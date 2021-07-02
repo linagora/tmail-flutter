@@ -29,22 +29,56 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_bindings.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_view.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:flutter/material.dart';
 
-class AppPages {
-  static final pages = [
-    GetPage(
-      name: AppRoutes.SPLASH,
-      page: () => SplashView(),
-      binding: SplashBindings()),
-    GetPage(
-      name: AppRoutes.LOGIN,
-      page: () => LoginView(),
-      binding: LoginBindings()),
-  ];
+class TextFieldBuilder {
+  Key? _key;
+  ValueChanged<String>? _onTextChange;
+  TextStyle? _textStyle;
+  TextInputAction? _textInputAction;
+  InputDecoration? _inputDecoration;
+  bool? _obscureText;
+
+  TextFieldBuilder key(Key key) {
+    _key = key;
+    return this;
+  }
+
+  TextFieldBuilder onChange(ValueChanged<String> onChange) {
+    _onTextChange = onChange;
+    return this;
+  }
+
+  TextFieldBuilder textStyle(TextStyle style) {
+    _textStyle = style;
+    return this;
+  }
+
+  TextFieldBuilder textInputAction(TextInputAction inputAction) {
+    _textInputAction = inputAction;
+    return this;
+  }
+
+  TextFieldBuilder textDecoration(InputDecoration inputDecoration) {
+    _inputDecoration = inputDecoration;
+    return this;
+  }
+
+  TextFieldBuilder obscureText(bool obscureText) {
+    _obscureText = obscureText;
+    return this;
+  }
+
+  TextField build() {
+    return TextField(
+      key: _key ?? Key('TextFieldBuilder'),
+      onChanged: _onTextChange,
+      cursorColor: AppColor.primaryColor,
+      textInputAction: _textInputAction,
+      decoration: _inputDecoration,
+      style: _textStyle ?? TextStyle(color: AppColor.textFieldTextColor),
+      obscureText: _obscureText ?? false,
+    );
+  }
 }

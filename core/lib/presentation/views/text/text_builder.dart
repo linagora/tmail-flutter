@@ -17,7 +17,8 @@
 // http://www.linshare.org, between linagora.com and Linagora, and (iii) refrain from
 // infringing Linagora intellectual property rights over its trademarks and commercial
 // brands. Other Additional Terms apply, see
-// <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf>
+// <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf
+//
 // for more details.
 // This program is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -25,26 +26,51 @@
 // more details.
 // You should have received a copy of the GNU Affero General Public License and its
 // applicable Additional Terms for LinShare along with this program. If not, see
-// <http://www.gnu.org/licenses/> for the GNU Affero General Public License version
-//  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
-//  the Additional Terms applicable to LinShare software.
+// <http://www.gnu.org/licenses
+// for the GNU Affero General Public License version
+//
+// 3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf
+// for
+//
+// the Additional Terms applicable to LinShare software.
 
-import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_bindings.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_view.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:flutter/material.dart';
 
-class AppPages {
-  static final pages = [
-    GetPage(
-      name: AppRoutes.SPLASH,
-      page: () => SplashView(),
-      binding: SplashBindings()),
-    GetPage(
-      name: AppRoutes.LOGIN,
-      page: () => LoginView(),
-      binding: LoginBindings()),
-  ];
+class TextBuilder {
+  String? _text;
+  TextStyle? _textStyle;
+  TextAlign? _textAlign;
+  Key? _key;
+
+  TextBuilder key(Key key) {
+    _key = key;
+    return this;
+  }
+
+  TextBuilder text(String text) {
+    _text = text;
+    return this;
+  }
+
+  TextBuilder textStyle(TextStyle textStyle) {
+    _textStyle = textStyle;
+    return this;
+  }
+
+  TextBuilder textAlign(TextAlign textAlign) {
+    _textAlign = textAlign;
+    return this;
+  }
+
+  Text build() {
+    return Text(_text ?? '', key: _key ?? Key('TextBuilder'), style: _textStyle ?? CommonTextStyle.textStyleNormal, textAlign: _textAlign ?? TextAlign.center);
+  }
+}
+
+class CenterTextBuilder extends TextBuilder {
+  @override
+  Text build() {
+    return Text(_text ?? '', key: _key ?? Key('TextBuilder'), style: _textStyle, textAlign: TextAlign.center);
+  }
 }

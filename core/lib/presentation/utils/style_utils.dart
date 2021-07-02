@@ -29,22 +29,14 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_bindings.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_view.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:flutter/material.dart';
 
-class AppPages {
-  static final pages = [
-    GetPage(
-      name: AppRoutes.SPLASH,
-      page: () => SplashView(),
-      binding: SplashBindings()),
-    GetPage(
-      name: AppRoutes.LOGIN,
-      page: () => LoginView(),
-      binding: LoginBindings()),
-  ];
+class CommonTextStyle {
+  static final textStyleNormal = TextStyle(
+    color: AppColor.primaryColor,
+    fontSize: 14,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.normal,
+  );
 }

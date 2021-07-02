@@ -29,10 +29,21 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
+import 'package:core/core.dart';
 import 'package:get/get.dart';
 
 class MainBindings extends Bindings {
   @override
   void dependencies() {
+    _bindingAppImagePaths();
+    _bindingResponsiveManager();
+  }
+
+  void _bindingAppImagePaths() {
+    Get.put(ImagePaths());
+  }
+
+  void _bindingResponsiveManager() {
+    Get.put(ResponsiveUtils());
   }
 }

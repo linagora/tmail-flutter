@@ -29,22 +29,34 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_bindings.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_view.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:flutter/material.dart';
 
-class AppPages {
-  static final pages = [
-    GetPage(
-      name: AppRoutes.SPLASH,
-      page: () => SplashView(),
-      binding: SplashBindings()),
-    GetPage(
-      name: AppRoutes.LOGIN,
-      page: () => LoginView(),
-      binding: LoginBindings()),
-  ];
+class ResponsiveWidget extends StatelessWidget {
+  final Widget? largeScreen;
+  final Widget mediumScreen;
+  final Widget? smallScreen;
+
+  final ResponsiveUtils responsiveUtils;
+
+  const ResponsiveWidget({
+    Key? key,
+    this.largeScreen,
+    required this.mediumScreen,
+    this.smallScreen,
+    required this.responsiveUtils,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      if (responsiveUtils.isLargeScreen(context)) {
+        return largeScreen ?? mediumScreen;
+      } else if (responsiveUtils.isMediumScreen(context)) {
+        return mediumScreen;
+      } else {
+        return smallScreen ?? mediumScreen;
+      }
+    });
+  }
 }

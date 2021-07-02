@@ -29,13 +29,6 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'dart:ui' show Color;
-
-import 'package:flutter/material.dart';
-
-extension AppColor on Color {
-  static const primaryColor = Color(0xFF6F35A5);
-  static const primaryDarkColor = Color(0xFFF1E6FF);
-  static const primaryLightColor = Color(0xFFF1E6FF);
-  static const baseTextColor = Color(0xFF757575);
+class AssetsPaths {
+  static const images = 'assets/images/';
 }

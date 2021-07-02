@@ -53,6 +53,13 @@ dependencies:
   intl: 0.17.0
   intl_translation: 0.17.10+1
 
+  # flutter_svg
+  flutter_svg: 0.22.0
+
+  # Http client
+  dio: 4.0.0
+  json_annotation: 4.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -77,7 +84,6 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/
-    - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -104,3 +110,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  fonts:
+    - family: CircularStd
+      fonts:
+        - asset: assets/fonts/CircularStd/CircularStd-Bold.otf
+          weight: 700
+        - asset: assets/fonts/CircularStd/CircularStd-Medium.otf
+          weight: 500
+        - asset: assets/fonts/CircularStd/CircularStd-Book.otf

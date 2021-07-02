@@ -17,7 +17,8 @@
 // http://www.linshare.org, between linagora.com and Linagora, and (iii) refrain from
 // infringing Linagora intellectual property rights over its trademarks and commercial
 // brands. Other Additional Terms apply, see
-// <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf>
+// <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf
+//
 // for more details.
 // This program is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -25,26 +26,68 @@
 // more details.
 // You should have received a copy of the GNU Affero General Public License and its
 // applicable Additional Terms for LinShare along with this program. If not, see
-// <http://www.gnu.org/licenses/> for the GNU Affero General Public License version
-//  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
-//  the Additional Terms applicable to LinShare software.
+// <http://www.gnu.org/licenses
+// for the GNU Affero General Public License version
+//
+// 3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf
+// for
+//
+// the Additional Terms applicable to LinShare software.
 
-import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_bindings.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_view.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:flutter/material.dart';
 
-class AppPages {
-  static final pages = [
-    GetPage(
-      name: AppRoutes.SPLASH,
-      page: () => SplashView(),
-      binding: SplashBindings()),
-    GetPage(
-      name: AppRoutes.LOGIN,
-      page: () => LoginView(),
-      binding: LoginBindings()),
-  ];
+abstract class InputDecorationBuilder {
+  String? prefixText;
+  String? labelText;
+  TextStyle? labelStyle;
+  String? hintText;
+  TextStyle? hintStyle;
+  EdgeInsets? contentPadding;
+  OutlineInputBorder? enabledBorder;
+
+  InputDecorationBuilder setPrefixText(String newPrefixText) {
+    prefixText = newPrefixText;
+    return this;
+  }
+
+  InputDecorationBuilder setLabelText(String newLabelText) {
+    labelText = newLabelText;
+    return this;
+  }
+
+  InputDecorationBuilder setLabelStyle(TextStyle newLabelStyle) {
+    labelStyle = newLabelStyle;
+    return this;
+  }
+
+  InputDecorationBuilder setHintText(String newHintText) {
+    hintText = newHintText;
+    return this;
+  }
+
+  InputDecorationBuilder setHintStyle(TextStyle newHintStyle) {
+    hintStyle = newHintStyle;
+    return this;
+  }
+
+  InputDecorationBuilder setContentPadding(EdgeInsets newContentPadding) {
+    contentPadding = newContentPadding;
+    return this;
+  }
+
+  InputDecorationBuilder setEnabledBorder(OutlineInputBorder newEnabledBorder) {
+    enabledBorder = newEnabledBorder;
+    return this;
+  }
+
+  InputDecoration build() {
+    return InputDecoration(
+      prefixText: prefixText,
+      labelText: labelText,
+      labelStyle: labelStyle,
+      hintText: hintText,
+      hintStyle: hintStyle,
+      contentPadding: contentPadding,
+      enabledBorder: enabledBorder);
+  }
 }

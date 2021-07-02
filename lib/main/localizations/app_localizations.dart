@@ -54,5 +54,35 @@ class AppLocalizations {
     return Intl.message('Initializing data...',
       name: 'initializing_data');
   }
+
+  String get login_text_slogan {
+    return Intl.message('TMail',
+        name: 'login_text_slogan');
+  }
+
+  String get prefix_https {
+    return Intl.message('https://',
+        name: 'prefix_https');
+  }
+
+  String get username {
+    return Intl.message('username',
+        name: 'username');
+  }
+
+  String get password {
+    return Intl.message('password',
+        name: 'password');
+  }
+
+  String get login {
+    return Intl.message('Login',
+        name: 'login');
+  }
+
+  String get login_text_login_to_continue {
+    return Intl.message('Please login to continue',
+        name: 'login_text_login_to_continue');
+  }
 }
 

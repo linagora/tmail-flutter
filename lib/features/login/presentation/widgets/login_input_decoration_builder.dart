@@ -17,7 +17,8 @@
 // http://www.linshare.org, between linagora.com and Linagora, and (iii) refrain from
 // infringing Linagora intellectual property rights over its trademarks and commercial
 // brands. Other Additional Terms apply, see
-// <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf>
+// <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf
+//
 // for more details.
 // This program is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -25,26 +26,39 @@
 // more details.
 // You should have received a copy of the GNU Affero General Public License and its
 // applicable Additional Terms for LinShare along with this program. If not, see
-// <http://www.gnu.org/licenses/> for the GNU Affero General Public License version
-//  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
-//  the Additional Terms applicable to LinShare software.
+// <http://www.gnu.org/licenses
+// for the GNU Affero General Public License version
+//
+// 3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf
+// for
+//
+// the Additional Terms applicable to LinShare software.
 
-import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_bindings.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_view.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:core/core.dart';
+import 'package:flutter/material.dart';
 
-class AppPages {
-  static final pages = [
-    GetPage(
-      name: AppRoutes.SPLASH,
-      page: () => SplashView(),
-      binding: SplashBindings()),
-    GetPage(
-      name: AppRoutes.LOGIN,
-      page: () => LoginView(),
-      binding: LoginBindings()),
-  ];
+class LoginInputDecorationBuilder extends InputDecorationBuilder {
+
+  @override
+  InputDecoration build() {
+    return InputDecoration(
+      enabledBorder: enabledBorder ?? OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(29)),
+        borderSide: BorderSide(width: 1, color: AppColor.textFieldBorderColor)),
+      focusedBorder: enabledBorder ?? OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(29)),
+        borderSide: BorderSide(width: 2, color: AppColor.textFieldFocusedBorderColor)),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(29)),
+        borderSide: BorderSide(width: 1, color: AppColor.textFieldErrorBorderColor)),
+      prefixText: prefixText,
+      labelText: labelText,
+      floatingLabelBehavior: FloatingLabelBehavior.never,
+      labelStyle: labelStyle ?? TextStyle(color: AppColor.textFieldLabelColor, fontSize: 16),
+      hintText: hintText,
+      hintStyle: hintStyle ?? TextStyle(color: AppColor.textFieldHintColor, fontSize: 16),
+      contentPadding: contentPadding ?? EdgeInsets.only(left: 25, top: 15, bottom: 15, right: 25),
+      filled: true,
+      fillColor: AppColor.textFieldBorderColor);
+  }
 }

@@ -29,22 +29,40 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_bindings.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_view.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:flutter/widgets.dart';
 
-class AppPages {
-  static final pages = [
-    GetPage(
-      name: AppRoutes.SPLASH,
-      page: () => SplashView(),
-      binding: SplashBindings()),
-    GetPage(
-      name: AppRoutes.LOGIN,
-      page: () => LoginView(),
-      binding: LoginBindings()),
-  ];
+class ResponsiveUtils {
+
+  static const int _minLargeWidth = 950;
+  static const int _minMediumWidth = 600;
+
+  static const double _loginTextFieldWidthSmallScreen = 280.0;
+  static const double _loginTextFieldWidthLargeScreen = 320.0;
+  static const double _loginButtonWidth = 240.0;
+
+  double getSizeWidthScreen(BuildContext context) {
+    return MediaQuery.of(context).size.width;
+  }
+
+  double getSizeHeightScreen(BuildContext context) {
+    return MediaQuery.of(context).size.height;
+  }
+
+  bool isLargeScreen(BuildContext context) {
+    return getSizeWidthScreen(context) >= _minLargeWidth;
+  }
+
+  bool isSmallScreen(BuildContext context) {
+    return getSizeWidthScreen(context) < _minMediumWidth;
+  }
+
+  bool isMediumScreen(BuildContext context) {
+    return getSizeWidthScreen(context) >= _minMediumWidth && getSizeWidthScreen(context) < _minLargeWidth;
+  }
+
+  double getWidthLoginTextField(BuildContext context) => isSmallScreen(context)
+    ? _loginTextFieldWidthSmallScreen
+    : _loginTextFieldWidthLargeScreen;
+
+  double getWidthLoginButton() => _loginButtonWidth;
 }

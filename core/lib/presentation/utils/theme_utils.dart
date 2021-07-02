@@ -29,22 +29,50 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_bindings.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_view.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:core/presentation/constants/constants.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:flutter/material.dart';
 
-class AppPages {
-  static final pages = [
-    GetPage(
-      name: AppRoutes.SPLASH,
-      page: () => SplashView(),
-      binding: SplashBindings()),
-    GetPage(
-      name: AppRoutes.LOGIN,
-      page: () => LoginView(),
-      binding: LoginBindings()),
-  ];
+ThemeData appTheme() {
+  return ThemeData(
+    scaffoldBackgroundColor: Colors.white,
+    fontFamily: Constants.fontApp,
+    appBarTheme: appBarTheme(),
+    textTheme: textTheme(),
+    visualDensity: VisualDensity.adaptivePlatformDensity,
+  );
+}
+
+InputDecorationTheme inputDecorationTheme() {
+  OutlineInputBorder outlineInputBorder = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(28),
+    borderSide: BorderSide(color: AppColor.baseTextColor),
+    gapPadding: 10,
+  );
+  return InputDecorationTheme(
+    floatingLabelBehavior: FloatingLabelBehavior.always,
+    contentPadding: EdgeInsets.symmetric(horizontal: 42, vertical: 20),
+    enabledBorder: outlineInputBorder,
+    focusedBorder: outlineInputBorder,
+    border: outlineInputBorder,
+  );
+}
+
+TextTheme textTheme() {
+  return TextTheme(
+    bodyText1: TextStyle(color: AppColor.baseTextColor),
+    bodyText2: TextStyle(color: AppColor.baseTextColor),
+  );
+}
+
+AppBarTheme appBarTheme() {
+  return AppBarTheme(
+    color: Colors.white,
+    elevation: 0,
+    brightness: Brightness.light,
+    iconTheme: IconThemeData(color: Colors.black),
+    textTheme: TextTheme(
+      headline6: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
+    ),
+  );
 }

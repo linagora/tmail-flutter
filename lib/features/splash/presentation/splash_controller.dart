@@ -30,7 +30,14 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class SplashController extends GetxController {
 
+  @override
+  Future onInit() async {
+    super.onInit();
+    await Future.delayed(const Duration(seconds: 3));
+    Get.offNamed(AppRoutes.LOGIN);
+  }
 }

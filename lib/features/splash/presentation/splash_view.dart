@@ -30,32 +30,39 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:core/core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/splash/presentation/splash_controller.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SplashView extends GetWidget<SplashController> {
 
   final splashController = Get.find<SplashController>();
+  final imagePaths = Get.find<ImagePaths>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.primaryColor,
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                AppLocalizations.of(context).initializing_data,
-                style: TextStyle(color: Colors.white, fontSize: 17)),
-            ],
-          ),
-        ),
+      backgroundColor: AppColor.primaryLightColor,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            alignment: Alignment.center,
+            child: SvgPicture.asset(
+              imagePaths.icTMailLogo,
+              width: 200,
+              height: 200,
+              alignment: Alignment.center)).paddingOnly(top: Get.mediaQuery.size.height * 0.4),
+          Spacer(),
+          SizedBox(
+            width: 50,
+            height: 50,
+            child: CupertinoActivityIndicator(),
+          ).paddingOnly(bottom: 80.0)
+        ],
       ),
     );
   }

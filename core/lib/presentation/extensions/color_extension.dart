@@ -29,22 +29,21 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_bindings.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_view.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'dart:ui' show Color;
 
-class AppPages {
-  static final pages = [
-    GetPage(
-      name: AppRoutes.SPLASH,
-      page: () => SplashView(),
-      binding: SplashBindings()),
-    GetPage(
-      name: AppRoutes.LOGIN,
-      page: () => LoginView(),
-      binding: LoginBindings()),
-  ];
+import 'package:flutter/material.dart';
+
+extension AppColor on Color {
+  static const primaryColor = Color(0xFF837dff);
+  static const primaryDarkColor = Color(0xFF1C1C1C);
+  static const primaryLightColor = Color(0xFFFFFFFF);
+  static const baseTextColor = Color(0xFF7E869B);
+  static const textFieldTextColor = Color(0xFF7E869B);
+  static const textFieldLabelColor = Color(0xFF7E869B);
+  static const textFieldHintColor = Color(0xFF757575);
+  static const textFieldBorderColor = Color(0xfff2f1fd);
+  static const textFieldFocusedBorderColor = Color(0xFF837dff);
+  static const textFieldErrorBorderColor = Color(0xffFF5858);
+  static const buttonColor = Color(0xFF837dff);
+  static const appColor = Color(0xFF3840F7);
 }
