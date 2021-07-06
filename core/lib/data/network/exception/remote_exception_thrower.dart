@@ -29,40 +29,27 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-library core;
+import 'package:core/data/network/exception/remote_exception.dart';
+import 'package:core/data/network/exception/tmail_error_code.dart';
+import 'package:dio/dio.dart';
 
-// Extensions
-export 'presentation/extensions/color_extension.dart';
-export 'presentation/extensions/url_extension.dart';
+class RemoteExceptionThrower {
+  void throwRemoteException(dynamic exception, {Function(DioError)? handler}) {
+    if (exception is DioError) {
+      switch (exception.type) {
+        case DioErrorType.other:
+          throw ServerNotFound();
+        case DioErrorType.connectTimeout:
+          throw ConnectError();
+        default:
+          handler != null ? handler(exception) : throw UnknownError(exception.message);
+          break;
+      }
+    } else {
+      throw UnknownError(exception.toString());
+    }
+  }
 
-// Utils
-export 'presentation/utils/theme_utils.dart';
-export 'presentation/utils/responsive_utils.dart';
-export 'presentation/utils/keyboard_utils.dart';
-export 'presentation/utils/style_utils.dart';
-
-// Views
-export 'presentation/views/text/slogan_builder.dart';
-export 'presentation/views/text/text_field_builder.dart';
-export 'presentation/views/text/input_decoration_builder.dart';
-export 'presentation/views/text/text_builder.dart';
-export 'presentation/views/responsive/responsive_widget.dart';
-
-// Resources
-export 'presentation/resources/assets_paths.dart';
-export 'presentation/resources/image_paths.dart';
-
-// Constants
-export 'presentation/constants/constants.dart';
-
-// Network
-export 'data/network/config/dynamic_url_interceptors.dart';
-export 'data/network/config/endpoint.dart';
-export 'data/network/config/service_path.dart';
-export 'data/network/dio_client.dart';
-export 'data/network/exception/remote_exception_thrower.dart';
-export 'data/network/exception/remote_exception.dart';
-
-// State
-export 'presentation/state/success.dart';
-export 'presentation/state/failure.dart';
+  TMailErrorCode getErrorCodeFromErrorResponse(Map<String, dynamic> responseMap) =>
+      TMailErrorCode(responseMap['errCode'] as int);
+}

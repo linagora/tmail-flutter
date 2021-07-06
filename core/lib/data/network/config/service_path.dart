@@ -29,40 +29,18 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-library core;
+class ServicePath {
+  final String path;
 
-// Extensions
-export 'presentation/extensions/color_extension.dart';
-export 'presentation/extensions/url_extension.dart';
+  ServicePath(this.path);
+}
 
-// Utils
-export 'presentation/utils/theme_utils.dart';
-export 'presentation/utils/responsive_utils.dart';
-export 'presentation/utils/keyboard_utils.dart';
-export 'presentation/utils/style_utils.dart';
+extension ServicePathExtension on ServicePath {
+  String generateEndpointPath() {
+    return '$path';
+  }
 
-// Views
-export 'presentation/views/text/slogan_builder.dart';
-export 'presentation/views/text/text_field_builder.dart';
-export 'presentation/views/text/input_decoration_builder.dart';
-export 'presentation/views/text/text_builder.dart';
-export 'presentation/views/responsive/responsive_widget.dart';
-
-// Resources
-export 'presentation/resources/assets_paths.dart';
-export 'presentation/resources/image_paths.dart';
-
-// Constants
-export 'presentation/constants/constants.dart';
-
-// Network
-export 'data/network/config/dynamic_url_interceptors.dart';
-export 'data/network/config/endpoint.dart';
-export 'data/network/config/service_path.dart';
-export 'data/network/dio_client.dart';
-export 'data/network/exception/remote_exception_thrower.dart';
-export 'data/network/exception/remote_exception.dart';
-
-// State
-export 'presentation/state/success.dart';
-export 'presentation/state/failure.dart';
+  String generateAuthenticationUrl(Uri baseUrl) {
+    return baseUrl.origin + generateEndpointPath();
+  }
+}

@@ -29,40 +29,58 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-library core;
+import 'package:equatable/equatable.dart';
 
-// Extensions
-export 'presentation/extensions/color_extension.dart';
-export 'presentation/extensions/url_extension.dart';
+abstract class RemoteException extends Equatable implements Exception {
+  static final missingRequiredFields = 'Missing required fields';
+  static final serverNotFound = 'Server not found';
+  static final internalServerError = 'Internal server error';
+  static final connectError = 'Connect error';
+  static final notAuthorized = 'Current logged in account does not have the rights';
 
-// Utils
-export 'presentation/utils/theme_utils.dart';
-export 'presentation/utils/responsive_utils.dart';
-export 'presentation/utils/keyboard_utils.dart';
-export 'presentation/utils/style_utils.dart';
+  final String? message;
 
-// Views
-export 'presentation/views/text/slogan_builder.dart';
-export 'presentation/views/text/text_field_builder.dart';
-export 'presentation/views/text/input_decoration_builder.dart';
-export 'presentation/views/text/text_builder.dart';
-export 'presentation/views/responsive/responsive_widget.dart';
+  RemoteException(this.message);
+}
 
-// Resources
-export 'presentation/resources/assets_paths.dart';
-export 'presentation/resources/image_paths.dart';
+class MissingRequiredFields extends RemoteException {
+  MissingRequiredFields() : super(RemoteException.missingRequiredFields);
 
-// Constants
-export 'presentation/constants/constants.dart';
+  @override
+  List<Object> get props => [];
+}
 
-// Network
-export 'data/network/config/dynamic_url_interceptors.dart';
-export 'data/network/config/endpoint.dart';
-export 'data/network/config/service_path.dart';
-export 'data/network/dio_client.dart';
-export 'data/network/exception/remote_exception_thrower.dart';
-export 'data/network/exception/remote_exception.dart';
+class ServerNotFound extends RemoteException {
+  ServerNotFound() : super(RemoteException.serverNotFound);
 
-// State
-export 'presentation/state/success.dart';
-export 'presentation/state/failure.dart';
+  @override
+  List<Object> get props => [];
+}
+
+class InternalServerError extends RemoteException {
+  InternalServerError() : super(RemoteException.internalServerError);
+
+  @override
+  List<Object> get props => [];
+}
+
+class ConnectError extends RemoteException {
+  ConnectError() : super(RemoteException.connectError);
+
+  @override
+  List<Object> get props => [];
+}
+
+class NotAuthorized extends RemoteException {
+  NotAuthorized() : super(RemoteException.notAuthorized);
+
+  @override
+  List<Object> get props => [];
+}
+
+class UnknownError extends RemoteException {
+  UnknownError(String? message) : super(message);
+
+  @override
+  List<Object> get props => [];
+}

@@ -60,6 +60,15 @@ dependencies:
   dio: 4.0.0
   json_annotation: 4.0.1
 
+  # equatable
+  equatable: 2.0.0
+
+  # shared_preferences
+  shared_preferences: 2.0.5
+
+  # either
+  dartz: 0.10.0-nullsafety.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -67,6 +76,7 @@ dev_dependencies:
     sdk: flutter
 
   build_runner: 2.0.1
+  json_serializable: 4.1.1
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

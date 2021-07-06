@@ -31,6 +31,15 @@ dependencies:
   # flutter_svg
   flutter_svg: 0.22.0
 
+  # Http client
+  dio: 4.0.0
+
+  # dartz
+  dartz: 0.10.0-nullsafety.1
+
+  # equatable
+  equatable: 2.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
