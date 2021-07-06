@@ -31,5 +31,6 @@
 
 abstract class AppRoutes {
   static const SPLASH = '/splash';
+  static const INITIALIZE = '/initialize';
   static const LOGIN = '/login';
 }

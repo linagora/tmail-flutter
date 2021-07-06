@@ -30,30 +30,30 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:core/core.dart';
-import 'package:dartz/dartz.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/password.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/user_name.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/initialize/presentation/initialize_controller.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class AuthenticationInteractor {
-  final AuthenticationRepository authenticationRepository;
-  final CredentialRepository credentialRepository;
+class InitializeView extends GetWidget<InitializeController> {
 
-  AuthenticationInteractor(this.authenticationRepository, this.credentialRepository);
+  final splashController = Get.find<InitializeController>();
 
-  Future<Either<Failure, Success>> execute(Uri baseUrl, UserName userName, Password password) async {
-    try {
-      final user = await authenticationRepository.authenticationUser(baseUrl, userName, password);
-      await Future.wait([
-        credentialRepository.saveBaseUrl(baseUrl),
-        credentialRepository.saveUserName(userName),
-        credentialRepository.savePassword(password)
-      ]);
-      return Right(AuthenticationUserViewState(user));
-    } catch (e) {
-      return Left(AuthenticationUserFailure(e));
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColor.primaryColor,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(AppLocalizations.of(context).initializing_data, style: TextStyle(color: Colors.white, fontSize: 17)),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

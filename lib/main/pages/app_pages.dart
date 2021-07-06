@@ -30,6 +30,8 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:tmail_ui_user/features/initialize/presentation/initialize_bindings.dart';
+import 'package:tmail_ui_user/features/initialize/presentation/initialize_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
 import 'package:tmail_ui_user/features/splash/presentation/splash_bindings.dart';
@@ -42,6 +44,10 @@ class AppPages {
       name: AppRoutes.SPLASH,
       page: () => SplashView(),
       binding: SplashBindings()),
+    GetPage(
+      name: AppRoutes.INITIALIZE,
+      page: () => InitializeView(),
+      binding: InitializeBindings()),
     GetPage(
       name: AppRoutes.LOGIN,
       page: () => LoginView(),

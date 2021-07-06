@@ -15,13 +15,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.5.0"
-  archive:
-    dependency: transitive
-    description:
-      name: archive
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.2"
   args:
     dependency: "direct overridden"
     description:
@@ -237,11 +230,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_driver:
-    dependency: "direct dev"
-    description: flutter
-    source: sdk
-    version: "0.0.0"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -260,11 +248,6 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_web_plugins:
-    dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.0"
-  fuchsia_remote_debug_protocol:
     dependency: transitive
     description: flutter
     source: sdk
@@ -582,13 +565,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  sync_http:
-    dependency: transitive
-    description:
-      name: sync_http
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.0"
   term_glyph:
     dependency: transitive
     description:
@@ -624,13 +600,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  vm_service:
-    dependency: transitive
-    description:
-      name: vm_service
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "6.2.0"
   watcher:
     dependency: transitive
     description:
@@ -645,13 +614,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  webdriver:
-    dependency: transitive
-    description:
-      name: webdriver
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
   win32:
     dependency: transitive
     description:

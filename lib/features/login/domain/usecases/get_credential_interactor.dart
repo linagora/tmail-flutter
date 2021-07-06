@@ -30,22 +30,31 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:core/core.dart';
-import 'package:tmail_ui_user/features/login/domain/model/user/user.dart';
+import 'package:dartz/dartz.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
+import 'dart:core';
 
-class LoginSuccess extends Success {
-  final User user;
+import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/extensions/uri_extension.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 
-  LoginSuccess(this.user);
+class GetCredentialInteractor {
+  final CredentialRepository credentialRepository;
 
-  @override
-  List<Object> get props => [user];
-}
+  GetCredentialInteractor(this.credentialRepository);
 
-class LoginFailure extends Failure {
-  final exception;
+  Future<Either<Failure, Success>> execute() async {
+    try {
+      final baseUrl = await credentialRepository.getBaseUrl();
+      if (isCredentialValid(baseUrl)) {
+        return Right(GetCredentialViewState(baseUrl));
+      } else {
+        return Left(GetCredentialFailure(BadCredentials()));
+      }
+    } catch (exception) {
+      return Left(GetCredentialFailure(BadCredentials()));
+    }
+  }
 
-  LoginFailure(this.exception);
-
-  @override
-  List<Object> get props => [exception];
+  bool isCredentialValid(Uri baseUrl) => baseUrl.isBaseUrlValid();
 }

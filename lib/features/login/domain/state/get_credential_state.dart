@@ -30,30 +30,22 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:core/core.dart';
-import 'package:dartz/dartz.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/password.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/user_name.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
+import 'package:core/presentation/state/failure.dart';
 
-class AuthenticationInteractor {
-  final AuthenticationRepository authenticationRepository;
-  final CredentialRepository credentialRepository;
+class GetCredentialViewState extends ViewState {
+  final Uri baseUrl;
 
-  AuthenticationInteractor(this.authenticationRepository, this.credentialRepository);
+  GetCredentialViewState(this.baseUrl);
 
-  Future<Either<Failure, Success>> execute(Uri baseUrl, UserName userName, Password password) async {
-    try {
-      final user = await authenticationRepository.authenticationUser(baseUrl, userName, password);
-      await Future.wait([
-        credentialRepository.saveBaseUrl(baseUrl),
-        credentialRepository.saveUserName(userName),
-        credentialRepository.savePassword(password)
-      ]);
-      return Right(AuthenticationUserViewState(user));
-    } catch (e) {
-      return Left(AuthenticationUserFailure(e));
-    }
-  }
+  @override
+  List<Object> get props => [baseUrl];
+}
+
+class GetCredentialFailure extends FeatureFailure {
+  final exception;
+
+  GetCredentialFailure(this.exception);
+
+  @override
+  List<Object> get props => [exception];
 }

@@ -1,19 +1,14 @@
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
-import 'package:flutter_driver/driver_extension.dart';
 
 import 'bindings/main_bindings.dart';
 import 'routes/app_routes.dart';
 
 void main() async {
-  if (kProfileMode) {
-    enableFlutterDriverExtension();
-  }
   runApp(TMailApp());
 }
 
@@ -43,6 +38,7 @@ class TMailApp extends StatelessWidget {
         }
         return supportedLocales.first;
       },
+      defaultTransition: Transition.fade,
       initialBinding: MainBindings(),
       initialRoute: AppRoutes.SPLASH,
       getPages: AppPages.pages);

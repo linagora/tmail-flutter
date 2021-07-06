@@ -33,21 +33,4 @@ import 'package:equatable/equatable.dart';
 
 abstract class Success extends Equatable {}
 
-abstract class ViewEvent extends Success {}
-
 abstract class ViewState extends Success {}
-
-class IdleState extends ViewState {
-  @override
-  List<Object> get props => [];
-}
-
-class LoadingState extends ViewState {
-  @override
-  List<Object> get props => [];
-}
-
-class NoInternetConnectionState extends ViewState {
-  @override
-  List<Object> get props => [];
-}

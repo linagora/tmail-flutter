@@ -29,59 +29,37 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/core.dart';
+import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/password.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/user_name.dart';
-import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
-import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
-class LoginController extends GetxController {
-
-  final AuthenticationInteractor _authenticationInteractor;
+class InitializeController extends GetxController {
+  final GetCredentialInteractor _getCredentialInteractor;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
 
-  LoginController(this._authenticationInteractor, this._dynamicUrlInterceptors);
+  InitializeController(this._getCredentialInteractor, this._dynamicUrlInterceptors);
 
-  var loginState = LoginState.IDLE.obs;
-
-  String _urlText = '';
-  String _userNameText = '';
-  String _passwordText = '';
-
-  void setUrlText(String url) => _urlText = url.formatURLValid();
-
-  void setUserNameText(String userName) => _userNameText = userName;
-
-  void setPasswordText(String password) => _passwordText = password;
-
-  Uri _parseUri(String url) => Uri.parse(url);
-
-  UserName _parseUserName(String userName) => UserName(userName);
-
-  Password _parsePassword(String password) => Password(password);
-
-  void handleLoginPressed() {
-    _loginAction(_parseUri(_urlText), _parseUserName(_userNameText), _parsePassword(_passwordText));
+  @override
+  void onReady() {
+    super.onReady();
+    _getCredentialAction();
   }
 
-  void _loginAction(Uri baseUrl, UserName userName, Password password) async {
-    loginState(LoginState.LOADING);
-    await _authenticationInteractor.execute(baseUrl, userName, password)
+  void _getCredentialAction() async {
+    await _getCredentialInteractor.execute()
       .then((response) => response.fold(
-        (failure) => failure is AuthenticationUserFailure ? _loginFailureAction(failure) : null,
-        (success) => success is AuthenticationUserViewState ? _loginSuccessAction(success) : null));
+        (failure) => _goToLogin(),
+        (success) => success is GetCredentialViewState ? _goToHome(success) : _goToLogin()));
   }
 
-  void _loginSuccessAction(AuthenticationUserViewState success) {
-    loginState(LoginState.SUCCESS);
-    _dynamicUrlInterceptors.changeBaseUrl(_urlText);
-    Get.snackbar('Login Success', 'User: ${success.user}');
+  void _goToLogin() {
+    Get.offNamed(AppRoutes.LOGIN);
   }
 
-  void _loginFailureAction(AuthenticationUserFailure failure) {
-    loginState(LoginState.FAILURE);
-    Get.snackbar('Login Failure', '${failure.exception}');
+  void _goToHome(GetCredentialViewState credentialViewState) {
+    _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
+    Get.snackbar('GO TO HOME', '');
   }
 }

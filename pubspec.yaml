@@ -72,8 +72,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_driver:
-    sdk: flutter
 
   build_runner: 2.0.1
   json_serializable: 4.1.1

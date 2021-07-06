@@ -44,14 +44,15 @@ import 'package:tmail_ui_user/features/login/data/repository/credential_reposito
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 
 class MainBindings extends Bindings {
   @override
   void dependencies() {
-    _bindingDio();
+    _bindingSharePreference();
     _bindingAppImagePaths();
     _bindingResponsiveManager();
-    _bindingSharePreference();
+    _bindingDio();
     _bindingRemoteExceptionThrower();
     _bindingNetwork();
     _bindingDataSourceImpl();
@@ -69,17 +70,8 @@ class MainBindings extends Bindings {
     Get.put(ResponsiveUtils());
   }
 
-  void _provideBaseOption() {
-    final headers = <String, dynamic>{
-      HttpHeaders.acceptHeader: 'application/json',
-      HttpHeaders.contentTypeHeader: 'application/json'
-    };
-    Get.put(BaseOptions(headers: headers));
-  }
-
   void _bindingDio() {
-    _provideBaseOption();
-    Get.put(Dio(Get.find<BaseOptions>()));
+    Get.put(Dio());
     _bindingInterceptors();
     Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
     if (kDebugMode) {
@@ -93,15 +85,15 @@ class MainBindings extends Bindings {
 
   void _bindingNetwork() {
     Get.put(DioClient(Get.find<Dio>()));
-    Get.put(LoginHttpClient(Get.find<DioClient>()));
+    Get.lazyPut(() => LoginHttpClient(Get.find<DioClient>()));
   }
 
   void _bindingRemoteExceptionThrower() {
-    Get.lazyPut(() => RemoteExceptionThrower());
+    Get.put(RemoteExceptionThrower());
   }
 
   void _bindingSharePreference() {
-    Get.putAsync(() => SharedPreferences.getInstance());
+    Get.putAsync(() async => await SharedPreferences.getInstance());
   }
 
   void _bindingDataSource() {
@@ -128,5 +120,8 @@ class MainBindings extends Bindings {
     Get.lazyPut(() => AuthenticationInteractor(
       Get.find<AuthenticationRepository>(),
       Get.find<CredentialRepository>()));
+    Get.lazyPut(() => GetCredentialInteractor(
+      Get.find<CredentialRepository>()
+    ));
   }
 }
