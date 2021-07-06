@@ -29,17 +29,9 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/core.dart';
-import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
-
-class LoginBindings extends Bindings {
-  @override
-  void dependencies() {
-    Get.put(LoginController(
-      Get.find<AuthenticationInteractor>(),
-      Get.find<DynamicUrlInterceptors>())
-    );
-  }
+enum LoginState {
+  IDLE,
+  LOADING,
+  SUCCESS,
+  FAILURE
 }

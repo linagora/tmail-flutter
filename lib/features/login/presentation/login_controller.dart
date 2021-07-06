@@ -31,8 +31,20 @@
 
 import 'package:core/core.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/login/domain/model/account/password.dart';
+import 'package:tmail_ui_user/features/login/domain/model/account/user_name.dart';
+import 'package:tmail_ui_user/features/login/domain/state/login_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
+import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 
 class LoginController extends GetxController {
+
+  final AuthenticationInteractor _authenticationInteractor;
+  final DynamicUrlInterceptors _dynamicUrlInterceptors;
+
+  LoginController(this._authenticationInteractor, this._dynamicUrlInterceptors);
+
+  var loginState = LoginState.IDLE.obs;
 
   String _urlText = '';
   String _userNameText = '';
@@ -44,7 +56,32 @@ class LoginController extends GetxController {
 
   void setPasswordText(String password) => _passwordText = password;
 
-  void handleLoginPressed() {
+  Uri _parseUri(String url) => Uri.parse(url);
 
+  UserName _parseUserName(String userName) => UserName(userName);
+
+  Password _parsePassword(String password) => Password(password);
+
+  void handleLoginPressed() {
+    _loginAction(_parseUri(_urlText), _parseUserName(_userNameText), _parsePassword(_passwordText));
+  }
+
+  void _loginAction(Uri baseUrl, UserName userName, Password password) async {
+    loginState(LoginState.LOADING);
+    await _authenticationInteractor.execute(baseUrl, userName, password)
+      .then((response) => response.fold(
+        (failure) => failure is LoginFailure ? _loginFailureAction(failure) : null,
+        (success) => success is LoginSuccess ? _loginSuccessAction(success) : null));
+  }
+
+  void _loginSuccessAction(LoginSuccess success) {
+    loginState(LoginState.SUCCESS);
+    _dynamicUrlInterceptors.changeBaseUrl(_urlText);
+    print('User: ${success.user}');
+  }
+
+  void _loginFailureAction(LoginFailure failure) {
+    loginState(LoginState.FAILURE);
+    print('failure: ${failure.exception}');
   }
 }

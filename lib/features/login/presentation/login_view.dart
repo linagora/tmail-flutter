@@ -34,6 +34,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
+import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_input_decoration_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -68,7 +69,9 @@ class LoginView extends GetWidget<LoginController> {
                       _buildUrlInput(context),
                       _buildUserNameInput(context),
                       _buildPasswordInput(context),
-                      _buildLoginButton(context),
+                      Obx(() => controller.loginState.value == LoginState.LOADING
+                        ? _buildLoadingCircularProgress()
+                        : _buildLoginButton(context)),
                     ],
                   ),
                 ),
@@ -140,6 +143,7 @@ class LoginView extends GetWidget<LoginController> {
         width: responsiveUtils.getWidthLoginTextField(context),
         child: TextFieldBuilder()
           .key(Key('login_password_input'))
+          .obscureText(true)
           .onChange((value) => loginController.setPasswordText(value))
           .textInputAction(TextInputAction.done)
           .textDecoration(LoginInputDecorationBuilder()
@@ -170,5 +174,13 @@ class LoginView extends GetWidget<LoginController> {
           }),
       )
     );
+  }
+
+  Widget _buildLoadingCircularProgress() {
+    return SizedBox(
+      key: Key('login_loading_icon'),
+      width: 40,
+      height: 40,
+      child: CircularProgressIndicator());
   }
 }

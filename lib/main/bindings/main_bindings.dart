@@ -29,14 +29,36 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
+import 'dart:io';
+
 import 'package:core/core.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/login/data/datasource/atuthentitcation_datasource.dart';
+import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_datasource_impl.dart';
+import 'package:tmail_ui_user/features/login/data/network/login_http_client.dart';
+import 'package:tmail_ui_user/features/login/data/repository/authentication_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 
 class MainBindings extends Bindings {
   @override
   void dependencies() {
+    _bindingDio();
     _bindingAppImagePaths();
     _bindingResponsiveManager();
+    _bindingSharePreference();
+    _bindingRemoteExceptionThrower();
+    _bindingNetwork();
+    _bindingDataSourceImpl();
+    _bindingDataSource();
+    _bindingRepositoryImpl();
+    _bindingRepository();
+    _bindingInteractor();
   }
 
   void _bindingAppImagePaths() {
@@ -45,5 +67,66 @@ class MainBindings extends Bindings {
 
   void _bindingResponsiveManager() {
     Get.put(ResponsiveUtils());
+  }
+
+  void _provideBaseOption() {
+    final headers = <String, dynamic>{
+      HttpHeaders.acceptHeader: 'application/json',
+      HttpHeaders.contentTypeHeader: 'application/json'
+    };
+    Get.put(BaseOptions(headers: headers));
+  }
+
+  void _bindingDio() {
+    _provideBaseOption();
+    Get.put(Dio(Get.find<BaseOptions>()));
+    _bindingInterceptors();
+    Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
+    if (kDebugMode) {
+      Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true));
+    }
+  }
+
+  void _bindingInterceptors() {
+    Get.put(DynamicUrlInterceptors());
+  }
+
+  void _bindingNetwork() {
+    Get.put(DioClient(Get.find<Dio>()));
+    Get.put(LoginHttpClient(Get.find<DioClient>()));
+  }
+
+  void _bindingRemoteExceptionThrower() {
+    Get.lazyPut(() => RemoteExceptionThrower());
+  }
+
+  void _bindingSharePreference() {
+    Get.putAsync(() => SharedPreferences.getInstance());
+  }
+
+  void _bindingDataSource() {
+    Get.lazyPut<AuthenticationDataSource>(() => Get.find<AuthenticationDataSourceImpl>());
+  }
+
+  void _bindingDataSourceImpl() {
+    Get.lazyPut(() => AuthenticationDataSourceImpl(
+      Get.find<LoginHttpClient>(),
+      Get.find<RemoteExceptionThrower>()));
+  }
+
+  void _bindingRepository() {
+    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
+    Get.lazyPut<AuthenticationRepository>(() => Get.find<AuthenticationRepositoryImpl>());
+  }
+
+  void _bindingRepositoryImpl() {
+    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
+    Get.lazyPut(() => AuthenticationRepositoryImpl(Get.find<AuthenticationDataSource>()));
+  }
+
+  void _bindingInteractor() {
+    Get.lazyPut(() => AuthenticationInteractor(
+      Get.find<AuthenticationRepository>(),
+      Get.find<CredentialRepository>()));
   }
 }
