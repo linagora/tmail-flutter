@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/login/domain/model/account/user_name.dart
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class LoginController extends GetxController {
 
@@ -77,11 +78,10 @@ class LoginController extends GetxController {
   void _loginSuccessAction(AuthenticationUserViewState success) {
     loginState(LoginState.SUCCESS);
     _dynamicUrlInterceptors.changeBaseUrl(_urlText);
-    Get.snackbar('Login Success', 'User: ${success.user}');
+    Get.offNamed(AppRoutes.MAILBOX);
   }
 
   void _loginFailureAction(AuthenticationUserFailure failure) {
     loginState(LoginState.FAILURE);
-    Get.snackbar('Login Failure', '${failure.exception}');
   }
 }

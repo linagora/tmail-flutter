@@ -29,37 +29,13 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 
-class InitializeController extends GetxController {
-  final GetCredentialInteractor _getCredentialInteractor;
-  final DynamicUrlInterceptors _dynamicUrlInterceptors;
-
-  InitializeController(this._getCredentialInteractor, this._dynamicUrlInterceptors);
-
+class MailBoxBindings extends Bindings {
   @override
-  void onReady() {
-    super.onReady();
-    _getCredentialAction();
-  }
-
-  void _getCredentialAction() async {
-    await _getCredentialInteractor.execute()
-      .then((response) => response.fold(
-        (failure) => _goToLogin(),
-        (success) => success is GetCredentialViewState ? _goToHome(success) : _goToLogin()));
-  }
-
-  void _goToLogin() {
-    Get.offNamed(AppRoutes.LOGIN);
-  }
-
-  void _goToHome(GetCredentialViewState credentialViewState) {
-    _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
-    Get.offNamed(AppRoutes.MAILBOX);
+  void dependencies() {
+    Get.lazyPut(() => MailBoxController(Get.find<GetAllMailBoxInteractor>()));
   }
 }

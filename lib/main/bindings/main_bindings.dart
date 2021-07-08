@@ -29,8 +29,6 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'dart:io';
-
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -45,6 +43,12 @@ import 'package:tmail_ui_user/features/login/domain/repository/authentication_re
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_http_client.dart';
+import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 
 class MainBindings extends Bindings {
   @override
@@ -85,7 +89,8 @@ class MainBindings extends Bindings {
 
   void _bindingNetwork() {
     Get.put(DioClient(Get.find<Dio>()));
-    Get.lazyPut(() => LoginHttpClient(Get.find<DioClient>()));
+    Get.put(LoginHttpClient(Get.find<DioClient>()));
+    Get.put(MailBoxHttpClient(Get.find<DioClient>()));
   }
 
   void _bindingRemoteExceptionThrower() {
@@ -93,35 +98,42 @@ class MainBindings extends Bindings {
   }
 
   void _bindingSharePreference() {
-    Get.putAsync(() async => await SharedPreferences.getInstance());
+    Get.putAsync(() async => await SharedPreferences.getInstance(), permanent: true);
   }
 
   void _bindingDataSource() {
-    Get.lazyPut<AuthenticationDataSource>(() => Get.find<AuthenticationDataSourceImpl>());
+    Get.create<AuthenticationDataSource>(() => Get.find<AuthenticationDataSourceImpl>());
+    Get.create<MailBoxDataSource>(() => Get.find<MailBoxDataSourceImpl>());
   }
 
   void _bindingDataSourceImpl() {
-    Get.lazyPut(() => AuthenticationDataSourceImpl(
+    Get.create(() => AuthenticationDataSourceImpl(
       Get.find<LoginHttpClient>(),
+      Get.find<RemoteExceptionThrower>()));
+    Get.create(() => MailBoxDataSourceImpl(
+      Get.find<MailBoxHttpClient>(),
       Get.find<RemoteExceptionThrower>()));
   }
 
   void _bindingRepository() {
-    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
-    Get.lazyPut<AuthenticationRepository>(() => Get.find<AuthenticationRepositoryImpl>());
+    Get.create<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
+    Get.create<AuthenticationRepository>(() => Get.find<AuthenticationRepositoryImpl>());
+    Get.create<MailBoxRepository>(() => Get.find<MailBoxRepositoryImpl>());
   }
 
   void _bindingRepositoryImpl() {
-    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
-    Get.lazyPut(() => AuthenticationRepositoryImpl(Get.find<AuthenticationDataSource>()));
+    Get.create(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
+    Get.create(() => AuthenticationRepositoryImpl(Get.find<AuthenticationDataSource>()));
+    Get.create(() => MailBoxRepositoryImpl(Get.find<MailBoxDataSource>()));
   }
 
   void _bindingInteractor() {
-    Get.lazyPut(() => AuthenticationInteractor(
+    Get.create(() => AuthenticationInteractor(
       Get.find<AuthenticationRepository>(),
       Get.find<CredentialRepository>()));
-    Get.lazyPut(() => GetCredentialInteractor(
+    Get.create(() => GetCredentialInteractor(
       Get.find<CredentialRepository>()
     ));
+    Get.create(() => GetAllMailBoxInteractor(Get.find<MailBoxRepository>()));
   }
 }

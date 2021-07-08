@@ -32,7 +32,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:tmail_ui_user/features/login/domain/model/user/user_id.dart';
 
-class User with EquatableMixin  {
+class User with EquatableMixin {
 
   final UserId userId;
   final String firstName;

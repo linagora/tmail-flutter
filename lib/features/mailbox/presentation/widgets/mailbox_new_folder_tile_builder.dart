@@ -29,37 +29,72 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'dart:ui';
+
+import 'package:core/core.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
-class InitializeController extends GetxController {
-  final GetCredentialInteractor _getCredentialInteractor;
-  final DynamicUrlInterceptors _dynamicUrlInterceptors;
+typedef OnOpenMailBoxNewFolderActionClick = void Function();
 
-  InitializeController(this._getCredentialInteractor, this._dynamicUrlInterceptors);
+class MailBoxNewFolderTileBuilder {
+  final imagePath = Get.find<ImagePaths>();
 
-  @override
-  void onReady() {
-    super.onReady();
-    _getCredentialAction();
+  String? _icon;
+  String? _name;
+
+  OnOpenMailBoxNewFolderActionClick? _onOpenMailBoxFolderActionClick;
+
+  MailBoxNewFolderTileBuilder();
+
+  MailBoxNewFolderTileBuilder addIcon(String icon) {
+    _icon = icon;
+    return this;
   }
 
-  void _getCredentialAction() async {
-    await _getCredentialInteractor.execute()
-      .then((response) => response.fold(
-        (failure) => _goToLogin(),
-        (success) => success is GetCredentialViewState ? _goToHome(success) : _goToLogin()));
+  MailBoxNewFolderTileBuilder addName(String name) {
+    _name = name;
+    return this;
   }
 
-  void _goToLogin() {
-    Get.offNamed(AppRoutes.LOGIN);
+  MailBoxNewFolderTileBuilder onOpenMailBoxFolderAction(OnOpenMailBoxNewFolderActionClick onOpenMailBoxFolderActionClick) {
+    _onOpenMailBoxFolderActionClick = onOpenMailBoxFolderActionClick;
+    return this;
   }
 
-  void _goToHome(GetCredentialViewState credentialViewState) {
-    _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
-    Get.offNamed(AppRoutes.MAILBOX);
+  Widget build() {
+    return Theme(
+      data: ThemeData(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent),
+      child: Container(
+        key: Key('mailbox_new_folder_tile'),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: AppColor.mailboxBackgroundColor),
+        child: ListTile(
+          onTap: () => {
+            if (_onOpenMailBoxFolderActionClick != null) {
+              _onOpenMailBoxFolderActionClick!()
+            }
+          },
+          leading: Transform(
+            transform: Matrix4.translationValues(20.0, 0.0, 0.0),
+            child: _icon != null
+              ? SvgPicture.asset(_icon!, width: 24, height: 24, color: AppColor.mailboxIconColor, fit: BoxFit.fill)
+              : SizedBox.shrink()),
+          title: Transform(
+            transform: Matrix4.translationValues(10.0, 0.0, 0.0),
+            child: Text(
+              _name ?? '',
+              maxLines: 1,
+              style: TextStyle(fontSize: 15, color: AppColor.mailboxTextColor, fontWeight: FontWeight.w500),
+            )),
+        )
+      )
+    );
   }
 }

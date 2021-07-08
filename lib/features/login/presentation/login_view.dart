@@ -65,11 +65,11 @@ class LoginView extends GetWidget<LoginController> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       _buildSlogan(context),
-                      _buildLoginMessage(context),
+                      Obx(() => _buildLoginMessage(context, loginController.loginState.value)),
                       _buildUrlInput(context),
                       _buildUserNameInput(context),
                       _buildPasswordInput(context),
-                      Obx(() => controller.loginState.value == LoginState.LOADING
+                      Obx(() => loginController.loginState.value == LoginState.LOADING
                         ? _buildLoadingCircularProgress()
                         : _buildLoginButton(context)),
                     ],
@@ -92,16 +92,20 @@ class LoginView extends GetWidget<LoginController> {
       .build();
   }
 
-  Widget _buildLoginMessage(BuildContext context) {
+  Widget _buildLoginMessage(BuildContext context, LoginState loginState) {
     return Padding(
       padding: EdgeInsets.only(bottom: 24, top: 60),
       child: Container(
         width: responsiveUtils.getWidthLoginTextField(context),
         child: CenterTextBuilder()
           .key(Key('login_message'))
-          .text(AppLocalizations.of(context).login_text_login_to_continue)
-          .textStyle(TextStyle(color: AppColor.primaryColor))
-          .build()));
+          .text(loginState == LoginState.FAILURE
+            ? AppLocalizations.of(context).unknown_error_login_message
+            : AppLocalizations.of(context).login_text_login_to_continue)
+          .textStyle(TextStyle(color: loginState == LoginState.FAILURE ? AppColor.textFieldErrorBorderColor : AppColor.appColor))
+          .build()
+      )
+    );
   }
 
   Widget _buildUrlInput(BuildContext context) {
@@ -181,6 +185,6 @@ class LoginView extends GetWidget<LoginController> {
       key: Key('login_loading_icon'),
       width: 40,
       height: 40,
-      child: CircularProgressIndicator());
+      child: CircularProgressIndicator(color: AppColor.primaryColor));
   }
 }

@@ -34,6 +34,8 @@ import 'package:tmail_ui_user/features/initialize/presentation/initialize_bindin
 import 'package:tmail_ui_user/features/initialize/presentation/initialize_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
 import 'package:tmail_ui_user/features/splash/presentation/splash_bindings.dart';
 import 'package:tmail_ui_user/features/splash/presentation/splash_view.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -52,5 +54,9 @@ class AppPages {
       name: AppRoutes.LOGIN,
       page: () => LoginView(),
       binding: LoginBindings()),
+    GetPage(
+      name: AppRoutes.MAILBOX,
+      page: () => MailBoxView(),
+      binding: MailBoxBindings()),
   ];
 }

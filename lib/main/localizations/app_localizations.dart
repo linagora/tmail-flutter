@@ -84,5 +84,38 @@ class AppLocalizations {
     return Intl.message('Please login to continue',
         name: 'login_text_login_to_continue');
   }
+
+  String get unknown_error_login_message {
+    return Intl.message('Unknown error occurred, please try again',
+        name: 'unknown_error_login_message');
+  }
+
+  String get search_folder {
+    return Intl.message(
+      'Search folder',
+      name: 'search_folder',
+    );
+  }
+
+  String get storage {
+    return Intl.message(
+      'STORAGE',
+      name: 'storage',
+    );
+  }
+
+  String get my_folders {
+    return Intl.message(
+      'MY FOLDERS',
+      name: 'my_folders',
+    );
+  }
+
+  String get new_folder {
+    return Intl.message(
+      'New folder',
+      name: 'new_folder',
+    );
+  }
 }
 
