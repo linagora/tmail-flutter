@@ -58,9 +58,9 @@ class SplashView extends GetWidget<SplashController> {
               alignment: Alignment.center)).paddingOnly(top: Get.mediaQuery.size.height * 0.4),
           Spacer(),
           SizedBox(
-            width: 50,
-            height: 50,
-            child: CupertinoActivityIndicator(),
+            width: 30,
+            height: 30,
+            child: CircularProgressIndicator(color: AppColor.primaryColor)
           ).paddingOnly(bottom: 80.0)
         ],
       ),
