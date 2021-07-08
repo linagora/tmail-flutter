@@ -70,7 +70,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.5"
   build_runner_core:
     dependency: transitive
     description:
@@ -175,7 +175,7 @@ packages:
       name: dartz
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.0-nullsafety.1"
+    version: "0.10.0-nullsafety.2"
   dio:
     dependency: "direct main"
     description:
@@ -189,7 +189,7 @@ packages:
       name: equatable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.3"
   fake_async:
     dependency: transitive
     description:
@@ -228,6 +228,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  frontend_server_client:
+    dependency: transitive
+    description:
+      name: frontend_server_client
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   glob:
     dependency: transitive
     description:
