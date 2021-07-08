@@ -33,6 +33,20 @@ import 'package:core/presentation/resources/assets_paths.dart';
 
 class ImagePaths {
   String get icTMailLogo => _getImagePath('tmail_logo.svg');
+  String get icCloseMailBox => _getImagePath('ic_close.svg');
+  String get icSearch => _getImagePath('ic_search.svg');
+  String get icNextArrow => _getImagePath('ic_next_arrow.svg');
+  String get icMailBoxInbox => _getImagePath('ic_mailbox_inbox.svg');
+  String get icMailBoxTrash => _getImagePath('ic_mailbox_trash.svg');
+  String get icMailBoxAllMail => _getImagePath('ic_mailbox_allmail.svg');
+  String get icMailBoxDraft => _getImagePath('ic_mailbox_draft.svg');
+  String get icMailBoxSent => _getImagePath('ic_mailbox_sent.svg');
+  String get icMailBoxSpam => _getImagePath('ic_mailbox_spam.svg');
+  String get icMailBoxTemplate => _getImagePath('ic_mailbox_template.svg');
+  String get icMailBoxFolder => _getImagePath('ic_mailbox_folder.svg');
+  String get icMailBoxNewFolder => _getImagePath('ic_mailbox_new_folder.svg');
+  String get icFolderArrow => _getImagePath('ic_folder_arrow.svg');
+  String get icExpandFolder => _getImagePath('ic_expand_folder.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
