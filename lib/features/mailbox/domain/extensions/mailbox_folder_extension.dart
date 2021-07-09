@@ -30,8 +30,7 @@
 //  the Additional Terms applicable to LinShare software.
 //
 
-import 'package:tmail_ui_user/features/mailbox/domain/model/expand_mode.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_folder.dart';
+import 'package:model/model.dart';
 
 extension MailBoxFolderExtension on MailBoxFolder {
   MailBoxFolder expandMailBoxFolder({required ExpandMode expandMode}) {

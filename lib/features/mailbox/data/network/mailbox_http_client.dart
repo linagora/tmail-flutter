@@ -32,10 +32,7 @@
 import 'dart:async';
 
 import 'package:core/core.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_role.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailboxes.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/select_mode.dart';
+import 'package:model/model.dart';
 
 class MailBoxHttpClient {
 

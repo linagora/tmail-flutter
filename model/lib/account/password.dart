@@ -28,33 +28,14 @@
 // <http://www.gnu.org/licenses/> for the GNU Affero General Public License version
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
-//
 
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:equatable/equatable.dart';
 
-extension MailBoxRoleExtension on MailBoxRole {
+class Password with EquatableMixin {
+  final String value;
 
-  String getIconMailBox(ImagePaths imagePaths) {
-    switch(this) {
-      case MailBoxRole.inbox:
-        return imagePaths.icMailBoxInbox;
-      case MailBoxRole.draft:
-        return imagePaths.icMailBoxDraft;
-      case MailBoxRole.trash:
-        return imagePaths.icMailBoxTrash;
-      case MailBoxRole.spam:
-        return imagePaths.icMailBoxSpam;
-      case MailBoxRole.templates:
-        return imagePaths.icMailBoxTemplate;
-      case MailBoxRole.sent:
-        return imagePaths.icMailBoxSent;
-      case MailBoxRole.createdFolder:
-        return imagePaths.icMailBoxNewFolder;
-      case MailBoxRole.allMail:
-        return imagePaths.icMailBoxAllMail;
-      case MailBoxRole.none:
-        return imagePaths.icMailBoxFolder;
-    }
-  }
+  Password(this.value);
+
+  @override
+  List<Object> get props => [value];
 }

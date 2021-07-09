@@ -30,7 +30,7 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:core/core.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailboxes.dart';
+import 'package:model/model.dart';
 
 class GetAllMailBoxesViewState extends ViewState {
   final List<MailBoxes> mailBoxesList;

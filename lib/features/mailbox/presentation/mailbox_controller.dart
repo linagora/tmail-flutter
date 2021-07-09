@@ -32,12 +32,7 @@
 import 'dart:collection';
 
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/expand_mode.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_folder.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_role.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailboxes.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/select_mode.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/mailboxes_extension.dart';

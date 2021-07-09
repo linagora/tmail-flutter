@@ -29,7 +29,7 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailboxes.dart';
+import 'package:model/model.dart';
 
 abstract class MailBoxDataSource {
   Future<List<MailBoxes>> getAllMailBox();

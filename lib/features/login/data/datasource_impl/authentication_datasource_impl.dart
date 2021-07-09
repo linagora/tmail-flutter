@@ -35,9 +35,7 @@ import 'package:tmail_ui_user/features/login/data/datasource/atuthentitcation_da
 import 'package:tmail_ui_user/features/login/data/model/request/account_request.dart';
 import 'package:tmail_ui_user/features/login/data/model/response/user_response.dart';
 import 'package:tmail_ui_user/features/login/data/network/login_http_client.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/password.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/user_name.dart';
-import 'package:tmail_ui_user/features/login/domain/model/user/user.dart';
+import 'package:model/model.dart';
 
 class AuthenticationDataSourceImpl extends AuthenticationDataSource {
 

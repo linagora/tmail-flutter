@@ -29,25 +29,55 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:equatable/equatable.dart';
-import 'package:tmail_ui_user/features/login/domain/model/user/user_id.dart';
+import 'package:model/mailbox/expand_mode.dart';
+import 'package:model/mailbox/mailboxes.dart';
 
-class User with EquatableMixin {
+class MailBoxFolder extends MailBoxes {
 
-  final UserId userId;
-  final String firstName;
-  final String lastName;
+  final List<MailBoxFolder> childList;
+  final ExpandMode expandMode;
 
-  User(
-    this.userId,
-    this.firstName,
-    this.lastName,
+  MailBoxFolder(
+    id,
+    name,
+    parentId,
+    role,
+    sortOrder,
+    totalEmails,
+    unreadEmails,
+    totalThreads,
+    unreadThreads,
+    myRights,
+    isSubscribed,
+    this.childList,
+    {
+      this.expandMode = ExpandMode.COLLAPSE
+    }
+  ) : super(
+    id,
+    name,
+    parentId,
+    role,
+    sortOrder,
+    totalEmails,
+    unreadEmails,
+    totalThreads,
+    unreadThreads,
+    myRights,
+    isSubscribed
   );
 
+  bool isRootFolder() => parentId != null && parentId!.id.value.isNotEmpty;
+
+  bool isFolderParent() => childList.length > 0;
+
+  bool isExpand() => expandMode == ExpandMode.EXPAND;
+
+  String getNameMailBox() => name == null ? '' : name!.name;
+
   @override
-  List<Object> get props => [
-    userId,
-    firstName,
-    lastName,
+  List<Object?> get props => [
+    super.props,
+    childList
   ];
 }

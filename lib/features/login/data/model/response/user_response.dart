@@ -32,9 +32,8 @@
 import 'package:core/data/constants/constant.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/data/model/converter/user_id_converter.dart';
-import 'package:tmail_ui_user/features/login/domain/model/user/user.dart';
-import 'package:tmail_ui_user/features/login/domain/model/user/user_id.dart';
 
 part 'user_response.g.dart';
 

@@ -30,12 +30,68 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:equatable/equatable.dart';
+import 'package:model/mailbox/mailbox.dart';
+import 'package:model/mailbox/mailbox_role.dart';
+import 'package:model/mailbox/select_mode.dart';
 
-class UserName extends Equatable {
-  final String userName;
+class MailBoxes with EquatableMixin {
 
-  UserName(this.userName);
+  final MailboxId id;
+  final MailboxName? name;
+  final MailboxId? parentId;
+  final MailBoxRole role;
+  final SortOrder? sortOrder;
+  final TotalEmails? totalEmails;
+  final UnreadEmails? unreadEmails;
+  final TotalThreads? totalThreads;
+  final UnreadThreads? unreadThreads;
+  final MailboxRights? myRights;
+  final IsSubscribed? isSubscribed;
+  final SelectMode selectMode;
+
+  MailBoxes(
+    this.id,
+    this.name,
+    this.parentId,
+    this.role,
+    this.sortOrder,
+    this.totalEmails,
+    this.unreadEmails,
+    this.totalThreads,
+    this.unreadThreads,
+    this.myRights,
+    this.isSubscribed,
+    {
+      this.selectMode = SelectMode.INACTIVE
+    }
+  );
+
+  bool isRootFolder() => parentId != null && parentId!.id.value.isNotEmpty;
+
+  String getNameMailBox() => name == null ? '' : name!.name;
+
+  bool isValidCountMailBox() {
+    if (role == MailBoxRole.createdFolder
+        || role == MailBoxRole.inbox
+        || role == MailBoxRole.allMail) {
+      return true;
+    }
+    return false;
+  }
+
+  String getCountUnReadEmails() {
+    if (unreadEmails == null || !isValidCountMailBox()) {
+      return '';
+    } else {
+      return unreadEmails!.value.value <= 999 ? '${unreadEmails!.value.value}' : '999+';
+    }
+  }
 
   @override
-  List<Object> get props => [userName];
+  List<Object?> get props => [
+    id,
+    name,
+    parentId,
+    role
+  ];
 }

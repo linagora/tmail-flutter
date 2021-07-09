@@ -29,8 +29,8 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailboxes.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 
 class MailBoxRepositoryImpl extends MailBoxRepository {

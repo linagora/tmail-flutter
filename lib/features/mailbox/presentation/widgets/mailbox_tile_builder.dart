@@ -36,8 +36,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailboxes.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/select_mode.dart';
+import 'package:model/mailbox/mailboxes.dart';
+import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/mailbox_role_extension.dart';
 
 typedef OnOpenMailBoxActionClick = void Function();

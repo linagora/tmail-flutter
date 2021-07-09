@@ -29,8 +29,25 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-class UserId {
-  final String id;
+import 'package:equatable/equatable.dart';
+import 'package:model/user/user_id.dart';
 
-  UserId(this.id);
+class User with EquatableMixin {
+
+  final UserId userId;
+  final String firstName;
+  final String lastName;
+
+  User(
+    this.userId,
+    this.firstName,
+    this.lastName,
+  );
+
+  @override
+  List<Object> get props => [
+    userId,
+    firstName,
+    lastName,
+  ];
 }

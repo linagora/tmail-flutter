@@ -31,9 +31,9 @@
 
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_http_client.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailboxes.dart';
 
 class MailBoxDataSourceImpl extends MailBoxDataSource {
 

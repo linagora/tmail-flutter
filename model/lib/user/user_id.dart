@@ -31,11 +31,11 @@
 
 import 'package:equatable/equatable.dart';
 
-class Password extends Equatable {
-  final String value;
+class UserId with EquatableMixin {
+  final String id;
 
-  Password(this.value);
+  UserId(this.id);
 
   @override
-  List<Object> get props => [value];
+  List<Object?> get props => [id];
 }

@@ -29,55 +29,18 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:tmail_ui_user/features/mailbox/domain/model/expand_mode.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailboxes.dart';
+library model;
 
-class MailBoxFolder extends MailBoxes {
-
-  final List<MailBoxFolder> childList;
-  final ExpandMode expandMode;
-
-  MailBoxFolder(
-    id,
-    name,
-    parentId,
-    role,
-    sortOrder,
-    totalEmails,
-    unreadEmails,
-    totalThreads,
-    unreadThreads,
-    myRights,
-    isSubscribed,
-    this.childList,
-    {
-      this.expandMode = ExpandMode.COLLAPSE
-    }
-  ) : super(
-    id,
-    name,
-    parentId,
-    role,
-    sortOrder,
-    totalEmails,
-    unreadEmails,
-    totalThreads,
-    unreadThreads,
-    myRights,
-    isSubscribed
-  );
-
-  bool isRootFolder() => parentId != null && parentId!.id.value.isNotEmpty;
-
-  bool isFolderParent() => childList.length > 0;
-
-  bool isExpand() => expandMode == ExpandMode.EXPAND;
-
-  String getNameMailBox() => name == null ? '' : name!.name;
-
-  @override
-  List<Object?> get props => [
-    super.props,
-    childList
-  ];
-}
+// Account
+export 'account/user_name.dart';
+export 'account/password.dart';
+// User
+export 'user/user_id.dart';
+export 'user/user.dart';
+// Mailbox
+export 'mailbox/mailbox.dart';
+export 'mailbox/mailboxes.dart';
+export 'mailbox/mailbox_folder.dart';
+export 'mailbox/mailbox_role.dart';
+export 'mailbox/select_mode.dart';
+export 'mailbox/expand_mode.dart';

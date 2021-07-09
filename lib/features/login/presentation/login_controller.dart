@@ -31,8 +31,7 @@
 
 import 'package:core/core.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/password.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/user_name.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';

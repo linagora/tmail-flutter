@@ -30,7 +30,7 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:core/core.dart';
-import 'package:tmail_ui_user/features/login/domain/model/user/user.dart';
+import 'package:model/model.dart';
 
 class AuthenticationUserViewState extends ViewState {
   final User user;

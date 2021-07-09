@@ -30,8 +30,7 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:equatable/equatable.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/password.dart';
-import 'package:tmail_ui_user/features/login/domain/model/account/user_name.dart';
+import 'package:model/model.dart';
 
 class AccountRequest with EquatableMixin {
   final UserName userName;
