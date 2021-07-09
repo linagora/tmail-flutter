@@ -38,19 +38,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/mailbox/mailbox_folder.dart';
 
-typedef OnOpenMailBoxFolderActionClick = void Function(MailBoxFolder mailBoxFolder);
+typedef OnOpenMailboxFolderActionClick = void Function(MailboxFolder mailboxFolder);
 
-class MailBoxFolderTileBuilder {
+class MailboxFolderTileBuilder {
   final imagePath = Get.find<ImagePaths>();
 
-  final MailBoxFolder mailBoxFolder;
+  final MailboxFolder mailboxFolder;
 
-  OnOpenMailBoxFolderActionClick? _onOpenMailBoxFolderActionClick;
+  OnOpenMailboxFolderActionClick? _onOpenMailboxFolderActionClick;
 
-  MailBoxFolderTileBuilder(this.mailBoxFolder);
+  MailboxFolderTileBuilder(this.mailboxFolder);
 
-  MailBoxFolderTileBuilder onOpenMailBoxFolderAction(OnOpenMailBoxFolderActionClick onOpenMailBoxFolderActionClick) {
-    _onOpenMailBoxFolderActionClick = onOpenMailBoxFolderActionClick;
+  MailboxFolderTileBuilder onOpenMailboxFolderAction(OnOpenMailboxFolderActionClick onOpenMailboxFolderActionClick) {
+    _onOpenMailboxFolderActionClick = onOpenMailboxFolderActionClick;
     return this;
   }
 
@@ -67,27 +67,27 @@ class MailBoxFolderTileBuilder {
           color: AppColor.mailboxBackgroundColor),
         child: ListTile(
           onTap: () => {
-            if (_onOpenMailBoxFolderActionClick != null) {
-              _onOpenMailBoxFolderActionClick!(mailBoxFolder)
+            if (_onOpenMailboxFolderActionClick != null) {
+              _onOpenMailboxFolderActionClick!(mailboxFolder)
             }
           },
           leading: Transform(
             transform: Matrix4.translationValues(20.0, 0.0, 0.0),
-            child: SvgPicture.asset(imagePath.icMailBoxFolder, width: 24, height: 24, color: AppColor.mailboxIconColor, fit: BoxFit.fill)),
+            child: SvgPicture.asset(imagePath.icMailboxFolder, width: 24, height: 24, color: AppColor.mailboxIconColor, fit: BoxFit.fill)),
           title: Transform(
             transform: Matrix4.translationValues(10.0, 0.0, 0.0),
             child: Text(
-              mailBoxFolder.getNameMailBox(),
+              mailboxFolder.getNameMailbox(),
               maxLines: 1,
               style: TextStyle(fontSize: 15, color: AppColor.mailboxTextColor, fontWeight: FontWeight.w500),
             )),
           trailing: Transform(
             transform: Matrix4.translationValues(-16.0, 0.0, 0.0),
-            child: mailBoxFolder.isFolderParent()
+            child: mailboxFolder.isFolderParent()
               ? SvgPicture.asset(
-                  mailBoxFolder.isExpand() ? imagePath.icExpandFolder : imagePath.icFolderArrow,
-                  width: mailBoxFolder.isExpand() ? 8 : 12,
-                  height: mailBoxFolder.isExpand() ? 8 : 12,
+                  mailboxFolder.isExpand() ? imagePath.icExpandFolder : imagePath.icFolderArrow,
+                  width: mailboxFolder.isExpand() ? 8 : 12,
+                  height: mailboxFolder.isExpand() ? 8 : 12,
                   color: AppColor.mailboxIconColor,
                   fit: BoxFit.fill)
               : SizedBox.shrink()))

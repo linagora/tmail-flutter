@@ -41,90 +41,90 @@ import 'package:tmail_ui_user/features/mailbox/domain/extensions/mailbox_folder_
 import 'package:tmail_ui_user/features/mailbox/presentation/state/mailbox_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
-class MailBoxController extends GetxController {
+class MailboxController extends GetxController {
 
-  final GetAllMailBoxInteractor _getAllMailBoxInteractor;
+  final GetAllMailboxInteractor _getAllMailboxInteractor;
 
-  var mailBoxState = MailBoxState.IDLE.obs;
+  var mailboxState = MailboxState.IDLE.obs;
 
-  var mailBoxList = <MailBoxes>[].obs;
-  var mailBoxHasRoleList = <MailBoxes>[].obs;
-  var mailBoxMyFolderList = <MailBoxFolder>[].obs;
+  var mailboxList = <Mailbox>[].obs;
+  var mailboxHasRoleList = <Mailbox>[].obs;
+  var mailboxMyFolderList = <MailboxFolder>[].obs;
 
-  MailBoxController(this._getAllMailBoxInteractor);
+  MailboxController(this._getAllMailboxInteractor);
 
   @override
   void onReady() {
     super.onReady();
-    getAllMailBoxAction();
+    getAllMailboxAction();
   }
   
-  void getAllMailBoxAction() async {
-    mailBoxState.value = MailBoxState.LOADING;
-    await _getAllMailBoxInteractor.execute()
+  void getAllMailboxAction() async {
+    mailboxState.value = MailboxState.LOADING;
+    await _getAllMailboxInteractor.execute()
       .then((response) => response.fold(
-        (failure) => mailBoxState.value = MailBoxState.FAILURE,
+        (failure) => mailboxState.value = MailboxState.FAILURE,
         (success) {
-          mailBoxState.value = MailBoxState.SUCCESS;
-          mailBoxList.value = success is GetAllMailBoxesViewState ? success.mailBoxesList : [];
-          _setListMailBoxHasRole(mailBoxList);
-          _setListMailBoxMyFolder(mailBoxList);
+          mailboxState.value = MailboxState.SUCCESS;
+          mailboxList.value = success is GetAllMailboxViewState ? success.mailboxList : [];
+          _setListMailboxHasRole(mailboxList);
+          _setListMailboxMyFolder(mailboxList);
         }));
   }
 
-  void _setListMailBoxHasRole(List<MailBoxes> mailboxesList) {
-    mailBoxHasRoleList.value = mailboxesList
-      .where((mailbox) => mailbox.role != MailBoxRole.none)
+  void _setListMailboxHasRole(List<Mailbox> mailboxesList) {
+    mailboxHasRoleList.value = mailboxesList
+      .where((mailbox) => mailbox.role != MailboxRole.none)
       .toList();
   }
 
-  void _setListMailBoxMyFolder(List<MailBoxes> mailboxesList) {
-    final mapsMyFolder = HashMap<JMapMailbox.MailboxId, List<MailBoxFolder>>();
-    final listMailBoxFolder = mailboxesList
-      .where((mailbox) => mailbox.role == MailBoxRole.none)
+  void _setListMailboxMyFolder(List<Mailbox> mailboxesList) {
+    final mapsMyFolder = HashMap<JMapMailbox.MailboxId, List<MailboxFolder>>();
+    final listMailboxFolder = mailboxesList
+      .where((mailbox) => mailbox.role == MailboxRole.none)
       .toList();
 
     JMapMailbox.MailboxId? parentID;
-    var listChildMailBox = <MailBoxFolder>[];
+    var listChildMailbox = <MailboxFolder>[];
 
-    for (int i = 0; i < listMailBoxFolder.length; i++) {
-      final mailbox = listMailBoxFolder[i];
+    for (int i = 0; i < listMailboxFolder.length; i++) {
+      final mailbox = listMailboxFolder[i];
 
       if (mailbox.isRootFolder()) {
         parentID = mailbox.parentId;
-        listChildMailBox = <MailBoxFolder>[];
+        listChildMailbox = <MailboxFolder>[];
       } else {
-        listChildMailBox.add(mailbox.toMailBoxFolder([]));
+        listChildMailbox.add(mailbox.toMailboxFolder([]));
       }
 
-      mapsMyFolder.addIf(() => parentID != null, parentID!, listChildMailBox);
+      mapsMyFolder.addIf(() => parentID != null, parentID!, listChildMailbox);
     }
 
-    final listFolderRoot = listMailBoxFolder.where((folder) => folder.isRootFolder()).toList();
+    final listFolderRoot = listMailboxFolder.where((folder) => folder.isRootFolder()).toList();
 
-    mailBoxMyFolderList.value = listFolderRoot
-      .map((mailbox) => mailbox.toMailBoxFolder(mailbox.isRootFolder()
+    mailboxMyFolderList.value = listFolderRoot
+      .map((mailbox) => mailbox.toMailboxFolder(mailbox.isRootFolder()
         ? mapsMyFolder[mailbox.parentId!] ?? []
         : []))
       .toList();
   }
 
-  void closeMailBoxScreen() {
+  void closeMailboxScreen() {
     Get.offAllNamed(AppRoutes.LOGIN);
   }
 
-  void selectMailBoxes(MailBoxes mailBoxes) {
-    mailBoxHasRoleList.value = mailBoxHasRoleList.map((mailBox) => mailBox.id == mailBoxes.id
-        ? mailBox.toMailBoxesSelected(SelectMode.ACTIVE)
-        : mailBox.toMailBoxesSelected(SelectMode.INACTIVE))
+  void selectMailbox(Mailbox mailbox) {
+    mailboxHasRoleList.value = mailboxHasRoleList.map((mailbox) => mailbox.id == mailbox.id
+        ? mailbox.toMailboxSelected(SelectMode.ACTIVE)
+        : mailbox.toMailboxSelected(SelectMode.INACTIVE))
       .toList();
   }
 
-  void expandMyFolder(MailBoxFolder mailBoxFolder) {
-    final newListFolder = mailBoxMyFolderList.map((folder) => folder.id == mailBoxFolder.id
-        ? folder.expandMailBoxFolder(expandMode: mailBoxFolder.isExpand() ? ExpandMode.COLLAPSE : ExpandMode.EXPAND)
+  void expandMyFolder(MailboxFolder mailboxFolder) {
+    final newListFolder = mailboxMyFolderList.map((folder) => folder.id == mailboxFolder.id
+        ? folder.expandMailboxFolder(expandMode: mailboxFolder.isExpand() ? ExpandMode.COLLAPSE : ExpandMode.EXPAND)
         : folder)
       .toList();
-    mailBoxMyFolderList.value = newListFolder;
+    mailboxMyFolderList.value = newListFolder;
   }
 }

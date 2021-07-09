@@ -56,7 +56,7 @@ class AppPages {
       binding: LoginBindings()),
     GetPage(
       name: AppRoutes.MAILBOX,
-      page: () => MailBoxView(),
-      binding: MailBoxBindings()),
+      page: () => MailboxView(),
+      binding: MailboxBindings()),
   ];
 }

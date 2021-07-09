@@ -90,7 +90,7 @@ class MainBindings extends Bindings {
   void _bindingNetwork() {
     Get.put(DioClient(Get.find<Dio>()));
     Get.put(LoginHttpClient(Get.find<DioClient>()));
-    Get.put(MailBoxHttpClient(Get.find<DioClient>()));
+    Get.put(MailboxHttpClient(Get.find<DioClient>()));
   }
 
   void _bindingRemoteExceptionThrower() {
@@ -103,28 +103,28 @@ class MainBindings extends Bindings {
 
   void _bindingDataSource() {
     Get.create<AuthenticationDataSource>(() => Get.find<AuthenticationDataSourceImpl>());
-    Get.create<MailBoxDataSource>(() => Get.find<MailBoxDataSourceImpl>());
+    Get.create<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
   }
 
   void _bindingDataSourceImpl() {
     Get.create(() => AuthenticationDataSourceImpl(
       Get.find<LoginHttpClient>(),
       Get.find<RemoteExceptionThrower>()));
-    Get.create(() => MailBoxDataSourceImpl(
-      Get.find<MailBoxHttpClient>(),
+    Get.create(() => MailboxDataSourceImpl(
+      Get.find<MailboxHttpClient>(),
       Get.find<RemoteExceptionThrower>()));
   }
 
   void _bindingRepository() {
     Get.create<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
     Get.create<AuthenticationRepository>(() => Get.find<AuthenticationRepositoryImpl>());
-    Get.create<MailBoxRepository>(() => Get.find<MailBoxRepositoryImpl>());
+    Get.create<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
   }
 
   void _bindingRepositoryImpl() {
     Get.create(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
     Get.create(() => AuthenticationRepositoryImpl(Get.find<AuthenticationDataSource>()));
-    Get.create(() => MailBoxRepositoryImpl(Get.find<MailBoxDataSource>()));
+    Get.create(() => MailboxRepositoryImpl(Get.find<MailboxDataSource>()));
   }
 
   void _bindingInteractor() {
@@ -134,6 +134,6 @@ class MainBindings extends Bindings {
     Get.create(() => GetCredentialInteractor(
       Get.find<CredentialRepository>()
     ));
-    Get.create(() => GetAllMailBoxInteractor(Get.find<MailBoxRepository>()));
+    Get.create(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
   }
 }

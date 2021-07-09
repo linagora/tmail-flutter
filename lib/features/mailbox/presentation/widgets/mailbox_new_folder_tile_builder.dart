@@ -37,30 +37,30 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-typedef OnOpenMailBoxNewFolderActionClick = void Function();
+typedef OnOpenMailboxNewFolderActionClick = void Function();
 
-class MailBoxNewFolderTileBuilder {
+class MailboxNewFolderTileBuilder {
   final imagePath = Get.find<ImagePaths>();
 
   String? _icon;
   String? _name;
 
-  OnOpenMailBoxNewFolderActionClick? _onOpenMailBoxFolderActionClick;
+  OnOpenMailboxNewFolderActionClick? _onOpenMailboxFolderActionClick;
 
-  MailBoxNewFolderTileBuilder();
+  MailboxNewFolderTileBuilder();
 
-  MailBoxNewFolderTileBuilder addIcon(String icon) {
+  MailboxNewFolderTileBuilder addIcon(String icon) {
     _icon = icon;
     return this;
   }
 
-  MailBoxNewFolderTileBuilder addName(String name) {
+  MailboxNewFolderTileBuilder addName(String name) {
     _name = name;
     return this;
   }
 
-  MailBoxNewFolderTileBuilder onOpenMailBoxFolderAction(OnOpenMailBoxNewFolderActionClick onOpenMailBoxFolderActionClick) {
-    _onOpenMailBoxFolderActionClick = onOpenMailBoxFolderActionClick;
+  MailboxNewFolderTileBuilder onOpenMailboxFolderAction(OnOpenMailboxNewFolderActionClick onOpenMailboxFolderActionClick) {
+    _onOpenMailboxFolderActionClick = onOpenMailboxFolderActionClick;
     return this;
   }
 
@@ -77,8 +77,8 @@ class MailBoxNewFolderTileBuilder {
           color: AppColor.mailboxBackgroundColor),
         child: ListTile(
           onTap: () => {
-            if (_onOpenMailBoxFolderActionClick != null) {
-              _onOpenMailBoxFolderActionClick!()
+            if (_onOpenMailboxFolderActionClick != null) {
+              _onOpenMailboxFolderActionClick!()
             }
           },
           leading: Transform(

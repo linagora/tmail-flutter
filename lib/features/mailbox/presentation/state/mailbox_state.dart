@@ -29,7 +29,7 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-enum MailBoxState {
+enum MailboxState {
   IDLE,
   LOADING,
   SUCCESS,

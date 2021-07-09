@@ -35,12 +35,12 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart' as JMapM
 import 'package:model/mailbox/mailbox_role.dart';
 import 'package:model/mailbox/select_mode.dart';
 
-class MailBoxes with EquatableMixin {
+class Mailbox with EquatableMixin {
 
   final JMapMailbox.MailboxId id;
   final JMapMailbox.MailboxName? name;
   final JMapMailbox.MailboxId? parentId;
-  final MailBoxRole role;
+  final MailboxRole role;
   final JMapMailbox.SortOrder? sortOrder;
   final JMapMailbox.TotalEmails? totalEmails;
   final JMapMailbox.UnreadEmails? unreadEmails;
@@ -50,7 +50,7 @@ class MailBoxes with EquatableMixin {
   final JMapMailbox.IsSubscribed? isSubscribed;
   final SelectMode selectMode;
 
-  MailBoxes(
+  Mailbox(
     this.id,
     this.name,
     this.parentId,
@@ -69,19 +69,19 @@ class MailBoxes with EquatableMixin {
 
   bool isRootFolder() => parentId != null && parentId!.id.value.isNotEmpty;
 
-  String getNameMailBox() => name == null ? '' : name!.name;
+  String getNameMailbox() => name == null ? '' : name!.name;
 
-  bool isValidCountMailBox() {
-    if (role == MailBoxRole.createdFolder
-        || role == MailBoxRole.inbox
-        || role == MailBoxRole.allMail) {
+  bool isValidCountMailbox() {
+    if (role == MailboxRole.createdFolder
+        || role == MailboxRole.inbox
+        || role == MailboxRole.allMail) {
       return true;
     }
     return false;
   }
 
   String getCountUnReadEmails() {
-    if (unreadEmails == null || !isValidCountMailBox()) {
+    if (unreadEmails == null || !isValidCountMailbox()) {
       return '';
     } else {
       return unreadEmails!.value.value <= 999 ? '${unreadEmails!.value.value}' : '999+';

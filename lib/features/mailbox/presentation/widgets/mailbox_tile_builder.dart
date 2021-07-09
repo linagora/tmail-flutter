@@ -36,23 +36,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:model/mailbox/mailboxes.dart';
+import 'package:model/mailbox/mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/mailbox_role_extension.dart';
 
-typedef OnOpenMailBoxActionClick = void Function();
+typedef OnOpenMailboxActionClick = void Function();
 
-class MailBoxTileBuilder {
+class MailboxTileBuilder {
   final imagePath = Get.find<ImagePaths>();
 
-  final MailBoxes _mailBoxes;
+  final Mailbox _mailbox;
 
-  OnOpenMailBoxActionClick? _onOpenMailBoxActionClick;
+  OnOpenMailboxActionClick? _onOpenMailboxActionClick;
 
-  MailBoxTileBuilder(this._mailBoxes);
+  MailboxTileBuilder(this._mailbox);
 
-  MailBoxTileBuilder onOpenMailBoxAction(OnOpenMailBoxActionClick onOpenMailBoxActionClick) {
-    _onOpenMailBoxActionClick = onOpenMailBoxActionClick;
+  MailboxTileBuilder onOpenMailboxAction(OnOpenMailboxActionClick onOpenMailboxActionClick) {
+    _onOpenMailboxActionClick = onOpenMailboxActionClick;
     return this;
   }
 
@@ -66,35 +66,35 @@ class MailBoxTileBuilder {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: _mailBoxes.selectMode == SelectMode.ACTIVE
+          color: _mailbox.selectMode == SelectMode.ACTIVE
             ? AppColor.mailboxSelectedBackgroundColor
             : AppColor.mailboxBackgroundColor),
         child: ListTile(
           focusColor: AppColor.primaryLightColor,
           hoverColor: AppColor.primaryLightColor,
           onTap: () => {
-            if (_onOpenMailBoxActionClick != null) {
-              _onOpenMailBoxActionClick!()
+            if (_onOpenMailboxActionClick != null) {
+              _onOpenMailboxActionClick!()
             }
           },
           leading: Transform(
             transform: Matrix4.translationValues(20.0, 0.0, 0.0),
             child: SvgPicture.asset(
-              _mailBoxes.role.getIconMailBox(imagePath),
+              _mailbox.role.getIconMailbox(imagePath),
               width: 24,
               height: 24,
-              color: _mailBoxes.selectMode == SelectMode.ACTIVE
+              color: _mailbox.selectMode == SelectMode.ACTIVE
                 ? AppColor.mailboxSelectedIconColor
                 : AppColor.mailboxIconColor,
               fit: BoxFit.fill)),
           title: Transform(
             transform: Matrix4.translationValues(8.0, 0.0, 0.0),
             child: Text(
-              _mailBoxes.getNameMailBox(),
+              _mailbox.getNameMailbox(),
               maxLines: 1,
               style: TextStyle(
                 fontSize: 15,
-                color: _mailBoxes.selectMode == SelectMode.ACTIVE
+                color: _mailbox.selectMode == SelectMode.ACTIVE
                   ? AppColor.mailboxSelectedTextColor
                   : AppColor.mailboxTextColor,
                 fontWeight: FontWeight.w500),
@@ -102,11 +102,11 @@ class MailBoxTileBuilder {
           trailing: Transform(
             transform: Matrix4.translationValues(-16.0, 0.0, 0.0),
             child: Text(
-              '${_mailBoxes.getCountUnReadEmails()}',
+              '${_mailbox.getCountUnReadEmails()}',
               maxLines: 1,
               style: TextStyle(
                 fontSize: 15,
-                color: _mailBoxes.selectMode == SelectMode.ACTIVE
+                color: _mailbox.selectMode == SelectMode.ACTIVE
                   ? AppColor.mailboxSelectedTextNumberColor
                   : AppColor.mailboxTextNumberColor,
                 fontWeight: FontWeight.w500))

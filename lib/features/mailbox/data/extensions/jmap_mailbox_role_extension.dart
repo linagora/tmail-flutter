@@ -33,28 +33,28 @@
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JMapMailbox;
 import 'package:model/model.dart';
 
-extension JMapMailBoxRoleExtension on JMapMailbox.Role? {
-  MailBoxRole toMailBoxRole() {
+extension JMapMailboxRoleExtension on JMapMailbox.Role? {
+  MailboxRole toMailboxRole() {
     if (this == null) {
-      return MailBoxRole.none;
+      return MailboxRole.none;
     } else {
       switch(this!.value) {
         case 'draft':
-          return MailBoxRole.draft;
+          return MailboxRole.draft;
         case 'trash':
-          return MailBoxRole.trash;
+          return MailboxRole.trash;
         case 'spam':
-          return MailBoxRole.spam;
+          return MailboxRole.spam;
         case 'templates':
-          return MailBoxRole.templates;
+          return MailboxRole.templates;
         case 'created_folder':
-          return MailBoxRole.createdFolder;
+          return MailboxRole.createdFolder;
         case 'inbox':
-          return MailBoxRole.inbox;
+          return MailboxRole.inbox;
         case 'allMail':
-          return MailBoxRole.allMail;
+          return MailboxRole.allMail;
         default:
-          return MailBoxRole.none;
+          return MailboxRole.none;
       }
     }
   }

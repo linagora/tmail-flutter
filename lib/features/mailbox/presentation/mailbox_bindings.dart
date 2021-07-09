@@ -33,9 +33,9 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 
-class MailBoxBindings extends Bindings {
+class MailboxBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => MailBoxController(Get.find<GetAllMailBoxInteractor>()));
+    Get.lazyPut(() => MailboxController(Get.find<GetAllMailboxInteractor>()));
   }
 }

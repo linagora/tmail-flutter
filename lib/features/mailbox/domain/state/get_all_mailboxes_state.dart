@@ -32,19 +32,19 @@
 import 'package:core/core.dart';
 import 'package:model/model.dart';
 
-class GetAllMailBoxesViewState extends ViewState {
-  final List<MailBoxes> mailBoxesList;
+class GetAllMailboxViewState extends ViewState {
+  final List<Mailbox> mailboxList;
 
-  GetAllMailBoxesViewState(this.mailBoxesList);
+  GetAllMailboxViewState(this.mailboxList);
 
   @override
-  List<Object> get props => [mailBoxesList];
+  List<Object> get props => [mailboxList];
 }
 
-class GetAllMailBoxesFailure extends FeatureFailure {
+class GetAllMailboxFailure extends FeatureFailure {
   final exception;
 
-  GetAllMailBoxesFailure(this.exception);
+  GetAllMailboxFailure(this.exception);
 
   @override
   List<Object> get props => [exception];

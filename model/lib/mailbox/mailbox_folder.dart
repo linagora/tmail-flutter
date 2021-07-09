@@ -30,14 +30,14 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:model/mailbox/expand_mode.dart';
-import 'package:model/mailbox/mailboxes.dart';
+import 'package:model/mailbox/mailbox.dart';
 
-class MailBoxFolder extends MailBoxes {
+class MailboxFolder extends Mailbox {
 
-  final List<MailBoxFolder> childList;
+  final List<MailboxFolder> childList;
   final ExpandMode expandMode;
 
-  MailBoxFolder(
+  MailboxFolder(
     id,
     name,
     parentId,
@@ -73,7 +73,7 @@ class MailBoxFolder extends MailBoxes {
 
   bool isExpand() => expandMode == ExpandMode.EXPAND;
 
-  String getNameMailBox() => name == null ? '' : name!.name;
+  String getNameMailbox() => name == null ? '' : name!.name;
 
   @override
   List<Object?> get props => [

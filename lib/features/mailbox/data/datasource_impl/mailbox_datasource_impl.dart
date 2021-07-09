@@ -35,17 +35,17 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_http_client.dart';
 
-class MailBoxDataSourceImpl extends MailBoxDataSource {
+class MailboxDataSourceImpl extends MailboxDataSource {
 
-  final MailBoxHttpClient mailBoxHttpClient;
+  final MailboxHttpClient mailboxHttpClient;
   final RemoteExceptionThrower remoteExceptionThrower;
 
-  MailBoxDataSourceImpl(this.mailBoxHttpClient, this.remoteExceptionThrower);
+  MailboxDataSourceImpl(this.mailboxHttpClient, this.remoteExceptionThrower);
 
   @override
-  Future<List<MailBoxes>> getAllMailBox() {
+  Future<List<Mailbox>> getAllMailbox() {
     return Future.sync(() async {
-      return await mailBoxHttpClient.getAllMailBox();
+      return await mailboxHttpClient.getAllMailbox();
     }).catchError((error) {
       remoteExceptionThrower.throwRemoteException(error, handler: (DioError error) {
         throw UnknownError(error.response?.statusMessage!);

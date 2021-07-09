@@ -34,17 +34,17 @@ import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 
-class GetAllMailBoxInteractor {
-  final MailBoxRepository mailBoxRepository;
+class GetAllMailboxInteractor {
+  final MailboxRepository mailboxRepository;
 
-  GetAllMailBoxInteractor(this.mailBoxRepository);
+  GetAllMailboxInteractor(this.mailboxRepository);
 
   Future<Either<Failure, Success>> execute() async {
     try {
-      final mailboxesList = await mailBoxRepository.getAllMailBox();
-      return Right(GetAllMailBoxesViewState(mailboxesList));
+      final mailboxesList = await mailboxRepository.getAllMailbox();
+      return Right(GetAllMailboxViewState(mailboxesList));
     } catch (e) {
-      return Left(GetAllMailBoxesFailure(e));
+      return Left(GetAllMailboxFailure(e));
     }
   }
 }

@@ -32,9 +32,9 @@
 
 import 'package:model/model.dart';
 
-extension MailBoxFolderExtension on MailBoxFolder {
-  MailBoxFolder expandMailBoxFolder({required ExpandMode expandMode}) {
-    return MailBoxFolder(
+extension MailboxFolderExtension on MailboxFolder {
+  MailboxFolder expandMailboxFolder({required ExpandMode expandMode}) {
+    return MailboxFolder(
       id,
       name,
       parentId,

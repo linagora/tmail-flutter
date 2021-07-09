@@ -31,6 +31,6 @@
 
 import 'package:model/model.dart';
 
-abstract class MailBoxDataSource {
-  Future<List<MailBoxes>> getAllMailBox();
+abstract class MailboxDataSource {
+  Future<List<Mailbox>> getAllMailbox();
 }

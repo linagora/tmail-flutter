@@ -33,28 +33,28 @@
 import 'package:core/core.dart';
 import 'package:model/model.dart';
 
-extension MailBoxRoleExtension on MailBoxRole {
+extension MailboxRoleExtension on MailboxRole {
 
-  String getIconMailBox(ImagePaths imagePaths) {
+  String getIconMailbox(ImagePaths imagePaths) {
     switch(this) {
-      case MailBoxRole.inbox:
-        return imagePaths.icMailBoxInbox;
-      case MailBoxRole.draft:
-        return imagePaths.icMailBoxDraft;
-      case MailBoxRole.trash:
-        return imagePaths.icMailBoxTrash;
-      case MailBoxRole.spam:
-        return imagePaths.icMailBoxSpam;
-      case MailBoxRole.templates:
-        return imagePaths.icMailBoxTemplate;
-      case MailBoxRole.sent:
-        return imagePaths.icMailBoxSent;
-      case MailBoxRole.createdFolder:
-        return imagePaths.icMailBoxNewFolder;
-      case MailBoxRole.allMail:
-        return imagePaths.icMailBoxAllMail;
-      case MailBoxRole.none:
-        return imagePaths.icMailBoxFolder;
+      case MailboxRole.inbox:
+        return imagePaths.icMailboxInbox;
+      case MailboxRole.draft:
+        return imagePaths.icMailboxDraft;
+      case MailboxRole.trash:
+        return imagePaths.icMailboxTrash;
+      case MailboxRole.spam:
+        return imagePaths.icMailboxSpam;
+      case MailboxRole.templates:
+        return imagePaths.icMailboxTemplate;
+      case MailboxRole.sent:
+        return imagePaths.icMailboxSent;
+      case MailboxRole.createdFolder:
+        return imagePaths.icMailboxNewFolder;
+      case MailboxRole.allMail:
+        return imagePaths.icMailboxAllMail;
+      case MailboxRole.none:
+        return imagePaths.icMailboxFolder;
     }
   }
 }

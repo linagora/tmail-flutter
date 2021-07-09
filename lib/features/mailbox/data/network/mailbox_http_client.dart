@@ -37,19 +37,19 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart' as JMapUnSignedId;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JMapMailbox;
 import 'package:model/model.dart';
 
-class MailBoxHttpClient {
+class MailboxHttpClient {
 
   final DioClient dioClient;
 
-  MailBoxHttpClient(this.dioClient);
+  MailboxHttpClient(this.dioClient);
 
-  Future<List<MailBoxes>> getAllMailBox() async {
+  Future<List<Mailbox>> getAllMailbox() async {
     return [
-      MailBoxes(
+      Mailbox(
         JMapMailbox.MailboxId(JMapId.Id('1')),
         JMapMailbox.MailboxName('Inbox'),
         null,
-        MailBoxRole.inbox,
+        MailboxRole.inbox,
         JMapMailbox.SortOrder(),
         JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
         JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt(100)),
@@ -58,11 +58,11 @@ class MailBoxHttpClient {
         null,
         JMapMailbox.IsSubscribed(false),
         selectMode: SelectMode.ACTIVE),
-      MailBoxes(
+      Mailbox(
         JMapMailbox.MailboxId(JMapId.Id('2')),
         JMapMailbox.MailboxName('Drafts'),
         null,
-        MailBoxRole.draft,
+        MailboxRole.draft,
         JMapMailbox.SortOrder(),
         JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
         JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
@@ -71,11 +71,11 @@ class MailBoxHttpClient {
         null,
         JMapMailbox.IsSubscribed(false),
       ),
-      MailBoxes(
+      Mailbox(
         JMapMailbox.MailboxId(JMapId.Id('3')),
         JMapMailbox.MailboxName('Sent'),
         null,
-        MailBoxRole.sent,
+        MailboxRole.sent,
         JMapMailbox.SortOrder(),
         JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
         JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
@@ -84,11 +84,11 @@ class MailBoxHttpClient {
         null,
         JMapMailbox.IsSubscribed(false),
       ),
-      MailBoxes(
+      Mailbox(
         JMapMailbox.MailboxId(JMapId.Id('4')),
         JMapMailbox.MailboxName('All mail'),
         null,
-        MailBoxRole.allMail,
+        MailboxRole.allMail,
         JMapMailbox.SortOrder(),
         JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
         JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt(1200)),
@@ -97,11 +97,11 @@ class MailBoxHttpClient {
         null,
         JMapMailbox.IsSubscribed(false),
       ),
-      MailBoxes(
+      Mailbox(
         JMapMailbox.MailboxId(JMapId.Id('5')),
         JMapMailbox.MailboxName('Trash'),
         null,
-        MailBoxRole.trash,
+        MailboxRole.trash,
         JMapMailbox.SortOrder(),
         JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
         JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
@@ -110,11 +110,11 @@ class MailBoxHttpClient {
         null,
         JMapMailbox.IsSubscribed(false),
       ),
-      MailBoxes(
+      Mailbox(
         JMapMailbox.MailboxId(JMapId.Id('6')),
         JMapMailbox.MailboxName('Spam'),
         null,
-        MailBoxRole.spam,
+        MailboxRole.spam,
         JMapMailbox.SortOrder(),
         JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
         JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
@@ -123,11 +123,11 @@ class MailBoxHttpClient {
         null,
         JMapMailbox.IsSubscribed(false),
       ),
-      MailBoxes(
+      Mailbox(
         JMapMailbox.MailboxId(JMapId.Id('7')),
         JMapMailbox.MailboxName('Templates'),
         null,
-        MailBoxRole.templates,
+        MailboxRole.templates,
         JMapMailbox.SortOrder(),
         JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
         JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
@@ -136,11 +136,11 @@ class MailBoxHttpClient {
         null,
         JMapMailbox.IsSubscribed(false),
       ),
-      MailBoxes(
+      Mailbox(
         JMapMailbox.MailboxId(JMapId.Id('8')),
         JMapMailbox.MailboxName('Folder 1'),
         JMapMailbox.MailboxId(JMapId.Id('1')),
-        MailBoxRole.none,
+        MailboxRole.none,
         JMapMailbox.SortOrder(),
         JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
         JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
@@ -149,11 +149,11 @@ class MailBoxHttpClient {
         null,
         JMapMailbox.IsSubscribed(false),
       ),
-      MailBoxes(
+      Mailbox(
         JMapMailbox.MailboxId(JMapId.Id('81')),
         JMapMailbox.MailboxName('Sub Folder 1'),
         null,
-        MailBoxRole.none,
+        MailboxRole.none,
         JMapMailbox.SortOrder(),
         JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
         JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
@@ -162,11 +162,11 @@ class MailBoxHttpClient {
         null,
         JMapMailbox.IsSubscribed(false),
       ),
-      MailBoxes(
+      Mailbox(
         JMapMailbox.MailboxId(JMapId.Id('82')),
         JMapMailbox.MailboxName('Sub Folder 2'),
         null,
-        MailBoxRole.none,
+        MailboxRole.none,
         JMapMailbox.SortOrder(),
         JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
         JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
@@ -175,11 +175,11 @@ class MailBoxHttpClient {
         null,
         JMapMailbox.IsSubscribed(false),
       ),
-      MailBoxes(
+      Mailbox(
         JMapMailbox.MailboxId(JMapId.Id('9')),
         JMapMailbox.MailboxName('Folder 2'),
         JMapMailbox.MailboxId(JMapId.Id('2')),
-        MailBoxRole.none,
+        MailboxRole.none,
         JMapMailbox.SortOrder(),
         JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
         JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),

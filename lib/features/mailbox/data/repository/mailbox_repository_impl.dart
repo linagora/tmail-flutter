@@ -33,14 +33,14 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 
-class MailBoxRepositoryImpl extends MailBoxRepository {
+class MailboxRepositoryImpl extends MailboxRepository {
 
-  final MailBoxDataSource mailBoxDataSource;
+  final MailboxDataSource mailboxDataSource;
 
-  MailBoxRepositoryImpl(this.mailBoxDataSource);
+  MailboxRepositoryImpl(this.mailboxDataSource);
 
   @override
-  Future<List<MailBoxes>> getAllMailBox() {
-    return mailBoxDataSource.getAllMailBox();
+  Future<List<Mailbox>> getAllMailbox() {
+    return mailboxDataSource.getAllMailbox();
   }
 }

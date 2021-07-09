@@ -31,16 +31,16 @@
 //
 
 // import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as jmap_mailbox;
-// import 'package:tmail_ui_user/features/mailbox/domain/model/mailboxes.dart';
+// import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox.dart';
 // import 'package:tmail_ui_user/features/mailbox/data/extensions/jmap_mailbox_role_extension.dart';
 //
-// extension JMapMailBoxExtension on jmap_mailbox.Mailbox {
-//   MailBoxes toMailBoxes() {
-//     return MailBoxes(
+// extension JMapMailboxExtension on jmap_mailbox.Mailbox {
+//   Mailbox toMailbox() {
+//     return Mailbox(
 //       id,
 //       name,
 //       parentId,
-//       role.toMailBoxRole(),
+//       role.toMailboxRole(),
 //       sortOrder,
 //       totalEmails,
 //       unreadEmails,

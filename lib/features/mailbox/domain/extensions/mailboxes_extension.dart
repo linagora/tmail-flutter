@@ -32,10 +32,10 @@
 
 import 'package:model/model.dart';
 
-extension MailBoxesExtension on MailBoxes {
+extension MailboxExtension on Mailbox {
 
-  MailBoxes toMailBoxesSelected(SelectMode selectMode) {
-    return MailBoxes(
+  Mailbox toMailboxSelected(SelectMode selectMode) {
+    return Mailbox(
       id,
       name,
       parentId,
@@ -51,8 +51,8 @@ extension MailBoxesExtension on MailBoxes {
     );
   }
 
-  MailBoxFolder toMailBoxFolder(List<MailBoxFolder> childList) {
-    return MailBoxFolder(
+  MailboxFolder toMailboxFolder(List<MailboxFolder> childList) {
+    return MailboxFolder(
       id,
       name,
       parentId,
