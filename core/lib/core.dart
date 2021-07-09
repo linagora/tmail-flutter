@@ -57,6 +57,7 @@ export 'presentation/resources/image_paths.dart';
 export 'presentation/constants/constants.dart';
 
 // Network
+export 'data/network/config/authorization_interceptors.dart';
 export 'data/network/config/dynamic_url_interceptors.dart';
 export 'data/network/config/endpoint.dart';
 export 'data/network/config/service_path.dart';

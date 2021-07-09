@@ -39,7 +39,8 @@ class LoginBindings extends Bindings {
   void dependencies() {
     Get.put(LoginController(
       Get.find<AuthenticationInteractor>(),
-      Get.find<DynamicUrlInterceptors>())
+      Get.find<DynamicUrlInterceptors>(),
+      Get.find<AuthorizationInterceptors>())
     );
   }
 }

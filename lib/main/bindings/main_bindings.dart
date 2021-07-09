@@ -78,6 +78,7 @@ class MainBindings extends Bindings {
     Get.put(Dio());
     _bindingInterceptors();
     Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
+    Get.find<Dio>().interceptors.add(Get.find<AuthorizationInterceptors>());
     if (kDebugMode) {
       Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true));
     }
@@ -85,6 +86,7 @@ class MainBindings extends Bindings {
 
   void _bindingInterceptors() {
     Get.put(DynamicUrlInterceptors());
+    Get.put(AuthorizationInterceptors());
   }
 
   void _bindingNetwork() {

@@ -29,7 +29,7 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
@@ -38,8 +38,9 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 class InitializeController extends GetxController {
   final GetCredentialInteractor _getCredentialInteractor;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
+  final AuthorizationInterceptors _authorizationInterceptors;
 
-  InitializeController(this._getCredentialInteractor, this._dynamicUrlInterceptors);
+  InitializeController(this._getCredentialInteractor, this._dynamicUrlInterceptors, this._authorizationInterceptors);
 
   @override
   void onReady() {
@@ -60,6 +61,10 @@ class InitializeController extends GetxController {
 
   void _goToHome(GetCredentialViewState credentialViewState) {
     _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
+    _authorizationInterceptors.changeAuthorization(
+      credentialViewState.userName.userName,
+      credentialViewState.password.value,
+    );
     Get.offNamed(AppRoutes.MAILBOX);
   }
 }

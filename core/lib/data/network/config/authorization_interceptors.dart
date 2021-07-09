@@ -29,8 +29,20 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-class Constant {
-  static const userId = '_id';
-  static const firstName = 'firstname';
-  static const lastName = 'lastname';
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
+
+class AuthorizationInterceptors extends InterceptorsWrapper {
+  var _authorization = '';
+
+  void changeAuthorization(String userName, String password) {
+    _authorization = base64Encode(utf8.encode('$userName:$password'));
+  }
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    options.headers['Authorization'] = 'Basic $_authorization';
+    super.onRequest(options, handler);
+  }
 }

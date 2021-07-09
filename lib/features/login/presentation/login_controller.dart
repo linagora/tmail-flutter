@@ -41,8 +41,9 @@ class LoginController extends GetxController {
 
   final AuthenticationInteractor _authenticationInteractor;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
+  final AuthorizationInterceptors _authorizationInterceptors;
 
-  LoginController(this._authenticationInteractor, this._dynamicUrlInterceptors);
+  LoginController(this._authenticationInteractor, this._dynamicUrlInterceptors, this._authorizationInterceptors);
 
   var loginState = LoginState.IDLE.obs;
 
@@ -77,6 +78,7 @@ class LoginController extends GetxController {
   void _loginSuccessAction(AuthenticationUserViewState success) {
     loginState(LoginState.SUCCESS);
     _dynamicUrlInterceptors.changeBaseUrl(_urlText);
+    _authorizationInterceptors.changeAuthorization(_userNameText, _passwordText);
     Get.offNamed(AppRoutes.MAILBOX);
   }
 

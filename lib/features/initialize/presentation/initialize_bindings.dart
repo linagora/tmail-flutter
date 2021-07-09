@@ -29,7 +29,7 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/initialize/presentation/initialize_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
@@ -39,6 +39,7 @@ class InitializeBindings extends Bindings {
   void dependencies() {
     Get.lazyPut(() => InitializeController(
       Get.find<GetCredentialInteractor>(),
-      Get.find<DynamicUrlInterceptors>()));
+      Get.find<DynamicUrlInterceptors>(),
+      Get.find<AuthorizationInterceptors>()));
   }
 }
