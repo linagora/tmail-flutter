@@ -30,23 +30,24 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:equatable/equatable.dart';
-import 'package:model/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JMapMailbox;
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart' as JMapMailboxRights;
 import 'package:model/mailbox/mailbox_role.dart';
 import 'package:model/mailbox/select_mode.dart';
 
 class MailBoxes with EquatableMixin {
 
-  final MailboxId id;
-  final MailboxName? name;
-  final MailboxId? parentId;
+  final JMapMailbox.MailboxId id;
+  final JMapMailbox.MailboxName? name;
+  final JMapMailbox.MailboxId? parentId;
   final MailBoxRole role;
-  final SortOrder? sortOrder;
-  final TotalEmails? totalEmails;
-  final UnreadEmails? unreadEmails;
-  final TotalThreads? totalThreads;
-  final UnreadThreads? unreadThreads;
-  final MailboxRights? myRights;
-  final IsSubscribed? isSubscribed;
+  final JMapMailbox.SortOrder? sortOrder;
+  final JMapMailbox.TotalEmails? totalEmails;
+  final JMapMailbox.UnreadEmails? unreadEmails;
+  final JMapMailbox.TotalThreads? totalThreads;
+  final JMapMailbox.UnreadThreads? unreadThreads;
+  final JMapMailboxRights.MailboxRights? myRights;
+  final JMapMailbox.IsSubscribed? isSubscribed;
   final SelectMode selectMode;
 
   MailBoxes(

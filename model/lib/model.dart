@@ -38,7 +38,6 @@ export 'account/password.dart';
 export 'user/user_id.dart';
 export 'user/user.dart';
 // Mailbox
-export 'mailbox/mailbox.dart';
 export 'mailbox/mailboxes.dart';
 export 'mailbox/mailbox_folder.dart';
 export 'mailbox/mailbox_role.dart';

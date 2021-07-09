@@ -343,6 +343,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  jmap_dart_client:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: serialize
+      resolved-ref: f0496f3c16d823eda18146909667b08edc643460
+      url: "git://github.com/hoangdat/jmap-dart-client.git"
+    source: git
+    version: "0.0.1"
   js:
     dependency: transitive
     description:

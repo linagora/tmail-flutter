@@ -32,6 +32,7 @@
 import 'dart:collection';
 
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JMapMailbox;
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
@@ -78,12 +79,12 @@ class MailBoxController extends GetxController {
   }
 
   void _setListMailBoxMyFolder(List<MailBoxes> mailboxesList) {
-    final mapsMyFolder = HashMap<MailboxId, List<MailBoxFolder>>();
+    final mapsMyFolder = HashMap<JMapMailbox.MailboxId, List<MailBoxFolder>>();
     final listMailBoxFolder = mailboxesList
       .where((mailbox) => mailbox.role == MailBoxRole.none)
       .toList();
 
-    MailboxId? parentID;
+    JMapMailbox.MailboxId? parentID;
     var listChildMailBox = <MailBoxFolder>[];
 
     for (int i = 0; i < listMailBoxFolder.length; i++) {
