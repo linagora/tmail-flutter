@@ -34,6 +34,9 @@ import 'package:dio/dio.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_http_client.dart';
+import 'package:tmail_ui_user/features/mailbox/data/extensions/jmap_mailbox_extension.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart' as JMapAccountId;
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as JMapProperties;
 
 class MailboxDataSourceImpl extends MailboxDataSource {
 
@@ -43,9 +46,10 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   MailboxDataSourceImpl(this.mailboxHttpClient, this.remoteExceptionThrower);
 
   @override
-  Future<List<Mailbox>> getAllMailbox() {
+  Future<List<Mailbox>> getAllMailbox(JMapAccountId.AccountId accountId, {JMapProperties.Properties? properties}) {
     return Future.sync(() async {
-      return await mailboxHttpClient.getAllMailbox();
+      final listJMapMailbox = await mailboxHttpClient.getAllMailbox(accountId, properties: properties);
+      return listJMapMailbox.map((mailbox) => mailbox.toMailbox()).toList();
     }).catchError((error) {
       remoteExceptionThrower.throwRemoteException(error, handler: (DioError error) {
         throw UnknownError(error.response?.statusMessage!);

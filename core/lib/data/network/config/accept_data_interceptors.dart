@@ -29,4 +29,19 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-enum ExpandMode { COLLAPSE, EXPAND }
+import 'package:core/data/constants/constant.dart';
+import 'package:dio/dio.dart';
+
+class AcceptDataInterceptors extends InterceptorsWrapper {
+  var _acceptData = Constant.acceptDefault;
+
+  void changeAcceptData(String acceptData) {
+    _acceptData = acceptData;
+  }
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    options.headers['Accept'] = '$_acceptData';
+    super.onRequest(options, handler);
+  }
+}

@@ -29,46 +29,49 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'dart:collection';
-
+import 'package:core/core.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JMapMailbox;
+import 'package:jmap_dart_client/jmap/account_id.dart' as JMapAccountId;
+import 'package:jmap_dart_client/jmap/core/id.dart' as JMapId;
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/extensions/mailboxes_extension.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/extensions/mailbox_folder_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/extensions/mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/state/mailbox_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class MailboxController extends GetxController {
 
   final GetAllMailboxInteractor _getAllMailboxInteractor;
+  final AcceptDataInterceptors _acceptDataInterceptors;
 
   var mailboxState = MailboxState.IDLE.obs;
 
   var mailboxList = <Mailbox>[].obs;
   var mailboxHasRoleList = <Mailbox>[].obs;
-  var mailboxMyFolderList = <MailboxFolder>[].obs;
+  var mailboxMyFolderList = <Mailbox>[].obs;
 
-  MailboxController(this._getAllMailboxInteractor);
+  MailboxController(this._getAllMailboxInteractor, this._acceptDataInterceptors);
 
   @override
   void onReady() {
     super.onReady();
+    _acceptDataInterceptors.changeAcceptData(Constant.acceptJMap);
     getAllMailboxAction();
   }
   
   void getAllMailboxAction() async {
+    final JMapAccountId.AccountId accountId = JMapAccountId.AccountId(JMapId.Id('3ce33c876a726662c627746eb9537a1d13c2338193ef27bd051a3ce5c0fe5b12'));
+
     mailboxState.value = MailboxState.LOADING;
-    await _getAllMailboxInteractor.execute()
+    await _getAllMailboxInteractor.execute(accountId)
       .then((response) => response.fold(
         (failure) => mailboxState.value = MailboxState.FAILURE,
         (success) {
           mailboxState.value = MailboxState.SUCCESS;
           mailboxList.value = success is GetAllMailboxViewState ? success.mailboxList : [];
           _setListMailboxHasRole(mailboxList);
-          _setListMailboxMyFolder(mailboxList);
+          _setListMailboxOfMyFolder(mailboxList);
         }));
   }
 
@@ -76,36 +79,20 @@ class MailboxController extends GetxController {
     mailboxHasRoleList.value = mailboxesList
       .where((mailbox) => mailbox.role != MailboxRole.none)
       .toList();
+
+    final mailboxInBox = mailboxHasRoleList.where((mailbox) => mailbox.role == MailboxRole.inbox).toList();
+    if (mailboxInBox.isNotEmpty) {
+      selectMailbox(mailboxInBox.first);
+    }
   }
 
-  void _setListMailboxMyFolder(List<Mailbox> mailboxesList) {
-    final mapsMyFolder = HashMap<JMapMailbox.MailboxId, List<MailboxFolder>>();
-    final listMailboxFolder = mailboxesList
+  void _setListMailboxOfMyFolder(List<Mailbox> mailboxesList) {
+    final listMailboxOfMyFolder = mailboxesList
       .where((mailbox) => mailbox.role == MailboxRole.none)
       .toList();
 
-    JMapMailbox.MailboxId? parentID;
-    var listChildMailbox = <MailboxFolder>[];
-
-    for (int i = 0; i < listMailboxFolder.length; i++) {
-      final mailbox = listMailboxFolder[i];
-
-      if (mailbox.isRootFolder()) {
-        parentID = mailbox.parentId;
-        listChildMailbox = <MailboxFolder>[];
-      } else {
-        listChildMailbox.add(mailbox.toMailboxFolder([]));
-      }
-
-      mapsMyFolder.addIf(() => parentID != null, parentID!, listChildMailbox);
-    }
-
-    final listFolderRoot = listMailboxFolder.where((folder) => folder.isRootFolder()).toList();
-
-    mailboxMyFolderList.value = listFolderRoot
-      .map((mailbox) => mailbox.toMailboxFolder(mailbox.isRootFolder()
-        ? mapsMyFolder[mailbox.parentId!] ?? []
-        : []))
+    mailboxMyFolderList.value = listMailboxOfMyFolder
+      .map((mailbox) => mailbox.toMailboxParent(mailbox.getNameMailboxFolderHasParentId(mailboxesList)))
       .toList();
   }
 
@@ -113,18 +100,10 @@ class MailboxController extends GetxController {
     Get.offAllNamed(AppRoutes.LOGIN);
   }
 
-  void selectMailbox(Mailbox mailbox) {
-    mailboxHasRoleList.value = mailboxHasRoleList.map((mailbox) => mailbox.id == mailbox.id
+  void selectMailbox(Mailbox mailboxSelected) {
+    mailboxHasRoleList.value = mailboxHasRoleList.map((mailbox) => mailbox.id == mailboxSelected.id
         ? mailbox.toMailboxSelected(SelectMode.ACTIVE)
         : mailbox.toMailboxSelected(SelectMode.INACTIVE))
       .toList();
-  }
-
-  void expandMyFolder(MailboxFolder mailboxFolder) {
-    final newListFolder = mailboxMyFolderList.map((folder) => folder.id == mailboxFolder.id
-        ? folder.expandMailboxFolder(expandMode: mailboxFolder.isExpand() ? ExpandMode.COLLAPSE : ExpandMode.EXPAND)
-        : folder)
-      .toList();
-    mailboxMyFolderList.value = newListFolder;
   }
 }

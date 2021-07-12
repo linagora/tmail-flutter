@@ -29,55 +29,6 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:model/mailbox/expand_mode.dart';
-import 'package:model/mailbox/mailbox.dart';
-
-class MailboxFolder extends Mailbox {
-
-  final List<MailboxFolder> childList;
-  final ExpandMode expandMode;
-
-  MailboxFolder(
-    id,
-    name,
-    parentId,
-    role,
-    sortOrder,
-    totalEmails,
-    unreadEmails,
-    totalThreads,
-    unreadThreads,
-    myRights,
-    isSubscribed,
-    this.childList,
-    {
-      this.expandMode = ExpandMode.COLLAPSE
-    }
-  ) : super(
-    id,
-    name,
-    parentId,
-    role,
-    sortOrder,
-    totalEmails,
-    unreadEmails,
-    totalThreads,
-    unreadThreads,
-    myRights,
-    isSubscribed
-  );
-
-  bool isRootFolder() => parentId != null && parentId!.id.value.isNotEmpty;
-
-  bool isFolderParent() => childList.length > 0;
-
-  bool isExpand() => expandMode == ExpandMode.EXPAND;
-
-  String getNameMailbox() => name == null ? '' : name!.name;
-
-  @override
-  List<Object?> get props => [
-    super.props,
-    childList
-  ];
+class ConstantsUI {
+  static const fontApp = 'CircularStd';
 }

@@ -29,6 +29,7 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
+import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
@@ -36,6 +37,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.d
 class MailboxBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => MailboxController(Get.find<GetAllMailboxInteractor>()));
+    Get.lazyPut(() => MailboxController(
+      Get.find<GetAllMailboxInteractor>(),
+      Get.find<AcceptDataInterceptors>()));
   }
 }

@@ -69,6 +69,8 @@ class Mailbox with EquatableMixin {
 
   bool isRootFolder() => parentId != null && parentId!.id.value.isNotEmpty;
 
+  bool isMailboxRole() => role != MailboxRole.none;
+
   String getNameMailbox() => name == null ? '' : name!.name;
 
   bool isValidCountMailbox() {

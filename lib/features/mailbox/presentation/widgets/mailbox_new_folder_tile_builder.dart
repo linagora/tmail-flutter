@@ -82,7 +82,7 @@ class MailboxNewFolderTileBuilder {
             }
           },
           leading: Transform(
-            transform: Matrix4.translationValues(20.0, 0.0, 0.0),
+            transform: Matrix4.translationValues(24.0, 0.0, 0.0),
             child: _icon != null
               ? SvgPicture.asset(_icon!, width: 24, height: 24, color: AppColor.mailboxIconColor, fit: BoxFit.fill)
               : SizedBox.shrink()),
@@ -91,7 +91,7 @@ class MailboxNewFolderTileBuilder {
             child: Text(
               _name ?? '',
               maxLines: 1,
-              style: TextStyle(fontSize: 15, color: AppColor.mailboxTextColor, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 15, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
             )),
         )
       )

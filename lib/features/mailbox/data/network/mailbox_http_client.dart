@@ -31,163 +31,39 @@
 
 import 'dart:async';
 
-import 'package:core/core.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart' as JMapId;
-import 'package:jmap_dart_client/jmap/core/unsigned_int.dart' as JMapUnSignedId;
+import 'package:jmap_dart_client/http/http_client.dart' as JMapHttpClient;
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as JMapProperties;
+import 'package:jmap_dart_client/jmap/account_id.dart' as JMapAccountId;
+import 'package:jmap_dart_client/jmap/jmap_request.dart' as JMapRequest;
+import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_method.dart' as JMapGetMailboxMethod;
+import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart' as JMapGetMailboxResponse;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JMapMailbox;
-import 'package:model/model.dart';
 
 class MailboxHttpClient {
 
-  final DioClient dioClient;
+  final JMapHttpClient.HttpClient httpClient;
 
-  MailboxHttpClient(this.dioClient);
+  MailboxHttpClient(this.httpClient);
 
-  Future<List<Mailbox>> getAllMailbox() async {
-    return [
-      Mailbox(
-        JMapMailbox.MailboxId(JMapId.Id('1')),
-        JMapMailbox.MailboxName('Inbox'),
-        null,
-        MailboxRole.inbox,
-        JMapMailbox.SortOrder(),
-        JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt(100)),
-        JMapMailbox.TotalThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        null,
-        JMapMailbox.IsSubscribed(false),
-        selectMode: SelectMode.ACTIVE),
-      Mailbox(
-        JMapMailbox.MailboxId(JMapId.Id('2')),
-        JMapMailbox.MailboxName('Drafts'),
-        null,
-        MailboxRole.draft,
-        JMapMailbox.SortOrder(),
-        JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.TotalThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        null,
-        JMapMailbox.IsSubscribed(false),
-      ),
-      Mailbox(
-        JMapMailbox.MailboxId(JMapId.Id('3')),
-        JMapMailbox.MailboxName('Sent'),
-        null,
-        MailboxRole.sent,
-        JMapMailbox.SortOrder(),
-        JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.TotalThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        null,
-        JMapMailbox.IsSubscribed(false),
-      ),
-      Mailbox(
-        JMapMailbox.MailboxId(JMapId.Id('4')),
-        JMapMailbox.MailboxName('All mail'),
-        null,
-        MailboxRole.allMail,
-        JMapMailbox.SortOrder(),
-        JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt(1200)),
-        JMapMailbox.TotalThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        null,
-        JMapMailbox.IsSubscribed(false),
-      ),
-      Mailbox(
-        JMapMailbox.MailboxId(JMapId.Id('5')),
-        JMapMailbox.MailboxName('Trash'),
-        null,
-        MailboxRole.trash,
-        JMapMailbox.SortOrder(),
-        JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.TotalThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        null,
-        JMapMailbox.IsSubscribed(false),
-      ),
-      Mailbox(
-        JMapMailbox.MailboxId(JMapId.Id('6')),
-        JMapMailbox.MailboxName('Spam'),
-        null,
-        MailboxRole.spam,
-        JMapMailbox.SortOrder(),
-        JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.TotalThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        null,
-        JMapMailbox.IsSubscribed(false),
-      ),
-      Mailbox(
-        JMapMailbox.MailboxId(JMapId.Id('7')),
-        JMapMailbox.MailboxName('Templates'),
-        null,
-        MailboxRole.templates,
-        JMapMailbox.SortOrder(),
-        JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.TotalThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        null,
-        JMapMailbox.IsSubscribed(false),
-      ),
-      Mailbox(
-        JMapMailbox.MailboxId(JMapId.Id('8')),
-        JMapMailbox.MailboxName('Folder 1'),
-        JMapMailbox.MailboxId(JMapId.Id('1')),
-        MailboxRole.none,
-        JMapMailbox.SortOrder(),
-        JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.TotalThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        null,
-        JMapMailbox.IsSubscribed(false),
-      ),
-      Mailbox(
-        JMapMailbox.MailboxId(JMapId.Id('81')),
-        JMapMailbox.MailboxName('Sub Folder 1'),
-        null,
-        MailboxRole.none,
-        JMapMailbox.SortOrder(),
-        JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.TotalThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        null,
-        JMapMailbox.IsSubscribed(false),
-      ),
-      Mailbox(
-        JMapMailbox.MailboxId(JMapId.Id('82')),
-        JMapMailbox.MailboxName('Sub Folder 2'),
-        null,
-        MailboxRole.none,
-        JMapMailbox.SortOrder(),
-        JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.TotalThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        null,
-        JMapMailbox.IsSubscribed(false),
-      ),
-      Mailbox(
-        JMapMailbox.MailboxId(JMapId.Id('9')),
-        JMapMailbox.MailboxName('Folder 2'),
-        JMapMailbox.MailboxId(JMapId.Id('2')),
-        MailboxRole.none,
-        JMapMailbox.SortOrder(),
-        JMapMailbox.TotalEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadEmails(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.TotalThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        JMapMailbox.UnreadThreads(JMapUnSignedId.UnsignedInt.defaultValue),
-        null,
-        JMapMailbox.IsSubscribed(false),
-      ),
-    ];
+  Future<List<JMapMailbox.Mailbox>> getAllMailbox(JMapAccountId.AccountId accountId, {JMapProperties.Properties? properties}) async {
+    final processingInvocation = JMapRequest.ProcessingInvocation();
+
+    final jmapRequestBuilder = JMapRequest.JmapRequestBuilder(httpClient, processingInvocation);
+
+    final getMailboxCreated = JMapGetMailboxMethod.GetMailboxMethod(accountId);
+
+    final queryInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
+
+    final result = await (jmapRequestBuilder
+      ..invocation(getMailboxCreated)
+      ..usings(getMailboxCreated.requiredCapabilities))
+        .build()
+        .execute();
+
+    final resultCreated = result.parse<JMapGetMailboxResponse.GetMailboxResponse>(
+      queryInvocation.methodCallId,
+      JMapGetMailboxResponse.GetMailboxResponse.deserialize);
+
+    return resultCreated == null ? [] : resultCreated.list;
   }
 }

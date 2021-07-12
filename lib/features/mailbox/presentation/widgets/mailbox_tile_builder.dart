@@ -92,12 +92,13 @@ class MailboxTileBuilder {
             child: Text(
               _mailbox.getNameMailbox(),
               maxLines: 1,
+              overflow: _mailbox.isMailboxRole() ? TextOverflow.ellipsis : TextOverflow.fade,
               style: TextStyle(
                 fontSize: 15,
                 color: _mailbox.selectMode == SelectMode.ACTIVE
                   ? AppColor.mailboxSelectedTextColor
                   : AppColor.mailboxTextColor,
-                fontWeight: FontWeight.w500),
+                fontWeight: FontWeight.bold),
             )),
           trailing: Transform(
             transform: Matrix4.translationValues(-16.0, 0.0, 0.0),
@@ -109,7 +110,7 @@ class MailboxTileBuilder {
                 color: _mailbox.selectMode == SelectMode.ACTIVE
                   ? AppColor.mailboxSelectedTextNumberColor
                   : AppColor.mailboxTextNumberColor,
-                fontWeight: FontWeight.w500))
+                fontWeight: FontWeight.bold))
           )),
       )
     );

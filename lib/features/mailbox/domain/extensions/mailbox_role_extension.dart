@@ -53,7 +53,7 @@ extension MailboxRoleExtension on MailboxRole {
         return imagePaths.icMailboxNewFolder;
       case MailboxRole.allMail:
         return imagePaths.icMailboxAllMail;
-      case MailboxRole.none:
+      default:
         return imagePaths.icMailboxFolder;
     }
   }

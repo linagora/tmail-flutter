@@ -39,7 +39,6 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/state/mailbox_state.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_new_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/search_form_widget_builder.dart';
@@ -164,34 +163,17 @@ class MailboxView extends GetWidget<MailboxController> {
         .build());
   }
 
-  Widget _buildListMailboxMyFolder(List<MailboxFolder> mailboxMyFolderList) {
-    return Padding(
-      padding: EdgeInsets.only(left: 16, right: 16),
-      child: TreeView(
-        key: Key('list_mailbox_folder'),
-        children: _buildListTileMyFolder(mailboxMyFolderList)
-      )
-    );
-  }
-
-  List<Widget> _buildListTileMyFolder(List<MailboxFolder> mailboxMyFolderList) {
-    return mailboxMyFolderList.map((mailboxFolder) =>
-      mailboxFolder.isRootFolder()
-        ? TreeViewChild(
-            key: Key('mailbox_folder_child'),
-            startExpanded: mailboxFolder.isExpand(),
-            parent: _buildTileFolderWidget(mailboxFolder: mailboxFolder),
-            children: _buildListTileMyFolder(mailboxFolder.childList))
-        : Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: _buildTileFolderWidget(mailboxFolder: mailboxFolder))
-    ).toList();
-  }
-
-  Widget _buildTileFolderWidget({required MailboxFolder mailboxFolder}) {
-    return MailboxFolderTileBuilder(mailboxFolder)
-      .onOpenMailboxFolderAction((folder) => mailboxController.expandMyFolder(folder))
-      .build();
+  Widget _buildListMailboxMyFolder(List<Mailbox> mailboxMyFolderList) {
+    return ListView.builder(
+      padding: EdgeInsets.only(left: 21, right: 16),
+      key: Key('list_mailbox_my_folder'),
+      itemCount: mailboxMyFolderList.length,
+      shrinkWrap: true,
+      primary: false,
+      itemBuilder: (context, index) =>
+        MailboxTileBuilder(mailboxMyFolderList[index])
+          .onOpenMailboxAction(() => {})
+          .build());
   }
 
   Widget _buildStorageWidget(BuildContext context) => StorageWidgetBuilder(context).build();

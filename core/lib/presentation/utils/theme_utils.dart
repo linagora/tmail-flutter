@@ -29,14 +29,14 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/presentation/constants/constants.dart';
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
 ThemeData appTheme() {
   return ThemeData(
     scaffoldBackgroundColor: Colors.white,
-    fontFamily: Constants.fontApp,
+    fontFamily: ConstantsUI.fontApp,
     appBarTheme: appBarTheme(),
     textTheme: textTheme(),
     visualDensity: VisualDensity.adaptivePlatformDensity,

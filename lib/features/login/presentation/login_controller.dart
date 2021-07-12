@@ -42,8 +42,14 @@ class LoginController extends GetxController {
   final AuthenticationInteractor _authenticationInteractor;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
   final AuthorizationInterceptors _authorizationInterceptors;
+  final AcceptDataInterceptors _acceptDataInterceptors;
 
-  LoginController(this._authenticationInteractor, this._dynamicUrlInterceptors, this._authorizationInterceptors);
+  LoginController(
+    this._authenticationInteractor,
+    this._dynamicUrlInterceptors,
+    this._authorizationInterceptors,
+    this._acceptDataInterceptors,
+  );
 
   var loginState = LoginState.IDLE.obs;
 
@@ -62,6 +68,12 @@ class LoginController extends GetxController {
   UserName _parseUserName(String userName) => UserName(userName);
 
   Password _parsePassword(String password) => Password(password);
+
+  @override
+  void onReady() {
+    super.onReady();
+    _acceptDataInterceptors.changeAcceptData(Constant.acceptDefault);
+  }
 
   void handleLoginPressed() {
     _loginAction(_parseUri(_urlText), _parseUserName(_userNameText), _parsePassword(_passwordText));

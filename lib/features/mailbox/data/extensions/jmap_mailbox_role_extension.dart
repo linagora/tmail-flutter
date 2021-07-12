@@ -39,7 +39,7 @@ extension JMapMailboxRoleExtension on JMapMailbox.Role? {
       return MailboxRole.none;
     } else {
       switch(this!.value) {
-        case 'draft':
+        case 'drafts':
           return MailboxRole.draft;
         case 'trash':
           return MailboxRole.trash;
@@ -53,6 +53,10 @@ extension JMapMailboxRoleExtension on JMapMailbox.Role? {
           return MailboxRole.inbox;
         case 'allMail':
           return MailboxRole.allMail;
+        case 'outbox':
+          return MailboxRole.outbox;
+        case 'sent':
+          return MailboxRole.sent;
         default:
           return MailboxRole.none;
       }

@@ -33,6 +33,7 @@ import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/http/http_client.dart' as JMapHttpClient;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/atuthentitcation_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_datasource_impl.dart';
@@ -79,6 +80,7 @@ class MainBindings extends Bindings {
     _bindingInterceptors();
     Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
     Get.find<Dio>().interceptors.add(Get.find<AuthorizationInterceptors>());
+    Get.find<Dio>().interceptors.add(Get.find<AcceptDataInterceptors>());
     if (kDebugMode) {
       Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true));
     }
@@ -87,12 +89,14 @@ class MainBindings extends Bindings {
   void _bindingInterceptors() {
     Get.put(DynamicUrlInterceptors());
     Get.put(AuthorizationInterceptors());
+    Get.put(AcceptDataInterceptors());
   }
 
   void _bindingNetwork() {
     Get.put(DioClient(Get.find<Dio>()));
+    Get.put(JMapHttpClient.HttpClient(Get.find<Dio>()));
     Get.put(LoginHttpClient(Get.find<DioClient>()));
-    Get.put(MailboxHttpClient(Get.find<DioClient>()));
+    Get.put(MailboxHttpClient(Get.find<JMapHttpClient.HttpClient>()));
   }
 
   void _bindingRemoteExceptionThrower() {

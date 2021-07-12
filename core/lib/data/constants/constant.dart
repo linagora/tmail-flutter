@@ -33,4 +33,6 @@ class Constant {
   static const userId = '_id';
   static const firstName = 'firstname';
   static const lastName = 'lastname';
+  static const acceptDefault = 'application/json';
+  static const acceptJMap = 'application/json;jmapVersion=rfc-8621';
 }

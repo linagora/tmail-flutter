@@ -37,6 +37,7 @@ enum MailboxRole {
   sent,
   createdFolder,
   inbox,
+  outbox,
   allMail,
   none
 }
