@@ -31,8 +31,8 @@
 
 import 'package:core/core.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart' as JMapAccountId;
-import 'package:jmap_dart_client/jmap/core/id.dart' as JMapId;
+import 'package:jmap_dart_client/jmap/account_id.dart' as JmapAccountId;
+import 'package:jmap_dart_client/jmap/core/id.dart' as JmapId;
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
@@ -56,12 +56,12 @@ class MailboxController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    _acceptDataInterceptors.changeAcceptData(Constant.acceptJMap);
+    _acceptDataInterceptors.changeAcceptData(Constant.acceptJmap);
     getAllMailboxAction();
   }
   
   void getAllMailboxAction() async {
-    final JMapAccountId.AccountId accountId = JMapAccountId.AccountId(JMapId.Id('3ce33c876a726662c627746eb9537a1d13c2338193ef27bd051a3ce5c0fe5b12'));
+    final JmapAccountId.AccountId accountId = JmapAccountId.AccountId(JmapId.Id('3ce33c876a726662c627746eb9537a1d13c2338193ef27bd051a3ce5c0fe5b12'));
 
     mailboxState.value = MailboxState.LOADING;
     await _getAllMailboxInteractor.execute(accountId)
@@ -77,10 +77,10 @@ class MailboxController extends GetxController {
 
   void _setListMailboxHasRole(List<Mailbox> mailboxesList) {
     mailboxHasRoleList.value = mailboxesList
-      .where((mailbox) => mailbox.role != MailboxRole.none)
+      .where((mailbox) => mailbox.isMailboxRole())
       .toList();
 
-    final mailboxInBox = mailboxHasRoleList.where((mailbox) => mailbox.role == MailboxRole.inbox).toList();
+    final mailboxInBox = mailboxHasRoleList.where((mailbox) => mailbox.role?.value == 'inbox').toList();
     if (mailboxInBox.isNotEmpty) {
       selectMailbox(mailboxInBox.first);
     }
@@ -88,7 +88,7 @@ class MailboxController extends GetxController {
 
   void _setListMailboxOfMyFolder(List<Mailbox> mailboxesList) {
     final listMailboxOfMyFolder = mailboxesList
-      .where((mailbox) => mailbox.role == MailboxRole.none)
+      .where((mailbox) => !mailbox.isMailboxRole())
       .toList();
 
     mailboxMyFolderList.value = listMailboxOfMyFolder

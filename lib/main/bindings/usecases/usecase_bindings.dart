@@ -30,11 +30,19 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_controller.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 
-class SplashBindings extends Bindings {
+class UseCaseBindings extends Bindings {
+
   @override
   void dependencies() {
-    Get.lazyPut(() => SplashController());
+    Get.create(() => AuthenticationInteractor(Get.find<AuthenticationRepository>(), Get.find<CredentialRepository>()));
+    Get.create(() => GetCredentialInteractor(Get.find<CredentialRepository>()));
+    Get.create(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
   }
 }

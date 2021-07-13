@@ -29,12 +29,12 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/core.dart';
+import 'package:equatable/equatable.dart';
 
-abstract class AuthenticationException extends RemoteException {
+abstract class AuthenticationException extends Equatable {
   static final wrongCredential = 'Credential is wrong';
 
-  AuthenticationException(String message) : super(message);
+  AuthenticationException(String message);
 }
 
 class BadCredentials extends AuthenticationException {

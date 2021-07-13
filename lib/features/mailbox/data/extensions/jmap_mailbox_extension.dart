@@ -30,17 +30,16 @@
 //  the Additional Terms applicable to LinShare software.
 //
 
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JMapMailbox;
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JmapMailbox;
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/mailbox/data/extensions/jmap_mailbox_role_extension.dart';
 
-extension JMapMailboxExtension on JMapMailbox.Mailbox {
+extension JmapMailboxExtension on JmapMailbox.Mailbox {
   Mailbox toMailbox() {
     return Mailbox(
       id,
       name,
       parentId,
-      role.toMailboxRole(),
+      role,
       sortOrder,
       totalEmails,
       unreadEmails,

@@ -31,30 +31,36 @@
 //
 
 import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JmapMailbox;
 
-extension MailboxRoleExtension on MailboxRole {
+extension MailboxRoleExtension on JmapMailbox.Role? {
 
   String getIconMailbox(ImagePaths imagePaths) {
-    switch(this) {
-      case MailboxRole.inbox:
-        return imagePaths.icMailboxInbox;
-      case MailboxRole.draft:
-        return imagePaths.icMailboxDraft;
-      case MailboxRole.trash:
-        return imagePaths.icMailboxTrash;
-      case MailboxRole.spam:
-        return imagePaths.icMailboxSpam;
-      case MailboxRole.templates:
-        return imagePaths.icMailboxTemplate;
-      case MailboxRole.sent:
-        return imagePaths.icMailboxSent;
-      case MailboxRole.createdFolder:
-        return imagePaths.icMailboxNewFolder;
-      case MailboxRole.allMail:
-        return imagePaths.icMailboxAllMail;
-      default:
-        return imagePaths.icMailboxFolder;
+    if (this == null) {
+      return imagePaths.icMailboxFolder;
+    } else {
+      switch(this!.value) {
+        case 'drafts':
+          return imagePaths.icMailboxDraft;
+        case 'trash':
+          return imagePaths.icMailboxTrash;
+        case 'spam':
+          return imagePaths.icMailboxSpam;
+        case 'templates':
+          return imagePaths.icMailboxTemplate;
+        case 'created_folder':
+          return imagePaths.icMailboxNewFolder;
+        case 'inbox':
+          return imagePaths.icMailboxInbox;
+        case 'allMail':
+          return imagePaths.icMailboxAllMail;
+        case 'outbox':
+          return imagePaths.icMailboxFolder;
+        case 'sent':
+          return imagePaths.icMailboxSent;
+        default:
+          return imagePaths.icMailboxFolder;
+      }
     }
   }
 }

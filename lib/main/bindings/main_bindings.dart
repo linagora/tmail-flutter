@@ -29,117 +29,20 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/core.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/http/http_client.dart' as JMapHttpClient;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tmail_ui_user/features/login/data/datasource/atuthentitcation_datasource.dart';
-import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_datasource_impl.dart';
-import 'package:tmail_ui_user/features/login/data/network/login_http_client.dart';
-import 'package:tmail_ui_user/features/login/data/repository/authentication_repository_impl.dart';
-import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
-import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_http_client.dart';
-import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/main/bindings/core/core_bindings.dart';
+import 'package:tmail_ui_user/main/bindings/datasource/datasource_bindings.dart';
+import 'package:tmail_ui_user/main/bindings/network/network_bindings.dart';
+import 'package:tmail_ui_user/main/bindings/repository/repository_bindings.dart';
+import 'package:tmail_ui_user/main/bindings/usecases/usecase_bindings.dart';
 
 class MainBindings extends Bindings {
   @override
-  void dependencies() {
-    _bindingSharePreference();
-    _bindingAppImagePaths();
-    _bindingResponsiveManager();
-    _bindingDio();
-    _bindingRemoteExceptionThrower();
-    _bindingNetwork();
-    _bindingDataSourceImpl();
-    _bindingDataSource();
-    _bindingRepositoryImpl();
-    _bindingRepository();
-    _bindingInteractor();
-  }
-
-  void _bindingAppImagePaths() {
-    Get.put(ImagePaths());
-  }
-
-  void _bindingResponsiveManager() {
-    Get.put(ResponsiveUtils());
-  }
-
-  void _bindingDio() {
-    Get.put(Dio());
-    _bindingInterceptors();
-    Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
-    Get.find<Dio>().interceptors.add(Get.find<AuthorizationInterceptors>());
-    Get.find<Dio>().interceptors.add(Get.find<AcceptDataInterceptors>());
-    if (kDebugMode) {
-      Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true));
-    }
-  }
-
-  void _bindingInterceptors() {
-    Get.put(DynamicUrlInterceptors());
-    Get.put(AuthorizationInterceptors());
-    Get.put(AcceptDataInterceptors());
-  }
-
-  void _bindingNetwork() {
-    Get.put(DioClient(Get.find<Dio>()));
-    Get.put(JMapHttpClient.HttpClient(Get.find<Dio>()));
-    Get.put(LoginHttpClient(Get.find<DioClient>()));
-    Get.put(MailboxHttpClient(Get.find<JMapHttpClient.HttpClient>()));
-  }
-
-  void _bindingRemoteExceptionThrower() {
-    Get.put(RemoteExceptionThrower());
-  }
-
-  void _bindingSharePreference() {
-    Get.putAsync(() async => await SharedPreferences.getInstance(), permanent: true);
-  }
-
-  void _bindingDataSource() {
-    Get.create<AuthenticationDataSource>(() => Get.find<AuthenticationDataSourceImpl>());
-    Get.create<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
-  }
-
-  void _bindingDataSourceImpl() {
-    Get.create(() => AuthenticationDataSourceImpl(
-      Get.find<LoginHttpClient>(),
-      Get.find<RemoteExceptionThrower>()));
-    Get.create(() => MailboxDataSourceImpl(
-      Get.find<MailboxHttpClient>(),
-      Get.find<RemoteExceptionThrower>()));
-  }
-
-  void _bindingRepository() {
-    Get.create<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
-    Get.create<AuthenticationRepository>(() => Get.find<AuthenticationRepositoryImpl>());
-    Get.create<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
-  }
-
-  void _bindingRepositoryImpl() {
-    Get.create(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
-    Get.create(() => AuthenticationRepositoryImpl(Get.find<AuthenticationDataSource>()));
-    Get.create(() => MailboxRepositoryImpl(Get.find<MailboxDataSource>()));
-  }
-
-  void _bindingInteractor() {
-    Get.create(() => AuthenticationInteractor(
-      Get.find<AuthenticationRepository>(),
-      Get.find<CredentialRepository>()));
-    Get.create(() => GetCredentialInteractor(
-      Get.find<CredentialRepository>()
-    ));
-    Get.create(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
+  Future dependencies() async {
+    await CoreBindings().dependencies();
+    NetworkBindings().dependencies();
+    DatasourceBindings().dependencies();
+    RepositoryBindings().dependencies();
+    UseCaseBindings().dependencies();
   }
 }

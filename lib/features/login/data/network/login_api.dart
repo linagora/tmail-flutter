@@ -29,41 +29,32 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:core/core.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/splash/presentation/splash_controller.dart';
+import 'package:dio/dio.dart';
+import 'package:tmail_ui_user/features/login/data/model/request/account_request.dart';
+import 'package:tmail_ui_user/features/login/data/model/response/user_response.dart';
 
-class SplashView extends GetWidget<SplashController> {
+class LoginAPI {
+  final DioClient _dioClient;
 
-  final splashController = Get.find<SplashController>();
-  final imagePaths = Get.find<ImagePaths>();
+  LoginAPI(this._dioClient);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.primaryLightColor,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            alignment: Alignment.center,
-            child: SvgPicture.asset(
-              imagePaths.icTMailLogo,
-              width: 200,
-              height: 200,
-              alignment: Alignment.center)).paddingOnly(top: Get.mediaQuery.size.height * 0.4),
-          Spacer(),
-          SizedBox(
-            width: 30,
-            height: 30,
-            child: CircularProgressIndicator(color: AppColor.primaryColor)
-          ).paddingOnly(bottom: 80.0)
-        ],
-      ),
-    );
+  Future<UserResponse> authenticationUser(Uri? baseUrl, AccountRequest accountRequest) async {
+    final basicAuth = 'Basic ' + base64Encode(utf8.encode('${accountRequest.userName?.userName}:${accountRequest.password?.value}'));
+    final resultJson = await _dioClient.post(
+      Endpoint.authentication.generateAuthenticationUrl(baseUrl!),
+      options: Options(headers: _buildHeaderRequestParam(basicAuth)),
+      data: accountRequest.toJson());
+    return UserResponse.fromJson(resultJson);
+  }
+
+  Map<String, dynamic> _buildHeaderRequestParam(String authorizationHeader) {
+    final headerParam = _dioClient.getHeaders();
+    headerParam[HttpHeaders.authorizationHeader] = authorizationHeader;
+    return headerParam;
   }
 }

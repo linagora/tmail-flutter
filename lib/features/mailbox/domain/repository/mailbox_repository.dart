@@ -30,9 +30,9 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:model/model.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart' as JMapAccountId;
-import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as JMapProperties;
+import 'package:jmap_dart_client/jmap/account_id.dart' as JmapAccountId;
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as JmapProperties;
 
 abstract class MailboxRepository {
-  Future<List<Mailbox>> getAllMailbox(JMapAccountId.AccountId accountId, {JMapProperties.Properties? properties});
+  Future<List<Mailbox>> getAllMailbox(JmapAccountId.AccountId accountId, {JmapProperties.Properties? properties});
 }

@@ -30,24 +30,23 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:equatable/equatable.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JMapMailbox;
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart' as JMapMailboxRights;
-import 'package:model/mailbox/mailbox_role.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JmapMailbox;
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart' as JmapMailboxRights;
 import 'package:model/mailbox/select_mode.dart';
 
 class Mailbox with EquatableMixin {
 
-  final JMapMailbox.MailboxId id;
-  final JMapMailbox.MailboxName? name;
-  final JMapMailbox.MailboxId? parentId;
-  final MailboxRole role;
-  final JMapMailbox.SortOrder? sortOrder;
-  final JMapMailbox.TotalEmails? totalEmails;
-  final JMapMailbox.UnreadEmails? unreadEmails;
-  final JMapMailbox.TotalThreads? totalThreads;
-  final JMapMailbox.UnreadThreads? unreadThreads;
-  final JMapMailboxRights.MailboxRights? myRights;
-  final JMapMailbox.IsSubscribed? isSubscribed;
+  final JmapMailbox.MailboxId id;
+  final JmapMailbox.MailboxName? name;
+  final JmapMailbox.MailboxId? parentId;
+  final JmapMailbox.Role? role;
+  final JmapMailbox.SortOrder? sortOrder;
+  final JmapMailbox.TotalEmails? totalEmails;
+  final JmapMailbox.UnreadEmails? unreadEmails;
+  final JmapMailbox.TotalThreads? totalThreads;
+  final JmapMailbox.UnreadThreads? unreadThreads;
+  final JmapMailboxRights.MailboxRights? myRights;
+  final JmapMailbox.IsSubscribed? isSubscribed;
   final SelectMode selectMode;
 
   Mailbox(
@@ -69,14 +68,12 @@ class Mailbox with EquatableMixin {
 
   bool isRootFolder() => parentId != null && parentId!.id.value.isNotEmpty;
 
-  bool isMailboxRole() => role != MailboxRole.none;
+  bool isMailboxRole() => role != null && role!.value.isNotEmpty;
 
   String getNameMailbox() => name == null ? '' : name!.name;
 
   bool isValidCountMailbox() {
-    if (role == MailboxRole.createdFolder
-        || role == MailboxRole.inbox
-        || role == MailboxRole.allMail) {
+    if (role?.value == 'created_folder' || role?.value == 'inbox' || role?.value == 'allMail') {
       return true;
     }
     return false;

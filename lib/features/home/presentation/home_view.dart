@@ -28,15 +28,30 @@
 // <http://www.gnu.org/licenses/> for the GNU Affero General Public License version
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
-//
 
-import 'package:equatable/equatable.dart';
+import 'package:core/core.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-abstract class BaseErrorCode with EquatableMixin {
-  final int value;
-
-  BaseErrorCode(this.value);
+class HomeView extends GetWidget<HomeController> {
 
   @override
-  List<Object> get props => [value];
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColor.primaryColor,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(AppLocalizations.of(context).initializing_data, style: TextStyle(color: Colors.white, fontSize: 17)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

@@ -29,32 +29,30 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:core/core.dart';
-import 'package:dio/dio.dart';
-import 'package:tmail_ui_user/features/login/data/model/request/account_request.dart';
-import 'package:tmail_ui_user/features/login/data/model/response/user_response.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginHttpClient {
-  final DioClient _dioClient;
+class CoreBindings extends Bindings {
 
-  LoginHttpClient(this._dioClient);
-
-  Future<UserResponse> authenticationUser(Uri baseUrl, AccountRequest accountRequest) async {
-    final basicAuth = 'Basic ' + base64Encode(utf8.encode('${accountRequest.userName.userName}:${accountRequest.password.value}'));
-    final resultJson = await _dioClient.post(
-      Endpoint.authentication.generateAuthenticationUrl(baseUrl),
-      options: Options(headers: _buildHeaderRequestParam(basicAuth)),
-      data: accountRequest.toJson());
-    return UserResponse.fromJson(resultJson);
+  @override
+  Future dependencies() async {
+    await _bindingSharePreference();
+    _bindingAppImagePaths();
+    _bindingResponsiveManager();
   }
 
-  Map<String, dynamic> _buildHeaderRequestParam(String authorizationHeader) {
-    final headerParam = _dioClient.getHeaders();
-    headerParam[HttpHeaders.authorizationHeader] = authorizationHeader;
-    return headerParam;
+  void _bindingAppImagePaths() {
+    Get.put(ImagePaths());
   }
+
+  void _bindingResponsiveManager() {
+    Get.put(ResponsiveUtils());
+  }
+
+  Future _bindingSharePreference() async {
+    await Get.putAsync(() async => await SharedPreferences.getInstance(), permanent: true);
+  }
+
+
 }

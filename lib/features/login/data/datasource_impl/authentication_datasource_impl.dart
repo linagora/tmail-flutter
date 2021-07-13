@@ -29,30 +29,25 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/core.dart';
-import 'package:dio/dio.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/atuthentitcation_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/model/request/account_request.dart';
 import 'package:tmail_ui_user/features/login/data/model/response/user_response.dart';
-import 'package:tmail_ui_user/features/login/data/network/login_http_client.dart';
-import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/login/data/network/login_api.dart';
 
 class AuthenticationDataSourceImpl extends AuthenticationDataSource {
 
-  final LoginHttpClient loginHttpClient;
-  final RemoteExceptionThrower remoteExceptionThrower;
+  final LoginAPI loginAPI;
 
-  AuthenticationDataSourceImpl(this.loginHttpClient, this.remoteExceptionThrower);
+  AuthenticationDataSourceImpl(this.loginAPI);
 
   @override
-  Future<User> authenticationUser(Uri baseUrl, UserName userName, Password password) {
+  Future<User> authenticationUser(Uri? baseUrl, UserName? userName, Password? password) {
     return Future.sync(() async {
-      final userResponse = await loginHttpClient.authenticationUser(baseUrl, AccountRequest(userName, password));
+      final userResponse = await loginAPI.authenticationUser(baseUrl, AccountRequest(userName, password));
       return userResponse.toUser();
     }).catchError((error) {
-      remoteExceptionThrower.throwRemoteException(error, handler: (DioError error) {
-        throw UnknownError(error.response?.statusMessage!);
-      });
+      throw error;
     });
   }
 }

@@ -29,15 +29,43 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-enum MailboxRole {
-  draft,
-  trash,
-  spam,
-  templates,
-  sent,
-  createdFolder,
-  inbox,
-  outbox,
-  allMail,
-  none
+import 'package:core/core.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
+import 'package:jmap_dart_client/http/http_client.dart' as JmapHttpClient;
+import 'package:tmail_ui_user/features/login/data/network/login_api.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
+
+class NetworkBindings extends Bindings {
+
+  @override
+  void dependencies() {
+    _bindingDio();
+    _bindingApi();
+  }
+
+  void _bindingDio() {
+    Get.put(Dio());
+    _bindingInterceptors();
+    Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
+    Get.find<Dio>().interceptors.add(Get.find<AuthorizationInterceptors>());
+    Get.find<Dio>().interceptors.add(Get.find<AcceptDataInterceptors>());
+    if (kDebugMode) {
+      Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true));
+    }
+  }
+
+  void _bindingInterceptors() {
+    Get.put(DynamicUrlInterceptors());
+    Get.put(AuthorizationInterceptors());
+    Get.put(AcceptDataInterceptors());
+  }
+
+  void _bindingApi() {
+    Get.put(DioClient(Get.find<Dio>()));
+    Get.put(JmapHttpClient.HttpClient(Get.find<Dio>()));
+    Get.put(LoginAPI(Get.find<DioClient>()));
+    Get.put(MailboxAPI(Get.find<JmapHttpClient.HttpClient>()));
+  }
 }

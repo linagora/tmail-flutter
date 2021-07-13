@@ -9,6 +9,8 @@ import 'bindings/main_bindings.dart';
 import 'routes/app_routes.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MainBindings().dependencies();
   runApp(TMailApp());
 }
 
@@ -39,8 +41,7 @@ class TMailApp extends StatelessWidget {
         return supportedLocales.first;
       },
       defaultTransition: Transition.fade,
-      initialBinding: MainBindings(),
-      initialRoute: AppRoutes.SPLASH,
+      initialRoute: AppRoutes.HOME,
       getPages: AppPages.pages);
   }
 }

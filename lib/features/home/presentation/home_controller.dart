@@ -28,38 +28,43 @@
 // <http://www.gnu.org/licenses/> for the GNU Affero General Public License version
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
-//
 
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JMapMailbox;
-import 'package:model/model.dart';
+import 'package:core/core.dart';
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
-extension JMapMailboxRoleExtension on JMapMailbox.Role? {
-  MailboxRole toMailboxRole() {
-    if (this == null) {
-      return MailboxRole.none;
-    } else {
-      switch(this!.value) {
-        case 'drafts':
-          return MailboxRole.draft;
-        case 'trash':
-          return MailboxRole.trash;
-        case 'spam':
-          return MailboxRole.spam;
-        case 'templates':
-          return MailboxRole.templates;
-        case 'created_folder':
-          return MailboxRole.createdFolder;
-        case 'inbox':
-          return MailboxRole.inbox;
-        case 'allMail':
-          return MailboxRole.allMail;
-        case 'outbox':
-          return MailboxRole.outbox;
-        case 'sent':
-          return MailboxRole.sent;
-        default:
-          return MailboxRole.none;
-      }
-    }
+class HomeController extends GetxController {
+  final GetCredentialInteractor _getCredentialInteractor;
+  final DynamicUrlInterceptors _dynamicUrlInterceptors;
+  final AuthorizationInterceptors _authorizationInterceptors;
+
+  HomeController(this._getCredentialInteractor, this._dynamicUrlInterceptors, this._authorizationInterceptors);
+
+  @override
+  void onReady() {
+    super.onReady();
+    _getCredentialAction();
+  }
+
+  void _getCredentialAction() async {
+    await _getCredentialInteractor.execute()
+      .then((response) => response.fold(
+        (failure) => _goToLogin(),
+        (success) => success is GetCredentialViewState ? _goToMailbox(success) : _goToLogin()));
+  }
+
+  void _goToLogin() {
+    Get.offNamed(AppRoutes.LOGIN);
+  }
+
+  void _goToMailbox(GetCredentialViewState credentialViewState) {
+    _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
+    _authorizationInterceptors.changeAuthorization(
+      credentialViewState.userName.userName,
+      credentialViewState.password.value,
+    );
+    Get.offNamed(AppRoutes.MAILBOX);
   }
 }

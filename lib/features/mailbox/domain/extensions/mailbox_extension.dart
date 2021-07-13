@@ -31,7 +31,7 @@
 //
 
 import 'package:model/model.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JMapMailbox;
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JmapMailbox;
 
 extension MailboxExtension on Mailbox {
 
@@ -55,7 +55,7 @@ extension MailboxExtension on Mailbox {
   Mailbox toMailboxParent(String nameMailbox) {
     return Mailbox(
         id,
-        JMapMailbox.MailboxName(nameMailbox),
+        JmapMailbox.MailboxName(nameMailbox),
         parentId,
         role,
         sortOrder,

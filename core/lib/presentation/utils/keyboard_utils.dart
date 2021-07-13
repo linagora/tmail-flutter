@@ -31,6 +31,9 @@
 
 import 'package:flutter/cupertino.dart';
 
+/// singleton KeyBoardUtils with GetX
+/// then
+/// keyBoardUtils.hideKeyboard(context)
 class KeyboardUtils {
   static void hideKeyboard(BuildContext context) {
     FocusScopeNode currentFocus = FocusScope.of(context);

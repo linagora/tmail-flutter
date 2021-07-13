@@ -54,7 +54,7 @@ class GetCredentialInteractor {
         return Left(GetCredentialFailure(BadCredentials()));
       }
     } catch (exception) {
-      return Left(GetCredentialFailure(BadCredentials()));
+      return Left(GetCredentialFailure(exception));
     }
   }
 

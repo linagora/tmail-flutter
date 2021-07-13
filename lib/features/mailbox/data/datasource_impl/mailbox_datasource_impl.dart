@@ -29,31 +29,26 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/core.dart';
-import 'package:dio/dio.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart' as JmapAccountId;
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as JmapProperties;
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_http_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/jmap_mailbox_extension.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart' as JMapAccountId;
-import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as JMapProperties;
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 
 class MailboxDataSourceImpl extends MailboxDataSource {
 
-  final MailboxHttpClient mailboxHttpClient;
-  final RemoteExceptionThrower remoteExceptionThrower;
+  final MailboxAPI mailboxAPI;
 
-  MailboxDataSourceImpl(this.mailboxHttpClient, this.remoteExceptionThrower);
+  MailboxDataSourceImpl(this.mailboxAPI,);
 
   @override
-  Future<List<Mailbox>> getAllMailbox(JMapAccountId.AccountId accountId, {JMapProperties.Properties? properties}) {
+  Future<List<Mailbox>> getAllMailbox(JmapAccountId.AccountId accountId, {JmapProperties.Properties? properties}) {
     return Future.sync(() async {
-      final listJMapMailbox = await mailboxHttpClient.getAllMailbox(accountId, properties: properties);
-      return listJMapMailbox.map((mailbox) => mailbox.toMailbox()).toList();
+      final listJmapMailbox = await mailboxAPI.getAllMailbox(accountId, properties: properties);
+      return listJmapMailbox.map((mailbox) => mailbox.toMailbox()).toList();
     }).catchError((error) {
-      remoteExceptionThrower.throwRemoteException(error, handler: (DioError error) {
-        throw UnknownError(error.response?.statusMessage!);
-      });
+      throw error;
     });
   }
 }

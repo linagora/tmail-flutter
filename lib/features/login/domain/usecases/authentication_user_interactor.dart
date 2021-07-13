@@ -42,7 +42,7 @@ class AuthenticationInteractor {
 
   AuthenticationInteractor(this.authenticationRepository, this.credentialRepository);
 
-  Future<Either<Failure, Success>> execute(Uri baseUrl, UserName userName, Password password) async {
+  Future<Either<Failure, Success>> execute(Uri? baseUrl, UserName? userName, Password? password) async {
     try {
       final user = await authenticationRepository.authenticationUser(baseUrl, userName, password);
       await Future.wait([

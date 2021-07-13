@@ -21,16 +21,13 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependency_overrides:
-  # intl
-  intl: 0.17.0
-
   # build_runner dependencies
-  crypto: 3.0.0
-  args: 2.0.0
-  dart_style: 2.0.0
-  analyzer: 1.5.0
-  convert: 3.0.0
-  petitparser: 4.1.0
+  intl: 0.17.0
+  args: 2.1.1
+  dart_style: 2.0.2
+  analyzer: 2.0.0
+  petitparser: 4.2.0
+  meta: 1.7.0
 
 dependencies:
   flutter:

@@ -32,8 +32,8 @@
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart' as JMapAccountId;
-import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as JMapProperties;
+import 'package:jmap_dart_client/jmap/account_id.dart' as JmapAccountId;
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as JmapProperties;
 
 class MailboxRepositoryImpl extends MailboxRepository {
 
@@ -42,7 +42,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
   MailboxRepositoryImpl(this.mailboxDataSource);
 
   @override
-  Future<List<Mailbox>> getAllMailbox(JMapAccountId.AccountId accountId, {JMapProperties.Properties? properties}) {
+  Future<List<Mailbox>> getAllMailbox(JmapAccountId.AccountId accountId, {JmapProperties.Properties? properties}) {
     return mailboxDataSource.getAllMailbox(accountId, properties: properties);
   }
 }

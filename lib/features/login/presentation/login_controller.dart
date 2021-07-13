@@ -53,9 +53,9 @@ class LoginController extends GetxController {
 
   var loginState = LoginState.IDLE.obs;
 
-  String _urlText = '';
-  String _userNameText = '';
-  String _passwordText = '';
+  String? _urlText;
+  String? _userNameText;
+  String? _passwordText;
 
   void setUrlText(String url) => _urlText = url.formatURLValid();
 
@@ -63,11 +63,11 @@ class LoginController extends GetxController {
 
   void setPasswordText(String password) => _passwordText = password;
 
-  Uri _parseUri(String url) => Uri.parse(url);
+  Uri? _parseUri(String? url) => url != null ? Uri.parse(url) : null;
 
-  UserName _parseUserName(String userName) => UserName(userName);
+  UserName? _parseUserName(String? userName) => userName != null ? UserName(userName) : null;
 
-  Password _parsePassword(String password) => Password(password);
+  Password? _parsePassword(String? password) => password != null ? Password(password) : null;
 
   @override
   void onReady() {
@@ -79,7 +79,7 @@ class LoginController extends GetxController {
     _loginAction(_parseUri(_urlText), _parseUserName(_userNameText), _parsePassword(_passwordText));
   }
 
-  void _loginAction(Uri baseUrl, UserName userName, Password password) async {
+  void _loginAction(Uri? baseUrl, UserName? userName, Password? password) async {
     loginState(LoginState.LOADING);
     await _authenticationInteractor.execute(baseUrl, userName, password)
       .then((response) => response.fold(

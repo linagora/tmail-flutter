@@ -29,27 +29,29 @@
 //  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
 //  the Additional Terms applicable to LinShare software.
 
-import 'package:core/data/network/exception/remote_exception.dart';
-import 'package:core/data/network/exception/tmail_error_code.dart';
-import 'package:dio/dio.dart';
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/login/data/datasource/atuthentitcation_datasource.dart';
+import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_datasource_impl.dart';
+import 'package:tmail_ui_user/features/login/data/network/login_api.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 
-class RemoteExceptionThrower {
-  void throwRemoteException(dynamic exception, {Function(DioError)? handler}) {
-    if (exception is DioError) {
-      switch (exception.type) {
-        case DioErrorType.other:
-          throw ServerNotFound();
-        case DioErrorType.connectTimeout:
-          throw ConnectError();
-        default:
-          handler != null ? handler(exception) : throw UnknownError(exception.message);
-          break;
-      }
-    } else {
-      throw UnknownError(exception.toString());
-    }
+class DatasourceBindings extends Bindings {
+
+  @override
+  void dependencies() {
+    _bindingDataSourceImpl();
+    _bindingDataSource();
   }
 
-  TMailErrorCode getErrorCodeFromErrorResponse(Map<String, dynamic> responseMap) =>
-      TMailErrorCode(responseMap['errCode'] as int);
+  void _bindingDataSourceImpl() {
+    Get.create(() => AuthenticationDataSourceImpl(Get.find<LoginAPI>()));
+    Get.create(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
+  }
+
+  void _bindingDataSource() {
+    Get.create<AuthenticationDataSource>(() => Get.find<AuthenticationDataSourceImpl>());
+    Get.create<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
+  }
 }

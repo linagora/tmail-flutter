@@ -30,14 +30,33 @@
 //  the Additional Terms applicable to LinShare software.
 
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/login/data/datasource/atuthentitcation_datasource.dart';
+import 'package:tmail_ui_user/features/login/data/repository/authentication_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 
-class SplashController extends GetxController {
+class RepositoryBindings extends Bindings {
 
   @override
-  Future onInit() async {
-    super.onInit();
-    await Future.delayed(const Duration(seconds: 2));
-    Get.offNamed(AppRoutes.INITIALIZE);
+  void dependencies() {
+    _bindingRepositoryImpl();
+    _bindingRepository();
+  }
+
+  void _bindingRepositoryImpl() {
+    Get.create(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
+    Get.create(() => AuthenticationRepositoryImpl(Get.find<AuthenticationDataSource>()));
+    Get.create(() => MailboxRepositoryImpl(Get.find<MailboxDataSource>()));
+  }
+
+  void _bindingRepository() {
+    Get.create<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
+    Get.create<AuthenticationRepository>(() => Get.find<AuthenticationRepositoryImpl>());
+    Get.create<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
   }
 }

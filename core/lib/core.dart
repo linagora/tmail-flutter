@@ -64,8 +64,6 @@ export 'data/network/config/accept_data_interceptors.dart';
 export 'data/network/config/endpoint.dart';
 export 'data/network/config/service_path.dart';
 export 'data/network/dio_client.dart';
-export 'data/network/exception/remote_exception_thrower.dart';
-export 'data/network/exception/remote_exception.dart';
 
 // State
 export 'presentation/state/success.dart';

@@ -39,5 +39,4 @@ export 'user/user_id.dart';
 export 'user/user.dart';
 // Mailbox
 export 'mailbox/mailbox.dart';
-export 'mailbox/mailbox_role.dart';
 export 'mailbox/select_mode.dart';

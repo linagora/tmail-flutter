@@ -46,8 +46,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future saveBaseUrl(Uri baseUrl) async {
-    await sharedPreferences.setString(LoginConstant.keyBaseUrl, baseUrl.origin);
+  Future saveBaseUrl(Uri? baseUrl) async {
+    if (baseUrl == null) {
+      await sharedPreferences.remove(LoginConstant.keyBaseUrl);
+    } else {
+      await sharedPreferences.setString(LoginConstant.keyBaseUrl, baseUrl.origin);
+    }
   }
 
   @override
@@ -66,8 +70,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future savePassword(Password password) async {
-    await sharedPreferences.setString(LoginConstant.keyPassword, password.value);
+  Future savePassword(Password? password) async {
+    if (password == null) {
+      await sharedPreferences.remove(LoginConstant.keyPassword);
+    } else {
+      await sharedPreferences.setString(LoginConstant.keyPassword, password.value);
+    }
   }
 
   @override
@@ -81,7 +89,11 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future saveUserName(UserName userName) async {
-    await sharedPreferences.setString(LoginConstant.keyUserName, userName.userName);
+  Future saveUserName(UserName? userName) async {
+    if (userName == null) {
+      await sharedPreferences.remove(LoginConstant.keyUserName);
+    } else {
+      await sharedPreferences.setString(LoginConstant.keyUserName, userName.userName);
+    }
   }
 }

@@ -32,16 +32,16 @@
 import 'package:dio/dio.dart';
 
 class DynamicUrlInterceptors extends InterceptorsWrapper {
-  var _baseUrl = '';
+  String? _baseUrl;
 
-  void changeBaseUrl(String url) {
+  void changeBaseUrl(String? url) {
     _baseUrl = url;
   }
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    if (_baseUrl.isNotEmpty) {
-      options.baseUrl = _baseUrl;
+    if (_baseUrl != null) {
+      options.baseUrl = _baseUrl!;
     }
     super.onRequest(options, handler);
   }

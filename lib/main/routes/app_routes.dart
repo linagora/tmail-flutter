@@ -30,8 +30,7 @@
 //  the Additional Terms applicable to LinShare software.
 
 abstract class AppRoutes {
-  static const SPLASH = '/splash';
-  static const INITIALIZE = '/initialize';
+  static const HOME = '/';
   static const LOGIN = '/login';
   static const MAILBOX = '/mailbox';
 }

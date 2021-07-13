@@ -40,7 +40,11 @@ extension ServicePathExtension on ServicePath {
     return '$path';
   }
 
-  String generateAuthenticationUrl(Uri baseUrl) {
-    return baseUrl.origin + generateEndpointPath();
+  String generateAuthenticationUrl(Uri? baseUrl) {
+    if (baseUrl == null) {
+      return generateEndpointPath();
+    } else {
+      return baseUrl.origin + generateEndpointPath();
+    }
   }
 }
