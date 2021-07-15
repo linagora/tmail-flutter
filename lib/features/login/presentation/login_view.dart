@@ -1,38 +1,8 @@
-// LinShare is an open source filesharing software, part of the LinPKI software
-// suite, developed by Linagora.
-//
-// Copyright (C) 2020 LINAGORA
-//
-// This program is free software: you can redistribute it and/or modify it under the
-// terms of the GNU Affero General Public License as published by the Free Software
-// Foundation, either version 3 of the License, or (at your option) any later version,
-// provided you comply with the Additional Terms applicable for LinShare software by
-// Linagora pursuant to Section 7 of the GNU Affero General Public License,
-// subsections (b), (c), and (e), pursuant to which you must notably (i) retain the
-// display in the interface of the “LinShare™” trademark/logo, the "Libre & Free" mention,
-// the words “You are using the Free and Open Source version of LinShare™, powered by
-// Linagora © 2009–2020. Contribute to Linshare R&D by subscribing to an Enterprise
-// offer!”. You must also retain the latter notice in all asynchronous messages such as
-// e-mails sent with the Program, (ii) retain all hypertext links between LinShare and
-// http://www.linshare.org, between linagora.com and Linagora, and (iii) refrain from
-// infringing Linagora intellectual property rights over its trademarks and commercial
-// brands. Other Additional Terms apply, see
-// <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf>
-// for more details.
-// This program is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
-// more details.
-// You should have received a copy of the GNU Affero General Public License and its
-// applicable Additional Terms for LinShare along with this program. If not, see
-// <http://www.gnu.org/licenses/> for the GNU Affero General Public License version
-//  3 and <http://www.linshare.org/licenses/LinShare-License_AfferoGPL-v3.pdf> for
-//  the Additional Terms applicable to LinShare software.
-
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_input_decoration_builder.dart';
@@ -43,6 +13,7 @@ class LoginView extends GetWidget<LoginController> {
   final loginController = Get.find<LoginController>();
   final imagePaths = Get.find<ImagePaths>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
+  final keyboardUtils = Get.find<KeyboardUtils>();
 
   @override
   Widget build(BuildContext context) {
@@ -69,9 +40,9 @@ class LoginView extends GetWidget<LoginController> {
                       _buildUrlInput(context),
                       _buildUserNameInput(context),
                       _buildPasswordInput(context),
-                      Obx(() => loginController.loginState.value == LoginState.LOADING
-                        ? _buildLoadingCircularProgress()
-                        : _buildLoginButton(context)),
+                      Obx(() => loginController.loginState.value.viewState.fold(
+                        (failure) => _buildLoginButton(context),
+                        (success) => success is LoginLoadingAction ? _buildLoadingCircularProgress() : _buildLoginButton(context))),
                     ],
                   ),
                 ),
@@ -99,10 +70,17 @@ class LoginView extends GetWidget<LoginController> {
         width: responsiveUtils.getWidthLoginTextField(context),
         child: CenterTextBuilder()
           .key(Key('login_message'))
-          .text(loginState == LoginState.FAILURE
-            ? AppLocalizations.of(context).unknown_error_login_message
-            : AppLocalizations.of(context).login_text_login_to_continue)
-          .textStyle(TextStyle(color: loginState == LoginState.FAILURE ? AppColor.textFieldErrorBorderColor : AppColor.appColor))
+          .text(loginState.viewState.fold(
+            (failure) => failure is AuthenticationUserFailure
+              ? AppLocalizations.of(context).unknown_error_login_message
+              : AppLocalizations.of(context).login_text_login_to_continue,
+            (success) => AppLocalizations.of(context).login_text_login_to_continue))
+          .textStyle(TextStyle(
+            color: loginState.viewState.fold(
+              (failure) => failure is AuthenticationUserFailure
+                ? AppColor.textFieldErrorBorderColor
+                : AppColor.appColor,
+              (success) => AppColor.appColor)))
           .build()
       )
     );
@@ -173,7 +151,7 @@ class LoginView extends GetWidget<LoginController> {
               side: BorderSide(width: 0, color: AppColor.buttonColor)))),
           child: Text(AppLocalizations.of(context).login, style: TextStyle(fontSize: 16, color: Colors.white)),
           onPressed: () {
-            KeyboardUtils.hideKeyboard(context);
+            keyboardUtils.hideKeyboard(context);
             loginController.handleLoginPressed();
           }),
       )
