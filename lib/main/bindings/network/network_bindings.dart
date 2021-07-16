@@ -18,7 +18,7 @@ class NetworkBindings extends Bindings {
 
   void _bindingBaseOption() {
     final headers = <String, dynamic>{
-      HttpHeaders.acceptHeader: Constant.acceptHeaderDefault,
+      HttpHeaders.acceptHeader: Constant.acceptHeaderJmap,
       HttpHeaders.contentTypeHeader: Constant.contentTypeHeaderDefault
     };
     Get.put(BaseOptions(headers: headers));

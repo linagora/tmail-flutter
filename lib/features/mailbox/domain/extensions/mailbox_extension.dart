@@ -1,5 +1,6 @@
 import 'package:model/model.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JmapMailbox;
+import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_extension.dart';
 
 extension MailboxExtension on Mailbox {
 
@@ -20,46 +21,29 @@ extension MailboxExtension on Mailbox {
     );
   }
 
-  Mailbox toMailboxParent(String nameMailbox) {
+  Mailbox qualifyNameMailbox(List<Mailbox> mailboxes) {
+    var qualifiedName = name != null ? name!.name : '';
+
+    var parent = mailboxes.findMailboxInList(parentId);
+
+    while (parent != null) {
+      qualifiedName = '${parent.name?.name} ${MailboxConstants.MAILBOX_LEVEL_SEPARATOR} $qualifiedName';
+      parent = mailboxes.findMailboxInList(parent.parentId);
+    }
+
     return Mailbox(
-        id,
-        MailboxName(nameMailbox),
-        parentId,
-        role,
-        sortOrder,
-        totalEmails,
-        unreadEmails,
-        totalThreads,
-        unreadThreads,
-        myRights,
-        isSubscribed
+      id,
+      name,
+      parentId,
+      role,
+      sortOrder,
+      totalEmails,
+      unreadEmails,
+      totalThreads,
+      unreadThreads,
+      myRights,
+      isSubscribed,
+      qualifiedName: MailboxName(qualifiedName)
     );
-  }
-
-  String getNameMailboxFolderHasParentId(List<Mailbox> mailboxList) {
-    final listMailboxParent = <Mailbox>[];
-    listMailboxParent.addAll(getRootFolder(mailboxList, this));
-    if (listMailboxParent.length > 0) {
-      var nameMailbox = '';
-      listMailboxParent.forEach((mailbox) {
-        nameMailbox += '${mailbox.getNameMailbox()} / ';
-      });
-      nameMailbox += '${getNameMailbox()}';
-      return nameMailbox;
-    }
-    return getNameMailbox();
-  }
-
-  List<Mailbox> getRootFolder(List<Mailbox> mailboxList, Mailbox currentMailbox) {
-    final listMailbox = <Mailbox>[];
-    final listMailboxParent = mailboxList.where((mailbox) => (mailbox.id == currentMailbox.parentId)).toList();
-    if (listMailboxParent.isNotEmpty) {
-      if (listMailboxParent.first.hasParentId()) {
-        listMailbox.addAll(getRootFolder(mailboxList, listMailboxParent.first));
-      } else {
-        listMailbox.add(listMailboxParent.first);
-      }
-    }
-    return listMailbox;
   }
 }

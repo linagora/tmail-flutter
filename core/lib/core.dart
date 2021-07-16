@@ -16,7 +16,7 @@ export 'presentation/views/text/text_field_builder.dart';
 export 'presentation/views/text/input_decoration_builder.dart';
 export 'presentation/views/text/text_builder.dart';
 export 'presentation/views/responsive/responsive_widget.dart';
-export 'presentation/views/list/tree_list.dart';
+export 'presentation/views/list/tree_view.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';
@@ -37,3 +37,6 @@ export 'data/network/dio_client.dart';
 export 'presentation/state/success.dart';
 export 'presentation/state/failure.dart';
 export 'presentation/state/app_state.dart';
+
+// Model
+export 'domain/model/tree_node.dart';

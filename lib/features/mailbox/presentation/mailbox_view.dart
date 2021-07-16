@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/state/display_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/state/mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_new_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/search_form_widget_builder.dart';
@@ -95,9 +98,7 @@ class MailboxView extends GetWidget<MailboxController> {
           : SizedBox.shrink()),
         _buildTitleMailboxMyFolder(context),
         _buildTileNewFolder(context),
-        Obx(() => mailboxController.mailboxMyFolderList.length > 0
-          ? _buildListMailboxMyFolder(mailboxController.mailboxMyFolderList)
-          : SizedBox.shrink()),
+        _buildConfigMyFolder(),
       ]
     );
   }
@@ -134,6 +135,20 @@ class MailboxView extends GetWidget<MailboxController> {
         .build());
   }
 
+  Widget _buildConfigMyFolder() {
+    return Obx(() {
+      if (mailboxController.displayMode.value == DisplayMode.LIST_VIEW) {
+        return mailboxController.mailboxFolderList.length > 0
+          ? _buildListMailboxMyFolder(mailboxController.mailboxFolderList)
+          : SizedBox.shrink();
+      } else {
+        return mailboxController.mailboxFolderTreeList.length > 0
+          ? _buildTreeMailBoxMyFolder(mailboxController.mailboxFolderTreeList)
+          : SizedBox.shrink();
+      }
+    });
+  }
+
   Widget _buildListMailboxMyFolder(List<Mailbox> mailboxMyFolderList) {
     return ListView.builder(
       padding: EdgeInsets.only(left: 21, right: 16),
@@ -145,6 +160,50 @@ class MailboxView extends GetWidget<MailboxController> {
         MailboxTileBuilder(mailboxMyFolderList[index])
           .onOpenMailboxAction(() => {})
           .build());
+  }
+
+  Widget _buildTreeMailBoxMyFolder(List<MailboxTree> mailboxTreeList) {
+    return Padding(
+      padding: EdgeInsets.only(left: 20, right: 16),
+      child: TreeView(
+        startExpanded: false,
+        key: Key('tree_list_mailbox_folder'),
+        children: _buildTreeTileMyFolderRoot(mailboxTreeList))
+    );
+  }
+
+  List<Widget> _buildTreeTileMyFolderRoot(List<MailboxTree> mailboxTreeList) {
+    return mailboxTreeList.map((mailboxTree) =>
+      mailboxTree.isParent()
+        ? Padding(
+            padding: EdgeInsets.only(left: 0),
+            child: TreeViewChild(
+              key: Key('tree_mailbox_folder_root'),
+              parent: _buildTreeTileFolderWidget(mailboxTree: mailboxTree),
+              children: _buildTreeTileMyFolderChild(mailboxTree.childrenItems as List<MailboxTree>)))
+        : Padding(
+            padding: EdgeInsets.only(left: 0),
+            child: _buildTreeTileFolderWidget(mailboxTree: mailboxTree))
+    ).toList();
+  }
+
+  List<Widget> _buildTreeTileMyFolderChild(List<MailboxTree> mailboxTreeList) {
+    return mailboxTreeList.map((mailboxTree) =>
+      mailboxTree.isParent()
+        ? Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: TreeViewChild(
+              key: Key('tree_mailbox_folder_child'),
+              parent: _buildTreeTileFolderWidget(mailboxTree: mailboxTree),
+              children: _buildTreeTileMyFolderChild(mailboxTree.childrenItems as List<MailboxTree>)))
+        : Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: _buildTreeTileFolderWidget(mailboxTree: mailboxTree))
+    ).toList();
+  }
+
+  MailBoxFolderTileBuilder _buildTreeTileFolderWidget({required MailboxTree mailboxTree}) {
+    return MailBoxFolderTileBuilder(mailboxTree: mailboxTree, imagePath: imagePaths);
   }
 
   Widget _buildStorageWidget(BuildContext context) => StorageWidgetBuilder(context).build();

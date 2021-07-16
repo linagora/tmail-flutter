@@ -59,9 +59,9 @@ class MailboxTileBuilder {
           title: Transform(
             transform: Matrix4.translationValues(8.0, 0.0, 0.0),
             child: Text(
-              _mailbox.getNameMailbox(),
+              _mailbox.getQualifiedName(),
               maxLines: 1,
-              overflow: _mailbox.isMailboxRole() ? TextOverflow.ellipsis : TextOverflow.fade,
+              overflow:TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 15,
                 color: _mailbox.selectMode == SelectMode.ACTIVE

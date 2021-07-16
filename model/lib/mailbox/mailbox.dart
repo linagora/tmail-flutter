@@ -17,6 +17,7 @@ class Mailbox with EquatableMixin {
   final MailboxRights? myRights;
   final IsSubscribed? isSubscribed;
   final SelectMode selectMode;
+  final MailboxName? qualifiedName;
 
   Mailbox(
     this.id,
@@ -31,6 +32,7 @@ class Mailbox with EquatableMixin {
     this.myRights,
     this.isSubscribed,
     {
+      this.qualifiedName,
       this.selectMode = SelectMode.INACTIVE
     }
   );
@@ -41,18 +43,19 @@ class Mailbox with EquatableMixin {
 
   String getNameMailbox() => name == null ? '' : name!.name;
 
-  bool isValidCountMailbox() {
-    if (role?.value == 'created_folder' || role?.value == 'inbox' || role?.value == 'allMail') {
-      return true;
-    }
-    return false;
-  }
+  String getQualifiedName() => qualifiedName == null ? getNameMailbox() : qualifiedName!.name;
 
   String getCountUnReadEmails() {
-    if (unreadEmails == null || !isValidCountMailbox()) {
+    if (unreadEmails == null) {
       return '';
     } else {
-      return unreadEmails!.value.value <= 999 ? '${unreadEmails!.value.value}' : '999+';
+      if (unreadEmails!.value.value <= 0) {
+        return '';
+      } else {
+        return unreadEmails!.value.value <= 999
+          ? '${unreadEmails!.value.value}'
+          : '999+';
+      }
     }
   }
 
@@ -60,6 +63,7 @@ class Mailbox with EquatableMixin {
   List<Object?> get props => [
     id,
     name,
+    qualifiedName,
     parentId,
     role
   ];

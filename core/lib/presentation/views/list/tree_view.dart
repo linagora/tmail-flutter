@@ -3,17 +3,18 @@ import 'package:flutter/scheduler.dart';
 
 class TreeView extends InheritedWidget {
   final List<Widget> children;
+  final bool startExpanded;
 
   TreeView({
     Key? key,
     required List<Widget> children,
-  }) : this.children = children,
-        super(
-        key: key,
-        child: _TreeViewData(
-          children: children,
-        ),
-      );
+    bool startExpanded = false,
+  }) : this.children = children, this.startExpanded = startExpanded, super (
+    key: key,
+    child: _TreeViewData(
+      children: children,
+    ),
+  );
 
   static TreeView of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<TreeView>()!;
@@ -21,7 +22,8 @@ class TreeView extends InheritedWidget {
 
   @override
   bool updateShouldNotify(TreeView oldWidget) {
-    if (oldWidget.children == this.children) {
+    if (oldWidget.children == this.children &&
+        oldWidget.startExpanded == this.startExpanded) {
       return false;
     }
     return true;
@@ -66,12 +68,12 @@ class TreeViewChild extends StatefulWidget {
   TreeViewChildState createState() => TreeViewChildState();
 
   TreeViewChild copyWith(
-      TreeViewChild source, {
-        bool? startExpanded,
-        Widget? parent,
-        List<Widget>? children,
-        VoidCallback? onTap,
-      }) {
+    TreeViewChild source, {
+    bool? startExpanded,
+    Widget? parent,
+    List<Widget>? children,
+    VoidCallback? onTap,
+  }) {
     return TreeViewChild(
       parent: parent ?? source.parent,
       children: children ?? source.children,
@@ -92,26 +94,31 @@ class TreeViewChildState extends State<TreeViewChild> {
 
   @override
   void didChangeDependencies() {
-    isExpanded = widget.startExpanded;
+    isExpanded = widget.startExpanded ?? TreeView.of(context).startExpanded;
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    isExpanded = widget.startExpanded;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         GestureDetector(
           child: widget.parent,
-          onTap: () => toggleExpanded(),
+          onTap: () {
+            if (widget.onTap != null) {
+              widget.onTap!();
+            }
+            toggleExpanded();
+          },
         ),
         AnimatedContainer(
-          duration: Duration(milliseconds: 100),
-          child: widget.startExpanded!
+          duration: Duration(milliseconds: 400),
+          child: isExpanded!
             ? Column(
                 mainAxisSize: MainAxisSize.min,
-                children: widget.children)
+                children: widget.children,
+              )
             : Offstage(),
         ),
       ],

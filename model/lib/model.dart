@@ -16,3 +16,4 @@ export 'mailbox/mailbox_properties.dart';
 export 'mailbox/mailbox_rights.dart';
 export 'mailbox/select_mode.dart';
 export 'mailbox/properties.dart';
+export 'mailbox/expand_mode.dart';
