@@ -88,7 +88,7 @@ class MailboxView extends GetWidget<MailboxController> {
         : SizedBox.shrink()));
   }
 
-  Widget _buildListMailbox(BuildContext context, List<Mailbox> mailboxList) {
+  Widget _buildListMailbox(BuildContext context, List<PresentationMailbox> mailboxList) {
     return ListView(
       key: Key('mailbox_list'),
       primary: true,
@@ -103,7 +103,7 @@ class MailboxView extends GetWidget<MailboxController> {
     );
   }
 
-  Widget _buildListMailboxHasRole(List<Mailbox> mailboxHasRoleList) {
+  Widget _buildListMailboxHasRole(List<PresentationMailbox> mailboxHasRoleList) {
     return ListView.builder(
       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
       key: Key('mailbox_has_role_list'),
@@ -149,7 +149,7 @@ class MailboxView extends GetWidget<MailboxController> {
     });
   }
 
-  Widget _buildListMailboxMyFolder(List<Mailbox> mailboxMyFolderList) {
+  Widget _buildListMailboxMyFolder(List<PresentationMailbox> mailboxMyFolderList) {
     return ListView.builder(
       padding: EdgeInsets.only(left: 21, right: 16),
       key: Key('list_mailbox_my_folder'),

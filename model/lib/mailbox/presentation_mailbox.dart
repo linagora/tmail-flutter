@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
-import 'package:model/mailbox/mailbox_properties.dart';
-import 'package:model/mailbox/mailbox_rights.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
 import 'package:model/mailbox/select_mode.dart';
 
-class Mailbox with EquatableMixin {
+class PresentationMailbox with EquatableMixin {
 
   final MailboxId id;
   final MailboxName? name;
@@ -17,22 +17,22 @@ class Mailbox with EquatableMixin {
   final MailboxRights? myRights;
   final IsSubscribed? isSubscribed;
   final SelectMode selectMode;
-  final MailboxName? qualifiedName;
+  // final MailboxName? qualifiedName;
 
-  Mailbox(
+  PresentationMailbox(
     this.id,
-    this.name,
-    this.parentId,
-    this.role,
-    this.sortOrder,
-    this.totalEmails,
-    this.unreadEmails,
-    this.totalThreads,
-    this.unreadThreads,
-    this.myRights,
-    this.isSubscribed,
     {
-      this.qualifiedName,
+      this.name,
+      this.parentId,
+      this.role,
+      this.sortOrder,
+      this.totalEmails,
+      this.unreadEmails,
+      this.totalThreads,
+      this.unreadThreads,
+      this.myRights,
+      this.isSubscribed,
+      // this.qualifiedName,
       this.selectMode = SelectMode.INACTIVE
     }
   );
@@ -43,7 +43,7 @@ class Mailbox with EquatableMixin {
 
   String getNameMailbox() => name == null ? '' : name!.name;
 
-  String getQualifiedName() => qualifiedName == null ? getNameMailbox() : qualifiedName!.name;
+  // String getQualifiedName() => qualifiedName == null ? getNameMailbox() : qualifiedName!.name;
 
   String getCountUnReadEmails() {
     if (unreadEmails == null) {
@@ -63,7 +63,7 @@ class Mailbox with EquatableMixin {
   List<Object?> get props => [
     id,
     name,
-    qualifiedName,
+    // qualifiedName,
     parentId,
     role
   ];

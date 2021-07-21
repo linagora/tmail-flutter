@@ -1,10 +1,10 @@
 import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 
-class GetAllMailboxViewState extends ViewState {
+class GetAllMailboxSuccess extends UIState {
   final List<Mailbox> mailboxList;
 
-  GetAllMailboxViewState(this.mailboxList);
+  GetAllMailboxSuccess(this.mailboxList);
 
   @override
   List<Object> get props => [mailboxList];

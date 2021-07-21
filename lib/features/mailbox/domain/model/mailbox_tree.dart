@@ -1,12 +1,12 @@
 import 'package:core/core.dart';
 import 'package:model/model.dart';
 
-class MailboxTree extends TreeNode<Mailbox> {
+class MailboxTree extends TreeNode<PresentationMailbox> {
 
   final ExpandMode expandMode;
 
   MailboxTree(
-    Mailbox item,
+    PresentationMailbox item,
     List<MailboxTree> childrenItems,
     {
       this.expandMode = ExpandMode.COLLAPSE

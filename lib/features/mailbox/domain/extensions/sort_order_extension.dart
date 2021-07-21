@@ -1,6 +1,5 @@
-import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/extensions/unsigned_int_extension.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 
 extension SortOrderExtension on SortOrder {
-  int compareToSort(SortOrder sortOrder) => value.compareToSort(sortOrder.value);
+  // int compareToSort(SortOrder sortOrder) => value.compareToSort(sortOrder.value);
 }

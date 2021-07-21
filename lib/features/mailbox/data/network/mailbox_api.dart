@@ -1,25 +1,25 @@
 import 'dart:async';
 
-import 'package:jmap_dart_client/http/http_client.dart' as JmapHttpClient;
-import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as JmapProperties;
-import 'package:jmap_dart_client/jmap/account_id.dart' as JmapAccountId;
-import 'package:jmap_dart_client/jmap/jmap_request.dart' as JmapRequest;
-import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_method.dart' as JmapGetMailboxMethod;
-import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart' as JmapGetMailboxResponse;
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as JmapMailbox;
+import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/jmap_request.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_method.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 
 class MailboxAPI {
 
-  final JmapHttpClient.HttpClient httpClient;
+  final HttpClient httpClient;
 
   MailboxAPI(this.httpClient);
 
-  Future<List<JmapMailbox.Mailbox>> getAllMailbox(JmapAccountId.AccountId accountId, {JmapProperties.Properties? properties}) async {
-    final processingInvocation = JmapRequest.ProcessingInvocation();
+  Future<List<Mailbox>> getAllMailbox(AccountId accountId, {Properties? properties}) async {
+    final processingInvocation = ProcessingInvocation();
 
-    final jmapRequestBuilder = JmapRequest.JmapRequestBuilder(httpClient, processingInvocation);
+    final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
 
-    final getMailboxCreated = JmapGetMailboxMethod.GetMailboxMethod(accountId);
+    final getMailboxCreated = GetMailboxMethod(accountId);
 
     final queryInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
 
@@ -29,10 +29,9 @@ class MailboxAPI {
       .build()
       .execute();
 
-    final resultCreated = result.parse<JmapGetMailboxResponse.GetMailboxResponse>(
+    final resultCreated = result.parse<GetMailboxResponse>(
       queryInvocation.methodCallId,
-      JmapGetMailboxResponse.GetMailboxResponse.deserialize);
-
+      GetMailboxResponse.deserialize);
 
     return resultCreated == null ? [] : resultCreated.list;
   }

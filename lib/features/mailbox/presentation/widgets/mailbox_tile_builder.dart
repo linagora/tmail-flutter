@@ -5,16 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:model/mailbox/mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/extensions/mailbox_role_extension.dart';
+import 'package:model/model.dart';
 
 typedef OnOpenMailboxActionClick = void Function();
 
 class MailboxTileBuilder {
   final imagePath = Get.find<ImagePaths>();
 
-  final Mailbox _mailbox;
+  final PresentationMailbox _mailbox;
 
   OnOpenMailboxActionClick? _onOpenMailboxActionClick;
 
@@ -49,7 +48,7 @@ class MailboxTileBuilder {
           leading: Transform(
             transform: Matrix4.translationValues(20.0, 0.0, 0.0),
             child: SvgPicture.asset(
-              _mailbox.role.getIconMailbox(imagePath),
+              imagePath.icMailboxInbox,
               width: 24,
               height: 24,
               color: _mailbox.selectMode == SelectMode.ACTIVE
@@ -59,7 +58,7 @@ class MailboxTileBuilder {
           title: Transform(
             transform: Matrix4.translationValues(8.0, 0.0, 0.0),
             child: Text(
-              _mailbox.getQualifiedName(),
+              _mailbox.name!.name,
               maxLines: 1,
               overflow:TextOverflow.ellipsis,
               style: TextStyle(

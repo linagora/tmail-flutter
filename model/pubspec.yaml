@@ -34,6 +34,12 @@ dependencies:
   # quiver
   quiver: 3.0.1
 
+  # jmap_dart_client
+  jmap_dart_client:
+    git:
+      url: git://github.com/hoangdat/jmap-dart-client.git
+      ref: serialize
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

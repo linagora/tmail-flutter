@@ -1,49 +1,21 @@
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_extension.dart';
 
-extension MailboxExtension on Mailbox {
+extension MailboxExtension on PresentationMailbox {
 
-  Mailbox toMailboxSelected(SelectMode selectMode) {
-    return Mailbox(
+  PresentationMailbox toMailboxSelected(SelectMode selectMode) {
+    return PresentationMailbox(
       id,
-      name,
-      parentId,
-      role,
-      sortOrder,
-      totalEmails,
-      unreadEmails,
-      totalThreads,
-      unreadThreads,
-      myRights,
-      isSubscribed,
+      name: name,
+      parentId: parentId,
+      role: role,
+      sortOrder: sortOrder,
+      totalEmails: totalEmails,
+      unreadEmails: unreadEmails,
+      totalThreads: totalThreads,
+      unreadThreads: unreadThreads,
+      myRights: myRights,
+      isSubscribed: isSubscribed,
       selectMode: selectMode
-    );
-  }
-
-  Mailbox qualifyNameMailbox(List<Mailbox> mailboxes) {
-    var qualifiedName = name != null ? name!.name : '';
-
-    var parent = mailboxes.findMailboxInList(parentId);
-
-    while (parent != null) {
-      qualifiedName = '${parent.name?.name} ${MailboxConstants.MAILBOX_LEVEL_SEPARATOR} $qualifiedName';
-      parent = mailboxes.findMailboxInList(parent.parentId);
-    }
-
-    return Mailbox(
-      id,
-      name,
-      parentId,
-      role,
-      sortOrder,
-      totalEmails,
-      unreadEmails,
-      totalThreads,
-      unreadThreads,
-      myRights,
-      isSubscribed,
-      qualifiedName: MailboxName(qualifiedName)
     );
   }
 }
