@@ -1,13 +1,14 @@
 import 'package:core/core.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 
 class GetAllMailboxSuccess extends UIState {
-  final List<Mailbox> mailboxList;
+  final List<PresentationMailbox> defaultMailboxList;
+  final List<PresentationMailbox> folderMailboxList;
 
-  GetAllMailboxSuccess(this.mailboxList);
+  GetAllMailboxSuccess({required this.defaultMailboxList, required this.folderMailboxList});
 
   @override
-  List<Object> get props => [mailboxList];
+  List<Object> get props => [folderMailboxList];
 }
 
 class GetAllMailboxFailure extends FeatureFailure {

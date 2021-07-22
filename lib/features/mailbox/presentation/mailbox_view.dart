@@ -6,11 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_tree.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/state/display_mode.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/state/mailbox_state.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_new_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/search_form_widget_builder.dart';
@@ -42,9 +39,7 @@ class MailboxView extends GetWidget<MailboxController> {
             Expanded(child: RefreshIndicator(
               color: AppColor.primaryColor,
               onRefresh: () async => mailboxController.getAllMailboxAction(),
-              child: Obx(() => mailboxController.mailboxList.length > 0
-                ? _buildListMailbox(context, mailboxController.mailboxList)
-                : SizedBox.shrink())))
+              child: _buildListMailbox(context)))
           ])),
       bottomNavigationBar: _buildStorageWidget(context),
     );
@@ -76,9 +71,9 @@ class MailboxView extends GetWidget<MailboxController> {
   }
 
   Widget _buildLoadingView() {
-    return Obx(() => mailboxController.mailboxState.value.viewState.fold(
+    return Obx(() => mailboxController.viewState.value.fold(
       (failure) => SizedBox.shrink(),
-      (success) => success is MailboxStateLoadingAction
+      (success) => success == UIState.loading
         ? Center(child: Padding(
             padding: EdgeInsets.only(top: 16),
             child: SizedBox(
@@ -88,22 +83,25 @@ class MailboxView extends GetWidget<MailboxController> {
         : SizedBox.shrink()));
   }
 
-  Widget _buildListMailbox(BuildContext context, List<PresentationMailbox> mailboxList) {
+  Widget _buildListMailbox(BuildContext context) {
     return ListView(
       key: Key('mailbox_list'),
       primary: true,
       children: [
-        Obx(() => mailboxController.mailboxHasRoleList.length > 0
-          ? _buildListMailboxHasRole(mailboxController.mailboxHasRoleList)
-          : SizedBox.shrink()),
+        Obx(() => mailboxController.viewState.value.fold(
+            (failure) => SizedBox.shrink(),
+            (success) => success is GetAllMailboxSuccess
+              ? _buildDefaultMailbox(success.defaultMailboxList)
+              : SizedBox.shrink())
+        ),
         _buildTitleMailboxMyFolder(context),
         _buildTileNewFolder(context),
-        _buildConfigMyFolder(),
+        // _buildConfigMyFolder(),
       ]
     );
   }
 
-  Widget _buildListMailboxHasRole(List<PresentationMailbox> mailboxHasRoleList) {
+  Widget _buildDefaultMailbox(List<PresentationMailbox> mailboxHasRoleList) {
     return ListView.builder(
       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
       key: Key('mailbox_has_role_list'),
@@ -112,7 +110,6 @@ class MailboxView extends GetWidget<MailboxController> {
       primary: false,
       itemBuilder: (context, index) =>
         MailboxTileBuilder(mailboxHasRoleList[index])
-          .onOpenMailboxAction(() => mailboxController.selectMailbox(mailboxHasRoleList[index]))
           .build());
   }
 
@@ -135,19 +132,13 @@ class MailboxView extends GetWidget<MailboxController> {
         .build());
   }
 
-  Widget _buildConfigMyFolder() {
-    return Obx(() {
-      if (mailboxController.displayMode.value == DisplayMode.LIST_VIEW) {
-        return mailboxController.mailboxFolderList.length > 0
-          ? _buildListMailboxMyFolder(mailboxController.mailboxFolderList)
-          : SizedBox.shrink();
-      } else {
-        return mailboxController.mailboxFolderTreeList.length > 0
-          ? _buildTreeMailBoxMyFolder(mailboxController.mailboxFolderTreeList)
-          : SizedBox.shrink();
-      }
-    });
-  }
+  // Widget _buildConfigMyFolder() {
+  //   return Obx(() {
+  //     return mailboxController.mailboxFolderTreeList.length > 0
+  //         ? _buildTreeMailBoxMyFolder(mailboxController.mailboxFolderTreeList)
+  //         : SizedBox.shrink();
+  //   });
+  // }
 
   Widget _buildListMailboxMyFolder(List<PresentationMailbox> mailboxMyFolderList) {
     return ListView.builder(
@@ -162,49 +153,49 @@ class MailboxView extends GetWidget<MailboxController> {
           .build());
   }
 
-  Widget _buildTreeMailBoxMyFolder(List<MailboxTree> mailboxTreeList) {
-    return Padding(
-      padding: EdgeInsets.only(left: 20, right: 16),
-      child: TreeView(
-        startExpanded: false,
-        key: Key('tree_list_mailbox_folder'),
-        children: _buildTreeTileMyFolderRoot(mailboxTreeList))
-    );
-  }
-
-  List<Widget> _buildTreeTileMyFolderRoot(List<MailboxTree> mailboxTreeList) {
-    return mailboxTreeList.map((mailboxTree) =>
-      mailboxTree.isParent()
-        ? Padding(
-            padding: EdgeInsets.only(left: 0),
-            child: TreeViewChild(
-              key: Key('tree_mailbox_folder_root'),
-              parent: _buildTreeTileFolderWidget(mailboxTree: mailboxTree),
-              children: _buildTreeTileMyFolderChild(mailboxTree.childrenItems as List<MailboxTree>)))
-        : Padding(
-            padding: EdgeInsets.only(left: 0),
-            child: _buildTreeTileFolderWidget(mailboxTree: mailboxTree))
-    ).toList();
-  }
-
-  List<Widget> _buildTreeTileMyFolderChild(List<MailboxTree> mailboxTreeList) {
-    return mailboxTreeList.map((mailboxTree) =>
-      mailboxTree.isParent()
-        ? Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: TreeViewChild(
-              key: Key('tree_mailbox_folder_child'),
-              parent: _buildTreeTileFolderWidget(mailboxTree: mailboxTree),
-              children: _buildTreeTileMyFolderChild(mailboxTree.childrenItems as List<MailboxTree>)))
-        : Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: _buildTreeTileFolderWidget(mailboxTree: mailboxTree))
-    ).toList();
-  }
-
-  MailBoxFolderTileBuilder _buildTreeTileFolderWidget({required MailboxTree mailboxTree}) {
-    return MailBoxFolderTileBuilder(mailboxTree: mailboxTree, imagePath: imagePaths);
-  }
+  // Widget _buildTreeMailBoxMyFolder(List<MailboxTree> mailboxTreeList) {
+  //   return Padding(
+  //     padding: EdgeInsets.only(left: 20, right: 16),
+  //     child: TreeView(
+  //       startExpanded: false,
+  //       key: Key('tree_list_mailbox_folder'),
+  //       children: _buildTreeTileMyFolderRoot(mailboxTreeList))
+  //   );
+  // }
+  //
+  // List<Widget> _buildTreeTileMyFolderRoot(List<MailboxTree> mailboxTreeList) {
+  //   return mailboxTreeList.map((mailboxTree) =>
+  //     mailboxTree.isParent()
+  //       ? Padding(
+  //           padding: EdgeInsets.only(left: 0),
+  //           child: TreeViewChild(
+  //             key: Key('tree_mailbox_folder_root'),
+  //             parent: _buildTreeTileFolderWidget(mailboxTree: mailboxTree),
+  //             children: _buildTreeTileMyFolderChild(mailboxTree.childrenItems as List<MailboxTree>)))
+  //       : Padding(
+  //           padding: EdgeInsets.only(left: 0),
+  //           child: _buildTreeTileFolderWidget(mailboxTree: mailboxTree))
+  //   ).toList();
+  // }
+  //
+  // List<Widget> _buildTreeTileMyFolderChild(List<MailboxTree> mailboxTreeList) {
+  //   return mailboxTreeList.map((mailboxTree) =>
+  //     mailboxTree.isParent()
+  //       ? Padding(
+  //           padding: EdgeInsets.only(left: 16),
+  //           child: TreeViewChild(
+  //             key: Key('tree_mailbox_folder_child'),
+  //             parent: _buildTreeTileFolderWidget(mailboxTree: mailboxTree),
+  //             children: _buildTreeTileMyFolderChild(mailboxTree.childrenItems as List<MailboxTree>)))
+  //       : Padding(
+  //           padding: EdgeInsets.only(left: 16),
+  //           child: _buildTreeTileFolderWidget(mailboxTree: mailboxTree))
+  //   ).toList();
+  // }
+  //
+  // MailBoxFolderTileBuilder _buildTreeTileFolderWidget({required MailboxTree mailboxTree}) {
+  //   return MailBoxFolderTileBuilder(mailboxTree: mailboxTree, imagePath: imagePaths);
+  // }
 
   Widget _buildStorageWidget(BuildContext context) => StorageWidgetBuilder(context).build();
 }

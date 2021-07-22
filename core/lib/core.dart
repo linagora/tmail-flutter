@@ -9,6 +9,7 @@ export 'presentation/utils/theme_utils.dart';
 export 'presentation/utils/responsive_utils.dart';
 export 'presentation/utils/keyboard_utils.dart';
 export 'presentation/utils/style_utils.dart';
+export 'presentation/extensions/list_extensions.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
@@ -37,6 +38,3 @@ export 'data/network/dio_client.dart';
 export 'presentation/state/success.dart';
 export 'presentation/state/failure.dart';
 export 'presentation/state/app_state.dart';
-
-// Model
-export 'domain/model/tree_node.dart';

@@ -6,7 +6,8 @@ extension URLExtension on String {
     if (startsWith(prefixUrlHttps)) {
       return this;
     } else if (startsWith(prefixUrlHttp)) {
-      return replaceAll(prefixUrlHttp, prefixUrlHttps);
+      // return replaceAll(prefixUrlHttp, prefixUrlHttps);
+      return this;
     } else {
       return '$prefixUrlHttps${this}';
     }

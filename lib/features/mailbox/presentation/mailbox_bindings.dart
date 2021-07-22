@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repositor
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 
 class MailboxBindings extends Bindings {
   @override
@@ -17,7 +18,7 @@ class MailboxBindings extends Bindings {
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
 
     Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
-
-    Get.lazyPut(() => MailboxController(Get.find<GetAllMailboxInteractor>()));
+    Get.lazyPut(() => TreeBuilder());
+    Get.lazyPut(() => MailboxController(Get.find<GetAllMailboxInteractor>(), Get.find<TreeBuilder>()));
   }
 }

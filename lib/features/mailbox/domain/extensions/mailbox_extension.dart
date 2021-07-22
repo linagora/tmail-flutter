@@ -1,8 +1,9 @@
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 
-extension MailboxExtension on PresentationMailbox {
+extension MailboxExtension on Mailbox {
 
-  PresentationMailbox toMailboxSelected(SelectMode selectMode) {
+  PresentationMailbox toPresentationMailbox({SelectMode selectMode = SelectMode.INACTIVE}) {
     return PresentationMailbox(
       id,
       name: name,
@@ -18,4 +19,6 @@ extension MailboxExtension on PresentationMailbox {
       selectMode: selectMode
     );
   }
+
+  bool hasRole() => role != null && role!.value.isNotEmpty;
 }

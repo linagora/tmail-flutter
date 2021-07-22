@@ -39,7 +39,7 @@ class PresentationMailbox with EquatableMixin {
 
   bool hasParentId() => parentId != null && parentId!.id.value.isNotEmpty;
 
-  bool isMailboxRole() => role != null && role!.value.isNotEmpty;
+  bool hasRole() => role != null && role!.value.isNotEmpty;
 
   String getNameMailbox() => name == null ? '' : name!.name;
 
