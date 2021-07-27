@@ -1,0 +1,1 @@
+enum ExpandMode { COLLAPSE, EXPAND }
