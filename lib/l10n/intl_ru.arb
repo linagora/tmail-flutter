@@ -1,0 +1,63 @@
+{
+  "@@last_modified": "2021-07-01T16:29:46.979874",
+  "initializing_data": "Initializing data...",
+  "@initializing_data": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "login_text_slogan": "TMail",
+  "@login_text_slogan": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "prefix_https": "https://",
+  "@prefix_https": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "username": "username",
+  "@username": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "password": "password",
+  "@password": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "login": "Login",
+  "@login": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "login_text_login_to_continue": "Please login to continue",
+  "@login_text_login_to_continue": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "unknown_error_login_message": "Unknown error occurred, please try again",
+  "@unknown_error_login_message": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "search_folder": "Search folder",
+  "@search_folder": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "storage": "STORAGE",
+  "@storage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "my_folders": "MY FOLDERS",
+  "@my_folders": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "new_folder": "New folder",
+  "@new_folder": {
+    "type": "text",
+    "placeholders": {}
+  }
+}
