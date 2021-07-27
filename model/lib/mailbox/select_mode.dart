@@ -1,0 +1,1 @@
+enum SelectMode { ACTIVE, INACTIVE }
