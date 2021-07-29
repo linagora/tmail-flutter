@@ -11,6 +11,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_da
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_bindings.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
+import 'package:tmail_ui_user/features/session/presentation/session_bindings.dart';
+import 'package:tmail_ui_user/features/session/presentation/session_view.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class AppPages {
@@ -23,6 +25,10 @@ class AppPages {
       name: AppRoutes.LOGIN,
       page: () => LoginView(),
       binding: LoginBindings()),
+    GetPage(
+      name: AppRoutes.SESSION,
+      page: () => SessionView(),
+      binding: SessionBindings()),
     GetPage(
       name: AppRoutes.MAILBOX,
       page: () => MailboxView(),

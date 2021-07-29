@@ -37,8 +37,8 @@ dependencies:
   # jmap_dart_client
   jmap_dart_client:
     git:
-      url: git://github.com/hoangdat/jmap-dart-client.git
-      ref: get_session_dat
+      url: git://github.com/dab246/jmap-dart-client.git
+      ref: fixbug_get_session
 
 dev_dependencies:
   flutter_test:

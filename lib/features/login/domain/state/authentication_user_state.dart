@@ -1,7 +1,7 @@
 import 'package:core/core.dart';
 import 'package:model/model.dart';
 
-class AuthenticationUserViewState extends ViewState {
+class AuthenticationUserViewState extends UIState {
   final User user;
 
   AuthenticationUserViewState(this.user);

@@ -1,5 +1,9 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
@@ -12,6 +16,9 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_b
 class MailboxBindings extends Bindings {
   @override
   void dependencies() {
+    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
+    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
+    Get.lazyPut(() => DeleteCredentialInteractor(Get.find<CredentialRepository>()));
     Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut(() => MailboxRepositoryImpl(Get.find<MailboxDataSource>()));
@@ -20,6 +27,7 @@ class MailboxBindings extends Bindings {
     Get.lazyPut(() => TreeBuilder());
     Get.lazyPut(() => MailboxController(
       Get.find<GetAllMailboxInteractor>(),
+      Get.find<DeleteCredentialInteractor>(),
       Get.find<TreeBuilder>(),
       Get.find<ResponsiveUtils>()));
   }

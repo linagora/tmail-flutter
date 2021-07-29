@@ -60,7 +60,7 @@ class LoginController extends GetxController {
     loginState.value = LoginState(Right(success));
     _dynamicUrlInterceptors.changeBaseUrl(_urlText);
     _authorizationInterceptors.changeAuthorization(_userNameText, _passwordText);
-    Get.offNamed(AppRoutes.MAILBOX_DASHBOARD);
+    Get.offNamed(AppRoutes.SESSION);
   }
 
   void _loginFailureAction(AuthenticationUserFailure failure) {
