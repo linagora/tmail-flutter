@@ -13,6 +13,14 @@ abstract class BaseController extends GetxController {
     );
   }
 
+  void getState(Future<Either<Failure, Success>> newStateStream) async {
+    final state = await newStateStream;
+    state.fold(
+      (failure) => onError(failure),
+      (success) => onData(state)
+    );
+  }
+
   void onData(Either<Failure, Success> newState) {
     viewState.value = newState;
   }

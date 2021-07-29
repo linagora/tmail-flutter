@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
@@ -17,6 +18,9 @@ class MailboxBindings extends Bindings {
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => TreeBuilder());
-    Get.lazyPut(() => MailboxController(Get.find<GetAllMailboxInteractor>(), Get.find<TreeBuilder>()));
+    Get.lazyPut(() => MailboxController(
+      Get.find<GetAllMailboxInteractor>(),
+      Get.find<TreeBuilder>(),
+      Get.find<ResponsiveUtils>()));
   }
 }

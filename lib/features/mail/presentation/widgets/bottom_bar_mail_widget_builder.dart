@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class BottomBarMessengerWidgetBuilder {
+class BottomBarMailWidgetBuilder {
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
 
-  BottomBarMessengerWidgetBuilder(
+  BottomBarMailWidgetBuilder(
     this._context,
     this._imagePaths,
     this._responsiveUtils,

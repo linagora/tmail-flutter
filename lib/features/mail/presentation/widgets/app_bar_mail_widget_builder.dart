@@ -5,20 +5,20 @@ import 'package:flutter/widgets.dart';
 
 typedef OnBackActionClick = void Function();
 
-class AppBarMessengerWidgetBuilder {
+class AppBarMailWidgetBuilder {
   OnBackActionClick? _onBackActionClick;
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
 
-  AppBarMessengerWidgetBuilder(
+  AppBarMailWidgetBuilder(
     this._context,
     this._imagePaths,
     this._responsiveUtils,
   );
 
-  AppBarMessengerWidgetBuilder onBackActionClick(
+  AppBarMailWidgetBuilder onBackActionClick(
       OnBackActionClick onBackActionClick) {
     _onBackActionClick = onBackActionClick;
     return this;
