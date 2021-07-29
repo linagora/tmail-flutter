@@ -3,7 +3,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:model/account/password.dart';
 import 'package:model/account/user_name.dart';
 
-class GetCredentialViewState extends ViewState {
+class GetCredentialViewState extends UIState {
   final Uri baseUrl;
   final UserName userName;
   final Password password;

@@ -6,12 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -23,12 +23,13 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 class MailboxController extends BaseController {
 
   final GetAllMailboxInteractor _getAllMailboxInteractor;
+  final DeleteCredentialInteractor _deleteCredentialInteractor;
   final TreeBuilder _treeBuilder;
   final ResponsiveUtils responsiveUtils;
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
-  MailboxController(this._getAllMailboxInteractor, this._treeBuilder, this.responsiveUtils);
+  MailboxController(this._getAllMailboxInteractor, this._deleteCredentialInteractor, this._treeBuilder, this.responsiveUtils);
 
   final folderMailboxTree = MailboxTree(MailboxNode.root()).obs;
   final selectedMailbox = PresentationMailbox.createMailboxEmpty().obs;
@@ -36,11 +37,13 @@ class MailboxController extends BaseController {
   @override
   void onReady() {
     super.onReady();
-    getAllMailboxAction();
+    if (mailboxDashBoardController.sessionCurrent != null) {
+      getAllMailboxAction(
+          mailboxDashBoardController.sessionCurrent!.accounts.keys.first);
+    }
   }
-  
-  void getAllMailboxAction() async {
-    final AccountId accountId = AccountId(Id('3ce33c876a726662c627746eb9537a1d13c2338193ef27bd051a3ce5c0fe5b12'));
+
+  void getAllMailboxAction(AccountId accountId) async {
     consumeState(_getAllMailboxInteractor.execute(accountId));
   }
 
@@ -101,7 +104,12 @@ class MailboxController extends BaseController {
     keyWidgetMailboxDashBoard.currentState?.openEndDrawer();
   }
 
+  void _deleteCredential() async {
+    await _deleteCredentialInteractor.execute();
+  }
+
   void closeMailboxScreen() {
+    _deleteCredential();
     Get.offAllNamed(AppRoutes.LOGIN);
   }
 }

@@ -39,7 +39,9 @@ class MailboxView extends GetWidget<MailboxController> {
             left: false,
             child: RefreshIndicator(
               color: AppColor.primaryColor,
-              onRefresh: () async => controller.getAllMailboxAction(),
+              onRefresh: () async => mailboxDashBoardController.sessionCurrent != null
+                ? controller.getAllMailboxAction(mailboxDashBoardController.sessionCurrent!.accounts.keys.first)
+                : null,
               child: SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
                 child: Padding(

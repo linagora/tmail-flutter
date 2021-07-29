@@ -34,6 +34,6 @@ class HomeController extends GetxController {
       credentialViewState.userName.userName,
       credentialViewState.password.value,
     );
-    Get.offNamed(AppRoutes.MAILBOX_DASHBOARD);
+    Get.offNamed(AppRoutes.SESSION);
   }
 }
