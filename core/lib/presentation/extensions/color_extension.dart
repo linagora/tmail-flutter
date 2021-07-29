@@ -33,4 +33,10 @@ extension AppColor on Color {
   static const storageMaxSizeColor = Color(0xFF101D43);
   static const storageUseSizeColor = Color(0xFF2D0CFF);
   static const myFolderTitleColor = Color(0xFF7E869B);
+  static const titleAppBarMailboxListMail = Color(0xFF182952);
+  static const notifyCountAppBarMailboxListMail = Color(0xFF3840F7);
+  static const bgNotifyCountAppBarMailboxListMail = Color(0xFFE6E5FF);
+  static const bgMailboxListMail = Color(0xFFFBFBFF);
+  static const bgMessenger = Color(0xFFF2F2F5);
+  static const textButtonColor = Color(0xFF182952);
 }
