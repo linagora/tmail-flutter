@@ -2,29 +2,29 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 
 class ResponsiveWidget extends StatelessWidget {
-  final Widget? largeScreen;
-  final Widget mediumScreen;
-  final Widget? smallScreen;
+  final Widget mobile;
+  final Widget tablet;
+  final Widget? desktop;
 
   final ResponsiveUtils responsiveUtils;
 
   const ResponsiveWidget({
     Key? key,
-    this.largeScreen,
-    required this.mediumScreen,
-    this.smallScreen,
+    required this.mobile,
+    required this.tablet,
+    this.desktop,
     required this.responsiveUtils,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      if (responsiveUtils.isLargeScreen(context)) {
-        return largeScreen ?? mediumScreen;
-      } else if (responsiveUtils.isMediumScreen(context)) {
-        return mediumScreen;
+      if (responsiveUtils.isDesktop(context)) {
+        return desktop ?? tablet;
+      } else if (responsiveUtils.isTablet(context)) {
+        return tablet;
       } else {
-        return smallScreen ?? mediumScreen;
+        return mobile;
       }
     });
   }

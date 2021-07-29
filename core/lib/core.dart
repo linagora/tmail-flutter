@@ -18,6 +18,7 @@ export 'presentation/views/text/input_decoration_builder.dart';
 export 'presentation/views/text/text_builder.dart';
 export 'presentation/views/responsive/responsive_widget.dart';
 export 'presentation/views/list/tree_view.dart';
+export 'presentation/views/button/button_builder.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';
