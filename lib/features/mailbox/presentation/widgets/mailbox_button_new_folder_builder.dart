@@ -4,19 +4,20 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 
 typedef OnOpenMailboxNewFolderActionClick = void Function();
 
 class MailboxNewFolderTileBuilder {
-  final imagePath = Get.find<ImagePaths>();
+
+  final BuildContext _context;
+  final ResponsiveUtils _responsiveUtils;
 
   String? _icon;
   String? _name;
 
   OnOpenMailboxNewFolderActionClick? _onOpenMailboxFolderActionClick;
 
-  MailboxNewFolderTileBuilder();
+  MailboxNewFolderTileBuilder(this._context, this._responsiveUtils);
 
   MailboxNewFolderTileBuilder addIcon(String icon) {
     _icon = icon;
@@ -44,24 +45,28 @@ class MailboxNewFolderTileBuilder {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           color: AppColor.mailboxBackgroundColor),
-        child: ListTile(
-          onTap: () => {
-            if (_onOpenMailboxFolderActionClick != null) {
-              _onOpenMailboxFolderActionClick!()
-            }
-          },
-          leading: Transform(
-            transform: Matrix4.translationValues(24.0, 0.0, 0.0),
-            child: _icon != null
-              ? SvgPicture.asset(_icon!, width: 24, height: 24, color: AppColor.mailboxIconColor, fit: BoxFit.fill)
-              : SizedBox.shrink()),
-          title: Transform(
-            transform: Matrix4.translationValues(10.0, 0.0, 0.0),
-            child: Text(
-              _name ?? '',
-              maxLines: 1,
-              style: TextStyle(fontSize: 15, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
-            )),
+        child: MediaQuery(
+          data: MediaQueryData(padding: EdgeInsets.zero),
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            onTap: () => {
+              if (_onOpenMailboxFolderActionClick != null) {
+                _onOpenMailboxFolderActionClick!()
+              }
+            },
+            leading: Padding(
+              padding: EdgeInsets.only(left: _responsiveUtils.isMobile(_context) ? 42 : 34),
+              child: _icon != null
+                ? SvgPicture.asset(_icon!, width: 24, height: 24, color: AppColor.mailboxIconColor, fit: BoxFit.fill)
+                : SizedBox.shrink()),
+            title: Padding(
+              padding: EdgeInsets.only(left: 8),
+              child: Text(
+                _name ?? '',
+                maxLines: 1,
+                style: TextStyle(fontSize: 15, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
+              )),
+          )
         )
       )
     );

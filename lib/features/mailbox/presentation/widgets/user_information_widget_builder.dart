@@ -4,16 +4,15 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 
 typedef OnOpenUserInformationActionClick = void Function();
 
 class UserInformationWidgetBuilder {
-  final imagePath = Get.find<ImagePaths>();
+  final ImagePaths _imagePaths;
 
   OnOpenUserInformationActionClick? _onOpenUserInformationActionClick;
 
-  UserInformationWidgetBuilder();
+  UserInformationWidgetBuilder(this._imagePaths);
 
   UserInformationWidgetBuilder onOpenUserInformationAction(
       OnOpenUserInformationActionClick onOpenUserInformationActionClick) {
@@ -34,7 +33,7 @@ class UserInformationWidgetBuilder {
             _onOpenUserInformationActionClick!();
           }
         },
-        leading: SvgPicture.asset(imagePath.icTMailLogo, width: 40, height: 40, fit: BoxFit.fill),
+        leading: SvgPicture.asset(_imagePaths.icTMailLogo, width: 40, height: 40, fit: BoxFit.fill),
         title: Transform(
           transform: Matrix4.translationValues(0.0, 0.0, 0.0),
           child: Text(
@@ -52,7 +51,7 @@ class UserInformationWidgetBuilder {
         trailing: Transform(
           transform: Matrix4.translationValues(0.0, 0.0, 0.0),
           child: IconButton(
-            icon: SvgPicture.asset(imagePath.icNextArrow, width: 7, height: 12, fit: BoxFit.fill),
+            icon: SvgPicture.asset(_imagePaths.icNextArrow, width: 7, height: 12, fit: BoxFit.fill),
             onPressed: () => {}))),
     );
   }

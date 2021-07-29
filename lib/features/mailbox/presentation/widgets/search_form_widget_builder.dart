@@ -5,20 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnNewSearchQuery = Function(String);
 
 class SearchFormWidgetBuilder {
-  final imagePath = Get.find<ImagePaths>();
-  final TextEditingController _typeAheadController = TextEditingController();
 
+  final _typeAheadController = TextEditingController();
   final BuildContext _context;
+  final ImagePaths _imagePaths;
 
   OnNewSearchQuery? _onNewSearchQuery;
 
-  SearchFormWidgetBuilder(this._context);
+  SearchFormWidgetBuilder(this._context, this._imagePaths);
 
   SearchFormWidgetBuilder onNewSearchQuery(OnNewSearchQuery onNewSearchQuery) {
     _onNewSearchQuery = onNewSearchQuery;
@@ -46,7 +45,7 @@ class SearchFormWidgetBuilder {
             hintStyle: TextStyle(color: AppColor.searchHintTextColor, fontSize: 15.0, fontWeight: FontWeight.w500),
             icon: Padding(
               padding: EdgeInsets.only(left: 20),
-              child: SvgPicture.asset(imagePath.icSearch, width: 24, height: 24, fit: BoxFit.fill),
+              child: SvgPicture.asset(_imagePaths.icSearch, width: 24, height: 24, fit: BoxFit.fill),
             ))),
         debounceDuration: Duration(milliseconds: 300),
         suggestionsCallback: (pattern) async {
