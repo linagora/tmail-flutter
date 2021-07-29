@@ -10,7 +10,7 @@ typedef OnOpenSearchMailActionClick = void Function();
 typedef OnOpenListMailboxActionClick = void Function();
 typedef OnOpenUserInformationActionClick = void Function();
 
-class AppBarListMailWidgetBuilder {
+class AppBarThreadWidgetBuilder {
   OnOpenSearchMailActionClick? _onOpenSearchMailActionClick;
   OnOpenListMailboxActionClick? _onOpenListMailboxActionClick;
   OnOpenUserInformationActionClick? _onOpenUserInformationActionClick;
@@ -20,26 +20,26 @@ class AppBarListMailWidgetBuilder {
   final ResponsiveUtils _responsiveUtils;
   final PresentationMailbox _presentationMailbox;
 
-  AppBarListMailWidgetBuilder(
+  AppBarThreadWidgetBuilder(
     this._context,
     this._imagePaths,
     this._responsiveUtils,
     this._presentationMailbox
   );
 
-  AppBarListMailWidgetBuilder onOpenUserInformationAction(
+  AppBarThreadWidgetBuilder onOpenUserInformationAction(
       OnOpenUserInformationActionClick onOpenUserInformationActionClick) {
     _onOpenUserInformationActionClick = onOpenUserInformationActionClick;
     return this;
   }
 
-  AppBarListMailWidgetBuilder onOpenSearchMailActionClick(
+  AppBarThreadWidgetBuilder onOpenSearchMailActionClick(
       OnOpenSearchMailActionClick onOpenSearchMailActionClick) {
     _onOpenSearchMailActionClick = onOpenSearchMailActionClick;
     return this;
   }
 
-  AppBarListMailWidgetBuilder onOpenListMailboxActionClick(
+  AppBarThreadWidgetBuilder onOpenListMailboxActionClick(
       OnOpenListMailboxActionClick onOpenListMailboxActionClick) {
     _onOpenListMailboxActionClick = onOpenListMailboxActionClick;
     return this;
@@ -47,7 +47,7 @@ class AppBarListMailWidgetBuilder {
 
   Widget build() {
     return Container(
-      key: Key('app_bar_list_mail_widget'),
+      key: Key('app_bar_thread_widget'),
       alignment: Alignment.center,
       color: Colors.white,
       child: MediaQuery(

@@ -8,21 +8,21 @@ import 'package:model/model.dart';
 
 typedef OnOpenMailActionClick = void Function();
 
-class MailTileBuilder {
+class ThreadTileBuilder {
 
   final SelectMode _selectMode;
   final ImagePaths _imagePaths;
-  final PresentationMail _presentationMail;
+  final PresentationThread _presentationThread;
 
   OnOpenMailActionClick? _onOpenMailActionClick;
 
-  MailTileBuilder(
+  ThreadTileBuilder(
     this._imagePaths,
     this._selectMode,
-    this._presentationMail,
+    this._presentationThread,
   );
 
-  MailTileBuilder onOpenMailAction(OnOpenMailActionClick onOpenMailActionClick) {
+  ThreadTileBuilder onOpenMailAction(OnOpenMailActionClick onOpenMailActionClick) {
     _onOpenMailActionClick = onOpenMailActionClick;
     return this;
   }
@@ -33,7 +33,7 @@ class MailTileBuilder {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent),
       child: Container(
-        key: Key('mail_list_tile'),
+        key: Key('thread_tile'),
         margin: EdgeInsets.only(bottom: 10),
         padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
         alignment: Alignment.center,
@@ -69,7 +69,7 @@ class MailTileBuilder {
                 children: [
                   Expanded(
                     child: Text(
-                      'TMail app',
+                      '',
                       maxLines: 1,
                       overflow:TextOverflow.ellipsis,
                       style: TextStyle(
@@ -77,7 +77,7 @@ class MailTileBuilder {
                         color: _selectMode == SelectMode.ACTIVE ? AppColor.mailboxSelectedTextColor : AppColor.mailboxTextColor,
                         fontWeight: FontWeight.bold))),
                   Text(
-                    '9:29 AM',
+                    '',
                     maxLines: 1,
                     overflow:TextOverflow.ellipsis,
                     style: TextStyle(
@@ -95,7 +95,7 @@ class MailTileBuilder {
                   Padding(
                     padding: EdgeInsets.only(bottom: 3),
                     child: Text(
-                      'Welcome to TMail!',
+                      '',
                       maxLines: 1,
                       overflow:TextOverflow.ellipsis,
                       style: TextStyle(
@@ -108,7 +108,7 @@ class MailTileBuilder {
                     children: [
                       Expanded(
                         child: Text(
-                          '${_presentationMail.message}',
+                          '${_presentationThread.message}',
                           maxLines: 1,
                           overflow:TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 12, color: AppColor.baseTextColor))),

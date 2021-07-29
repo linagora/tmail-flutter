@@ -86,5 +86,40 @@ class AppLocalizations {
       name: 'new_folder',
     );
   }
+
+  String get reply_all {
+    return Intl.message(
+      'Reply all',
+      name: 'reply_all',
+    );
+  }
+
+  String get reply {
+    return Intl.message(
+      'Reply',
+      name: 'reply',
+    );
+  }
+
+  String get forward {
+    return Intl.message(
+      'Forward',
+      name: 'forward',
+    );
+  }
+
+  String get no_threads {
+    return Intl.message(
+      'No threads',
+      name: 'no_threads',
+    );
+  }
+
+  String get no_mail_selected {
+    return Intl.message(
+      'No mail selected',
+      name: 'no_mail_selected',
+    );
+  }
 }
 

@@ -41,6 +41,7 @@ class ButtonBuilder {
 
   Widget build() {
     return Container(
+      key: _key,
       alignment: Alignment.center,
       color: Colors.transparent,
       child: MediaQuery(
