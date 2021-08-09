@@ -117,7 +117,7 @@ class AppLocalizations {
 
   String get no_mail_selected {
     return Intl.message(
-      'No mail selected',
+      'No email selected',
       name: 'no_mail_selected',
     );
   }

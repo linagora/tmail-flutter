@@ -4,11 +4,11 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 
-class MailController extends BaseController {
+class EmailController extends BaseController {
 
   final ResponsiveUtils responsiveUtils;
 
-  MailController(this.responsiveUtils);
+  EmailController(this.responsiveUtils);
 
   @override
   void onReady() {

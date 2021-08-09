@@ -13,5 +13,5 @@ export 'mailbox/presentation_mailbox.dart';
 export 'mailbox/select_mode.dart';
 export 'mailbox/expand_mode.dart';
 
-// Mail
-export 'mail/presentation_thread.dart';
+// Email
+export 'email/presentation_email.dart';
