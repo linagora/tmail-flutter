@@ -43,7 +43,7 @@ class ThreadController extends BaseController {
   }
 
   void goToMail(BuildContext context) {
-    Get.toNamed(AppRoutes.MAIL);
+    Get.toNamed(AppRoutes.EMAIL);
   }
 
   @override

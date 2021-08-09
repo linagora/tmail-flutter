@@ -2,13 +2,13 @@ import 'package:core/core.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/mail/presentation/mail_controller.dart';
-import 'package:tmail_ui_user/features/mail/presentation/widgets/app_bar_mail_widget_builder.dart';
-import 'package:tmail_ui_user/features/mail/presentation/widgets/bottom_bar_mail_widget_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class MailView extends GetWidget<MailController> {
+class EmailView extends GetWidget<EmailController> {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
