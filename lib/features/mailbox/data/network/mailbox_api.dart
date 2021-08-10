@@ -24,7 +24,6 @@ class MailboxAPI {
     final queryInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
 
     final result = await (jmapRequestBuilder
-        ..invocation(getMailboxCreated)
         ..usings(getMailboxCreated.requiredCapabilities))
       .build()
       .execute();

@@ -22,24 +22,41 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class MailboxController extends BaseController {
 
+  final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final GetAllMailboxInteractor _getAllMailboxInteractor;
   final DeleteCredentialInteractor _deleteCredentialInteractor;
   final TreeBuilder _treeBuilder;
   final ResponsiveUtils responsiveUtils;
 
-  final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-
-  MailboxController(this._getAllMailboxInteractor, this._deleteCredentialInteractor, this._treeBuilder, this.responsiveUtils);
-
   final folderMailboxTree = MailboxTree(MailboxNode.root()).obs;
-  final selectedMailbox = PresentationMailbox.createMailboxEmpty().obs;
+
+  MailboxController(
+    this._getAllMailboxInteractor,
+    this._deleteCredentialInteractor,
+    this._treeBuilder,
+    this.responsiveUtils
+  );
 
   @override
   void onReady() {
     super.onReady();
-    if (mailboxDashBoardController.sessionCurrent != null) {
-      getAllMailboxAction(
-          mailboxDashBoardController.sessionCurrent!.accounts.keys.first);
+    mailboxDashBoardController.accountId.listen((accountId) {
+      if (accountId != null) {
+        getAllMailboxAction(accountId);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    mailboxDashBoardController.accountId.close();
+  }
+
+  void refreshGetAllMailboxAction() {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null) {
+      getAllMailboxAction(accountId);
     }
   }
 
@@ -53,55 +70,49 @@ class MailboxController extends BaseController {
     newState.map((success) {
       if (success is GetAllMailboxSuccess) {
         _buildTree(success.folderMailboxList);
-        _setDefaultSelected(success.defaultMailboxList);
       }
     });
   }
 
   @override
   void onDone() {
+    viewState.value.map((success) {
+      if (success is GetAllMailboxSuccess) {
+        _setUpMailboxDefault(success.defaultMailboxList);
+      }
+    });
   }
 
   @override
-  void onError(error) {
-  }
+  void onError(error) {}
 
   void _buildTree(List<PresentationMailbox> folderMailboxList) async {
     folderMailboxTree.value = await _treeBuilder.generateMailboxTree(folderMailboxList);
   }
 
-  void _setDefaultSelected(List<PresentationMailbox> defaultMailboxList) {
+  void _setUpMailboxDefault(List<PresentationMailbox> defaultMailboxList) {
     try {
       final mailboxDefault = defaultMailboxList
           .firstWhere((presentationMailbox) => presentationMailbox.role == Role(MailboxConstants.ROLE_DEFAULT));
-      selectedMailbox.value = mailboxDefault;
-      mailboxDashBoardController.mailboxCurrent.value = mailboxDefault;
+      mailboxDashBoardController.setSelectedMailbox(mailboxDefault);
     } catch (e) {}
   }
 
-  SelectMode getSelectMode(PresentationMailbox presentationMailbox) {
-    return presentationMailbox.id == selectedMailbox.value.id
+  SelectMode getSelectMode(PresentationMailbox presentationMailbox, PresentationMailbox selectedMailbox) {
+    return presentationMailbox.id == selectedMailbox.id
       ? SelectMode.ACTIVE
       : SelectMode.INACTIVE;
   }
 
   void selectMailbox(
       BuildContext context,
-      PresentationMailbox presentationMailboxSelected,
-      {
-        required GlobalKey<ScaffoldState> keyWidgetMailboxDashBoard
-      }
+      PresentationMailbox presentationMailboxSelected
   ) {
-    selectedMailbox.value = presentationMailboxSelected;
-    mailboxDashBoardController.mailboxCurrent.value = presentationMailboxSelected;
+    mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
 
     if (responsiveUtils.isMobile(context)) {
-      goToThread(keyWidgetMailboxDashBoard: keyWidgetMailboxDashBoard);
+      mailboxDashBoardController.closeDrawer();
     }
-  }
-
-  void goToThread({required GlobalKey<ScaffoldState> keyWidgetMailboxDashBoard}) {
-    keyWidgetMailboxDashBoard.currentState?.openEndDrawer();
   }
 
   void _deleteCredential() async {

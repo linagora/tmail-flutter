@@ -17,14 +17,12 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_tile
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/search_form_widget_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/storage_widget_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class MailboxView extends GetWidget<MailboxController> {
 
   final imagePaths = Get.find<ImagePaths>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
-  final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +37,7 @@ class MailboxView extends GetWidget<MailboxController> {
             left: false,
             child: RefreshIndicator(
               color: AppColor.primaryColor,
-              onRefresh: () async => mailboxDashBoardController.sessionCurrent != null
-                ? controller.getAllMailboxAction(mailboxDashBoardController.sessionCurrent!.accounts.keys.first)
-                : null,
+              onRefresh: () async => controller.refreshGetAllMailboxAction(),
               child: SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
                 child: Padding(
@@ -177,8 +173,8 @@ class MailboxView extends GetWidget<MailboxController> {
             imagePaths,
             responsiveUtils,
             defaultMailbox[index],
-            controller.getSelectMode(defaultMailbox[index]))
-          .onOpenMailboxAction(() => controller.selectMailbox(context, defaultMailbox[index], keyWidgetMailboxDashBoard: mailboxDashBoardController.scaffoldKey))
+            controller.getSelectMode(defaultMailbox[index], controller.mailboxDashBoardController.selectedMailbox.value))
+          .onOpenMailboxAction(() => controller.selectMailbox(context, defaultMailbox[index]))
           .build()));
   }
 
@@ -201,11 +197,25 @@ class MailboxView extends GetWidget<MailboxController> {
             padding: EdgeInsets.only(left: 16),
             child: TreeViewChild(
               key: Key('children_tree_mailbox_child'),
-              parent: MailBoxFolderTileBuilder(context, imagePaths, responsiveUtils, mailboxNode).build(context),
+              parent: Obx(() => MailBoxFolderTileBuilder(
+                    context,
+                    imagePaths,
+                    responsiveUtils,
+                    mailboxNode,
+                    controller.getSelectMode(mailboxNode.item, controller.mailboxDashBoardController.selectedMailbox.value))
+                .build(context)),
               children: _buildListChildTileWidget(context, mailboxNode.childrenItems)))
         : Padding(
             padding: EdgeInsets.only(left: 16),
-            child: MailBoxFolderTileBuilder(context, imagePaths, responsiveUtils, mailboxNode).build(context)))
+            child: GestureDetector(
+              onTap: () => controller.selectMailbox(context, mailboxNode.item),
+              child: Obx(() => MailBoxFolderTileBuilder(
+                    context,
+                    imagePaths,
+                    responsiveUtils,
+                    mailboxNode,
+                    controller.getSelectMode(mailboxNode.item, controller.mailboxDashBoardController.selectedMailbox.value))
+                .build(context)))))
       .toList();
   }
 

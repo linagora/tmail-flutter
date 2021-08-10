@@ -25,7 +25,7 @@ class MailboxBindings extends Bindings {
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => TreeBuilder());
-    Get.lazyPut(() => MailboxController(
+    Get.put(MailboxController(
       Get.find<GetAllMailboxInteractor>(),
       Get.find<DeleteCredentialInteractor>(),
       Get.find<TreeBuilder>(),

@@ -8,21 +8,25 @@ import 'package:model/model.dart';
 
 typedef OnOpenMailActionClick = void Function();
 
-class ThreadTileBuilder {
+class EmailTileBuilder {
 
   final SelectMode _selectMode;
   final ImagePaths _imagePaths;
-  final PresentationThread _presentationThread;
+  final PresentationEmail _presentationEmail;
+  final BuildContext _context;
+  final ResponsiveUtils _responsiveUtils;
 
   OnOpenMailActionClick? _onOpenMailActionClick;
 
-  ThreadTileBuilder(
+  EmailTileBuilder(
+    this._context,
     this._imagePaths,
     this._selectMode,
-    this._presentationThread,
+    this._presentationEmail,
+    this._responsiveUtils,
   );
 
-  ThreadTileBuilder onOpenMailAction(OnOpenMailActionClick onOpenMailActionClick) {
+  EmailTileBuilder onOpenMailAction(OnOpenMailActionClick onOpenMailActionClick) {
     _onOpenMailActionClick = onOpenMailActionClick;
     return this;
   }
@@ -40,8 +44,10 @@ class ThreadTileBuilder {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           color: _selectMode== SelectMode.ACTIVE
-            ? AppColor.mailboxSelectedBackgroundColor
-            : AppColor.mailboxBackgroundColor),
+            ? _responsiveUtils.isDesktop(_context)
+              ? AppColor.mailboxSelectedBackgroundColor
+              : _responsiveUtils.isMobile(_context) ? AppColor.bgMailboxListMail : Colors.white
+            : _responsiveUtils.isMobile(_context) ? AppColor.bgMailboxListMail : Colors.white),
         child: MediaQuery(
           data: MediaQueryData(padding: EdgeInsets.zero),
           child: ListTile(
@@ -59,7 +65,9 @@ class ThreadTileBuilder {
                 _imagePaths.icTMailLogo,
                 width: 32,
                 height: 32,
-                color: _selectMode == SelectMode.ACTIVE ? AppColor.mailboxSelectedIconColor : AppColor.mailboxIconColor,
+                color: _selectMode == SelectMode.ACTIVE
+                    ? _responsiveUtils.isDesktop(_context) ? AppColor.mailboxSelectedIconColor : AppColor.mailboxIconColor
+                    : AppColor.mailboxIconColor,
                 fit: BoxFit.fill)),
             title: Padding(
               padding: EdgeInsets.only(left: 0),
@@ -69,20 +77,24 @@ class ThreadTileBuilder {
                 children: [
                   Expanded(
                     child: Text(
-                      '',
+                      '${_presentationEmail.getSenderName()}',
                       maxLines: 1,
                       overflow:TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 14,
-                        color: _selectMode == SelectMode.ACTIVE ? AppColor.mailboxSelectedTextColor : AppColor.mailboxTextColor,
+                        color: _selectMode == SelectMode.ACTIVE
+                            ? _responsiveUtils.isDesktop(_context) ? AppColor.mailboxSelectedTextColor : AppColor.mailboxTextColor
+                            : AppColor.mailboxTextColor,
                         fontWeight: FontWeight.bold))),
                   Text(
-                    '',
+                    '${_presentationEmail.getTimeThisYear()}',
                     maxLines: 1,
                     overflow:TextOverflow.ellipsis,
                     style: TextStyle(
                         fontSize: 12,
-                        color: _selectMode == SelectMode.ACTIVE ? AppColor.mailboxSelectedTextColor : AppColor.mailboxTextColor))
+                        color: _selectMode == SelectMode.ACTIVE
+                          ? _responsiveUtils.isDesktop(_context) ? AppColor.mailboxSelectedTextColor : AppColor.mailboxTextColor
+                          : AppColor.mailboxTextColor))
                 ],
               )
             ),
@@ -95,12 +107,12 @@ class ThreadTileBuilder {
                   Padding(
                     padding: EdgeInsets.only(bottom: 3),
                     child: Text(
-                      '',
+                      '${_presentationEmail.getEmailTitle()}',
                       maxLines: 1,
                       overflow:TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: 12,
-                          color: AppColor.appColor,
+                          color: AppColor.baseTextColor,
                           fontWeight: FontWeight.bold))),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -108,13 +120,11 @@ class ThreadTileBuilder {
                     children: [
                       Expanded(
                         child: Text(
-                          '${_presentationThread.message}',
+                          '${_presentationEmail.getPartialContent()}',
                           maxLines: 1,
                           overflow:TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 12, color: AppColor.baseTextColor))),
-                      ButtonBuilder(_imagePaths.icCalendar).build(),
-                      SizedBox(width: 12),
-                      ButtonBuilder(_imagePaths.icShare).build(),
+                      if (_presentationEmail.hasAttachment == true) ButtonBuilder(_imagePaths.icShare).build(),
                       SizedBox(width: 12),
                       ButtonBuilder(_imagePaths.icStar).build(),
                     ],

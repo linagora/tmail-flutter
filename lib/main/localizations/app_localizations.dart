@@ -108,10 +108,10 @@ class AppLocalizations {
     );
   }
 
-  String get no_threads {
+  String get no_emails {
     return Intl.message(
-      'No threads',
-      name: 'no_threads',
+      'No emails',
+      name: 'no_emails',
     );
   }
 
