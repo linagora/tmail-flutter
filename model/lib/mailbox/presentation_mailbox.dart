@@ -6,6 +6,8 @@ import 'package:model/mailbox/select_mode.dart';
 
 class PresentationMailbox with EquatableMixin {
 
+  static PresentationMailbox presentationMailboxEmpty = PresentationMailbox(MailboxId(Id('empty')));
+
   final MailboxId id;
   final MailboxName? name;
   final MailboxId? parentId;
@@ -35,10 +37,6 @@ class PresentationMailbox with EquatableMixin {
       this.selectMode = SelectMode.INACTIVE
     }
   );
-
-  factory PresentationMailbox.createMailboxEmpty() {
-    return PresentationMailbox(MailboxId(Id("empty")));
-  }
 
   bool hasParentId() => parentId != null && parentId!.id.value.isNotEmpty;
 

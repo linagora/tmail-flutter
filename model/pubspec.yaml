@@ -34,11 +34,14 @@ dependencies:
   # quiver
   quiver: 3.0.1
 
+  # intl
+  intl: 0.17.0
+
   # jmap_dart_client
   jmap_dart_client:
     git:
-      url: git://github.com/dab246/jmap-dart-client.git
-      ref: fixbug_get_session
+      url: git://github.com/linagora/jmap-dart-client.git
+      ref: master
 
 dev_dependencies:
   flutter_test:
@@ -93,7 +96,3 @@ flutter:
   # maintain consistency when adding or modifying assets and plugins.
   # They also do not have any bearing on your native host application's
   # identifiers, which may be completely independent or the same as these.
-  module:
-    androidX: true
-    androidPackage: com.linagora.android.tmail.model
-    iosBundleIdentifier: com.linagora.android.tmail.model
