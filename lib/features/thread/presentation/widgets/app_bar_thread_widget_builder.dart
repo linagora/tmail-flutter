@@ -104,6 +104,7 @@ class AppBarThreadWidgetBuilder {
             child: Text(
               '${_presentationMailbox.name?.name}',
               maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 22, color: AppColor.titleAppBarMailboxListMail, fontWeight: FontWeight.w500),
             ))),
         if(_presentationMailbox.getCountUnReadEmails().isNotEmpty)
@@ -116,8 +117,9 @@ class AppBarThreadWidgetBuilder {
             child: Text(
               '${_presentationMailbox.getCountUnReadEmails()} new',
               maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 10, color: AppColor.notifyCountAppBarMailboxListMail, fontWeight: FontWeight.w500),
-            ))
+            )),
       ]
     );
   }

@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/http/http_client.dart' as JmapHttpClient;
 import 'package:tmail_ui_user/features/login/data/network/login_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
+import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 
 class NetworkBindings extends Bindings {
 
@@ -47,5 +48,6 @@ class NetworkBindings extends Bindings {
     Get.put(LoginAPI(Get.find<DioClient>()));
     Get.put(MailboxAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(SessionAPI(Get.find<JmapHttpClient.HttpClient>()));
+    Get.put(ThreadAPI(Get.find<JmapHttpClient.HttpClient>()));
   }
 }

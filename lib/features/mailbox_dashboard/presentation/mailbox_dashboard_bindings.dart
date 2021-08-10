@@ -7,7 +7,7 @@ class MailboxDashBoardBindings extends Bindings {
 
   @override
   void dependencies() {
-    Get.lazyPut(() => MailboxDashBoardController());
+    Get.put(MailboxDashBoardController());
 
     MailboxBindings().dependencies();
     ThreadBindings().dependencies();

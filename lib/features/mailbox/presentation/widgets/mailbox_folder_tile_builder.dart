@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 
@@ -13,6 +14,7 @@ class MailBoxFolderTileBuilder extends StatelessWidget {
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
+  final SelectMode _selectMode;
 
   final OnOpenMailBoxFolderActionClick? onOpenMailBoxFolderActionClick;
 
@@ -21,6 +23,7 @@ class MailBoxFolderTileBuilder extends StatelessWidget {
     this._imagePaths,
     this._responsiveUtils,
     this._mailboxNode,
+    this._selectMode,
     {
       this.onOpenMailBoxFolderActionClick
     }
@@ -33,20 +36,35 @@ class MailBoxFolderTileBuilder extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: AppColor.mailboxBackgroundColor),
+        color: _selectMode== SelectMode.ACTIVE
+          ? AppColor.mailboxSelectedBackgroundColor
+          : AppColor.mailboxBackgroundColor),
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: ListTile(
           contentPadding: EdgeInsets.zero,
           leading: Padding(
             padding: EdgeInsets.only(left: _responsiveUtils.isMobile(_context) ? 40 : 34),
-            child: SvgPicture.asset(_imagePaths.icMailboxFolder, width: 24, height: 24, color: AppColor.mailboxIconColor, fit: BoxFit.fill)),
+            child: SvgPicture.asset(
+              _imagePaths.icMailboxFolder,
+              width: 24,
+              height: 24,
+              color: _selectMode == SelectMode.ACTIVE
+                ? AppColor.mailboxSelectedIconColor
+                : AppColor.mailboxIconColor,
+              fit: BoxFit.fill)),
           title: Padding(
             padding: EdgeInsets.only(left: 8),
             child: Text(
               _mailboxNode.item.name!.name,
               maxLines: 1,
-              style: TextStyle(fontSize: 15, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 15,
+                color: _selectMode == SelectMode.ACTIVE
+                  ? AppColor.mailboxSelectedTextColor
+                  : AppColor.mailboxTextColor,
+                fontWeight: FontWeight.bold),
             )),
           trailing: Padding(
             padding: EdgeInsets.only(right: _responsiveUtils.isMobile(_context) ? 36 : 8, left: 16),
@@ -55,7 +73,9 @@ class MailBoxFolderTileBuilder extends StatelessWidget {
                   _imagePaths.icFolderArrow,
                   width: 12,
                   height: 12,
-                  color: AppColor.mailboxIconColor,
+                  color: _selectMode == SelectMode.ACTIVE
+                    ? AppColor.mailboxSelectedIconColor
+                    : AppColor.mailboxIconColor,
                   fit: BoxFit.fill)
               : SizedBox.shrink())
         )

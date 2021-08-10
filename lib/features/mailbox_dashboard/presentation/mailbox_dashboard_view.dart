@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
@@ -13,9 +12,6 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> {
 
   @override
   Widget build(BuildContext context) {
-    final arguments = Get.arguments as Session;
-    controller.setSessionCurrent(arguments);
-
     return Scaffold(
       key: controller.scaffoldKey,
       drawer: responsiveUtils.isMobile(context)

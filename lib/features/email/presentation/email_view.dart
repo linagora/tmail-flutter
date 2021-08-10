@@ -1,7 +1,7 @@
 import 'package:core/core.dart';
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
@@ -61,8 +61,8 @@ class EmailView extends GetWidget<EmailController> {
       padding: EdgeInsets.all(20),
       color: AppColor.bgMessenger,
       child: Obx(() => Text(
-        mailboxDashBoardController.mailCurrent.value.id != 'empty'
-          ? '${mailboxDashBoardController.mailCurrent.value.message}'
+        mailboxDashBoardController.selectedEmail.value != PresentationEmail.presentationEmailEmpty
+          ? '${mailboxDashBoardController.selectedEmail.value.preview}'
           : AppLocalizations.of(context).no_mail_selected,
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 25, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold)

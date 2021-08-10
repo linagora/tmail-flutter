@@ -5,11 +5,9 @@ import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view.dart';
-import 'package:tmail_ui_user/features/thread/presentation/thread_bindings.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/session/presentation/session_bindings.dart';
 import 'package:tmail_ui_user/features/session/presentation/session_view.dart';
@@ -31,16 +29,14 @@ class AppPages {
       binding: SessionBindings()),
     GetPage(
       name: AppRoutes.MAILBOX,
-      page: () => MailboxView(),
-      binding: MailboxBindings()),
+      page: () => MailboxView()),
     GetPage(
       name: AppRoutes.MAILBOX_DASHBOARD,
       page: () => MailboxDashBoardView(),
       binding: MailboxDashBoardBindings()),
     GetPage(
       name: AppRoutes.THREAD,
-      page: () => ThreadView(),
-      binding: ThreadBindings()),
+      page: () => ThreadView()),
     GetPage(
       name: AppRoutes.EMAIL,
       page: () => EmailView(),
