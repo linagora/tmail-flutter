@@ -15,3 +15,6 @@ export 'mailbox/expand_mode.dart';
 
 // Email
 export 'email/presentation_email.dart';
+
+// Extensions
+export 'extensions/email_address_extension.dart';
