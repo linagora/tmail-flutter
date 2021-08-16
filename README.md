@@ -16,7 +16,7 @@ Here is how TMail looks like on a tablet:
 
 ## FAQ
 
- - **Why did you choose JMAP?**
+### **Why did you choose JMAP?**
 
 That is a good question! **IMAP** is THE ubiquitous protocol people use to read their emails, THE norm.
 
