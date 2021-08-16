@@ -1,9 +1,18 @@
 # Tmail Flutter mobile application
 
-![wider](https://user-images.githubusercontent.com/6928740/129552343-31e21182-d07c-4f2a-bc83-4f9be70d1693.png)
+![LOGO](https://user-images.githubusercontent.com/6928740/129552343-31e21182-d07c-4f2a-bc83-4f9be70d1693.png)
 
 This project aims at providing a multi-plateform mobile email application, running the [JMAP protocol](https://jmap.io/) and will also deliver additional 
 features to the [TMail back-end](https://github.com/linagora/tmail-backend).
+
+Here is how TMail looks like on a phone:
+
+![Screenshots Mobile](https://user-images.githubusercontent.com/6928740/129556356-3099bc0f-2af8-4635-afc2-6ccb385abd03.jpg)
+
+
+Here is how TMail looks like on a tablet:
+
+![Screenshot Tablet](https://user-images.githubusercontent.com/6928740/129555644-229abd19-d1db-4d31-bfe1-3f1f7e59804c.png)
 
 ## FAQ
 
