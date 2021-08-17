@@ -30,7 +30,7 @@ This, is where **[JMAP](https://jmap.io/)** comes to play! **JMAP** builds on de
 
 Yes, you can use the TMail application with any JMAP server and benefits from **Tmail** ergonomy and ease of use.
 
-### **I don't understand your crap... I need help using your App! HELP MEEEEEE...**
+### **I don't understand your app... I need help using it! HELP MEEEEEE...**
 
 Don't worry, we are here!
 
@@ -73,3 +73,7 @@ There are many ways to help us, and amongst them:
    - **Spread the word**: Tell people you like **TMail**, on social medias, via blog posts etc... 
    - **Give us feedbacks**... It's hard to make all good decisions from the first time. It is very likely we can benefit from *your* experience. Did you encountered annoying bugs? Do you think we can better arrange the layout? Do you think we are missing some features critical to you? Tell us in the [issues](https://github.com/linagora/tmail-flutter/issues).
  - I can code! **I wanna help ;-)**. Wow thanks! Let's discuss your project together in the [issues](https://github.com/linagora/tmail-flutter/issues) to get you on track!
+ 
+ ### **Cool. I also want to write my own email application for JMAP. Can you help me?**
+ 
+You would be pleased to know we contributes a [JMAP Dart client](https://github.com/linagora/jmap-dart-client) that you can reuse to write your own applications. Feels free to open pull requests and enrich it!
