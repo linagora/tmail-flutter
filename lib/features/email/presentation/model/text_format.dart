@@ -1,0 +1,5 @@
+
+enum TextFormat {
+  HTML,
+  PLAIN
+}

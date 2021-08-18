@@ -5,12 +5,13 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 
 class MailboxDashBoardController extends BaseController {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  final selectedMailbox = PresentationMailbox.presentationMailboxEmpty.obs;
-  final selectedEmail = PresentationEmail.presentationEmailEmpty.obs;
+  final selectedMailbox = Rxn<PresentationMailbox>();
+  final selectedEmail = Rxn<PresentationEmail>();
   final accountId = Rxn<AccountId>();
 
   Session? sessionCurrent;
@@ -32,25 +33,34 @@ class MailboxDashBoardController extends BaseController {
   }
 
   void _setSessionCurrent() {
-    Future.delayed(const Duration(milliseconds: 500), () {
-      sessionCurrent = Get.arguments as Session;
-      accountId.value = sessionCurrent?.accounts.keys.first;
+    Future.delayed(const Duration(milliseconds: 100), () {
+      final arguments = Get.arguments;
+      if (arguments is Session) {
+        sessionCurrent = Get.arguments as Session;
+        accountId.value = sessionCurrent?.accounts.keys.first;
+      }
     });
   }
 
-  void setSelectedMailbox(PresentationMailbox newPresentationMailbox) {
+  void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
     selectedMailbox.value = newPresentationMailbox;
   }
 
-  void setSelectedEmail(PresentationEmail newPresentationEmail) {
+  void setSelectedEmail(PresentationEmail? newPresentationEmail) {
     selectedEmail.value = newPresentationEmail;
   }
 
   void openDrawer() {
-    scaffoldKey.currentState?.openEndDrawer();
+    scaffoldKey.currentState?.openDrawer();
   }
 
   void closeDrawer() {
     scaffoldKey.currentState?.openEndDrawer();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    Get.delete<EmailController>();
   }
 }

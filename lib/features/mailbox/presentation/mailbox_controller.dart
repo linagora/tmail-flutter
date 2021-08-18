@@ -98,8 +98,8 @@ class MailboxController extends BaseController {
     } catch (e) {}
   }
 
-  SelectMode getSelectMode(PresentationMailbox presentationMailbox, PresentationMailbox selectedMailbox) {
-    return presentationMailbox.id == selectedMailbox.id
+  SelectMode getSelectMode(PresentationMailbox presentationMailbox, PresentationMailbox? selectedMailbox) {
+    return presentationMailbox.id == selectedMailbox?.id
       ? SelectMode.ACTIVE
       : SelectMode.INACTIVE;
   }

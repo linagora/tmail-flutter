@@ -25,6 +25,7 @@ class ThreadView extends GetWidget<ThreadController> {
         left: false,
         child: Container(
           alignment: Alignment.center,
+          padding: EdgeInsets.zero,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,22 +41,22 @@ class ThreadView extends GetWidget<ThreadController> {
     );
   }
 
-  Widget _buildAppBarMailboxListMail(BuildContext context, PresentationMailbox presentationMailbox) {
+  Widget _buildAppBarMailboxListMail(BuildContext context, PresentationMailbox? presentationMailbox) {
     return Padding(
-      padding: EdgeInsets.only(left: 16, top: 8.0, right: 16),
+      padding: EdgeInsets.only(left: 15, right: 12),
       child: AppBarThreadWidgetBuilder(
           context,
           imagePaths,
           responsiveUtils,
           presentationMailbox)
-        .onOpenListMailboxActionClick(() => controller.goToMailbox())
+        .onOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
         .build());
   }
 
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),
-      (success) => success == UIState.loading
+      (success) => success == UIState.loading && controller.loadMoreState.value != LoadMoreState.LOADING
         ? Center(child: Padding(
             padding: EdgeInsets.only(top: 16, bottom: 16),
             child: SizedBox(
@@ -107,7 +108,7 @@ class ThreadView extends GetWidget<ThreadController> {
             return false;
           },
           child: ListView.builder(
-            padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+            padding: EdgeInsets.only(top: 16),
             key: Key('presentation_email_list'),
             itemCount: listPresentationEmail.length,
             itemBuilder: (context, index) =>

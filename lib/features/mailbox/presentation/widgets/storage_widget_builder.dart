@@ -17,7 +17,7 @@ class StorageWidgetBuilder {
       padding: EdgeInsets.only(left: 40, top: 16, bottom: 20, right: 40),
       color: AppColor.storageBackgroundColor,
       alignment: Alignment.bottomLeft,
-      height: 112,
+      height: 100,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -46,7 +46,7 @@ class ThreadController extends BaseController {
   void onReady() {
     super.onReady();
     mailboxDashBoardController.selectedMailbox.listen((selectedMailbox) {
-      mailboxDashBoardController.setSelectedEmail(PresentationEmail.presentationEmailEmpty);
+      mailboxDashBoardController.setSelectedEmail(null);
       refreshGetAllEmailAction();
     });
   }
@@ -80,17 +80,11 @@ class ThreadController extends BaseController {
 
     lastGetTotal = emailList.length;
 
-    if (newListEmail.isEmpty) {
-      _resetPositionCurrentAndLoadMoreState();
-    } else {
-      loadMoreState.value = LoadMoreState.IDLE;
-    }
+    loadMoreState.value = newListEmail.isEmpty ? LoadMoreState.COMPLETED : LoadMoreState.IDLE;
   }
 
   EmailFilterCondition? _getFilterConditionCurrent() {
-    return mailboxDashBoardController.selectedMailbox.value.id != PresentationMailbox.presentationMailboxEmpty.id
-      ? EmailFilterCondition(inMailbox: mailboxDashBoardController.selectedMailbox.value.id)
-      : null;
+    return EmailFilterCondition(inMailbox: mailboxDashBoardController.selectedMailbox.value?.id);
   }
 
   Set<Comparator>? _getSortCurrent() {
@@ -103,7 +97,7 @@ class ThreadController extends BaseController {
     if (loadMoreState.value == LoadMoreState.LOADING) {
       positionCurrent -= lastGetTotal;
     }
-    loadMoreState.value = LoadMoreState.COMPLETED;
+    loadMoreState.value = LoadMoreState.IDLE;
   }
 
   void getAllEmailAction(AccountId accountId,
@@ -150,7 +144,7 @@ class ThreadController extends BaseController {
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (accountId != null) {
-      Future.delayed(const Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 100), () {
         getAllEmailAction(
           accountId,
           limit: ThreadConstants.defaultLimit,
@@ -162,8 +156,8 @@ class ThreadController extends BaseController {
     }
   }
 
-  SelectMode getSelectMode(PresentationEmail presentationEmail, PresentationEmail selectedEmail) {
-    return presentationEmail.id == selectedEmail.id
+  SelectMode getSelectMode(PresentationEmail presentationEmail, PresentationEmail? selectedEmail) {
+    return presentationEmail.id == selectedEmail?.id
       ? SelectMode.ACTIVE
       : SelectMode.INACTIVE;
   }
@@ -175,7 +169,7 @@ class ThreadController extends BaseController {
     }
   }
 
-  void goToMailbox() {
+  void openMailboxLeftMenu() {
     mailboxDashBoardController.openDrawer();
   }
 

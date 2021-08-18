@@ -86,7 +86,7 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildCloseScreenButton(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 24, top: responsiveUtils.isMobile(context) ? 0 : 12),
+      padding: EdgeInsets.only(left: 16, top: responsiveUtils.isMobile(context) ? 0 : 12),
       child: IconButton(
         key: Key('mailbox_close_button'),
         onPressed: () => controller.closeMailboxScreen(),
