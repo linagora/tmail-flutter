@@ -9,6 +9,6 @@ class AuthenticationRepositoryImpl extends AuthenticationRepository {
 
   @override
   Future<User> authenticationUser(Uri baseUrl, UserName userName, Password password) {
-    return Future.value(User(UserId(userName.userName), "Alice", "Alice"));
+    return loginDataSource.authenticationUser(baseUrl, userName, password);
   }
 }
