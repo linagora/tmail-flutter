@@ -121,5 +121,40 @@ class AppLocalizations {
       name: 'no_mail_selected',
     );
   }
+
+  String get from_email_address_prefix {
+    return Intl.message(
+      'From',
+      name: 'from_email_address_prefix',
+    );
+  }
+
+  String get to_email_address_prefix {
+    return Intl.message(
+      'To',
+      name: 'to_email_address_prefix',
+    );
+  }
+
+  String get unread_email_notification {
+    return Intl.message(
+      'new',
+      name: 'unread_email_notification',
+    );
+  }
+
+  String get bcc_email_address_prefix {
+    return Intl.message(
+      'Bcc',
+      name: 'bcc_email_address_prefix',
+    );
+  }
+
+  String get cc_email_address_prefix {
+    return Intl.message(
+      'Cc',
+      name: 'cc_email_address_prefix',
+    );
+  }
 }
 

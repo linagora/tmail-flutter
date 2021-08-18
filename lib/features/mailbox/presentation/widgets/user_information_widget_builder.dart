@@ -33,7 +33,10 @@ class UserInformationWidgetBuilder {
             _onOpenUserInformationActionClick!();
           }
         },
-        leading: SvgPicture.asset(_imagePaths.icTMailLogo, width: 40, height: 40, fit: BoxFit.fill),
+        leading: AvatarBuilder()
+          .text('J')
+          .size(40)
+          .build(),
         title: Transform(
           transform: Matrix4.translationValues(0.0, 0.0, 0.0),
           child: Text(

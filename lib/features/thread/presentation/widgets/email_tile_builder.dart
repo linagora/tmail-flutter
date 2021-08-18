@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/domain/extensions/presentation_email_extension.dart';
 
 typedef OnOpenMailActionClick = void Function();
 
@@ -39,7 +39,7 @@ class EmailTileBuilder {
       child: Container(
         key: Key('thread_tile'),
         margin: EdgeInsets.only(bottom: 10),
-        padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
+        padding: EdgeInsets.only(top: 10, bottom: 10, left: 25, right: 6),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -51,8 +51,6 @@ class EmailTileBuilder {
         child: MediaQuery(
           data: MediaQueryData(padding: EdgeInsets.zero),
           child: ListTile(
-            focusColor: AppColor.primaryLightColor,
-            hoverColor: AppColor.primaryLightColor,
             contentPadding: EdgeInsets.zero,
             onTap: () => {
               if (_onOpenMailActionClick != null) {
@@ -60,46 +58,41 @@ class EmailTileBuilder {
               }
             },
             leading: Transform(
-              transform: Matrix4.translationValues(0.0, -12.0, 0.0),
-              child: SvgPicture.asset(
-                _imagePaths.icTMailLogo,
-                width: 32,
-                height: 32,
-                color: _selectMode == SelectMode.ACTIVE
-                    ? _responsiveUtils.isDesktop(_context) ? AppColor.mailboxSelectedIconColor : AppColor.mailboxIconColor
-                    : AppColor.mailboxIconColor,
-                fit: BoxFit.fill)),
-            title: Padding(
-              padding: EdgeInsets.only(left: 0),
+              transform: Matrix4.translationValues(-10.0, -10.0, 0.0),
+              child: AvatarBuilder()
+                .text('${_presentationEmail.getAvatarText()}')
+                .size(40)
+                .iconStatus(_imagePaths.icOffline)
+                .build()),
+            title: Transform(
+              transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Text(
-                      '${_presentationEmail.getSenderName()}',
+                      '${_presentationEmail.getSenderName().inCaps}',
                       maxLines: 1,
                       overflow:TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 14,
-                        color: _selectMode == SelectMode.ACTIVE
-                            ? _responsiveUtils.isDesktop(_context) ? AppColor.mailboxSelectedTextColor : AppColor.mailboxTextColor
-                            : AppColor.mailboxTextColor,
-                        fontWeight: FontWeight.bold))),
-                  Text(
-                    '${_presentationEmail.getTimeThisYear()}',
-                    maxLines: 1,
-                    overflow:TextOverflow.ellipsis,
-                    style: TextStyle(
+                        color: AppColor.mailboxTextColor,
+                        fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500))),
+                  Padding(
+                    padding: EdgeInsets.only(right: 4),
+                    child: Text(
+                      '${_presentationEmail.getTimeSentEmail('${Localizations.localeOf(_context).languageCode}_${Localizations.localeOf(_context).countryCode}')}',
+                      maxLines: 1,
+                      overflow:TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 12,
-                        color: _selectMode == SelectMode.ACTIVE
-                          ? _responsiveUtils.isDesktop(_context) ? AppColor.mailboxSelectedTextColor : AppColor.mailboxTextColor
-                          : AppColor.mailboxTextColor))
+                        color: _presentationEmail.isUnReadEmail() ? AppColor.sentTimeTextColorUnRead : AppColor.baseTextColor)))
                 ],
               )
             ),
-            subtitle: Padding(
-              padding: EdgeInsets.only(left: 0, top: 8),
+            subtitle: Transform(
+              transform: Matrix4.translationValues(-10.0, 8.0, 0.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -112,8 +105,8 @@ class EmailTileBuilder {
                       overflow:TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: 12,
-                          color: AppColor.baseTextColor,
-                          fontWeight: FontWeight.bold))),
+                          color: _presentationEmail.isUnReadEmail() ? AppColor.subjectEmailTextColorUnRead : AppColor.baseTextColor,
+                          fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500))),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -124,9 +117,11 @@ class EmailTileBuilder {
                           maxLines: 1,
                           overflow:TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 12, color: AppColor.baseTextColor))),
-                      if (_presentationEmail.hasAttachment == true) ButtonBuilder(_imagePaths.icShare).build(),
-                      SizedBox(width: 12),
-                      ButtonBuilder(_imagePaths.icStar).build(),
+                      if (_presentationEmail.hasAttachment == true) ButtonBuilder(_imagePaths.icShare).padding(2).build(),
+                      SizedBox(width: 2),
+                      ButtonBuilder(_presentationEmail.isFlaggedEmail() ? _imagePaths.icFlagged : _imagePaths.icFlag)
+                          .padding(2)
+                          .build(),
                     ],
                   )
                 ],

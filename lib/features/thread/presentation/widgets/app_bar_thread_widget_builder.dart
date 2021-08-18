@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnOpenSearchMailActionClick = void Function();
 typedef OnOpenListMailboxActionClick = void Function();
@@ -18,7 +19,7 @@ class AppBarThreadWidgetBuilder {
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
-  final PresentationMailbox _presentationMailbox;
+  final PresentationMailbox? _presentationMailbox;
 
   AppBarThreadWidgetBuilder(
     this._context,
@@ -49,6 +50,7 @@ class AppBarThreadWidgetBuilder {
     return Container(
       key: Key('app_bar_thread_widget'),
       alignment: Alignment.center,
+      padding: EdgeInsets.only(top: 8, bottom: 2),
       color: Colors.white,
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
@@ -72,13 +74,16 @@ class AppBarThreadWidgetBuilder {
           _onOpenUserInformationActionClick!()
         }},
       child: Padding(
-        padding: EdgeInsets.only(left: _responsiveUtils.isMobile(_context) ? 24 : 0),
-        child: SvgPicture.asset(_imagePaths.icTMailLogo, width: 24, height: 24, fit: BoxFit.fill)));
+        padding: EdgeInsets.zero,
+        child: AvatarBuilder()
+          .text('J')
+          .size(36)
+          .build()));
   }
 
   Widget _buildIconSearch() {
     return Padding(
-      padding: EdgeInsets.only(left: 16, right: 0),
+      padding: EdgeInsets.only(left: 16),
       child: IconButton(
         icon: SvgPicture.asset(_imagePaths.icSearch, width: 24, height: 24, fit: BoxFit.fill),
         onPressed: () => {
@@ -102,20 +107,20 @@ class AppBarThreadWidgetBuilder {
           child: Padding(
             padding: EdgeInsets.only(left: 16),
             child: Text(
-              '${_presentationMailbox.name?.name}',
+              '${_presentationMailbox?.name != null ? _presentationMailbox?.name?.name : ''}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 22, color: AppColor.titleAppBarMailboxListMail, fontWeight: FontWeight.w500),
             ))),
-        if(_presentationMailbox.getCountUnReadEmails().isNotEmpty)
+        if(_presentationMailbox != null && _presentationMailbox!.getCountUnReadEmails().isNotEmpty)
           Container(
             margin: EdgeInsets.only(left: 9),
-            padding: EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
+            padding: EdgeInsets.only(left: 8, right: 8, top: 2.5, bottom: 2.5),
             decoration:BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: AppColor.bgNotifyCountAppBarMailboxListMail),
             child: Text(
-              '${_presentationMailbox.getCountUnReadEmails()} new',
+              '${_presentationMailbox!.getCountUnReadEmails()} ${AppLocalizations.of(_context).unread_email_notification}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 10, color: AppColor.notifyCountAppBarMailboxListMail, fontWeight: FontWeight.w500),

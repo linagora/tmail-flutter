@@ -59,5 +59,55 @@
   "@new_folder": {
     "type": "text",
     "placeholders": {}
+  },
+  "reply_all": "Reply all",
+  "@reply_all": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "reply": "Reply",
+  "@reply": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "forward": "Forward",
+  "@forward": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "no_emails": "No emails",
+  "@no_emails": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "no_mail_selected": "No email selected",
+  "@no_mail_selected": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "from_email_address_prefix": "From",
+  "@from_email_address_prefix": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "to_email_address_prefix": "To",
+  "@to_email_address_prefix": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "unread_email_notification": "new",
+  "@unread_email_notification": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "bcc_email_address_prefix": "Bcc",
+  "@bcc_email_address_prefix": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "cc_email_address_prefix": "Cc",
+  "@cc_email_address_prefix": {
+    "type": "text",
+    "placeholders": {}
   }
 }
