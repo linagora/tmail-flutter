@@ -3,6 +3,9 @@ library core;
 // Extensions
 export 'presentation/extensions/color_extension.dart';
 export 'presentation/extensions/url_extension.dart';
+export 'presentation/extensions/capitalize_extension.dart';
+export 'presentation/extensions/list_extensions.dart';
+export 'domain/extensions/datetime_extension.dart';
 
 // Utils
 export 'presentation/utils/theme_utils.dart';
@@ -19,6 +22,8 @@ export 'presentation/views/text/text_builder.dart';
 export 'presentation/views/responsive/responsive_widget.dart';
 export 'presentation/views/list/tree_view.dart';
 export 'presentation/views/button/button_builder.dart';
+export 'presentation/views/image/avatar_builder.dart';
+export 'presentation/views/list/sliver_grid_delegate_fixed_height.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';

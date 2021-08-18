@@ -1,12 +1,13 @@
 import 'package:equatable/equatable.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
 import 'package:model/mailbox/select_mode.dart';
 
 class PresentationMailbox with EquatableMixin {
 
-  static PresentationMailbox presentationMailboxEmpty = PresentationMailbox(MailboxId(Id('empty')));
+  static final roleTrash = Role('trash');
+  static final roleSent = Role('sent');
+  static final roleTemplates = Role('templates');
 
   final MailboxId id;
   final MailboxName? name;
@@ -43,17 +44,15 @@ class PresentationMailbox with EquatableMixin {
   bool hasRole() => role != null && role!.value.isNotEmpty;
 
   String getCountUnReadEmails() {
-    if (unreadEmails == null) {
+    if (role == roleTrash || role == roleSent || role == roleTemplates) {
       return '';
-    } else {
-      if (unreadEmails!.value.value <= 0) {
-        return '';
-      } else {
-        return unreadEmails!.value.value <= 999
-          ? '${unreadEmails!.value.value}'
-          : '999+';
-      }
     }
+
+    if (unreadEmails == null || unreadEmails!.value.value <= 0) {
+      return '';
+    }
+
+    return unreadEmails!.value.value <= 999 ? '${unreadEmails!.value.value}' : '999+';
   }
 
   @override

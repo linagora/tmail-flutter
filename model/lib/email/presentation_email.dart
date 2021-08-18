@@ -1,7 +1,5 @@
 
 import 'package:equatable/equatable.dart';
-import 'package:intl/intl.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -11,8 +9,6 @@ import 'package:model/mailbox/select_mode.dart';
 import 'package:model/extensions/email_address_extension.dart';
 
 class PresentationEmail with EquatableMixin {
-
-  static PresentationEmail presentationEmailEmpty = PresentationEmail(EmailId(Id('empty')));
 
   final EmailId id;
   final Map<KeyWordIdentifier, bool>? keywords;
@@ -55,17 +51,20 @@ class PresentationEmail with EquatableMixin {
     return '';
   }
 
+  String getAvatarText() {
+    if (getSenderName().isNotEmpty) {
+      return getSenderName().substring(0, 1).toUpperCase();
+    }
+    return '';
+  }
+
   String getEmailTitle() => subject != null ? subject! : '';
 
   String getPartialContent() => preview != null ? preview! : '';
 
-  String getTimeForToday() => receivedAt != null ? DateFormat('h:mm a').format(receivedAt!.value) : '';
+  bool isUnReadEmail() => !(keywords?.containsKey(KeyWordIdentifier.emailSeen) == true);
 
-  String getTimeForYesterday() => receivedAt != null ? DateFormat('EEE').format(receivedAt!.value) : '';
-
-  String getTimeThisYear() => receivedAt != null ? DateFormat('MMMd').format(receivedAt!.value) : '';
-
-  String getTimeOtherYear() => receivedAt != null ? DateFormat('yMMMd').format(receivedAt!.value) : '';
+  bool isFlaggedEmail() => keywords?.containsKey(KeyWordIdentifier.emailFlagged) == true;
 
   @override
   List<Object?> get props => [

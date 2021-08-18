@@ -13,6 +13,7 @@ class ButtonBuilder {
   String? _icon;
   String? _text;
   double? _size;
+  double? _padding;
   bool? _isVertical;
   Key? _key;
 
@@ -23,6 +24,11 @@ class ButtonBuilder {
 
   ButtonBuilder size(double size) {
     _size = size;
+    return this;
+  }
+
+  ButtonBuilder padding(double padding) {
+    _padding = padding;
     return this;
   }
 
@@ -66,7 +72,6 @@ class ButtonBuilder {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildIcon(),
-              SizedBox(height: 8),
               _buildText(),
             ])
         : Row(
@@ -74,7 +79,6 @@ class ButtonBuilder {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildIcon(),
-              SizedBox(width: 8),
               _buildText(),
             ]);
     } else {
@@ -82,7 +86,9 @@ class ButtonBuilder {
     }
   }
 
-  Widget _buildIcon() => SvgPicture.asset(_icon ?? '', width: _size ?? 24, height: _size ?? 24, fit: BoxFit.fill);
+  Widget _buildIcon() => Padding(
+    padding: EdgeInsets.all(_padding ?? 10),
+    child: SvgPicture.asset(_icon ?? '', width: _size ?? 24, height: _size ?? 24, fit: BoxFit.fill));
 
   Widget _buildText() {
     return Text(
