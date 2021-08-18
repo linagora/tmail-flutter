@@ -22,10 +22,15 @@ class ImagePaths {
   String get icForward => _getImagePath('ic_forward.svg');
   String get icReply => _getImagePath('ic_reply.svg');
   String get icReplyAll => _getImagePath('ic_reply_all.svg');
-  String get icStar => _getImagePath('ic_star.svg');
+  String get icFlag => _getImagePath('ic_flag.svg');
   String get icTrash => _getImagePath('ic_trash.svg');
   String get icCalendar => _getImagePath('ic_calendar.svg');
   String get icShare => _getImagePath('ic_share.svg');
+  String get icAttachmentFile => _getImagePath('ic_attachment_file.svg');
+  String get icOnline => _getImagePath('ic_online.svg');
+  String get icOffline => _getImagePath('ic_offline.svg');
+  String get icFlagged => _getImagePath('ic_flagged.svg');
+  String get icMoreReceiver => _getImagePath('ic_more_receiver.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

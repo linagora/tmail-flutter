@@ -43,6 +43,9 @@ dependencies:
       url: git://github.com/linagora/jmap-dart-client.git
       ref: master
 
+  # uri
+  uri: 1.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
