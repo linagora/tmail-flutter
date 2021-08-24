@@ -42,6 +42,8 @@ dependencies:
 
   built_collection: 5.1.0
 
+  html: 0.15.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

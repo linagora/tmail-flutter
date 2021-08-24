@@ -6,6 +6,7 @@ export 'presentation/extensions/url_extension.dart';
 export 'presentation/extensions/capitalize_extension.dart';
 export 'presentation/extensions/list_extensions.dart';
 export 'domain/extensions/datetime_extension.dart';
+export 'presentation/extensions/html_extension.dart';
 
 // Utils
 export 'presentation/utils/theme_utils.dart';
@@ -44,3 +45,6 @@ export 'data/network/dio_client.dart';
 export 'presentation/state/success.dart';
 export 'presentation/state/failure.dart';
 export 'presentation/state/app_state.dart';
+
+// Validator
+export 'presentation/validator/html_message_purifier.dart';

@@ -10,6 +10,7 @@ class CoreBindings extends Bindings {
     _bindingAppImagePaths();
     _bindingResponsiveManager();
     _bindingKeyboardManager();
+    _bindingValiadtor();
   }
 
   void _bindingAppImagePaths() {
@@ -26,5 +27,9 @@ class CoreBindings extends Bindings {
 
   void _bindingKeyboardManager() {
     Get.put(KeyboardUtils());
+  }
+
+  void _bindingValiadtor() {
+    Get.put(HtmlMessagePurifier());
   }
 }
