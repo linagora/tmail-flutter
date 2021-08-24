@@ -18,6 +18,7 @@ class EmailView extends GetWidget {
   final emailController = Get.find<EmailController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
+  final htmlMessagePurifier = Get.find<HtmlMessagePurifier>();
 
   @override
   Widget build(BuildContext context) {
@@ -192,8 +193,8 @@ class EmailView extends GetWidget {
                 itemCount: messageContents.length,
                 itemBuilder: (context, index) =>
                   MessageContentTileBuilder(
+                      htmlMessagePurifier,
                       messageContents[index],
-                      imagePaths,
                       attachmentsInline,
                       emailController.mailboxDashBoardController.sessionCurrent,
                       emailController.mailboxDashBoardController.accountId.value)
