@@ -2,12 +2,12 @@ import 'package:core/core.dart';
 import 'package:model/model.dart';
 
 class AuthenticationUserViewState extends UIState {
-  final User user;
+  final UserProfile userProfile;
 
-  AuthenticationUserViewState(this.user);
+  AuthenticationUserViewState(this.userProfile);
 
   @override
-  List<Object> get props => [user];
+  List<Object> get props => [userProfile];
 }
 
 class AuthenticationUserFailure extends FeatureFailure {

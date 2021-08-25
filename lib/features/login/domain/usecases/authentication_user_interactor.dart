@@ -17,7 +17,8 @@ class AuthenticationInteractor {
       await Future.wait([
         credentialRepository.saveBaseUrl(baseUrl),
         credentialRepository.saveUserName(userName),
-        credentialRepository.savePassword(password)
+        credentialRepository.savePassword(password),
+        credentialRepository.saveUserProfile(user),
       ]);
       return Right(AuthenticationUserViewState(user));
     } catch (e) {
