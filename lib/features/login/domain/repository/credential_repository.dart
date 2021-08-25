@@ -18,4 +18,10 @@ abstract class CredentialRepository {
   Future removePassword();
 
   Future<Password> getPassword();
+
+  Future saveUserProfile(UserProfile userProfile);
+
+  Future removeUserProfile();
+
+  Future<UserProfile> getUserProfile();
 }
