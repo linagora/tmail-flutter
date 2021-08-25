@@ -6,30 +6,45 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
 
 class MailboxDashBoardController extends BaseController {
+
+  final GetUserProfileInteractor _getUserProfileInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
   final selectedEmail = Rxn<PresentationEmail>();
   final accountId = Rxn<AccountId>();
+  final userProfile = Rxn<UserProfile>();
 
   Session? sessionCurrent;
 
-  MailboxDashBoardController();
+  MailboxDashBoardController(this._getUserProfileInteractor);
 
   @override
   void onReady() {
     super.onReady();
     _setSessionCurrent();
+    _getUserProfile();
   }
 
   @override
   void onDone() {
+    viewState.value.map((success) {
+      if (success is GetUserProfileSuccess) {
+        userProfile.value = success.userProfile;
+      }
+    });
   }
 
   @override
   void onError(error) {
+  }
+
+  void _getUserProfile() async {
+    consumeState(_getUserProfileInteractor.execute());
   }
 
   void _setSessionCurrent() {

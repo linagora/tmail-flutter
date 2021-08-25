@@ -4,15 +4,17 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:model/model.dart';
 
 typedef OnOpenUserInformationActionClick = void Function();
 
 class UserInformationWidgetBuilder {
   final ImagePaths _imagePaths;
+  final UserProfile? _userProfile;
 
   OnOpenUserInformationActionClick? _onOpenUserInformationActionClick;
 
-  UserInformationWidgetBuilder(this._imagePaths);
+  UserInformationWidgetBuilder(this._imagePaths, this._userProfile);
 
   UserInformationWidgetBuilder onOpenUserInformationAction(
       OnOpenUserInformationActionClick onOpenUserInformationActionClick) {
@@ -34,23 +36,27 @@ class UserInformationWidgetBuilder {
           }
         },
         leading: AvatarBuilder()
-          .text('J')
+          .text(_userProfile != null ? _userProfile!.getAvatarText() : '')
           .size(40)
           .build(),
         title: Transform(
           transform: Matrix4.translationValues(0.0, 0.0, 0.0),
           child: Text(
-            'John Doe',
+            _userProfile != null ? _userProfile!.getNameDisplay() : '',
             maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 16, color: AppColor.nameUserColor, fontWeight: FontWeight.w500),
           )),
-        subtitle: Transform(
-          transform: Matrix4.translationValues(0.0, 4.0, 0.0),
-          child: Text(
-            'user@example.com',
-            maxLines: 1,
-            style: TextStyle(fontSize: 12, color: AppColor.emailUserColor, fontWeight: FontWeight.w500),
-          )),
+        subtitle: (_userProfile != null && !_userProfile!.isUserEmpty())
+          ? Transform(
+            transform: Matrix4.translationValues(0.0, 4.0, 0.0),
+            child: Text(
+              _userProfile!.getEmailAddress() ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12, color: AppColor.emailUserColor, fontWeight: FontWeight.w500),
+            ))
+          : null,
         trailing: Transform(
           transform: Matrix4.translationValues(0.0, 0.0, 0.0),
           child: IconButton(

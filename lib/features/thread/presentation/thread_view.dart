@@ -30,7 +30,11 @@ class ThreadView extends GetWidget<ThreadController> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(() => _buildAppBarMailboxListMail(context, controller.mailboxDashBoardController.selectedMailbox.value)),
+              Obx(() => _buildAppBarMailboxListMail(
+                  context,
+                  controller.mailboxDashBoardController.selectedMailbox.value,
+                  controller.mailboxDashBoardController.userProfile.value,
+              )),
               _buildLoadingView(),
               Expanded(child: _buildListEmail(context)),
               _buildLoadingViewLoadMore()
@@ -41,14 +45,15 @@ class ThreadView extends GetWidget<ThreadController> {
     );
   }
 
-  Widget _buildAppBarMailboxListMail(BuildContext context, PresentationMailbox? presentationMailbox) {
+  Widget _buildAppBarMailboxListMail(BuildContext context, PresentationMailbox? presentationMailbox, UserProfile? userProfile) {
     return Padding(
       padding: EdgeInsets.only(left: 15, right: 12),
       child: AppBarThreadWidgetBuilder(
           context,
           imagePaths,
           responsiveUtils,
-          presentationMailbox)
+          presentationMailbox,
+          userProfile)
         .onOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
         .build());
   }
