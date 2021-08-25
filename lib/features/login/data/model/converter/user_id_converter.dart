@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:json_annotation/json_annotation.dart';
 import 'package:model/model.dart';
 
@@ -10,5 +8,5 @@ class UserIdConverter implements JsonConverter<UserId, String> {
   UserId fromJson(String json) => UserId(json);
 
   @override
-  String toJson(UserId object) => jsonEncode(object.id);
+  String toJson(UserId object) => object.id;
 }
