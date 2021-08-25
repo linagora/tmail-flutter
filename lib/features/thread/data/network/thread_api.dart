@@ -63,6 +63,12 @@ class ThreadAPI {
     final resultList = result.parse<GetEmailResponse>(
         getEmailInvocation.methodCallId, GetEmailResponse.deserialize);
 
+    if (sort != null && resultList != null) {
+      sort.forEach((comparator) {
+        resultList..sortEmails(comparator);
+      });
+    }
+
     return resultList == null ? [] : resultList.list;
   }
 }
