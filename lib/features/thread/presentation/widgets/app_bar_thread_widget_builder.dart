@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnOpenSearchMailActionClick = void Function();
@@ -20,12 +21,14 @@ class AppBarThreadWidgetBuilder {
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
   final PresentationMailbox? _presentationMailbox;
+  final UserProfile? _userProfile;
 
   AppBarThreadWidgetBuilder(
     this._context,
     this._imagePaths,
     this._responsiveUtils,
-    this._presentationMailbox
+    this._presentationMailbox,
+    this._userProfile,
   );
 
   AppBarThreadWidgetBuilder onOpenUserInformationAction(
@@ -76,7 +79,7 @@ class AppBarThreadWidgetBuilder {
       child: Padding(
         padding: EdgeInsets.zero,
         child: AvatarBuilder()
-          .text('J')
+          .text(_userProfile != null ? _userProfile!.getAvatarText() : '')
           .size(36)
           .build()));
   }

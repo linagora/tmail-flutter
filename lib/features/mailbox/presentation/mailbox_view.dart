@@ -96,8 +96,10 @@ class MailboxView extends GetWidget<MailboxController> {
   Widget _buildUserInformationWidget(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 16, top: 8.0, right: 16),
-      child: UserInformationWidgetBuilder(imagePaths)
-        .build());
+      child: Obx(() => UserInformationWidgetBuilder(
+          imagePaths,
+          controller.mailboxDashBoardController.userProfile.value)
+        .build()));
   }
 
   Widget _buildSearchFormWidget(BuildContext context) {
