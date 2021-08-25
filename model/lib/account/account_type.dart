@@ -1,0 +1,5 @@
+
+enum AccountType {
+  oauth,
+  email
+}
