@@ -31,6 +31,11 @@ class ImagePaths {
   String get icOffline => _getImagePath('ic_offline.svg');
   String get icFlagged => _getImagePath('ic_flagged.svg');
   String get icMoreReceiver => _getImagePath('ic_more_receiver.svg');
+  String get icComposerClose => _getImagePath('ic_composer_close.svg');
+  String get icComposerSend => _getImagePath('ic_composer_send.svg');
+  String get icComposerMenu => _getImagePath('ic_composer_menu.svg');
+  String get icComposerFileShare => _getImagePath('ic_composer_file_share.svg');
+  String get icExpandAddress => _getImagePath('ic_expand_address.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

@@ -19,9 +19,12 @@ export 'mailbox/expand_mode.dart';
 // Email
 export 'email/presentation_email.dart';
 export 'email/email_content.dart';
+export 'email/prefix_email_address.dart';
+export 'email/email_action_type.dart';
 export 'email/presentation_email_address.dart';
 
 // Extensions
 export 'extensions/email_address_extension.dart';
 export 'extensions/list_email_address_extension.dart';
 export 'extensions/session_extension.dart';
+export 'extensions/utcdate_extension.dart';

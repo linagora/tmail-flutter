@@ -46,4 +46,10 @@ extension AppColor on Color {
   static const avatarTextColor = Color(0xFF3840F7);
   static const sentTimeTextColorUnRead = Color(0xFF182952);
   static const subjectEmailTextColorUnRead = Color(0xFF3840F7);
+  static const dividerColor = Color(0xFFEAEAEA);
+  static const bgComposer = Color(0xFFFBFBFF);
+  static const emailAddressChipColor = Color(0xFFF5F5F7);
+  static const enableSendEmailButtonColor = Color(0xFF3840F7);
+  static const disableSendEmailButtonColor = Color(0xFFACAFFF);
+  static const borderLeftEmailContentColor = Color(0xFFEFEFEF);
 }

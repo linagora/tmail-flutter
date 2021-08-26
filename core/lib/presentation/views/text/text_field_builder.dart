@@ -8,6 +8,8 @@ class TextFieldBuilder {
   TextInputAction? _textInputAction;
   InputDecoration? _inputDecoration;
   bool? _obscureText;
+  int? _maxLines = 1;
+  TextEditingController? _textController;
 
   TextFieldBuilder key(Key key) {
     _key = key;
@@ -39,13 +41,25 @@ class TextFieldBuilder {
     return this;
   }
 
+  TextFieldBuilder setText(String value) {
+    _textController = TextEditingController.fromValue(TextEditingValue(text: value));
+    return this;
+  }
+
+  TextFieldBuilder maxLines(int? value) {
+    _maxLines = value;
+    return this;
+  }
+
   TextField build() {
     return TextField(
       key: _key ?? Key('TextFieldBuilder'),
       onChanged: _onTextChange,
       cursorColor: AppColor.primaryColor,
+      controller: _textController,
       textInputAction: _textInputAction,
       decoration: _inputDecoration,
+      maxLines: _maxLines,
       style: _textStyle ?? TextStyle(color: AppColor.textFieldTextColor),
       obscureText: _obscureText ?? false,
     );
