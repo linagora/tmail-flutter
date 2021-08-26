@@ -156,5 +156,48 @@ class AppLocalizations {
       name: 'cc_email_address_prefix',
     );
   }
+
+  String get hint_text_email_address {
+    return Intl.message(
+      'Name or email address',
+      name: 'hint_text_email_address',
+    );
+  }
+
+  String get subject_email {
+    return Intl.message(
+      'Subject',
+      name: 'subject_email',
+    );
+  }
+
+  String get hint_content_email_composer {
+    return Intl.message(
+      'Start writing your email here',
+      name: 'hint_content_email_composer',
+    );
+  }
+
+  String header_email_quoted(String sentDate, String emailAddress) {
+    return Intl.message(
+        'On $sentDate, from $emailAddress',
+        name: 'header_email_quoted',
+        args: [sentDate, emailAddress]
+    );
+  }
+
+  String get prefix_reply_email {
+    return Intl.message(
+      'Re:',
+      name: 'prefix_reply_email',
+    );
+  }
+
+  String get prefix_forward_email {
+    return Intl.message(
+      'Fwd:',
+      name: 'prefix_forward_email',
+    );
+  }
 }
 

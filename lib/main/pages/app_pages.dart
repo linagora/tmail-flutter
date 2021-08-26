@@ -1,4 +1,6 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
@@ -39,5 +41,9 @@ class AppPages {
     GetPage(
       name: AppRoutes.EMAIL,
       page: () => EmailView()),
+    GetPage(
+      name: AppRoutes.COMPOSER,
+      page: () => ComposerView(),
+      binding: ComposerBindings()),
   ];
 }

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-08-18T17:44:10.952718",
+  "@@last_modified": "2021-08-27T17:46:09.196916",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -107,6 +107,39 @@
   },
   "cc_email_address_prefix": "Cc",
   "@cc_email_address_prefix": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "hint_text_email_address": "Name or email address",
+  "@hint_text_email_address": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "subject_email": "Subject",
+  "@subject_email": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "hint_content_email_composer": "Start writing your email here",
+  "@hint_content_email_composer": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "header_email_quoted": "On {sentDate}, from {emailAddress}",
+  "@header_email_quoted": {
+    "type": "text",
+    "placeholders": {
+      "sentDate": {},
+      "emailAddress": {}
+    }
+  },
+  "prefix_reply_email": "Re:",
+  "@prefix_reply_email": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "prefix_forward_email": "Fwd:",
+  "@prefix_forward_email": {
     "type": "text",
     "placeholders": {}
   }
