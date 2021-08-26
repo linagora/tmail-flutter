@@ -6,4 +6,5 @@ abstract class AppRoutes {
   static const THREAD = '$MAILBOX_DASHBOARD/thread';
   static const EMAIL = '$THREAD/email';
   static const SESSION = '/session';
+  static const COMPOSER = '/composer';
 }

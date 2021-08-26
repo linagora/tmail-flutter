@@ -7,8 +7,11 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class EmailController extends BaseController {
 
@@ -16,6 +19,7 @@ class EmailController extends BaseController {
   final GetEmailContentInteractor _getEmailContentInteractor;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
+  EmailContent? emailContent;
 
   EmailController(this._getEmailContentInteractor);
 
@@ -48,6 +52,11 @@ class EmailController extends BaseController {
 
   @override
   void onDone() {
+    viewState.value.map((success) {
+      if (success is GetEmailContentSuccess) {
+        emailContent = success.emailContent;
+      }
+    });
   }
 
   @override
@@ -60,5 +69,20 @@ class EmailController extends BaseController {
 
   void goToThreadView(BuildContext context) {
     Get.back();
+  }
+
+  void pressEmailAction(EmailActionType emailActionType) {
+    if (mailboxDashBoardController.selectedEmail.value != null
+        && mailboxDashBoardController.sessionCurrent != null
+        && mailboxDashBoardController.userProfile.value != null) {
+      Get.toNamed(
+        AppRoutes.COMPOSER,
+        arguments: ComposerArguments(
+          emailActionType: emailActionType,
+          presentationEmail: mailboxDashBoardController.selectedEmail.value!,
+          emailContent: emailContent,
+          session: mailboxDashBoardController.sessionCurrent!,
+          userProfile: mailboxDashBoardController.userProfile.value!));
+    }
   }
 }
