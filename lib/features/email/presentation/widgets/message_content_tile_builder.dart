@@ -11,19 +11,19 @@ import 'package:tmail_ui_user/features/email/presentation/model/text_format.dart
 
 class MessageContentTileBuilder {
 
-  final MessageContent _messageContent;
-  final List<AttachmentFile> _attachmentInlines;
-  final Session? _session;
-  final AccountId? _accountId;
-  final HtmlMessagePurifier _htmlMessagePurifier;
+  final MessageContent messageContent;
+  final List<AttachmentFile> attachmentInlines;
+  final Session? session;
+  final AccountId? accountId;
+  final HtmlMessagePurifier htmlMessagePurifier;
 
-  MessageContentTileBuilder(
-    this._htmlMessagePurifier,
-    this._messageContent,
-    this._attachmentInlines,
-    this._session,
-    this._accountId,
-  );
+  MessageContentTileBuilder({
+    required this.htmlMessagePurifier,
+    required this.messageContent,
+    required this.attachmentInlines,
+    required this.session,
+    required this.accountId,
+  });
 
   Widget build() {
     return Theme(
@@ -33,8 +33,8 @@ class MessageContentTileBuilder {
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: Center(
-          child: _messageContent.textFormat == TextFormat.PLAIN
-            ? Text('${_messageContent.content}', style: TextStyle(fontSize: 12, color: AppColor.mailboxTextColor))
+          child: messageContent.textFormat == TextFormat.PLAIN
+            ? Text('${messageContent.content}', style: TextStyle(fontSize: 12, color: AppColor.mailboxTextColor))
             : HtmlWidget(
                 getHtmlMessageText(),
                 textStyle: TextStyle(fontSize: 12, color: AppColor.mailboxTextColor),
@@ -50,11 +50,11 @@ class MessageContentTileBuilder {
   }
 
   String getHtmlMessageText() {
-    final message = (_attachmentInlines.isNotEmpty && _session != null && _accountId != null && _messageContent.hasImageInlineWithCid())
-      ? '${_messageContent.getContentHasInlineAttachment(_session!, _accountId!, _attachmentInlines)}'
-      : '${_messageContent.content}';
+    final message = (attachmentInlines.isNotEmpty && session != null && accountId != null && messageContent.hasImageInlineWithCid())
+      ? '${messageContent.getContentHasInlineAttachment(session!, accountId!, attachmentInlines)}'
+      : '${messageContent.content}';
 
-    final trustAsHtml = _htmlMessagePurifier.purifyHtmlMessage(
+    final trustAsHtml = htmlMessagePurifier.purifyHtmlMessage(
         message,
         allowAttributes: {'style', 'input', 'form'});
 

@@ -58,8 +58,9 @@ class EmailView extends GetWidget {
   Widget _buildBottomBar(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 6, top: 6, right: 6, bottom: 6),
-      child: BottomBarMailWidgetBuilder(context, imagePaths, responsiveUtils)
-          .build());
+      child: (BottomBarMailWidgetBuilder(context, imagePaths, responsiveUtils)
+          ..addOnPressEmailAction((emailActionType) => emailController.pressEmailAction(emailActionType)))
+        .build());
   }
 
   Widget _buildEmailContent(BuildContext context) {
@@ -193,11 +194,11 @@ class EmailView extends GetWidget {
                 itemCount: messageContents.length,
                 itemBuilder: (context, index) =>
                   MessageContentTileBuilder(
-                      htmlMessagePurifier,
-                      messageContents[index],
-                      attachmentsInline,
-                      emailController.mailboxDashBoardController.sessionCurrent,
-                      emailController.mailboxDashBoardController.accountId.value)
+                      htmlMessagePurifier: htmlMessagePurifier,
+                      messageContent: messageContents[index],
+                      attachmentInlines: attachmentsInline,
+                      session: emailController.mailboxDashBoardController.sessionCurrent,
+                      accountId: emailController.mailboxDashBoardController.accountId.value)
                     .build())
             : SizedBox.shrink();
         } else {

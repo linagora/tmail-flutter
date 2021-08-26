@@ -56,7 +56,7 @@ class AppBarMailWidgetBuilder {
   Widget _buildBackButton() {
     return ButtonBuilder(_imagePaths.icBack)
       .size(20)
-      .onBackActionClick(() {
+      .onPressActionClick(() {
         if (_onBackActionClick != null) {
           _onBackActionClick!();
         }})
