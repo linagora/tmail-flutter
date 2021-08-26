@@ -16,3 +16,21 @@ extension DateTimeExtension on DateTime {
     return now.year == this.year;
   }
 }
+
+extension DateTimeNullableExtension on DateTime? {
+
+  String toPattern() {
+    if (this != null) {
+      if (this!.isToday()) {
+        return 'h:mm a';
+      } else if (this!.isYesterday()) {
+        return 'EEE';
+      } else if (this!.isThisYear()) {
+        return 'MMMd';
+      } else {
+        return 'yMMMd';
+      }
+    }
+    return 'yMMMd';
+  }
+}

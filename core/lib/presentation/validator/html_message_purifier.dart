@@ -20,7 +20,8 @@ class HtmlMessagePurifier {
       .removeMaxHeightZeroPixel()
       .removeMaxWidthZeroPixel()
       .removeHeightZeroPixel()
-      .removeWidthZeroPixel();
+      .removeWidthZeroPixel()
+      .addBorderLefForBlockQuote();
   }
 
   String sanitizeHtml(

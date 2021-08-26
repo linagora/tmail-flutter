@@ -16,6 +16,7 @@ class ButtonBuilder {
   double? _padding;
   bool? _isVertical;
   Key? _key;
+  Color? _color;
 
   ButtonBuilder key(Key key) {
     _key = key;
@@ -24,6 +25,11 @@ class ButtonBuilder {
 
   ButtonBuilder size(double size) {
     _size = size;
+    return this;
+  }
+
+  ButtonBuilder color(Color color) {
+    _color = color;
     return this;
   }
 
@@ -40,7 +46,7 @@ class ButtonBuilder {
 
   ButtonBuilder(this._icon);
 
-  ButtonBuilder onBackActionClick(OnPressActionClick onPressActionClick) {
+  ButtonBuilder onPressActionClick(OnPressActionClick onPressActionClick) {
     _onPressActionClick = onPressActionClick;
     return this;
   }
@@ -88,7 +94,7 @@ class ButtonBuilder {
 
   Widget _buildIcon() => Padding(
     padding: EdgeInsets.all(_padding ?? 10),
-    child: SvgPicture.asset(_icon ?? '', width: _size ?? 24, height: _size ?? 24, fit: BoxFit.fill));
+    child: SvgPicture.asset(_icon ?? '', width: _size ?? 24, height: _size ?? 24, fit: BoxFit.fill, color: _color));
 
   Widget _buildText() {
     return Text(

@@ -53,7 +53,7 @@ class PresentationEmail with EquatableMixin {
 
   String getAvatarText() {
     if (getSenderName().isNotEmpty) {
-      return getSenderName().substring(0, 1).toUpperCase();
+      return getSenderName()[0].toUpperCase();
     }
     return '';
   }
