@@ -89,6 +89,15 @@ dependencies:
   # flutter_widget_from_html
   flutter_widget_from_html: 0.6.2
 
+  # flutter_chips_input
+  flutter_chips_input: 1.10.0
+
+  # html_editor_enhanced
+  html_editor_enhanced:
+    git:
+      url: git://github.com/dab246/html-editor-enhanced.git
+      ref: master
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
