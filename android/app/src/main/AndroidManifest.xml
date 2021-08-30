@@ -4,7 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <uses-sdk tools:overrideLibrary="io.flutter.plugins.webviewflutter" />
+    <!-- webviewflutter support minSdk version to at least 19 -->
+    <!-- flutter_inappwebview support minSdk version to at least 17 -->
+    <uses-sdk tools:overrideLibrary="io.flutter.plugins.webviewflutter, com.pichillilorenzo.flutter_inappwebview" />
 
     <queries>
         <intent>
