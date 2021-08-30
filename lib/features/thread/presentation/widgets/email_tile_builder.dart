@@ -82,7 +82,7 @@ class EmailTileBuilder {
                   Padding(
                     padding: EdgeInsets.only(right: 4),
                     child: Text(
-                      '${_presentationEmail.getTimeSentEmail('${Localizations.localeOf(_context).languageCode}_${Localizations.localeOf(_context).countryCode}')}',
+                      '${_presentationEmail.getTimeSentEmail(Localizations.localeOf(_context).toLanguageTag())}',
                       maxLines: 1,
                       overflow:TextOverflow.ellipsis,
                       style: TextStyle(
