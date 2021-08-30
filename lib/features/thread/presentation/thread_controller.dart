@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart'
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
@@ -28,7 +29,7 @@ class ThreadController extends BaseController {
 
   final _properties = Properties({
     'id', 'subject', 'from', 'to', 'cc', 'bcc', 'keywords', 'receivedAt',
-    'sentAt', 'preview', 'hasAttachment'
+    'sentAt', 'preview', 'hasAttachment', 'replyTo'
   });
 
   final emailList = <PresentationEmail>[].obs;
@@ -175,5 +176,15 @@ class ThreadController extends BaseController {
 
   void goToEmail(BuildContext context) {
     Get.toNamed(AppRoutes.EMAIL);
+  }
+
+  void composeEmailAction() {
+    if (mailboxDashBoardController.sessionCurrent != null && mailboxDashBoardController.userProfile.value != null) {
+      Get.toNamed(
+        AppRoutes.COMPOSER,
+        arguments: ComposerArguments(
+          session: mailboxDashBoardController.sessionCurrent!,
+          userProfile: mailboxDashBoardController.userProfile.value!));
+    }
   }
 }

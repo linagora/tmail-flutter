@@ -102,20 +102,32 @@ class AppBarThreadWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        GestureDetector(
-          onTap: () => {
-            if (_onOpenListMailboxActionClick != null) {
-              _onOpenListMailboxActionClick!()
-            }},
-          child: Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Text(
-              '${_presentationMailbox?.name != null ? _presentationMailbox?.name?.name : ''}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 22, color: AppColor.titleAppBarMailboxListMail, fontWeight: FontWeight.w500),
-            ))),
-        if(_presentationMailbox != null && _presentationMailbox!.getCountUnReadEmails().isNotEmpty)
+        (_presentationMailbox != null && _presentationMailbox!.hasRole())
+          ? GestureDetector(
+              onTap: () => {
+                if (_onOpenListMailboxActionClick != null) {
+                  _onOpenListMailboxActionClick!()
+                }},
+              child: Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Text(
+                  '${_presentationMailbox?.name != null ? _presentationMailbox?.name?.name : ''}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 22, color: AppColor.titleAppBarMailboxListMail, fontWeight: FontWeight.w500))))
+          : Expanded(child: GestureDetector(
+              onTap: () => {
+                if (_onOpenListMailboxActionClick != null) {
+                  _onOpenListMailboxActionClick!()
+                }},
+              child: Padding(
+                  padding: EdgeInsets.only(left: 16),
+                  child: Text(
+                    '${_presentationMailbox?.name != null ? _presentationMailbox?.name?.name : ''}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 22, color: AppColor.titleAppBarMailboxListMail, fontWeight: FontWeight.w500))))),
+        if(_presentationMailbox != null && _presentationMailbox!.hasRole() && _presentationMailbox!.getCountUnReadEmails().isNotEmpty)
           Container(
             margin: EdgeInsets.only(left: 9),
             padding: EdgeInsets.only(left: 8, right: 8, top: 2.5, bottom: 2.5),
