@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:core/core.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
@@ -10,7 +9,6 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_button_new_folder_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_tile_builder.dart';
@@ -154,10 +152,7 @@ class MailboxView extends GetWidget<MailboxController> {
             .addName(AppLocalizations.of(context).new_folder)
             .build()
         ),
-        Obx(() => controller.folderMailboxTree.value.root.childrenItems.isNotEmpty
-            ? _buildFolderMailbox(context, controller.folderMailboxTree.value)
-            : SizedBox.shrink()
-        ),
+        _buildFolderMailbox(context),
       ]
     );
   }
@@ -180,19 +175,22 @@ class MailboxView extends GetWidget<MailboxController> {
           .build()));
   }
 
-  Widget _buildFolderMailbox(BuildContext context, MailboxTree mailboxTree) {
-    return Transform(
-      transform: Matrix4.translationValues(responsiveUtils.isMobile(context) ? 0.0 : -15.0, 0.0, 0.0),
-      child: Padding(
-        padding: EdgeInsets.only(left: 4, right: 16),
-        child: TreeView(
-          startExpanded: false,
-          key: Key('folder_mailbox_list'),
-          children: _buildListChildTileWidget(context, mailboxTree.root.childrenItems)))
+  Widget _buildFolderMailbox(BuildContext context) {
+    return Obx(() => controller.folderMailboxTree.value.root.hasChildren()
+        ? Transform(
+            transform: Matrix4.translationValues(responsiveUtils.isMobile(context) ? 0.0 : -15.0, 0.0, 0.0),
+            child: Padding(
+              padding: EdgeInsets.only(left: 4, right: 16),
+              child: TreeView(
+                startExpanded: false,
+                key: Key('folder_mailbox_list'),
+                children: _buildListChildTileWidget(context, controller.folderMailboxTree.value.root.childrenItems!)))
+          )
+        : SizedBox.shrink()
     );
   }
 
-  List<Widget> _buildListChildTileWidget(BuildContext context, BuiltList<MailboxNode> listMailboxNode) {
+  List<Widget> _buildListChildTileWidget(BuildContext context, List<MailboxNode> listMailboxNode) {
     return listMailboxNode
       .map((mailboxNode) => mailboxNode.hasChildren()
         ? Padding(
@@ -206,7 +204,7 @@ class MailboxView extends GetWidget<MailboxController> {
                     mailboxNode,
                     controller.getSelectMode(mailboxNode.item, controller.mailboxDashBoardController.selectedMailbox.value))
                 .build(context)),
-              children: _buildListChildTileWidget(context, mailboxNode.childrenItems)))
+              children: _buildListChildTileWidget(context, mailboxNode.childrenItems!)))
         : Padding(
             padding: EdgeInsets.only(left: 16),
             child: GestureDetector(
