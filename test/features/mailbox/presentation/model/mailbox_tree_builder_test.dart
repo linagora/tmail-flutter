@@ -13,46 +13,46 @@ void main() {
         PresentationMailbox(MailboxId(Id('root'))),
         childrenItems: [
           MailboxNode(
-            PresentationMailbox(MailboxId(Id("1")), parentId: null),
-            childrenItems: [
-              MailboxNode(PresentationMailbox(MailboxId(Id("1_1")), parentId: MailboxId(Id('1')))),
-              MailboxNode(
-                PresentationMailbox(MailboxId(Id("1_2")), parentId: MailboxId(Id('1'))),
-                childrenItems: [
-                  MailboxNode(PresentationMailbox(MailboxId(Id("1_2_1")), parentId: MailboxId(Id('1_2'))))
-                ]
-              ),
-            ]
+              PresentationMailbox(MailboxId(Id("3")), parentId: null),
+              childrenItems: [
+                MailboxNode(
+                    PresentationMailbox(MailboxId(Id("3_2")), parentId: MailboxId(Id('3'))),
+                    childrenItems: [MailboxNode(PresentationMailbox(MailboxId(Id("3_2_1")), parentId: MailboxId(Id('3_2'))))]
+                ),
+                MailboxNode(
+                    PresentationMailbox(MailboxId(Id("3_1")), parentId: MailboxId(Id('3'))),
+                    childrenItems: [
+                      MailboxNode(PresentationMailbox(MailboxId(Id("3_1_1")), parentId: MailboxId(Id('3_1'))))
+                    ]
+                ),
+              ]
           ),
           MailboxNode(
-            PresentationMailbox(MailboxId(Id("2")), parentId: null),
-            childrenItems: [
-              MailboxNode(PresentationMailbox(MailboxId(Id("2_1")), parentId: MailboxId(Id('2'))),
-                childrenItems: [
-                  MailboxNode(
-                    PresentationMailbox(MailboxId(Id("2_1_1")), parentId: MailboxId(Id('2_1'))),
-                    childrenItems: [MailboxNode(PresentationMailbox(MailboxId(Id("2_1_1_1")), parentId: MailboxId(Id('2_1_1'))))]
-                  ),
-                  MailboxNode(PresentationMailbox(MailboxId(Id("2_1_2")), parentId: MailboxId(Id('2_1'))))
-                ]
-              ),
-              MailboxNode(PresentationMailbox(MailboxId(Id("2_2")), parentId: MailboxId(Id('2'))))
-            ]
+              PresentationMailbox(MailboxId(Id("1")), parentId: null),
+              childrenItems: [
+                MailboxNode(
+                    PresentationMailbox(MailboxId(Id("1_2")), parentId: MailboxId(Id('1'))),
+                    childrenItems: [
+                      MailboxNode(PresentationMailbox(MailboxId(Id("1_2_1")), parentId: MailboxId(Id('1_2'))))
+                    ]
+                ),
+                MailboxNode(PresentationMailbox(MailboxId(Id("1_1")), parentId: MailboxId(Id('1')))),
+              ]
           ),
           MailboxNode(
-            PresentationMailbox(MailboxId(Id("3")), parentId: null),
-            childrenItems: [
-              MailboxNode(
-                PresentationMailbox(MailboxId(Id("3_1")), parentId: MailboxId(Id('3'))),
-                childrenItems: [
-                  MailboxNode(PresentationMailbox(MailboxId(Id("3_1_1")), parentId: MailboxId(Id('3_1'))))
-                ]
-              ),
-              MailboxNode(
-                PresentationMailbox(MailboxId(Id("3_2")), parentId: MailboxId(Id('3'))),
-                childrenItems: [MailboxNode(PresentationMailbox(MailboxId(Id("3_2_1")), parentId: MailboxId(Id('3_2'))))]
-              )
-            ]
+              PresentationMailbox(MailboxId(Id("2")), parentId: null),
+              childrenItems: [
+                MailboxNode(PresentationMailbox(MailboxId(Id("2_2")), parentId: MailboxId(Id('2')))),
+                MailboxNode(PresentationMailbox(MailboxId(Id("2_1")), parentId: MailboxId(Id('2'))),
+                    childrenItems: [
+                      MailboxNode(PresentationMailbox(MailboxId(Id("2_1_2")), parentId: MailboxId(Id('2_1')))),
+                      MailboxNode(
+                          PresentationMailbox(MailboxId(Id("2_1_1")), parentId: MailboxId(Id('2_1'))),
+                          childrenItems: [MailboxNode(PresentationMailbox(MailboxId(Id("2_1_1_1")), parentId: MailboxId(Id('2_1_1'))))]
+                      ),
+                    ]
+                ),
+              ]
           ),
         ]
       )

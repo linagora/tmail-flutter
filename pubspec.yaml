@@ -83,6 +83,8 @@ dependencies:
   # http_parser
   http_parser: 4.0.0
 
+  collection: 1.15.0
+
   # file_size
   filesize: 2.0.1
 
