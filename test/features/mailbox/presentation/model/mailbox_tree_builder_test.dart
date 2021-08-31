@@ -11,14 +11,14 @@ void main() {
     final expectedTree = MailboxTree(
       MailboxNode(
         PresentationMailbox(MailboxId(Id('root'))),
-        child: [
+        childrenItems: [
           MailboxNode(
             PresentationMailbox(MailboxId(Id("1")), parentId: null),
-            child: [
+            childrenItems: [
               MailboxNode(PresentationMailbox(MailboxId(Id("1_1")), parentId: MailboxId(Id('1')))),
               MailboxNode(
                 PresentationMailbox(MailboxId(Id("1_2")), parentId: MailboxId(Id('1'))),
-                child: [
+                childrenItems: [
                   MailboxNode(PresentationMailbox(MailboxId(Id("1_2_1")), parentId: MailboxId(Id('1_2'))))
                 ]
               ),
@@ -26,12 +26,12 @@ void main() {
           ),
           MailboxNode(
             PresentationMailbox(MailboxId(Id("2")), parentId: null),
-            child: [
+            childrenItems: [
               MailboxNode(PresentationMailbox(MailboxId(Id("2_1")), parentId: MailboxId(Id('2'))),
-                child: [
+                childrenItems: [
                   MailboxNode(
                     PresentationMailbox(MailboxId(Id("2_1_1")), parentId: MailboxId(Id('2_1'))),
-                    child: [MailboxNode(PresentationMailbox(MailboxId(Id("2_1_1_1")), parentId: MailboxId(Id('2_1_1'))))]
+                    childrenItems: [MailboxNode(PresentationMailbox(MailboxId(Id("2_1_1_1")), parentId: MailboxId(Id('2_1_1'))))]
                   ),
                   MailboxNode(PresentationMailbox(MailboxId(Id("2_1_2")), parentId: MailboxId(Id('2_1'))))
                 ]
@@ -41,16 +41,16 @@ void main() {
           ),
           MailboxNode(
             PresentationMailbox(MailboxId(Id("3")), parentId: null),
-            child: [
+            childrenItems: [
               MailboxNode(
                 PresentationMailbox(MailboxId(Id("3_1")), parentId: MailboxId(Id('3'))),
-                child: [
+                childrenItems: [
                   MailboxNode(PresentationMailbox(MailboxId(Id("3_1_1")), parentId: MailboxId(Id('3_1'))))
                 ]
               ),
               MailboxNode(
                 PresentationMailbox(MailboxId(Id("3_2")), parentId: MailboxId(Id('3'))),
-                child: [MailboxNode(PresentationMailbox(MailboxId(Id("3_2_1")), parentId: MailboxId(Id('3_2'))))]
+                childrenItems: [MailboxNode(PresentationMailbox(MailboxId(Id("3_2_1")), parentId: MailboxId(Id('3_2'))))]
               )
             ]
           ),
@@ -103,8 +103,8 @@ void main() {
 
       final generatedTree = await TreeBuilder().generateMailboxTree(testCase);
 
-      expect(generatedTree.root.childrenItems, containsAll(expectedTree.root.childrenItems));
-      expect(generatedTree.root.childrenItems[2], equals(expectedTree.root.childrenItems[0]));
+      expect(generatedTree.root.childrenItems, containsAll(expectedTree.root.childrenItems!));
+      expect(generatedTree.root.childrenItems![2], equals(expectedTree.root.childrenItems![0]));
     });
 
     test('list mailbox is not in ordered, parent come first, then grandpa, then children', () async {
@@ -128,8 +128,8 @@ void main() {
 
       final generatedTree = await TreeBuilder().generateMailboxTree(testCase);
 
-      expect(generatedTree.root.childrenItems, containsAll(expectedTree.root.childrenItems));
-      expect(generatedTree.root.childrenItems[2], equals(expectedTree.root.childrenItems[0]));
+      expect(generatedTree.root.childrenItems, containsAll(expectedTree.root.childrenItems!));
+      expect(generatedTree.root.childrenItems![2], equals(expectedTree.root.childrenItems![0]));
     });
 
     test('list mailbox is not in ordered, children come first, then grandpa, then parent', () async {
@@ -153,8 +153,8 @@ void main() {
 
       final generatedTree = await TreeBuilder().generateMailboxTree(testCase);
 
-      expect(generatedTree.root.childrenItems, containsAll(expectedTree.root.childrenItems));
-      expect(generatedTree.root.childrenItems[2], equals(expectedTree.root.childrenItems[0]));
+      expect(generatedTree.root.childrenItems, containsAll(expectedTree.root.childrenItems!));
+      expect(generatedTree.root.childrenItems![2], equals(expectedTree.root.childrenItems![0]));
     });
 
     test('list mailbox is not in ordered, children come first, then parent, then grandpa',  () async {
@@ -178,8 +178,8 @@ void main() {
 
       final generatedTree = await TreeBuilder().generateMailboxTree(testCase);
 
-      expect(generatedTree.root.childrenItems, containsAll(expectedTree.root.childrenItems));
-      expect(generatedTree.root.childrenItems[2], equals(expectedTree.root.childrenItems[0]));
+      expect(generatedTree.root.childrenItems, containsAll(expectedTree.root.childrenItems!));
+      expect(generatedTree.root.childrenItems![2], equals(expectedTree.root.childrenItems![0]));
     });
 
     test('item have parent but not found in tree will become root child',  () async {
@@ -204,7 +204,7 @@ void main() {
 
       final generatedTree = await TreeBuilder().generateMailboxTree(testCase);
 
-      expect(generatedTree.root.childrenItems.length, equals(4));
+      expect(generatedTree.root.childrenItems?.length, equals(4));
       expect(generatedTree.root.childrenItems,
           contains(MailboxNode(PresentationMailbox(MailboxId(Id("e3_2_1")), parentId: MailboxId(Id('id42'))))));
     });
