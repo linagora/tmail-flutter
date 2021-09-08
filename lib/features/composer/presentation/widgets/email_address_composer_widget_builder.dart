@@ -1,16 +1,19 @@
 
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 
 typedef OnOpenExpandAddressActionClick = void Function();
-
+typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word);
 typedef OnUpdateListEmailAddressAction = void Function(
   PrefixEmailAddress prefixEmailAddress,
   List<EmailAddress> listEmailAddress
@@ -21,7 +24,6 @@ class EmailAddressComposerWidgetBuilder {
   final ImagePaths _imagePaths;
   final BuildContext _context;
   final ExpandMode _expandMode;
-  final List<EmailAddress> _listEmailAddressSuggestion;
   final List<EmailAddress> _listToEmailAddress;
   final List<EmailAddress> _listCcEmailAddress;
   final List<EmailAddress> _listBccEmailAddress;
@@ -31,12 +33,12 @@ class EmailAddressComposerWidgetBuilder {
 
   OnOpenExpandAddressActionClick? _onOpenExpandAddressActionClick;
   OnUpdateListEmailAddressAction? _onUpdateListEmailAddressAction;
+  OnSuggestionEmailAddress? _onSuggestionEmailAddress;
 
   EmailAddressComposerWidgetBuilder(
     this._context,
     this._imagePaths,
     this._expandMode,
-    this._listEmailAddressSuggestion,
     this._listToEmailAddress,
     this._listCcEmailAddress,
     this._listBccEmailAddress,
@@ -49,6 +51,10 @@ class EmailAddressComposerWidgetBuilder {
 
   void addOnUpdateListEmailAddressAction(OnUpdateListEmailAddressAction onUpdateListEmailAddressAction) {
     _onUpdateListEmailAddressAction = onUpdateListEmailAddressAction;
+  }
+
+  void addOnSuggestionEmailAddress(OnSuggestionEmailAddress onSuggestionEmailAddress) {
+    _onSuggestionEmailAddress = onSuggestionEmailAddress;
   }
 
   Widget build() {
@@ -115,27 +121,31 @@ class EmailAddressComposerWidgetBuilder {
             : Key('${prefixEmailAddress.toString()}_email_address_input'),
           initialValue: _getListEmailAddressCurrent(prefixEmailAddress),
           textStyle: TextStyle(color: AppColor.nameUserColor, fontSize: 14, fontWeight: FontWeight.w500),
+          cursorColor: AppColor.primaryColor,
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: AppLocalizations.of(_context).hint_text_email_address,
             hintMaxLines: 1,
             hintStyle: TextStyle(color: AppColor.baseTextColor, fontSize: 14, fontWeight: FontWeight.w500)),
-          initialSuggestions: _listEmailAddressSuggestion,
           findSuggestions: (query) {
-            if (query.isNotEmpty) {
-              final lowercaseQuery = query.toLowerCase();
-              return _listEmailAddressSuggestion
-                  .where((emailAddress) => emailAddress.getName().toLowerCase().contains(query.toLowerCase())
-                    || emailAddress.getEmail().toLowerCase().contains(query.toLowerCase()))
-                  .toList(growable: false)
-                ..sort((email1, email2) => email1.asString().toLowerCase().indexOf(lowercaseQuery).compareTo(email2.asString().toLowerCase().indexOf(lowercaseQuery)));
+            if (query.isNotEmpty && _onSuggestionEmailAddress != null) {
+              return _onSuggestionEmailAddress!(query);
             }
             return [];
           },
           onChanged: (data) {
-            print('data: $data');
             if (_onUpdateListEmailAddressAction != null) {
               _onUpdateListEmailAddressAction!(prefixEmailAddress, data);
+            }
+          },
+          onChipInputActionDone: (state, value) {
+            if (GetUtils.isEmail(value)) {
+              state.selectSuggestion(EmailAddress(value, value));
+            }
+          },
+          onChipInputChangeFocusAction: (state, value) {
+            if (GetUtils.isEmail(value)) {
+              state.selectSuggestion(EmailAddress(value, value));
             }
           },
           chipBuilder: (context, state, emailAddress) {

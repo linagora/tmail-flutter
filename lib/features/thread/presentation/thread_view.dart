@@ -43,7 +43,7 @@ class ThreadView extends GetWidget<ThreadController> {
         )
       ),
       floatingActionButton: FloatingActionButton(
-        elevation: 0.0,
+        elevation: 4.0,
         child: new Icon(Icons.add),
         backgroundColor: AppColor.appColor,
         onPressed: () => controller.composeEmailAction()

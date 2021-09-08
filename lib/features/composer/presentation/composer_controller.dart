@@ -1,46 +1,93 @@
 
+import 'dart:async';
+
 import 'package:core/core.dart';
+import 'package:core/presentation/utils/app_toast.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/composer/domain/model/auto_complete_pattern.dart';
+import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/search_email_address_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/search_email_address_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/constants/email_constants.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/attachment_file.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/message_content.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:uuid/uuid.dart';
 
-class ComposerController extends GetxController {
+class ComposerController extends BaseController {
 
   final expandMode = ExpandMode.COLLAPSE.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
   final listReplyToEmailAddress = <EmailAddress>[].obs;
-  final htmlEditorController = HtmlEditorController();
 
-  final listEmailAddressSuggestion = [
-    EmailAddress('Mike Jones', 'user1@linagora.com'),
-    EmailAddress('Mike Smith', 'user2@linagora.com'),
-    EmailAddress('Jane Smith', 'user3@linagora.com'),
-    EmailAddress('User4', 'user4@linagora.com'),
-    EmailAddress('User5', 'user5@linagora.com')
-  ];
+  final SendEmailInteractor _sendEmailInteractor;
+  final SaveEmailAddressesInteractor _saveEmailAddressInteractor;
+  final SearchEmailAddressInteractor _searchEmailAddressInteractor;
+  final AppToast _appToast;
+  final Uuid _uuid;
+  final HtmlEditorController htmlEditorController;
+
   List<EmailAddress> listToEmailAddress = [];
   List<EmailAddress> listCcEmailAddress = [];
   List<EmailAddress> listBccEmailAddress = [];
+  String? _subjectEmail;
 
-  ComposerController();
+  void setSubjectEmail(String subject) => _subjectEmail = subject;
+
+  ComposerController(
+    this._sendEmailInteractor,
+    this._saveEmailAddressInteractor,
+    this._searchEmailAddressInteractor,
+    this._appToast,
+    this._uuid,
+    this.htmlEditorController,
+  );
 
   @override
-  void onReady() {
+  void onReady() async {
     super.onReady();
     _getSelectedEmail();
+    await searchEmailAddressSuggestion('');
   }
 
+  @override
+  void onDone() {
+    viewState.value.fold(
+      (failure) {
+        _appToast.showErrorToast(AppLocalizations.of(Get.context!).error_message_sent);
+        Get.back();
+      },
+      (success) {
+        _saveEmailAddress();
+        _appToast.showSuccessToast(AppLocalizations.of(Get.context!).message_sent);
+        Get.back();
+      });
+  }
+
+  @override
+  void onError(error) {
+    _appToast.showErrorToast(AppLocalizations.of(Get.context!).error_message_sent);
+    Get.back();
+  }
+  
   void _getSelectedEmail() {
     final arguments = Get.arguments;
     if (arguments is ComposerArguments) {
@@ -164,6 +211,67 @@ class ComposerController extends GetxController {
         .addBlockTag('div', attribute: 'style=\"padding-right:16px;padding-left:16px;background-color:#FBFBFF;width:100%\"');
 
     return emailQuotedHtml;
+  }
+
+  Future<Email> generateEmail() async {
+    final generateEmailId = EmailId(Id(_uuid.v1()));
+    final outboxMailboxId = composerArguments.value!.mapMailboxId[PresentationMailbox.roleOutbox];
+    final listFromEmailAddress = {
+      EmailAddress(
+        composerArguments.value!.userProfile.getNameDisplay(),
+        composerArguments.value!.userProfile.getEmailAddress())
+    };
+    final generatePartId = PartId(_uuid.v1());
+    final generateBlobId = Id(_uuid.v1());
+
+    final emailBodyText = await htmlEditorController.getText();
+
+    return Email(
+      generateEmailId,
+      mailboxIds: {outboxMailboxId!: true},
+      from: listFromEmailAddress,
+      to: listToEmailAddress.toSet(),
+      cc: listCcEmailAddress.toSet(),
+      bcc: listBccEmailAddress.toSet(),
+      subject: _subjectEmail,
+      htmlBody: {
+        EmailBodyPart(
+          partId: generatePartId,
+          blobId: generateBlobId,
+          type: MediaType.parse(EmailConstants.HTML_TEXT)
+        )},
+      bodyValues: {
+        generatePartId: EmailBodyValue(emailBodyText, false, false)
+      }
+    );
+  }
+
+  void sendEmailAction(BuildContext context) async {
+    if (isEnableEmailSendButton.value) {
+      _appToast.showToast(AppLocalizations.of(context).your_email_being_sent);
+
+      final email = await generateEmail();
+      final accountId = composerArguments.value!.session.accounts.keys.first;
+      final sentMailboxId = composerArguments.value!.mapMailboxId[PresentationMailbox.roleSent];
+      final submissionCreateId = Id(_uuid.v1());
+
+      consumeState(_sendEmailInteractor.execute(accountId, EmailRequest(email, submissionCreateId, mailboxIdSaved: sentMailboxId)));
+    } else {
+      _appToast.showErrorToast(AppLocalizations.of(context).your_email_should_have_at_least_one_recipient);
+    }
+  }
+
+  void _saveEmailAddress() {
+    final listEmailAddressCanSave = Set<EmailAddress>();
+    listEmailAddressCanSave.addAll(listToEmailAddress + listCcEmailAddress + listBccEmailAddress);
+    _saveEmailAddressInteractor.execute(listEmailAddressCanSave.toList());
+  }
+
+  Future<List<EmailAddress>> searchEmailAddressSuggestion(String word) async {
+    return await _searchEmailAddressInteractor.execute(AutoCompletePattern(word: word))
+      .then((value) => value.fold(
+        (failure) => [],
+        (success) => success is SearchEmailAddressSuccess ? success.listEmailAddress : []));
   }
 
   void backToEmailViewAction() {

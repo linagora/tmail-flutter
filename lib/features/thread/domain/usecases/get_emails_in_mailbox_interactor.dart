@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:model/model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -7,7 +8,6 @@ import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/extensions/email_extension.dart';
 
 class GetEmailsInMailboxInteractor {
   final ThreadRepository threadRepository;

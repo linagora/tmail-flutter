@@ -1,5 +1,5 @@
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/login/data/datasource/atuthentitcation_datasource.dart';
+import 'package:tmail_ui_user/features/login/data/datasource/authentication_datasource.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
 
 class AuthenticationRepositoryImpl extends AuthenticationRepository {

@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:core/presentation/utils/app_toast.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,7 +11,8 @@ class CoreBindings extends Bindings {
     _bindingAppImagePaths();
     _bindingResponsiveManager();
     _bindingKeyboardManager();
-    _bindingValiadtor();
+    _bindingValidator();
+    _bindingToast();
   }
 
   void _bindingAppImagePaths() {
@@ -29,7 +31,11 @@ class CoreBindings extends Bindings {
     Get.put(KeyboardUtils());
   }
 
-  void _bindingValiadtor() {
+  void _bindingValidator() {
     Get.put(HtmlMessagePurifier());
+  }
+
+  void _bindingToast() {
+    Get.put(AppToast());
   }
 }

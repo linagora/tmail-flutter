@@ -1,7 +1,7 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tmail_ui_user/features/login/data/datasource/atuthentitcation_datasource.dart';
+import 'package:tmail_ui_user/features/login/data/datasource/authentication_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/network/login_api.dart';
 import 'package:tmail_ui_user/features/login/data/repository/authentication_repository_impl.dart';
