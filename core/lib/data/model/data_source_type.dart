@@ -1,0 +1,5 @@
+
+enum DataSourceType {
+  network,
+  local
+}
