@@ -2,7 +2,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/login/data/model/converter/presentation_email_address_converter.dart';
 
 part 'presentation_account_response.g.dart';
 

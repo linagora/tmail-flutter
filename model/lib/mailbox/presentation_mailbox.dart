@@ -5,9 +5,11 @@ import 'package:model/mailbox/select_mode.dart';
 
 class PresentationMailbox with EquatableMixin {
 
+  static final roleInbox = Role('inbox');
   static final roleTrash = Role('trash');
   static final roleSent = Role('sent');
   static final roleTemplates = Role('templates');
+  static final roleOutbox = Role('outbox');
 
   final MailboxId id;
   final MailboxName? name;
@@ -44,10 +46,6 @@ class PresentationMailbox with EquatableMixin {
   bool hasRole() => role != null && role!.value.isNotEmpty;
 
   String getCountUnReadEmails() {
-    if (role == roleTrash || role == roleSent || role == roleTemplates) {
-      return '';
-    }
-
     if (unreadEmails == null || unreadEmails!.value.value <= 0) {
       return '';
     }
