@@ -172,7 +172,7 @@ class ThreadController extends BaseController {
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
       && mailboxDashBoardController.userProfile.value != null
-      && mailboxDashBoardController.mapMailboxId.containsKey([PresentationMailbox.roleOutbox]);
+      && mailboxDashBoardController.mapMailboxId.containsKey(PresentationMailbox.roleOutbox);
 
   void openMailboxLeftMenu() {
     mailboxDashBoardController.openDrawer();
