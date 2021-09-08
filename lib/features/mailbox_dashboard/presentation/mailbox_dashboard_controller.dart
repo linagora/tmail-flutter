@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
@@ -20,6 +21,7 @@ class MailboxDashBoardController extends BaseController {
   final userProfile = Rxn<UserProfile>();
 
   Session? sessionCurrent;
+  Map<Role, MailboxId> mapMailboxId = Map();
 
   MailboxDashBoardController(this._getUserProfileInteractor);
 
@@ -55,6 +57,10 @@ class MailboxDashBoardController extends BaseController {
         accountId.value = sessionCurrent?.accounts.keys.first;
       }
     });
+  }
+
+  void addMailboxIdToMap(Role role, MailboxId mailboxId) {
+    mapMailboxId[role] = mailboxId;
   }
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {

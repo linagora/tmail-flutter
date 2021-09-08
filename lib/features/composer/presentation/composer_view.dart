@@ -51,6 +51,7 @@ class ComposerView extends GetWidget<ComposerController> {
     return Padding(
       padding: EdgeInsets.only(left: 20, right: 24, top: 12, bottom: 12),
       child: Obx(() => (TopBarComposerWidgetBuilder(imagePaths, controller.isEnableEmailSendButton.value)
+          ..addSendEmailActionClick(() => controller.sendEmailAction(context))
           ..addBackActionClick(() => controller.backToEmailViewAction()))
         .build()),
     );
@@ -66,20 +67,7 @@ class ComposerView extends GetWidget<ComposerController> {
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 24),
-            child: Obx(() {
-              return (EmailAddressComposerWidgetBuilder(
-                    context,
-                    imagePaths,
-                    controller.expandMode.value,
-                    controller.listEmailAddressSuggestion,
-                    controller.listReplyToEmailAddress.isNotEmpty ? controller.listReplyToEmailAddress : controller.listToEmailAddress,
-                    controller.listCcEmailAddress,
-                    controller.listBccEmailAddress,
-                    controller.composerArguments.value?.userProfile)
-                ..addExpandAddressActionClick(() => controller.expandEmailAddressAction())
-                ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress)))
-              .build();
-            })),
+            child: _buildEmailAddress(context)),
           _buildSubjectEmail(context),
           Container(
             margin: EdgeInsets.zero,
@@ -91,6 +79,22 @@ class ComposerView extends GetWidget<ComposerController> {
       ),
     );
   }
+  
+  Widget _buildEmailAddress(BuildContext context) {
+    return Obx(() => (EmailAddressComposerWidgetBuilder(
+            context,
+            imagePaths,
+            controller.expandMode.value,
+            controller.listReplyToEmailAddress.isNotEmpty ? controller.listReplyToEmailAddress : controller.listToEmailAddress,
+            controller.listCcEmailAddress,
+            controller.listBccEmailAddress,
+            controller.composerArguments.value?.userProfile)
+        ..addExpandAddressActionClick(() => controller.expandEmailAddressAction())
+        ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+        ..addOnSuggestionEmailAddress((word) => controller.searchEmailAddressSuggestion(word)))
+      .build()
+    );
+  }
 
   Widget _buildSubjectEmail(BuildContext context) {
     return Padding(
@@ -99,6 +103,7 @@ class ComposerView extends GetWidget<ComposerController> {
         .key(Key('subject_email_input'))
         .textInputAction(TextInputAction.newline)
         .maxLines(null)
+        .onChange((value) => controller.setSubjectEmail(value))
         .textStyle(TextStyle(color: AppColor.nameUserColor, fontSize: 14, fontWeight: FontWeight.w500))
         .textDecoration(InputDecoration(
             hintText: AppLocalizations.of(context).subject_email,
@@ -118,7 +123,9 @@ class ComposerView extends GetWidget<ComposerController> {
       child: Container(
         margin: EdgeInsets.zero,
         color: AppColor.bgComposer,
-        padding: EdgeInsets.only(bottom: 30),
+        padding: controller.getEmailActionType() != EmailActionType.compose 
+          ? EdgeInsets.only(bottom: 30, left: 16, right: 16)
+          : EdgeInsets.only(bottom: 30),
         alignment: Alignment.topCenter,
         child: _buildEmailBodyEditorQuoted(context)
       )

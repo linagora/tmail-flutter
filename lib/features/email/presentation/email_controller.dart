@@ -67,14 +67,17 @@ class EmailController extends BaseController {
     emailAddressExpandMode.value = expandMode;
   }
 
+  bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
+      && mailboxDashBoardController.userProfile.value != null
+      && mailboxDashBoardController.mapMailboxId.containsKey(PresentationMailbox.roleOutbox)
+      && mailboxDashBoardController.selectedEmail.value != null;
+
   void goToThreadView(BuildContext context) {
     Get.back();
   }
 
   void pressEmailAction(EmailActionType emailActionType) {
-    if (mailboxDashBoardController.selectedEmail.value != null
-        && mailboxDashBoardController.sessionCurrent != null
-        && mailboxDashBoardController.userProfile.value != null) {
+    if (canComposeEmail()) {
       Get.toNamed(
         AppRoutes.COMPOSER,
         arguments: ComposerArguments(
@@ -82,7 +85,8 @@ class EmailController extends BaseController {
           presentationEmail: mailboxDashBoardController.selectedEmail.value!,
           emailContent: emailContent,
           session: mailboxDashBoardController.sessionCurrent!,
-          userProfile: mailboxDashBoardController.userProfile.value!));
+          userProfile: mailboxDashBoardController.userProfile.value!,
+          mapMailboxId: mailboxDashBoardController.mapMailboxId));
     }
   }
 }

@@ -2,9 +2,7 @@ import 'dart:convert';
 
 import 'package:model/model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tmail_ui_user/features/login/data/model/response/user_profile_response.dart';
 import 'package:tmail_ui_user/features/login/data/utils/login_constant.dart';
-import 'package:tmail_ui_user/features/login/data/extensions/user_profile_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 
 class CredentialRepositoryImpl extends CredentialRepository {

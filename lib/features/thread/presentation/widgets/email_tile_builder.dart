@@ -4,7 +4,6 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/email/domain/extensions/presentation_email_extension.dart';
 
 typedef OnOpenMailActionClick = void Function();
 
@@ -82,7 +81,7 @@ class EmailTileBuilder {
                   Padding(
                     padding: EdgeInsets.only(right: 4),
                     child: Text(
-                      '${_presentationEmail.getTimeSentEmail(Localizations.localeOf(_context).toLanguageTag())}',
+                      '${_presentationEmail.getEmailDateTime(Localizations.localeOf(_context).toLanguageTag())}',
                       maxLines: 1,
                       overflow:TextOverflow.ellipsis,
                       style: TextStyle(

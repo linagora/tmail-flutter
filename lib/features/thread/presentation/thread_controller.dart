@@ -170,6 +170,10 @@ class ThreadController extends BaseController {
     }
   }
 
+  bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
+      && mailboxDashBoardController.userProfile.value != null
+      && mailboxDashBoardController.mapMailboxId.containsKey([PresentationMailbox.roleOutbox]);
+
   void openMailboxLeftMenu() {
     mailboxDashBoardController.openDrawer();
   }
@@ -179,12 +183,13 @@ class ThreadController extends BaseController {
   }
 
   void composeEmailAction() {
-    if (mailboxDashBoardController.sessionCurrent != null && mailboxDashBoardController.userProfile.value != null) {
+    if (canComposeEmail()) {
       Get.toNamed(
         AppRoutes.COMPOSER,
         arguments: ComposerArguments(
           session: mailboxDashBoardController.sessionCurrent!,
-          userProfile: mailboxDashBoardController.userProfile.value!));
+          userProfile: mailboxDashBoardController.userProfile.value!,
+          mapMailboxId: mailboxDashBoardController.mapMailboxId));
     }
   }
 }

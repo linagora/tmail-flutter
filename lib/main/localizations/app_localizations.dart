@@ -199,5 +199,33 @@ class AppLocalizations {
       name: 'prefix_forward_email',
     );
   }
+
+  String get your_email_being_sent {
+    return Intl.message(
+      'Your email being sent...',
+      name: 'your_email_being_sent',
+    );
+  }
+
+  String get your_email_should_have_at_least_one_recipient {
+    return Intl.message(
+      'Your email should have at least one recipient',
+      name: 'your_email_should_have_at_least_one_recipient',
+    );
+  }
+
+  String get message_sent {
+    return Intl.message(
+      'Message sent',
+      name: 'message_sent',
+    );
+  }
+
+  String get error_message_sent {
+    return Intl.message(
+      'Error message sent',
+      name: 'error_message_sent',
+    );
+  }
 }
 

@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -78,7 +77,7 @@ class MailboxController extends BaseController {
   void onDone() {
     viewState.value.map((success) {
       if (success is GetAllMailboxSuccess) {
-        _setUpMailboxDefault(success.defaultMailboxList);
+        _setUpMapMailboxIdDefault(success.defaultMailboxList);
       }
     });
   }
@@ -90,12 +89,13 @@ class MailboxController extends BaseController {
     folderMailboxTree.value = await _treeBuilder.generateMailboxTree(folderMailboxList);
   }
 
-  void _setUpMailboxDefault(List<PresentationMailbox> defaultMailboxList) {
-    try {
-      final mailboxDefault = defaultMailboxList
-          .firstWhere((presentationMailbox) => presentationMailbox.role == Role(MailboxConstants.ROLE_DEFAULT));
-      mailboxDashBoardController.setSelectedMailbox(mailboxDefault);
-    } catch (e) {}
+  void _setUpMapMailboxIdDefault(List<PresentationMailbox> defaultMailboxList) {
+    defaultMailboxList.forEach((presentationMailbox) {
+      if (presentationMailbox.role == PresentationMailbox.roleInbox) {
+        mailboxDashBoardController.setSelectedMailbox(presentationMailbox);
+      }
+      mailboxDashBoardController.addMailboxIdToMap(presentationMailbox.role!, presentationMailbox.id);
+    });
   }
 
   SelectMode getSelectMode(PresentationMailbox presentationMailbox, PresentationMailbox? selectedMailbox) {

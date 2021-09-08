@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnOpenExpandAddressReceiverActionClick = void Function();
@@ -69,7 +68,7 @@ class SenderAndReceiverInformationTileBuilder {
                 Padding(
                   padding: EdgeInsets.only(top: 6),
                   child: Text(
-                    '${_presentationEmail!.getSentTime(Localizations.localeOf(_context).toLanguageTag())}',
+                    '${_presentationEmail!.getEmailDateTime(Localizations.localeOf(_context).toLanguageTag(), pattern: 'dd/MM/yyyy h:mm a')}',
                     style: TextStyle(fontSize: 12, color: AppColor.baseTextColor),
                   ))
               ],

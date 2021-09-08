@@ -4,8 +4,7 @@ import 'dart:io';
 
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
-import 'package:tmail_ui_user/features/login/data/model/request/account_request.dart';
-import 'package:tmail_ui_user/features/login/data/model/response/user_profile_response.dart';
+import 'package:model/model.dart';
 
 class LoginAPI {
   final DioClient _dioClient;

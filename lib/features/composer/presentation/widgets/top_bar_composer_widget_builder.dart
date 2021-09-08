@@ -11,9 +11,9 @@ class TopBarComposerWidgetBuilder {
   OnSendEmailActionClick? _onSendEmailActionClick;
 
   final ImagePaths _imagePaths;
-  bool isEnableEmailSendButton;
+  final bool _isEnableEmailSendButton;
 
-  TopBarComposerWidgetBuilder(this._imagePaths, this.isEnableEmailSendButton);
+  TopBarComposerWidgetBuilder(this._imagePaths, this._isEnableEmailSendButton);
 
   void addBackActionClick(OnBackActionClick onBackActionClick) {
     _onBackActionClick = onBackActionClick;
@@ -68,12 +68,11 @@ class TopBarComposerWidgetBuilder {
         SizedBox(width: 10),
         ButtonBuilder(_imagePaths.icComposerSend)
           .key(Key('button_send_email'))
-          .color(isEnableEmailSendButton ? AppColor.enableSendEmailButtonColor : AppColor.disableSendEmailButtonColor)
+          .color(_isEnableEmailSendButton ? AppColor.enableSendEmailButtonColor : AppColor.disableSendEmailButtonColor)
           .onPressActionClick(() {
-            if (_onSendEmailActionClick != null && isEnableEmailSendButton) {
+            if (_onSendEmailActionClick != null && _isEnableEmailSendButton) {
               _onSendEmailActionClick!();
-            }
-          })
+            }})
           .build(),
         SizedBox(width: 10),
         ButtonBuilder(_imagePaths.icComposerMenu).key(Key('button_menu_composer')).build(),
