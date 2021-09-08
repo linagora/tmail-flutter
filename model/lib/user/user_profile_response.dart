@@ -1,11 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/login/data/model/converter/avatar_id_converter.dart';
-import 'package:tmail_ui_user/features/login/data/model/converter/avatar_id_nullable_converter.dart';
-import 'package:tmail_ui_user/features/login/data/model/converter/user_id_converter.dart';
-import 'package:tmail_ui_user/features/login/data/model/response/presentation_account_response.dart';
-import 'package:tmail_ui_user/features/login/data/utils/attribute.dart';
 
 part 'user_profile_response.g.dart';
 
