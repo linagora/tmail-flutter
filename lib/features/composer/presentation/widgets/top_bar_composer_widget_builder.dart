@@ -63,9 +63,9 @@ class TopBarComposerWidgetBuilder {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ButtonBuilder(_imagePaths.icComposerFileShare).key(Key('button_file_share')).build(),
-        SizedBox(width: 10),
+        SizedBox(width: 2),
         ButtonBuilder(_imagePaths.icShare).key(Key('button_attachment')).build(),
-        SizedBox(width: 10),
+        SizedBox(width: 2),
         ButtonBuilder(_imagePaths.icComposerSend)
           .key(Key('button_send_email'))
           .color(_isEnableEmailSendButton ? AppColor.enableSendEmailButtonColor : AppColor.disableSendEmailButtonColor)
@@ -74,7 +74,7 @@ class TopBarComposerWidgetBuilder {
               _onSendEmailActionClick!();
             }})
           .build(),
-        SizedBox(width: 10),
+        SizedBox(width: 2),
         ButtonBuilder(_imagePaths.icComposerMenu).key(Key('button_menu_composer')).build(),
       ]
     );
