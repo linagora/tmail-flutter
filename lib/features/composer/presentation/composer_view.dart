@@ -33,14 +33,12 @@ class ComposerView extends GetWidget<ComposerController> {
             mainAxisSize: MainAxisSize.max,
             children: [
               _buildTopBar(context),
-              _buildEmailHeaderField(context),
-              Expanded(child: GestureDetector(
-                onTap: () => keyboardUtils.hideKeyboard(context),
+              Expanded(
                 child: Container(
                   color: AppColor.bgComposer,
-                  child: _buildEmailBody(context),
-                ),
-              ))
+                  margin: EdgeInsets.zero,
+                  alignment: Alignment.topCenter,
+                  child: _buildEmailBody(context)))
             ])
         )
       ),
@@ -49,7 +47,7 @@ class ComposerView extends GetWidget<ComposerController> {
 
   Widget _buildTopBar(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 20, right: 24, top: 12, bottom: 12),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Obx(() => (TopBarComposerWidgetBuilder(imagePaths, controller.isEnableEmailSendButton.value)
           ..addSendEmailActionClick(() => controller.sendEmailAction(context))
           ..addBackActionClick(() => controller.backToEmailViewAction()))
@@ -119,15 +117,15 @@ class ComposerView extends GetWidget<ComposerController> {
 
   Widget _buildEmailBody(BuildContext context) {
     return SingleChildScrollView(
-      physics : ClampingScrollPhysics(),
-      child: Container(
-        margin: EdgeInsets.zero,
-        color: AppColor.bgComposer,
-        padding: controller.getEmailActionType() != EmailActionType.compose 
-          ? EdgeInsets.only(bottom: 30, left: 16, right: 16)
-          : EdgeInsets.only(bottom: 30),
-        alignment: Alignment.topCenter,
-        child: _buildEmailBodyEditorQuoted(context)
+      physics: ClampingScrollPhysics(),
+      child: Column(
+        children: [
+          _buildEmailHeaderField(context),
+          Padding(
+            padding: EdgeInsets.only(bottom: 30, top: 16, left: 16, right: 16),
+            child: _buildEmailBodyEditorQuoted(context),
+          )
+        ]
       )
     );
   }
