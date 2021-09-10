@@ -60,6 +60,7 @@ class TextFieldBuilder {
       textInputAction: _textInputAction,
       decoration: _inputDecoration,
       maxLines: _maxLines,
+      keyboardAppearance: Brightness.light,
       style: _textStyle ?? TextStyle(color: AppColor.textFieldTextColor),
       obscureText: _obscureText ?? false,
     );
