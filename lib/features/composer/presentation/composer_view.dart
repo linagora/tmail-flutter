@@ -141,13 +141,13 @@ class ComposerView extends GetWidget<ComposerController> {
         initialText: controller.getEmailActionType() != EmailActionType.compose
             ? controller.getBodyEmailQuotedAsHtml(context, htmlMessagePurifier)
             : null,
-        disableHorizontalScroll: false,
-        supportZoom: true,
-        horizontalScrollBarEnabled: true,
         shouldEnsureVisible: true),
-      otherOptions: OtherOptions(
-        decoration: BoxDecoration(),
-        height: 600)
+      otherOptions: OtherOptions(decoration: BoxDecoration()),
+      callbacks: Callbacks(
+        onFocus: () {
+          FocusScope.of(context).unfocus();
+        }
+      ),
     ));
   }
 }
