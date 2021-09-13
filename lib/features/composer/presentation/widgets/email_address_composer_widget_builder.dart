@@ -83,18 +83,22 @@ class EmailAddressComposerWidgetBuilder {
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: TextStyle(fontSize: 14, color: AppColor.nameUserColor, fontWeight: FontWeight.w500))),
-                  Expanded(child: RichText(text: TextSpan(
-                    style: TextStyle(fontSize: 14, color: AppColor.nameUserColor),
-                    children: [
-                      if (_userProfile?.getFullName().isNotEmpty == true)
-                        TextSpan(
-                          text: '${_userProfile?.getFullName()}',
-                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: AppColor.nameUserColor)),
-                      if (_userProfile?.getEmailAddress()?.isNotEmpty == true)
-                        TextSpan(
-                          text: '<${_userProfile?.getEmailAddress()}>',
-                          style: TextStyle(fontSize: 14, color: AppColor.nameUserColor))
-                    ])))
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (_userProfile?.getFullName().isNotEmpty == true)
+                          Text(
+                            '${_userProfile?.getFullName()}',
+                            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: AppColor.nameUserColor)),
+                        if (_userProfile?.getEmailAddress()?.isNotEmpty == true)
+                          Text(
+                            '<${_userProfile?.getEmailAddress()}>',
+                            style: TextStyle(fontSize: 14, color: AppColor.nameUserColor))
+                      ],
+                    )
+                  )
               ])),
             _buildEmailAddressWidget(PrefixEmailAddress.to, hasExpandButton: true),
             if (_expandMode == ExpandMode.EXPAND) _buildEmailAddressWidget(PrefixEmailAddress.cc),
