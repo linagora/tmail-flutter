@@ -30,11 +30,7 @@ class ThreadView extends GetWidget<ThreadController> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(() => _buildAppBarMailboxListMail(
-                  context,
-                  controller.mailboxDashBoardController.selectedMailbox.value,
-                  controller.mailboxDashBoardController.userProfile.value,
-              )),
+              _buildAppBarMailboxListMail(context),
               _buildLoadingView(),
               Expanded(child: _buildListEmail(context)),
               _buildLoadingViewLoadMore()
@@ -51,17 +47,17 @@ class ThreadView extends GetWidget<ThreadController> {
     );
   }
 
-  Widget _buildAppBarMailboxListMail(BuildContext context, PresentationMailbox? presentationMailbox, UserProfile? userProfile) {
-    return Padding(
-      padding: EdgeInsets.only(left: 15, right: 12),
-      child: AppBarThreadWidgetBuilder(
-          context,
-          imagePaths,
-          responsiveUtils,
-          presentationMailbox,
-          userProfile)
-        .onOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
-        .build());
+  Widget _buildAppBarMailboxListMail(BuildContext context) {
+    return Obx(() => Padding(
+        padding: EdgeInsets.only(left: 15, right: 12),
+        child: AppBarThreadWidgetBuilder(
+            context,
+            imagePaths,
+            responsiveUtils,
+            controller.mailboxDashBoardController.selectedMailbox.value,
+            controller.mailboxDashBoardController.userProfile.value)
+          .onOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
+          .build()));
   }
 
   Widget _buildLoadingView() {
@@ -96,13 +92,12 @@ class ThreadView extends GetWidget<ThreadController> {
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
       color: responsiveUtils.isMobile(context) ? AppColor.bgMailboxListMail : Colors.white,
-      child: Obx(() => RefreshIndicator(
+      child: RefreshIndicator(
         color: AppColor.primaryColor,
         onRefresh: () async => controller.refreshGetAllEmailAction(),
-        child: controller.emailList.isNotEmpty
+        child: Obx(() => controller.emailList.isNotEmpty
           ? _buildListEmailBody(context, controller.emailList)
-          : _buildEmptyEmail(context)))
-      );
+          : _buildEmptyEmail(context))));
   }
 
   Widget _buildListEmailBody(BuildContext context, List<PresentationEmail> listPresentationEmail) {

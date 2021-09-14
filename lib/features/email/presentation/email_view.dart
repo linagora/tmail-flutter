@@ -22,25 +22,29 @@ class EmailView extends GetWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: AppColor.primaryLightColor,
-      body: SafeArea(
-        right: false,
-        left: false,
-        child: Container(
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildAppBar(context),
-              Expanded(child: _buildEmailContent(context)),
-              _buildBottomBar(context),
-            ])
-        )
-      ),
-    );
+    return WillPopScope(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: AppColor.primaryLightColor,
+        body: SafeArea(
+          right: false,
+          left: false,
+          child: Container(
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _buildAppBar(context),
+                Expanded(child: _buildEmailContent(context)),
+                _buildBottomBar(context),
+              ])
+          )
+        )),
+      onWillPop: () async {
+        emailController.goToThreadView(context);
+        return true;
+      });
   }
 
   Widget _buildAppBar(BuildContext context) {

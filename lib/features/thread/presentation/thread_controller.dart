@@ -8,9 +8,11 @@ import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -19,7 +21,9 @@ import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/load_more_state.dart';
+import 'package:tmail_ui_user/main/actions/email_action.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ThreadController extends BaseController {
 
@@ -37,6 +41,7 @@ class ThreadController extends BaseController {
 
   int positionCurrent = 0;
   int lastGetTotal = 0;
+  MailboxId? _currentMailboxId;
 
   ThreadController(
     this.responsiveUtils,
@@ -47,8 +52,15 @@ class ThreadController extends BaseController {
   void onReady() {
     super.onReady();
     mailboxDashBoardController.selectedMailbox.listen((selectedMailbox) {
-      mailboxDashBoardController.setSelectedEmail(null);
-      refreshGetAllEmailAction();
+      if (_currentMailboxId != selectedMailbox?.id) {
+        _currentMailboxId = selectedMailbox?.id;
+        refreshGetAllEmailAction();
+      } else {
+        final emailCurrent = mailboxDashBoardController.selectedEmail.value;
+        if (Get.context != null && responsiveUtils.isDesktop(Get.context!) && emailCurrent != null) {
+          _updateStateUnReadEmail(emailCurrent.id, unRead: false);
+        }
+      }
     });
   }
 
@@ -170,6 +182,13 @@ class ThreadController extends BaseController {
     }
   }
 
+  void _updateStateUnReadEmail(EmailId emailId, {required bool unRead}) {
+      final newEmailList = emailList
+        .map((email) => email.id == emailId ? email.markAsReadPresentationEmail(unRead: unRead) : email)
+        .toList();
+      emailList.value = newEmailList;
+  }
+
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
       && mailboxDashBoardController.userProfile.value != null
       && mailboxDashBoardController.mapMailboxId.containsKey(PresentationMailbox.roleOutbox);
@@ -178,8 +197,13 @@ class ThreadController extends BaseController {
     mailboxDashBoardController.openDrawer();
   }
 
-  void goToEmail(BuildContext context) {
-    Get.toNamed(AppRoutes.EMAIL);
+  void goToEmail(BuildContext context) async {
+    final action = await push(AppRoutes.EMAIL);
+    if (action is MarkAsEmailReadAction) {
+      _updateStateUnReadEmail(action.emailId, unRead: false);
+      mailboxDashBoardController.setMailboxDashBoardAction(action);
+    }
+    mailboxDashBoardController.clearSelectedEmail();
   }
 
   void composeEmailAction() {
