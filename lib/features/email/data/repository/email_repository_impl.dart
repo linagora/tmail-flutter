@@ -20,4 +20,9 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest) {
     return emailDataSource.sendEmail(accountId, emailRequest);
   }
+
+  @override
+  Future<bool> markAsRead(AccountId accountId, EmailId emailId, bool unread) {
+    return emailDataSource.markAsRead(accountId, emailId, unread);
+  }
 }

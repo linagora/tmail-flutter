@@ -6,4 +6,6 @@ abstract class EmailRepository {
   Future<Email> getEmailContent(AccountId accountId, EmailId emailId);
 
   Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest);
+
+  Future<bool> markAsRead(AccountId accountId, EmailId emailId, bool unread);
 }
