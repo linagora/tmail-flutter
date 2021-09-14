@@ -38,6 +38,7 @@ export 'extensions/presentation_account_extension.dart';
 export 'extensions/user_profile_extension.dart';
 export 'extensions/presentation_email_extension.dart';
 export 'extensions/keyword_identifier_extension.dart';
+export 'extensions/presentation_mailbox_extension.dart';
 
 // Converter
 export 'converter/avatar_id_converter.dart';

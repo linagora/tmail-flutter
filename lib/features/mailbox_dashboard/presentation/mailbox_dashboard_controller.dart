@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
+import 'package:tmail_ui_user/main/actions/app_action.dart';
 
 class MailboxDashBoardController extends BaseController {
 
@@ -19,6 +20,7 @@ class MailboxDashBoardController extends BaseController {
   final selectedEmail = Rxn<PresentationEmail>();
   final accountId = Rxn<AccountId>();
   final userProfile = Rxn<UserProfile>();
+  final mailboxDashBoardAction = Rxn<AppAction>();
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapMailboxId = Map();
@@ -67,8 +69,25 @@ class MailboxDashBoardController extends BaseController {
     selectedMailbox.value = newPresentationMailbox;
   }
 
+  void setNewFirstSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
+    selectedMailbox.firstRebuild = true;
+    selectedMailbox.value = newPresentationMailbox;
+  }
+
   void setSelectedEmail(PresentationEmail? newPresentationEmail) {
     selectedEmail.value = newPresentationEmail;
+  }
+
+  void setMailboxDashBoardAction(AppAction? newAction) {
+    mailboxDashBoardAction.value = newAction;
+  }
+
+  void clearMailboxDashBoardAction() {
+    mailboxDashBoardAction.value = null;
+  }
+
+  void clearSelectedEmail() {
+    selectedEmail.value = null;
   }
 
   void openDrawer() {

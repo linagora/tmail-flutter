@@ -1,22 +1,20 @@
-import 'package:core/presentation/state/failure.dart';
-import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:model/mailbox/select_mode.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/main/actions/email_action.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class MailboxController extends BaseController {
@@ -28,6 +26,7 @@ class MailboxController extends BaseController {
   final ResponsiveUtils responsiveUtils;
 
   final folderMailboxTree = MailboxTree(MailboxNode.root()).obs;
+  final defaultMailboxList = <PresentationMailbox>[].obs;
 
   MailboxController(
     this._getAllMailboxInteractor,
@@ -44,12 +43,20 @@ class MailboxController extends BaseController {
         getAllMailboxAction(accountId);
       }
     });
+
+    mailboxDashBoardController.mailboxDashBoardAction.listen((action) {
+      if (action is MarkAsEmailReadAction) {
+        _updateCountUnReadAllMailbox(action.presentationMailbox);
+        mailboxDashBoardController.clearMailboxDashBoardAction();
+      }
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
     mailboxDashBoardController.accountId.close();
+    mailboxDashBoardController.mailboxDashBoardAction.close();
   }
 
   void refreshGetAllMailboxAction() {
@@ -77,6 +84,7 @@ class MailboxController extends BaseController {
   void onDone() {
     viewState.value.map((success) {
       if (success is GetAllMailboxSuccess) {
+        defaultMailboxList.value = success.defaultMailboxList;
         _setUpMapMailboxIdDefault(success.defaultMailboxList);
       }
     });
@@ -90,12 +98,21 @@ class MailboxController extends BaseController {
   }
 
   void _setUpMapMailboxIdDefault(List<PresentationMailbox> defaultMailboxList) {
+    var mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
+
     defaultMailboxList.forEach((presentationMailbox) {
-      if (presentationMailbox.role == PresentationMailbox.roleInbox) {
-        mailboxDashBoardController.setSelectedMailbox(presentationMailbox);
+      if (mailboxCurrent == null && presentationMailbox.role == PresentationMailbox.roleInbox) {
+        mailboxCurrent = presentationMailbox;
+      } else if (mailboxCurrent?.role == presentationMailbox.role) {
+        mailboxCurrent = presentationMailbox;
       }
+
       mailboxDashBoardController.addMailboxIdToMap(presentationMailbox.role!, presentationMailbox.id);
     });
+
+    if (mailboxCurrent != null) {
+      mailboxDashBoardController.setNewFirstSelectedMailbox(mailboxCurrent);
+    }
   }
 
   SelectMode getSelectMode(PresentationMailbox presentationMailbox, PresentationMailbox? selectedMailbox) {
@@ -109,9 +126,26 @@ class MailboxController extends BaseController {
       PresentationMailbox presentationMailboxSelected
   ) {
     mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
+    mailboxDashBoardController.clearSelectedEmail();
 
     if (responsiveUtils.isMobile(context)) {
       mailboxDashBoardController.closeDrawer();
+    }
+  }
+
+  void _updateCountUnReadAllMailbox(PresentationMailbox presentationMailbox) {
+    if (presentationMailbox.hasRole()) {
+      final newCountUnRead = presentationMailbox.unreadEmails != null
+          ? presentationMailbox.unreadEmails!.value.value - 1
+          : 0;
+      final newMailbox = presentationMailbox.toPresentationMailbox(countUnRead: UnsignedInt(newCountUnRead));
+      final newDefaultMailboxList = defaultMailboxList
+          .map((mailbox) => mailbox.id == presentationMailbox.id
+            ? mailbox.toPresentationMailbox(countUnRead: UnsignedInt(newCountUnRead))
+            : mailbox)
+          .toList();
+      defaultMailboxList.value = newDefaultMailboxList;
+      mailboxDashBoardController.setNewFirstSelectedMailbox(newMailbox);
     }
   }
 

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_button_new_folder_builder.dart';
@@ -127,12 +126,9 @@ class MailboxView extends GetWidget<MailboxController> {
       primary: false,
       shrinkWrap: true,
       children: [
-        Obx(() => controller.viewState.value.fold(
-            (failure) => SizedBox.shrink(),
-            (success) => success is GetAllMailboxSuccess
-              ? _buildDefaultMailbox(context, success.defaultMailboxList)
-              : SizedBox.shrink())
-        ),
+        Obx(() => controller.defaultMailboxList.isNotEmpty
+          ? _buildDefaultMailbox(context, controller.defaultMailboxList)
+          : SizedBox.shrink()),
         Padding(
           padding: EdgeInsets.only(
             left: responsiveUtils.isMobile(context) ? 40 : 32,
@@ -202,7 +198,8 @@ class MailboxView extends GetWidget<MailboxController> {
                     imagePaths,
                     responsiveUtils,
                     mailboxNode,
-                    controller.getSelectMode(mailboxNode.item, controller.mailboxDashBoardController.selectedMailbox.value))
+                    controller.getSelectMode(mailboxNode.item,
+                    controller.mailboxDashBoardController.selectedMailbox.value))
                 .build(context)),
               children: _buildListChildTileWidget(context, mailboxNode.childrenItems!)))
         : Padding(
