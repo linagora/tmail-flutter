@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 
 class EmailBindings extends Bindings {
@@ -15,6 +16,9 @@ class EmailBindings extends Bindings {
     Get.lazyPut(() => EmailRepositoryImpl(Get.find<EmailDataSource>()));
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
     Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));
-    Get.put(EmailController(Get.find<GetEmailContentInteractor>()));
+    Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
+    Get.put(EmailController(
+      Get.find<GetEmailContentInteractor>(),
+      Get.find<MarkAsEmailReadInteractor>()));
   }
 }

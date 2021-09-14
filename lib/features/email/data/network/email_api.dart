@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/address.dart';
@@ -99,6 +100,35 @@ class EmailAPI {
     return Future.sync(() async {
       final emailCreated = setEmailResponse!.created![emailRequest.email.id.id];
       return setEmailSubmissionResponse!.updated![emailCreated!.id.id] == null;
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  Future<bool> markAsRead(AccountId accountId, EmailId emailId, bool unread) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates({
+        emailId.id: PatchObject({
+          KeyWordIdentifier.emailSeen.generatePath() : unread ? null : true
+        })
+      });
+
+    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final response = await (requestBuilder
+        ..usings(setEmailMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+        setEmailInvocation.methodCallId,
+        SetEmailResponse.deserialize);
+
+    return Future.sync(() async {
+      final emailUpdated = setEmailResponse!.updated![emailId.id];
+      return emailUpdated == null;
     }).catchError((error) {
       throw error;
     });

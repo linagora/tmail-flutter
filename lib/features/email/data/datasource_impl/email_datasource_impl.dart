@@ -27,4 +27,13 @@ class EmailDataSourceImpl extends EmailDataSource {
       throw error;
     });
   }
+
+  @override
+  Future<bool> markAsRead(AccountId accountId, EmailId emailId, bool unread) {
+    return Future.sync(() async {
+      return await emailAPI.markAsRead(accountId, emailId, unread);
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }
