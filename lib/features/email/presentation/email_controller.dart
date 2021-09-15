@@ -1,7 +1,5 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -13,8 +11,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/main/actions/app_action.dart';
-import 'package:tmail_ui_user/main/actions/email_action.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -28,7 +24,6 @@ class EmailController extends BaseController {
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   EmailContent? emailContent;
-  AppAction? emailActionCurrent;
 
   EmailController(this._getEmailContentInteractor, this._markAsEmailReadInteractor);
 
@@ -37,12 +32,11 @@ class EmailController extends BaseController {
     super.onReady();
     mailboxDashBoardController.selectedEmail.listen((presentationEmail) {
       toggleDisplayEmailAddressAction(expandMode: ExpandMode.COLLAPSE);
-      emailActionCurrent = null;
       final accountId = mailboxDashBoardController.accountId.value;
       if (accountId != null && presentationEmail != null) {
         _getEmailContentAction(accountId, presentationEmail.id);
         if (presentationEmail.isUnReadEmail()) {
-          markAsEmailRead(unread: false);
+          markAsEmailRead(presentationEmail, ReadActions.markAsRead);
         }
       }
     });
@@ -65,11 +59,19 @@ class EmailController extends BaseController {
 
   @override
   void onDone() {
-    viewState.value.map((success) {
-      if (success is GetEmailContentSuccess) {
-        emailContent = success.emailContent;
-      }
-    });
+    viewState.value.fold(
+      (failure) {
+        if (failure is MarkAsEmailReadFailure) {
+          _markAsEmailReadFailure(failure);
+        }
+      },
+      (success) {
+        if (success is GetEmailContentSuccess) {
+          emailContent = success.emailContent;
+        } else if (success is MarkAsEmailReadSuccess) {
+          _markAsEmailReadSuccess(success);
+        }
+      });
   }
 
   @override
@@ -80,27 +82,24 @@ class EmailController extends BaseController {
     emailAddressExpandMode.value = expandMode;
   }
 
-  void markAsEmailRead({required bool unread}) async {
+  void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions) async {
     final accountId = mailboxDashBoardController.accountId.value;
-    final presentationEmail = mailboxDashBoardController.selectedEmail.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
-    if (accountId != null && presentationEmail != null && mailboxCurrent != null) {
-      _markAsEmailReadInteractor.execute(accountId, presentationEmail.id, unread)
-          .then((result) => result
-            .map((success) {
-              if (success is MarkAsEmailReadSuccess) {
-                emailActionCurrent = MarkAsEmailReadAction(presentationEmail.id, mailboxCurrent);
-                _updateMailboxDashBoardActionForDesktop(emailActionCurrent);
-              }
-            })
-          );
+    if (accountId != null && mailboxCurrent != null) {
+      consumeState(_markAsEmailReadInteractor.execute(accountId, presentationEmail.id, readActions));
     }
   }
 
-  void _updateMailboxDashBoardActionForDesktop(AppAction? appAction) {
-    if (Get.context != null && responsiveUtils.isDesktop(Get.context!)) {
-      mailboxDashBoardController.setMailboxDashBoardAction(appAction);
+  void _markAsEmailReadSuccess(Success success) {
+    mailboxDashBoardController.dispatchState(Right(success));
+
+    if (success is MarkAsEmailReadSuccess && success.readActions == ReadActions.markAsUnread) {
+      backToThreadView();
     }
+  }
+
+  void _markAsEmailReadFailure(Failure failure) {
+    backToThreadView();
   }
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
@@ -108,8 +107,8 @@ class EmailController extends BaseController {
       && mailboxDashBoardController.mapMailboxId.containsKey(PresentationMailbox.roleOutbox)
       && mailboxDashBoardController.selectedEmail.value != null;
 
-  void goToThreadView(BuildContext context) {
-    popBack(result: emailActionCurrent);
+  void backToThreadView() {
+    popBack();
   }
 
   void pressEmailAction(EmailActionType emailActionType) {

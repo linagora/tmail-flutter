@@ -76,7 +76,7 @@ class ThreadView extends GetWidget<ThreadController> {
             controller.getListEmailSelected())
           ..addCloseActionClick(() => controller.cancelSelectEmail())
           ..addRemoveEmailActionClick((listEmail) => {})
-          ..addUnreadEmailActionClick((listEmail) => controller.unreadSelectedEmail(listEmail))
+          ..addOnMarkAsEmailReadActionClick((listEmail) => controller.markAsSelectedEmailRead(listEmail))
           ..addOpenContextMenuActionClick((listEmail) => controller.openContextMenuSelectedEmail(context, imagePaths, listEmail)))
         .build()));
   }

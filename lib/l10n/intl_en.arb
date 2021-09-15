@@ -1,133 +1,162 @@
 {
-  "@@last_modified": "2021-07-01T16:29:46.979874",
+  "@@last_modified": "2021-09-15T13:25:41.117609",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "login_text_slogan": "Team Mail",
   "@login_text_slogan": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "prefix_https": "https://",
   "@prefix_https": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "username": "username",
   "@username": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "password": "password",
   "@password": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "login": "Login",
   "@login": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "login_text_login_to_continue": "Please login to continue",
   "@login_text_login_to_continue": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "unknown_error_login_message": "Unknown error occurred, please try again",
   "@unknown_error_login_message": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "search_folder": "Search folder",
   "@search_folder": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "storage": "STORAGE",
   "@storage": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "my_folders": "MY FOLDERS",
   "@my_folders": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "new_folder": "New folder",
   "@new_folder": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "reply_all": "Reply all",
   "@reply_all": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "reply": "Reply",
   "@reply": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "forward": "Forward",
   "@forward": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "no_emails": "No emails",
   "@no_emails": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "no_mail_selected": "No email selected",
   "@no_mail_selected": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "from_email_address_prefix": "From",
   "@from_email_address_prefix": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "to_email_address_prefix": "To",
   "@to_email_address_prefix": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "unread_email_notification": "new",
   "@unread_email_notification": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "bcc_email_address_prefix": "Bcc",
   "@bcc_email_address_prefix": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "cc_email_address_prefix": "Cc",
   "@cc_email_address_prefix": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "hint_text_email_address": "Name or email address",
   "@hint_text_email_address": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "subject_email": "Subject",
   "@subject_email": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "hint_content_email_composer": "Start writing your email here",
   "@hint_content_email_composer": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "header_email_quoted": "On {sentDate}, from {emailAddress}",
   "@header_email_quoted": {
     "type": "text",
+    "placeholders_order": [
+      "sentDate",
+      "emailAddress"
+    ],
     "placeholders": {
       "sentDate": {},
       "emailAddress": {}
@@ -136,36 +165,45 @@
   "prefix_reply_email": "Re:",
   "@prefix_reply_email": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "prefix_forward_email": "Fwd:",
   "@prefix_forward_email": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "your_email_being_sent": "Your email being sent...",
   "@your_email_being_sent": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "your_email_should_have_at_least_one_recipient": "Your email should have at least one recipient",
   "@your_email_should_have_at_least_one_recipient": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "message_sent": "Message sent",
   "@message_sent": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "error_message_sent": "Error message sent",
   "@error_message_sent": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "count_email_selected": "{count} selected",
   "@count_email_selected": {
     "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
     "placeholders": {
       "count": {}
     }
@@ -173,36 +211,45 @@
   "mark_as_unread": "Mark as unread",
   "@mark_as_unread": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "mark_as_read": "Mark as read",
   "@mark_as_read": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "move_to_trash": "Move to trash",
   "@move_to_trash": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "move_to_mailbox": "Move to mailbox",
   "@move_to_mailbox": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "mark_as_flag": "Star",
   "@mark_as_flag": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "move_to_spam": "Move to spam",
   "@move_to_spam": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "marked_multiple_item_as_read": "Marked {count} item as read",
   "@marked_multiple_item_as_read": {
     "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
     "placeholders": {
       "count": {}
     }
@@ -210,6 +257,9 @@
   "marked_multiple_item_as_unread": "Marked {count} item as unread",
   "@marked_multiple_item_as_unread": {
     "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
     "placeholders": {
       "count": {}
     }
@@ -217,6 +267,7 @@
   "an_error_occurred": "Error! An error occurred. Please try again later.",
   "@an_error_occurred": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   }
 }

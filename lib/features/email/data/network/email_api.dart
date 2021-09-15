@@ -105,12 +105,10 @@ class EmailAPI {
     });
   }
 
-  Future<bool> markAsRead(AccountId accountId, EmailId emailId, bool unread) async {
+  Future<bool> markAsRead(AccountId accountId, EmailId emailId, ReadActions readAction) async {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addUpdates({
-        emailId.id: PatchObject({
-          KeyWordIdentifier.emailSeen.generatePath() : unread ? null : true
-        })
+        emailId.id: KeyWordIdentifier.emailSeen.generateReadActionPath(readAction)
       });
 
     final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
