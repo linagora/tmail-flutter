@@ -1,4 +1,5 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
@@ -16,9 +17,11 @@ class ThreadBindings extends Bindings {
     Get.lazyPut(() => ThreadRepositoryImpl(Get.find<ThreadDataSource>()));
     Get.lazyPut<ThreadRepository>(() => Get.find<ThreadRepositoryImpl>());
     Get.lazyPut(() => GetEmailsInMailboxInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => ScrollController());
     Get.put(ThreadController(
       Get.find<ResponsiveUtils>(),
       Get.find<GetEmailsInMailboxInteractor>(),
+      Get.find<ScrollController>(),
     ));
   }
 }

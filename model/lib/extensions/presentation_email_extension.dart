@@ -46,4 +46,42 @@ extension PresentationEmailExtension on PresentationEmail {
         selectMode:  selectMode
     );
   }
+
+  PresentationEmail toggleSelect() {
+    return PresentationEmail(
+        id,
+        keywords: keywords,
+        size: size,
+        receivedAt: receivedAt,
+        hasAttachment: hasAttachment,
+        preview: preview,
+        subject: subject,
+        sentAt: sentAt,
+        from: from,
+        to: to,
+        cc: cc,
+        bcc: bcc,
+        replyTo: replyTo,
+        selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE
+    );
+  }
+
+  PresentationEmail toSelectedEmail({required SelectMode selectMode}) {
+    return PresentationEmail(
+      id,
+      keywords: keywords,
+      size: size,
+      receivedAt: receivedAt,
+      hasAttachment: hasAttachment,
+      preview: preview,
+      subject: subject,
+      sentAt: sentAt,
+      from: from,
+      to: to,
+      cc: cc,
+      bcc: bcc,
+      replyTo: replyTo,
+      selectMode: selectMode
+    );
+  }
 }

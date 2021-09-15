@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-09-16T11:55:46.823676",
+  "@@last_modified": "2021-09-15T10:03:14.927099",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -196,6 +196,63 @@
   "@error_message_sent": {
     "type": "text",
     "placeholders_order": [],
+    "placeholders": {}
+  },
+  "your_email_being_sent": "Your email being sent...",
+  "@your_email_being_sent": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "your_email_should_have_at_least_one_recipient": "Your email should have at least one recipient",
+  "@your_email_should_have_at_least_one_recipient": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "message_sent": "Message sent",
+  "@message_sent": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "error_message_sent": "Error message sent",
+  "@error_message_sent": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "count_email_selected": "{count} selected",
+  "@count_email_selected": {
+    "type": "text",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "mark_as_unread": "Mark as unread",
+  "@mark_as_unread": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "mark_as_read": "Mark as read",
+  "@mark_as_read": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "move_to_trash": "Move to trash",
+  "@move_to_trash": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "move_to_mailbox": "Move to mailbox",
+  "@move_to_mailbox": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "mark_as_flag": "Star",
+  "@mark_as_flag": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "move_to_spam": "Move to spam",
+  "@move_to_spam": {
+    "type": "text",
     "placeholders": {}
   }
 }

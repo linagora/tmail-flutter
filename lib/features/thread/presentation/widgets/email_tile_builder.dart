@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:core/core.dart';
@@ -5,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:model/model.dart';
 
-typedef OnOpenMailActionClick = void Function();
+typedef OnOpenEmailActionClick = void Function(PresentationEmail selectedEmail);
+typedef OnSelectEmailActionClick = void Function(PresentationEmail selectedEmail);
 
 class EmailTileBuilder {
 
@@ -14,8 +16,10 @@ class EmailTileBuilder {
   final PresentationEmail _presentationEmail;
   final BuildContext _context;
   final ResponsiveUtils _responsiveUtils;
+  final SelectMode _selectModeAll;
 
-  OnOpenMailActionClick? _onOpenMailActionClick;
+  OnOpenEmailActionClick? _onOpenEmailActionClick;
+  OnSelectEmailActionClick? _onSelectEmailActionClick;
 
   EmailTileBuilder(
     this._context,
@@ -23,11 +27,15 @@ class EmailTileBuilder {
     this._selectMode,
     this._presentationEmail,
     this._responsiveUtils,
+    this._selectModeAll,
   );
 
-  EmailTileBuilder onOpenMailAction(OnOpenMailActionClick onOpenMailActionClick) {
-    _onOpenMailActionClick = onOpenMailActionClick;
-    return this;
+  void onOpenEmailAction(OnOpenEmailActionClick onOpenEmailActionClick) {
+    _onOpenEmailActionClick = onOpenEmailActionClick;
+  }
+
+  void onSelectEmailAction(OnSelectEmailActionClick onSelectEmailActionClick) {
+    _onSelectEmailActionClick = onSelectEmailActionClick;
   }
 
   Widget build() {
@@ -41,28 +49,25 @@ class EmailTileBuilder {
         padding: EdgeInsets.only(top: 10, bottom: 10, left: 25, right: 6),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: _selectMode== SelectMode.ACTIVE
-            ? _responsiveUtils.isDesktop(_context)
-              ? AppColor.mailboxSelectedBackgroundColor
-              : _responsiveUtils.isMobile(_context) ? AppColor.bgMailboxListMail : Colors.white
-            : _responsiveUtils.isMobile(_context) ? AppColor.bgMailboxListMail : Colors.white),
+          borderRadius: BorderRadius.circular(_selectModeAll == SelectMode.ACTIVE ? 0 : 16),
+          color: _getBackgroundColorItem()),
         child: MediaQuery(
           data: MediaQueryData(padding: EdgeInsets.zero),
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             onTap: () => {
-              if (_onOpenMailActionClick != null) {
-                _onOpenMailActionClick!()
+              if (_onOpenEmailActionClick != null) {
+                _onOpenEmailActionClick!(_presentationEmail)
+              }
+            },
+            onLongPress: () => {
+              if (_onSelectEmailActionClick != null) {
+                _onSelectEmailActionClick!(_presentationEmail)
               }
             },
             leading: Transform(
               transform: Matrix4.translationValues(-10.0, -10.0, 0.0),
-              child: AvatarBuilder()
-                .text('${_presentationEmail.getAvatarText()}')
-                .size(40)
-                .iconStatus(_imagePaths.icOffline)
-                .build()),
+              child: _buildAvatarIcon()),
             title: Transform(
               transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
               child: Row(
@@ -130,5 +135,71 @@ class EmailTileBuilder {
         )
       )
     );
+  }
+
+  Widget _buildAvatarIcon () {
+    if (_selectModeAll == SelectMode.ACTIVE) {
+      return AnimatedSwitcher(
+        duration: Duration(milliseconds: 600),
+        transitionBuilder: __transitionBuilder,
+        child: _presentationEmail.selectMode == SelectMode.ACTIVE
+          ? (IconBuilder(_imagePaths.icSelected)
+                ..addOnTapActionClick(() {
+                  if (_selectModeAll == SelectMode.ACTIVE && _onSelectEmailActionClick != null) {
+                    _onSelectEmailActionClick!(_presentationEmail);
+                  }}))
+              .build()
+          : AvatarBuilder()
+              .text('${_presentationEmail.getAvatarText()}')
+              .size(40)
+              .iconStatus(_imagePaths.icOffline)
+              .addOnTapActionClick(() {
+                  if (_selectModeAll == SelectMode.ACTIVE && _onSelectEmailActionClick != null) {
+                  _onSelectEmailActionClick!(_presentationEmail);
+                  }})
+              .build()
+      );
+    } else {
+      return AvatarBuilder()
+        .text('${_presentationEmail.getAvatarText()}')
+        .size(40)
+        .iconStatus(_imagePaths.icOffline)
+        .build();
+    }
+  }
+
+  Widget __transitionBuilder(Widget widget, Animation<double> animation) {
+    final rotateAnim = Tween(begin: pi, end: 0.0).animate(animation);
+    return AnimatedBuilder(
+      animation: rotateAnim,
+      child: widget,
+      builder: (context, widget) {
+        final isUnder = _presentationEmail.selectMode == SelectMode.ACTIVE;
+        final value = isUnder ? min(rotateAnim.value, pi / 2) : rotateAnim.value;
+        return Transform(
+          transform: Matrix4.rotationY(value),
+          child: widget,
+          alignment: Alignment.center,
+        );
+      },
+    );
+  }
+
+  Color _getBackgroundColorItem() {
+    if (_selectModeAll == SelectMode.ACTIVE) {
+      if (_presentationEmail.selectMode == SelectMode.ACTIVE) {
+        return AppColor.mailboxSelectedBackgroundColor;
+      } else {
+        return _responsiveUtils.isMobile(_context) ? AppColor.bgMailboxListMail : Colors.white;
+      }
+    } else {
+      if (_responsiveUtils.isMobile(_context)) {
+        return AppColor.bgMailboxListMail;
+      } else if (_responsiveUtils.isDesktop(_context)) {
+        return _selectMode == SelectMode.ACTIVE ? AppColor.mailboxSelectedBackgroundColor : Colors.white;
+      } else {
+        return Colors.white;
+      }
+    }
   }
 }
