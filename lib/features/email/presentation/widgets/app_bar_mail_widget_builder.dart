@@ -7,9 +7,11 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 typedef OnBackActionClick = void Function();
+typedef OnUnreadEmailActionClick = void Function(PresentationEmail presentationEmail);
 
 class AppBarMailWidgetBuilder {
   OnBackActionClick? _onBackActionClick;
+  OnUnreadEmailActionClick? _onUnreadEmailActionClick;
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
@@ -23,10 +25,12 @@ class AppBarMailWidgetBuilder {
     this._presentationEmail,
   );
 
-  AppBarMailWidgetBuilder onBackActionClick(
-      OnBackActionClick onBackActionClick) {
+  void onBackActionClick(OnBackActionClick onBackActionClick) {
     _onBackActionClick = onBackActionClick;
-    return this;
+  }
+
+  void onUnreadEmailActionClick(OnUnreadEmailActionClick onUnreadEmailActionClick) {
+    _onUnreadEmailActionClick = onUnreadEmailActionClick;
   }
 
   Widget build() {
@@ -68,17 +72,23 @@ class AppBarMailWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        ButtonBuilder(_imagePaths.icTrash).key(Key('button_delete_message')).build(),
+        ButtonBuilder(_imagePaths.icTrash).key(Key('button_move_to_trash_email')).build(),
         SizedBox(width: 10),
-        ButtonBuilder(_imagePaths.icEyeDisable).key(Key('button_hide_message')).build(),
+        ButtonBuilder(_imagePaths.icEyeDisable)
+          .key(Key('button_mark_as_unread_email'))
+          .onPressActionClick(() {
+            if (_onUnreadEmailActionClick != null && _presentationEmail != null && _presentationEmail!.isReadEmail()) {
+              _onUnreadEmailActionClick!(_presentationEmail!);
+            }})
+          .build(),
         SizedBox(width: 10),
         ButtonBuilder((_presentationEmail != null && _presentationEmail!.isFlaggedEmail())
             ? _imagePaths.icFlagged
             : _imagePaths.icFlag)
-          .key(Key('button_favorite_message'))
+          .key(Key('button_mark_as_flag_email'))
           .build(),
         SizedBox(width: 10),
-        ButtonBuilder(_imagePaths.icFolder).key(Key('button_add_folder_message')).build(),
+        ButtonBuilder(_imagePaths.icFolder).key(Key('button_move_to_mailbox_email')).build(),
       ]
     );
   }

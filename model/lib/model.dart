@@ -27,6 +27,7 @@ export 'email/prefix_email_address.dart';
 export 'email/email_action_type.dart';
 export 'email/presentation_email_address.dart';
 export 'email/email_address_cache.dart';
+export 'email/read_actions.dart';
 
 // Extensions
 export 'extensions/email_address_extension.dart';

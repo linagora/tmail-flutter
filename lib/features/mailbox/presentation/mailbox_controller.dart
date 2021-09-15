@@ -4,9 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
@@ -14,7 +14,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/main/actions/email_action.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class MailboxController extends BaseController {
@@ -44,12 +44,14 @@ class MailboxController extends BaseController {
       }
     });
 
-    mailboxDashBoardController.mailboxDashBoardAction.listen((action) {
-      if (action is MarkAsEmailReadAction) {
-        _updateCountUnReadForMailbox(action.presentationMailbox, countUnreadChange: 1, isUnread: false);
-      } else if (action is MarkAsMultipleEmailReadAndUnreadAction) {
-        _updateCountUnReadForMailbox(action.presentationMailbox, countUnreadChange: action.listEmailId.length, isUnread: action.isUnread);
-      }
+    mailboxDashBoardController.viewState.listen((state) {
+      state.map((success) {
+        if (success is MarkAsEmailReadSuccess ||
+            success is MarkAsMultipleEmailReadAllSuccess ||
+            success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+          refreshGetAllMailboxAction();
+        }
+      });
     });
   }
 
@@ -57,7 +59,6 @@ class MailboxController extends BaseController {
   void dispose() {
     super.dispose();
     mailboxDashBoardController.accountId.close();
-    mailboxDashBoardController.mailboxDashBoardAction.close();
   }
 
   void refreshGetAllMailboxAction() {
@@ -131,34 +132,6 @@ class MailboxController extends BaseController {
 
     if (responsiveUtils.isMobile(context)) {
       mailboxDashBoardController.closeDrawer();
-    }
-  }
-
-  void _updateCountUnReadForMailbox(
-      PresentationMailbox presentationMailbox,
-      {
-        required int countUnreadChange,
-        required bool isUnread
-      }
-    ) {
-    if (presentationMailbox.hasRole()) {
-      final currentCountUnread = presentationMailbox.unreadEmails != null
-          ? presentationMailbox.unreadEmails!.value.value
-          : 0;
-      num newCountUnread = 0;
-      if (isUnread) {
-        newCountUnread = currentCountUnread + countUnreadChange;
-      } else {
-        newCountUnread = currentCountUnread > countUnreadChange ? currentCountUnread - countUnreadChange : 0;
-      }
-      final newMailbox = presentationMailbox.toPresentationMailbox(countUnRead: UnsignedInt(newCountUnread));
-      final newDefaultMailboxList = defaultMailboxList
-          .map((mailbox) => mailbox.id == presentationMailbox.id
-            ? mailbox.toPresentationMailbox(countUnRead: UnsignedInt(newCountUnread))
-            : mailbox)
-          .toList();
-      defaultMailboxList.value = newDefaultMailboxList;
-      mailboxDashBoardController.setNewFirstSelectedMailbox(newMailbox);
     }
   }
 

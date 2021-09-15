@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-09-15T11:00:57.061103",
+  "@@last_modified": "2021-09-15T13:25:41.117609",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -198,29 +198,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_being_sent": "Your email being sent...",
-  "@your_email_being_sent": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "your_email_should_have_at_least_one_recipient": "Your email should have at least one recipient",
-  "@your_email_should_have_at_least_one_recipient": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "message_sent": "Message sent",
-  "@message_sent": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "error_message_sent": "Error message sent",
-  "@error_message_sent": {
-    "type": "text",
-    "placeholders": {}
-  },
   "count_email_selected": "{count} selected",
   "@count_email_selected": {
     "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
     "placeholders": {
       "count": {}
     }
@@ -228,36 +211,45 @@
   "mark_as_unread": "Mark as unread",
   "@mark_as_unread": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "mark_as_read": "Mark as read",
   "@mark_as_read": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "move_to_trash": "Move to trash",
   "@move_to_trash": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "move_to_mailbox": "Move to mailbox",
   "@move_to_mailbox": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "mark_as_flag": "Star",
   "@mark_as_flag": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "move_to_spam": "Move to spam",
   "@move_to_spam": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   },
   "marked_multiple_item_as_read": "Marked {count} item as read",
   "@marked_multiple_item_as_read": {
     "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
     "placeholders": {
       "count": {}
     }
@@ -265,6 +257,9 @@
   "marked_multiple_item_as_unread": "Marked {count} item as unread",
   "@marked_multiple_item_as_unread": {
     "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
     "placeholders": {
       "count": {}
     }
@@ -272,6 +267,7 @@
   "an_error_occurred": "Error! An error occurred. Please try again later.",
   "@an_error_occurred": {
     "type": "text",
+    "placeholders_order": [],
     "placeholders": {}
   }
 }

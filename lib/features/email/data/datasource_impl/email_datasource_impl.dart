@@ -1,5 +1,6 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
@@ -29,9 +30,9 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<bool> markAsRead(AccountId accountId, EmailId emailId, bool unread) {
+  Future<bool> markAsRead(AccountId accountId, EmailId emailId, ReadActions readActions) {
     return Future.sync(() async {
-      return await emailAPI.markAsRead(accountId, emailId, unread);
+      return await emailAPI.markAsRead(accountId, emailId, readActions);
     }).catchError((error) {
       throw error;
     });

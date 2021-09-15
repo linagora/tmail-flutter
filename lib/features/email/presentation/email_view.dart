@@ -22,40 +22,37 @@ class EmailView extends GetWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: AppColor.primaryLightColor,
-        body: SafeArea(
-          right: false,
-          left: false,
-          child: Container(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buildAppBar(context),
-                Expanded(child: _buildEmailContent(context)),
-                _buildBottomBar(context),
-              ])
-          )
-        )),
-      onWillPop: () async {
-        emailController.goToThreadView(context);
-        return true;
-      });
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: AppColor.primaryLightColor,
+      body: SafeArea(
+        right: false,
+        left: false,
+        child: Container(
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildAppBar(context),
+              Expanded(child: _buildEmailContent(context)),
+              _buildBottomBar(context),
+            ])
+        )
+      ));
   }
 
   Widget _buildAppBar(BuildContext context) {
     return Obx(() => Padding(
       padding: EdgeInsets.only(left: 6, top: 6, right: 6, bottom: 6),
-      child: AppBarMailWidgetBuilder(
-          context,
-          imagePaths,
-          responsiveUtils,
-          emailController.mailboxDashBoardController.selectedEmail.value)
-        .onBackActionClick(() => emailController.goToThreadView(context))
+      child: (AppBarMailWidgetBuilder(
+            context,
+            imagePaths,
+            responsiveUtils,
+            emailController.mailboxDashBoardController.selectedEmail.value)
+          ..onBackActionClick(() => emailController.backToThreadView())
+          ..onUnreadEmailActionClick((presentationEmail) =>
+              emailController.markAsEmailRead(presentationEmail, ReadActions.markAsUnread)))
         .build()));
   }
 

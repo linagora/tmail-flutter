@@ -6,13 +6,13 @@ import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnCloseActionClick = void Function();
-typedef OnUnreadEmailActionClick = void Function(List<PresentationEmail> listEmail);
+typedef OnMarkAsEmailReadActionClick = void Function(List<PresentationEmail> listEmail);
 typedef OnRemoveEmailActionClick = void Function(List<PresentationEmail> listEmail);
 typedef OnOpenContextMenuActionClick = void Function(List<PresentationEmail> listEmail);
 
 class AppBarThreadSelectModeActiveBuilder {
   OnCloseActionClick? _onCloseActionClick;
-  OnUnreadEmailActionClick? _onUnreadEmailActionClick;
+  OnMarkAsEmailReadActionClick? _onMarkAsEmailReadActionClick;
   OnRemoveEmailActionClick? _onRemoveEmailActionClick;
   OnOpenContextMenuActionClick? _onOpenContextMenuActionClick;
 
@@ -26,8 +26,8 @@ class AppBarThreadSelectModeActiveBuilder {
     _onCloseActionClick = onCloseActionClick;
   }
 
-  void addUnreadEmailActionClick(OnUnreadEmailActionClick onUnreadEmailActionClick) {
-    _onUnreadEmailActionClick = onUnreadEmailActionClick;
+  void addOnMarkAsEmailReadActionClick(OnMarkAsEmailReadActionClick onMarkAsEmailReadActionClick) {
+    _onMarkAsEmailReadActionClick = onMarkAsEmailReadActionClick;
   }
 
   void addRemoveEmailActionClick(OnRemoveEmailActionClick onRemoveEmailActionClick) {
@@ -94,8 +94,8 @@ class AppBarThreadSelectModeActiveBuilder {
           SizedBox(width: 10),
           ButtonBuilder(_imagePaths.icEyeDisable).key(Key('button_unread_email_selected'))
             .onPressActionClick(() {
-              if (_onUnreadEmailActionClick != null) {
-                _onUnreadEmailActionClick!(_listEmail);
+              if (_onMarkAsEmailReadActionClick != null) {
+                _onMarkAsEmailReadActionClick!(_listEmail);
               }})
             .build(),
           SizedBox(width: 10),

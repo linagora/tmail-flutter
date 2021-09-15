@@ -14,10 +14,10 @@ extension PresentationEmailExtension on PresentationEmail {
     return '';
   }
 
-  PresentationEmail markAsReadPresentationEmail({required bool isUnread}) {
+  PresentationEmail markAsReadPresentationEmail(ReadActions readActions) {
     var newKeyWord = keywords;
 
-    if (isUnread) {
+    if (readActions == ReadActions.markAsUnread) {
       newKeyWord?.removeWhere((key, value) => key == KeyWordIdentifier.emailSeen);
     } else {
       if (newKeyWord == null) {

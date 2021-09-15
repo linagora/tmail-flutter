@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 
@@ -10,12 +11,18 @@ class MarkAsMultipleEmailReadInteractor {
 
   MarkAsMultipleEmailReadInteractor(this.markAsEmailReadInteractor);
 
-  Future<Either<Failure, Success>> execute(AccountId accountId, List<EmailId> listEmailId, bool unread) async {
+  Stream<Either<Failure, Success>> execute(
+      AccountId accountId,
+      List<EmailId> listEmailId,
+      ReadActions readAction
+  ) async* {
     try {
-      final listResult = await Future.wait(listEmailId.map((emailId) =>
-          markAsEmailReadInteractor.execute(accountId, emailId, unread)));
+      final listResult = await Future.wait(listEmailId.map((emailId) async {
+        final result = await markAsEmailReadInteractor.execute(accountId, emailId, readAction).toList();
+        return result.first;
+      }));
       if (listResult.length == 1) {
-        return listResult.first;
+        yield listResult.first;
       } else {
         var failedFileCount = 0;
         listResult.forEach((element) {
@@ -24,14 +31,14 @@ class MarkAsMultipleEmailReadInteractor {
           }
         });
         if (failedFileCount == 0) {
-          return Right(MarkAsMultipleEmailReadAllSuccess(listResult));
+          yield Right(MarkAsMultipleEmailReadAllSuccess(listResult, readAction));
         } else if (failedFileCount == listResult.length) {
-          return Left(MarkAsMultipleEmailReadAllFailure(listResult));
+          yield Left(MarkAsMultipleEmailReadAllFailure(listResult, readAction));
         }
-        return Right(MarkAsMultipleEmailReadHasSomeEmailFailure(listResult));
+        yield Right(MarkAsMultipleEmailReadHasSomeEmailFailure(listResult, readAction));
       }
     } catch (e) {
-      return Left(MarkAsMultipleEmailReadFailure(e));
+      yield Left(MarkAsMultipleEmailReadFailure(e, readAction));
     }
   }
 }
