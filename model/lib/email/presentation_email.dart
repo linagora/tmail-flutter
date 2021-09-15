@@ -64,6 +64,8 @@ class PresentationEmail with EquatableMixin {
 
   bool isUnReadEmail() => !(keywords?.containsKey(KeyWordIdentifier.emailSeen) == true);
 
+  bool isReadEmail() => keywords?.containsKey(KeyWordIdentifier.emailSeen) == true;
+
   bool isFlaggedEmail() => keywords?.containsKey(KeyWordIdentifier.emailFlagged) == true;
 
   @override
