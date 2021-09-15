@@ -46,8 +46,9 @@ class MailboxController extends BaseController {
 
     mailboxDashBoardController.mailboxDashBoardAction.listen((action) {
       if (action is MarkAsEmailReadAction) {
-        _updateCountUnReadAllMailbox(action.presentationMailbox);
-        mailboxDashBoardController.clearMailboxDashBoardAction();
+        _updateCountUnReadForMailbox(action.presentationMailbox, countUnreadChange: 1, isUnread: false);
+      } else if (action is MarkAsMultipleEmailReadAndUnreadAction) {
+        _updateCountUnReadForMailbox(action.presentationMailbox, countUnreadChange: action.listEmailId.length, isUnread: action.isUnread);
       }
     });
   }
@@ -133,15 +134,27 @@ class MailboxController extends BaseController {
     }
   }
 
-  void _updateCountUnReadAllMailbox(PresentationMailbox presentationMailbox) {
+  void _updateCountUnReadForMailbox(
+      PresentationMailbox presentationMailbox,
+      {
+        required int countUnreadChange,
+        required bool isUnread
+      }
+    ) {
     if (presentationMailbox.hasRole()) {
-      final newCountUnRead = presentationMailbox.unreadEmails != null
-          ? presentationMailbox.unreadEmails!.value.value - 1
+      final currentCountUnread = presentationMailbox.unreadEmails != null
+          ? presentationMailbox.unreadEmails!.value.value
           : 0;
-      final newMailbox = presentationMailbox.toPresentationMailbox(countUnRead: UnsignedInt(newCountUnRead));
+      num newCountUnread = 0;
+      if (isUnread) {
+        newCountUnread = currentCountUnread + countUnreadChange;
+      } else {
+        newCountUnread = currentCountUnread > countUnreadChange ? currentCountUnread - countUnreadChange : 0;
+      }
+      final newMailbox = presentationMailbox.toPresentationMailbox(countUnRead: UnsignedInt(newCountUnread));
       final newDefaultMailboxList = defaultMailboxList
           .map((mailbox) => mailbox.id == presentationMailbox.id
-            ? mailbox.toPresentationMailbox(countUnRead: UnsignedInt(newCountUnRead))
+            ? mailbox.toPresentationMailbox(countUnRead: UnsignedInt(newCountUnread))
             : mailbox)
           .toList();
       defaultMailboxList.value = newDefaultMailboxList;
