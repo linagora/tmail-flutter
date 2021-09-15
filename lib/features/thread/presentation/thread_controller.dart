@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mail
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/load_more_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_context_menu_action_builder.dart';
+import 'package:tmail_ui_user/main/actions/app_action.dart';
 import 'package:tmail_ui_user/main/actions/email_action.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -69,9 +70,16 @@ class ThreadController extends BaseController {
         _currentMailboxId = selectedMailbox?.id;
         refreshGetAllEmailAction();
       } else {
-        final emailCurrent = mailboxDashBoardController.selectedEmail.value;
-        if (Get.context != null && responsiveUtils.isDesktop(Get.context!) && emailCurrent != null) {
-          _updateStateUnReadEmail(emailCurrent.id, unRead: false);
+        final actionCurrent = mailboxDashBoardController.mailboxDashBoardAction.value;
+        if (actionCurrent is MarkAsEmailReadAction) {
+          final emailCurrent = mailboxDashBoardController.selectedEmail.value;
+          if (Get.context != null && responsiveUtils.isDesktop(Get.context!) && emailCurrent != null) {
+            _updateStateUnReadAllEmail([emailCurrent.id], isUnread: false);
+          }
+          mailboxDashBoardController.clearMailboxDashBoardAction();
+        } else if (actionCurrent is MarkAsMultipleEmailReadAndUnreadAction) {
+          _updateStateUnReadAllEmail(actionCurrent.listEmailId, isUnread: actionCurrent.isUnread);
+          mailboxDashBoardController.clearMailboxDashBoardAction();
         }
       }
     });
@@ -218,9 +226,9 @@ class ThreadController extends BaseController {
     currentSelectMode.value = SelectMode.INACTIVE;
   }
 
-  void _updateStateUnReadEmail(EmailId emailId, {required bool unRead}) {
+  void _updateStateUnReadAllEmail(List<EmailId> list, {required bool isUnread}) {
       final newEmailList = emailList
-        .map((email) => email.id == emailId ? email.markAsReadPresentationEmail(unRead: unRead) : email)
+        .map((email) => list.contains(email.id) ? email.markAsReadPresentationEmail(isUnread: isUnread) : email)
         .toList();
       emailList.value = newEmailList;
   }
@@ -238,8 +246,9 @@ class ThreadController extends BaseController {
         .toList();
 
     final accountId = mailboxDashBoardController.accountId.value;
+    final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
 
-    if (accountId != null) {
+    if (accountId != null && mailboxCurrent != null) {
       _markAsMultipleEmailReadInteractor
         .execute(accountId, listEmailId, isUnread)
         .then((result) => result.fold(
@@ -254,6 +263,7 @@ class ThreadController extends BaseController {
             },
             (success) {
               cancelSelectEmail();
+              final listEmailIdSuccess = _getListEmailIdMarkedAsReadSuccess(success);
 
               if (success is MarkAsEmailReadSuccess
                   || success is MarkAsMultipleEmailReadAllSuccess
@@ -263,9 +273,43 @@ class ThreadController extends BaseController {
                       ? AppLocalizations.of(Get.context!).marked_multiple_item_as_unread(listEmail.length)
                       : AppLocalizations.of(Get.context!).marked_multiple_item_as_read(listEmail.length));
                 }
+
+                if (listEmailIdSuccess.isNotEmpty) {
+                  _updateStateEmailAndCountUnReadMailbox(MarkAsMultipleEmailReadAndUnreadAction(listEmailIdSuccess, mailboxCurrent, isUnread));
+                }
               }
             }));
     }
+  }
+
+  List<EmailId> _getListEmailIdMarkedAsReadSuccess(Success success) {
+    final listEmailIdSuccess = <EmailId>[];
+
+    if (success is MarkAsEmailReadSuccess) {
+      listEmailIdSuccess.add(success.emailId);
+    } else if (success is MarkAsMultipleEmailReadAllSuccess) {
+      success.resultList.forEach((either) {
+        either.map((success) {
+          if (success is MarkAsEmailReadSuccess) {
+            listEmailIdSuccess.add(success.emailId);
+          }
+        });
+      });
+    } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+      success.resultList.forEach((either) {
+        either.map((success) {
+          if (success is MarkAsEmailReadSuccess) {
+            listEmailIdSuccess.add(success.emailId);
+          }
+        });
+      });
+    }
+
+    return listEmailIdSuccess;
+  }
+
+  void _updateStateEmailAndCountUnReadMailbox(AppAction? appAction) {
+    mailboxDashBoardController.setMailboxDashBoardAction(appAction);
   }
 
   void openContextMenuSelectedEmail(BuildContext context, ImagePaths imagePaths, List<PresentationEmail> listEmail) {
@@ -342,7 +386,7 @@ class ThreadController extends BaseController {
   void goToEmail(BuildContext context) async {
     final action = await push(AppRoutes.EMAIL);
     if (action is MarkAsEmailReadAction) {
-      _updateStateUnReadEmail(action.emailId, unRead: false);
+      _updateStateUnReadAllEmail([action.emailId], isUnread: false);
       mailboxDashBoardController.setMailboxDashBoardAction(action);
     }
     mailboxDashBoardController.clearSelectedEmail();

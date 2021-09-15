@@ -13,7 +13,7 @@ class MarkAsEmailReadInteractor {
   Future<Either<Failure, Success>> execute(AccountId accountId, EmailId emailId, bool unread) async {
     try {
       final result = await emailRepository.markAsRead(accountId, emailId, unread);
-      return result ? Right(MarkAsEmailReadSuccess()) : Left(MarkAsEmailReadFailure(null));
+      return result ? Right(MarkAsEmailReadSuccess(emailId)) : Left(MarkAsEmailReadFailure(null));
     } catch (e) {
       return Left(MarkAsEmailReadFailure(e));
     }

@@ -1,8 +1,10 @@
 import 'package:core/core.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 
 class MarkAsEmailReadSuccess extends UIState {
+  final EmailId emailId;
 
-  MarkAsEmailReadSuccess();
+  MarkAsEmailReadSuccess(this.emailId);
 
   @override
   List<Object?> get props => [];
