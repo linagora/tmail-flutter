@@ -277,5 +277,28 @@ class AppLocalizations {
       name: 'move_to_spam',
     );
   }
+
+  String marked_multiple_item_as_read(int count) {
+    return Intl.message(
+        'Marked $count item as read',
+        name: 'marked_multiple_item_as_read',
+        args: [count]
+    );
+  }
+
+  String marked_multiple_item_as_unread(int count) {
+    return Intl.message(
+        'Marked $count item as unread',
+        name: 'marked_multiple_item_as_unread',
+        args: [count]
+    );
+  }
+
+  String get an_error_occurred {
+    return Intl.message(
+      'Error! An error occurred. Please try again later.',
+      name: 'an_error_occurred',
+    );
+  }
 }
 

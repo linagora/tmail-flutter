@@ -16,11 +16,14 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/load_more_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_context_menu_action_builder.dart';
 import 'package:tmail_ui_user/main/actions/email_action.dart';
@@ -32,6 +35,8 @@ class ThreadController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final GetEmailsInMailboxInteractor _getEmailsInMailboxInteractor;
+  final MarkAsMultipleEmailReadInteractor _markAsMultipleEmailReadInteractor;
+  final AppToast _appToast;
   final ResponsiveUtils responsiveUtils;
   final ScrollController listEmailController;
 
@@ -52,6 +57,8 @@ class ThreadController extends BaseController {
     this.responsiveUtils,
     this._getEmailsInMailboxInteractor,
     this.listEmailController,
+    this._markAsMultipleEmailReadInteractor,
+    this._appToast,
   );
 
   @override
@@ -204,7 +211,7 @@ class ThreadController extends BaseController {
 
   bool _isUnSelectedAll() => emailList.every((email) => email.selectMode == SelectMode.INACTIVE);
 
-  bool _isEmailAllRead(List<PresentationEmail> listEmail) => listEmail.every((email) => !email.isUnReadEmail());
+  bool _isEmailAllRead(List<PresentationEmail> listEmail) => listEmail.every((email) => email.isReadEmail());
 
   void cancelSelectEmail() {
     emailList.value = emailList.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
@@ -218,8 +225,47 @@ class ThreadController extends BaseController {
       emailList.value = newEmailList;
   }
 
-  void unreadSelectedEmail(List<PresentationEmail> listEmail) {
-    popBack();
+  void unreadSelectedEmail(List<PresentationEmail> listEmail, {bool fromContextMenuAction = false}) {
+    if (fromContextMenuAction) {
+      popBack();
+    }
+
+    final isUnread = _isEmailAllRead(listEmail);
+
+    final listEmailId = listEmail
+        .where((email) => isUnread ? email.isReadEmail() : email.isUnReadEmail())
+        .map((email) => email.id)
+        .toList();
+
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (accountId != null) {
+      _markAsMultipleEmailReadInteractor
+        .execute(accountId, listEmailId, isUnread)
+        .then((result) => result.fold(
+            (failure) {
+              cancelSelectEmail();
+
+              if (failure is MarkAsEmailReadFailure
+                  || failure is MarkAsMultipleEmailReadAllFailure
+                  || failure is MarkAsMultipleEmailReadFailure) {
+                _appToast.showErrorToast(AppLocalizations.of(Get.context!).an_error_occurred);
+              }
+            },
+            (success) {
+              cancelSelectEmail();
+
+              if (success is MarkAsEmailReadSuccess
+                  || success is MarkAsMultipleEmailReadAllSuccess
+                  || success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+                if (Get.context != null) {
+                  _appToast.showSuccessToast(isUnread
+                      ? AppLocalizations.of(Get.context!).marked_multiple_item_as_unread(listEmail.length)
+                      : AppLocalizations.of(Get.context!).marked_multiple_item_as_read(listEmail.length));
+                }
+              }
+            }));
+    }
   }
 
   void openContextMenuSelectedEmail(BuildContext context, ImagePaths imagePaths, List<PresentationEmail> listEmail) {
@@ -245,7 +291,7 @@ class ThreadController extends BaseController {
               SvgPicture.asset(imagePaths.icEyeDisable, width: 24, height: 24, fit: BoxFit.fill),
               _isEmailAllRead(listEmail) ? AppLocalizations.of(context).mark_as_unread : AppLocalizations.of(context).mark_as_read,
               listEmail)
-          ..onActionClick((data) => unreadSelectedEmail(data)))
+          ..onActionClick((data) => unreadSelectedEmail(data, fromContextMenuAction: true)))
         .build();
   }
 

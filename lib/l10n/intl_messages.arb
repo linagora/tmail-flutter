@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-09-15T10:03:14.927099",
+  "@@last_modified": "2021-09-15T11:00:57.061103",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -252,6 +252,25 @@
   },
   "move_to_spam": "Move to spam",
   "@move_to_spam": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "marked_multiple_item_as_read": "Marked {count} item as read",
+  "@marked_multiple_item_as_read": {
+    "type": "text",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "marked_multiple_item_as_unread": "Marked {count} item as unread",
+  "@marked_multiple_item_as_unread": {
+    "type": "text",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "an_error_occurred": "Error! An error occurred. Please try again later.",
+  "@an_error_occurred": {
     "type": "text",
     "placeholders": {}
   }
