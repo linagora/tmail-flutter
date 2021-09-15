@@ -20,15 +20,6 @@ version: 1.0.0+1
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
-dependency_overrides:
-  # build_runner dependencies
-  intl: 0.17.0
-  args: 2.2.0
-  dart_style: 2.0.3
-  analyzer: 2.2.0
-  petitparser: 4.2.0
-  meta: 1.7.0
-
 dependencies:
   flutter:
     sdk: flutter
@@ -50,8 +41,7 @@ dependencies:
   get: 4.1.4
 
   # intl
-  intl: 0.17.0
-  intl_translation: 0.17.10+1
+  intl_generator: 0.2.0+0
 
   # flutter_svg
   flutter_svg: 0.22.0
