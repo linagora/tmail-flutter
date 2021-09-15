@@ -6,6 +6,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/load_more_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_select_mode_active_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -30,7 +31,7 @@ class ThreadView extends GetWidget<ThreadController> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildAppBarMailboxListMail(context),
+              _buildAppBarThread(context),
               _buildLoadingView(),
               Expanded(child: _buildListEmail(context)),
               _buildLoadingViewLoadMore()
@@ -47,17 +48,37 @@ class ThreadView extends GetWidget<ThreadController> {
     );
   }
 
-  Widget _buildAppBarMailboxListMail(BuildContext context) {
+  Widget _buildAppBarThread(BuildContext context) {
+    return Obx(() => controller.currentSelectMode.value == SelectMode.ACTIVE
+      ? _buildAppBarSelectModeActive(context)
+      : _buildAppBarNormal(context));
+  }
+
+  Widget _buildAppBarNormal(BuildContext context) {
     return Obx(() => Padding(
-        padding: EdgeInsets.only(left: 15, right: 12),
-        child: AppBarThreadWidgetBuilder(
+      padding: EdgeInsets.only(left: 15, right: 12),
+      child: AppBarThreadWidgetBuilder(
             context,
             imagePaths,
             responsiveUtils,
             controller.mailboxDashBoardController.selectedMailbox.value,
             controller.mailboxDashBoardController.userProfile.value)
-          .onOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
-          .build()));
+        .onOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
+        .build()));
+  }
+
+  Widget _buildAppBarSelectModeActive(BuildContext context) {
+    return Obx(() => Padding(
+      padding: EdgeInsets.only(left: 15, right: 12),
+      child: (AppBarThreadSelectModeActiveBuilder(
+            context,
+            imagePaths,
+            controller.getListEmailSelected())
+          ..addCloseActionClick(() => controller.cancelSelectEmail())
+          ..addRemoveEmailActionClick((listEmail) => {})
+          ..addUnreadEmailActionClick((listEmail) => controller.unreadSelectedEmail(listEmail))
+          ..addOpenContextMenuActionClick((listEmail) => controller.openContextMenuSelectedEmail(context, imagePaths, listEmail)))
+        .build()));
   }
 
   Widget _buildLoadingView() {
@@ -92,12 +113,16 @@ class ThreadView extends GetWidget<ThreadController> {
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
       color: responsiveUtils.isMobile(context) ? AppColor.bgMailboxListMail : Colors.white,
-      child: RefreshIndicator(
-        color: AppColor.primaryColor,
-        onRefresh: () async => controller.refreshGetAllEmailAction(),
-        child: Obx(() => controller.emailList.isNotEmpty
-          ? _buildListEmailBody(context, controller.emailList)
-          : _buildEmptyEmail(context))));
+      child: Obx(() => controller.currentSelectMode.value == SelectMode.INACTIVE
+        ? RefreshIndicator(
+            color: AppColor.primaryColor,
+            onRefresh: () async => controller.refreshGetAllEmailAction(),
+            child: controller.emailList.isNotEmpty
+              ? _buildListEmailBody(context, controller.emailList)
+              : _buildEmptyEmail(context))
+        : controller.emailList.isNotEmpty
+            ? _buildListEmailBody(context, controller.emailList)
+            : _buildEmptyEmail(context)));
   }
 
   Widget _buildListEmailBody(BuildContext context, List<PresentationEmail> listPresentationEmail) {
@@ -114,18 +139,21 @@ class ThreadView extends GetWidget<ThreadController> {
             return false;
           },
           child: ListView.builder(
+            controller: controller.listEmailController,
             padding: EdgeInsets.only(top: 16),
             key: Key('presentation_email_list'),
             itemCount: listPresentationEmail.length,
             itemBuilder: (context, index) =>
-              Obx(() => EmailTileBuilder(
-                  context,
-                  imagePaths,
-                  controller.getSelectMode(listPresentationEmail[index], controller.mailboxDashBoardController.selectedEmail.value),
-                  listPresentationEmail[index],
-                  responsiveUtils)
-                .onOpenMailAction(() => controller.selectEmail(context, listPresentationEmail[index]))
-                .build())
+              Obx(() => (EmailTileBuilder(
+                    context,
+                    imagePaths,
+                    controller.getSelectMode(listPresentationEmail[index], controller.mailboxDashBoardController.selectedEmail.value),
+                    listPresentationEmail[index],
+                    responsiveUtils,
+                    controller.currentSelectMode.value)
+                  ..onOpenEmailAction((selectedEmail) => controller.previewEmail(context, selectedEmail))
+                  ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail)))
+                .build()),
           ));
     }
   }

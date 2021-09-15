@@ -50,6 +50,9 @@ dependencies:
   # sqflite
   sqflite: 2.0.0+4
 
+  # GetX
+  get: 4.1.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

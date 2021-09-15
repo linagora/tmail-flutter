@@ -227,5 +227,55 @@ class AppLocalizations {
       name: 'error_message_sent',
     );
   }
+
+  String count_email_selected(int count) {
+    return Intl.message(
+        '$count selected',
+        name: 'count_email_selected',
+        args: [count]
+    );
+  }
+
+  String get mark_as_unread {
+    return Intl.message(
+      'Mark as unread',
+      name: 'mark_as_unread',
+    );
+  }
+
+  String get mark_as_read {
+    return Intl.message(
+      'Mark as read',
+      name: 'mark_as_read',
+    );
+  }
+
+  String get move_to_trash {
+    return Intl.message(
+      'Move to trash',
+      name: 'move_to_trash',
+    );
+  }
+
+  String get move_to_mailbox {
+    return Intl.message(
+      'Move to mailbox',
+      name: 'move_to_mailbox',
+    );
+  }
+
+  String get mark_as_flag {
+    return Intl.message(
+      'Star',
+      name: 'mark_as_flag',
+    );
+  }
+
+  String get move_to_spam {
+    return Intl.message(
+      'Move to spam',
+      name: 'move_to_spam',
+    );
+  }
 }
 
