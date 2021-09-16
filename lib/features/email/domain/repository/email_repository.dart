@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
@@ -15,5 +16,13 @@ abstract class EmailRepository {
     AccountId accountId,
     String baseDownloadUrl,
     AccountRequest accountRequest
+  );
+
+  Future<String> exportAttachment(
+    Attachment attachment,
+    AccountId accountId,
+    String baseDownloadUrl,
+    AccountRequest accountRequest,
+    CancelToken cancelToken
   );
 }

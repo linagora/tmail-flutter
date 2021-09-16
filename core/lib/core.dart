@@ -33,6 +33,7 @@ export 'presentation/views/text/text_form_field_builder.dart';
 export 'presentation/views/image/icon_builder.dart';
 export 'presentation/views/context_menu/context_menu_action_builder.dart';
 export 'presentation/views/context_menu/context_menu_builder.dart';
+export 'presentation/views/dialog/downloading_file_dialog_builder.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';
@@ -48,6 +49,8 @@ export 'data/network/config/dynamic_url_interceptors.dart';
 export 'data/network/config/endpoint.dart';
 export 'data/network/config/service_path.dart';
 export 'data/network/dio_client.dart';
+export 'data/network/download/download_client.dart';
+export 'data/network/download/download_manager.dart';
 
 // State
 export 'presentation/state/success.dart';

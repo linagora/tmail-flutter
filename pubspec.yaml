@@ -110,6 +110,9 @@ dependencies:
   # permission_handler
   permission_handler: 8.1.6
 
+  # share
+  share: 2.0.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
