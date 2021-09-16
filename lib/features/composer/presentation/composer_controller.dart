@@ -117,7 +117,7 @@ class ComposerController extends BaseController {
     return null;
   }
 
-  Tuple3<List<MessageContent>, List<AttachmentFile>, Session>? getContentEmailQuoted() {
+  Tuple3<List<MessageContent>, List<Attachment>, Session>? getContentEmailQuoted() {
     if (composerArguments.value != null) {
       final emailContent = composerArguments.value!.emailContent;
       final session = composerArguments.value!.session;
@@ -196,10 +196,11 @@ class ComposerController extends BaseController {
       final messageContent = contentEmail.value1.first;
       final attachmentInlines = contentEmail.value2;
       final session = contentEmail.value3;
+      final baseDownloadUrl = session.getDownloadUrl();
       final accountId = session.accounts.keys.first;
 
       final message = (attachmentInlines.isNotEmpty && messageContent.hasImageInlineWithCid())
-          ? '${messageContent.getContentHasInlineAttachment(session, accountId, attachmentInlines)}'
+          ? '${messageContent.getContentHasInlineAttachment(baseDownloadUrl, accountId, attachmentInlines)}'
           : '${messageContent.content}';
 
       trustAsHtml = htmlMessagePurifier.purifyHtmlMessage(message, allowAttributes: {'style', 'input', 'form'})

@@ -95,6 +95,21 @@ dependencies:
   # uuid
   uuid: 3.0.4
 
+  # flutter_downloader
+  flutter_downloader: 1.7.0
+
+  # external_path
+  external_path: 1.0.1
+
+  # path_provider
+  path_provider: 2.0.3
+
+  # device_info
+  device_info: 2.0.2
+
+  # permission_handler
+  permission_handler: 8.1.6
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

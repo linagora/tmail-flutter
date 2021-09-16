@@ -23,6 +23,7 @@ export 'email/email_action_type.dart';
 export 'email/presentation_email_address.dart';
 export 'email/email_address_cache.dart';
 export 'email/read_actions.dart';
+export 'email/attachment.dart';
 
 // Extensions
 export 'extensions/email_address_extension.dart';
@@ -34,3 +35,6 @@ export 'extensions/user_profile_extension.dart';
 export 'extensions/presentation_email_extension.dart';
 export 'extensions/keyword_identifier_extension.dart';
 export 'extensions/presentation_mailbox_extension.dart';
+
+// Download
+export 'download/download_task_id.dart';

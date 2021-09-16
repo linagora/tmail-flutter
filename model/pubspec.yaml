@@ -52,6 +52,9 @@ dependencies:
   # json_annotation
   json_annotation: 4.0.1
 
+  # http_parser
+  http_parser: 4.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

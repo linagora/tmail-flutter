@@ -8,12 +8,16 @@ export 'presentation/extensions/list_extensions.dart';
 export 'domain/extensions/datetime_extension.dart';
 export 'presentation/extensions/html_extension.dart';
 
+// Exceptions
+export 'domain/exceptions/download_file_exception.dart';
+
 // Utils
 export 'presentation/utils/theme_utils.dart';
 export 'presentation/utils/responsive_utils.dart';
 export 'presentation/utils/keyboard_utils.dart';
 export 'presentation/utils/style_utils.dart';
 export 'presentation/utils/app_toast.dart';
+export 'data/utils/device_manager.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
