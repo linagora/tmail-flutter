@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/read_actions.dart';
@@ -50,6 +51,21 @@ class EmailDataSourceImpl extends EmailDataSource {
   ) {
     return Future.sync(() async {
       return await emailAPI.downloadAttachments(attachments, accountId, baseDownloadUrl, accountRequest);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<String> exportAttachment(
+      Attachment attachment,
+      AccountId accountId,
+      String baseDownloadUrl,
+      AccountRequest accountRequest,
+      CancelToken cancelToken
+  ) {
+    return Future.sync(() async {
+      return await emailAPI.exportAttachment(attachment, accountId, baseDownloadUrl, accountRequest, cancelToken);
     }).catchError((error) {
       throw error;
     });

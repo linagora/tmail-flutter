@@ -1,4 +1,5 @@
 
+import 'package:dio/src/cancel_token.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/read_actions.dart';
@@ -38,5 +39,21 @@ class EmailRepositoryImpl extends EmailRepository {
       AccountRequest accountRequest
   ) {
     return emailDataSource.downloadAttachments(attachments, accountId, baseDownloadUrl, accountRequest);
+  }
+
+  @override
+  Future<String> exportAttachment(
+      Attachment attachment,
+      AccountId accountId,
+      String baseDownloadUrl,
+      AccountRequest accountRequest,
+      CancelToken cancelToken
+  ) {
+    return emailDataSource.exportAttachment(
+      attachment,
+      accountId,
+      baseDownloadUrl,
+      accountRequest,
+      cancelToken);
   }
 }

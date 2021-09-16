@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:core/core.dart';
+import 'package:dio/dio.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
@@ -29,14 +30,15 @@ import 'package:model/model.dart';
 
 class EmailAPI {
 
-  final HttpClient httpClient;
+  final HttpClient _httpClient;
+  final DownloadManager _downloadManager;
 
-  EmailAPI(this.httpClient);
+  EmailAPI(this._httpClient, this._downloadManager);
 
   Future<Email> getEmailContent(AccountId accountId, EmailId emailId) async {
     final processingInvocation = ProcessingInvocation();
 
-    final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+    final jmapRequestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
 
     final getEmailMethod = GetEmailMethod(accountId)
       ..addIds({emailId.id})
@@ -84,7 +86,7 @@ class EmailAPI {
         })
       });
 
-    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
     final setEmailSubmissionInvocation = requestBuilder.invocation(setEmailSubmissionMethod);
@@ -171,5 +173,22 @@ class EmailAPI {
       .where((taskId) => taskId != null)
       .map((taskId) => DownloadTaskId(taskId!))
       .toList();
+  }
+
+  Future<String> exportAttachment(
+      Attachment attachment,
+      AccountId accountId,
+      String baseDownloadUrl,
+      AccountRequest accountRequest,
+      CancelToken cancelToken
+  ) async {
+    final basicAuth = 'Basic ' + base64Encode(utf8.encode('${accountRequest.userName.userName}:${accountRequest.password.value}'));
+
+    return _downloadManager.downloadFile(
+      attachment.getDownloadUrl(baseDownloadUrl, accountId),
+      getTemporaryDirectory(),
+      attachment.name ?? '',
+      basicAuth,
+      cancelToken: cancelToken);
   }
 }
