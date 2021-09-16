@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_datasource_impl.dart';
-import 'package:tmail_ui_user/features/login/data/network/login_api.dart';
 import 'package:tmail_ui_user/features/login/data/repository/authentication_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
@@ -14,7 +13,7 @@ import 'package:tmail_ui_user/features/login/presentation/login_controller.dart'
 class LoginBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => AuthenticationDataSourceImpl(Get.find<LoginAPI>()));
+    Get.lazyPut(() => AuthenticationDataSourceImpl());
     Get.lazyPut<AuthenticationDataSource>(() => Get.find<AuthenticationDataSourceImpl>());
 
     Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
