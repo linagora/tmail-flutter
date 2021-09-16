@@ -1,17 +1,21 @@
+import 'dart:io';
+
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_content_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/list_attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/message_content_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/sender_and_receiver_information_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:filesize/filesize.dart';
 
 class EmailView extends GetWidget {
 
@@ -138,11 +142,11 @@ class EmailView extends GetWidget {
               imagePaths,
               emailController.mailboxDashBoardController.selectedEmail.value,
               emailController.emailAddressExpandMode.value)
-            .onOpenExpandAddressReceiverActionClick(() => emailController.toggleDisplayEmailAddressAction(expandMode: ExpandMode.EXPAND))
+            .onOpenExpandAddressReceiverActionClick(() => emailController.toggleDisplayAttachmentsAction())
             .build()),
           _buildLoadingView(),
-          _buildListMessageContent(),
           _buildListAttachments(context),
+          _buildListMessageContent(),
         ],
       )
     );
@@ -150,66 +154,151 @@ class EmailView extends GetWidget {
 
   Widget _buildListAttachments(BuildContext context) {
     if (emailController.mailboxDashBoardController.selectedEmail.value?.hasAttachment == true) {
-      return Obx(() => emailController.viewState.value.fold(
-        (failure) => SizedBox.shrink(),
-        (success) {
-          if (success is GetEmailContentSuccess && success.emailContent != null) {
-            final attachments = success.emailContent!.getListAttachment();
-            return attachments.isNotEmpty
-              ? GridView.builder(
-                  key: Key('list_attachment'),
-                  primary: false,
-                  shrinkWrap: true,
-                  padding: EdgeInsets.only(top: 16),
-                  itemCount: attachments.length,
-                  gridDelegate: SliverGridDelegateFixedHeight(
-                      height: 60,
-                      crossAxisCount: responsiveUtils.isMobile(context) ? 2 : 4,
-                      crossAxisSpacing: 16.0,
-                      mainAxisSpacing: 8.0),
-                  itemBuilder: (context, index) =>
-                      (AttachmentFileTileBuilder(imagePaths, attachments[index])
-                        ..onDownloadAttachmentFileActionClick((attachment) =>
-                            emailController.downloadAttachments(context, [attachment])))
-                    .build())
+      return Obx(() {
+        if (emailController.emailContent.value != null) {
+          final attachments = emailController.emailContent.value!.getListAttachment();
+          return attachments.isNotEmpty
+              ? _buildAttachmentsBody(context, attachments)
               : SizedBox.shrink();
-          } else {
-            return SizedBox.shrink();
-          }
-        })
-      );
+        } else {
+          return SizedBox.shrink();
+        }
+      });
     } else {
       return SizedBox.shrink();
     }
   }
 
+  int _getAttachmentLimitDisplayed(BuildContext context) {
+    if (responsiveUtils.isMobile(context)) {
+      return 2;
+    } else if (responsiveUtils.isTablet(context)) {
+      return 4;
+    } else {
+      return 3;
+    }
+  }
+
+  Widget _buildAttachmentsBody(BuildContext context, List<Attachment> attachments) {
+    final attachmentLimitDisplayed = _getAttachmentLimitDisplayed(context);
+    final countAttachments = _getListAttachmentsSize(
+        context,
+        emailController.attachmentsExpandMode.value,
+        attachments,
+        attachmentLimitDisplayed);
+    final isExpand = emailController.attachmentsExpandMode.value == ExpandMode.EXPAND
+        && attachments.length > attachmentLimitDisplayed;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (isExpand)
+          Padding(
+            padding: EdgeInsets.zero,
+            child: _buildAttachmentsHeader(context, attachments)),
+        GridView.builder(
+          key: Key('list_attachment'),
+          primary: false,
+          shrinkWrap: true,
+          padding: EdgeInsets.only(top: isExpand ? 0 : 16),
+          itemCount: countAttachments,
+          gridDelegate: SliverGridDelegateFixedHeight(
+            height: 60,
+            crossAxisCount: attachmentLimitDisplayed,
+            crossAxisSpacing: 16.0,
+            mainAxisSpacing: 8.0),
+          itemBuilder: (context, index) =>
+                (AttachmentFileTileBuilder(
+                    imagePaths,
+                    attachments[index],
+                    attachments.length,
+                    attachmentLimitDisplayed)
+                ..setExpandMode((countAttachments - 1 == index) ? emailController.attachmentsExpandMode.value : null)
+                ..onExpandAttachmentActionClick(() => emailController.toggleDisplayAttachmentsAction())
+                ..onDownloadAttachmentFileActionClick((attachment) {
+                  if (Platform.isAndroid) {
+                    emailController.downloadAttachments(context, [attachment]);
+                  } else {
+                    emailController.exportAttachment(context, attachment);
+                  }
+                }))
+            .build())
+      ],
+    );
+  }
+
+  int _getListAttachmentsSize(
+      BuildContext context,
+      ExpandMode expandMode,
+      List<Attachment> attachments,
+      int limitDisplayAttachment
+  ) {
+    if (attachments.length > limitDisplayAttachment) {
+      return expandMode == ExpandMode.EXPAND
+        ? attachments.length
+        : attachments.sublist(0, limitDisplayAttachment).length;
+    } else {
+      return attachments.length;
+    }
+  }
+
+  Widget _buildAttachmentsHeader(BuildContext context, List<Attachment> attachments) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${AppLocalizations.of(context).count_attachment(attachments.length)}',
+              style: TextStyle(fontSize: 12, color: AppColor.baseTextColor)),
+            Padding(
+              padding: EdgeInsets.only(left: 8),
+              child: Text(
+                '(${filesize(attachments.totalSize(), 1)})',
+                style: TextStyle(fontSize: 12, color: AppColor.nameUserColor, fontWeight: FontWeight.w500)))
+          ],
+        ),
+        if (attachments.length > 2)
+          Padding(
+            padding: EdgeInsets.only(left: 8),
+            child: IconButton(
+              icon: SvgPicture.asset(imagePaths.icExpandAttachment,
+                width: 20,
+                height: 20,
+                fit: BoxFit.fill),
+              onPressed: () => emailController.toggleDisplayAttachmentsAction()
+            ))
+      ],
+    );
+  }
+
   Widget _buildListMessageContent() {
-    return Obx(() => emailController.viewState.value.fold(
-      (failure) => SizedBox.shrink(),
-      (success) {
-        if (success is GetEmailContentSuccess && success.emailContent != null) {
-          final messageContents = success.emailContent!.getListMessageContent();
-          final attachmentsInline = success.emailContent!.getListAttachmentInline();
-          return messageContents.isNotEmpty
-            ? ListView.builder(
-                primary: false,
-                shrinkWrap: true,
-                padding: EdgeInsets.only(top: 16),
-                key: Key('list_message_content'),
-                itemCount: messageContents.length,
-                itemBuilder: (context, index) =>
+    return Obx(() {
+      if (emailController.emailContent.value != null) {
+        final messageContents = emailController.emailContent.value!.getListMessageContent();
+        final attachmentsInline = emailController.emailContent.value!.getListAttachmentInline();
+        return messageContents.isNotEmpty
+          ? ListView.builder(
+              primary: false,
+              shrinkWrap: true,
+              padding: EdgeInsets.only(top: 16),
+              key: Key('list_message_content'),
+              itemCount: messageContents.length,
+              itemBuilder: (context, index) =>
                   MessageContentTileBuilder(
                       htmlMessagePurifier: htmlMessagePurifier,
                       messageContent: messageContents[index],
                       attachmentInlines: attachmentsInline,
                       session: emailController.mailboxDashBoardController.sessionCurrent,
                       accountId: emailController.mailboxDashBoardController.accountId.value)
-                    .build())
-            : SizedBox.shrink();
-        } else {
-          return SizedBox.shrink();
-        }
-      })
-    );
+                .build())
+          : SizedBox.shrink();
+      } else {
+        return SizedBox.shrink();
+      }
+    });
   }
 }

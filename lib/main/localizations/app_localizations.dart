@@ -308,10 +308,47 @@ class AppLocalizations {
     );
   }
 
-  String get attachment_download_successfully {
+  String downloading_file(String fileName) {
     return Intl.message(
-      'Attachment downloaded successfully',
-      name: 'attachment_download_successfully',
+      'Downloading $fileName',
+      name: 'downloading_file',
+      args: [fileName]
+    );
+  }
+
+  String get preparing_to_export {
+    return Intl.message(
+      'Preparing to export',
+      name: 'preparing_to_export'
+    );
+  }
+
+  String get cancel {
+    return Intl.message(
+      'Cancel',
+      name: 'cancel'
+    );
+  }
+
+  String get user_cancel_download_file {
+    return Intl.message(
+      'User cancel download file',
+      name: 'user_cancel_download_file'
+    );
+  }
+
+  String get you_need_to_grant_files_permission_to_download_attachments {
+    return Intl.message(
+      'You need to grant files permission to download attachments',
+      name: 'you_need_to_grant_files_permission_to_download_attachments'
+    );
+  }
+
+  String count_attachment(int count) {
+    return Intl.message(
+        '$count attachments',
+        name: 'count_attachment',
+        args: [count]
     );
   }
 }

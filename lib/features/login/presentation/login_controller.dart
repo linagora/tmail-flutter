@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/login/domain/state/authentication_user_st
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LoginController extends GetxController {
 
@@ -60,7 +61,7 @@ class LoginController extends GetxController {
     loginState.value = LoginState(Right(success));
     _dynamicUrlInterceptors.changeBaseUrl(_urlText);
     _authorizationInterceptors.changeAuthorization(_userNameText, _passwordText);
-    Get.offNamed(AppRoutes.SESSION);
+    pushAndPop(AppRoutes.SESSION);
   }
 
   void _loginFailureAction(AuthenticationUserFailure failure) {
