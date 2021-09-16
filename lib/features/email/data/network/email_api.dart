@@ -1,5 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
+import 'package:core/core.dart';
+import 'package:external_path/external_path.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
@@ -18,6 +23,7 @@ import 'package:jmap_dart_client/jmap/mail/email/submission/email_submission.dar
 import 'package:jmap_dart_client/jmap/mail/email/submission/email_submission_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/envelope.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submission_method.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:model/model.dart';
 
@@ -111,7 +117,7 @@ class EmailAPI {
         emailId.id: KeyWordIdentifier.emailSeen.generateReadActionPath(readAction)
       });
 
-    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
@@ -130,5 +136,40 @@ class EmailAPI {
     }).catchError((error) {
       throw error;
     });
+  }
+
+  Future<List<DownloadTaskId>> downloadAttachments(
+      List<Attachment> attachments,
+      AccountId accountId,
+      String baseDownloadUrl,
+      AccountRequest accountRequest
+  ) async {
+    var externalStorageDirPath;
+    if (Platform.isAndroid) {
+      externalStorageDirPath = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+    } else if (Platform.isIOS) {
+      externalStorageDirPath = (await getApplicationDocumentsDirectory()).absolute.path;
+    } else {
+      throw DeviceNotSupportedException();
+    }
+
+    final basicAuth = 'Basic ' + base64Encode(utf8.encode('${accountRequest.userName.userName}:${accountRequest.password.value}'));
+
+    final taskIds = await Future.wait(
+      attachments.map((attachment) async => await FlutterDownloader.enqueue(
+        url: attachment.getDownloadUrl(baseDownloadUrl, accountId),
+        savedDir: externalStorageDirPath,
+        headers: {
+          HttpHeaders.authorizationHeader: basicAuth,
+          HttpHeaders.acceptHeader: DioClient.jmapHeader
+        },
+        fileName: attachment.name,
+        showNotification: true,
+        openFileFromNotification: true)));
+
+    return taskIds
+      .where((taskId) => taskId != null)
+      .map((taskId) => DownloadTaskId(taskId!))
+      .toList();
   }
 }
