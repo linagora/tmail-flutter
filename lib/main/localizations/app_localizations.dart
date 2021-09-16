@@ -25,7 +25,7 @@ class AppLocalizations {
   }
 
   String get login_text_slogan {
-    return Intl.message('TMail',
+    return Intl.message('Team Mail',
         name: 'login_text_slogan');
   }
 
