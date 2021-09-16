@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Team Mail</string>
+    <string name="flutter_downloader_notification_started">Started</string>
+    <string name="flutter_downloader_notification_in_progress">In Progress</string>
+    <string name="flutter_downloader_notification_canceled">Canceled</string>
+    <string name="flutter_downloader_notification_failed">Failed</string>
+    <string name="flutter_downloader_notification_complete">Completed</string>
+    <string name="flutter_downloader_notification_paused">Paused</string>
+</resources>

@@ -1,8 +1,6 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/attachment_file.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/text_format.dart';
 import 'package:model/model.dart';
 
@@ -15,16 +13,11 @@ class MessageContent with EquatableMixin {
 
   bool hasImageInlineWithCid() => content.contains('cid:');
 
-  String getContentHasInlineAttachment(Session session, AccountId accountId, List<AttachmentFile> attachmentFiles) {
+  String getContentHasInlineAttachment(String baseDownloadUrl, AccountId accountId, List<Attachment> attachments) {
     var contentValid = content;
-    attachmentFiles.forEach((attachment) {
+    attachments.forEach((attachment) {
       if(attachment.cid != null) {
-        final urlDownloadImage = session.getDownloadUrl(
-            '${accountId.id.value}',
-            '${attachment.blobId?.value}',
-            '${attachment.name}',
-            '${attachment.type?.mimeType}');
-
+        final urlDownloadImage = attachment.getDownloadUrl(baseDownloadUrl, accountId);
         contentValid = content.replaceAll('cid:${attachment.cid}', '$urlDownloadImage');
       }
     });

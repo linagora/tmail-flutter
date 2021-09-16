@@ -5,14 +5,14 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/attachment_file.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/message_content.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/text_format.dart';
 
 class MessageContentTileBuilder {
 
   final MessageContent messageContent;
-  final List<AttachmentFile> attachmentInlines;
+  final List<Attachment> attachmentInlines;
   final Session? session;
   final AccountId? accountId;
   final HtmlMessagePurifier htmlMessagePurifier;
@@ -51,7 +51,7 @@ class MessageContentTileBuilder {
 
   String getHtmlMessageText() {
     final message = (attachmentInlines.isNotEmpty && session != null && accountId != null && messageContent.hasImageInlineWithCid())
-      ? '${messageContent.getContentHasInlineAttachment(session!, accountId!, attachmentInlines)}'
+      ? '${messageContent.getContentHasInlineAttachment(session!.getDownloadUrl(), accountId!, attachmentInlines)}'
       : '${messageContent.content}';
 
     final trustAsHtml = htmlMessagePurifier.purifyHtmlMessage(

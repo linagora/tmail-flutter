@@ -4,23 +4,21 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/attachment_file.dart';
+import 'package:model/model.dart';
 
-typedef OnOpenAttachmentFileActionClick = void Function();
+typedef OnDownloadAttachmentFileActionClick = void Function(Attachment attachment);
 
 class AttachmentFileTileBuilder {
 
   final ImagePaths _imagePaths;
-  final AttachmentFile _attachmentFile;
+  final Attachment _attachment;
 
-  OnOpenAttachmentFileActionClick? _onOpenAttachmentFileActionClick;
+  OnDownloadAttachmentFileActionClick? _onDownloadAttachmentFileActionClick;
 
-  AttachmentFileTileBuilder(this._imagePaths, this._attachmentFile);
+  AttachmentFileTileBuilder(this._imagePaths, this._attachment);
 
-  AttachmentFileTileBuilder onOpenAttachmentFileActionClick(
-      OnOpenAttachmentFileActionClick onOpenAttachmentFileActionClick) {
-    _onOpenAttachmentFileActionClick = onOpenAttachmentFileActionClick;
-    return this;
+  void onDownloadAttachmentFileActionClick(OnDownloadAttachmentFileActionClick onDownloadAttachmentFileActionClick) {
+    _onDownloadAttachmentFileActionClick = onDownloadAttachmentFileActionClick;
   }
 
   Widget build() {
@@ -38,26 +36,29 @@ class AttachmentFileTileBuilder {
         child: MediaQuery(
           data: MediaQueryData(padding: EdgeInsets.zero),
           child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            focusColor: AppColor.primaryColor,
+            hoverColor: AppColor.primaryColor,
             onTap: () {
-              if (_onOpenAttachmentFileActionClick != null) {
-                _onOpenAttachmentFileActionClick!();
+              if (_onDownloadAttachmentFileActionClick != null) {
+                _onDownloadAttachmentFileActionClick!(_attachment);
               }},
             leading: Transform(
-              transform: Matrix4.translationValues(0.0, 2.0, 0.0),
+              transform: Matrix4.translationValues(14.0, 2.0, 0.0),
               child: SvgPicture.asset(_imagePaths.icAttachmentFile, width: 24, height: 24, fit: BoxFit.fill)),
             title: Transform(
-              transform: Matrix4.translationValues(-18.0, -8.0, 0.0),
+              transform: Matrix4.translationValues(-8.0, -8.0, 0.0),
               child: Text(
-                _attachmentFile.name ?? '',
+                _attachment.name ?? '',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 12, color: AppColor.attachmentFileNameColor, fontWeight: FontWeight.w500),
               )),
-            subtitle: _attachmentFile.size != null && _attachmentFile.size?.value != 0
+            subtitle: _attachment.size != null && _attachment.size?.value != 0
               ? Transform(
-                  transform: Matrix4.translationValues(-18.0, -8.0, 0.0),
+                  transform: Matrix4.translationValues(-8.0, -8.0, 0.0),
                   child: Text(
-                    filesize(_attachmentFile.size?.value),
+                    filesize(_attachment.size?.value),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 12, color: AppColor.attachmentFileSizeColor)))

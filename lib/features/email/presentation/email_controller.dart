@@ -1,16 +1,21 @@
+import 'dart:io';
+
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -21,11 +26,18 @@ class EmailController extends BaseController {
 
   final GetEmailContentInteractor _getEmailContentInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
+  final DownloadAttachmentsInteractor _downloadAttachmentsInteractor;
+  final DeviceManager _deviceManager;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   EmailContent? emailContent;
 
   EmailController(this._getEmailContentInteractor, this._markAsEmailReadInteractor);
+  EmailController(
+    this._getEmailContentInteractor,
+    this._downloadAttachmentsInteractor,
+    this._deviceManager
+  );
 
   @override
   void onReady() {
@@ -100,6 +112,46 @@ class EmailController extends BaseController {
 
   void _markAsEmailReadFailure(Failure failure) {
     backToThreadView();
+  }
+
+  void downloadAttachments(BuildContext context, List<Attachment> attachments) async {
+    final needRequestPermission = await _deviceManager.isNeedRequestStoragePermissionOnAndroid();
+
+    if (Platform.isAndroid && needRequestPermission) {
+      final status = await Permission.storage.status;
+      switch (status) {
+        case PermissionStatus.granted:
+          _downloadAttachmentsAction(context, attachments);
+          break;
+        case PermissionStatus.permanentlyDenied:
+          _appToast.showToast(AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments);
+          break;
+        default: {
+          final requested = await Permission.storage.request();
+          switch (requested) {
+            case PermissionStatus.granted:
+              _downloadAttachmentsAction(context, attachments);
+              break;
+            default:
+              _appToast.showToast(AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments);
+              break;
+          }
+        }
+      }
+    } else {
+      _downloadAttachmentsAction(context, attachments);
+    }
+  }
+
+  void _downloadAttachmentsAction(BuildContext context, List<Attachment> attachments) async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
+      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl();
+      await _downloadAttachmentsInteractor.execute(attachments, accountId, baseDownloadUrl)
+        .then((result) => result.fold(
+          (failure) => AppLocalizations.of(context).attachment_download_failed,
+          (success) => AppLocalizations.of(context).attachment_download_successfully));
+    }
   }
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null

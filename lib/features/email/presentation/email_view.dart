@@ -141,9 +141,8 @@ class EmailView extends GetWidget {
             .onOpenExpandAddressReceiverActionClick(() => emailController.toggleDisplayEmailAddressAction(expandMode: ExpandMode.EXPAND))
             .build()),
           _buildLoadingView(),
-          SizedBox(height: 16),
-          _buildListAttachments(context),
           _buildListMessageContent(),
+          _buildListAttachments(context),
         ],
       )
     );
@@ -161,14 +160,18 @@ class EmailView extends GetWidget {
                   key: Key('list_attachment'),
                   primary: false,
                   shrinkWrap: true,
-                  padding: EdgeInsets.only(bottom: 16),
+                  padding: EdgeInsets.only(top: 16),
                   itemCount: attachments.length,
                   gridDelegate: SliverGridDelegateFixedHeight(
                       height: 60,
                       crossAxisCount: responsiveUtils.isMobile(context) ? 2 : 4,
                       crossAxisSpacing: 16.0,
                       mainAxisSpacing: 8.0),
-                  itemBuilder: (context, index) => AttachmentFileTileBuilder(imagePaths, attachments[index]).build())
+                  itemBuilder: (context, index) =>
+                      (AttachmentFileTileBuilder(imagePaths, attachments[index])
+                        ..onDownloadAttachmentFileActionClick((attachment) =>
+                            emailController.downloadAttachments(context, [attachment])))
+                    .build())
               : SizedBox.shrink();
           } else {
             return SizedBox.shrink();
@@ -191,6 +194,7 @@ class EmailView extends GetWidget {
             ? ListView.builder(
                 primary: false,
                 shrinkWrap: true,
+                padding: EdgeInsets.only(top: 16),
                 key: Key('list_message_content'),
                 itemCount: messageContents.length,
                 itemBuilder: (context, index) =>
