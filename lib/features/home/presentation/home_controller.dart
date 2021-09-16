@@ -1,4 +1,6 @@
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
@@ -14,8 +16,17 @@ class HomeController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+    _initFlutterDownloader();
     _getCredentialAction();
   }
+
+  void _initFlutterDownloader() {
+    FlutterDownloader
+      .initialize(debug: kDebugMode)
+      .then((_) => FlutterDownloader.registerCallback(downloadCallback));
+  }
+
+  static void downloadCallback(String id, DownloadTaskStatus status, int progress) {}
 
   void _getCredentialAction() async {
     await _getCredentialInteractor.execute()

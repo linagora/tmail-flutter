@@ -53,6 +53,9 @@ dependencies:
   # GetX
   get: 4.1.4
 
+  # device_info
+  device_info: 2.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
