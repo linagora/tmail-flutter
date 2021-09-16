@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class HomeController extends GetxController {
   final GetCredentialInteractor _getCredentialInteractor;
@@ -36,7 +37,7 @@ class HomeController extends GetxController {
   }
 
   void _goToLogin() {
-    Get.offNamed(AppRoutes.LOGIN);
+    pushAndPop(AppRoutes.LOGIN);
   }
 
   void _goToMailbox(GetCredentialViewState credentialViewState) {
@@ -45,6 +46,6 @@ class HomeController extends GetxController {
       credentialViewState.userName.userName,
       credentialViewState.password.value,
     );
-    Get.offNamed(AppRoutes.SESSION);
+    pushAndPop(AppRoutes.SESSION);
   }
 }

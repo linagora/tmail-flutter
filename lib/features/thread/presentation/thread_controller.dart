@@ -392,7 +392,7 @@ class ThreadController extends BaseController {
 
   void composeEmailAction() {
     if (canComposeEmail()) {
-      Get.toNamed(
+      push(
         AppRoutes.COMPOSER,
         arguments: ComposerArguments(
           session: mailboxDashBoardController.sessionCurrent!,

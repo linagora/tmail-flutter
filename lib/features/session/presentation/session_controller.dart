@@ -3,6 +3,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_i
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SessionController extends GetxController {
   final GetSessionInteractor _getSessionInteractor;
@@ -29,10 +30,10 @@ class SessionController extends GetxController {
 
   void _goToLogin() {
     _deleteCredential();
-    Get.offNamed(AppRoutes.LOGIN);
+    pushAndPop(AppRoutes.LOGIN);
   }
 
   void _goToMailboxDashBoard(GetSessionSuccess getSessionSuccess) {
-    Get.offNamed(AppRoutes.MAILBOX_DASHBOARD, arguments: getSessionSuccess.session);
+    pushAndPop(AppRoutes.MAILBOX_DASHBOARD, arguments: getSessionSuccess.session);
   }
 }

@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_b
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class MailboxController extends BaseController {
 
@@ -141,6 +142,6 @@ class MailboxController extends BaseController {
 
   void closeMailboxScreen() {
     _deleteCredential();
-    Get.offAllNamed(AppRoutes.LOGIN);
+    pushAndPopAll(AppRoutes.LOGIN);
   }
 }

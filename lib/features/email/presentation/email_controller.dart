@@ -1,16 +1,21 @@
-import 'dart:io';
-
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -18,6 +23,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_da
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:share/share.dart' as share_library;
 
 class EmailController extends BaseController {
 
@@ -28,22 +34,27 @@ class EmailController extends BaseController {
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
   final DownloadAttachmentsInteractor _downloadAttachmentsInteractor;
   final DeviceManager _deviceManager;
+  final AppToast _appToast;
+  final ExportAttachmentInteractor _exportAttachmentInteractor;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
-  EmailContent? emailContent;
+  final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
+  final emailContent = Rxn<EmailContent>();
 
-  EmailController(this._getEmailContentInteractor, this._markAsEmailReadInteractor);
   EmailController(
     this._getEmailContentInteractor,
+    this._markAsEmailReadInteractor,
     this._downloadAttachmentsInteractor,
-    this._deviceManager
+    this._deviceManager,
+    this._appToast,
+    this._exportAttachmentInteractor,
   );
 
   @override
   void onReady() {
     super.onReady();
     mailboxDashBoardController.selectedEmail.listen((presentationEmail) {
-      toggleDisplayEmailAddressAction(expandMode: ExpandMode.COLLAPSE);
+      _clearEmailContent();
       final accountId = mailboxDashBoardController.accountId.value;
       if (accountId != null && presentationEmail != null) {
         _getEmailContentAction(accountId, presentationEmail.id);
@@ -75,19 +86,31 @@ class EmailController extends BaseController {
       (failure) {
         if (failure is MarkAsEmailReadFailure) {
           _markAsEmailReadFailure(failure);
+        } else if (failure is DownloadAttachmentsFailure) {
+          _downloadAttachmentsFailure(failure);
+        } else if (failure is ExportAttachmentFailure) {
+          _exportAttachmentFailureAction(failure);
         }
       },
       (success) {
         if (success is GetEmailContentSuccess) {
-          emailContent = success.emailContent;
+          emailContent.value = success.emailContent;
         } else if (success is MarkAsEmailReadSuccess) {
           _markAsEmailReadSuccess(success);
+        } else if (success is ExportAttachmentSuccess) {
+          _exportAttachmentSuccessAction(success);
         }
       });
   }
 
   @override
   void onError(error) {
+  }
+
+  void _clearEmailContent() {
+    toggleDisplayEmailAddressAction(expandMode: ExpandMode.COLLAPSE);
+    attachmentsExpandMode.value = ExpandMode.COLLAPSE;
+    emailContent.value = null;
   }
 
   void toggleDisplayEmailAddressAction({required ExpandMode expandMode}) {
@@ -114,10 +137,17 @@ class EmailController extends BaseController {
     backToThreadView();
   }
 
+  void toggleDisplayAttachmentsAction() {
+    final newExpandMode = attachmentsExpandMode.value == ExpandMode.COLLAPSE
+        ? ExpandMode.EXPAND
+        : ExpandMode.COLLAPSE;
+    attachmentsExpandMode.value = newExpandMode;
+  }
+
   void downloadAttachments(BuildContext context, List<Attachment> attachments) async {
     final needRequestPermission = await _deviceManager.isNeedRequestStoragePermissionOnAndroid();
 
-    if (Platform.isAndroid && needRequestPermission) {
+    if (needRequestPermission) {
       final status = await Permission.storage.status;
       switch (status) {
         case PermissionStatus.granted:
@@ -147,10 +177,55 @@ class EmailController extends BaseController {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl();
-      await _downloadAttachmentsInteractor.execute(attachments, accountId, baseDownloadUrl)
-        .then((result) => result.fold(
-          (failure) => AppLocalizations.of(context).attachment_download_failed,
-          (success) => AppLocalizations.of(context).attachment_download_successfully));
+      consumeState(_downloadAttachmentsInteractor.execute(attachments, accountId, baseDownloadUrl));
+    }
+  }
+
+  void _downloadAttachmentsFailure(Failure failure) {
+    if (Get.context != null) {
+      _appToast.showErrorToast(AppLocalizations.of(Get.context!).attachment_download_failed);
+    }
+  }
+
+  void exportAttachment(BuildContext context, Attachment attachment) {
+    final cancelToken = CancelToken();
+    _showDownloadingFileDialog(context, attachment, cancelToken);
+    _exportAttachmentAction(attachment, cancelToken);
+  }
+
+  void _showDownloadingFileDialog(BuildContext context, Attachment attachment, CancelToken cancelToken) {
+    showCupertinoDialog(
+      context: context,
+      builder: (_) => (DownloadingFileDialogBuilder()
+          ..key(Key('downloading_file_dialog'))
+          ..title(AppLocalizations.of(context).preparing_to_export)
+          ..content(AppLocalizations.of(context).downloading_file(attachment.name ?? ''))
+          ..actionText(AppLocalizations.of(context).cancel)
+          ..addCancelDownloadActionClick(() {
+              cancelToken.cancel([AppLocalizations.of(context).user_cancel_download_file]);
+              Get.back();
+            }))
+        .build());
+  }
+
+  void _exportAttachmentAction(Attachment attachment, CancelToken cancelToken) async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
+      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl();
+      consumeState(_exportAttachmentInteractor.execute(attachment, accountId, baseDownloadUrl, cancelToken));
+    }
+  }
+
+  void _exportAttachmentFailureAction(Failure failure) {
+    if (failure is ExportAttachmentFailure && !(failure.exception is CancelDownloadFileException)) {
+      popBack();
+    }
+  }
+
+  void _exportAttachmentSuccessAction(Success success) async {
+    popBack();
+    if (success is ExportAttachmentSuccess) {
+      await share_library.Share.shareFiles([success.filePath]);
     }
   }
 
@@ -165,12 +240,12 @@ class EmailController extends BaseController {
 
   void pressEmailAction(EmailActionType emailActionType) {
     if (canComposeEmail()) {
-      Get.toNamed(
+      push(
         AppRoutes.COMPOSER,
         arguments: ComposerArguments(
           emailActionType: emailActionType,
           presentationEmail: mailboxDashBoardController.selectedEmail.value!,
-          emailContent: emailContent,
+          emailContent: emailContent.value,
           session: mailboxDashBoardController.sessionCurrent!,
           userProfile: mailboxDashBoardController.userProfile.value!,
           mapMailboxId: mailboxDashBoardController.mapMailboxId));
