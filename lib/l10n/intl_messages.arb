@@ -1,12 +1,12 @@
 {
-  "@@last_modified": "2021-09-15T10:01:46.152493",
+  "@@last_modified": "2021-09-16T11:55:46.823676",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login_text_slogan": "TMail",
+  "login_text_slogan": "Team Mail",
   "@login_text_slogan": {
     "type": "text",
     "placeholders_order": [],
