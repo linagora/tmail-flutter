@@ -25,7 +25,6 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_inter
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/constants/email_constants.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_content_extension.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/attachment_file.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/message_content.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';

@@ -12,11 +12,11 @@ class DownloadAttachmentsInteractor {
 
   DownloadAttachmentsInteractor(this.emailRepository, this.credentialRepository);
 
-  Future<Either<Failure, Success>> execute(
+  Stream<Either<Failure, Success>> execute(
       List<Attachment> attachments,
       AccountId accountId,
       String baseDownloadUrl
-  ) async {
+  ) async* {
     try {
       final taskIds = await Future.wait(
           [credentialRepository.getUserName(), credentialRepository.getPassword()],
@@ -30,9 +30,9 @@ class DownloadAttachmentsInteractor {
             accountRequest);
       });
 
-      return Right<Failure, Success>(DownloadAttachmentsSuccess(taskIds));
+      yield Right<Failure, Success>(DownloadAttachmentsSuccess(taskIds));
     } catch (e) {
-      return Left<Failure, Success>(DownloadAttachmentsFailure(e));
+      yield Left<Failure, Success>(DownloadAttachmentsFailure(e));
     }
   }
 }
