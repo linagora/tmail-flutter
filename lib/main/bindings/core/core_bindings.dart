@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:device_info/device_info.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,6 +14,7 @@ class CoreBindings extends Bindings {
     _bindingKeyboardManager();
     _bindingValidator();
     _bindingToast();
+    _bindingDeviceManager();
   }
 
   void _bindingAppImagePaths() {
@@ -37,5 +39,10 @@ class CoreBindings extends Bindings {
 
   void _bindingToast() {
     Get.put(AppToast());
+  }
+
+  void _bindingDeviceManager() {
+    Get.put(DeviceInfoPlugin());
+    Get.put(DeviceManager(Get.find<DeviceInfoPlugin>()));
   }
 }

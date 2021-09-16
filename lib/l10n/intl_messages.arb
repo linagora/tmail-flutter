@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-09-15T13:25:41.117609",
+  "@@last_modified": "2021-09-15T23:44:29.035668",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -266,6 +266,18 @@
   },
   "an_error_occurred": "Error! An error occurred. Please try again later.",
   "@an_error_occurred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachment_download_failed": "Attachment download failed",
+  "@attachment_download_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachment_download_successfully": "Attachment downloaded successfully",
+  "@attachment_download_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

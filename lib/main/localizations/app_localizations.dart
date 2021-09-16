@@ -300,5 +300,19 @@ class AppLocalizations {
       name: 'an_error_occurred',
     );
   }
+
+  String get attachment_download_failed {
+    return Intl.message(
+      'Attachment download failed',
+      name: 'attachment_download_failed',
+    );
+  }
+
+  String get attachment_download_successfully {
+    return Intl.message(
+      'Attachment downloaded successfully',
+      name: 'attachment_download_successfully',
+    );
+  }
 }
 

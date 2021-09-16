@@ -269,5 +269,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "attachment_download_failed": "Attachment download failed",
+  "@attachment_download_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachment_download_successfully": "Attachment downloaded successfully",
+  "@attachment_download_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
