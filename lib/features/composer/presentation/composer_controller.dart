@@ -22,11 +22,11 @@ import 'package:tmail_ui_user/features/composer/domain/state/search_email_addres
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/search_email_address_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/constants/email_constants.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/email_content_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/attachment_file.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/email/presentation/extensions/email_content_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/message_content.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:uuid/uuid.dart';
@@ -217,9 +217,7 @@ class ComposerController extends BaseController {
     final generateEmailId = EmailId(Id(_uuid.v1()));
     final outboxMailboxId = composerArguments.value!.mapMailboxId[PresentationMailbox.roleOutbox];
     final listFromEmailAddress = {
-      EmailAddress(
-        composerArguments.value!.userProfile.getNameDisplay(),
-        composerArguments.value!.userProfile.getEmailAddress())
+      EmailAddress(null, composerArguments.value!.userProfile.email)
     };
     final generatePartId = PartId(_uuid.v1());
     final generateBlobId = Id(_uuid.v1());

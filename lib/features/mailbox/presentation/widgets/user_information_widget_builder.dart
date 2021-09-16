@@ -42,21 +42,11 @@ class UserInformationWidgetBuilder {
         title: Transform(
           transform: Matrix4.translationValues(0.0, 0.0, 0.0),
           child: Text(
-            _userProfile != null ? _userProfile!.getNameDisplay() : '',
+            _userProfile != null ? _userProfile!.email : '',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 16, color: AppColor.nameUserColor, fontWeight: FontWeight.w500),
           )),
-        subtitle: (_userProfile != null && !_userProfile!.isUserEmpty())
-          ? Transform(
-            transform: Matrix4.translationValues(0.0, 4.0, 0.0),
-            child: Text(
-              _userProfile!.getEmailAddress() ?? '',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12, color: AppColor.emailUserColor, fontWeight: FontWeight.w500),
-            ))
-          : null,
         trailing: Transform(
           transform: Matrix4.translationValues(0.0, 0.0, 0.0),
           child: IconButton(

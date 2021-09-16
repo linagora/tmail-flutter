@@ -9,8 +9,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnOpenExpandAddressActionClick = void Function();
 typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word);
@@ -88,14 +88,10 @@ class EmailAddressComposerWidgetBuilder {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (_userProfile?.getFullName().isNotEmpty == true)
-                          Text(
-                            '${_userProfile?.getFullName()}',
-                            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: AppColor.nameUserColor)),
-                        if (_userProfile?.getEmailAddress()?.isNotEmpty == true)
-                          Text(
-                            '<${_userProfile?.getEmailAddress()}>',
-                            style: TextStyle(fontSize: 14, color: AppColor.nameUserColor))
+                        Text(
+                          '<${_userProfile?.email}>',
+                          style: TextStyle(fontSize: 14, color: AppColor.nameUserColor)
+                        )
                       ],
                     )
                   )

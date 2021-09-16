@@ -4,80 +4,23 @@ import 'package:model/model.dart';
 
 part 'user_profile_response.g.dart';
 
-@AvatarIdNullableConverter()
-@AvatarIdConverter()
-@UserIdConverter()
 @JsonSerializable()
 class UserProfileResponse with EquatableMixin  {
 
-  @JsonKey(name: Attribute.id, includeIfNull: false)
-  final UserId id;
-  @JsonKey(name: Attribute.firstname, includeIfNull: false)
-  final String? firstName;
-  @JsonKey(name: Attribute.lastname, includeIfNull: false)
-  final String? lastName;
-  @JsonKey(name: Attribute.job_title, includeIfNull: false)
-  final String? jobTitle;
-  @JsonKey(includeIfNull: false)
-  final String? service;
-  @JsonKey(name: Attribute.building_location, includeIfNull: false)
-  final String? buildingLocation;
-  @JsonKey(name: Attribute.office_location, includeIfNull: false)
-  final String? officeLocation;
-  @JsonKey(name: Attribute.main_phone, includeIfNull: false)
-  final String? mainPhone;
-  @JsonKey(includeIfNull: false)
-  final String? description;
-  @JsonKey(includeIfNull: false)
-  final AvatarId? currentAvatar;
-  @JsonKey(includeIfNull: false)
-  final List<AvatarId>? avatars;
-  @JsonKey(includeIfNull: false)
-  final List<PresentationAccountResponse>? accounts;
+  final String email;
 
-  UserProfileResponse(
-    this.id,
-    this.firstName,
-    this.lastName,
-    this.jobTitle,
-    this.service,
-    this.buildingLocation,
-    this.officeLocation,
-    this.mainPhone,
-    this.description,
-    this.currentAvatar,
-    this.avatars,
-    this.accounts
-  );
+  UserProfileResponse(this.email);
 
   factory UserProfileResponse.fromJson(Map<String, dynamic> json) => _$UserProfileResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$UserProfileResponseToJson(this);
 
   @override
-  List<Object?> get props => [
-    id,
-    firstName,
-    lastName,
-    accounts,
-  ];
+  List<Object?> get props => [email];
 }
 
 extension UserProfileResponseExtension on UserProfileResponse {
   UserProfile toUserProfile() {
-    return UserProfile(
-      id,
-      firstName ?? '',
-      lastName ?? '',
-      jobTitle ?? '',
-      service ?? '',
-      buildingLocation ?? '',
-      officeLocation ?? '',
-      mainPhone ?? '',
-      description ?? '',
-      currentAvatar ?? AvatarId.initial(),
-      avatars ?? [],
-      accounts != null ? accounts!.map((account) => account.toPresentationAccount()).toList() : []
-    );
+    return UserProfile(email);
   }
 }
