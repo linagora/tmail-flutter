@@ -13,7 +13,7 @@ class GetEmailContentInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, EmailId emailId) async* {
     try {
-      yield Right<Failure, Success>(UIState.loading);
+      yield Right<Failure, Success>(LoadingState());
       final email = await emailRepository.getEmailContent(accountId, emailId);
       yield Right<Failure, Success>(GetEmailContentSuccess(email.toEmailContent()));
     } catch (e) {

@@ -110,7 +110,7 @@ class MailboxView extends GetWidget<MailboxController> {
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),
-      (success) => success == UIState.loading
+      (success) => success is LoadingState
         ? Center(child: Padding(
             padding: EdgeInsets.only(top: 16),
             child: SizedBox(

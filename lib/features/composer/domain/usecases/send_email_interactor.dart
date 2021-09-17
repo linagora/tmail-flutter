@@ -12,7 +12,7 @@ class SendEmailInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, EmailRequest emailRequest) async* {
     try {
-      yield Right<Failure, Success>(UIState.loading);
+      yield Right<Failure, Success>(LoadingState());
       final result = await emailRepository.sendEmail(accountId, emailRequest);
       if (result) {
         yield Right<Failure, Success>(SendEmailSuccess());
