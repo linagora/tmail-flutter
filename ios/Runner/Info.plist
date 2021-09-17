@@ -28,6 +28,8 @@
 	<string>Main</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>To save photo to library, we need permission to access your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>To select and upload photo, we need permission to access your photo library.</string>
     <key>NSContactsUsageDescription</key>
   	<string>To send email with these contacts</string>
 	<key>UISupportedInterfaceOrientations</key>
