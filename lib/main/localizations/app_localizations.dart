@@ -351,5 +351,47 @@ class AppLocalizations {
         args: [count]
     );
   }
+
+  String get attach_file_prepare_text {
+    return Intl.message(
+      'Preparing to attach file...',
+      name: 'attach_file_prepare_text'
+    );
+  }
+
+  String get can_not_upload_this_file_as_attachments {
+    return Intl.message(
+      'Can not upload this file as attachments',
+      name: 'can_not_upload_this_file_as_attachments'
+    );
+  }
+
+  String get attachments_uploaded_successfully {
+    return Intl.message(
+      'Attachments uploaded successfully',
+      name: 'attachments_uploaded_successfully'
+    );
+  }
+
+  String get pick_attachments {
+    return Intl.message(
+      'Pick attachments',
+      name: 'pick_attachments'
+    );
+  }
+
+  String get photos_and_videos {
+    return Intl.message(
+      'Photos and Videos',
+      name: 'photos_and_videos',
+    );
+  }
+
+  String get browse {
+    return Intl.message(
+      'Browse',
+      name: 'browse',
+    );
+  }
 }
 

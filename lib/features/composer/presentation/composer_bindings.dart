@@ -3,6 +3,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/autocomplete_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
@@ -12,6 +13,7 @@ import 'package:tmail_ui_user/features/composer/data/datasource_impl/contact_dat
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/local_autocomplete_datasource_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/local_composer_datasource_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/local/email_address_database_manager.dart';
+import 'package:tmail_ui_user/features/composer/data/network/composer_api.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/auto_complete_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/composer_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
@@ -20,18 +22,22 @@ import 'package:tmail_ui_user/features/composer/domain/repository/composer_repos
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:uuid/uuid.dart';
 
 class ComposerBindings extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => EmailAddressDatabaseManager(Get.find<DatabaseClient>()));
-    Get.lazyPut(() => ComposerDataSourceImpl());
+    Get.lazyPut(() => ComposerDataSourceImpl(Get.find<ComposerAPI>()));
     Get.lazyPut(() => LocalComposerDataSourceImpl(Get.find<EmailAddressDatabaseManager>()));
     Get.lazyPut<ComposerDataSource>(() => Get.find<ComposerDataSourceImpl>());
     Get.lazyPut(() => ComposerRepositoryImpl({
@@ -61,6 +67,12 @@ class ComposerBindings extends Bindings {
     Get.lazyPut(() => GetAutoCompleteWithDeviceContactInteractor(
         Get.find<GetAutoCompleteInteractor>(),
         Get.find<GetDeviceContactSuggestionsInteractor>()));
+    Get.lazyPut(() => LocalFilePickerInteractor());
+    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
+    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
+    Get.lazyPut(() => UploadAttachmentInteractor(
+      Get.find<ComposerRepository>(),
+      Get.find<CredentialRepository>()));
     Get.lazyPut(() => ComposerController(
       Get.find<SendEmailInteractor>(),
       Get.find<SaveEmailAddressesInteractor>(),
@@ -71,5 +83,8 @@ class ComposerBindings extends Bindings {
       Get.find<HtmlEditorController>(),
       Get.find<TextEditingController>(),
       Get.find<HtmlMessagePurifier>()));
+      Get.find<HtmlEditorController>(),
+      Get.find<LocalFilePickerInteractor>(),
+      Get.find<UploadAttachmentInteractor>()));
   }
 }

@@ -5,10 +5,12 @@ import 'package:flutter/widgets.dart';
 
 typedef OnBackActionClick = void Function();
 typedef OnSendEmailActionClick = void Function();
+typedef OnAttachFileActionClick = void Function();
 
 class TopBarComposerWidgetBuilder {
   OnBackActionClick? _onBackActionClick;
   OnSendEmailActionClick? _onSendEmailActionClick;
+  OnAttachFileActionClick? _onAttachFileActionClick;
 
   final ImagePaths _imagePaths;
   final bool _isEnableEmailSendButton;
@@ -21,6 +23,10 @@ class TopBarComposerWidgetBuilder {
 
   void addSendEmailActionClick(OnSendEmailActionClick onSendEmailActionClick) {
     _onSendEmailActionClick = onSendEmailActionClick;
+  }
+
+  void addAttachFileActionClick(OnAttachFileActionClick onAttachFileActionClick) {
+    _onAttachFileActionClick = onAttachFileActionClick;
   }
 
   Widget build() {
@@ -64,7 +70,13 @@ class TopBarComposerWidgetBuilder {
       children: [
         ButtonBuilder(_imagePaths.icComposerFileShare).key(Key('button_file_share')).build(),
         SizedBox(width: 2),
-        ButtonBuilder(_imagePaths.icShare).key(Key('button_attachment')).build(),
+        ButtonBuilder(_imagePaths.icShare)
+          .key(Key('button_attachment'))
+          .onPressActionClick(() {
+            if (_onAttachFileActionClick != null) {
+              _onAttachFileActionClick!();
+            }})
+          .build(),
         SizedBox(width: 2),
         ButtonBuilder(_imagePaths.icComposerSend)
           .key(Key('button_send_email'))

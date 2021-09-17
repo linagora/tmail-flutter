@@ -20,6 +20,9 @@ class AttachmentFileTileBuilder {
   OnDownloadAttachmentFileActionClick? _onDownloadAttachmentFileActionClick;
   OnExpandAttachmentActionClick? _onExpandAttachmentActionClick;
 
+  Widget? buttonAction;
+  double? heightItem;
+
   AttachmentFileTileBuilder(
     this._imagePaths,
     this._attachment,
@@ -39,6 +42,14 @@ class AttachmentFileTileBuilder {
     _expandMode = expandMode;
   }
 
+  void addButtonAction(Widget action) {
+    buttonAction = action;
+  }
+
+  void height(double height) {
+    heightItem = height;
+  }
+
   Widget build() {
     return Theme(
       data: ThemeData(
@@ -47,6 +58,8 @@ class AttachmentFileTileBuilder {
       child: Container(
         key: Key('attach_file_tile'),
         alignment: Alignment.center,
+        margin: EdgeInsets.only(top:heightItem != null ? 8 : 0),
+        height: heightItem ?? null,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: AppColor.attachmentFileBorderColor),
@@ -83,6 +96,11 @@ class AttachmentFileTileBuilder {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontSize: 12, color: AppColor.attachmentFileSizeColor)))
+                  : null,
+                trailing: buttonAction != null
+                  ? Transform(
+                      transform: Matrix4.translationValues(6.0, heightItem != null ? -6.0 : 0.0, 0.0),
+                      child: buttonAction)
                   : null
               ),
               Transform(

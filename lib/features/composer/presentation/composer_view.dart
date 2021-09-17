@@ -1,11 +1,17 @@
 import 'package:core/core.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:model/email/attachment.dart';
+import 'package:model/email/email_action_type.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_composer_widget_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/top_bar_composer_widget_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
@@ -50,12 +56,40 @@ class ComposerView extends GetWidget<ComposerController> {
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Obx(() => (TopBarComposerWidgetBuilder(imagePaths, controller.isEnableEmailSendButton.value)
           ..addSendEmailActionClick(() => controller.sendEmailAction(context))
+          ..addAttachFileActionClick(() => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context)))
           ..addBackActionClick(() => controller.backToEmailViewAction()))
         .build()),
     );
   }
 
   Widget _buildEmailHeader(BuildContext context) {
+  List<Widget> _pickAttachmentsActionTiles(BuildContext context) {
+    return [
+      _pickPhotoAndVideoAction(context),
+      _browseFileAction(context),
+      SizedBox(height: 30),
+    ];
+  }
+
+  Widget _pickPhotoAndVideoAction(BuildContext context) {
+    return (SimpleContextMenuActionBuilder(
+            Key('pick_photo_and_video_context_menu_action'),
+            SvgPicture.asset(imagePaths.icPhotoLibrary, width: 24, height: 24, fit: BoxFit.fill),
+            AppLocalizations.of(context).photos_and_videos)
+        ..onActionClick((_) => controller.openFilePickerByType(context, FileType.media)))
+      .build();
+  }
+
+  Widget _browseFileAction(BuildContext context) {
+    return (SimpleContextMenuActionBuilder(
+            Key('browse_file_context_menu_action'),
+            SvgPicture.asset(imagePaths.icMore, width: 24, height: 24, fit: BoxFit.fill),
+            AppLocalizations.of(context).browse)
+        ..onActionClick((_) => controller.openFilePickerByType(context, FileType.any)))
+      .build();
+  }
+
+  Widget _buildEmailHeaderField(BuildContext context) {
     return Container(
       margin: EdgeInsets.zero,
       padding: EdgeInsets.only(top: 20),
@@ -120,6 +154,10 @@ class ComposerView extends GetWidget<ComposerController> {
             padding: EdgeInsets.only(bottom: 30, top: 16, left: 16, right: 16),
             child: _buildComposerEditer(context),
           )
+            child: _buildEmailBodyEditorQuoted(context),
+          ),
+          _buildLoadingView(),
+          _buildAttachments(context),
         ]
       )
     );
@@ -142,5 +180,44 @@ class ComposerView extends GetWidget<ComposerController> {
         }
       ),
     );
+  }
+
+  Widget _buildLoadingView() {
+    return Obx(() => controller.viewState.value.fold(
+      (failure) => SizedBox.shrink(),
+      (success) => success is UploadAttachmentLoadingState
+        ? Center(child: Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(color: AppColor.primaryColor))))
+        : SizedBox.shrink()));
+  }
+
+  Widget _buildAttachments(BuildContext context) {
+    return Obx(() => controller.attachments.isNotEmpty
+      ? ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          key: Key('attachment_list'),
+          padding: EdgeInsets.only(top: 16, bottom: 24, right: 50, left: 24),
+          itemCount: controller.attachments.length,
+          itemBuilder: (context, index) => (AttachmentFileTileBuilder(
+                  imagePaths,
+                  controller.attachments[index],
+                  0,
+                  0)
+              ..height(60)
+              ..addButtonAction(_buildRemoveButtonAttachment(controller.attachments[index])))
+            .build())
+      : SizedBox.shrink());
+  }
+
+  Widget _buildRemoveButtonAttachment(Attachment attachment) {
+    return (IconBuilder(imagePaths.icComposerClose)
+        ..size(35)
+        ..addOnTapActionClick(() => controller.removeAttachmentAction(attachment)))
+      .build();
   }
 }
