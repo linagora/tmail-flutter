@@ -39,6 +39,8 @@ class ImagePaths {
   String get icSelected => _getImagePath('ic_selected.svg');
   String get icExpandAttachment => _getImagePath('ic_expand_attachment.svg');
   String get icDownload => _getImagePath('ic_download.svg');
+  String get icMore => _getImagePath('ic_more.svg');
+  String get icPhotoLibrary => _getImagePath('ic_photo_library.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

@@ -33,7 +33,9 @@ export 'presentation/views/text/text_form_field_builder.dart';
 export 'presentation/views/image/icon_builder.dart';
 export 'presentation/views/context_menu/context_menu_action_builder.dart';
 export 'presentation/views/context_menu/context_menu_builder.dart';
-export 'presentation/views/dialog/downloading_file_dialog_builder.dart';
+export 'presentation/views/context_menu/context_menu_header_builder.dart';
+export 'presentation/views/context_menu/simple_context_menu_action_builder.dart';
+export 'presentation/views/dialog/loading_dialog_builder.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';

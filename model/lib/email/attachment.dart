@@ -16,14 +16,14 @@ class Attachment with EquatableMixin {
   final MediaType? type;
   final String? cid;
 
-  Attachment(
+  Attachment({
     this.partId,
     this.blobId,
     this.size,
     this.name,
     this.type,
     this.cid
-  );
+  });
 
   String getDownloadUrl(String baseDownloadUrl, AccountId accountId) {
     final downloadUriTemplate = UriTemplate('$baseDownloadUrl');
