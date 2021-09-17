@@ -42,3 +42,8 @@ export 'download/download_task_id.dart';
 // Contact
 export 'contact/contact.dart';
 export 'contact/device_contact.dart';
+
+// Upload
+export 'upload/file_info.dart';
+export 'upload/upload_request.dart';
+export 'upload/upload_response.dart';

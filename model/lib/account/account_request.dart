@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:model/model.dart';
 
@@ -11,6 +13,8 @@ class AccountRequest with EquatableMixin {
     'username': userName.userName,
     'password': password.value,
   };
+
+  String basicAuth() => 'Basic ${base64Encode(utf8.encode('${userName.userName}:${password.value}'))}';
 
   @override
   List<Object> get props => [userName, password];
