@@ -14,7 +14,6 @@ class UploadAttachmentInteractor {
 
   Stream<Either<Failure, Success>> execute(FileInfo fileInfo, AccountId accountId, Uri uploadUrl) async* {
     try {
-      yield Right<Failure, Success>(UploadAttachmentLoadingState());
       final result = await Future.wait(
           [_credentialRepository.getUserName(), _credentialRepository.getPassword()],
           eagerError: true

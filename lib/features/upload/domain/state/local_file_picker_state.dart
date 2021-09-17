@@ -3,12 +3,12 @@ import 'package:core/core.dart';
 import 'package:model/model.dart';
 
 class LocalFilePickerSuccess extends UIState {
-  final FileInfo fileInfo;
+  final List<FileInfo> pickedFiles;
 
-  LocalFilePickerSuccess(this.fileInfo);
+  LocalFilePickerSuccess(this.pickedFiles);
 
   @override
-  List<Object> get props => [fileInfo];
+  List<Object> get props => [pickedFiles];
 }
 
 class LocalFilePickerFailure extends FeatureFailure {

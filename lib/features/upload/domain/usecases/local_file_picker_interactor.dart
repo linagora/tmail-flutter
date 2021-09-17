@@ -11,15 +11,14 @@ class LocalFilePickerInteractor {
 
   Stream<Either<Failure, Success>> execute({FileType fileType = FileType.any}) async* {
     try {
-      final filesResult = await FilePicker.platform.pickFiles(type: fileType);
+      final filesResult = await FilePicker.platform.pickFiles(type: fileType, allowMultiple: true);
       if (filesResult != null && filesResult.files.isNotEmpty) {
-        final platformFile = filesResult.files.first;
-        final fileInfoResult = FileInfo(
+      final fileInfoResults = filesResult.files
+        .map((platformFile) => FileInfo(
           platformFile.name,
           platformFile.path ?? '',
-          platformFile.size,
-        );
-        yield Right<Failure, Success>(LocalFilePickerSuccess(fileInfoResult));
+          platformFile.size)).toList();
+        yield Right<Failure, Success>(LocalFilePickerSuccess(fileInfoResults));
       } else {
         yield Left<Failure, Success>(LocalFilePickerCancel());
       }
