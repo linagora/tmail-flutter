@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -25,7 +24,6 @@ import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/load_more_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/email_context_menu_action_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -61,6 +59,12 @@ class ThreadController extends BaseController {
   );
 
   @override
+  void onInit() {
+    super.onInit();
+    dispatchState(Right(LoadingState()));
+  }
+
+  @override
   void onReady() {
     super.onReady();
     mailboxDashBoardController.selectedMailbox.listen((selectedMailbox) {
@@ -84,11 +88,6 @@ class ThreadController extends BaseController {
     mailboxDashBoardController.selectedMailbox.close();
     listEmailController.dispose();
     super.onClose();
-  }
-
-  @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
   }
 
   @override
@@ -121,7 +120,7 @@ class ThreadController extends BaseController {
 
   void _getAllEmailSuccess(Success success) {
     if (success is GetAllEmailSuccess) {
-      emailList.value += success.emailList;
+      emailList.addAll(success.emailList);
       lastGetTotal = emailList.length;
       loadMoreState.value = success.emailList.isEmpty ? LoadMoreState.COMPLETED : LoadMoreState.IDLE;
     }
@@ -144,7 +143,7 @@ class ThreadController extends BaseController {
     loadMoreState.value = LoadMoreState.IDLE;
   }
 
-  void getAllEmailAction(AccountId accountId,
+  void _getAllEmailAction(AccountId accountId,
     {
       UnsignedInt? limit,
       int position = 0,
@@ -152,7 +151,7 @@ class ThreadController extends BaseController {
       Filter? filter,
       Properties? properties,
     }
-  ) async {
+  ) {
     consumeState(_getEmailsInMailboxInteractor.execute(
       accountId,
       limit: limit,
@@ -171,7 +170,7 @@ class ThreadController extends BaseController {
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (accountId != null) {
-      getAllEmailAction(
+      _getAllEmailAction(
         accountId,
         limit: ThreadConstants.defaultLimit,
         position: positionCurrent,
@@ -188,15 +187,13 @@ class ThreadController extends BaseController {
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (accountId != null) {
-      Future.delayed(const Duration(milliseconds: 100), () {
-        getAllEmailAction(
-          accountId,
-          limit: ThreadConstants.defaultLimit,
-          position: positionCurrent,
-          sort: _getSortCurrent(),
-          properties: _properties,
-          filter: _getFilterConditionCurrent());
-      });
+      _getAllEmailAction(
+        accountId,
+        limit: ThreadConstants.defaultLimit,
+        position: positionCurrent,
+        sort: _getSortCurrent(),
+        properties: _properties,
+        filter: _getFilterConditionCurrent());
     }
   }
 
@@ -228,7 +225,7 @@ class ThreadController extends BaseController {
 
   bool _isUnSelectedAll() => emailList.every((email) => email.selectMode == SelectMode.INACTIVE);
 
-  bool _isEmailAllRead(List<PresentationEmail> listEmail) => listEmail.every((email) => email.isReadEmail());
+  bool isEmailAllRead(List<PresentationEmail> listEmail) => listEmail.every((email) => email.isReadEmail());
 
   void cancelSelectEmail() {
     emailList.value = emailList.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
@@ -243,7 +240,7 @@ class ThreadController extends BaseController {
       final accountId = mailboxDashBoardController.accountId.value;
 
       if (accountId != null) {
-        getAllEmailAction(
+        _getAllEmailAction(
           accountId,
           limit: newLimit,
           position: 0,
@@ -258,7 +255,7 @@ class ThreadController extends BaseController {
       popBack();
     }
 
-    final readAction = _isEmailAllRead(listEmail) ? ReadActions.markAsUnread : ReadActions.markAsRead;
+    final readAction = isEmailAllRead(listEmail) ? ReadActions.markAsUnread : ReadActions.markAsRead;
 
     final listEmailId = listEmail
         .where((email) => readAction == ReadActions.markAsUnread ? email.isReadEmail() : email.isUnReadEmail())
@@ -315,67 +312,10 @@ class ThreadController extends BaseController {
     _appToast.showErrorToast(AppLocalizations.of(Get.context!).an_error_occurred);
   }
 
-  void openContextMenuSelectedEmail(BuildContext context, ImagePaths imagePaths, List<PresentationEmail> listEmail) {
+  void openContextMenuSelectedEmail(BuildContext context, List<Widget> actionTiles) {
       (ContextMenuBuilder(context)
-        ..addTiles(_contextMenuActionList(context, imagePaths, listEmail)))
+        ..addTiles(actionTiles))
     .build();
-  }
-
-  List<Widget> _contextMenuActionList(BuildContext context, ImagePaths imagePaths, List<PresentationEmail> listEmail) {
-    return [
-      _moveToTrashAction(context, imagePaths, listEmail),
-      _moveToMailboxAction(context, imagePaths, listEmail),
-      _markAsReadAction(context, imagePaths, listEmail),
-      _markAsFlagAction(context, imagePaths, listEmail),
-      _moveToSpamAction(context, imagePaths, listEmail),
-      SizedBox(height: 40),
-    ];
-  }
-
-  Widget _markAsReadAction(BuildContext context, ImagePaths imagePaths, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-              Key('mark_as_read_context_menu_action'),
-              SvgPicture.asset(imagePaths.icEyeDisable, width: 24, height: 24, fit: BoxFit.fill),
-              _isEmailAllRead(listEmail) ? AppLocalizations.of(context).mark_as_unread : AppLocalizations.of(context).mark_as_read,
-              listEmail)
-          ..onActionClick((data) => markAsSelectedEmailRead(data, fromContextMenuAction: true)))
-        .build();
-  }
-
-  Widget _moveToTrashAction(BuildContext context, ImagePaths imagePaths, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-              Key('move_to_trash_context_menu_action'),
-              SvgPicture.asset(imagePaths.icTrash, width: 24, height: 24, fit: BoxFit.fill),
-              AppLocalizations.of(context).move_to_trash, listEmail)
-          ..onActionClick((data) => {}))
-        .build();
-  }
-
-  Widget _moveToMailboxAction(BuildContext context, ImagePaths imagePaths, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-              Key('move_to_mailbox_context_menu_action'),
-              SvgPicture.asset(imagePaths.icFolder, width: 24, height: 24, fit: BoxFit.fill),
-              AppLocalizations.of(context).move_to_mailbox, listEmail)
-          ..onActionClick((data) => {}))
-        .build();
-  }
-
-  Widget _markAsFlagAction(BuildContext context, ImagePaths imagePaths, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-              Key('mark_as_flag_context_menu_action'),
-              SvgPicture.asset(imagePaths.icFlag, width: 24, height: 24, fit: BoxFit.fill),
-              AppLocalizations.of(context).mark_as_flag, listEmail)
-          ..onActionClick((data) => {}))
-        .build();
-  }
-
-  Widget _moveToSpamAction(BuildContext context, ImagePaths imagePaths, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-              Key('move_to_spam_context_menu_action'),
-              SvgPicture.asset(imagePaths.icMailboxSpam, width: 24, height: 24, fit: BoxFit.fill),
-              AppLocalizations.of(context).move_to_spam, listEmail)
-          ..onActionClick((data) => {}))
-        .build();
   }
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null

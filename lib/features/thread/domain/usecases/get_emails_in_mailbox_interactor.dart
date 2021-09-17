@@ -25,7 +25,7 @@ class GetEmailsInMailboxInteractor {
     }
   ) async* {
     try {
-      yield Right<Failure, Success>(UIState.loading);
+      yield Right<Failure, Success>(LoadingState());
       final emailList = await threadRepository.getAllEmail(
         accountId,
         position: position,

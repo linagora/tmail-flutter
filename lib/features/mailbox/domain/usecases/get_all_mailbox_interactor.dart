@@ -14,7 +14,7 @@ class GetAllMailboxInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, {Properties? properties}) async* {
     try {
-      yield Right<Failure, Success>(UIState.loading);
+      yield Right<Failure, Success>(LoadingState());
       final mailboxList = await mailboxRepository.getAllMailbox(accountId, properties: properties);
       final tupleList = mailboxList.splitMailboxList((mailbox) => mailbox.hasRole());
       yield Right<Failure, Success>(GetAllMailboxSuccess(defaultMailboxList: tupleList.value1, folderMailboxList: tupleList.value2));

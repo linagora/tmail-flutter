@@ -12,7 +12,7 @@ class GetUserProfileInteractor {
 
   Stream<Either<Failure, Success>> execute() async* {
     try {
-      yield Right<Failure, Success>(UIState.loading);
+      yield Right<Failure, Success>(LoadingState());
       final userProfile = await credentialRepository.getUserProfile();
       yield Right(GetUserProfileSuccess(userProfile));
     } catch (exception) {
