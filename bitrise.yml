@@ -179,6 +179,11 @@ workflows:
         - additional_params: domain
     - certificate-and-profile-installer@1:
         is_always_run: true
+    - set-xcode-build-number@1:
+        inputs:
+        - build_version_offset: alpha$BITRISE_BUILD_NUMBER
+        - build_short_version_string: 0.1.0-beta01
+        - plist_path: "$BITRISE_FLUTTER_PROJECT_LOCATION/ios/Runner/Info.plist"
     - flutter-build@0:
         inputs:
         - platform: ios
