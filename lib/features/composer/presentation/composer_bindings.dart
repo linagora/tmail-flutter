@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachmen
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
@@ -73,6 +74,7 @@ class ComposerBindings extends Bindings {
     Get.lazyPut(() => UploadAttachmentInteractor(
       Get.find<ComposerRepository>(),
       Get.find<CredentialRepository>()));
+    Get.lazyPut(() => UploadMultipleAttachmentInteractor(Get.find<UploadAttachmentInteractor>()));
     Get.lazyPut(() => ComposerController(
       Get.find<SendEmailInteractor>(),
       Get.find<SaveEmailAddressesInteractor>(),
@@ -85,6 +87,6 @@ class ComposerBindings extends Bindings {
       Get.find<HtmlMessagePurifier>()));
       Get.find<HtmlEditorController>(),
       Get.find<LocalFilePickerInteractor>(),
-      Get.find<UploadAttachmentInteractor>()));
+      Get.find<UploadMultipleAttachmentInteractor>()));
   }
 }

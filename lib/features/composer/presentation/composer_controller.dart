@@ -27,9 +27,9 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/search_email_address_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/constants/email_constants.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_content_extension.dart';
@@ -60,7 +60,7 @@ class ComposerController extends BaseController {
   final HtmlMessagePurifier _htmlMessagePurifier;
   final HtmlEditorController htmlEditorController;
   final LocalFilePickerInteractor _localFilePickerInteractor;
-  final UploadAttachmentInteractor _uploadAttachmentInteractor;
+  final UploadMultipleAttachmentInteractor _uploadMultipleAttachmentInteractor;
 
   List<EmailAddress> listToEmailAddress = [];
   List<EmailAddress> listCcEmailAddress = [];
@@ -82,7 +82,7 @@ class ComposerController extends BaseController {
     this._htmlMessagePurifier,
     this.htmlEditorController,
     this._localFilePickerInteractor,
-    this._uploadAttachmentInteractor,
+    this._uploadMultipleAttachmentInteractor,
   );
 
   @override
@@ -101,7 +101,8 @@ class ComposerController extends BaseController {
           _sendEmailFailure(failure);
         } else if (failure is LocalFilePickerFailure || failure is LocalFilePickerCancel) {
           _pickFileFailure(failure);
-        } else if (failure is UploadAttachmentFailure) {
+        } else if (failure is UploadAttachmentFailure
+          || failure is UploadAttachmentAllFailure) {
           _uploadAttachmentsFailure(failure);
         }
       },
@@ -110,7 +111,9 @@ class ComposerController extends BaseController {
           _sendEmailSuccess(success);
         } else if (success is LocalFilePickerSuccess) {
           _pickFileSuccess(success);
-        } else if (success is UploadAttachmentSuccess) {
+        } else if (success is UploadAttachmentSuccess
+          || success is UploadAttachmentAllSuccess
+          || success is UploadAttachmentHasSomeFailure) {
           _uploadAttachmentsSuccess(success);
         }
       });
@@ -366,16 +369,16 @@ class ComposerController extends BaseController {
 
   void _pickFileSuccess(Success success) {
     if (success is LocalFilePickerSuccess) {
-      _uploadAttachmentsAction(success.fileInfo);
+      _uploadAttachmentsAction(success.pickedFiles);
     }
   }
 
-  void _uploadAttachmentsAction(FileInfo fileInfo) async {
+  void _uploadAttachmentsAction(List<FileInfo> pickedFiles) async {
     if (composerArguments.value != null) {
       final accountId = composerArguments.value!.session.accounts.keys.first;
       final uploadUrl = composerArguments.value!.session.getUploadUrl(accountId);
 
-      consumeState(_uploadAttachmentInteractor.execute(fileInfo, accountId, uploadUrl));
+      consumeState(_uploadMultipleAttachmentInteractor.execute(pickedFiles, accountId, uploadUrl));
     }
   }
 
@@ -388,9 +391,25 @@ class ComposerController extends BaseController {
   void _uploadAttachmentsSuccess(Success success) {
     if (success is UploadAttachmentSuccess) {
       attachments.add(success.attachment);
-      if (Get.context != null) {
-        _appToast.showSuccessToast(AppLocalizations.of(Get.context!).attachments_uploaded_successfully);
-      }
+    } else if (success is UploadAttachmentAllSuccess) {
+      final listAttachment = success.listResults
+        .map((either) => either
+          .map((result) => (result as UploadAttachmentSuccess).attachment)
+          .toIterable().first)
+        .toList();
+
+      attachments.addAll(listAttachment);
+    } else if (success is UploadAttachmentHasSomeFailure) {
+      final listAttachment = success.listResults
+          .map((either) => either
+          .map((result) => (result as UploadAttachmentSuccess).attachment)
+          .toIterable().first)
+          .toList();
+
+      attachments.addAll(listAttachment);
+    }
+    if (Get.context != null) {
+      _appToast.showSuccessToast(AppLocalizations.of(Get.context!).attachments_uploaded_successfully);
     }
   }
 
