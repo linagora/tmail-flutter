@@ -1,5 +1,4 @@
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
-import 'package:model/email/email_content.dart';
 import 'package:tmail_ui_user/features/email/presentation/constants/email_constants.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/message_content.dart';

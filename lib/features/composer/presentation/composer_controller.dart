@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:dartz/dartz.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
@@ -23,6 +24,10 @@ import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart'
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/search_email_address_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
@@ -30,7 +35,10 @@ import 'package:tmail_ui_user/features/email/presentation/constants/email_consta
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_content_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/message_content.dart';
+import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
+import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
 
 class ComposerController extends BaseController {
@@ -39,6 +47,7 @@ class ComposerController extends BaseController {
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
   final listReplyToEmailAddress = <EmailAddress>[].obs;
+  final attachments = <Attachment>[].obs;
 
   final SendEmailInteractor _sendEmailInteractor;
   final SaveEmailAddressesInteractor _saveEmailAddressInteractor;
@@ -49,6 +58,9 @@ class ComposerController extends BaseController {
   final HtmlEditorController composerEditorController;
   final TextEditingController subjectEmailInputController;
   final HtmlMessagePurifier _htmlMessagePurifier;
+  final HtmlEditorController htmlEditorController;
+  final LocalFilePickerInteractor _localFilePickerInteractor;
+  final UploadAttachmentInteractor _uploadAttachmentInteractor;
 
   List<EmailAddress> listToEmailAddress = [];
   List<EmailAddress> listCcEmailAddress = [];
@@ -68,6 +80,9 @@ class ComposerController extends BaseController {
     this.composerEditorController,
     this.subjectEmailInputController,
     this._htmlMessagePurifier,
+    this.htmlEditorController,
+    this._localFilePickerInteractor,
+    this._uploadAttachmentInteractor,
   );
 
   @override
@@ -82,20 +97,29 @@ class ComposerController extends BaseController {
   void onDone() {
     viewState.value.fold(
       (failure) {
-        _appToast.showErrorToast(AppLocalizations.of(Get.context!).error_message_sent);
-        Get.back();
+        if (failure is SendEmailFailure) {
+          _sendEmailFailure(failure);
+        } else if (failure is LocalFilePickerFailure || failure is LocalFilePickerCancel) {
+          _pickFileFailure(failure);
+        } else if (failure is UploadAttachmentFailure) {
+          _uploadAttachmentsFailure(failure);
+        }
       },
       (success) {
-        _saveEmailAddress();
-        _appToast.showSuccessToast(AppLocalizations.of(Get.context!).message_sent);
-        Get.back();
+        if (success is SendEmailSuccess) {
+          _sendEmailSuccess(success);
+        } else if (success is LocalFilePickerSuccess) {
+          _pickFileSuccess(success);
+        } else if (success is UploadAttachmentSuccess) {
+          _uploadAttachmentsSuccess(success);
+        }
       });
   }
 
   @override
   void onError(error) {
     _appToast.showErrorToast(AppLocalizations.of(Get.context!).error_message_sent);
-    Get.back();
+    popBack();
   }
   
   void _getSelectedEmail() {
@@ -275,6 +299,17 @@ class ComposerController extends BaseController {
     }
   }
 
+  void _sendEmailSuccess(Success success) {
+    _saveEmailAddress();
+    _appToast.showSuccessToast(AppLocalizations.of(Get.context!).message_sent);
+    popBack();
+  }
+
+  void _sendEmailFailure(Failure failure) {
+    _appToast.showErrorToast(AppLocalizations.of(Get.context!).error_message_sent);
+    popBack();
+  }
+
   void _saveEmailAddress() {
     final listEmailAddressCanSave = Set<EmailAddress>();
     listEmailAddressCanSave.addAll(listToEmailAddress + listCcEmailAddress + listBccEmailAddress);
@@ -304,6 +339,63 @@ class ComposerController extends BaseController {
       .then((value) => value.fold(
         (failure) => <EmailAddress>[],
         (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
+  }
+
+  void openPickAttachmentMenu(BuildContext context, List<Widget> actionTiles) {
+      (ContextMenuBuilder(context)
+        ..addHeader(
+              (ContextMenuHeaderBuilder(Key('attachment_picker_context_menu_header_builder'))
+              ..addLabel(AppLocalizations.of(context).pick_attachments))
+            .build())
+        ..addTiles(actionTiles))
+    .build();
+  }
+
+  void openFilePickerByType(BuildContext context, FileType fileType) async {
+    popBack();
+    consumeState(_localFilePickerInteractor.execute(fileType: fileType));
+  }
+
+  void _pickFileFailure(Failure failure) {
+    if (failure is LocalFilePickerFailure) {
+      if (Get.context != null) {
+        _appToast.showErrorToast(AppLocalizations.of(Get.context!).can_not_upload_this_file_as_attachments);
+      }
+    }
+  }
+
+  void _pickFileSuccess(Success success) {
+    if (success is LocalFilePickerSuccess) {
+      _uploadAttachmentsAction(success.fileInfo);
+    }
+  }
+
+  void _uploadAttachmentsAction(FileInfo fileInfo) async {
+    if (composerArguments.value != null) {
+      final accountId = composerArguments.value!.session.accounts.keys.first;
+      final uploadUrl = composerArguments.value!.session.getUploadUrl(accountId);
+
+      consumeState(_uploadAttachmentInteractor.execute(fileInfo, accountId, uploadUrl));
+    }
+  }
+
+  void _uploadAttachmentsFailure(Failure failure) {
+    if (Get.context != null) {
+      _appToast.showErrorToast(AppLocalizations.of(Get.context!).can_not_upload_this_file_as_attachments);
+    }
+  }
+
+  void _uploadAttachmentsSuccess(Success success) {
+    if (success is UploadAttachmentSuccess) {
+      attachments.add(success.attachment);
+      if (Get.context != null) {
+        _appToast.showSuccessToast(AppLocalizations.of(Get.context!).attachments_uploaded_successfully);
+      }
+    }
+  }
+
+  void removeAttachmentAction(Attachment attachmentRemoved) {
+    attachments.removeWhere((attachment) => attachment == attachmentRemoved);
   }
 
   void backToEmailViewAction() {

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-09-16T14:31:23.463339",
+  "@@last_modified": "2021-09-17T17:37:57.805293",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -300,6 +300,42 @@
   },
   "user_cancel_download_file": "User cancel download file",
   "@user_cancel_download_file": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attach_file_prepare_text": "Preparing to attach file...",
+  "@attach_file_prepare_text": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "can_not_upload_this_file_as_attachments": "Can not upload this file as attachments",
+  "@can_not_upload_this_file_as_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachments_uploaded_successfully": "Attachments uploaded successfully",
+  "@attachments_uploaded_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pick_attachments": "Pick attachments",
+  "@pick_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "photos_and_videos": "Photos and Videos",
+  "@photos_and_videos": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "browse": "Browse",
+  "@browse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
