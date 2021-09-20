@@ -9,18 +9,21 @@ typedef OnCloseActionClick = void Function();
 typedef OnMarkAsEmailReadActionClick = void Function(List<PresentationEmail> listEmail);
 typedef OnRemoveEmailActionClick = void Function(List<PresentationEmail> listEmail);
 typedef OnOpenContextMenuActionClick = void Function(List<PresentationEmail> listEmail);
+typedef OnOpenPopupMenuActionClick = void Function(List<PresentationEmail> listEmail, RelativeRect position);
 
 class AppBarThreadSelectModeActiveBuilder {
   OnCloseActionClick? _onCloseActionClick;
   OnMarkAsEmailReadActionClick? _onMarkAsEmailReadActionClick;
   OnRemoveEmailActionClick? _onRemoveEmailActionClick;
   OnOpenContextMenuActionClick? _onOpenContextMenuActionClick;
+  OnOpenPopupMenuActionClick? _onOpenPopupMenuActionClick;
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final List<PresentationEmail> _listEmail;
+  final ResponsiveUtils _responsiveUtils;
 
-  AppBarThreadSelectModeActiveBuilder(this._context, this._imagePaths, this._listEmail);
+  AppBarThreadSelectModeActiveBuilder(this._context, this._imagePaths, this._listEmail, this._responsiveUtils);
 
   void addCloseActionClick(OnCloseActionClick onCloseActionClick) {
     _onCloseActionClick = onCloseActionClick;
@@ -36,6 +39,10 @@ class AppBarThreadSelectModeActiveBuilder {
 
   void addOpenContextMenuActionClick(OnOpenContextMenuActionClick onOpenContextMenuActionClick) {
     _onOpenContextMenuActionClick = onOpenContextMenuActionClick;
+  }
+
+  void addOnOpenPopupMenuActionClick(OnOpenPopupMenuActionClick onOpenPopupMenuActionClick) {
+    _onOpenPopupMenuActionClick = onOpenPopupMenuActionClick;
   }
 
   Widget build() {
@@ -103,6 +110,18 @@ class AppBarThreadSelectModeActiveBuilder {
             .onPressActionClick(() {
               if (_onOpenContextMenuActionClick != null) {
                 _onOpenContextMenuActionClick!(_listEmail);
+              }})
+            .onTapActionClick((details) {
+              if (_onOpenPopupMenuActionClick != null && !_responsiveUtils.isMobile(_context)) {
+                final screenSize = MediaQuery.of(_context).size;
+                final offset = details.globalPosition;
+                final position = RelativeRect.fromLTRB(
+                  offset.dx,
+                  offset.dy,
+                  screenSize.width - offset.dx,
+                  screenSize.height - offset.dy,
+                );
+                _onOpenPopupMenuActionClick!(_listEmail, position);
               }})
             .build(),
         ]

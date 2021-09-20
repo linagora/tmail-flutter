@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
@@ -16,11 +17,9 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_important_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_important_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
@@ -47,7 +46,6 @@ class ThreadController extends BaseController {
   final ResponsiveUtils responsiveUtils;
   final ScrollController listEmailController;
   final MoveMultipleEmailToMailboxInteractor _moveMultipleEmailToMailboxInteractor;
-  final MarkAsEmailImportantInteractor _markAsEmailImportantInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
   final MarkAsStarMultipleEmailInteractor _markAsStarMultipleEmailInteractor;
 
@@ -71,7 +69,6 @@ class ThreadController extends BaseController {
     this._markAsMultipleEmailReadInteractor,
     this._appToast,
     this._moveMultipleEmailToMailboxInteractor,
-    this._markAsEmailImportantInteractor,
     this._markAsStarEmailInteractor,
     this._markAsStarMultipleEmailInteractor,
   );
@@ -102,23 +99,9 @@ class ThreadController extends BaseController {
         } else if (success is MoveToMailboxSuccess) {
           _refreshListEmail();
           mailboxDashBoardController.clearState();
-        }
-      });
-      } else {
-        mailboxDashBoardController.viewState.value.map((success) {
-          if (success is MarkAsEmailReadSuccess ||
-              success is MarkAsMultipleEmailReadAllSuccess ||
-              success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-            _refreshListEmail();
-          }
-        });
-      }
-    });
-
-    mailboxDashBoardController.viewState.listen((state) {
-      state.map((success) {
-        if (success is MarkAsStarEmailSuccess) {
+        } else if (success is MarkAsStarEmailSuccess) {
           _refreshListEmail();
+          mailboxDashBoardController.clearState();
         }
       });
     });
@@ -155,8 +138,6 @@ class ThreadController extends BaseController {
         } else if (success is MoveMultipleEmailToMailboxAllSuccess
             || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
           _moveSelectedMultipleEmailToMailboxSuccess(success);
-        } else if (success is MarkAsEmailImportantSuccess) {
-          _markAsEmailImportantSuccess(success);
         } else if (success is MarkAsStarEmailSuccess) {
           _markAsStarEmailSuccess(success);
         } else if (success is MarkAsStarMultipleEmailAllSuccess
@@ -173,27 +154,14 @@ class ThreadController extends BaseController {
 
   void _getAllEmailSuccess(Success success) {
     if (success is GetAllEmailSuccess) {
-      emailList.addAll(success.emailList);
+      if (loadMoreState.value == LoadMoreState.LOADING) {
+        emailList.addAll(success.emailList);
+      } else {
+        emailList.value = success.emailList;
+      }
+
       lastGetTotal = emailList.length;
       loadMoreState.value = success.emailList.isEmpty ? LoadMoreState.COMPLETED : LoadMoreState.IDLE;
-
-      mailboxDashBoardController.viewState.value.map((success) {
-        if (success is MarkAsStarEmailSuccess) {
-          _updateValueCurrentEmail();
-          mailboxDashBoardController.clearState();
-        }
-      });
-    }
-  }
-
-  void _updateValueCurrentEmail() {
-    if (mailboxDashBoardController.selectedEmail.value != null) {
-      try {
-        final newSelectedEmail = emailList.firstWhere(
-                (email) => email.id == mailboxDashBoardController.selectedEmail.value!.id,
-            orElse: null);
-        mailboxDashBoardController.setSelectedEmail(newSelectedEmail);
-      } catch(e){}
     }
   }
 
@@ -237,7 +205,6 @@ class ThreadController extends BaseController {
     loadMoreState.value = LoadMoreState.IDLE;
     positionCurrent = 0;
     dispatchState(Right(LoadingState()));
-    emailList.value = <PresentationEmail>[];
 
     final accountId = mailboxDashBoardController.accountId.value;
 
@@ -311,7 +278,6 @@ class ThreadController extends BaseController {
       final newLimit = emailList.isNotEmpty ? UnsignedInt(emailList.length) : ThreadConstants.defaultLimit;
       loadMoreState.value = LoadMoreState.IDLE;
       dispatchState(Right(LoadingState()));
-      emailList.value = <PresentationEmail>[];
 
       final accountId = mailboxDashBoardController.accountId.value;
 
@@ -331,7 +297,7 @@ class ThreadController extends BaseController {
       popBack();
     }
 
-    final readAction = isEmailAllRead(listPresentationEmail) ? ReadActions.markAsUnread : ReadActions.markAsRead;
+    final readAction = isAllEmailRead(listPresentationEmail) ? ReadActions.markAsUnread : ReadActions.markAsRead;
 
     final accountId = mailboxDashBoardController.accountId.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
@@ -459,7 +425,16 @@ class ThreadController extends BaseController {
     }
   }
 
-  void markAsEmailImportant(PresentationEmail presentationEmail) {
+  void openPopupMenuSelectedEmail(BuildContext context, RelativeRect position, List<PopupMenuItem> popupMenuItems) async {
+    await showMenu(
+      context: context,
+      position: position,
+      color: Colors.white,
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      items: popupMenuItems);
+  }
+
   void markAsStarEmail(PresentationEmail presentationEmail) {
     final accountId = mailboxDashBoardController.accountId.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;

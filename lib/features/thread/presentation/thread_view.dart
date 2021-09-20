@@ -73,13 +73,17 @@ class ThreadView extends GetWidget<ThreadController> {
     return Obx(() => Padding(
       padding: EdgeInsets.only(left: 15, right: 12),
       child: (AppBarThreadSelectModeActiveBuilder(
-            context,
-            imagePaths,
-            controller.getListEmailSelected())
+              context,
+              imagePaths,
+              controller.getListEmailSelected(),
+              responsiveUtils)
           ..addCloseActionClick(() => controller.cancelSelectEmail())
           ..addRemoveEmailActionClick((listEmail) => {})
           ..addOnMarkAsEmailReadActionClick((listEmail) => controller.markAsSelectedEmailRead(listEmail))
-          ..addOpenContextMenuActionClick((listEmail) => controller.openContextMenuSelectedEmail(context, _contextMenuEmailActionTile(context, listEmail))))
+          ..addOpenContextMenuActionClick((listEmail) =>
+              controller.openContextMenuSelectedEmail(context, _contextMenuEmailActionTile(context, listEmail)))
+          ..addOnOpenPopupMenuActionClick((listEmail, position) =>
+              controller.openPopupMenuSelectedEmail(context, position, _popupMenuEmailActionTile(context, listEmail))))
         .build()));
   }
 
@@ -114,9 +118,6 @@ class ThreadView extends GetWidget<ThreadController> {
             listEmail)
         ..onActionClick((data) => {}))
       .build();
-            AppLocalizations.of(context).move_to_trash, listEmail)
-          ..onActionClick((data) => {}))
-        .build();
   }
 
   Widget _moveToMailboxAction(BuildContext context, List<PresentationEmail> listEmail) {
@@ -133,12 +134,6 @@ class ThreadView extends GetWidget<ThreadController> {
     final markStarAction = controller.isAllEmailMarkAsStar(listEmail) ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
 
     return (EmailContextMenuActionBuilder(
-            Key('mark_as_flag_context_menu_action'),
-            SvgPicture.asset(imagePaths.icFlag, width: 24, height: 24, fit: BoxFit.fill),
-            AppLocalizations.of(context).mark_as_flag,
-            listEmail)
-        ..onActionClick((data) => {}))
-      .build();
             Key('mark_as_star_context_menu_action'),
             SvgPicture.asset(
                 markStarAction == MarkStarAction.markStar ? imagePaths.icFlag : imagePaths.icFlagged,
@@ -161,9 +156,16 @@ class ThreadView extends GetWidget<ThreadController> {
             listEmail)
         ..onActionClick((data) => {}))
       .build();
-            AppLocalizations.of(context).move_to_spam, listEmail)
-          ..onActionClick((data) => {}))
-        .build();
+  }
+
+  List<PopupMenuItem> _popupMenuEmailActionTile(BuildContext context, List<PresentationEmail> listEmail) {
+    return [
+      PopupMenuItem(child: _moveToTrashAction(context, listEmail)),
+      PopupMenuItem(child: _moveToMailboxAction(context, listEmail)),
+      PopupMenuItem(child: _markAsReadAction(context, listEmail)),
+      PopupMenuItem(child: _markAsStarAction(context, listEmail)),
+      PopupMenuItem(child: _moveToSpamAction(context, listEmail)),
+    ];
   }
 
   Widget _buildLoadingView() {
@@ -173,8 +175,8 @@ class ThreadView extends GetWidget<ThreadController> {
         ? Center(child: Padding(
             padding: EdgeInsets.only(top: 16, bottom: 16),
             child: SizedBox(
-              width: 30,
-              height: 30,
+              width: 24,
+              height: 24,
               child: CircularProgressIndicator(color: AppColor.primaryColor))))
         : SizedBox.shrink()));
   }
@@ -184,8 +186,8 @@ class ThreadView extends GetWidget<ThreadController> {
       ? Center(child: Padding(
           padding: EdgeInsets.only(top: 16, bottom: 16),
           child: SizedBox(
-            width: 30,
-            height: 30,
+            width: 24,
+            height: 24,
             child: CircularProgressIndicator(color: AppColor.primaryColor))))
       : SizedBox.shrink());
   }
@@ -237,7 +239,8 @@ class ThreadView extends GetWidget<ThreadController> {
                 responsiveUtils,
                 controller.currentSelectMode.value)
             ..onOpenEmailAction((selectedEmail) => controller.previewEmail(context, selectedEmail))
-            ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail)))
+            ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail))
+            ..addOnMarkAsStarEmailActionClick((selectedEmail) => controller.markAsStarEmail(selectedEmail)))
           .build()),
       ));
   }

@@ -21,6 +21,10 @@ extension ListEmailIdExtension on List<EmailId> {
     final Map<Id, PatchObject> maps = {};
     forEach((emailId) {
       maps[emailId.id] = currentMailboxId.generateMoveToMailboxActionPath(destinationMailboxId);
+    });
+    return maps;
+  }
+
   Map<Id, PatchObject> generateMapUpdateObjectMarkAsStar(MarkStarAction markStarAction) {
     final Map<Id, PatchObject> maps = {};
     forEach((emailId) {

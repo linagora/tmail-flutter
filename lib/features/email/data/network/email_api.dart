@@ -220,7 +220,6 @@ class EmailAPI {
     });
   }
 
-  Future<bool> markAsImportant(AccountId accountId, EmailId emailId, ImportantAction importantAction) async {
   Future<List<Email>> markAsStar(AccountId accountId, List<Email> emails, MarkStarAction markStarAction) async {
     final emailIds = emails.map((email) => email.id).toList();
 

@@ -23,7 +23,7 @@ class AppBarDestinationPickerBuilder {
     return Container(
         key: Key('app_bar_destination_picker'),
         alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
         color: Colors.white,
         child: MediaQuery(
             data: MediaQueryData(padding: EdgeInsets.zero),

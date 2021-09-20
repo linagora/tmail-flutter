@@ -14,17 +14,13 @@ class MailboxTileBuilder {
 
   final PresentationMailbox _presentationMailbox;
   final SelectMode selectMode;
-  final BuildContext _context;
   final ImagePaths _imagePaths;
-  final ResponsiveUtils _responsiveUtils;
   final MailboxDisplayed mailboxDisplayed;
 
   OnOpenMailboxActionClick? _onOpenMailboxActionClick;
 
   MailboxTileBuilder(
-    this._context,
     this._imagePaths,
-    this._responsiveUtils,
     this._presentationMailbox,
     {
       this.selectMode = SelectMode.INACTIVE,
@@ -53,8 +49,6 @@ class MailboxTileBuilder {
         child: MediaQuery(
           data: MediaQueryData(padding: EdgeInsets.zero),
           child: ListTile(
-            focusColor: AppColor.primaryLightColor,
-            hoverColor: AppColor.primaryLightColor,
             contentPadding: EdgeInsets.zero,
             onTap: () => {
               if (_onOpenMailboxActionClick != null) {
@@ -62,10 +56,7 @@ class MailboxTileBuilder {
               }
             },
             leading: Padding(
-              padding: EdgeInsets.only(left: mailboxDisplayed == MailboxDisplayed.mailbox
-                  ? _responsiveUtils.isMobile(_context) ? 40 : 20
-                  : 40
-              ),
+              padding: EdgeInsets.only(left: 24),
               child: SvgPicture.asset(
                 '${_presentationMailbox.getMailboxIcon(_imagePaths)}',
                 width: 24,
@@ -89,7 +80,7 @@ class MailboxTileBuilder {
               )),
             trailing: mailboxDisplayed == MailboxDisplayed.mailbox
                 ? Padding(
-                    padding: EdgeInsets.only(right: _responsiveUtils.isMobile(_context) ? 36 : 24, left: 16),
+                    padding: EdgeInsets.only(right: 24, left: 16),
                     child: Text(
                       '${_presentationMailbox.getCountUnReadEmails()}',
                       maxLines: 1,

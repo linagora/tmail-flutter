@@ -58,10 +58,7 @@ class EmailView extends GetView {
           ..onUnreadEmailActionClick((presentationEmail) =>
               emailController.markAsEmailRead(presentationEmail, ReadActions.markAsUnread))
           ..addOnMoveToMailboxActionClick((presentationEmail) =>
-              emailController.openDestinationPickerView(presentationEmail)))
-              emailController.markAsEmailRead(presentationEmail, ReadActions.markAsUnread))
-          ..addOnMarkAsImportantActionClick((presentationEmail) =>
-              emailController.markAsEmailImportant(presentationEmail)))
+              emailController.openDestinationPickerView(presentationEmail))
           ..addOnMarkAsStarActionClick((presentationEmail) =>
               emailController.markAsStarEmail(presentationEmail)))
         .build()));

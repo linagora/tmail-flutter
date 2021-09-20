@@ -98,7 +98,7 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildSearchFormWidget(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 16, bottom: 12, left: 16, right: 16),
+      padding: EdgeInsets.only(top: 16, left: 16, right: 16),
       child: SearchFormWidgetBuilder(context, imagePaths)
         .onNewSearchQuery((searchQuery) => {})
         .build());
@@ -111,8 +111,8 @@ class MailboxView extends GetWidget<MailboxController> {
         ? Center(child: Padding(
             padding: EdgeInsets.only(top: 16),
             child: SizedBox(
-              width: 30,
-              height: 30,
+              width: 24,
+              height: 24,
               child: CircularProgressIndicator(color: AppColor.primaryColor))))
         : SizedBox.shrink()));
   }
@@ -128,7 +128,7 @@ class MailboxView extends GetWidget<MailboxController> {
           : SizedBox.shrink()),
         Padding(
           padding: EdgeInsets.only(
-            left: responsiveUtils.isMobile(context) ? 40 : 32,
+            left: 25,
             top: 20),
           child: Text(
             AppLocalizations.of(context).my_folders,
@@ -137,12 +137,12 @@ class MailboxView extends GetWidget<MailboxController> {
         ),
         Padding(
           padding: EdgeInsets.only(
-            left: responsiveUtils.isMobile(context) ? 16 : 2,
+            left: 8,
             right: 16,
             top: 10),
-          child: MailboxNewFolderTileBuilder(context, responsiveUtils)
-            .addIcon(imagePaths.icMailboxNewFolder)
-            .addName(AppLocalizations.of(context).new_folder)
+          child: (MailboxNewFolderTileBuilder()
+              ..addIcon(imagePaths.icMailboxNewFolder)
+              ..addName(AppLocalizations.of(context).new_folder))
             .build()
         ),
         _buildFolderMailbox(context),
@@ -159,9 +159,7 @@ class MailboxView extends GetWidget<MailboxController> {
       primary: false,
       itemBuilder: (context, index) =>
         Obx(() => (MailboxTileBuilder(
-              context,
               imagePaths,
-              responsiveUtils,
               defaultMailbox[index],
               selectMode: controller.getSelectMode(
                   defaultMailbox[index],
@@ -173,9 +171,9 @@ class MailboxView extends GetWidget<MailboxController> {
   Widget _buildFolderMailbox(BuildContext context) {
     return Obx(() => controller.folderMailboxNodeList.isNotEmpty
         ? Transform(
-            transform: Matrix4.translationValues(responsiveUtils.isMobile(context) ? 0.0 : -15.0, 0.0, 0.0),
+            transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
             child: Padding(
-              padding: EdgeInsets.only(left: 4, right: 16),
+              padding: EdgeInsets.only(right: 12),
               child: TreeView(
                 startExpanded: false,
                 key: Key('folder_mailbox_list'),

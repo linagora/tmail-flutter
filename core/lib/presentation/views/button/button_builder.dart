@@ -6,9 +6,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnPressActionClick = void Function();
+typedef OnTapDownActionClick = void Function(TapDownDetails details);
 
 class ButtonBuilder {
   OnPressActionClick? _onPressActionClick;
+  OnTapDownActionClick? _onTapActionClick;
 
   String? _icon;
   String? _text;
@@ -51,6 +53,11 @@ class ButtonBuilder {
     return this;
   }
 
+  ButtonBuilder onTapActionClick(OnTapDownActionClick onTapActionClick) {
+    _onTapActionClick = onTapActionClick;
+    return this;
+  }
+
   Widget build() {
     return Container(
       key: _key,
@@ -63,6 +70,11 @@ class ButtonBuilder {
           onTap: () {
             if (_onPressActionClick != null) {
               _onPressActionClick!();
+            }
+          },
+          onTapDown: (detail) {
+            if (_onTapActionClick != null) {
+              _onTapActionClick!(detail);
             }
           },
         )

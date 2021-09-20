@@ -9,14 +9,12 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 typedef OnBackActionClick = void Function();
 typedef OnUnreadEmailActionClick = void Function(PresentationEmail presentationEmail);
 typedef OnMoveToMailboxActionClick = void Function(PresentationEmail presentationEmail);
-typedef OnMarkAsImportantActionClick = void Function(PresentationEmail presentationEmail);
 typedef OnMarkAsStarActionClick = void Function(PresentationEmail presentationEmail);
 
 class AppBarMailWidgetBuilder {
   OnBackActionClick? _onBackActionClick;
   OnUnreadEmailActionClick? _onUnreadEmailActionClick;
   OnMoveToMailboxActionClick? _onMoveToMailboxActionClick;
-  OnMarkAsImportantActionClick? _onMarkAsImportantActionClick;
   OnMarkAsStarActionClick? _markAsStarActionClick;
 
   final BuildContext _context;
@@ -43,8 +41,6 @@ class AppBarMailWidgetBuilder {
     _onMoveToMailboxActionClick = onMoveToMailboxActionClick;
   }
 
-  void addOnMarkAsImportantActionClick(OnMarkAsImportantActionClick onMarkAsImportantActionClick) {
-    _onMarkAsImportantActionClick = onMarkAsImportantActionClick;
   void addOnMarkAsStarActionClick(OnMarkAsStarActionClick onMarkAsStarActionClick) {
     _markAsStarActionClick = onMarkAsStarActionClick;
   }
@@ -101,7 +97,7 @@ class AppBarMailWidgetBuilder {
         ButtonBuilder((_presentationEmail != null && _presentationEmail!.isFlaggedEmail())
             ? _imagePaths.icFlagged
             : _imagePaths.icFlag)
-          .key(Key('button_mark_as_email_important'))
+          .key(Key('button_mark_as_star_email'))
           .onPressActionClick(() {
             if (_markAsStarActionClick != null && _presentationEmail != null) {
               _markAsStarActionClick!(_presentationEmail!);
