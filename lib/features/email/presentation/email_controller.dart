@@ -18,11 +18,12 @@ import 'package:tmail_ui_user/features/email/domain/state/export_attachment_stat
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_important_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_important_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -45,6 +46,7 @@ class EmailController extends BaseController {
   final ExportAttachmentInteractor _exportAttachmentInteractor;
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final MarkAsEmailImportantInteractor _markAsEmailImportantInteractor;
+  final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
@@ -60,6 +62,7 @@ class EmailController extends BaseController {
     this._exportAttachmentInteractor,
     this._moveToMailboxInteractor,
     this._markAsEmailImportantInteractor,
+    this._markAsStarEmailInteractor,
   );
 
   @override
@@ -118,6 +121,8 @@ class EmailController extends BaseController {
           _moveToMailboxSuccess(success);
         } else if (success is MarkAsEmailImportantSuccess) {
           _markAsEmailImportantSuccess(success);
+        } else if (success is MarkAsStarEmailSuccess) {
+          _markAsEmailStarSuccess(success);
         }
       });
   }
@@ -309,15 +314,19 @@ class EmailController extends BaseController {
   }
 
   void markAsEmailImportant(PresentationEmail presentationEmail) async {
+  void markAsStarEmail(PresentationEmail presentationEmail) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (accountId != null && mailboxCurrent != null) {
-      final importantAction = presentationEmail.isFlaggedEmail() ? ImportantAction.unMarkStar : ImportantAction.markStar;
-      consumeState(_markAsEmailImportantInteractor.execute(accountId, presentationEmail.id, importantAction));
+      final markStarAction = presentationEmail.isFlaggedEmail() ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
+      consumeState(_markAsStarEmailInteractor.execute(accountId, presentationEmail.toEmail(), markStarAction));
     }
   }
 
-  void _markAsEmailImportantSuccess(Success success) {
+  void _markAsEmailStarSuccess(Success success) {
+    if (success is MarkAsStarEmailSuccess) {
+      mailboxDashBoardController.setSelectedEmail(success.updatedEmail.toPresentationEmail(selectMode: SelectMode.ACTIVE));
+    }
     mailboxDashBoardController.dispatchState(Right(success));
   }
 

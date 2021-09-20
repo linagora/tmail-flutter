@@ -264,10 +264,10 @@ class AppLocalizations {
     );
   }
 
-  String get mark_as_flag {
+  String get mark_as_star {
     return Intl.message(
       'Star',
-      name: 'mark_as_flag',
+      name: 'mark_as_star',
     );
   }
 
@@ -406,6 +406,29 @@ class AppLocalizations {
     return Intl.message(
         'UNDO',
         name: 'undo_action'
+    );
+  }
+
+  String get mark_as_unstar {
+    return Intl.message(
+      'Unstar',
+      name: 'mark_as_unstar',
+    );
+  }
+
+  String marked_star_multiple_item(int count) {
+    return Intl.message(
+        'Marked star $count item',
+        name: 'marked_star_multiple_item',
+        args: [count]
+    );
+  }
+
+  String marked_unstar_multiple_item(int count) {
+    return Intl.message(
+        'Marked unstar $count item',
+        name: 'marked_unstar_multiple_item',
+        args: [count]
     );
   }
 }

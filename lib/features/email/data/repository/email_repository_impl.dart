@@ -61,7 +61,11 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<bool> markAsImportant(AccountId accountId, EmailId emailId, ImportantAction importantAction) {
-    return emailDataSource.markAsImportant(accountId, emailId, importantAction);
+  Future<List<Email>> markAsStar(
+      AccountId accountId,
+      List<Email> emails,
+      MarkStarAction markStarAction
+  ) {
+    return emailDataSource.markAsStar(accountId, emails, markStarAction);
   }
 }

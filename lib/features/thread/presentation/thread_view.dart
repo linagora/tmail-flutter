@@ -88,7 +88,7 @@ class ThreadView extends GetWidget<ThreadController> {
       _moveToTrashAction(context, listEmail),
       _moveToMailboxAction(context, listEmail),
       _markAsReadAction(context, listEmail),
-      _markAsFlagAction(context, listEmail),
+      _markAsStarAction(context, listEmail),
       _moveToSpamAction(context, listEmail),
       SizedBox(height: 30),
     ];
@@ -98,12 +98,12 @@ class ThreadView extends GetWidget<ThreadController> {
     return (EmailContextMenuActionBuilder(
             Key('mark_as_read_context_menu_action'),
             SvgPicture.asset(imagePaths.icEyeDisable, width: 24, height: 24, fit: BoxFit.fill),
-            controller.isEmailAllRead(listEmail)
+            controller.isAllEmailRead(listEmail)
                 ? AppLocalizations.of(context).mark_as_unread
                 : AppLocalizations.of(context).mark_as_read,
             listEmail)
-        ..onActionClick((data) => controller.markAsSelectedEmailRead(data, fromContextMenuAction: true)))
-      .build();
+          ..onActionClick((data) => controller.markAsSelectedEmailRead(data, fromContextMenuAction: true)))
+        .build();
   }
 
   Widget _moveToTrashAction(BuildContext context, List<PresentationEmail> listEmail) {
@@ -114,6 +114,9 @@ class ThreadView extends GetWidget<ThreadController> {
             listEmail)
         ..onActionClick((data) => {}))
       .build();
+            AppLocalizations.of(context).move_to_trash, listEmail)
+          ..onActionClick((data) => {}))
+        .build();
   }
 
   Widget _moveToMailboxAction(BuildContext context, List<PresentationEmail> listEmail) {
@@ -126,7 +129,9 @@ class ThreadView extends GetWidget<ThreadController> {
       .build();
   }
 
-  Widget _markAsFlagAction(BuildContext context, List<PresentationEmail> listEmail) {
+  Widget _markAsStarAction(BuildContext context, List<PresentationEmail> listEmail) {
+    final markStarAction = controller.isAllEmailMarkAsStar(listEmail) ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
+
     return (EmailContextMenuActionBuilder(
             Key('mark_as_flag_context_menu_action'),
             SvgPicture.asset(imagePaths.icFlag, width: 24, height: 24, fit: BoxFit.fill),
@@ -134,6 +139,18 @@ class ThreadView extends GetWidget<ThreadController> {
             listEmail)
         ..onActionClick((data) => {}))
       .build();
+            Key('mark_as_star_context_menu_action'),
+            SvgPicture.asset(
+                markStarAction == MarkStarAction.markStar ? imagePaths.icFlag : imagePaths.icFlagged,
+                width: 24,
+                height: 24,
+                fit: BoxFit.fill),
+            markStarAction == MarkStarAction.markStar
+                ? AppLocalizations.of(context).mark_as_star
+                : AppLocalizations.of(context).mark_as_unstar,
+            listEmail)
+          ..onActionClick((data) => controller.markAsStarSelectedMultipleEmail(data, markStarAction)))
+        .build();
   }
 
   Widget _moveToSpamAction(BuildContext context, List<PresentationEmail> listEmail) {
@@ -144,6 +161,9 @@ class ThreadView extends GetWidget<ThreadController> {
             listEmail)
         ..onActionClick((data) => {}))
       .build();
+            AppLocalizations.of(context).move_to_spam, listEmail)
+          ..onActionClick((data) => {}))
+        .build();
   }
 
   Widget _buildLoadingView() {

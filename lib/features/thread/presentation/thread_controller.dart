@@ -8,7 +8,6 @@ import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
@@ -18,18 +17,22 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_important_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_important_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/load_more_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -45,6 +48,8 @@ class ThreadController extends BaseController {
   final ScrollController listEmailController;
   final MoveMultipleEmailToMailboxInteractor _moveMultipleEmailToMailboxInteractor;
   final MarkAsEmailImportantInteractor _markAsEmailImportantInteractor;
+  final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
+  final MarkAsStarMultipleEmailInteractor _markAsStarMultipleEmailInteractor;
 
   final _properties = Properties({
     'id', 'subject', 'from', 'to', 'cc', 'bcc', 'keywords', 'receivedAt',
@@ -67,6 +72,8 @@ class ThreadController extends BaseController {
     this._appToast,
     this._moveMultipleEmailToMailboxInteractor,
     this._markAsEmailImportantInteractor,
+    this._markAsStarEmailInteractor,
+    this._markAsStarMultipleEmailInteractor,
   );
 
   @override
@@ -110,7 +117,7 @@ class ThreadController extends BaseController {
 
     mailboxDashBoardController.viewState.listen((state) {
       state.map((success) {
-        if (success is MarkAsEmailImportantSuccess) {
+        if (success is MarkAsStarEmailSuccess) {
           _refreshListEmail();
         }
       });
@@ -134,6 +141,9 @@ class ThreadController extends BaseController {
         } else if (failure is MarkAsMultipleEmailReadAllFailure
             || failure is MarkAsMultipleEmailReadFailure) {
           _markAsSelectedEmailReadFailure(failure);
+        } else if (failure is MarkAsStarMultipleEmailAllFailure
+            || failure is MarkAsStarMultipleEmailFailure) {
+          _markAsStarMultipleEmailFailure(failure);
         }
       },
       (success) {
@@ -147,6 +157,11 @@ class ThreadController extends BaseController {
           _moveSelectedMultipleEmailToMailboxSuccess(success);
         } else if (success is MarkAsEmailImportantSuccess) {
           _markAsEmailImportantSuccess(success);
+        } else if (success is MarkAsStarEmailSuccess) {
+          _markAsStarEmailSuccess(success);
+        } else if (success is MarkAsStarMultipleEmailAllSuccess
+            || success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
+          _markAsStarMultipleEmailSuccess(success);
         }
       }
     );
@@ -163,7 +178,7 @@ class ThreadController extends BaseController {
       loadMoreState.value = success.emailList.isEmpty ? LoadMoreState.COMPLETED : LoadMoreState.IDLE;
 
       mailboxDashBoardController.viewState.value.map((success) {
-        if (success is MarkAsEmailImportantSuccess) {
+        if (success is MarkAsStarEmailSuccess) {
           _updateValueCurrentEmail();
           mailboxDashBoardController.clearState();
         }
@@ -282,7 +297,9 @@ class ThreadController extends BaseController {
 
   bool _isUnSelectedAll() => emailList.every((email) => email.selectMode == SelectMode.INACTIVE);
 
-  bool isEmailAllRead(List<PresentationEmail> listEmail) => listEmail.every((email) => email.isReadEmail());
+  bool isAllEmailRead(List<PresentationEmail> listEmail) => listEmail.every((email) => email.isReadEmail());
+
+  bool isAllEmailMarkAsStar(List<PresentationEmail> listEmail) => listEmail.every((email) => email.isFlaggedEmail());
 
   void cancelSelectEmail() {
     emailList.value = emailList.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
@@ -443,16 +460,58 @@ class ThreadController extends BaseController {
   }
 
   void markAsEmailImportant(PresentationEmail presentationEmail) {
+  void markAsStarEmail(PresentationEmail presentationEmail) {
     final accountId = mailboxDashBoardController.accountId.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (accountId != null && mailboxCurrent != null) {
-      final importantAction = presentationEmail.isFlaggedEmail() ? ImportantAction.unMarkStar : ImportantAction.markStar;
-      consumeState(_markAsEmailImportantInteractor.execute(accountId, presentationEmail.id, importantAction));
+      final importantAction = presentationEmail.isFlaggedEmail() ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
+      consumeState(_markAsStarEmailInteractor.execute(accountId, presentationEmail.toEmail(), importantAction));
     }
   }
 
-  void _markAsEmailImportantSuccess(Success success) {
+  void _markAsStarEmailSuccess(Success success) {
     _refreshListEmail();
+  }
+
+  void markAsStarSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail, MarkStarAction markStarAction) {
+    popBack();
+
+    final accountId = mailboxDashBoardController.accountId.value;
+    final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
+    if (accountId != null && mailboxCurrent != null) {
+      final listEmail = listPresentationEmail.map((presentationEmail) => presentationEmail.toEmail()).toList();
+      consumeState(_markAsStarMultipleEmailInteractor.execute(accountId, listEmail, markStarAction));
+    }
+  }
+
+  void _markAsStarMultipleEmailSuccess(Success success) {
+    cancelSelectEmail();
+
+    MarkStarAction? markStarAction;
+    int countMarkStarSuccess = 0;
+
+    if (success is MarkAsStarMultipleEmailAllSuccess) {
+      markStarAction = success.markStarAction;
+      countMarkStarSuccess = success.countMarkStarSuccess;
+    } else if (success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
+      markStarAction = success.markStarAction;
+      countMarkStarSuccess = success.countMarkStarSuccess;
+    }
+
+    if (Get.context != null && markStarAction != null) {
+      _appToast.showSuccessToast(markStarAction == MarkStarAction.unMarkStar
+          ? AppLocalizations.of(Get.context!).marked_unstar_multiple_item(countMarkStarSuccess)
+          : AppLocalizations.of(Get.context!).marked_star_multiple_item(countMarkStarSuccess));
+    }
+
+    _refreshListEmail();
+  }
+
+  void _markAsStarMultipleEmailFailure(Failure failure) {
+    cancelSelectEmail();
+    if (Get.context != null) {
+      _appToast.showErrorToast(AppLocalizations.of(Get.context!).an_error_occurred);
+    }
   }
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null

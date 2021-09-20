@@ -1,5 +1,5 @@
 
-enum ImportantAction {
+enum MarkStarAction {
   markStar,
   unMarkStar
 }
