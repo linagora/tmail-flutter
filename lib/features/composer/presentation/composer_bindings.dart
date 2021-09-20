@@ -3,7 +3,6 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/autocomplete_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
@@ -28,9 +27,6 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
-import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:uuid/uuid.dart';
 
@@ -46,7 +42,6 @@ class ComposerBindings extends Bindings {
       DataSourceType.local: Get.find<LocalComposerDataSourceImpl>(),
     }));
     Get.lazyPut<ComposerRepository>(() => Get.find<ComposerRepositoryImpl>());
-    Get.lazyPut(() => SendEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => SaveEmailAddressesInteractor(Get.find<ComposerRepository>()));
     Get.lazyPut(() => AutoCompleteDataSourceImpl());
     Get.lazyPut<AutoCompleteDataSource>(() => Get.find<AutoCompleteDataSourceImpl>());
@@ -69,11 +64,8 @@ class ComposerBindings extends Bindings {
         Get.find<GetAutoCompleteInteractor>(),
         Get.find<GetDeviceContactSuggestionsInteractor>()));
     Get.lazyPut(() => LocalFilePickerInteractor());
-    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
-    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
     Get.lazyPut(() => UploadAttachmentInteractor(
-      Get.find<ComposerRepository>(),
-      Get.find<CredentialRepository>()));
+      Get.find<ComposerRepository>()));
     Get.lazyPut(() => UploadMultipleAttachmentInteractor(Get.find<UploadAttachmentInteractor>()));
     Get.lazyPut(() => ComposerController(
       Get.find<SendEmailInteractor>(),
@@ -84,8 +76,7 @@ class ComposerBindings extends Bindings {
       Get.find<Uuid>(),
       Get.find<HtmlEditorController>(),
       Get.find<TextEditingController>(),
-      Get.find<HtmlMessagePurifier>()));
-      Get.find<HtmlEditorController>(),
+      Get.find<HtmlMessagePurifier>(),
       Get.find<LocalFilePickerInteractor>(),
       Get.find<UploadMultipleAttachmentInteractor>()));
   }

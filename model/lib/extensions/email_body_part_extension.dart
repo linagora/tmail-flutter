@@ -8,5 +8,6 @@ extension EmailBodyPartExtension on EmailBodyPart {
     size: size,
     name: name,
     type: type,
-    cid: cid);
+    cid: cid,
+    disposition: disposition);
 }

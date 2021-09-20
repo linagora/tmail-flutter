@@ -12,7 +12,7 @@ class UploadMultipleAttachmentInteractor {
 
   Stream<Either<Failure, Success>> execute(List<FileInfo> listFiles, AccountId accountId, Uri uploadUrl) async* {
     try {
-      yield Right<Failure, Success>(UploadAttachmentLoadingState());
+      yield Right<Failure, Success>(UploadingAttachmentState());
       final listResult = await Future.wait(
         listFiles.map((fileInfo) async {
           final result = await _uploadAttachmentInteractor.execute(fileInfo, accountId, uploadUrl).toList();
@@ -24,13 +24,15 @@ class UploadMultipleAttachmentInteractor {
       } else {
         final listResultSuccess = listResult.where((either) => either.isRight()).toList();
         if (listResultSuccess.length == listResult.length) {
-          yield Right<Failure, Success>(UploadAttachmentHasSomeFailure(listResultSuccess));
+          yield Right<Failure, Success>(UploadMultipleAttachmentAllSuccess(listResultSuccess));
+        } else if (listResultSuccess.length == 0) {
+          yield Left<Failure, Success>(UploadMultipleAttachmentAllFailure(listResult));
         } else {
-          yield Right<Failure, Success>(UploadAttachmentAllSuccess(listResult));
+          yield Right<Failure, Success>(UploadMultipleAttachmentHasSomeFailure(listResultSuccess));
         }
       }
     } catch (e) {
-      yield Left<Failure, Success>(UploadAttachmentAllFailure(e));
+      yield Left<Failure, Success>(UploadMultipleAttachmentFailure(e));
     }
   }
 }

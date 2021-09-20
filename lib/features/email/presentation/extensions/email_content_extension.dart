@@ -3,7 +3,6 @@ import 'package:tmail_ui_user/features/email/presentation/constants/email_consta
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/message_content.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/text_format.dart';
-import 'package:tmail_ui_user/features/email/presentation/extensions/email_body_part_extension.dart';
 
 extension EmailContentExtension on EmailContent {
 

@@ -25,6 +25,10 @@ abstract class BaseController extends GetxController {
     );
   }
 
+  void clearState() {
+    viewState.value = Right(UIState.idle);
+  }
+
   void onData(Either<Failure, Success> newState) {
     viewState.value = newState;
   }

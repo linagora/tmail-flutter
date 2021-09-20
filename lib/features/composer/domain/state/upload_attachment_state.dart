@@ -2,8 +2,8 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:model/model.dart';
 
-class UploadAttachmentLoadingState extends UIState {
-  UploadAttachmentLoadingState();
+class UploadingAttachmentState extends UIState {
+  UploadingAttachmentState();
 
   @override
   List<Object?> get props => [];
@@ -27,28 +27,37 @@ class UploadAttachmentFailure extends FeatureFailure {
   List<Object> get props => [exception];
 }
 
-class UploadAttachmentAllSuccess extends UIState {
+class UploadMultipleAttachmentAllSuccess extends UIState {
   final List<Either<Failure, Success>> listResults;
 
-  UploadAttachmentAllSuccess(this.listResults);
+  UploadMultipleAttachmentAllSuccess(this.listResults);
 
   @override
   List<Object?> get props => [listResults];
 }
 
-class UploadAttachmentHasSomeFailure extends UIState {
+class UploadMultipleAttachmentHasSomeFailure extends UIState {
   final List<Either<Failure, Success>> listResults;
 
-  UploadAttachmentHasSomeFailure(this.listResults);
+  UploadMultipleAttachmentHasSomeFailure(this.listResults);
 
   @override
   List<Object?> get props => [listResults];
 }
 
-class UploadAttachmentAllFailure extends FeatureFailure {
+class UploadMultipleAttachmentAllFailure extends FeatureFailure {
+  final List<Either<Failure, Success>> listResults;
+
+  UploadMultipleAttachmentAllFailure(this.listResults);
+
+  @override
+  List<Object> get props => [listResults];
+}
+
+class UploadMultipleAttachmentFailure extends FeatureFailure {
   final exception;
 
-  UploadAttachmentAllFailure(this.exception);
+  UploadMultipleAttachmentFailure(this.exception);
 
   @override
   List<Object> get props => [exception];

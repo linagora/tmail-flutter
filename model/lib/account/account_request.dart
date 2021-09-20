@@ -14,7 +14,7 @@ class AccountRequest with EquatableMixin {
     'password': password.value,
   };
 
-  String basicAuth() => 'Basic ${base64Encode(utf8.encode('${userName.userName}:${password.value}'))}';
+  String get basicAuth => 'Basic ${base64Encode(utf8.encode('${userName.userName}:${password.value}'))}';
 
   @override
   List<Object> get props => [userName, password];

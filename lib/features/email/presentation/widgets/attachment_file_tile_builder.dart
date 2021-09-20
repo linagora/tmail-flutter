@@ -99,20 +99,21 @@ class AttachmentFileTileBuilder {
                   : null,
                 trailing: buttonAction != null
                   ? Transform(
-                      transform: Matrix4.translationValues(6.0, heightItem != null ? -6.0 : 0.0, 0.0),
+                      transform: Matrix4.translationValues(-5.0, heightItem != null ? -6.0 : 0.0, 0.0),
                       child: buttonAction)
                   : null
               ),
-              Transform(
-                transform: Matrix4.translationValues(5.0, 5.0, 0.0),
-                child: IconButton(
-                  icon: SvgPicture.asset(_imagePaths.icDownload, width: 24, height: 24, fit: BoxFit.fill),
-                  onPressed: () {
-                    if (_onDownloadAttachmentFileActionClick != null) {
-                      _onDownloadAttachmentFileActionClick!(_attachment);
+              if (buttonAction == null)
+                Transform(
+                  transform: Matrix4.translationValues(5.0, 5.0, 0.0),
+                  child: IconButton(
+                    icon: SvgPicture.asset(_imagePaths.icDownload, width: 24, height: 24, fit: BoxFit.fill),
+                    onPressed: () {
+                      if (_onDownloadAttachmentFileActionClick != null) {
+                        _onDownloadAttachmentFileActionClick!(_attachment);
+                      }
                     }
-                  }
-                )),
+                  )),
               if (_attachmentSize > _limitDisplayAttachment && _expandMode == ExpandMode.COLLAPSE) _buildItemBackground()
             ]
           )

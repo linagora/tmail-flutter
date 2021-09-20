@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:model/email/attachment.dart';
-import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_composer_widget_builder.dart';
@@ -62,7 +61,6 @@ class ComposerView extends GetWidget<ComposerController> {
     );
   }
 
-  Widget _buildEmailHeader(BuildContext context) {
   List<Widget> _pickAttachmentsActionTiles(BuildContext context) {
     return [
       _pickPhotoAndVideoAction(context),
@@ -89,7 +87,7 @@ class ComposerView extends GetWidget<ComposerController> {
       .build();
   }
 
-  Widget _buildEmailHeaderField(BuildContext context) {
+  Widget _buildEmailHeader(BuildContext context) {
     return Container(
       margin: EdgeInsets.zero,
       padding: EdgeInsets.only(top: 20),
@@ -152,18 +150,16 @@ class ComposerView extends GetWidget<ComposerController> {
           _buildEmailHeader(context),
           Padding(
             padding: EdgeInsets.only(bottom: 30, top: 16, left: 16, right: 16),
-            child: _buildComposerEditer(context),
-          )
-            child: _buildEmailBodyEditorQuoted(context),
+            child: _buildComposerEditor(context),
           ),
-          _buildLoadingView(),
+          _buildAttachmentsLoadingView(),
           _buildAttachments(context),
         ]
       )
     );
   }
 
-  Widget _buildComposerEditer(BuildContext context) {
+  Widget _buildComposerEditor(BuildContext context) {
     return HtmlEditor(
       key: Key('email_body_editor_quoted'),
       controller: controller.composerEditorController,
@@ -182,10 +178,10 @@ class ComposerView extends GetWidget<ComposerController> {
     );
   }
 
-  Widget _buildLoadingView() {
+  Widget _buildAttachmentsLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),
-      (success) => success is UploadAttachmentLoadingState
+      (success) => success is UploadingAttachmentState
         ? Center(child: Padding(
             padding: EdgeInsets.only(top: 8),
             child: SizedBox(

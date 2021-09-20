@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_bindings.dart';
@@ -15,8 +16,11 @@ class MailboxDashBoardBindings extends Bindings {
     Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
     Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
     Get.lazyPut(() => GetUserProfileInteractor(Get.find<CredentialRepository>()));
+    Get.lazyPut(() => AppToast());
 
-    Get.put(MailboxDashBoardController(Get.find<GetUserProfileInteractor>()));
+    Get.put(MailboxDashBoardController(
+      Get.find<GetUserProfileInteractor>(),
+      Get.find<AppToast>()));
 
     MailboxBindings().dependencies();
     ThreadBindings().dependencies();

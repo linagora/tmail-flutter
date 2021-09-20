@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:core/core.dart';
@@ -155,14 +154,12 @@ class EmailAPI {
       throw DeviceNotSupportedException();
     }
 
-    final basicAuth = 'Basic ' + base64Encode(utf8.encode('${accountRequest.userName.userName}:${accountRequest.password.value}'));
-
     final taskIds = await Future.wait(
       attachments.map((attachment) async => await FlutterDownloader.enqueue(
         url: attachment.getDownloadUrl(baseDownloadUrl, accountId),
         savedDir: externalStorageDirPath,
         headers: {
-          HttpHeaders.authorizationHeader: basicAuth,
+          HttpHeaders.authorizationHeader: accountRequest.basicAuth,
           HttpHeaders.acceptHeader: DioClient.jmapHeader
         },
         fileName: attachment.name,
@@ -182,13 +179,11 @@ class EmailAPI {
       AccountRequest accountRequest,
       CancelToken cancelToken
   ) async {
-    final basicAuth = 'Basic ' + base64Encode(utf8.encode('${accountRequest.userName.userName}:${accountRequest.password.value}'));
-
     return _downloadManager.downloadFile(
       attachment.getDownloadUrl(baseDownloadUrl, accountId),
       getTemporaryDirectory(),
       attachment.name ?? '',
-      basicAuth,
+      accountRequest.basicAuth,
       cancelToken: cancelToken);
   }
 }
