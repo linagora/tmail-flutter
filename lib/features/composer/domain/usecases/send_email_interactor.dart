@@ -12,15 +12,15 @@ class SendEmailInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, EmailRequest emailRequest) async* {
     try {
-      yield Right<Failure, Success>(LoadingState());
+      yield Right<Failure, Success>(SendingEmailState());
       final result = await emailRepository.sendEmail(accountId, emailRequest);
       if (result) {
         yield Right<Failure, Success>(SendEmailSuccess());
       } else {
-        yield Left(SendEmailFailure(result));
+        yield Left<Failure, Success>(SendEmailFailure(result));
       }
     } catch (e) {
-      yield Left(SendEmailFailure(e));
+      yield Left<Failure, Success>(SendEmailFailure(e));
     }
   }
 }

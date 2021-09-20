@@ -9,12 +9,15 @@ import 'package:uri/uri.dart';
 
 class Attachment with EquatableMixin {
 
+  static final String dispositionAttachment = 'attachment';
+
   final PartId? partId;
   final Id? blobId;
   final UnsignedInt? size;
   final String? name;
   final MediaType? type;
   final String? cid;
+  final String? disposition;
 
   Attachment({
     this.partId,
@@ -22,7 +25,8 @@ class Attachment with EquatableMixin {
     this.size,
     this.name,
     this.type,
-    this.cid
+    this.cid,
+    this.disposition,
   });
 
   String getDownloadUrl(String baseDownloadUrl, AccountId accountId) {
@@ -37,5 +41,5 @@ class Attachment with EquatableMixin {
   }
 
   @override
-  List<Object?> get props => [partId, blobId, size, name, type, cid];
+  List<Object?> get props => [partId, blobId, size, name, type, cid, disposition];
 }

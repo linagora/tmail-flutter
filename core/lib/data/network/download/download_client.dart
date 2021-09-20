@@ -12,11 +12,11 @@ class DownloadClient {
 
   Future<ResponseBody> downloadFile(
       String url,
-      String baseAuth,
+      String basicAuth,
       CancelToken? cancelToken,
   ) async {
     final headerParam = _dioClient.getHeaders();
-    headerParam[HttpHeaders.authorizationHeader] = baseAuth;
+    headerParam[HttpHeaders.authorizationHeader] = basicAuth;
     headerParam[HttpHeaders.acceptHeader] = DioClient.jmapHeader;
 
     final responseBody = await _dioClient.get(

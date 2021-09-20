@@ -204,7 +204,7 @@ class EmailController extends BaseController {
           ..actionText(AppLocalizations.of(context).cancel)
           ..addCancelDownloadActionClick(() {
               cancelToken.cancel([AppLocalizations.of(context).user_cancel_download_file]);
-              Get.back();
+              popBack();
             }))
         .build());
   }

@@ -25,8 +25,6 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_st
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/search_email_address_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
@@ -35,6 +33,7 @@ import 'package:tmail_ui_user/features/email/presentation/constants/email_consta
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_content_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/message_content.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -43,6 +42,8 @@ import 'package:uuid/uuid.dart';
 
 class ComposerController extends BaseController {
 
+  final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+  
   final expandMode = ExpandMode.COLLAPSE.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
@@ -58,7 +59,6 @@ class ComposerController extends BaseController {
   final HtmlEditorController composerEditorController;
   final TextEditingController subjectEmailInputController;
   final HtmlMessagePurifier _htmlMessagePurifier;
-  final HtmlEditorController htmlEditorController;
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final UploadMultipleAttachmentInteractor _uploadMultipleAttachmentInteractor;
 
@@ -80,7 +80,6 @@ class ComposerController extends BaseController {
     this.composerEditorController,
     this.subjectEmailInputController,
     this._htmlMessagePurifier,
-    this.htmlEditorController,
     this._localFilePickerInteractor,
     this._uploadMultipleAttachmentInteractor,
   );
@@ -97,23 +96,19 @@ class ComposerController extends BaseController {
   void onDone() {
     viewState.value.fold(
       (failure) {
-        if (failure is SendEmailFailure) {
-          _sendEmailFailure(failure);
-        } else if (failure is LocalFilePickerFailure || failure is LocalFilePickerCancel) {
+        if (failure is LocalFilePickerFailure || failure is LocalFilePickerCancel) {
           _pickFileFailure(failure);
         } else if (failure is UploadAttachmentFailure
-          || failure is UploadAttachmentAllFailure) {
+          || failure is UploadMultipleAttachmentAllFailure) {
           _uploadAttachmentsFailure(failure);
         }
       },
       (success) {
-        if (success is SendEmailSuccess) {
-          _sendEmailSuccess(success);
-        } else if (success is LocalFilePickerSuccess) {
+        if (success is LocalFilePickerSuccess) {
           _pickFileSuccess(success);
         } else if (success is UploadAttachmentSuccess
-          || success is UploadAttachmentAllSuccess
-          || success is UploadAttachmentHasSomeFailure) {
+          || success is UploadMultipleAttachmentAllSuccess
+          || success is UploadMultipleAttachmentHasSomeFailure) {
           _uploadAttachmentsSuccess(success);
         }
       });
@@ -283,40 +278,39 @@ class ComposerController extends BaseController {
         )},
       bodyValues: {
         generatePartId: EmailBodyValue(emailBodyText, false, false)
-      }
+      },
+      attachments: attachments.isNotEmpty ? _generateAttachments() : null
     );
+  }
+
+  Set<EmailBodyPart> _generateAttachments() {
+    return attachments.map((attachment) =>
+      attachment.toEmailBodyPart(Attachment.dispositionAttachment)).toSet();
   }
 
   void sendEmailAction(BuildContext context) async {
     if (isEnableEmailSendButton.value) {
-      _appToast.showToast(AppLocalizations.of(context).your_email_being_sent);
+      _saveEmailAddress();
 
       final email = await generateEmail();
       final accountId = composerArguments.value!.session.accounts.keys.first;
       final sentMailboxId = composerArguments.value!.mapMailboxId[PresentationMailbox.roleSent];
       final submissionCreateId = Id(_uuid.v1());
 
-      consumeState(_sendEmailInteractor.execute(accountId, EmailRequest(email, submissionCreateId, mailboxIdSaved: sentMailboxId)));
+      mailboxDashBoardController.consumeState(_sendEmailInteractor.execute(
+          accountId,
+          EmailRequest(email, submissionCreateId, mailboxIdSaved: sentMailboxId)));
+
+      popBack();
     } else {
       _appToast.showErrorToast(AppLocalizations.of(context).your_email_should_have_at_least_one_recipient);
     }
   }
 
-  void _sendEmailSuccess(Success success) {
-    _saveEmailAddress();
-    _appToast.showSuccessToast(AppLocalizations.of(Get.context!).message_sent);
-    popBack();
-  }
-
-  void _sendEmailFailure(Failure failure) {
-    _appToast.showErrorToast(AppLocalizations.of(Get.context!).error_message_sent);
-    popBack();
-  }
-
-  void _saveEmailAddress() {
+  void _saveEmailAddress() async {
     final listEmailAddressCanSave = Set<EmailAddress>();
     listEmailAddressCanSave.addAll(listToEmailAddress + listCcEmailAddress + listBccEmailAddress);
-    _saveEmailAddressInteractor.execute(listEmailAddressCanSave.toList());
+    await _saveEmailAddressInteractor.execute(listEmailAddressCanSave.toList());
   }
 
   void _checkContactPermission() async {
@@ -391,20 +385,20 @@ class ComposerController extends BaseController {
   void _uploadAttachmentsSuccess(Success success) {
     if (success is UploadAttachmentSuccess) {
       attachments.add(success.attachment);
-    } else if (success is UploadAttachmentAllSuccess) {
-      final listAttachment = success.listResults
+    } else if (success is UploadMultipleAttachmentAllSuccess) {
+      final listAttachment = success.listResults.where((either) => either.isRight())
         .map((either) => either
           .map((result) => (result as UploadAttachmentSuccess).attachment)
           .toIterable().first)
         .toList();
 
       attachments.addAll(listAttachment);
-    } else if (success is UploadAttachmentHasSomeFailure) {
+    } else if (success is UploadMultipleAttachmentHasSomeFailure) {
       final listAttachment = success.listResults
-          .map((either) => either
-          .map((result) => (result as UploadAttachmentSuccess).attachment)
-          .toIterable().first)
-          .toList();
+        .map((either) => either
+        .map((result) => (result as UploadAttachmentSuccess).attachment)
+        .toIterable().first)
+        .toList();
 
       attachments.addAll(listAttachment);
     }
@@ -418,6 +412,6 @@ class ComposerController extends BaseController {
   }
 
   void backToEmailViewAction() {
-    Get.back();
+    popBack();
   }
 }

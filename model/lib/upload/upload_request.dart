@@ -8,10 +8,9 @@ class UploadRequest with EquatableMixin {
   final Uri uploadUrl;
   final FileInfo fileInfo;
   final AccountId accountId;
-  final AccountRequest accountRequest;
 
-  UploadRequest(this.uploadUrl, this.accountId, this.fileInfo, this.accountRequest);
+  UploadRequest(this.uploadUrl, this.accountId, this.fileInfo);
 
   @override
-  List<Object?> get props => [uploadUrl, accountId, fileInfo, accountRequest];
+  List<Object?> get props => [uploadUrl, accountId, fileInfo];
 }
