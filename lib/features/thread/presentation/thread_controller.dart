@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_important_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_important_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -43,6 +44,7 @@ class ThreadController extends BaseController {
   final ResponsiveUtils responsiveUtils;
   final ScrollController listEmailController;
   final MoveMultipleEmailToMailboxInteractor _moveMultipleEmailToMailboxInteractor;
+  final MarkAsEmailImportantInteractor _markAsEmailImportantInteractor;
 
   final _properties = Properties({
     'id', 'subject', 'from', 'to', 'cc', 'bcc', 'keywords', 'receivedAt',
@@ -64,6 +66,7 @@ class ThreadController extends BaseController {
     this._markAsMultipleEmailReadInteractor,
     this._appToast,
     this._moveMultipleEmailToMailboxInteractor,
+    this._markAsEmailImportantInteractor,
   );
 
   @override
@@ -142,6 +145,8 @@ class ThreadController extends BaseController {
         } else if (success is MoveMultipleEmailToMailboxAllSuccess
             || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
           _moveSelectedMultipleEmailToMailboxSuccess(success);
+        } else if (success is MarkAsEmailImportantSuccess) {
+          _markAsEmailImportantSuccess(success);
         }
       }
     );
@@ -435,6 +440,19 @@ class ThreadController extends BaseController {
     if (accountId != null) {
       _moveSelectedEmailMultipleToMailbox(accountId, moveRequest);
     }
+  }
+
+  void markAsEmailImportant(PresentationEmail presentationEmail) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
+    if (accountId != null && mailboxCurrent != null) {
+      final importantAction = presentationEmail.isFlaggedEmail() ? ImportantAction.unMarkStar : ImportantAction.markStar;
+      consumeState(_markAsEmailImportantInteractor.execute(accountId, presentationEmail.id, importantAction));
+    }
+  }
+
+  void _markAsEmailImportantSuccess(Success success) {
+    _refreshListEmail();
   }
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
