@@ -66,9 +66,9 @@ class EmailController extends BaseController {
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  void onClose() {
     mailboxDashBoardController.selectedEmail.close();
+    super.onClose();
   }
 
   void _getEmailContentAction(AccountId accountId, EmailId emailId) async {

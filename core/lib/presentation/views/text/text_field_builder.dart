@@ -11,44 +11,40 @@ class TextFieldBuilder {
   int? _maxLines = 1;
   TextEditingController? _textController;
 
-  TextFieldBuilder key(Key key) {
+  void key(Key key) {
     _key = key;
-    return this;
   }
 
-  TextFieldBuilder onChange(ValueChanged<String> onChange) {
+  void onChange(ValueChanged<String> onChange) {
     _onTextChange = onChange;
-    return this;
   }
 
-  TextFieldBuilder textStyle(TextStyle style) {
+  void textStyle(TextStyle style) {
     _textStyle = style;
-    return this;
   }
 
-  TextFieldBuilder textInputAction(TextInputAction inputAction) {
+  void textInputAction(TextInputAction inputAction) {
     _textInputAction = inputAction;
-    return this;
   }
 
-  TextFieldBuilder textDecoration(InputDecoration inputDecoration) {
+  void textDecoration(InputDecoration inputDecoration) {
     _inputDecoration = inputDecoration;
-    return this;
   }
 
-  TextFieldBuilder obscureText(bool obscureText) {
+  void obscureText(bool obscureText) {
     _obscureText = obscureText;
-    return this;
   }
 
-  TextFieldBuilder setText(String value) {
+  void setText(String value) {
     _textController = TextEditingController.fromValue(TextEditingValue(text: value));
-    return this;
   }
 
-  TextFieldBuilder maxLines(int? value) {
+  void addController(TextEditingController textEditingController) {
+    _textController = textEditingController;
+  }
+
+  void maxLines(int? value) {
     _maxLines = value;
-    return this;
   }
 
   TextField build() {

@@ -57,9 +57,9 @@ class MailboxController extends BaseController {
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  void onClose() {
     mailboxDashBoardController.accountId.close();
+    super.onClose();
   }
 
   void refreshGetAllMailboxAction() {
