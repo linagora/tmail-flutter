@@ -9,29 +9,23 @@ typedef OnOpenMailboxNewFolderActionClick = void Function();
 
 class MailboxNewFolderTileBuilder {
 
-  final BuildContext _context;
-  final ResponsiveUtils _responsiveUtils;
-
   String? _icon;
   String? _name;
 
   OnOpenMailboxNewFolderActionClick? _onOpenMailboxFolderActionClick;
 
-  MailboxNewFolderTileBuilder(this._context, this._responsiveUtils);
+  MailboxNewFolderTileBuilder();
 
-  MailboxNewFolderTileBuilder addIcon(String icon) {
+  void addIcon(String icon) {
     _icon = icon;
-    return this;
   }
 
-  MailboxNewFolderTileBuilder addName(String name) {
+  void addName(String name) {
     _name = name;
-    return this;
   }
 
-  MailboxNewFolderTileBuilder onOpenMailboxFolderAction(OnOpenMailboxNewFolderActionClick onOpenMailboxFolderActionClick) {
+  void onOpenMailboxFolderAction(OnOpenMailboxNewFolderActionClick onOpenMailboxFolderActionClick) {
     _onOpenMailboxFolderActionClick = onOpenMailboxFolderActionClick;
-    return this;
   }
 
   Widget build() {
@@ -55,7 +49,7 @@ class MailboxNewFolderTileBuilder {
               }
             },
             leading: Padding(
-              padding: EdgeInsets.only(left: _responsiveUtils.isMobile(_context) ? 42 : 34),
+              padding: EdgeInsets.only(left: 34),
               child: _icon != null
                 ? SvgPicture.asset(_icon!, width: 24, height: 24, color: AppColor.mailboxIconColor, fit: BoxFit.fill)
                 : SizedBox.shrink()),

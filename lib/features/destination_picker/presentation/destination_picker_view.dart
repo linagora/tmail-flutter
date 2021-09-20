@@ -41,7 +41,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                   child: Column(
                     children: [
                       _buildAppBar(context),
-                      Expanded(child: _buildBodyDestinationPicker(context))
+                      Expanded(child:
+                        Container(
+                          color: AppColor.bgMailboxListMail,
+                          child: _buildBodyDestinationPicker(context)))
                     ],
                   )
                 )
@@ -54,12 +57,9 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
   }
 
   Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 24, right: 12),
-      child: (AppBarDestinationPickerBuilder(context, _imagePaths, _responsiveUtils)
-          ..addCloseActionClick(() => controller.closeDestinationPicker()))
-        .build()
-    );
+    return (AppBarDestinationPickerBuilder(context, _imagePaths, _responsiveUtils)
+        ..addCloseActionClick(() => controller.closeDestinationPicker()))
+      .build();
   }
 
   Widget _buildBodyDestinationPicker(BuildContext context) {
@@ -89,7 +89,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),
       (success) => success is LoadingState
-        ? Center(child: Padding(
+        ? Center(
+          child: Padding(
             padding: EdgeInsets.only(top: 16),
             child: SizedBox(
               width: 24,
@@ -117,15 +118,13 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
         if (success is GetAllMailboxSuccess) {
           final defaultMailboxList = success.defaultMailboxList;
           return ListView.builder(
-            padding: EdgeInsets.only(top: 16, right: 10),
+            padding: EdgeInsets.only(top: 16, left: 8, right: 10),
             key: Key('default_mailbox_list'),
             itemCount: defaultMailboxList.length,
             shrinkWrap: true,
             primary: false,
             itemBuilder: (context, index) => (MailboxTileBuilder(
-                    context,
                     _imagePaths,
-                    _responsiveUtils,
                     defaultMailboxList[index],
                     mailboxDisplayed: MailboxDisplayed.destinationPicker)
                 ..onOpenMailboxAction((mailbox) =>

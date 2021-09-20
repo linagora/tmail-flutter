@@ -38,7 +38,6 @@ class ThreadBindings extends Bindings {
     Get.lazyPut(() => MarkAsMultipleEmailReadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveMultipleEmailToMailboxInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => MarkAsMultipleEmailReadInteractor(Get.find<MarkAsEmailReadInteractor>()));
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsStarMultipleEmailInteractor(Get.find<EmailRepository>()));
     Get.put(ThreadController(
@@ -48,7 +47,6 @@ class ThreadBindings extends Bindings {
       Get.find<MarkAsMultipleEmailReadInteractor>(),
       Get.find<AppToast>(),
       Get.find<MoveMultipleEmailToMailboxInteractor>(),
-      Get.find<MarkAsEmailImportantInteractor>(),
       Get.find<MarkAsStarEmailInteractor>(),
       Get.find<MarkAsStarMultipleEmailInteractor>(),
     ));

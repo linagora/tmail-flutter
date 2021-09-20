@@ -36,7 +36,6 @@ class EmailBindings extends Bindings {
       Get.find<EmailRepository>(),
       Get.find<CredentialRepository>()));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => MarkAsEmailImportantInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
     Get.put(EmailController(
       Get.find<GetEmailContentInteractor>(),
@@ -45,8 +44,7 @@ class EmailBindings extends Bindings {
       Get.find<DeviceManager>(),
       Get.find<AppToast>(),
       Get.find<ExportAttachmentInteractor>(),
-      Get.find<MoveToMailboxInteractor>()));
-      Get.find<ExportAttachmentInteractor>(),
+      Get.find<MoveToMailboxInteractor>(),
       Get.find<MarkAsStarEmailInteractor>()));
   }
 }
