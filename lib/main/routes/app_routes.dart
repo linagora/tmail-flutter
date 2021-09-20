@@ -7,4 +7,5 @@ abstract class AppRoutes {
   static const EMAIL = '$THREAD/email';
   static const SESSION = '/session';
   static const COMPOSER = '/composer';
+  static const DESTINATION_PICKER = '/destinationPicker';
 }

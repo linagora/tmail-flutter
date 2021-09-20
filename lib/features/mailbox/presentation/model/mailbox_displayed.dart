@@ -1,0 +1,5 @@
+
+enum MailboxDisplayed {
+  mailbox,
+  destinationPicker
+}

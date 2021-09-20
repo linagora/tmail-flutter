@@ -15,6 +15,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
@@ -316,6 +317,19 @@ class ThreadController extends BaseController {
       (ContextMenuBuilder(context)
         ..addTiles(actionTiles))
     .build();
+  }
+
+  void moveSelectedMultipleEmailToMailboxAction(List<PresentationEmail> listEmail) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (_currentMailboxId != null && accountId != null) {
+      popBack();
+
+      final listEmailIds = listEmail.map((email) => email.id).toList();
+      push(
+          AppRoutes.DESTINATION_PICKER,
+          arguments: DestinationPickerArguments(accountId, listEmailIds, _currentMailboxId!)
+      );
+    }
   }
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
