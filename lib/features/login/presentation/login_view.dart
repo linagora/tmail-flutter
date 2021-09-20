@@ -91,14 +91,14 @@ class LoginView extends GetWidget<LoginController> {
       padding: EdgeInsets.only(bottom: 16),
       child: Container(
         width: responsiveUtils.getWidthLoginTextField(context),
-        child: TextFieldBuilder()
-          .key(Key('login_url_input'))
-          .onChange((value) => loginController.setUrlText(value))
-          .textInputAction(TextInputAction.next)
-          .textDecoration(LoginInputDecorationBuilder()
-            .setLabelText(AppLocalizations.of(context).prefix_https)
-            .setPrefixText(AppLocalizations.of(context).prefix_https)
-            .build())
+        child: (TextFieldBuilder()
+            ..key(Key('login_url_input'))
+            ..onChange((value) => loginController.setUrlText(value))
+            ..textInputAction(TextInputAction.next)
+            ..textDecoration(LoginInputDecorationBuilder()
+                .setLabelText(AppLocalizations.of(context).prefix_https)
+                .setPrefixText(AppLocalizations.of(context).prefix_https)
+                .build()))
           .build()));
   }
 
@@ -107,14 +107,14 @@ class LoginView extends GetWidget<LoginController> {
       padding: EdgeInsets.only(bottom: 16),
       child: Container(
         width: responsiveUtils.getWidthLoginTextField(context),
-        child: TextFieldBuilder()
-          .key(Key('login_username_input'))
-          .onChange((value) => loginController.setUserNameText(value))
-          .textInputAction(TextInputAction.next)
-          .textDecoration(LoginInputDecorationBuilder()
-            .setLabelText(AppLocalizations.of(context).username)
-            .setHintText(AppLocalizations.of(context).username)
-            .build())
+        child: (TextFieldBuilder()
+            ..key(Key('login_username_input'))
+            ..onChange((value) => loginController.setUserNameText(value))
+            ..textInputAction(TextInputAction.next)
+            ..textDecoration(LoginInputDecorationBuilder()
+                .setLabelText(AppLocalizations.of(context).username)
+                .setHintText(AppLocalizations.of(context).username)
+                .build()))
           .build()));
   }
 
@@ -123,15 +123,15 @@ class LoginView extends GetWidget<LoginController> {
       padding: EdgeInsets.only(bottom: 40),
       child: Container(
         width: responsiveUtils.getWidthLoginTextField(context),
-        child: TextFieldBuilder()
-          .key(Key('login_password_input'))
-          .obscureText(true)
-          .onChange((value) => loginController.setPasswordText(value))
-          .textInputAction(TextInputAction.done)
-          .textDecoration(LoginInputDecorationBuilder()
-            .setLabelText(AppLocalizations.of(context).password)
-            .setHintText(AppLocalizations.of(context).password)
-            .build())
+        child: (TextFieldBuilder()
+            ..key(Key('login_password_input'))
+            ..obscureText(true)
+            ..onChange((value) => loginController.setPasswordText(value))
+            ..textInputAction(TextInputAction.done)
+            ..textDecoration(LoginInputDecorationBuilder()
+                .setLabelText(AppLocalizations.of(context).password)
+                .setHintText(AppLocalizations.of(context).password)
+                .build()))
           .build()));
   }
 

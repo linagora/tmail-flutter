@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/autocomplete_datasource.dart';
@@ -45,12 +46,15 @@ class ComposerBindings extends Bindings {
     Get.lazyPut(() => SearchEmailAddressInteractor(Get.find<AutoCompleteRepository>()));
     Get.lazyPut(() => Uuid());
     Get.lazyPut(() => HtmlEditorController());
+    Get.lazyPut(() => TextEditingController());
     Get.lazyPut(() => ComposerController(
       Get.find<SendEmailInteractor>(),
       Get.find<SaveEmailAddressesInteractor>(),
       Get.find<SearchEmailAddressInteractor>(),
       Get.find<AppToast>(),
       Get.find<Uuid>(),
-      Get.find<HtmlEditorController>()));
+      Get.find<HtmlEditorController>(),
+      Get.find<TextEditingController>(),
+      Get.find<HtmlMessagePurifier>()));
   }
 }

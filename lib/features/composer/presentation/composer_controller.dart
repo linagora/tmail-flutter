@@ -42,7 +42,9 @@ class ComposerController extends BaseController {
   final SearchEmailAddressInteractor _searchEmailAddressInteractor;
   final AppToast _appToast;
   final Uuid _uuid;
-  final HtmlEditorController htmlEditorController;
+  final HtmlEditorController composerEditorController;
+  final TextEditingController subjectEmailInputController;
+  final HtmlMessagePurifier _htmlMessagePurifier;
 
   List<EmailAddress> listToEmailAddress = [];
   List<EmailAddress> listCcEmailAddress = [];
@@ -57,7 +59,9 @@ class ComposerController extends BaseController {
     this._searchEmailAddressInteractor,
     this._appToast,
     this._uuid,
-    this.htmlEditorController,
+    this.composerEditorController,
+    this.subjectEmailInputController,
+    this._htmlMessagePurifier,
   );
 
   @override
@@ -92,19 +96,28 @@ class ComposerController extends BaseController {
     if (arguments is ComposerArguments) {
       composerArguments.value = arguments;
       _initToEmailAddress();
+      _initSubjectEmail();
     }
   }
 
-  EmailActionType getEmailActionType() => composerArguments.value != null
-      ? composerArguments.value!.emailActionType
-      : EmailActionType.compose;
-
-  String getEmailSubject(BuildContext context) {
-    if (composerArguments.value != null && composerArguments.value?.presentationEmail != null) {
-      final subject = composerArguments.value!.presentationEmail?.subject;
-      return '${composerArguments.value!.emailActionType.prefixSubjectComposer(context)} $subject';
+  void _initSubjectEmail() {
+    if (composerArguments.value != null
+        && composerArguments.value?.presentationEmail != null
+        && Get.context != null) {
+      final subject = '${composerArguments.value!.emailActionType.prefixSubjectComposer(Get.context!)} '
+          '${composerArguments.value!.presentationEmail?.subject}';
+      setSubjectEmail(subject);
+      subjectEmailInputController.text = subject;
     }
-    return '';
+  }
+
+  void initContentEmail() {
+    if (composerArguments.value != null
+        && composerArguments.value!.emailActionType != EmailActionType.compose
+        && Get.context != null) {
+      final contentEmailQuoted = _getBodyEmailQuotedAsHtml(Get.context!, _htmlMessagePurifier);
+      composerEditorController.setText(contentEmailQuoted);
+    }
   }
 
   Tuple2<String, String>? getHeaderEmailQuoted(String locale) {
@@ -176,13 +189,9 @@ class ComposerController extends BaseController {
     }
   }
 
-  String getBodyEmailQuotedAsHtml(BuildContext context, HtmlMessagePurifier htmlMessagePurifier) {
+  String _getBodyEmailQuotedAsHtml(BuildContext context, HtmlMessagePurifier htmlMessagePurifier) {
     final headerEmailQuoted = getHeaderEmailQuoted(Localizations.localeOf(context).toLanguageTag());
     final contentEmail = getContentEmailQuoted();
-
-    final placeHolderBodyEmailEditor = AppLocalizations.of(context).hint_content_email_composer
-      .addBlockTag('p', attribute: 'style=\"font-size:14px;color:#182952;\"')
-      .addNewLineTag();
 
     final headerEmailQuotedAsHtml = headerEmailQuoted != null
         ? AppLocalizations.of(context).header_email_quoted(headerEmailQuoted.value1, headerEmailQuoted.value2)
@@ -207,7 +216,7 @@ class ComposerController extends BaseController {
           .addNewLineTag(count: 2);
     }
 
-    final emailQuotedHtml = '$placeHolderBodyEmailEditor$headerEmailQuotedAsHtml$trustAsHtml'
+    final emailQuotedHtml = '$headerEmailQuotedAsHtml$trustAsHtml'
         .addBlockTag('div', attribute: 'style=\"padding-right:16px;padding-left:16px;background-color:#FBFBFF;width:100%\"');
 
     return emailQuotedHtml;
@@ -222,7 +231,7 @@ class ComposerController extends BaseController {
     final generatePartId = PartId(_uuid.v1());
     final generateBlobId = Id(_uuid.v1());
 
-    final emailBodyText = await htmlEditorController.getText();
+    final emailBodyText = await composerEditorController.getText();
 
     return Email(
       generateEmailId,

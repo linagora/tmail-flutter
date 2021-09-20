@@ -80,10 +80,10 @@ class ThreadController extends BaseController {
   }
 
   @override
-  void dispose() {
+  void onClose() {
     mailboxDashBoardController.selectedMailbox.close();
     listEmailController.dispose();
-    super.dispose();
+    super.onClose();
   }
 
   @override
