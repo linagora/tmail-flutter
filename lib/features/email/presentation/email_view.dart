@@ -50,13 +50,15 @@ class EmailView extends GetWidget {
     return Obx(() => Padding(
       padding: EdgeInsets.only(left: 6, top: 6, right: 6, bottom: 6),
       child: (AppBarMailWidgetBuilder(
-            context,
-            imagePaths,
-            responsiveUtils,
-            emailController.mailboxDashBoardController.selectedEmail.value)
+              context,
+              imagePaths,
+              responsiveUtils,
+              emailController.mailboxDashBoardController.selectedEmail.value)
           ..onBackActionClick(() => emailController.backToThreadView())
           ..onUnreadEmailActionClick((presentationEmail) =>
-              emailController.markAsEmailRead(presentationEmail, ReadActions.markAsUnread)))
+              emailController.markAsEmailRead(presentationEmail, ReadActions.markAsUnread))
+          ..addOnMoveToMailboxActionClick((presentationEmail) =>
+              emailController.openDestinationPickerView(presentationEmail)))
         .build()));
   }
 

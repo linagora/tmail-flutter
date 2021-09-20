@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
@@ -227,6 +228,18 @@ class EmailController extends BaseController {
     popBack();
     if (success is ExportAttachmentSuccess) {
       await share_library.Share.shareFiles([success.filePath]);
+    }
+  }
+
+  void openDestinationPickerView(PresentationEmail email) {
+    final currentMailboxId = mailboxDashBoardController.selectedMailbox.value?.id;
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (currentMailboxId != null && accountId != null) {
+      push(
+        AppRoutes.DESTINATION_PICKER,
+        arguments: DestinationPickerArguments(accountId, [email.id], currentMailboxId)
+      );
     }
   }
 

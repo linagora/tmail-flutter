@@ -142,6 +142,69 @@ class ThreadView extends GetWidget<ThreadController> {
       .build();
   }
 
+  List<Widget> _contextMenuActionList(BuildContext context, List<PresentationEmail> listEmail) {
+    return [
+      _moveToTrashAction(context, listEmail),
+      _moveToMailboxAction(context, listEmail),
+      _markAsReadAction(context, listEmail),
+      _markAsFlagAction(context, listEmail),
+      _moveToSpamAction(context, listEmail),
+      SizedBox(height: 30),
+    ];
+  }
+
+  Widget _markAsReadAction(BuildContext context, List<PresentationEmail> listEmail) {
+    return (EmailContextMenuActionBuilder(
+            Key('mark_as_read_context_menu_action'),
+            SvgPicture.asset(imagePaths.icEyeDisable, width: 24, height: 24, fit: BoxFit.fill),
+            controller.isEmailAllRead(listEmail)
+                ? AppLocalizations.of(context).mark_as_unread
+                : AppLocalizations.of(context).mark_as_read,
+            listEmail)
+          ..onActionClick((data) => controller.markAsSelectedEmailRead(data, fromContextMenuAction: true)))
+        .build();
+  }
+
+  Widget _moveToTrashAction(BuildContext context, List<PresentationEmail> listEmail) {
+    return (EmailContextMenuActionBuilder(
+            Key('move_to_trash_context_menu_action'),
+            SvgPicture.asset(imagePaths.icTrash, width: 24, height: 24, fit: BoxFit.fill),
+            AppLocalizations.of(context).move_to_trash,
+            listEmail)
+          ..onActionClick((data) => {}))
+        .build();
+  }
+
+  Widget _moveToMailboxAction(BuildContext context, List<PresentationEmail> listEmail) {
+    return (EmailContextMenuActionBuilder(
+            Key('move_to_mailbox_context_menu_action'),
+            SvgPicture.asset(imagePaths.icFolder, width: 24, height: 24, fit: BoxFit.fill),
+            AppLocalizations.of(context).move_to_mailbox,
+            listEmail)
+          ..onActionClick((emails) => controller.moveSelectedMultipleEmailToMailboxAction(emails)))
+        .build();
+  }
+
+  Widget _markAsFlagAction(BuildContext context, List<PresentationEmail> listEmail) {
+    return (EmailContextMenuActionBuilder(
+            Key('mark_as_flag_context_menu_action'),
+            SvgPicture.asset(imagePaths.icFlag, width: 24, height: 24, fit: BoxFit.fill),
+            AppLocalizations.of(context).mark_as_flag,
+            listEmail)
+          ..onActionClick((data) => {}))
+        .build();
+  }
+
+  Widget _moveToSpamAction(BuildContext context, List<PresentationEmail> listEmail) {
+    return (EmailContextMenuActionBuilder(
+            Key('move_to_spam_context_menu_action'),
+            SvgPicture.asset(imagePaths.icMailboxSpam, width: 24, height: 24, fit: BoxFit.fill),
+            AppLocalizations.of(context).move_to_spam,
+            listEmail)
+          ..onActionClick((data) => {}))
+        .build();
+  }
+
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),

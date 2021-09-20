@@ -8,10 +8,12 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 typedef OnBackActionClick = void Function();
 typedef OnUnreadEmailActionClick = void Function(PresentationEmail presentationEmail);
+typedef OnMoveToMailboxActionClick = void Function(PresentationEmail presentationEmail);
 
 class AppBarMailWidgetBuilder {
   OnBackActionClick? _onBackActionClick;
   OnUnreadEmailActionClick? _onUnreadEmailActionClick;
+  OnMoveToMailboxActionClick? _onMoveToMailboxActionClick;
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
@@ -31,6 +33,10 @@ class AppBarMailWidgetBuilder {
 
   void onUnreadEmailActionClick(OnUnreadEmailActionClick onUnreadEmailActionClick) {
     _onUnreadEmailActionClick = onUnreadEmailActionClick;
+  }
+
+  void addOnMoveToMailboxActionClick(OnMoveToMailboxActionClick onMoveToMailboxActionClick) {
+    _onMoveToMailboxActionClick = onMoveToMailboxActionClick;
   }
 
   Widget build() {
@@ -88,7 +94,13 @@ class AppBarMailWidgetBuilder {
           .key(Key('button_mark_as_flag_email'))
           .build(),
         SizedBox(width: 10),
-        ButtonBuilder(_imagePaths.icFolder).key(Key('button_move_to_mailbox_email')).build(),
+        ButtonBuilder(_imagePaths.icFolder)
+          .key(Key('button_move_to_mailbox_email'))
+          .onPressActionClick(() {
+            if (_onMoveToMailboxActionClick != null && _presentationEmail != null) {
+              _onMoveToMailboxActionClick!(_presentationEmail!);
+            }})
+          .build(),
       ]
     );
   }

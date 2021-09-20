@@ -6,16 +6,18 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 
-typedef OnOpenMailboxActionClick = void Function();
+typedef OnOpenMailboxActionClick = void Function(PresentationMailbox mailbox);
 
 class MailboxTileBuilder {
 
   final PresentationMailbox _presentationMailbox;
-  final SelectMode _selectMode;
+  final SelectMode selectMode;
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
+  final MailboxDisplayed mailboxDisplayed;
 
   OnOpenMailboxActionClick? _onOpenMailboxActionClick;
 
@@ -24,12 +26,14 @@ class MailboxTileBuilder {
     this._imagePaths,
     this._responsiveUtils,
     this._presentationMailbox,
-    this._selectMode
+    {
+      this.selectMode = SelectMode.INACTIVE,
+      this.mailboxDisplayed = MailboxDisplayed.mailbox
+    }
   );
 
-  MailboxTileBuilder onOpenMailboxAction(OnOpenMailboxActionClick onOpenMailboxActionClick) {
+  void onOpenMailboxAction(OnOpenMailboxActionClick onOpenMailboxActionClick) {
     _onOpenMailboxActionClick = onOpenMailboxActionClick;
-    return this;
   }
 
   Widget build() {
@@ -41,10 +45,11 @@ class MailboxTileBuilder {
         key: Key('mailbox_list_tile'),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: _selectMode== SelectMode.ACTIVE
-            ? AppColor.mailboxSelectedBackgroundColor
-            : AppColor.mailboxBackgroundColor),
+          borderRadius: BorderRadius.circular(mailboxDisplayed == MailboxDisplayed.mailbox ? 16 : 0),
+          color: mailboxDisplayed == MailboxDisplayed.mailbox
+            ? selectMode == SelectMode.ACTIVE ? AppColor.mailboxSelectedBackgroundColor : AppColor.mailboxBackgroundColor
+            : AppColor.bgMailboxListMail
+        ),
         child: MediaQuery(
           data: MediaQueryData(padding: EdgeInsets.zero),
           child: ListTile(
@@ -53,16 +58,19 @@ class MailboxTileBuilder {
             contentPadding: EdgeInsets.zero,
             onTap: () => {
               if (_onOpenMailboxActionClick != null) {
-                _onOpenMailboxActionClick!()
+                _onOpenMailboxActionClick!(_presentationMailbox)
               }
             },
             leading: Padding(
-              padding: EdgeInsets.only(left: _responsiveUtils.isMobile(_context) ? 40 : 20),
+              padding: EdgeInsets.only(left: mailboxDisplayed == MailboxDisplayed.mailbox
+                  ? _responsiveUtils.isMobile(_context) ? 40 : 20
+                  : 40
+              ),
               child: SvgPicture.asset(
                 '${_presentationMailbox.getMailboxIcon(_imagePaths)}',
                 width: 24,
                 height: 24,
-                color: _selectMode == SelectMode.ACTIVE
+                color: selectMode == SelectMode.ACTIVE
                   ? AppColor.mailboxSelectedIconColor
                   : AppColor.mailboxIconColor,
                 fit: BoxFit.fill)),
@@ -74,23 +82,25 @@ class MailboxTileBuilder {
                 overflow:TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 15,
-                  color: _selectMode == SelectMode.ACTIVE
+                  color: selectMode == SelectMode.ACTIVE
                     ? AppColor.mailboxSelectedTextColor
                     : AppColor.mailboxTextColor,
-                  fontWeight: FontWeight.bold),
+                  fontWeight: mailboxDisplayed == MailboxDisplayed.mailbox ? FontWeight.bold : FontWeight.w500),
               )),
-            trailing: Padding(
-              padding: EdgeInsets.only(right: _responsiveUtils.isMobile(_context) ? 36 : 24, left: 16),
-              child: Text(
-                '${_presentationMailbox.getCountUnReadEmails()}',
-                maxLines: 1,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: _selectMode == SelectMode.ACTIVE
-                    ? AppColor.mailboxSelectedTextNumberColor
-                    : AppColor.mailboxTextNumberColor,
-                  fontWeight: FontWeight.bold))
-            )),
+            trailing: mailboxDisplayed == MailboxDisplayed.mailbox
+                ? Padding(
+                    padding: EdgeInsets.only(right: _responsiveUtils.isMobile(_context) ? 36 : 24, left: 16),
+                    child: Text(
+                      '${_presentationMailbox.getCountUnReadEmails()}',
+                      maxLines: 1,
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: selectMode == SelectMode.ACTIVE
+                              ? AppColor.mailboxSelectedTextNumberColor
+                              : AppColor.mailboxTextNumberColor,
+                          fontWeight: FontWeight.bold)))
+                : SizedBox.shrink()
+            ),
         )
       )
     );

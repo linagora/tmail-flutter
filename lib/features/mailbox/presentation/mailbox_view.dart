@@ -161,14 +161,16 @@ class MailboxView extends GetWidget<MailboxController> {
       shrinkWrap: true,
       primary: false,
       itemBuilder: (context, index) =>
-        Obx(() => MailboxTileBuilder(
-            context,
-            imagePaths,
-            responsiveUtils,
-            defaultMailbox[index],
-            controller.getSelectMode(defaultMailbox[index], controller.mailboxDashBoardController.selectedMailbox.value))
-          .onOpenMailboxAction(() => controller.selectMailbox(context, defaultMailbox[index]))
-          .build()));
+        Obx(() => (MailboxTileBuilder(
+              context,
+              imagePaths,
+              responsiveUtils,
+              defaultMailbox[index],
+              selectMode: controller.getSelectMode(
+                  defaultMailbox[index],
+                  controller.mailboxDashBoardController.selectedMailbox.value))
+          ..onOpenMailboxAction((mailbox) => controller.selectMailbox(context, mailbox)))
+        .build()));
   }
 
   Widget _buildFolderMailbox(BuildContext context) {
@@ -189,30 +191,34 @@ class MailboxView extends GetWidget<MailboxController> {
   List<Widget> _buildListChildTileWidget(BuildContext context, List<MailboxNode> listMailboxNode) {
     return listMailboxNode
       .map((mailboxNode) => mailboxNode.hasChildren()
-        ? Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: TreeViewChild(
-              key: Key('children_tree_mailbox_child'),
-              parent: Obx(() => MailBoxFolderTileBuilder(
-                    context,
-                    imagePaths,
-                    responsiveUtils,
-                    mailboxNode,
-                    controller.getSelectMode(mailboxNode.item,
-                    controller.mailboxDashBoardController.selectedMailbox.value))
-                .build(context)),
-              children: _buildListChildTileWidget(context, mailboxNode.childrenItems!)))
-        : Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: GestureDetector(
-              onTap: () => controller.selectMailbox(context, mailboxNode.item),
-              child: Obx(() => MailBoxFolderTileBuilder(
-                    context,
-                    imagePaths,
-                    responsiveUtils,
-                    mailboxNode,
-                    controller.getSelectMode(mailboxNode.item, controller.mailboxDashBoardController.selectedMailbox.value))
-                .build(context)))))
+          ? Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: TreeViewChild(
+                key: Key('children_tree_mailbox_child'),
+                parent: Obx(() => MailBoxFolderTileBuilder(
+                      context,
+                      imagePaths,
+                      responsiveUtils,
+                      mailboxNode,
+                      selectMode: controller.getSelectMode(
+                          mailboxNode.item,
+                          controller.mailboxDashBoardController.selectedMailbox.value))
+                  .build()),
+                children: _buildListChildTileWidget(context, mailboxNode.childrenItems!)))
+          : Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: Obx(() => GestureDetector(
+                onTap: () => controller.selectMailbox(context, mailboxNode.item),
+                child: MailBoxFolderTileBuilder(
+                      context,
+                      imagePaths,
+                      responsiveUtils,
+                      mailboxNode,
+                      selectMode: controller.getSelectMode(
+                          mailboxNode.item,
+                          controller.mailboxDashBoardController.selectedMailbox.value))
+                  .build(),
+              ))))
       .toList();
   }
 
