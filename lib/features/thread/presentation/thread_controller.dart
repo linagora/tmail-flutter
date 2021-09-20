@@ -17,6 +17,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_important_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -93,6 +94,23 @@ class ThreadController extends BaseController {
           mailboxDashBoardController.clearState();
         }
       });
+      } else {
+        mailboxDashBoardController.viewState.value.map((success) {
+          if (success is MarkAsEmailReadSuccess ||
+              success is MarkAsMultipleEmailReadAllSuccess ||
+              success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+            _refreshListEmail();
+          }
+        });
+      }
+    });
+
+    mailboxDashBoardController.viewState.listen((state) {
+      state.map((success) {
+        if (success is MarkAsEmailImportantSuccess) {
+          _refreshListEmail();
+        }
+      });
     });
   }
 
@@ -138,6 +156,24 @@ class ThreadController extends BaseController {
       emailList.addAll(success.emailList);
       lastGetTotal = emailList.length;
       loadMoreState.value = success.emailList.isEmpty ? LoadMoreState.COMPLETED : LoadMoreState.IDLE;
+
+      mailboxDashBoardController.viewState.value.map((success) {
+        if (success is MarkAsEmailImportantSuccess) {
+          _updateValueCurrentEmail();
+          mailboxDashBoardController.clearState();
+        }
+      });
+    }
+  }
+
+  void _updateValueCurrentEmail() {
+    if (mailboxDashBoardController.selectedEmail.value != null) {
+      try {
+        final newSelectedEmail = emailList.firstWhere(
+                (email) => email.id == mailboxDashBoardController.selectedEmail.value!.id,
+            orElse: null);
+        mailboxDashBoardController.setSelectedEmail(newSelectedEmail);
+      } catch(e){}
     }
   }
 

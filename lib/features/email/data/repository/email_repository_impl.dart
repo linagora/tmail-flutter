@@ -59,4 +59,9 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
     return emailDataSource.moveToMailbox(accountId, moveRequest);
   }
+
+  @override
+  Future<bool> markAsImportant(AccountId accountId, EmailId emailId, ImportantAction importantAction) {
+    return emailDataSource.markAsImportant(accountId, emailId, importantAction);
+  }
 }
