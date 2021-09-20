@@ -17,7 +17,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/sender_and_rec
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:filesize/filesize.dart';
 
-class EmailView extends GetWidget {
+class EmailView extends GetView {
 
   final emailController = Get.find<EmailController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
