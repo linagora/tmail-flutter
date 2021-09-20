@@ -8,6 +8,7 @@ import 'package:model/model.dart';
 
 typedef OnOpenEmailActionClick = void Function(PresentationEmail selectedEmail);
 typedef OnSelectEmailActionClick = void Function(PresentationEmail selectedEmail);
+typedef OnMarkAsImportantActionClick = void Function(PresentationEmail selectedEmail);
 
 class EmailTileBuilder {
 
@@ -20,6 +21,7 @@ class EmailTileBuilder {
 
   OnOpenEmailActionClick? _onOpenEmailActionClick;
   OnSelectEmailActionClick? _onSelectEmailActionClick;
+  OnMarkAsImportantActionClick? _onMarkAsImportantActionClick;
 
   EmailTileBuilder(
     this._context,
@@ -36,6 +38,10 @@ class EmailTileBuilder {
 
   void onSelectEmailAction(OnSelectEmailActionClick onSelectEmailActionClick) {
     _onSelectEmailActionClick = onSelectEmailActionClick;
+  }
+
+  void addOnMarkAsImportantActionClick(OnMarkAsImportantActionClick onMarkAsImportantActionClick) {
+    _onMarkAsImportantActionClick = onMarkAsImportantActionClick;
   }
 
   Widget build() {
@@ -125,6 +131,11 @@ class EmailTileBuilder {
                       SizedBox(width: 2),
                       ButtonBuilder(_presentationEmail.isFlaggedEmail() ? _imagePaths.icFlagged : _imagePaths.icFlag)
                           .padding(2)
+                          .onPressActionClick(() {
+                              if (_onMarkAsImportantActionClick != null) {
+                                _onMarkAsImportantActionClick!(_presentationEmail);
+                              }
+                            })
                           .build(),
                     ],
                   )
