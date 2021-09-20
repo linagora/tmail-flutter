@@ -219,4 +219,31 @@ class EmailAPI {
       throw error;
     });
   }
+
+  Future<bool> markAsImportant(AccountId accountId, EmailId emailId, ImportantAction importantAction) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates({
+        emailId.id: KeyWordIdentifier.emailFlagged.generateImportantActionPath(importantAction)
+      });
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final response = await (requestBuilder
+      ..usings(setEmailMethod.requiredCapabilities))
+        .build()
+        .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+        setEmailInvocation.methodCallId,
+        SetEmailResponse.deserialize);
+
+    return Future.sync(() async {
+      final emailUpdated = setEmailResponse!.updated![emailId.id];
+      return emailUpdated == null;
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }

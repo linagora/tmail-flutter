@@ -77,4 +77,13 @@ class EmailDataSourceImpl extends EmailDataSource {
       throw error;
     });
   }
+
+  @override
+  Future<bool> markAsImportant(AccountId accountId, EmailId emailId, ImportantAction importantAction) {
+    return Future.sync(() async {
+      return await emailAPI.markAsImportant(accountId, emailId, importantAction);
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }

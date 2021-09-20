@@ -29,4 +29,6 @@ abstract class EmailDataSource {
   );
 
   Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveRequest moveRequest);
+
+  Future<bool> markAsImportant(AccountId accountId, EmailId emailId, ImportantAction importantAction);
 }

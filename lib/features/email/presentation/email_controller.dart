@@ -17,10 +17,12 @@ import 'package:tmail_ui_user/features/email/domain/state/download_attachments_s
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_important_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_important_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -42,6 +44,7 @@ class EmailController extends BaseController {
   final AppToast _appToast;
   final ExportAttachmentInteractor _exportAttachmentInteractor;
   final MoveToMailboxInteractor _moveToMailboxInteractor;
+  final MarkAsEmailImportantInteractor _markAsEmailImportantInteractor;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
@@ -56,6 +59,7 @@ class EmailController extends BaseController {
     this._appToast,
     this._exportAttachmentInteractor,
     this._moveToMailboxInteractor,
+    this._markAsEmailImportantInteractor,
   );
 
   @override
@@ -112,6 +116,8 @@ class EmailController extends BaseController {
           _exportAttachmentSuccessAction(success);
         } else if (success is MoveToMailboxSuccess) {
           _moveToMailboxSuccess(success);
+        } else if (success is MarkAsEmailImportantSuccess) {
+          _markAsEmailImportantSuccess(success);
         }
       });
   }
@@ -300,6 +306,19 @@ class EmailController extends BaseController {
     if (accountId != null) {
       _moveToMailbox(accountId, newMoveRequest);
     }
+  }
+
+  void markAsEmailImportant(PresentationEmail presentationEmail) async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
+    if (accountId != null && mailboxCurrent != null) {
+      final importantAction = presentationEmail.isFlaggedEmail() ? ImportantAction.unMarkStar : ImportantAction.markStar;
+      consumeState(_markAsEmailImportantInteractor.execute(accountId, presentationEmail.id, importantAction));
+    }
+  }
+
+  void _markAsEmailImportantSuccess(Success success) {
+    mailboxDashBoardController.dispatchState(Right(success));
   }
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null

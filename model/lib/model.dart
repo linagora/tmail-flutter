@@ -25,6 +25,7 @@ export 'email/email_address_cache.dart';
 export 'email/read_actions.dart';
 export 'email/attachment.dart';
 export 'email/move_action.dart';
+export 'email/important_action.dart';
 
 // Extensions
 export 'extensions/email_address_extension.dart';
