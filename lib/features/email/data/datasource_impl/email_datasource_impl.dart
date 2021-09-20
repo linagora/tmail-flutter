@@ -5,6 +5,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 
 class EmailDataSourceImpl extends EmailDataSource {
 
@@ -63,6 +64,15 @@ class EmailDataSourceImpl extends EmailDataSource {
   ) {
     return Future.sync(() async {
       return await emailAPI.exportAttachment(attachment, accountId, baseDownloadUrl, accountRequest, cancelToken);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<bool> moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
+    return Future.sync(() async {
+      return await emailAPI.moveToMailbox(accountId, moveRequest);
     }).catchError((error) {
       throw error;
     });

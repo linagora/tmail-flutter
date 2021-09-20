@@ -17,6 +17,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -77,16 +78,26 @@ class ThreadController extends BaseController {
           if (success is MarkAsEmailReadSuccess ||
               success is MarkAsMultipleEmailReadAllSuccess ||
               success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-            _refreshListEmailMarkAsRead();
+            _refreshListEmail();
           }
         });
       }
+    });
+
+    mailboxDashBoardController.viewState.listen((state) {
+      state.map((success) {
+        if (success is MoveToMailboxSuccess) {
+          _refreshListEmail();
+          mailboxDashBoardController.clearState();
+        }
+      });
     });
   }
 
   @override
   void onClose() {
     mailboxDashBoardController.selectedMailbox.close();
+    mailboxDashBoardController.viewState.close();
     listEmailController.dispose();
     super.onClose();
   }
@@ -233,7 +244,7 @@ class ThreadController extends BaseController {
     currentSelectMode.value = SelectMode.INACTIVE;
   }
 
-  void _refreshListEmailMarkAsRead() {
+  void _refreshListEmail() {
       final newLimit = emailList.isNotEmpty ? UnsignedInt(emailList.length) : ThreadConstants.defaultLimit;
       loadMoreState.value = LoadMoreState.IDLE;
       emailList.clear();
@@ -320,14 +331,15 @@ class ThreadController extends BaseController {
   }
 
   void moveSelectedMultipleEmailToMailboxAction(List<PresentationEmail> listEmail) {
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     final accountId = mailboxDashBoardController.accountId.value;
-    if (_currentMailboxId != null && accountId != null) {
+    if (currentMailbox != null && accountId != null) {
       popBack();
 
       final listEmailIds = listEmail.map((email) => email.id).toList();
       push(
           AppRoutes.DESTINATION_PICKER,
-          arguments: DestinationPickerArguments(accountId, listEmailIds, _currentMailboxId!)
+          arguments: DestinationPickerArguments(accountId, listEmailIds, currentMailbox)
       );
     }
   }

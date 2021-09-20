@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
@@ -33,12 +34,14 @@ class EmailBindings extends Bindings {
     Get.lazyPut(() => ExportAttachmentInteractor(
       Get.find<EmailRepository>(),
       Get.find<CredentialRepository>()));
+    Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
     Get.put(EmailController(
       Get.find<GetEmailContentInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
       Get.find<DownloadAttachmentsInteractor>(),
       Get.find<DeviceManager>(),
       Get.find<AppToast>(),
-      Get.find<ExportAttachmentInteractor>()));
+      Get.find<ExportAttachmentInteractor>(),
+      Get.find<MoveToMailboxInteractor>()));
   }
 }

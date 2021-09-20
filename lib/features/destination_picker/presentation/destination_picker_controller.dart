@@ -63,7 +63,7 @@ class DestinationPickerController extends BaseController {
   }
 
   void moveEmailToMailboxAction(PresentationMailbox destinationMailbox) {
-    popBack();
+    popBack(result: destinationMailbox);
   }
 
   void closeDestinationPicker() {

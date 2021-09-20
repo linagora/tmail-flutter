@@ -393,5 +393,20 @@ class AppLocalizations {
       name: 'browse',
     );
   }
+
+  String moved_to_mailbox(String destinationMailboxPath) {
+    return Intl.message(
+        'Moved to $destinationMailboxPath',
+        name: 'moved_to_mailbox',
+        args: [destinationMailboxPath]
+    );
+  }
+
+  String get undo_action {
+    return Intl.message(
+        'UNDO',
+        name: 'undo_action'
+    );
+  }
 }
 

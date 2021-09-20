@@ -8,18 +8,22 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -38,6 +42,7 @@ class EmailController extends BaseController {
   final DeviceManager _deviceManager;
   final AppToast _appToast;
   final ExportAttachmentInteractor _exportAttachmentInteractor;
+  final MoveToMailboxInteractor _moveToMailboxInteractor;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
@@ -50,6 +55,7 @@ class EmailController extends BaseController {
     this._deviceManager,
     this._appToast,
     this._exportAttachmentInteractor,
+    this._moveToMailboxInteractor,
   );
 
   @override
@@ -101,6 +107,8 @@ class EmailController extends BaseController {
           _markAsEmailReadSuccess(success);
         } else if (success is ExportAttachmentSuccess) {
           _exportAttachmentSuccessAction(success);
+        } else if (success is MoveToMailboxSuccess) {
+          _moveToMailboxSuccess(success);
         }
       });
   }
@@ -231,16 +239,34 @@ class EmailController extends BaseController {
     }
   }
 
-  void openDestinationPickerView(PresentationEmail email) {
-    final currentMailboxId = mailboxDashBoardController.selectedMailbox.value?.id;
+  void openDestinationPickerView(PresentationEmail email) async {
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     final accountId = mailboxDashBoardController.accountId.value;
 
-    if (currentMailboxId != null && accountId != null) {
-      push(
+    if (currentMailbox != null && accountId != null) {
+      final mailboxDestination = await push(
         AppRoutes.DESTINATION_PICKER,
-        arguments: DestinationPickerArguments(accountId, [email.id], currentMailboxId)
+        arguments: DestinationPickerArguments(accountId, [email.id], currentMailbox)
       );
+
+      if (mailboxDestination != null && mailboxDestination is PresentationMailbox) {
+        _moveToMailbox(accountId, MoveRequest(
+            email.id,
+            currentMailbox.id,
+            currentMailbox.name ?? MailboxName(''),
+            mailboxDestination.id,
+            mailboxDestination.name ?? MailboxName(''),
+            MoveAction.moveTo));
+      }
     }
+  }
+
+  void _moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
+    consumeState(_moveToMailboxInteractor.execute(accountId, moveRequest));
+  }
+
+  void _moveToMailboxSuccess(Success success) {
+    mailboxDashBoardController.dispatchState(Right(success));
   }
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null

@@ -26,6 +26,7 @@ import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submis
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 
 class EmailAPI {
 
@@ -185,5 +186,33 @@ class EmailAPI {
       attachment.name ?? '',
       accountRequest.basicAuth,
       cancelToken: cancelToken);
+  }
+
+  Future<bool> moveToMailbox(AccountId accountId, MoveRequest moveRequest) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates({
+        moveRequest.emailId.id: moveRequest.currentMailboxId
+            .generateMoveToMailboxActionPath(moveRequest.destinationMailboxId)
+      });
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final response = await (requestBuilder
+        ..usings(setEmailMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+        setEmailInvocation.methodCallId,
+        SetEmailResponse.deserialize);
+
+    return Future.sync(() async {
+      final emailUpdated = setEmailResponse!.updated![moveRequest.emailId.id];
+      return emailUpdated == null;
+    }).catchError((error) {
+      throw error;
+    });
   }
 }

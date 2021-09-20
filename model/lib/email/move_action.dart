@@ -1,0 +1,5 @@
+
+enum MoveAction {
+  moveTo,
+  undo
+}

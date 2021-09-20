@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 
 class EmailRepositoryImpl extends EmailRepository {
@@ -52,5 +53,10 @@ class EmailRepositoryImpl extends EmailRepository {
       baseDownloadUrl,
       accountRequest,
       cancelToken);
+  }
+
+  @override
+  Future<bool> moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
+    return emailDataSource.moveToMailbox(accountId, moveRequest);
   }
 }
