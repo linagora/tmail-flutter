@@ -79,9 +79,9 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<bool> markAsImportant(AccountId accountId, EmailId emailId, ImportantAction importantAction) {
+  Future<List<Email>> markAsStar(AccountId accountId, List<Email> emails, MarkStarAction markStarAction) {
     return Future.sync(() async {
-      return await emailAPI.markAsImportant(accountId, emailId, importantAction);
+      return await emailAPI.markAsStar(accountId, emails, markStarAction);
     }).catchError((error) {
       throw error;
     });

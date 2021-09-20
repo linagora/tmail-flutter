@@ -10,9 +10,9 @@ import 'package:tmail_ui_user/features/email/domain/repository/email_repository.
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_important_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
@@ -37,6 +37,7 @@ class EmailBindings extends Bindings {
       Get.find<CredentialRepository>()));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsEmailImportantInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
     Get.put(EmailController(
       Get.find<GetEmailContentInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
@@ -46,6 +47,6 @@ class EmailBindings extends Bindings {
       Get.find<ExportAttachmentInteractor>(),
       Get.find<MoveToMailboxInteractor>()));
       Get.find<ExportAttachmentInteractor>(),
-      Get.find<MarkAsEmailImportantInteractor>()));
+      Get.find<MarkAsStarEmailInteractor>()));
   }
 }

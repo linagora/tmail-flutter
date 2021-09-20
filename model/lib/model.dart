@@ -26,6 +26,7 @@ export 'email/read_actions.dart';
 export 'email/attachment.dart';
 export 'email/move_action.dart';
 export 'email/important_action.dart';
+export 'email/mark_star_action.dart';
 
 // Extensions
 export 'extensions/email_address_extension.dart';
@@ -41,6 +42,7 @@ export 'extensions/email_body_part_extension.dart';
 export 'extensions/attachment_extension.dart';
 export 'extensions/list_email_id_extension.dart';
 export 'extensions/mailbox_id_extension.dart';
+export 'extensions/list_email_id_extension.dart';
 
 // Download
 export 'download/download_task_id.dart';

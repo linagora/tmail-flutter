@@ -371,5 +371,47 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "you_need_to_grant_files_permission_to_download_attachments": "You need to grant files permission to download attachments",
+  "@you_need_to_grant_files_permission_to_download_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "count_attachment": "{count} attachments",
+  "@count_attachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "mark_as_unstar": "Unstar",
+  "@mark_as_unstar": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_star_multiple_item": "Marked star {count} item",
+  "@marked_star_multiple_item": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "marked_unstar_multiple_item": "Marked unstar {count} item",
+  "@marked_unstar_multiple_item": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
   }
 }

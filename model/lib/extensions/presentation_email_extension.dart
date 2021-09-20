@@ -1,5 +1,7 @@
 import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 
 extension PresentationEmailExtension on PresentationEmail {
@@ -15,9 +17,11 @@ extension PresentationEmailExtension on PresentationEmail {
   }
 
   PresentationEmail toggleSelect() {
+  PresentationEmail toUpdatedPresentationEmail({Map<KeyWordIdentifier, bool>? newKeywords}) {
     return PresentationEmail(
         id,
         keywords: keywords,
+        keywords: newKeywords ?? keywords,
         size: size,
         receivedAt: receivedAt,
         hasAttachment: hasAttachment,
@@ -49,6 +53,24 @@ extension PresentationEmailExtension on PresentationEmail {
       bcc: bcc,
       replyTo: replyTo,
       selectMode: selectMode
+    );
+  }
+
+  Email toEmail() {
+    return Email(
+        id,
+        keywords: keywords,
+        size: size,
+        receivedAt: receivedAt,
+        hasAttachment: hasAttachment,
+        preview: preview,
+        subject: subject,
+        sentAt: sentAt,
+        from: from,
+        to: to,
+        cc: cc,
+        bcc: bcc,
+        replyTo: replyTo
     );
   }
 

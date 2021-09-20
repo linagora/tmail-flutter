@@ -10,12 +10,14 @@ typedef OnBackActionClick = void Function();
 typedef OnUnreadEmailActionClick = void Function(PresentationEmail presentationEmail);
 typedef OnMoveToMailboxActionClick = void Function(PresentationEmail presentationEmail);
 typedef OnMarkAsImportantActionClick = void Function(PresentationEmail presentationEmail);
+typedef OnMarkAsStarActionClick = void Function(PresentationEmail presentationEmail);
 
 class AppBarMailWidgetBuilder {
   OnBackActionClick? _onBackActionClick;
   OnUnreadEmailActionClick? _onUnreadEmailActionClick;
   OnMoveToMailboxActionClick? _onMoveToMailboxActionClick;
   OnMarkAsImportantActionClick? _onMarkAsImportantActionClick;
+  OnMarkAsStarActionClick? _markAsStarActionClick;
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
@@ -43,6 +45,8 @@ class AppBarMailWidgetBuilder {
 
   void addOnMarkAsImportantActionClick(OnMarkAsImportantActionClick onMarkAsImportantActionClick) {
     _onMarkAsImportantActionClick = onMarkAsImportantActionClick;
+  void addOnMarkAsStarActionClick(OnMarkAsStarActionClick onMarkAsStarActionClick) {
+    _markAsStarActionClick = onMarkAsStarActionClick;
   }
 
   Widget build() {
@@ -99,8 +103,8 @@ class AppBarMailWidgetBuilder {
             : _imagePaths.icFlag)
           .key(Key('button_mark_as_email_important'))
           .onPressActionClick(() {
-            if (_onMarkAsImportantActionClick != null && _presentationEmail != null) {
-              _onMarkAsImportantActionClick!(_presentationEmail!);
+            if (_markAsStarActionClick != null && _presentationEmail != null) {
+              _markAsStarActionClick!(_presentationEmail!);
             }})
           .build(),
         SizedBox(width: 10),

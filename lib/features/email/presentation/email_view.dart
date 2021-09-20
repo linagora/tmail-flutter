@@ -62,6 +62,8 @@ class EmailView extends GetView {
               emailController.markAsEmailRead(presentationEmail, ReadActions.markAsUnread))
           ..addOnMarkAsImportantActionClick((presentationEmail) =>
               emailController.markAsEmailImportant(presentationEmail)))
+          ..addOnMarkAsStarActionClick((presentationEmail) =>
+              emailController.markAsStarEmail(presentationEmail)))
         .build()));
   }
 

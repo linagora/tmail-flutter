@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasour
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_important_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/thread/domain/repository/thread_repositor
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 
 class ThreadBindings extends Bindings {
@@ -38,7 +39,8 @@ class ThreadBindings extends Bindings {
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveMultipleEmailToMailboxInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsMultipleEmailReadInteractor(Get.find<MarkAsEmailReadInteractor>()));
-    Get.lazyPut(() => MarkAsEmailImportantInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MarkAsStarMultipleEmailInteractor(Get.find<EmailRepository>()));
     Get.put(ThreadController(
       Get.find<ResponsiveUtils>(),
       Get.find<GetEmailsInMailboxInteractor>(),
@@ -47,6 +49,8 @@ class ThreadBindings extends Bindings {
       Get.find<AppToast>(),
       Get.find<MoveMultipleEmailToMailboxInteractor>(),
       Get.find<MarkAsEmailImportantInteractor>(),
+      Get.find<MarkAsStarEmailInteractor>(),
+      Get.find<MarkAsStarMultipleEmailInteractor>(),
     ));
   }
 }

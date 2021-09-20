@@ -221,27 +221,33 @@ class EmailAPI {
   }
 
   Future<bool> markAsImportant(AccountId accountId, EmailId emailId, ImportantAction importantAction) async {
+  Future<List<Email>> markAsStar(AccountId accountId, List<Email> emails, MarkStarAction markStarAction) async {
+    final emailIds = emails.map((email) => email.id).toList();
+
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addUpdates({
-        emailId.id: KeyWordIdentifier.emailFlagged.generateImportantActionPath(importantAction)
-      });
+      ..addUpdates(emailIds.generateMapUpdateObjectMarkAsStar(markStarAction));
+
+    final getEmailMethod = GetEmailMethod(accountId)
+      ..addIds(emailIds.toIds().toSet())
+      ..addProperties(Properties({'keywords'}));
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
-    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+    requestBuilder.invocation(setEmailMethod);
+
+    final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
 
     final response = await (requestBuilder
-      ..usings(setEmailMethod.requiredCapabilities))
-        .build()
-        .execute();
+        ..usings(setEmailMethod.requiredCapabilities))
+      .build()
+      .execute();
 
-    final setEmailResponse = response.parse<SetEmailResponse>(
-        setEmailInvocation.methodCallId,
-        SetEmailResponse.deserialize);
+    final getEmailResponse = response.parse<GetEmailResponse>(
+      getEmailInvocation.methodCallId,
+      GetEmailResponse.deserialize);
 
     return Future.sync(() async {
-      final emailUpdated = setEmailResponse!.updated![emailId.id];
-      return emailUpdated == null;
+      return getEmailResponse!.list;
     }).catchError((error) {
       throw error;
     });
