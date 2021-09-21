@@ -113,6 +113,12 @@ dependencies:
   # share
   share: 2.0.4
 
+  # flutter_contacts
+  contacts_service:
+    git:
+      url: git://github.com/linagora/flutter_contacts.git
+      ref: master
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
