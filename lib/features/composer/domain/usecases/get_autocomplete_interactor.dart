@@ -2,20 +2,19 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/auto_complete_pattern.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/auto_complete_repository.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/save_email_address_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/search_email_address_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 
-class SearchEmailAddressInteractor {
+class GetAutoCompleteInteractor {
   final AutoCompleteRepository autoCompleteRepository;
 
-  SearchEmailAddressInteractor(this.autoCompleteRepository);
+  GetAutoCompleteInteractor(this.autoCompleteRepository);
 
   Future<Either<Failure, Success>> execute(AutoCompletePattern autoCompletePattern) async {
     try {
       final listEmailAddress = await autoCompleteRepository.getAutoComplete(autoCompletePattern);
-      return Right(SearchEmailAddressSuccess(listEmailAddress));
+      return Right(GetAutoCompleteSuccess(listEmailAddress));
     } catch (e) {
-      return Left(SaveEmailAddressFailure(e));
+      return Left(GetAutoCompleteFailure(e));
     }
   }
 }

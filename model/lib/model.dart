@@ -38,3 +38,7 @@ export 'extensions/presentation_mailbox_extension.dart';
 
 // Download
 export 'download/download_task_id.dart';
+
+// Contact
+export 'contact/contact.dart';
+export 'contact/device_contact.dart';
