@@ -11,10 +11,11 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_i
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -26,8 +27,8 @@ class MailboxController extends BaseController {
   final TreeBuilder _treeBuilder;
   final ResponsiveUtils responsiveUtils;
 
-  final folderMailboxTree = MailboxTree(MailboxNode.root()).obs;
   final defaultMailboxList = <PresentationMailbox>[].obs;
+  final folderMailboxNodeList = <MailboxNode>[].obs;
 
   MailboxController(
     this._getAllMailboxInteractor,
@@ -50,6 +51,10 @@ class MailboxController extends BaseController {
         if (success is MarkAsEmailReadSuccess ||
             success is MarkAsMultipleEmailReadAllSuccess ||
             success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+          refreshGetAllMailboxAction();
+        } else if (success is MoveMultipleEmailToMailboxAllSuccess
+            || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
+          mailboxDashBoardController.clearState();
           refreshGetAllMailboxAction();
         }
       });
@@ -97,7 +102,20 @@ class MailboxController extends BaseController {
   void onError(error) {}
 
   void _buildTree(List<PresentationMailbox> folderMailboxList) async {
-    folderMailboxTree.value = await _treeBuilder.generateMailboxTree(folderMailboxList);
+    final _folderMailboxTree = await _treeBuilder.generateMailboxTree(folderMailboxList);
+    folderMailboxNodeList.value = _folderMailboxTree.root.childrenItems ?? [];
+  }
+
+  void toggleMailboxFolder(MailboxNode mailboxNode) {
+    final newExpandMode = mailboxNode.expandMode == ExpandMode.COLLAPSE
+        ? ExpandMode.EXPAND
+        : ExpandMode.COLLAPSE;
+
+    final newMailboxNodeList = folderMailboxNodeList.updateNode(
+        mailboxNode.item.id,
+        mailboxNode.copyWith(newExpandMode: newExpandMode)) ?? [];
+
+    folderMailboxNodeList.value = newMailboxNodeList;
   }
 
   void _setUpMapMailboxIdDefault(List<PresentationMailbox> defaultMailboxList) {

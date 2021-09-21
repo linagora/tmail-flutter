@@ -13,9 +13,16 @@ class MoveToMailboxInteractor {
   Stream<Either<Failure, Success>> execute(AccountId accountId, MoveRequest moveRequest) async* {
     try {
       final result = await emailRepository.moveToMailbox(accountId, moveRequest);
-      yield result
-        ? Right(MoveToMailboxSuccess(moveRequest))
-        : Left(MoveToMailboxFailure(null));
+      if (result.isNotEmpty) {
+        yield Right(MoveToMailboxSuccess(
+          result.first,
+          moveRequest.currentMailboxId,
+          moveRequest.destinationMailboxId,
+          moveRequest.moveAction,
+          moveRequest.destinationPath));
+      } else {
+        yield Left(MoveToMailboxFailure(null));
+      }
     } catch (e) {
       yield Left(MoveToMailboxFailure(e));
     }

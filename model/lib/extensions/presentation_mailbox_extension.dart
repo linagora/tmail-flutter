@@ -1,10 +1,9 @@
-import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 
 extension PresentationMailboxExtension on PresentationMailbox {
 
-  PresentationMailbox toPresentationMailbox({required UnsignedInt countUnRead}) {
+  PresentationMailbox toPresentationMailboxWithMailboxPath(String mailboxPath) {
     return PresentationMailbox(
       id,
       name: name,
@@ -12,12 +11,29 @@ extension PresentationMailboxExtension on PresentationMailbox {
       role: role,
       sortOrder: sortOrder,
       totalEmails: totalEmails,
-      unreadEmails: UnreadEmails(countUnRead),
+      unreadEmails: unreadEmails,
       totalThreads: totalThreads,
       unreadThreads: unreadThreads,
       myRights: myRights,
       isSubscribed: isSubscribed,
-      selectMode: selectMode
+      selectMode: selectMode,
+      mailboxPath: mailboxPath
+    );
+  }
+
+  Mailbox toMailbox() {
+    return Mailbox(
+      id,
+      name,
+      parentId,
+      role,
+      sortOrder,
+      totalEmails,
+      unreadEmails,
+      totalThreads,
+      unreadThreads,
+      myRights,
+      isSubscribed
     );
   }
 }

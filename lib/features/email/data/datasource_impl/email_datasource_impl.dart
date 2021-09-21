@@ -32,9 +32,9 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<bool> markAsRead(AccountId accountId, EmailId emailId, ReadActions readActions) {
+  Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions) {
     return Future.sync(() async {
-      return await emailAPI.markAsRead(accountId, emailId, readActions);
+      return await emailAPI.markAsRead(accountId, emails, readActions);
     }).catchError((error) {
       throw error;
     });
@@ -70,7 +70,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<bool> moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
+  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
     return Future.sync(() async {
       return await emailAPI.moveToMailbox(accountId, moveRequest);
     }).catchError((error) {

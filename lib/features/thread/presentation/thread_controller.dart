@@ -16,6 +16,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -23,8 +24,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_da
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/load_more_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -38,6 +41,7 @@ class ThreadController extends BaseController {
   final AppToast _appToast;
   final ResponsiveUtils responsiveUtils;
   final ScrollController listEmailController;
+  final MoveMultipleEmailToMailboxInteractor _moveMultipleEmailToMailboxInteractor;
 
   final _properties = Properties({
     'id', 'subject', 'from', 'to', 'cc', 'bcc', 'keywords', 'receivedAt',
@@ -58,6 +62,7 @@ class ThreadController extends BaseController {
     this.listEmailController,
     this._markAsMultipleEmailReadInteractor,
     this._appToast,
+    this._moveMultipleEmailToMailboxInteractor,
   );
 
   @override
@@ -73,20 +78,17 @@ class ThreadController extends BaseController {
       if (_currentMailboxId != selectedMailbox?.id) {
         _currentMailboxId = selectedMailbox?.id;
         refreshGetAllEmailAction();
-      } else {
-        mailboxDashBoardController.viewState.value.map((success) {
-          if (success is MarkAsEmailReadSuccess ||
-              success is MarkAsMultipleEmailReadAllSuccess ||
-              success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-            _refreshListEmail();
-          }
-        });
       }
     });
 
     mailboxDashBoardController.viewState.listen((state) {
       state.map((success) {
-        if (success is MoveToMailboxSuccess) {
+        if (success is MarkAsEmailReadSuccess
+            || success is MarkAsMultipleEmailReadAllSuccess
+            || success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+          _refreshListEmail();
+          mailboxDashBoardController.clearState();
+        } else if (success is MoveToMailboxSuccess) {
           _refreshListEmail();
           mailboxDashBoardController.clearState();
         }
@@ -108,19 +110,20 @@ class ThreadController extends BaseController {
       (failure) {
         if (failure is GetAllEmailFailure) {
           _resetPositionCurrentAndLoadMoreState();
-        } else if (failure is MarkAsEmailReadFailure ||
-            failure is MarkAsMultipleEmailReadAllFailure ||
-            failure is MarkAsMultipleEmailReadFailure) {
+        } else if (failure is MarkAsMultipleEmailReadAllFailure
+            || failure is MarkAsMultipleEmailReadFailure) {
           _markAsSelectedEmailReadFailure(failure);
         }
       },
       (success) {
         if (success is GetAllEmailSuccess) {
           _getAllEmailSuccess(success);
-        } else if (success is MarkAsEmailReadSuccess ||
-            success is MarkAsMultipleEmailReadAllSuccess ||
-            success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+        } else if (success is MarkAsMultipleEmailReadAllSuccess
+            || success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
           _markAsSelectedEmailReadSuccess(success);
+        } else if (success is MoveMultipleEmailToMailboxAllSuccess
+            || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
+          _moveSelectedMultipleEmailToMailboxSuccess(success);
         }
       }
     );
@@ -177,7 +180,8 @@ class ThreadController extends BaseController {
   void refreshGetAllEmailAction() {
     loadMoreState.value = LoadMoreState.IDLE;
     positionCurrent = 0;
-    emailList.clear();
+    dispatchState(Right(LoadingState()));
+    emailList.value = <PresentationEmail>[];
 
     final accountId = mailboxDashBoardController.accountId.value;
 
@@ -245,9 +249,11 @@ class ThreadController extends BaseController {
   }
 
   void _refreshListEmail() {
+      currentSelectMode.value = SelectMode.INACTIVE;
       final newLimit = emailList.isNotEmpty ? UnsignedInt(emailList.length) : ThreadConstants.defaultLimit;
       loadMoreState.value = LoadMoreState.IDLE;
-      emailList.clear();
+      dispatchState(Right(LoadingState()));
+      emailList.value = <PresentationEmail>[];
 
       final accountId = mailboxDashBoardController.accountId.value;
 
@@ -262,61 +268,42 @@ class ThreadController extends BaseController {
       }
   }
 
-  void markAsSelectedEmailRead(List<PresentationEmail> listEmail, {bool fromContextMenuAction = false}) {
+  void markAsSelectedEmailRead(List<PresentationEmail> listPresentationEmail, {bool fromContextMenuAction = false}) {
     if (fromContextMenuAction) {
       popBack();
     }
 
-    final readAction = isEmailAllRead(listEmail) ? ReadActions.markAsUnread : ReadActions.markAsRead;
-
-    final listEmailId = listEmail
-        .where((email) => readAction == ReadActions.markAsUnread ? email.isReadEmail() : email.isUnReadEmail())
-        .map((email) => email.id)
-        .toList();
+    final readAction = isEmailAllRead(listPresentationEmail) ? ReadActions.markAsUnread : ReadActions.markAsRead;
 
     final accountId = mailboxDashBoardController.accountId.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (accountId != null && mailboxCurrent != null) {
-      consumeState(_markAsMultipleEmailReadInteractor.execute(accountId, listEmailId, readAction));
+      final listEmail = listPresentationEmail.map((presentationEmail) => presentationEmail.toEmail()).toList();
+      consumeState(_markAsMultipleEmailReadInteractor.execute(accountId, listEmail, readAction));
     }
   }
 
   void _markAsSelectedEmailReadSuccess(Success success) {
     cancelSelectEmail();
 
-    List<EmailId> listEmailId = <EmailId>[];
-    ReadActions? readActions;
+    mailboxDashBoardController.dispatchState(Right(success));
 
-    if (success is MarkAsEmailReadSuccess) {
-      listEmailId.add(success.emailId);
+    ReadActions? readActions;
+    int countMarkAsReadSuccess = 0;
+
+    if (success is MarkAsMultipleEmailReadAllSuccess) {
       readActions = success.readActions;
-    } else if (success is MarkAsMultipleEmailReadAllSuccess) {
-      success.resultList.forEach((either) {
-        either.map((success) {
-          if (success is MarkAsEmailReadSuccess) {
-            listEmailId.add(success.emailId);
-          }
-        });
-      });
-      readActions = success.readActions;
+      countMarkAsReadSuccess = success.countMarkAsReadSuccess;
     } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-      success.resultList.forEach((either) {
-        either.map((success) {
-          if (success is MarkAsEmailReadSuccess) {
-            listEmailId.add(success.emailId);
-          }
-        });
-      });
       readActions = success.readActions;
+      countMarkAsReadSuccess = success.countMarkAsReadSuccess;
     }
 
     if (Get.context != null && readActions != null) {
       _appToast.showSuccessToast(readActions == ReadActions.markAsUnread
-          ? AppLocalizations.of(Get.context!).marked_multiple_item_as_unread(listEmailId.length)
-          : AppLocalizations.of(Get.context!).marked_multiple_item_as_read(listEmailId.length));
+          ? AppLocalizations.of(Get.context!).marked_multiple_item_as_unread(countMarkAsReadSuccess)
+          : AppLocalizations.of(Get.context!).marked_multiple_item_as_read(countMarkAsReadSuccess));
     }
-
-    mailboxDashBoardController.dispatchState(Right(success));
   }
 
   void _markAsSelectedEmailReadFailure(Failure failure) {
@@ -330,17 +317,87 @@ class ThreadController extends BaseController {
     .build();
   }
 
-  void moveSelectedMultipleEmailToMailboxAction(List<PresentationEmail> listEmail) {
+  void moveSelectedMultipleEmailToMailboxAction(List<PresentationEmail> listEmail) async {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     final accountId = mailboxDashBoardController.accountId.value;
     if (currentMailbox != null && accountId != null) {
       popBack();
 
       final listEmailIds = listEmail.map((email) => email.id).toList();
-      push(
+      final destinationMailbox = await push(
           AppRoutes.DESTINATION_PICKER,
           arguments: DestinationPickerArguments(accountId, listEmailIds, currentMailbox)
       );
+
+      if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
+        _moveSelectedEmailMultipleToMailbox(
+            accountId,
+            MoveRequest(
+              listEmailIds,
+              currentMailbox.id,
+              destinationMailbox.id,
+              MoveAction.moveTo,
+              destinationPath: destinationMailbox.mailboxPath));
+      }
+    }
+  }
+
+  void _moveSelectedEmailMultipleToMailbox(AccountId accountId, MoveRequest moveRequest) {
+    consumeState(_moveMultipleEmailToMailboxInteractor.execute(accountId, moveRequest));
+  }
+
+  void _moveSelectedMultipleEmailToMailboxSuccess(Success success) {
+    mailboxDashBoardController.dispatchState(Right(success));
+
+    String? destinationPath;
+    List<EmailId> movedEmailIds = [];
+    MailboxId? currentMailboxId;
+    MailboxId? destinationMailboxId;
+    MoveAction? moveAction;
+
+    if (success is MoveMultipleEmailToMailboxAllSuccess) {
+      destinationPath = success.destinationPath;
+      movedEmailIds = success.movedListEmailId;
+      currentMailboxId = success.currentMailboxId;
+      destinationMailboxId = success.destinationMailboxId;
+      moveAction = success.moveAction;
+    } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
+      destinationPath = success.destinationPath;
+      movedEmailIds = success.movedListEmailId;
+      currentMailboxId = success.currentMailboxId;
+      destinationMailboxId = success.destinationMailboxId;
+      moveAction = success.moveAction;
+    }
+
+    if (Get.context != null && Get.overlayContext != null
+        && destinationPath != null && moveAction == MoveAction.moveTo) {
+      _appToast.showToastWithAction(
+          Get.overlayContext!,
+          AppLocalizations.of(Get.context!).moved_to_mailbox(destinationPath),
+          AppLocalizations.of(Get.context!).undo_action,
+          () {
+            final newCurrentMailboxId = destinationMailboxId;
+            final newDestinationMailboxId = currentMailboxId;
+            if (newCurrentMailboxId != null && newDestinationMailboxId != null) {
+              _undoMoveSelectedMultipleEmailToMailbox(MoveRequest(
+                  movedEmailIds,
+                  newCurrentMailboxId,
+                  newDestinationMailboxId,
+                  MoveAction.undo,
+                  destinationPath: destinationPath));
+            }
+          }
+      );
+    }
+
+    _refreshListEmail();
+  }
+
+  void _undoMoveSelectedMultipleEmailToMailbox(MoveRequest moveRequest) {
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (accountId != null) {
+      _moveSelectedEmailMultipleToMailbox(accountId, moveRequest);
     }
   }
 

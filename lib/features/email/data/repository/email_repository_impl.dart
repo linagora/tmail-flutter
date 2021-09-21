@@ -25,8 +25,8 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<bool> markAsRead(AccountId accountId, EmailId emailId, ReadActions readAction) {
-    return emailDataSource.markAsRead(accountId, emailId, readAction);
+  Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions) {
+    return emailDataSource.markAsRead(accountId, emails, readActions);
   }
 
   @override
@@ -56,7 +56,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<bool> moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
+  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
     return emailDataSource.moveToMailbox(accountId, moveRequest);
   }
 }

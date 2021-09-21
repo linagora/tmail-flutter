@@ -50,84 +50,43 @@ class _TreeViewData extends StatelessWidget {
   }
 }
 
-class TreeViewChild extends StatefulWidget {
-  final bool? startExpanded;
+class TreeViewChild {
+  final BuildContext context;
+  final bool? isExpanded;
   final Widget parent;
   final List<Widget> children;
   final VoidCallback? onTap;
 
-  TreeViewChild({
-    required this.parent,
-    required this.children,
-    this.startExpanded,
-    this.onTap,
-    Key? key,
-  }) : super(key: key);
+  TreeViewChild(
+    this.context,
+    {
+      required this.parent,
+      required this.children,
+      this.isExpanded,
+      this.onTap,
+      Key? key,
+    }
+  );
 
-  @override
-  TreeViewChildState createState() => TreeViewChildState();
-
-  TreeViewChild copyWith(
-    TreeViewChild source, {
-    bool? startExpanded,
-    Widget? parent,
-    List<Widget>? children,
-    VoidCallback? onTap,
-  }) {
-    return TreeViewChild(
-      parent: parent ?? source.parent,
-      children: children ?? source.children,
-      startExpanded: startExpanded ?? source.startExpanded,
-      onTap: onTap ?? source.onTap,
-    );
-  }
-}
-
-class TreeViewChildState extends State<TreeViewChild> {
-  bool? isExpanded;
-
-  @override
-  void initState() {
-    super.initState();
-    isExpanded = widget.startExpanded;
-  }
-
-  @override
-  void didChangeDependencies() {
-    isExpanded = widget.startExpanded ?? TreeView.of(context).startExpanded;
-    super.didChangeDependencies();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         GestureDetector(
-          child: widget.parent,
+          child: parent,
           onTap: () {
-            if (widget.onTap != null) {
-              widget.onTap!();
+            if (onTap != null) {
+              onTap!();
             }
-            toggleExpanded();
           },
         ),
         AnimatedContainer(
           duration: Duration(milliseconds: 400),
           child: isExpanded!
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                children: widget.children,
-              )
+            ? Column(mainAxisSize: MainAxisSize.min, children: children)
             : Offstage(),
         ),
       ],
     );
-  }
-
-  void toggleExpanded() {
-    setState(() {
-      this.isExpanded = !this.isExpanded!;
-    });
   }
 }
