@@ -15,12 +15,15 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
 import 'package:model/model.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/auto_complete_pattern.dart';
+import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/search_email_address_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/search_email_address_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/constants/email_constants.dart';
@@ -39,7 +42,8 @@ class ComposerController extends BaseController {
 
   final SendEmailInteractor _sendEmailInteractor;
   final SaveEmailAddressesInteractor _saveEmailAddressInteractor;
-  final SearchEmailAddressInteractor _searchEmailAddressInteractor;
+  final GetAutoCompleteInteractor _getAutoCompleteInteractor;
+  final GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
   final AppToast _appToast;
   final Uuid _uuid;
   final HtmlEditorController composerEditorController;
@@ -50,13 +54,15 @@ class ComposerController extends BaseController {
   List<EmailAddress> listCcEmailAddress = [];
   List<EmailAddress> listBccEmailAddress = [];
   String? _subjectEmail;
+  ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.localContact;
 
   void setSubjectEmail(String subject) => _subjectEmail = subject;
 
   ComposerController(
     this._sendEmailInteractor,
     this._saveEmailAddressInteractor,
-    this._searchEmailAddressInteractor,
+    this._getAutoCompleteInteractor,
+    this._getAutoCompleteWithDeviceContactInteractor,
     this._appToast,
     this._uuid,
     this.composerEditorController,
@@ -68,7 +74,8 @@ class ComposerController extends BaseController {
   void onReady() async {
     super.onReady();
     _getSelectedEmail();
-    await searchEmailAddressSuggestion('');
+
+    Future.delayed(Duration(milliseconds: 500), () => _checkContactPermission());
   }
 
   @override
@@ -274,11 +281,29 @@ class ComposerController extends BaseController {
     _saveEmailAddressInteractor.execute(listEmailAddressCanSave.toList());
   }
 
-  Future<List<EmailAddress>> searchEmailAddressSuggestion(String word) async {
-    return await _searchEmailAddressInteractor.execute(AutoCompletePattern(word: word))
+  void _checkContactPermission() async {
+    final permissionStatus = await Permission.contacts.status;
+    if (permissionStatus.isGranted) {
+      _contactSuggestionSource = ContactSuggestionSource.all;
+    } else if (!permissionStatus.isPermanentlyDenied) {
+      final requestedPermission = await Permission.contacts.request();
+      _contactSuggestionSource = requestedPermission == PermissionStatus.granted
+          ? ContactSuggestionSource.all
+          : _contactSuggestionSource;
+    }
+  }
+
+  Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
+    if (_contactSuggestionSource == ContactSuggestionSource.all) {
+      return await _getAutoCompleteWithDeviceContactInteractor.execute(AutoCompletePattern(word: word))
+        .then((value) => value.fold(
+          (failure) => <EmailAddress>[],
+          (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
+    }
+    return await _getAutoCompleteInteractor.execute(AutoCompletePattern(word: word))
       .then((value) => value.fold(
-        (failure) => [],
-        (success) => success is SearchEmailAddressSuccess ? success.listEmailAddress : []));
+        (failure) => <EmailAddress>[],
+        (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
   }
 
   void backToEmailViewAction() {
