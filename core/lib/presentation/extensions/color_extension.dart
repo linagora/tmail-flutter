@@ -55,5 +55,7 @@ extension AppColor on Color {
   static const toastBackgroundColor = Color(0xFFACAFFF);
   static const toastSuccessBackgroundColor = Color(0xFF04AA11);
   static const toastErrorBackgroundColor = Color(0xFFFF5858);
+  static const toastWithActionBackgroundColor = Color(0xFF3F3F3F);
+  static const buttonActionToastWithActionColor = Color(0xFF7ADCF8);
   static const backgroundCountAttachment = Color(0x681C1C1C);
 }

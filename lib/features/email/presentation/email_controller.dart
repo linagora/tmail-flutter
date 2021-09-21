@@ -267,6 +267,34 @@ class EmailController extends BaseController {
 
   void _moveToMailboxSuccess(Success success) {
     mailboxDashBoardController.dispatchState(Right(success));
+
+    if (success is MoveToMailboxSuccess
+        && success.moveRequest.moveAction == MoveAction.moveTo
+        && Get.context != null && Get.overlayContext != null) {
+      _appToast.showToastWithAction(
+          Get.overlayContext!,
+          AppLocalizations.of(Get.context!).moved_to_mailbox(success.moveRequest.destinationMailboxName.name),
+          AppLocalizations.of(Get.context!).undo_action,
+          () {
+            final newMoveRequest = MoveRequest(
+                success.moveRequest.emailId,
+                success.moveRequest.destinationMailboxId,
+                success.moveRequest.destinationMailboxName,
+                success.moveRequest.currentMailboxId,
+                success.moveRequest.currentMailboxName,
+                MoveAction.undo);
+            _undoMoveToMailbox(newMoveRequest);
+          }
+      );
+    }
+  }
+
+  void _undoMoveToMailbox(MoveRequest newMoveRequest) {
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (accountId != null) {
+      _moveToMailbox(accountId, newMoveRequest);
+    }
   }
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
