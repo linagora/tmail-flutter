@@ -84,7 +84,7 @@ class ComposerView extends GetWidget<ComposerController> {
             controller.composerArguments.value?.userProfile)
         ..addExpandAddressActionClick(() => controller.expandEmailAddressAction())
         ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-        ..addOnSuggestionEmailAddress((word) => controller.searchEmailAddressSuggestion(word)))
+        ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
       .build()
     );
   }
