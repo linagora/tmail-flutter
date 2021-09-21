@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/app_bar_destination_picker_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
@@ -87,7 +88,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),
-      (success) => success == UIState.loading
+      (success) => success is LoadingState
         ? Center(child: Padding(
             padding: EdgeInsets.only(top: 16),
             child: SizedBox(
@@ -127,7 +128,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                     _responsiveUtils,
                     defaultMailboxList[index],
                     mailboxDisplayed: MailboxDisplayed.destinationPicker)
-                ..onOpenMailboxAction((mailbox) => controller.moveEmailToMailboxAction(mailbox)))
+                ..onOpenMailboxAction((mailbox) =>
+                    controller.moveEmailToMailboxAction(mailbox.toPresentationMailboxWithMailboxPath(mailbox.name?.name ?? ''))))
               .build());
         } else {
           return SizedBox.shrink();
@@ -137,7 +139,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
   }
 
   Widget _buildFolderMailbox(BuildContext context) {
-    return Obx(() => controller.folderMailboxTree.value.root.hasChildren()
+    return Obx(() => controller.folderMailboxNodeList.isNotEmpty
       ? Transform(
           transform: Matrix4.translationValues(-12.0, 0.0, 0.0),
           child: Padding(
@@ -145,7 +147,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
             child: TreeView(
               startExpanded: false,
               key: Key('folder_mailbox_list'),
-              children: _buildListChildTileWidget(context, controller.folderMailboxTree.value.root.childrenItems!))))
+              children: _buildListChildTileWidget(context, controller.folderMailboxNodeList))))
       : SizedBox.shrink()
     );
   }
@@ -155,28 +157,40 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
       .map((mailboxNode) => mailboxNode.hasChildren()
           ? Padding(
               padding: EdgeInsets.only(left: 20),
-              child: TreeViewChild(
-                key: Key('children_tree_mailbox_child'),
-                parent: MailBoxFolderTileBuilder(
-                        context,
-                        _imagePaths,
-                        _responsiveUtils,
-                        mailboxNode,
-                        mailboxDisplayed: MailboxDisplayed.destinationPicker)
-                    .build(),
-                children: _buildListChildTileWidget(context, mailboxNode.childrenItems!)))
+              child:  TreeViewChild(
+                  context,
+                  key: Key('children_tree_mailbox_child'),
+                  isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
+                  parent: (MailBoxFolderTileBuilder(
+                            context,
+                            _imagePaths,
+                            _responsiveUtils,
+                            mailboxNode,
+                            mailboxDisplayed: MailboxDisplayed.destinationPicker)
+                        ..addOnSelectMailboxFolderClick((mailboxNode) => controller.moveEmailToMailboxAction(mailboxNode.item.toPresentationMailboxWithMailboxPath(
+                            mailboxNode.getPathMailboxNode(
+                              controller.folderMailboxTree,
+                              controller.defaultMailboxList,
+                            ))))
+                        ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode)))
+                      .build(),
+                  children: _buildListChildTileWidget(context, mailboxNode.childrenItems!)
+              ).build())
           : Padding(
               padding: EdgeInsets.only(left: 20),
-              child: GestureDetector(
-                onTap: () => controller.moveEmailToMailboxAction(mailboxNode.item),
-                child: MailBoxFolderTileBuilder(
+              child: (MailBoxFolderTileBuilder(
                       context,
                       _imagePaths,
                       _responsiveUtils,
                       mailboxNode,
                       mailboxDisplayed: MailboxDisplayed.destinationPicker)
-                  .build(),
-              )))
+                  ..addOnSelectMailboxFolderClick((mailboxNode) => controller.moveEmailToMailboxAction(mailboxNode.item.toPresentationMailboxWithMailboxPath(
+                      mailboxNode.getPathMailboxNode(
+                        controller.folderMailboxTree,
+                        controller.defaultMailboxList,
+                      )))))
+                .build(),
+              ))
       .toList();
   }
 }

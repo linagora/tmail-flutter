@@ -11,7 +11,7 @@ abstract class EmailDataSource {
 
   Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest);
 
-  Future<bool> markAsRead(AccountId accountId, EmailId emailId, ReadActions readActions);
+  Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions);
 
   Future<List<DownloadTaskId>> downloadAttachments(
     List<Attachment> attachments,
@@ -28,5 +28,5 @@ abstract class EmailDataSource {
     CancelToken cancelToken
   );
 
-  Future<bool> moveToMailbox(AccountId accountId, MoveRequest moveRequest);
+  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveRequest moveRequest);
 }

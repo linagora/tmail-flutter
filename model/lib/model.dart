@@ -38,6 +38,7 @@ export 'extensions/keyword_identifier_extension.dart';
 export 'extensions/presentation_mailbox_extension.dart';
 export 'extensions/email_body_part_extension.dart';
 export 'extensions/attachment_extension.dart';
+export 'extensions/list_email_id_extension.dart';
 export 'extensions/mailbox_id_extension.dart';
 
 // Download

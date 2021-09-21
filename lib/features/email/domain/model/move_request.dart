@@ -6,29 +6,28 @@ import 'package:model/model.dart';
 
 class MoveRequest with EquatableMixin {
 
-  final EmailId emailId;
+  final List<EmailId> emailIds;
   final MailboxId currentMailboxId;
-  final MailboxName currentMailboxName;
   final MailboxId destinationMailboxId;
-  final MailboxName destinationMailboxName;
   final MoveAction moveAction;
+  final String? destinationPath;
 
   MoveRequest(
-    this.emailId,
+    this.emailIds,
     this.currentMailboxId,
-    this.currentMailboxName,
     this.destinationMailboxId,
-    this.destinationMailboxName,
     this.moveAction,
+    {
+      this.destinationPath,
+    }
   );
 
   @override
   List<Object?> get props => [
-    emailId,
+    emailIds,
     currentMailboxId,
-    currentMailboxName,
     destinationMailboxId,
-    destinationMailboxName,
-    moveAction
+    moveAction,
+    destinationPath,
   ];
 }

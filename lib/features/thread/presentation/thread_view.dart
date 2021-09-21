@@ -110,69 +110,10 @@ class ThreadView extends GetWidget<ThreadController> {
     return (EmailContextMenuActionBuilder(
             Key('move_to_trash_context_menu_action'),
             SvgPicture.asset(imagePaths.icTrash, width: 24, height: 24, fit: BoxFit.fill),
-            AppLocalizations.of(context).move_to_trash, listEmail)
-        ..onActionClick((data) => {}))
-      .build();
-  }
-
-  Widget _moveToMailboxAction(BuildContext context, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-            Key('move_to_mailbox_context_menu_action'),
-            SvgPicture.asset(imagePaths.icFolder, width: 24, height: 24, fit: BoxFit.fill),
-            AppLocalizations.of(context).move_to_mailbox, listEmail)
-        ..onActionClick((data) => {}))
-      .build();
-  }
-
-  Widget _markAsFlagAction(BuildContext context, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-            Key('mark_as_flag_context_menu_action'),
-            SvgPicture.asset(imagePaths.icFlag, width: 24, height: 24, fit: BoxFit.fill),
-            AppLocalizations.of(context).mark_as_flag, listEmail)
-        ..onActionClick((data) => {}))
-      .build();
-  }
-
-  Widget _moveToSpamAction(BuildContext context, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-            Key('move_to_spam_context_menu_action'),
-            SvgPicture.asset(imagePaths.icMailboxSpam, width: 24, height: 24, fit: BoxFit.fill),
-            AppLocalizations.of(context).move_to_spam, listEmail)
-        ..onActionClick((data) => {}))
-      .build();
-  }
-
-  List<Widget> _contextMenuActionList(BuildContext context, List<PresentationEmail> listEmail) {
-    return [
-      _moveToTrashAction(context, listEmail),
-      _moveToMailboxAction(context, listEmail),
-      _markAsReadAction(context, listEmail),
-      _markAsFlagAction(context, listEmail),
-      _moveToSpamAction(context, listEmail),
-      SizedBox(height: 30),
-    ];
-  }
-
-  Widget _markAsReadAction(BuildContext context, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-            Key('mark_as_read_context_menu_action'),
-            SvgPicture.asset(imagePaths.icEyeDisable, width: 24, height: 24, fit: BoxFit.fill),
-            controller.isEmailAllRead(listEmail)
-                ? AppLocalizations.of(context).mark_as_unread
-                : AppLocalizations.of(context).mark_as_read,
-            listEmail)
-          ..onActionClick((data) => controller.markAsSelectedEmailRead(data, fromContextMenuAction: true)))
-        .build();
-  }
-
-  Widget _moveToTrashAction(BuildContext context, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-            Key('move_to_trash_context_menu_action'),
-            SvgPicture.asset(imagePaths.icTrash, width: 24, height: 24, fit: BoxFit.fill),
             AppLocalizations.of(context).move_to_trash,
             listEmail)
-          ..onActionClick((data) => {}))
-        .build();
+        ..onActionClick((data) => {}))
+      .build();
   }
 
   Widget _moveToMailboxAction(BuildContext context, List<PresentationEmail> listEmail) {
@@ -181,8 +122,8 @@ class ThreadView extends GetWidget<ThreadController> {
             SvgPicture.asset(imagePaths.icFolder, width: 24, height: 24, fit: BoxFit.fill),
             AppLocalizations.of(context).move_to_mailbox,
             listEmail)
-          ..onActionClick((emails) => controller.moveSelectedMultipleEmailToMailboxAction(emails)))
-        .build();
+        ..onActionClick((data) => controller.moveSelectedMultipleEmailToMailboxAction(data)))
+      .build();
   }
 
   Widget _markAsFlagAction(BuildContext context, List<PresentationEmail> listEmail) {
@@ -191,8 +132,8 @@ class ThreadView extends GetWidget<ThreadController> {
             SvgPicture.asset(imagePaths.icFlag, width: 24, height: 24, fit: BoxFit.fill),
             AppLocalizations.of(context).mark_as_flag,
             listEmail)
-          ..onActionClick((data) => {}))
-        .build();
+        ..onActionClick((data) => {}))
+      .build();
   }
 
   Widget _moveToSpamAction(BuildContext context, List<PresentationEmail> listEmail) {
@@ -201,8 +142,8 @@ class ThreadView extends GetWidget<ThreadController> {
             SvgPicture.asset(imagePaths.icMailboxSpam, width: 24, height: 24, fit: BoxFit.fill),
             AppLocalizations.of(context).move_to_spam,
             listEmail)
-          ..onActionClick((data) => {}))
-        .build();
+        ..onActionClick((data) => {}))
+      .build();
   }
 
   Widget _buildLoadingView() {
@@ -238,63 +179,59 @@ class ThreadView extends GetWidget<ThreadController> {
       padding: EdgeInsets.zero,
       color: responsiveUtils.isMobile(context) ? AppColor.bgMailboxListMail : Colors.white,
       child: Obx(() => controller.currentSelectMode.value == SelectMode.INACTIVE
-        ? RefreshIndicator(
-            color: AppColor.primaryColor,
-            onRefresh: () async => controller.refreshGetAllEmailAction(),
-            child: _buildListEmailBody(context))
-        : _buildListEmailBody(context)));
+        ? controller.emailList.isNotEmpty
+            ? RefreshIndicator(
+                color: AppColor.primaryColor,
+                onRefresh: () async => controller.refreshGetAllEmailAction(),
+                child: _buildListEmailBody(context, controller.emailList))
+            : RefreshIndicator(
+                color: AppColor.primaryColor,
+                onRefresh: () async => controller.refreshGetAllEmailAction(),
+                child: _buildEmptyEmail(context))
+        : controller.emailList.isNotEmpty
+            ? _buildListEmailBody(context, controller.emailList)
+            : _buildEmptyEmail(context)));
   }
 
-  Widget _buildListEmailBody(BuildContext context) {
-    return controller.emailList.isNotEmpty
-      ? _buildListEmailSuccess(context, controller.emailList)
-      : _buildEmptyEmail(context);
-  }
-  Widget _buildListEmailSuccess(BuildContext context, List<PresentationEmail> listPresentationEmail) {
-    if (listPresentationEmail.isEmpty) {
-      return _buildEmptyEmail(context);
-    } else {
-      return  NotificationListener<ScrollNotification>(
-          onNotification: (ScrollNotification scrollInfo) {
-            if (controller.loadMoreState.value == LoadMoreState.IDLE
-                && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-              controller.loadMoreEmailAction();
-              return true;
-            }
-            return false;
-          },
-          child: ListView.builder(
-            controller: controller.listEmailController,
-            padding: EdgeInsets.only(top: 16),
-            key: Key('presentation_email_list'),
-            itemCount: listPresentationEmail.length,
-            itemBuilder: (context, index) =>
-              Obx(() => (EmailTileBuilder(
-                    context,
-                    imagePaths,
-                    controller.getSelectMode(listPresentationEmail[index], controller.mailboxDashBoardController.selectedEmail.value),
-                    listPresentationEmail[index],
-                    responsiveUtils,
-                    controller.currentSelectMode.value)
-                  ..onOpenEmailAction((selectedEmail) => controller.previewEmail(context, selectedEmail))
-                  ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail)))
-                .build()),
-          ));
-    }
+  Widget _buildListEmailBody(BuildContext context, List<PresentationEmail> listPresentationEmail) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification scrollInfo) {
+        if (scrollInfo is ScrollEndNotification
+            && controller.loadMoreState.value == LoadMoreState.IDLE
+            && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+          controller.loadMoreEmailAction();
+        }
+        return false;
+      },
+      child: ListView.builder(
+        controller: controller.listEmailController,
+        physics: AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.only(top: 16),
+        key: Key('presentation_email_list'),
+        itemCount: listPresentationEmail.length,
+        itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
+                context,
+                imagePaths,
+                controller.getSelectMode(listPresentationEmail[index], controller.mailboxDashBoardController.selectedEmail.value),
+                listPresentationEmail[index],
+                responsiveUtils,
+                controller.currentSelectMode.value)
+            ..onOpenEmailAction((selectedEmail) => controller.previewEmail(context, selectedEmail))
+            ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail)))
+          .build()),
+      ));
   }
 
   Widget _buildEmptyEmail(BuildContext context) {
     return Obx(() => controller.viewState.value.fold(
-      (failure) => Text(
-        AppLocalizations.of(context).no_emails,
-        maxLines: 1,
-        style: TextStyle(fontSize: 25, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold)),
-      (success) => success is LoadingState
-        ? SizedBox.shrink()
-        : Text(
-            AppLocalizations.of(context).no_emails,
-            maxLines: 1,
-            style: TextStyle(fontSize: 25, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold)))
+      (failure) => SizedBox.shrink(),
+      (success) => !(success is LoadingState)
+        ? (BackgroundWidgetBuilder(context)
+            ..key(Key('empty_email_background'))
+            ..image(SvgPicture.asset(imagePaths.icEmptyImageDefault, width: 120, height: 120, fit: BoxFit.fill))
+            ..text(AppLocalizations.of(context).no_emails))
+          .build()
+        : SizedBox.shrink())
     );
   }
 }

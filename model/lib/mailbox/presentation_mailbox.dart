@@ -23,6 +23,7 @@ class PresentationMailbox with EquatableMixin {
   final MailboxRights? myRights;
   final IsSubscribed? isSubscribed;
   final SelectMode selectMode;
+  final String? mailboxPath;
 
   PresentationMailbox(
     this.id,
@@ -37,7 +38,8 @@ class PresentationMailbox with EquatableMixin {
       this.unreadThreads,
       this.myRights,
       this.isSubscribed,
-      this.selectMode = SelectMode.INACTIVE
+      this.selectMode = SelectMode.INACTIVE,
+      this.mailboxPath,
     }
   );
 

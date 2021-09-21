@@ -1,35 +1,33 @@
 import 'package:core/core.dart';
-import 'package:dartz/dartz.dart';
 import 'package:model/email/read_actions.dart';
 
 class MarkAsMultipleEmailReadAllSuccess extends UIState {
-  final List<Either<Failure, Success>> resultList;
+  final int countMarkAsReadSuccess;
   final ReadActions readActions;
 
-  MarkAsMultipleEmailReadAllSuccess(this.resultList, this.readActions);
+  MarkAsMultipleEmailReadAllSuccess(this.countMarkAsReadSuccess, this.readActions);
 
   @override
-  List<Object?> get props => [resultList, readActions];
+  List<Object?> get props => [countMarkAsReadSuccess, readActions];
 }
 
 class MarkAsMultipleEmailReadAllFailure extends FeatureFailure {
-  final List<Either<Failure, Success>> resultList;
   final ReadActions readActions;
 
-  MarkAsMultipleEmailReadAllFailure(this.resultList, this.readActions);
+  MarkAsMultipleEmailReadAllFailure(this.readActions);
 
   @override
-  List<Object> get props => [resultList, readActions];
+  List<Object> get props => [readActions];
 }
 
 class MarkAsMultipleEmailReadHasSomeEmailFailure extends UIState {
-  final List<Either<Failure, Success>> resultList;
+  final int countMarkAsReadSuccess;
   final ReadActions readActions;
 
-  MarkAsMultipleEmailReadHasSomeEmailFailure(this.resultList, this.readActions);
+  MarkAsMultipleEmailReadHasSomeEmailFailure(this.countMarkAsReadSuccess, this.readActions);
 
   @override
-  List<Object> get props => [resultList, readActions];
+  List<Object> get props => [countMarkAsReadSuccess, readActions];
 }
 
 class MarkAsMultipleEmailReadFailure extends FeatureFailure {

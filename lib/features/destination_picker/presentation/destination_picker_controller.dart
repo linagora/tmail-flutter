@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_i
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -17,7 +18,9 @@ class DestinationPickerController extends BaseController {
   final GetAllMailboxInteractor _getAllMailboxInteractor;
   final TreeBuilder _treeBuilder;
 
-  final folderMailboxTree = MailboxTree(MailboxNode.root()).obs;
+  MailboxTree folderMailboxTree = MailboxTree(MailboxNode.root());
+  final defaultMailboxList = <PresentationMailbox>[].obs;
+  final folderMailboxNodeList = <MailboxNode>[].obs;
 
   DestinationPickerArguments? destinationPickerArguments;
 
@@ -46,7 +49,13 @@ class DestinationPickerController extends BaseController {
   }
 
   @override
-  void onDone() {}
+  void onDone() {
+    viewState.value.map((success) {
+      if (success is GetAllMailboxSuccess) {
+        defaultMailboxList.value = success.defaultMailboxList;
+      }
+    });
+  }
 
   @override
   void onError(error) {}
@@ -59,7 +68,20 @@ class DestinationPickerController extends BaseController {
   }
 
   void _buildTree(List<PresentationMailbox> folderMailboxList) async {
-    folderMailboxTree.value = await _treeBuilder.generateMailboxTree(folderMailboxList);
+    folderMailboxTree = await _treeBuilder.generateMailboxTree(folderMailboxList);
+    folderMailboxNodeList.value = folderMailboxTree.root.childrenItems ?? [];
+  }
+
+  void toggleMailboxFolder(MailboxNode selectedMailboxNode) {
+    final newExpandMode = selectedMailboxNode.expandMode == ExpandMode.COLLAPSE
+      ? ExpandMode.EXPAND
+      : ExpandMode.COLLAPSE;
+
+    final newMailboxNodeList = folderMailboxNodeList.updateNode(
+        selectedMailboxNode.item.id,
+        selectedMailboxNode.copyWith(newExpandMode: newExpandMode)) ?? [];
+
+    folderMailboxNodeList.value = newMailboxNodeList;
   }
 
   void moveEmailToMailboxAction(PresentationMailbox destinationMailbox) {

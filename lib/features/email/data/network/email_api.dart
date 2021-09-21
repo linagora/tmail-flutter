@@ -15,7 +15,6 @@ import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
-import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/address.dart';
@@ -113,28 +112,33 @@ class EmailAPI {
     });
   }
 
-  Future<bool> markAsRead(AccountId accountId, EmailId emailId, ReadActions readAction) async {
+  Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions) async {
+    final emailIds = emails.map((email) => email.id).toList();
+
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addUpdates({
-        emailId.id: KeyWordIdentifier.emailSeen.generateReadActionPath(readAction)
-      });
+      ..addUpdates(emailIds.generateMapUpdateObjectMarkAsRead(readActions));
+
+    final getEmailMethod = GetEmailMethod(accountId)
+      ..addIds(emailIds.toIds().toSet())
+      ..addProperties(Properties({'keywords'}));
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
-    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+    requestBuilder.invocation(setEmailMethod);
+
+    final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
 
     final response = await (requestBuilder
         ..usings(setEmailMethod.requiredCapabilities))
       .build()
       .execute();
 
-    final setEmailResponse = response.parse<SetEmailResponse>(
-        setEmailInvocation.methodCallId,
-        SetEmailResponse.deserialize);
+    final getEmailResponse = response.parse<GetEmailResponse>(
+      getEmailInvocation.methodCallId,
+      GetEmailResponse.deserialize);
 
     return Future.sync(() async {
-      final emailUpdated = setEmailResponse!.updated![emailId.id];
-      return emailUpdated == null;
+      return getEmailResponse!.list;
     }).catchError((error) {
       throw error;
     });
@@ -188,12 +192,10 @@ class EmailAPI {
       cancelToken: cancelToken);
   }
 
-  Future<bool> moveToMailbox(AccountId accountId, MoveRequest moveRequest) async {
+  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveRequest moveRequest) async {
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addUpdates({
-        moveRequest.emailId.id: moveRequest.currentMailboxId
-            .generateMoveToMailboxActionPath(moveRequest.destinationMailboxId)
-      });
+      ..addUpdates(moveRequest.emailIds
+          .generateMapUpdateObjectMoveToMailbox(moveRequest.currentMailboxId, moveRequest.destinationMailboxId));
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
@@ -209,8 +211,10 @@ class EmailAPI {
         SetEmailResponse.deserialize);
 
     return Future.sync(() async {
-      final emailUpdated = setEmailResponse!.updated![moveRequest.emailId.id];
-      return emailUpdated == null;
+      final mapUpdated = setEmailResponse!.updated!;
+      return moveRequest.emailIds
+        .where((emailId) => mapUpdated.containsKey(emailId.id))
+        .toList();
     }).catchError((error) {
       throw error;
     });

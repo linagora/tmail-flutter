@@ -110,7 +110,7 @@ class AppLocalizations {
 
   String get no_emails {
     return Intl.message(
-      'No emails',
+      'No emails in this mailbox',
       name: 'no_emails',
     );
   }

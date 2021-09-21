@@ -10,7 +10,7 @@ abstract class EmailRepository {
 
   Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest);
 
-  Future<bool> markAsRead(AccountId accountId, EmailId emailId, ReadActions readAction);
+  Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions);
 
   Future<List<DownloadTaskId>> downloadAttachments(
     List<Attachment> attachments,
@@ -27,5 +27,5 @@ abstract class EmailRepository {
     CancelToken cancelToken
   );
 
-  Future<bool> moveToMailbox(AccountId accountId, MoveRequest moveRequest);
+  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveRequest moveRequest);
 }

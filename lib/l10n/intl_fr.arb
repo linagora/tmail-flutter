@@ -90,7 +90,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_emails": "No emails",
+  "no_emails": "No emails in this mailbox",
   "@no_emails": {
     "type": "text",
     "placeholders_order": [],
@@ -336,6 +336,38 @@
   },
   "browse": "Browse",
   "@browse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_need_to_grant_files_permission_to_download_attachments": "You need to grant files permission to download attachments",
+  "@you_need_to_grant_files_permission_to_download_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "count_attachment": "{count} attachments",
+  "@count_attachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "moved_to_mailbox": "Moved to {destinationMailboxPath}",
+  "@moved_to_mailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationMailboxPath"
+    ],
+    "placeholders": {
+      "destinationMailboxPath": {}
+    }
+  },
+  "undo_action": "UNDO",
+  "@undo_action": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

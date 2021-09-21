@@ -2,40 +2,37 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/email/read_actions.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
+import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 
 class MarkAsMultipleEmailReadInteractor {
-  final MarkAsEmailReadInteractor markAsEmailReadInteractor;
+  final EmailRepository _emailRepository;
 
-  MarkAsMultipleEmailReadInteractor(this.markAsEmailReadInteractor);
+  MarkAsMultipleEmailReadInteractor(this._emailRepository);
 
   Stream<Either<Failure, Success>> execute(
       AccountId accountId,
-      List<EmailId> listEmailId,
+      List<Email> emails,
       ReadActions readAction
   ) async* {
     try {
-      final listResult = await Future.wait(listEmailId.map((emailId) async {
-        final result = await markAsEmailReadInteractor.execute(accountId, emailId, readAction).toList();
-        return result.first;
-      }));
-      if (listResult.length == 1) {
-        yield listResult.first;
+      yield Right<Failure, Success>(LoadingState());
+
+      final listEmailNeedMarkAsRead = emails
+          .where((email) => readAction == ReadActions.markAsUnread ? email.isReadEmail() : email.isUnReadEmail())
+          .toList();
+
+      final result = await _emailRepository.markAsRead(accountId, listEmailNeedMarkAsRead, readAction);
+
+      if (listEmailNeedMarkAsRead.length == result.length) {
+        final countMarkAsReadSuccess = emails.length;
+        yield Right(MarkAsMultipleEmailReadAllSuccess(countMarkAsReadSuccess, readAction));
+      } else if (result.isEmpty) {
+        yield Left(MarkAsMultipleEmailReadAllFailure(readAction));
       } else {
-        var failedFileCount = 0;
-        listResult.forEach((element) {
-          if (element is Left) {
-            failedFileCount++;
-          }
-        });
-        if (failedFileCount == 0) {
-          yield Right(MarkAsMultipleEmailReadAllSuccess(listResult, readAction));
-        } else if (failedFileCount == listResult.length) {
-          yield Left(MarkAsMultipleEmailReadAllFailure(listResult, readAction));
-        }
-        yield Right(MarkAsMultipleEmailReadHasSomeEmailFailure(listResult, readAction));
+        final countMarkAsReadSuccess = emails.length - (listEmailNeedMarkAsRead.length - result.length);
+        yield Right(MarkAsMultipleEmailReadHasSomeEmailFailure(countMarkAsReadSuccess, readAction));
       }
     } catch (e) {
       yield Left(MarkAsMultipleEmailReadFailure(e, readAction));

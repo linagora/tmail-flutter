@@ -8,7 +8,6 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -47,6 +46,7 @@ class EmailController extends BaseController {
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
   final emailContent = Rxn<EmailContent>();
+  EmailId? _currentEmailId;
 
   EmailController(
     this._getEmailContentInteractor,
@@ -62,12 +62,15 @@ class EmailController extends BaseController {
   void onReady() {
     super.onReady();
     mailboxDashBoardController.selectedEmail.listen((presentationEmail) {
-      _clearEmailContent();
-      final accountId = mailboxDashBoardController.accountId.value;
-      if (accountId != null && presentationEmail != null) {
-        _getEmailContentAction(accountId, presentationEmail.id);
-        if (presentationEmail.isUnReadEmail()) {
-          markAsEmailRead(presentationEmail, ReadActions.markAsRead);
+      if (_currentEmailId != presentationEmail?.id) {
+        _currentEmailId = presentationEmail?.id;
+        _clearEmailContent();
+        final accountId = mailboxDashBoardController.accountId.value;
+        if (accountId != null && presentationEmail != null) {
+          _getEmailContentAction(accountId, presentationEmail.id);
+          if (presentationEmail.isUnReadEmail()) {
+            markAsEmailRead(presentationEmail, ReadActions.markAsRead);
+          }
         }
       }
     });
@@ -131,11 +134,14 @@ class EmailController extends BaseController {
     final accountId = mailboxDashBoardController.accountId.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (accountId != null && mailboxCurrent != null) {
-      consumeState(_markAsEmailReadInteractor.execute(accountId, presentationEmail.id, readActions));
+      consumeState(_markAsEmailReadInteractor.execute(accountId, presentationEmail.toEmail(), readActions));
     }
   }
 
   void _markAsEmailReadSuccess(Success success) {
+    if (success is MarkAsEmailReadSuccess) {
+      mailboxDashBoardController.setSelectedEmail(success.updatedEmail.toPresentationEmail(selectMode: SelectMode.ACTIVE));
+    }
     mailboxDashBoardController.dispatchState(Right(success));
 
     if (success is MarkAsEmailReadSuccess && success.readActions == ReadActions.markAsUnread) {
@@ -144,7 +150,9 @@ class EmailController extends BaseController {
   }
 
   void _markAsEmailReadFailure(Failure failure) {
-    backToThreadView();
+    if (failure is MarkAsEmailReadFailure && failure.readActions == ReadActions.markAsUnread) {
+      backToThreadView();
+    }
   }
 
   void toggleDisplayAttachmentsAction() {
@@ -244,19 +252,18 @@ class EmailController extends BaseController {
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (currentMailbox != null && accountId != null) {
-      final mailboxDestination = await push(
+      final destinationMailbox = await push(
         AppRoutes.DESTINATION_PICKER,
         arguments: DestinationPickerArguments(accountId, [email.id], currentMailbox)
       );
 
-      if (mailboxDestination != null && mailboxDestination is PresentationMailbox) {
+      if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
         _moveToMailbox(accountId, MoveRequest(
-            email.id,
+            [email.id],
             currentMailbox.id,
-            currentMailbox.name ?? MailboxName(''),
-            mailboxDestination.id,
-            mailboxDestination.name ?? MailboxName(''),
-            MoveAction.moveTo));
+            destinationMailbox.id,
+            MoveAction.moveTo,
+            destinationPath: destinationMailbox.mailboxPath));
       }
     }
   }
@@ -269,19 +276,17 @@ class EmailController extends BaseController {
     mailboxDashBoardController.dispatchState(Right(success));
 
     if (success is MoveToMailboxSuccess
-        && success.moveRequest.moveAction == MoveAction.moveTo
+        && success.moveAction == MoveAction.moveTo
         && Get.context != null && Get.overlayContext != null) {
       _appToast.showToastWithAction(
           Get.overlayContext!,
-          AppLocalizations.of(Get.context!).moved_to_mailbox(success.moveRequest.destinationMailboxName.name),
+          AppLocalizations.of(Get.context!).moved_to_mailbox(success.destinationPath ?? ''),
           AppLocalizations.of(Get.context!).undo_action,
           () {
             final newMoveRequest = MoveRequest(
-                success.moveRequest.emailId,
-                success.moveRequest.destinationMailboxId,
-                success.moveRequest.destinationMailboxName,
-                success.moveRequest.currentMailboxId,
-                success.moveRequest.currentMailboxName,
+                [success.emailId],
+                success.destinationMailboxId,
+                success.currentMailboxId,
                 MoveAction.undo);
             _undoMoveToMailbox(newMoveRequest);
           }

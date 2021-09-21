@@ -1,7 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -174,7 +171,7 @@ class MailboxView extends GetWidget<MailboxController> {
   }
 
   Widget _buildFolderMailbox(BuildContext context) {
-    return Obx(() => controller.folderMailboxTree.value.root.hasChildren()
+    return Obx(() => controller.folderMailboxNodeList.isNotEmpty
         ? Transform(
             transform: Matrix4.translationValues(responsiveUtils.isMobile(context) ? 0.0 : -15.0, 0.0, 0.0),
             child: Padding(
@@ -182,7 +179,7 @@ class MailboxView extends GetWidget<MailboxController> {
               child: TreeView(
                 startExpanded: false,
                 key: Key('folder_mailbox_list'),
-                children: _buildListChildTileWidget(context, controller.folderMailboxTree.value.root.childrenItems!)))
+                children: _buildListChildTileWidget(context, controller.folderMailboxNodeList)))
           )
         : SizedBox.shrink()
     );
@@ -192,24 +189,27 @@ class MailboxView extends GetWidget<MailboxController> {
     return listMailboxNode
       .map((mailboxNode) => mailboxNode.hasChildren()
           ? Padding(
-              padding: EdgeInsets.only(left: 16),
+              padding: EdgeInsets.only(left: 20),
               child: TreeViewChild(
-                key: Key('children_tree_mailbox_child'),
-                parent: Obx(() => MailBoxFolderTileBuilder(
-                      context,
-                      imagePaths,
-                      responsiveUtils,
-                      mailboxNode,
-                      selectMode: controller.getSelectMode(
-                          mailboxNode.item,
-                          controller.mailboxDashBoardController.selectedMailbox.value))
-                  .build()),
-                children: _buildListChildTileWidget(context, mailboxNode.childrenItems!)))
+                  context,
+                  key: Key('children_tree_mailbox_child'),
+                  isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
+                  parent: Obx(() => (MailBoxFolderTileBuilder(
+                          context,
+                          imagePaths,
+                          responsiveUtils,
+                          mailboxNode,
+                          selectMode: controller.getSelectMode(
+                              mailboxNode.item,
+                              controller.mailboxDashBoardController.selectedMailbox.value))
+                      ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailbox(context, mailboxNode.item))
+                      ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode)))
+                    .build()),
+                  children: _buildListChildTileWidget(context, mailboxNode.childrenItems!)
+              ).build())
           : Padding(
-              padding: EdgeInsets.only(left: 16),
-              child: Obx(() => GestureDetector(
-                onTap: () => controller.selectMailbox(context, mailboxNode.item),
-                child: MailBoxFolderTileBuilder(
+              padding: EdgeInsets.only(left: 20),
+              child: Obx(() => (MailBoxFolderTileBuilder(
                       context,
                       imagePaths,
                       responsiveUtils,
@@ -217,8 +217,9 @@ class MailboxView extends GetWidget<MailboxController> {
                       selectMode: controller.getSelectMode(
                           mailboxNode.item,
                           controller.mailboxDashBoardController.selectedMailbox.value))
-                  .build(),
-              ))))
+                  ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailbox(context, mailboxNode.item)))
+                .build(),
+              )))
       .toList();
   }
 
