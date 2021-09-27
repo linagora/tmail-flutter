@@ -112,6 +112,7 @@ dependencies:
 
   # share
   share: 2.0.4
+  webview_flutter_plus: ^0.2.3
 
   # flutter_contacts
   contacts_service:

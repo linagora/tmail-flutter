@@ -13,6 +13,7 @@ class GetSessionInteractor {
       final session = await sessionRepository.getSession();
       return Right<Failure, Success>(GetSessionSuccess(session));
     } catch (e) {
+      print("ERR: $e");
       return Left<Failure, Success>(GetSessionFailure(e));
     }
   }

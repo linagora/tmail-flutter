@@ -292,6 +292,7 @@ class EmailView extends GetView {
               key: Key('list_message_content'),
               itemCount: messageContents.length,
               itemBuilder: (context, index) =>
+                  
                   MessageContentTileBuilder(
                       htmlMessagePurifier: htmlMessagePurifier,
                       messageContent: messageContents[index],
