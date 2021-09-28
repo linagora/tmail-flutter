@@ -31,7 +31,7 @@ class MailboxView extends GetWidget<MailboxController> {
             left: false,
             child: RefreshIndicator(
               color: AppColor.primaryColor,
-              onRefresh: () async => controller.refreshGetAllMailboxAction(),
+              onRefresh: () async => controller.refreshAllMailbox(),
               child: SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
                 child: Padding(

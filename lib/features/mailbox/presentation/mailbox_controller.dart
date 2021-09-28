@@ -4,12 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_mailboxes_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
@@ -18,21 +20,26 @@ import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmapState;
 
 class MailboxController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final GetAllMailboxInteractor _getAllMailboxInteractor;
   final DeleteCredentialInteractor _deleteCredentialInteractor;
+  final RefreshMailboxesInteractor _refreshMailboxesInteractor;
   final TreeBuilder _treeBuilder;
   final ResponsiveUtils responsiveUtils;
 
   final defaultMailboxList = <PresentationMailbox>[].obs;
   final folderMailboxNodeList = <MailboxNode>[].obs;
 
+  jmapState.State? currentMailboxState;
+
   MailboxController(
     this._getAllMailboxInteractor,
     this._deleteCredentialInteractor,
+    this._refreshMailboxesInteractor,
     this._treeBuilder,
     this.responsiveUtils
   );
@@ -51,11 +58,11 @@ class MailboxController extends BaseController {
         if (success is MarkAsEmailReadSuccess ||
             success is MarkAsMultipleEmailReadAllSuccess ||
             success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-          refreshGetAllMailboxAction();
+          refreshMailboxChanges();
         } else if (success is MoveMultipleEmailToMailboxAllSuccess
             || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
           mailboxDashBoardController.clearState();
-          refreshGetAllMailboxAction();
+          refreshMailboxChanges();
         }
       });
     });
@@ -65,17 +72,6 @@ class MailboxController extends BaseController {
   void onClose() {
     mailboxDashBoardController.accountId.close();
     super.onClose();
-  }
-
-  void refreshGetAllMailboxAction() {
-    final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null) {
-      getAllMailboxAction(accountId);
-    }
-  }
-
-  void getAllMailboxAction(AccountId accountId) async {
-    consumeState(_getAllMailboxInteractor.execute(accountId));
   }
 
   @override
@@ -92,6 +88,7 @@ class MailboxController extends BaseController {
   void onDone() {
     viewState.value.map((success) {
       if (success is GetAllMailboxSuccess) {
+        currentMailboxState = success.currentMailboxState;
         defaultMailboxList.value = success.defaultMailboxList;
         _setUpMapMailboxIdDefault(success.defaultMailboxList);
       }
@@ -100,6 +97,24 @@ class MailboxController extends BaseController {
 
   @override
   void onError(error) {}
+
+  void getAllMailboxAction(AccountId accountId) async {
+    consumeState(_getAllMailboxInteractor.execute(accountId));
+  }
+
+  void refreshAllMailbox() {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null) {
+      consumeState(_getAllMailboxInteractor.execute(accountId));
+    }
+  }
+
+  void refreshMailboxChanges() {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null && currentMailboxState != null) {
+      consumeState(_refreshMailboxesInteractor.execute(accountId, currentMailboxState!));
+    }
+  }
 
   void _buildTree(List<PresentationMailbox> folderMailboxList) async {
     final _folderMailboxTree = await _treeBuilder.generateMailboxTree(folderMailboxList);
@@ -119,20 +134,32 @@ class MailboxController extends BaseController {
   }
 
   void _setUpMapMailboxIdDefault(List<PresentationMailbox> defaultMailboxList) {
+    final mapMailboxId = Map<Role, MailboxId>.fromIterable(
+      defaultMailboxList,
+      key: (presentationMailbox) => presentationMailbox.role!,
+      value: (presentationMailbox) => presentationMailbox.id);
+
+    final mapMailboxDefault = Map<Role, PresentationMailbox>.fromIterable(
+        defaultMailboxList,
+        key: (presentationMailbox) => presentationMailbox.role!,
+        value: (presentationMailbox) => presentationMailbox);
+
+    mailboxDashBoardController.setMapMailboxId(mapMailboxId);
+
     var mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
 
-    defaultMailboxList.forEach((presentationMailbox) {
-      if (mailboxCurrent == null && presentationMailbox.role == PresentationMailbox.roleInbox) {
-        mailboxCurrent = presentationMailbox;
-      } else if (mailboxCurrent?.role == presentationMailbox.role) {
-        mailboxCurrent = presentationMailbox;
-      }
-
-      mailboxDashBoardController.addMailboxIdToMap(presentationMailbox.role!, presentationMailbox.id);
-    });
-
     if (mailboxCurrent != null) {
-      mailboxDashBoardController.setNewFirstSelectedMailbox(mailboxCurrent);
+      if (mapMailboxDefault.containsKey(mailboxCurrent.role)) {
+        mailboxDashBoardController.setNewFirstSelectedMailbox(mapMailboxDefault[mailboxCurrent.role]);
+      } else {
+        mailboxDashBoardController.setNewFirstSelectedMailbox(mailboxCurrent);
+      }
+    } else {
+      if (mapMailboxDefault.containsKey(PresentationMailbox.roleInbox)) {
+        mailboxDashBoardController.setNewFirstSelectedMailbox(mapMailboxDefault[PresentationMailbox.roleInbox]);
+      } else {
+        mailboxDashBoardController.setNewFirstSelectedMailbox(mapMailboxDefault.values.first);
+      }
     }
   }
 

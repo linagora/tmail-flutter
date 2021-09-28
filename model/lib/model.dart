@@ -14,6 +14,7 @@ export 'user/user_profile_response.dart';
 export 'mailbox/presentation_mailbox.dart';
 export 'mailbox/select_mode.dart';
 export 'mailbox/expand_mode.dart';
+export 'mailbox/mailbox_property.dart';
 
 // Email
 export 'email/presentation_email.dart';
@@ -41,7 +42,10 @@ export 'extensions/email_body_part_extension.dart';
 export 'extensions/attachment_extension.dart';
 export 'extensions/list_email_id_extension.dart';
 export 'extensions/mailbox_id_extension.dart';
-export 'extensions/list_email_id_extension.dart';
+export 'extensions/mailbox_extension.dart';
+export 'extensions/mailbox_name_extension.dart';
+export 'extensions/properties_extension.dart';
+export 'extensions/list_mailbox_extension.dart';
 
 // Download
 export 'download/download_task_id.dart';

@@ -1,17 +1,142 @@
+import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 
 class MailboxRepositoryImpl extends MailboxRepository {
 
-  final MailboxDataSource mailboxDataSource;
+  final Map<DataSourceType, MailboxDataSource> mapDataSource;
+  final StateDataSource stateDataSource;
 
-  MailboxRepositoryImpl(this.mailboxDataSource);
+  MailboxRepositoryImpl(this.mapDataSource, this.stateDataSource);
 
   @override
-  Future<List<Mailbox>> getAllMailbox(AccountId accountId, {Properties? properties}) {
-    return mailboxDataSource.getAllMailbox(accountId, properties: properties);
+  Stream<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties}) async* {
+    final localMailboxResponse = await Future.wait([
+      mapDataSource[DataSourceType.local]!.getAllMailboxCache(),
+      stateDataSource.getState(StateType.mailbox)
+    ]).then((List response) {
+      return MailboxResponse(mailboxes: response.first, state: response.last);
+    });
+
+    yield localMailboxResponse;
+
+    if (localMailboxResponse.hasData()) {
+      bool hasMoreChanges = true;
+      State? sinceState = localMailboxResponse.state!;
+
+      while(hasMoreChanges && sinceState != null) {
+        final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(accountId, sinceState);
+
+        hasMoreChanges = changesResponse.hasMoreChanges;
+        sinceState = changesResponse.newStateChanges;
+
+        final newMailboxUpdated = await _combineMailboxCache(
+            mailboxUpdated: changesResponse.updated,
+            updatedProperties: changesResponse.updatedProperties,
+            mailboxCacheList: localMailboxResponse.mailboxes!);
+
+        await Future.wait([
+          mapDataSource[DataSourceType.local]!.update(
+              updated: newMailboxUpdated,
+              created: changesResponse.created,
+              destroyed: changesResponse.destroyed),
+          if (changesResponse.newStateMailbox != null)
+            stateDataSource.saveState(changesResponse.newStateMailbox!.toStateCache(StateType.mailbox)),
+        ]);
+      }
+    } else {
+      final mailboxResponse = await mapDataSource[DataSourceType.network]!.getAllMailbox(accountId);
+
+      await Future.wait([
+        mapDataSource[DataSourceType.local]!.update(created: mailboxResponse.mailboxes),
+        if (mailboxResponse.state != null)
+          stateDataSource.saveState(mailboxResponse.state!.toStateCache(StateType.mailbox)),
+      ]);
+    }
+
+    final newMailboxResponse = await Future.wait([
+      mapDataSource[DataSourceType.local]!.getAllMailboxCache(),
+      stateDataSource.getState(StateType.mailbox)
+    ]).then((List response) {
+      return MailboxResponse(mailboxes: response.first, state: response.last);
+    });
+
+    yield newMailboxResponse;
+  }
+
+  Future<List<Mailbox>?> _combineMailboxCache({
+    List<Mailbox>? mailboxUpdated,
+    Properties? updatedProperties,
+    List<Mailbox>? mailboxCacheList
+  }) async {
+    if (mailboxUpdated != null && mailboxUpdated.isNotEmpty) {
+      final newMailboxUpdated = mailboxUpdated.map((mailboxUpdated) {
+        if (updatedProperties == null) {
+          return mailboxUpdated;
+        } else {
+          final mailboxOld = mailboxCacheList?.findMailbox(mailboxUpdated.id);
+          if (mailboxOld != null) {
+            return mailboxOld.combineMailbox(mailboxUpdated, updatedProperties);
+          } else {
+            return mailboxUpdated;
+          }
+        }
+      }).toList();
+
+      return newMailboxUpdated;
+    }
+    return mailboxUpdated;
+  }
+
+  @override
+  Stream<MailboxResponse> refresh(AccountId accountId, State currentState) async* {
+    final localMailboxResponse = await Future.wait([
+      mapDataSource[DataSourceType.local]!.getAllMailboxCache(),
+      stateDataSource.getState(StateType.mailbox)
+    ]).then((List response) {
+      return MailboxResponse(mailboxes: response.first, state: response.last);
+    });
+
+    bool hasMoreChanges = true;
+    State? sinceState = localMailboxResponse.state!;
+
+    while(hasMoreChanges && sinceState != null) {
+      final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(accountId, sinceState);
+
+      hasMoreChanges = changesResponse.hasMoreChanges;
+      sinceState = changesResponse.newStateChanges;
+
+      final newMailboxUpdated = await _combineMailboxCache(
+          mailboxUpdated: changesResponse.updated,
+          updatedProperties: changesResponse.updatedProperties,
+          mailboxCacheList: localMailboxResponse.mailboxes!);
+
+      await Future.wait([
+        mapDataSource[DataSourceType.local]!.update(
+            updated: newMailboxUpdated,
+            created: changesResponse.created,
+            destroyed: changesResponse.destroyed),
+        if (changesResponse.newStateMailbox != null)
+          stateDataSource.saveState(changesResponse.newStateMailbox!.toStateCache(StateType.mailbox)),
+      ]);
+    }
+
+    final newMailboxResponse = await Future.wait([
+      mapDataSource[DataSourceType.local]!.getAllMailboxCache(),
+      stateDataSource.getState(StateType.mailbox)
+    ]).then((List response) {
+      return MailboxResponse(mailboxes: response.first, state: response.last);
+    });
+
+    yield newMailboxResponse;
   }
 }
