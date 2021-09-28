@@ -2,8 +2,7 @@ import 'dart:collection';
 import 'package:collection/collection.dart';
 
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/extensions/mailbox_name_extension.dart';
+import 'package:model/model.dart';
 
 import 'mailbox_node.dart';
 import 'mailbox_tree.dart';

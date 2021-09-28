@@ -77,7 +77,7 @@ class MailBoxFolderTileBuilder {
             title: Padding(
               padding: EdgeInsets.only(left: 8),
               child: Text(
-                _mailboxNode.item.name!.name,
+                '${_mailboxNode.item.name?.name}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
