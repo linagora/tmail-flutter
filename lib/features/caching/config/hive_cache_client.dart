@@ -1,7 +1,7 @@
 
 import 'package:hive/hive.dart';
 
-abstract class CacheClient<T> {
+abstract class HiveCacheClient<T> {
 
   String get tableName;
 
@@ -13,7 +13,7 @@ abstract class CacheClient<T> {
 
   Future<T?> getItem(String key);
 
-  Future<List<T>> getListItem();
+  Future<List<T>> getAll();
 
   Future<void> updateItem(String key, T newObject);
 

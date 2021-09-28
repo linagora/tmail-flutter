@@ -1,6 +1,5 @@
 
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
 
 extension ListMailboxCacheExtension on List<MailboxCache> {
   Map<String, MailboxCache> toMap() {
@@ -8,9 +7,5 @@ extension ListMailboxCacheExtension on List<MailboxCache> {
         this,
         key: (mailboxCache) => mailboxCache.id,
         value: (mailboxCache) => mailboxCache);
-  }
-
-  List<Mailbox> toMailboxList() {
-    return map((mailboxCache) => mailboxCache.toMailbox()).toList();
   }
 }

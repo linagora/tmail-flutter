@@ -55,7 +55,7 @@ class MailboxDashBoardController extends BaseController {
       (failure) {
         if (failure is SendEmailFailure) {
           if (Get.context != null) {
-            _appToast.showSuccessToast(AppLocalizations.of(Get.context!).error_message_sent);
+            _appToast.showErrorToast(AppLocalizations.of(Get.context!).error_message_sent);
             clearState();
           }
         }

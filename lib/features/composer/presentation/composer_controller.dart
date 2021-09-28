@@ -187,6 +187,7 @@ class ComposerController extends BaseController {
       } else if (fromEmailAddress != null && fromEmailAddress.isNotEmpty) {
         listReplyToEmailAddress.value = fromEmailAddress.toList();
       }
+      listToEmailAddress = listReplyToEmailAddress;
     }
     _updateStatusEmailSendButton();
   }
