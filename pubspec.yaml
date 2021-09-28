@@ -122,6 +122,9 @@ dependencies:
   # file_picker
   file_picker: 3.0.2+2
 
+  # hive
+  hive: 2.0.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
