@@ -1,7 +1,7 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
-import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/mailbox/data/utils/caching_constants.dart';
 
 part 'mailbox_rights_cache.g.dart';
 

@@ -3,7 +3,7 @@ import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
-import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 
 class LocalBindings extends Bindings {
 
@@ -20,6 +20,6 @@ class LocalBindings extends Bindings {
   void _bindingCaching() {
     Get.put(MailboxCacheClient());
     Get.put(StateCacheClient());
-    Get.put(MailboxCacheManager(Get.find<MailboxCacheClient>(), Get.find<StateCacheClient>()));
+    Get.put(MailboxCacheManager(Get.find<MailboxCacheClient>()));
   }
 }

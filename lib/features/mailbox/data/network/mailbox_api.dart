@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_response.dart';
 
 class MailboxAPI {
 
@@ -20,7 +21,7 @@ class MailboxAPI {
 
   MailboxAPI(this.httpClient);
 
-  Future<GetMailboxResponse?> getAllMailbox(AccountId accountId, {Properties? properties}) async {
+  Future<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties}) async {
     final processingInvocation = ProcessingInvocation();
 
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
@@ -38,7 +39,7 @@ class MailboxAPI {
       queryInvocation.methodCallId,
       GetMailboxResponse.deserialize);
 
-    return resultCreated;
+    return MailboxResponse(mailboxes: resultCreated?.list, state: resultCreated?.state);
   }
 
   Future<MailboxChangeResponse> getChanges(AccountId accountId, State sinceState) async {
@@ -85,19 +86,13 @@ class MailboxAPI {
 
     final listMailboxIdDestroyed = resultChanges?.destroyed.map((id) => MailboxId(id)).toList() ?? <MailboxId>[];
 
-    final updatedProperties = resultChanges?.updatedProperties;
-
-    final listMailboxUpdated = resultUpdated?.list ?? <Mailbox>[];
-
-    final listMailboxCreated = resultCreated?.list ?? <Mailbox>[];
-
-    final newState = resultChanges?.newState;
-
     return MailboxChangeResponse(
-      updated: listMailboxUpdated,
-      created: listMailboxCreated,
+      updated: resultUpdated?.list,
+      created: resultCreated?.list,
       destroyed: listMailboxIdDestroyed,
-      newState: newState,
-      updatedProperties: updatedProperties);
+      newStateMailbox: resultUpdated?.state,
+      newStateChanges: resultChanges?.newState,
+      hasMoreChanges: resultChanges?.hasMoreChanges ?? false,
+      updatedProperties: resultChanges?.updatedProperties);
   }
 }

@@ -1,20 +1,20 @@
 
 import 'package:hive/hive.dart';
-import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/caching/config/cache_client.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_client.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
 
-class StateCacheClient extends CacheClient<StateDao> {
+class StateCacheClient extends HiveCacheClient<StateCache> {
 
   @override
   String get tableName => 'StateCache';
 
   @override
-  Future<Box<StateDao>> openTable() {
+  Future<Box<StateCache>> openTable() {
     return Future.sync(() async {
       if (Hive.isBoxOpen(tableName)) {
-        return Hive.box<StateDao>(tableName);
+        return Hive.box<StateCache>(tableName);
       }
-      return await Hive.openBox<StateDao>(tableName);
+      return await Hive.openBox<StateCache>(tableName);
     }).catchError((error) {
       throw error;
     });
@@ -41,7 +41,7 @@ class StateCacheClient extends CacheClient<StateDao> {
   }
 
   @override
-  Future<StateDao?> getItem(String key) {
+  Future<StateCache?> getItem(String key) {
     return Future.sync(() async {
       final boxState = await openTable();
       return boxState.get(key);
@@ -51,7 +51,7 @@ class StateCacheClient extends CacheClient<StateDao> {
   }
 
   @override
-  Future<List<StateDao>> getListItem() {
+  Future<List<StateCache>> getAll() {
     return Future.sync(() async {
       final boxState = await openTable();
       return boxState.values.toList();
@@ -61,7 +61,7 @@ class StateCacheClient extends CacheClient<StateDao> {
   }
 
   @override
-  Future<void> insertItem(String key, StateDao newObject) {
+  Future<void> insertItem(String key, StateCache newObject) {
     return Future.sync(() async {
       final boxState = await openTable();
       boxState.put(key, newObject);
@@ -71,7 +71,7 @@ class StateCacheClient extends CacheClient<StateDao> {
   }
 
   @override
-  Future<void> insertMultipleItem(Map<String, StateDao> mapObject) {
+  Future<void> insertMultipleItem(Map<String, StateCache> mapObject) {
     return Future.sync(() async {
       final boxState = await openTable();
       boxState.putAll(mapObject);
@@ -81,7 +81,7 @@ class StateCacheClient extends CacheClient<StateDao> {
   }
 
   @override
-  Future<void> updateItem(String key, StateDao newObject) {
+  Future<void> updateItem(String key, StateCache newObject) {
     return Future.sync(() async {
       final boxState = await openTable();
       boxState.put(key, newObject);
@@ -110,7 +110,7 @@ class StateCacheClient extends CacheClient<StateDao> {
   }
 
   @override
-  Future<void> updateMultipleItem(Map<String, StateDao> mapObject) {
+  Future<void> updateMultipleItem(Map<String, StateCache> mapObject) {
     return Future.sync(() async {
       final boxState = await openTable();
       boxState.putAll(mapObject);

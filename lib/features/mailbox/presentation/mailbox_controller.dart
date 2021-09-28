@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_sta
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
@@ -19,21 +20,26 @@ import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmapState;
 
 class MailboxController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final GetAllMailboxInteractor _getAllMailboxInteractor;
   final DeleteCredentialInteractor _deleteCredentialInteractor;
+  final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
   final TreeBuilder _treeBuilder;
   final ResponsiveUtils responsiveUtils;
 
   final defaultMailboxList = <PresentationMailbox>[].obs;
   final folderMailboxNodeList = <MailboxNode>[].obs;
 
+  jmapState.State? currentMailboxState;
+
   MailboxController(
     this._getAllMailboxInteractor,
     this._deleteCredentialInteractor,
+    this._refreshAllMailboxInteractor,
     this._treeBuilder,
     this.responsiveUtils
   );
@@ -52,11 +58,11 @@ class MailboxController extends BaseController {
         if (success is MarkAsEmailReadSuccess ||
             success is MarkAsMultipleEmailReadAllSuccess ||
             success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-          refreshGetAllMailboxAction();
+          refreshMailboxChanges();
         } else if (success is MoveMultipleEmailToMailboxAllSuccess
             || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
           mailboxDashBoardController.clearState();
-          refreshGetAllMailboxAction();
+          refreshMailboxChanges();
         }
       });
     });
@@ -66,17 +72,6 @@ class MailboxController extends BaseController {
   void onClose() {
     mailboxDashBoardController.accountId.close();
     super.onClose();
-  }
-
-  void refreshGetAllMailboxAction() {
-    final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null) {
-      getAllMailboxAction(accountId);
-    }
-  }
-
-  void getAllMailboxAction(AccountId accountId) async {
-    consumeState(_getAllMailboxInteractor.execute(accountId));
   }
 
   @override
@@ -93,6 +88,7 @@ class MailboxController extends BaseController {
   void onDone() {
     viewState.value.map((success) {
       if (success is GetAllMailboxSuccess) {
+        currentMailboxState = success.currentMailboxState;
         defaultMailboxList.value = success.defaultMailboxList;
         _setUpMapMailboxIdDefault(success.defaultMailboxList);
       }
@@ -100,8 +96,24 @@ class MailboxController extends BaseController {
   }
 
   @override
-  void onError(error) {
-    print('$error');
+  void onError(error) {}
+
+  void getAllMailboxAction(AccountId accountId) async {
+    consumeState(_getAllMailboxInteractor.execute(accountId));
+  }
+
+  void refreshAllMailbox() {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null) {
+      consumeState(_getAllMailboxInteractor.execute(accountId));
+    }
+  }
+
+  void refreshMailboxChanges() {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null && currentMailboxState != null) {
+      consumeState(_refreshAllMailboxInteractor.execute(accountId, currentMailboxState!));
+    }
   }
 
   void _buildTree(List<PresentationMailbox> folderMailboxList) async {

@@ -1,6 +1,6 @@
 
 import 'package:hive/hive.dart';
-import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/mailbox/data/utils/caching_constants.dart';
 
 part 'state_type.g.dart';
 
