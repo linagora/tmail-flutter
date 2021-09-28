@@ -8,17 +8,29 @@ class MailboxChangeResponse with EquatableMixin {
   final List<Mailbox>? updated;
   final List<Mailbox>? created;
   final List<MailboxId>? destroyed;
-  final State? newState;
+  final State? newStateMailbox;
+  final State? newStateChanges;
+  final bool hasMoreChanges;
   final Properties? updatedProperties;
 
   MailboxChangeResponse({
     this.updated,
     this.created,
     this.destroyed,
-    this.newState,
+    this.newStateMailbox,
+    this.newStateChanges,
+    this.hasMoreChanges = false,
     this.updatedProperties,
   });
 
   @override
-  List<Object?> get props => [updated, created, destroyed, newState, updatedProperties];
+  List<Object?> get props => [
+    updated,
+    created,
+    destroyed,
+    newStateMailbox,
+    newStateChanges,
+    hasMoreChanges,
+    updatedProperties
+  ];
 }

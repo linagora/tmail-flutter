@@ -1,9 +1,9 @@
 
 import 'package:hive/hive.dart';
-import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/caching/config/cache_client.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_client.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
 
-class MailboxCacheClient extends CacheClient<MailboxCache> {
+class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
 
   @override
   String get tableName => 'MailboxCache';
@@ -51,7 +51,7 @@ class MailboxCacheClient extends CacheClient<MailboxCache> {
   }
 
   @override
-  Future<List<MailboxCache>> getListItem() {
+  Future<List<MailboxCache>> getAll() {
     return Future.sync(() async {
       final boxMailbox = await openTable();
       return boxMailbox.values.toList();

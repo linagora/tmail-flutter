@@ -2,7 +2,8 @@
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
+import 'package:tmail_ui_user/features/mailbox/data/extensions/mailbox_rights_cache_extension.dart';
 
 extension MailboxCacheExtension on MailboxCache {
   Mailbox toMailbox() {
