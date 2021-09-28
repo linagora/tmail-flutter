@@ -85,6 +85,7 @@ class ThreadController extends BaseController {
     mailboxDashBoardController.selectedMailbox.listen((selectedMailbox) {
       if (_currentMailboxId != selectedMailbox?.id) {
         _currentMailboxId = selectedMailbox?.id;
+        emailList.value = <PresentationEmail>[];
         refreshGetAllEmailAction();
       }
     });
@@ -440,6 +441,7 @@ class ThreadController extends BaseController {
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (accountId != null && mailboxCurrent != null) {
       final importantAction = presentationEmail.isFlaggedEmail() ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
+      dispatchState(Right(LoadingState()));
       consumeState(_markAsStarEmailInteractor.execute(accountId, presentationEmail.toEmail(), importantAction));
     }
   }

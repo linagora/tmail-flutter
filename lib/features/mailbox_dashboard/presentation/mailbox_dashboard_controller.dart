@@ -91,8 +91,8 @@ class MailboxDashBoardController extends BaseController {
     });
   }
 
-  void addMailboxIdToMap(Role role, MailboxId mailboxId) {
-    mapMailboxId[role] = mailboxId;
+  void setMapMailboxId(Map<Role, MailboxId> newMapMailboxId) {
+    mapMailboxId = newMapMailboxId;
   }
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
