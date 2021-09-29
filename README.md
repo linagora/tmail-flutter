@@ -1,5 +1,7 @@
 # Tmail Flutter mobile application
 
+[![Gitter](https://badges.gitter.im/linagora/team-mail.svg)](https://gitter.im/linagora/team-mail?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 ![LOGO](https://user-images.githubusercontent.com/6928740/129552343-31e21182-d07c-4f2a-bc83-4f9be70d1693.png)
 
 This project aims at providing a multi-plateform mobile email application, running the [JMAP protocol](https://jmap.io/) and will also deliver additional 
