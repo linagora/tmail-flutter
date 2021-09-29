@@ -2,13 +2,12 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+// import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/message_content.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/text_format.dart';
-import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class MessageContentTileBuilder {
@@ -49,8 +48,10 @@ class MessageContentTileBuilder {
             //     webViewJs: false),
             : SizedBox(
               child:InAppWebView(
-                    initialData: InAppWebViewInitialData(data: getHtmlMessageText()),
-                    
+                    initialData: InAppWebViewInitialData(
+                      data: getHtmlMessageText()
+                    ),
+                    initialOptions: InAppWebViewGroupOptions(ios: IOSInAppWebViewOptions(enableViewportScale: true)),
                 ),
             width: double.infinity,
             height: 500,
