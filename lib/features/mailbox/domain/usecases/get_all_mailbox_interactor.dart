@@ -2,11 +2,11 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_extension.dart';
-import 'package:model/model.dart';
 
 class GetAllMailboxInteractor {
   final MailboxRepository _mailboxRepository;
@@ -32,6 +32,7 @@ class GetAllMailboxInteractor {
     return Right<Failure, Success>(GetAllMailboxSuccess(
       defaultMailboxList: tupleList.value1,
       folderMailboxList: tupleList.value2,
-      currentMailboxState: mailboxResponse.state));
+      currentMailboxState: mailboxResponse.state)
+    );
   }
 }
