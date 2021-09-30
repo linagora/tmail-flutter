@@ -9,7 +9,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   String get tableName => 'StateCache';
 
   @override
-  Future<Box<StateCache>> openTable() {
+  Future<Box<StateCache>> openBox() {
     return Future.sync(() async {
       if (Hive.isBoxOpen(tableName)) {
         return Hive.box<StateCache>(tableName);
@@ -23,7 +23,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   @override
   Future<bool> isExistItem(String key) {
     return Future.sync(() async {
-      final boxState = await openTable();
+      final boxState = await openBox();
       return boxState.containsKey(key);
     }).catchError((error) {
       throw error;
@@ -33,7 +33,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   @override
   Future<void> deleteItem(String key) {
     return Future.sync(() async {
-      final boxState = await openTable();
+      final boxState = await openBox();
       return boxState.delete(key);
     }).catchError((error) {
       throw error;
@@ -43,7 +43,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   @override
   Future<StateCache?> getItem(String key) {
     return Future.sync(() async {
-      final boxState = await openTable();
+      final boxState = await openBox();
       return boxState.get(key);
     }).catchError((error) {
       throw error;
@@ -53,7 +53,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   @override
   Future<List<StateCache>> getAll() {
     return Future.sync(() async {
-      final boxState = await openTable();
+      final boxState = await openBox();
       return boxState.values.toList();
     }).catchError((error) {
       throw error;
@@ -63,7 +63,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   @override
   Future<void> insertItem(String key, StateCache newObject) {
     return Future.sync(() async {
-      final boxState = await openTable();
+      final boxState = await openBox();
       boxState.put(key, newObject);
     }).catchError((error) {
       throw error;
@@ -73,7 +73,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   @override
   Future<void> insertMultipleItem(Map<String, StateCache> mapObject) {
     return Future.sync(() async {
-      final boxState = await openTable();
+      final boxState = await openBox();
       boxState.putAll(mapObject);
     }).catchError((error) {
       throw error;
@@ -83,7 +83,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   @override
   Future<void> updateItem(String key, StateCache newObject) {
     return Future.sync(() async {
-      final boxState = await openTable();
+      final boxState = await openBox();
       boxState.put(key, newObject);
     }).catchError((error) {
       throw error;
@@ -102,7 +102,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   @override
   Future<void> deleteMultipleItem(List<String> listKey) {
     return Future.sync(() async {
-      final boxState = await openTable();
+      final boxState = await openBox();
       boxState.deleteAll(listKey);
     }).catchError((error) {
       throw error;
@@ -112,7 +112,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   @override
   Future<void> updateMultipleItem(Map<String, StateCache> mapObject) {
     return Future.sync(() async {
-      final boxState = await openTable();
+      final boxState = await openBox();
       boxState.putAll(mapObject);
     }).catchError((error) {
       throw error;

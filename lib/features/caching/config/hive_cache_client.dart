@@ -5,7 +5,7 @@ abstract class HiveCacheClient<T> {
 
   String get tableName;
 
-  Future<Box<T>> openTable();
+  Future<Box<T>> openBox();
 
   Future<void> insertItem(String key, T newObject);
 
@@ -26,4 +26,8 @@ abstract class HiveCacheClient<T> {
   Future<bool> isExistItem(String key);
 
   Future<bool> isExistTable();
+
+  Future<void> deleteBox() {
+    return Hive.deleteBoxFromDisk(tableName);
+  }
 }

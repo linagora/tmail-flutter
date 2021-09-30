@@ -9,14 +9,19 @@ import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 
 class HiveCacheConfig {
 
-  Future setUp() async {
-    await initializeDatabase();
+  Future setUp({String? cachePath}) async {
+    await initializeDatabase(databasePath: cachePath);
     registerAdapter();
   }
 
-  Future initializeDatabase() async {
-    Directory directory = await pathProvider.getApplicationDocumentsDirectory();
-    Hive.init(directory.path);
+  Future initializeDatabase({String? databasePath}) async {
+    if (databasePath != null) {
+      Hive.init(databasePath);
+    } else {
+      Directory directory = await pathProvider
+        .getApplicationDocumentsDirectory();
+      Hive.init(directory.path);
+    }
   }
 
   void registerAdapter() {
