@@ -120,6 +120,7 @@ class EmailAddressComposerWidgetBuilder {
             ? keyToEmailAddress
             : Key('${prefixEmailAddress.toString()}_email_address_input'),
           initialValue: _getListEmailAddressCurrent(prefixEmailAddress),
+          autofocus: prefixEmailAddress == PrefixEmailAddress.to ? true : false,
           textStyle: TextStyle(color: AppColor.nameUserColor, fontSize: 14, fontWeight: FontWeight.w500),
           cursorColor: AppColor.primaryColor,
           decoration: InputDecoration(
