@@ -1,13 +1,12 @@
 ---
-format_version: '11'
+format_version: '8'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: flutter
 trigger_map:
-- push_branch: master
+- push_branch: "*"
   workflow: primary
 - pull_request_source_branch: "*"
   workflow: primary
-  pull_request_target_branch: master
 workflows:
   deploy:
     steps:
@@ -39,9 +38,6 @@ workflows:
         - configuration: Release
     - deploy-to-bitrise-io@1: {}
     - cache-push@2: {}
-    meta:
-      bitrise.io:
-        stack: osx-xcode-12.5.x
   primary:
     steps:
     - activate-ssh-key@4:
@@ -75,165 +71,37 @@ workflows:
             flutter pub get && flutter pub run intl_generator:extract_to_arb --output-dir=./lib/l10n lib/main/localizations/app_localizations.dart
 
             flutter pub get && flutter pub run intl_generator:generate_from_arb --output-dir=lib/l10n --no-use-deferred-loading lib/main/localizations/app_localizations.dart lib/l10n/intl*.arb
-        is_always_run: true
     - flutter-analyze@0:
         inputs:
         - additional_params: ''
-        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION/core"
-    - flutter-test@1:
-        inputs:
-        - additional_params: "--verbose"
-    - flutter-test@1:
-        inputs:
-        - additional_params: core
-    - flutter-test@1:
-        inputs:
-        - additional_params: model
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION/data"
     - certificate-and-profile-installer@1:
         is_always_run: true
     - set-xcode-build-number@1:
         inputs:
+        - build_short_version_string: 1.0.0
         - build_version_offset: alpha$BITRISE_BUILD_NUMBER
-        - build_short_version_string: 0.1.0-beta01
-        - plist_path: "$BITRISE_FLUTTER_PROJECT_LOCATION/ios/Runner/Info.plist"
-    - flutter-build@0:
-        inputs:
-        - is_debug_mode: 'true'
-        - ios_additional_params: "--release"
-        - ios_codesign_identity: 'iPhone Developer: Tung Tran (B8V9X882MX)'
-    - sign-apk@1: {}
-    - xcode-archive@3:
-        inputs:
-        - team_id: KUT463DS29
-        - force_team_id: KUT463DS29
-        - force_code_sign_identity: 'iPhone Developer: Tung Tran (B8V9X882MX)'
-        - force_provisioning_profile: 8eb8bacb-6fc6-49e5-bf92-71ee7d964469
-        - force_provisioning_profile_specifier: ''
-        - export_method: development
-    - deploy-to-bitrise-io@2: {}
-    - slack@3:
-        inputs:
-        - channel: 'channel: #ft-mobile '
-        - text: |
-            Commit Author: ${GIT_CLONE_COMMIT_AUTHOR_NAME}
-            Message: ${GIT_CLONE_COMMIT_MESSAGE_SUBJECT}
-            App: ${BITRISE_APP_TITLE}
-            Branch: ${BITRISE_GIT_BRANCH}
-            Workflow: ${BITRISE_TRIGGERED_WORKFLOW_ID}
-            View App: ${BITRISE_APP_URL}
-            View Build: ${BITRISE_BUILD_URL}
-            Install Page: ${BITRISE_PUBLIC_INSTALL_PAGE_URL}
-            Status: ${BITRISE_BUILD_STATUS}
-        - emoji: ":sunny:"
-        - from_username: mobile_bot
-        - from_username_on_error: mobile_bot
-        - channel_on_error: 'channel: #ft-mobile'
-        - footer: Linagora Mobile Team
-        - text_on_error: |-
-            Commit Author: ${GIT_CLONE_COMMIT_AUTHOR_NAME}
-            Message: ${GIT_CLONE_COMMIT_MESSAGE_SUBJECT}
-            App: ${BITRISE_APP_TITLE}
-            Branch: ${BITRISE_GIT_BRANCH}
-            Workflow: ${BITRISE_TRIGGERED_WORKFLOW_ID}
-            View App: ${BITRISE_APP_URL}
-            View Build: ${BITRISE_BUILD_URL}
-            Install Page: ${BITRISE_PUBLIC_INSTALL_PAGE_URL}
-            Status: ${BITRISE_BUILD_STATUS}
-        - emoji_on_error: ":rain_cloud:"
-        - icon_url: ''
-        - footer_icon: ''
-        - icon_url_on_error: ''
-        - webhook_url: "$TWAKE_WEBHOOK_API"
-  primary-bitrise-debug:
-    steps:
-    - activate-ssh-key@4:
-        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
-    - git-clone@4: {}
-    - flutter-installer@0:
-        inputs:
-        - installation_bundle_url: https://storage.googleapis.com/flutter_infra/releases/stable/macos/flutter_macos_1.22.1-stable.zip
-        - is_update: 'false'
-    - cache-pull@2: {}
-    - script@1:
-        title: Do anything with Script step
-        inputs:
-        - content: "#!/usr/bin/env bash\n# fail if any commands fails\nset -e\n# debug
-            log\nset -x\n\ncat pubspec.yaml\n\nflutter pub get\nflutter pub get domain\nflutter
-            pub get data\nflutter packages get\n\ncd $BITRISE_FLUTTER_PROJECT_LOCATION/data\nflutter
-            pub run build_runner build --delete-conflicting-outputs\n\ncd $BITRISE_FLUTTER_PROJECT_LOCATION\nflutter
-            pub run intl_translation:extract_to_arb --output-dir=$BITRISE_FLUTTER_PROJECT_LOCATION/lib/l10n
-            \\\n$BITRISE_FLUTTER_PROJECT_LOCATION/lib/presentation/localizations/app_localizations.dart\nflutter
-            pub run intl_translation:generate_from_arb --output-dir=$BITRISE_FLUTTER_PROJECT_LOCATION/lib/l10n
-            \\ \n--no-use-deferred-loading $BITRISE_FLUTTER_PROJECT_LOCATION/lib/presentation/localizations/app_localizations.dart
-            \\\n$BITRISE_FLUTTER_PROJECT_LOCATION/lib/l10n/intl*.arb\n\n# Install
-            necessary pods\ncd $BITRISE_FLUTTER_PROJECT_LOCATION/ios\nflutter pub
-            get && pod install"
-        is_always_run: true
-    - flutter-analyze@0:
-        inputs:
-        - additional_params: ''
-        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION/core"
-    - flutter-test@0:
-        inputs:
-        - additional_params: "--verbose"
-    - flutter-test@0:
-        inputs:
-        - additional_params: data
-    - flutter-test@0:
-        inputs:
-        - additional_params: domain
-    - certificate-and-profile-installer@1:
-        is_always_run: true
-    - set-xcode-build-number@1:
-        inputs:
-        - build_version_offset: alpha$BITRISE_BUILD_NUMBER
-        - build_short_version_string: 0.1.0-beta01
         - plist_path: "$BITRISE_FLUTTER_PROJECT_LOCATION/ios/Runner/Info.plist"
     - flutter-build@0:
         inputs:
         - platform: ios
         - is_debug_mode: 'true'
         - ios_additional_params: "--release"
-        - ios_codesign_identity: 'iPhone Developer: Tung Tran (B8V9X882MX)'
-    - xcode-archive@2:
+        - ios_codesign_identity: 'iPhone Distribution: Linagora (KUT463DS29)'
+    - xcode-archive@3:
         inputs:
         - team_id: KUT463DS29
         - force_team_id: KUT463DS29
-        - force_code_sign_identity: 'iPhone Developer: Tung Tran (B8V9X882MX)'
-        - force_provisioning_profile: 8eb8bacb-6fc6-49e5-bf92-71ee7d964469
+        - force_code_sign_identity: 'iPhone Distribution: Linagora (KUT463DS29)'
+        - force_provisioning_profile: 1d0aa2ba-fead-4bed-8a3d-e599c94b3f66
         - force_provisioning_profile_specifier: ''
-        - export_method: development
-    - deploy-to-bitrise-io@1: {}
-    - slack@3:
+        - export_method: app-store
+    - deploy-to-itunesconnect-application-loader@1:
         inputs:
-        - channel: 'channel: #ft-mobile '
-        - text: |
-            Commit Author|${GIT_CLONE_COMMIT_AUTHOR_NAME}
-            Message|${GIT_CLONE_COMMIT_MESSAGE_SUBJECT}
-            App|${BITRISE_APP_TITLE}
-            Branch|${BITRISE_GIT_BRANCH}
-            Workflow|${BITRISE_TRIGGERED_WORKFLOW_ID}
-            View App|${BITRISE_APP_URL}
-            View Build|${BITRISE_BUILD_URL}
-            Install Page|${BITRISE_PUBLIC_INSTALL_PAGE_URL}
-            Status|${BITRISE_BUILD_STATUS}
-        - emoji: ":sunny:"
-        - from_username: mobile_bot
-        - from_username_on_error: mobile_bot
-        - channel_on_error: 'channel: #ft-mobile'
-        - footer: Mobile Team
-        - text_on_error: |
-            Commit Author|${GIT_CLONE_COMMIT_AUTHOR_NAME}
-            Message|${GIT_CLONE_COMMIT_MESSAGE_SUBJECT}
-            App|${BITRISE_APP_TITLE}
-            Branch|${BITRISE_GIT_BRANCH}
-            Workflow|${BITRISE_TRIGGERED_WORKFLOW_ID}
-            View App|${BITRISE_APP_URL}
-            View Build|${BITRISE_BUILD_URL}
-            Install Page|${BITRISE_PUBLIC_INSTALL_PAGE_URL}
-            Status|${BITRISE_BUILD_STATUS}
-        - emoji_on_error: ":rain_cloud:"
-        - webhook_url: "$TWAKE_WEBHOOK_API"
+        - itunescon_user: "$APPLEID"
+        - password: "$APPLEID_PASSWORD"
+        - connection: 'off'
+        - app_password: "$APPLE_SPECIFIC_PASSWORD"
 app:
   envs:
   - opts:
@@ -247,4 +115,7 @@ app:
     BITRISE_SCHEME: Runner
   - opts:
       is_expand: false
-    BITRISE_EXPORT_METHOD: development
+    BITRISE_EXPORT_METHOD: app-store
+  - opts:
+      is_expand: false
+    BITRISE_GIT_BRANCH: release
