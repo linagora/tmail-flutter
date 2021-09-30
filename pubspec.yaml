@@ -122,6 +122,7 @@ dependencies:
 
   # file_picker
   file_picker: 3.0.2+2
+  sanitize_html: ^2.0.0
 
 dev_dependencies:
   flutter_test:
