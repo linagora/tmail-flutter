@@ -53,6 +53,7 @@ class TextFieldBuilder {
       onChanged: _onTextChange,
       cursorColor: AppColor.primaryColor,
       controller: _textController,
+      autocorrect: false,
       textInputAction: _textInputAction,
       decoration: _inputDecoration,
       maxLines: _maxLines,
