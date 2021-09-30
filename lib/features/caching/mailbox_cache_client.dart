@@ -9,7 +9,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   String get tableName => 'MailboxCache';
 
   @override
-  Future<Box<MailboxCache>> openTable() {
+  Future<Box<MailboxCache>> openBox() {
     return Future.sync(() async {
       if (Hive.isBoxOpen(tableName)) {
         return Hive.box<MailboxCache>(tableName);
@@ -23,7 +23,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   @override
   Future<bool> isExistItem(String key) {
     return Future.sync(() async {
-      final boxMailbox = await openTable();
+      final boxMailbox = await openBox();
       return boxMailbox.containsKey(key);
     }).catchError((error) {
       throw error;
@@ -33,7 +33,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   @override
   Future<void> deleteItem(String key) {
     return Future.sync(() async {
-      final boxMailbox = await openTable();
+      final boxMailbox = await openBox();
       return boxMailbox.delete(key);
     }).catchError((error) {
       throw error;
@@ -43,7 +43,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   @override
   Future<MailboxCache?> getItem(String key) {
     return Future.sync(() async {
-      final boxMailbox = await openTable();
+      final boxMailbox = await openBox();
       return boxMailbox.get(key);
     }).catchError((error) {
       throw error;
@@ -53,7 +53,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   @override
   Future<List<MailboxCache>> getAll() {
     return Future.sync(() async {
-      final boxMailbox = await openTable();
+      final boxMailbox = await openBox();
       return boxMailbox.values.toList();
     }).catchError((error) {
       throw error;
@@ -63,7 +63,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   @override
   Future<void> insertItem(String key, MailboxCache newObject) {
     return Future.sync(() async {
-      final boxMailbox = await openTable();
+      final boxMailbox = await openBox();
       boxMailbox.put(key, newObject);
     }).catchError((error) {
       throw error;
@@ -73,7 +73,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   @override
   Future<void> insertMultipleItem(Map<String, MailboxCache> mapObject) {
     return Future.sync(() async {
-      final boxMailbox = await openTable();
+      final boxMailbox = await openBox();
       boxMailbox.putAll(mapObject);
     }).catchError((error) {
       throw error;
@@ -83,7 +83,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   @override
   Future<void> updateItem(String key, MailboxCache newObject) {
     return Future.sync(() async {
-      final boxMailbox = await openTable();
+      final boxMailbox = await openBox();
       boxMailbox.put(key, newObject);
     }).catchError((error) {
       throw error;
@@ -102,7 +102,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   @override
   Future<void> deleteMultipleItem(List<String> listKey) {
     return Future.sync(() async {
-      final boxMailbox = await openTable();
+      final boxMailbox = await openBox();
       return boxMailbox.deleteAll(listKey);
     }).catchError((error) {
       throw error;
@@ -112,7 +112,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   @override
   Future<void> updateMultipleItem(Map<String, MailboxCache> mapObject) {
     return Future.sync(() async {
-      final boxMailbox = await openTable();
+      final boxMailbox = await openBox();
       boxMailbox.putAll(mapObject);
     }).catchError((error) {
       throw error;
