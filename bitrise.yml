@@ -1,12 +1,7 @@
 ---
-format_version: '8'
+format_version: '11'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: flutter
-trigger_map:
-- push_branch: "*"
-  workflow: primary
-- pull_request_source_branch: "*"
-  workflow: primary
 workflows:
   deploy:
     steps:
@@ -74,7 +69,7 @@ workflows:
     - flutter-analyze@0:
         inputs:
         - additional_params: ''
-        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION/data"
+        - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION/core"
     - certificate-and-profile-installer@1:
         is_always_run: true
     - set-xcode-build-number@1:
@@ -93,7 +88,7 @@ workflows:
         - team_id: KUT463DS29
         - force_team_id: KUT463DS29
         - force_code_sign_identity: 'iPhone Distribution: Linagora (KUT463DS29)'
-        - force_provisioning_profile: 1d0aa2ba-fead-4bed-8a3d-e599c94b3f66
+        - force_provisioning_profile: c9f2fd46-251f-4ba4-85c7-390b04fa83d1
         - force_provisioning_profile_specifier: ''
         - export_method: app-store
     - deploy-to-itunesconnect-application-loader@1:
@@ -119,3 +114,6 @@ app:
   - opts:
       is_expand: false
     BITRISE_GIT_BRANCH: release
+trigger_map:
+- push_branch: release
+  workflow: primary
