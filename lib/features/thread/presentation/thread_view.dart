@@ -22,7 +22,7 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: responsiveUtils.isMobile(context) ? AppColor.bgMailboxListMail : AppColor.primaryLightColor,
+      backgroundColor: AppColor.primaryLightColor,
       body: SafeArea(
         right: false,
         left: false,
@@ -34,9 +34,20 @@ class ThreadView extends GetWidget<ThreadController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildAppBarThread(context),
-              _buildLoadingView(),
-              Expanded(child: _buildListEmail(context)),
-              _buildLoadingViewLoadMore()
+              Expanded(child: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.zero,
+                color: responsiveUtils.isMobile(context) ? AppColor.bgMailboxListMail : AppColor.primaryLightColor,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLoadingView(),
+                    Expanded(child: _buildListEmail(context)),
+                    _buildLoadingViewLoadMore()
+                  ]
+                )
+              )),
             ]
           )
         )
@@ -59,19 +70,21 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget _buildAppBarNormal(BuildContext context) {
     return Obx(() => Padding(
       padding: EdgeInsets.only(left: 15, right: 12),
-      child: AppBarThreadWidgetBuilder(
-            context,
-            imagePaths,
-            responsiveUtils,
-            controller.mailboxDashBoardController.selectedMailbox.value,
-            controller.mailboxDashBoardController.userProfile.value)
-        .onOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
+      child: (AppBarThreadWidgetBuilder(
+              context,
+              imagePaths,
+              responsiveUtils,
+              controller.mailboxDashBoardController.selectedMailbox.value,
+              controller.mailboxDashBoardController.userProfile.value)
+          ..onOpenUserInformationAction(() => {})
+          ..onOpenSearchMailActionClick(() => {})
+          ..onOpenListMailboxActionClick(() => controller.openMailboxLeftMenu()))
         .build()));
   }
 
   Widget _buildAppBarSelectModeActive(BuildContext context) {
     return Obx(() => Padding(
-      padding: EdgeInsets.only(left: 15, right: 12),
+      padding: EdgeInsets.only(left: 12, right: 12),
       child: (AppBarThreadSelectModeActiveBuilder(
               context,
               imagePaths,
@@ -94,7 +107,7 @@ class ThreadView extends GetWidget<ThreadController> {
       _markAsReadAction(context, listEmail),
       _markAsStarAction(context, listEmail),
       _moveToSpamAction(context, listEmail),
-      SizedBox(height: 30),
+      SizedBox(height: 20),
     ];
   }
 
