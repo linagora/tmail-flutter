@@ -47,7 +47,6 @@ class ComposerController extends BaseController {
   final expandMode = ExpandMode.COLLAPSE.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
-  final listReplyToEmailAddress = <EmailAddress>[].obs;
   final attachments = <Attachment>[].obs;
 
   final SendEmailInteractor _sendEmailInteractor;
@@ -177,17 +176,28 @@ class ComposerController extends BaseController {
   }
 
   void _initToEmailAddress() {
-    if (composerArguments.value != null
-        && composerArguments.value?.presentationEmail != null
-        && composerArguments.value?.emailActionType == EmailActionType.reply) {
-      final replyToEmailAddress = composerArguments.value!.presentationEmail?.replyTo;
-      final fromEmailAddress = composerArguments.value!.presentationEmail?.from;
-      if (replyToEmailAddress != null && replyToEmailAddress.isNotEmpty) {
-        listReplyToEmailAddress.value = replyToEmailAddress.toList();
-      } else if (fromEmailAddress != null && fromEmailAddress.isNotEmpty) {
-        listReplyToEmailAddress.value = fromEmailAddress.toList();
+    if (composerArguments.value != null && composerArguments.value?.presentationEmail != null) {
+      final userEmailAddress = EmailAddress(null, composerArguments.value!.userProfile.email);
+
+      final recipients = composerArguments.value!.presentationEmail!.generateRecipientsEmailAddressForComposer(
+        composerArguments.value?.emailActionType,
+        composerArguments.value?.mailboxRole);
+
+      if (composerArguments.value?.mailboxRole == PresentationMailbox.roleSent) {
+        listToEmailAddress = recipients.value1;
+        listCcEmailAddress = recipients.value2;
+        listBccEmailAddress = recipients.value3;
+      } else {
+        listToEmailAddress = recipients.value1.toSet().filterEmailAddress(userEmailAddress);
+        listCcEmailAddress = recipients.value2.toSet().filterEmailAddress(userEmailAddress);
+        listBccEmailAddress = recipients.value3.toSet().filterEmailAddress(userEmailAddress);
       }
-      listToEmailAddress = listReplyToEmailAddress;
+
+      if (listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty) {
+        expandMode.value = ExpandMode.EXPAND;
+      } else {
+        expandMode.value = ExpandMode.COLLAPSE;
+      }
     }
     _updateStatusEmailSendButton();
   }
@@ -196,7 +206,6 @@ class ComposerController extends BaseController {
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.to:
         listToEmailAddress = newListEmailAddress;
-        listReplyToEmailAddress.clear();
         break;
       case PrefixEmailAddress.cc:
         listCcEmailAddress = newListEmailAddress;
@@ -211,8 +220,7 @@ class ComposerController extends BaseController {
   void _updateStatusEmailSendButton() {
     if (listToEmailAddress.isNotEmpty
         || listBccEmailAddress.isNotEmpty
-        || listCcEmailAddress.isNotEmpty
-        || listReplyToEmailAddress.isNotEmpty) {
+        || listCcEmailAddress.isNotEmpty) {
       isEnableEmailSendButton.value = true;
     } else {
       isEnableEmailSendButton.value = false;
