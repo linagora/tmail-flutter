@@ -110,7 +110,7 @@ class ComposerView extends GetWidget<ComposerController> {
             context,
             imagePaths,
             controller.expandMode.value,
-            controller.listReplyToEmailAddress.isNotEmpty ? controller.listReplyToEmailAddress : controller.listToEmailAddress,
+            controller.listToEmailAddress,
             controller.listCcEmailAddress,
             controller.listBccEmailAddress,
             controller.composerArguments.value?.userProfile)
