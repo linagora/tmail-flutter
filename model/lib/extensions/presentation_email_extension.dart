@@ -9,7 +9,9 @@ extension PresentationEmailExtension on PresentationEmail {
   String getEmailDateTime(String newLocale, {String? pattern}) {
     final emailTime = sentAt ?? receivedAt;
     if (emailTime != null) {
-      return emailTime.formatDate(pattern: pattern ?? emailTime.value.toPattern(), locale: newLocale);
+      return emailTime.formatDate(
+        pattern: pattern ?? emailTime.value.toLocal().toPattern(),
+        locale: newLocale);
     }
     return '';
   }
