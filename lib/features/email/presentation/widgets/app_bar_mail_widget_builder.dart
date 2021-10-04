@@ -2,6 +2,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -50,7 +51,6 @@ class AppBarMailWidgetBuilder {
       key: Key('app_bar_messenger_widget'),
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
-      color: Colors.white,
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
@@ -70,13 +70,15 @@ class AppBarMailWidgetBuilder {
   }
 
   Widget _buildBackButton() {
-    return ButtonBuilder(_imagePaths.icBack)
-      .size(20)
-      .onPressActionClick(() {
+    return IconButton(
+      color: AppColor.appColor,
+      icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.appColor, fit: BoxFit.fill),
+      onPressed: () {
         if (_onBackActionClick != null) {
           _onBackActionClick!();
-        }})
-      .build();
+        }
+      }
+    );
   }
 
   Widget _buildListOptionButton() {
@@ -84,33 +86,44 @@ class AppBarMailWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        ButtonBuilder(_imagePaths.icTrash).key(Key('button_move_to_trash_email')).build(),
-        SizedBox(width: 10),
-        ButtonBuilder(_imagePaths.icEyeDisable)
-          .key(Key('button_mark_as_unread_email'))
-          .onPressActionClick(() {
+        IconButton(
+          color: AppColor.baseTextColor,
+          icon: SvgPicture.asset(_imagePaths.icTrash, color: AppColor.baseTextColor, fit: BoxFit.fill),
+          onPressed: () {
+            if (_onBackActionClick != null) {
+              _onBackActionClick!();
+            }
+          }),
+        IconButton(
+          key: Key('button_mark_as_unread_email'),
+          color: AppColor.baseTextColor,
+          icon: SvgPicture.asset(_imagePaths.icEyeDisable, color: AppColor.baseTextColor, fit: BoxFit.fill),
+          onPressed: () {
             if (_onUnreadEmailActionClick != null && _presentationEmail != null && _presentationEmail!.isReadEmail()) {
               _onUnreadEmailActionClick!(_presentationEmail!);
-            }})
-          .build(),
-        SizedBox(width: 10),
-        ButtonBuilder((_presentationEmail != null && _presentationEmail!.isFlaggedEmail())
-            ? _imagePaths.icFlagged
-            : _imagePaths.icFlag)
-          .key(Key('button_mark_as_star_email'))
-          .onPressActionClick(() {
+            }
+          }),
+        IconButton(
+          key: Key('button_mark_as_star_email'),
+          icon: SvgPicture.asset(
+            (_presentationEmail != null && _presentationEmail!.isFlaggedEmail())
+              ? _imagePaths.icFlagged
+              : _imagePaths.icFlag,
+            fit: BoxFit.fill),
+          onPressed: () {
             if (_markAsStarActionClick != null && _presentationEmail != null) {
               _markAsStarActionClick!(_presentationEmail!);
-            }})
-          .build(),
-        SizedBox(width: 10),
-        ButtonBuilder(_imagePaths.icFolder)
-          .key(Key('button_move_to_mailbox_email'))
-          .onPressActionClick(() {
+            }
+          }),
+        IconButton(
+          key: Key('button_move_to_mailbox_email'),
+          color: AppColor.baseTextColor,
+          icon: SvgPicture.asset(_imagePaths.icFolder, color: AppColor.baseTextColor, fit: BoxFit.fill),
+          onPressed: () {
             if (_onMoveToMailboxActionClick != null && _presentationEmail != null) {
               _onMoveToMailboxActionClick!(_presentationEmail!);
-            }})
-          .build(),
+            }
+          }),
       ]
     );
   }

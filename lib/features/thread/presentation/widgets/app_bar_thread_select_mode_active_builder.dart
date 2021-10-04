@@ -2,6 +2,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -50,7 +51,6 @@ class AppBarThreadSelectModeActiveBuilder {
         key: Key('app_bar_thread_select_mode_active'),
         alignment: Alignment.center,
         padding: EdgeInsets.symmetric(vertical: 8),
-        color: Colors.white,
         child: MediaQuery(
             data: MediaQueryData(padding: EdgeInsets.zero),
             child: Row(
@@ -77,14 +77,15 @@ class AppBarThreadSelectModeActiveBuilder {
   }
 
   Widget _buildBackButton() {
-    return ButtonBuilder(_imagePaths.icComposerClose)
-      .padding(5)
-      .size(30)
-      .onPressActionClick(() {
+    return IconButton(
+      color: AppColor.baseTextColor,
+      icon: SvgPicture.asset(_imagePaths.icComposerClose, color: AppColor.baseTextColor, fit: BoxFit.fill),
+      onPressed: () => {
         if (_onCloseActionClick != null) {
-          _onCloseActionClick!();
-        }})
-      .build();
+          _onCloseActionClick!()
+        }
+      }
+    );
   }
 
   Widget _buildListOptionButton() {
@@ -92,29 +93,44 @@ class AppBarThreadSelectModeActiveBuilder {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ButtonBuilder(_imagePaths.icTrash).key(Key('button_remove_email_selected'))
-            .onPressActionClick(() {
+          IconButton(
+            key: Key('button_remove_email_selected'),
+            color: AppColor.baseTextColor,
+            icon: SvgPicture.asset(_imagePaths.icTrash, color: AppColor.baseTextColor, fit: BoxFit.fill),
+            onPressed: () => {
               if (_onRemoveEmailActionClick != null) {
-                _onRemoveEmailActionClick!(_listEmail);
-              }})
-            .build(),
-          SizedBox(width: 10),
-          ButtonBuilder(_imagePaths.icEyeDisable).key(Key('button_unread_email_selected'))
-            .onPressActionClick(() {
+                _onRemoveEmailActionClick!(_listEmail)
+              }
+            }),
+          IconButton(
+            key: Key('button_unread_email_selected'),
+            color: AppColor.baseTextColor,
+            icon: SvgPicture.asset(_imagePaths.icEyeDisable, color: AppColor.baseTextColor, fit: BoxFit.fill),
+            onPressed: () => {
               if (_onMarkAsEmailReadActionClick != null) {
-                _onMarkAsEmailReadActionClick!(_listEmail);
-              }})
-            .build(),
-          SizedBox(width: 10),
-          ButtonBuilder(_imagePaths.icComposerMenu).key(Key('button_menu_select_email'))
-            .onPressActionClick(() {
-              if (_onOpenContextMenuActionClick != null) {
-                _onOpenContextMenuActionClick!(_listEmail);
-              }})
-            .onTapActionClick((details) {
+                _onMarkAsEmailReadActionClick!(_listEmail)
+              }
+            }),
+          GestureDetector(
+            key: Key('button_menu_select_email'),
+            onTap: () => {
+              if (_onOpenContextMenuActionClick != null && _responsiveUtils.isMobile(_context)) {
+                _onOpenContextMenuActionClick!(_listEmail)
+              }
+            },
+            child: Padding(
+              padding: EdgeInsets.all(8),
+              child: SvgPicture.asset(
+                _imagePaths.icComposerMenu,
+                color: AppColor.baseTextColor,
+                width: 24,
+                height: 24,
+                fit: BoxFit.fill),
+            ),
+            onTapDown: (detail) {
               if (_onOpenPopupMenuActionClick != null && !_responsiveUtils.isMobile(_context)) {
                 final screenSize = MediaQuery.of(_context).size;
-                final offset = details.globalPosition;
+                final offset = detail.globalPosition;
                 final position = RelativeRect.fromLTRB(
                   offset.dx,
                   offset.dy,
@@ -122,8 +138,8 @@ class AppBarThreadSelectModeActiveBuilder {
                   screenSize.height - offset.dy,
                 );
                 _onOpenPopupMenuActionClick!(_listEmail, position);
-              }})
-            .build(),
+              }
+            })
         ]
     );
   }
