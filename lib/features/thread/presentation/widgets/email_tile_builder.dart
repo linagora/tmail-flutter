@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 
 typedef OnOpenEmailActionClick = void Function(PresentationEmail selectedEmail);
@@ -18,6 +19,7 @@ class EmailTileBuilder {
   final BuildContext _context;
   final ResponsiveUtils _responsiveUtils;
   final SelectMode _selectModeAll;
+  final Role? _mailboxRole;
 
   OnOpenEmailActionClick? _onOpenEmailActionClick;
   OnSelectEmailActionClick? _onSelectEmailActionClick;
@@ -29,6 +31,7 @@ class EmailTileBuilder {
     this._selectMode,
     this._presentationEmail,
     this._responsiveUtils,
+    this._mailboxRole,
     this._selectModeAll,
   );
 
@@ -82,7 +85,9 @@ class EmailTileBuilder {
                 children: [
                   Expanded(
                     child: Text(
-                      '${_presentationEmail.getSenderName().inCaps}',
+                      _mailboxRole == PresentationMailbox.roleSent
+                          ? '${_presentationEmail.recipientsName().inCaps}'
+                          : '${_presentationEmail.getSenderName().inCaps}',
                       maxLines: 1,
                       overflow:TextOverflow.ellipsis,
                       style: TextStyle(
