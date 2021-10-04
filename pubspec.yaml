@@ -81,12 +81,20 @@ dependencies:
   flutter_widget_from_html: 0.6.2
 
   # flutter_chips_input
+  # ISSUE: https://github.com/linagora/tmail-flutter/issues/131
+  # UPSTREAM ISSUE: TODO
+  # UPSTREAM PR: TODO
+  # EXPLANATION: We need a fork to be able to delete contacts from the composer
   flutter_chips_input:
     git:
       url: git://github.com/dab246/flutter_chips_input.git
       ref: master
 
   # html_editor_enhanced
+  # ISSUE: https://github.com/linagora/tmail-flutter/issues/46
+  # UPSTREAM ISSUE: TODO
+  # UPSTREAM PR: TODO
+  # EXPLANATION: We customized to hide the toolbar of rich text editor to limit the functions out of our requirements
   html_editor_enhanced:
     git:
       url: git://github.com/dab246/html-editor-enhanced.git
@@ -114,6 +122,9 @@ dependencies:
   share: 2.0.4
 
   # flutter_contacts
+  # ISSUE: https://github.com/linagora/tmail-flutter/issues/60
+  # EXPLANATION: We customized the plugin to get email or name with text pattern in device contact.
+  #   It also be used in LinShare mobile app
   contacts_service:
     git:
       url: git://github.com/linagora/flutter_contacts.git
