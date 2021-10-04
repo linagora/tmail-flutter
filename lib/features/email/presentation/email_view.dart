@@ -146,7 +146,7 @@ class EmailView extends GetView {
               imagePaths,
               emailController.mailboxDashBoardController.selectedEmail.value,
               emailController.emailAddressExpandMode.value)
-            .onOpenExpandAddressReceiverActionClick(() => emailController.toggleDisplayAttachmentsAction())
+            .onOpenExpandAddressReceiverActionClick(() => emailController.toggleDisplayEmailAddressAction(expandMode: ExpandMode.EXPAND))
             .build()),
           _buildLoadingView(),
           _buildListAttachments(context),
