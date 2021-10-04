@@ -237,6 +237,7 @@ class ThreadView extends GetWidget<ThreadController> {
                 controller.getSelectMode(listPresentationEmail[index], controller.mailboxDashBoardController.selectedEmail.value),
                 listPresentationEmail[index],
                 responsiveUtils,
+                controller.mailboxDashBoardController.selectedMailbox.value?.role,
                 controller.currentSelectMode.value)
             ..onOpenEmailAction((selectedEmail) => controller.previewEmail(context, selectedEmail))
             ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail))
