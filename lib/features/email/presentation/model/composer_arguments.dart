@@ -11,11 +11,13 @@ class ComposerArguments with EquatableMixin {
   final Session session;
   final UserProfile userProfile;
   final Map<Role, MailboxId> mapMailboxId;
+  final Role? mailboxRole;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
     this.presentationEmail,
     this.emailContent,
+    this.mailboxRole,
     required this.session,
     required this.userProfile,
     required this.mapMailboxId,
@@ -26,6 +28,7 @@ class ComposerArguments with EquatableMixin {
     emailActionType,
     presentationEmail,
     emailContent,
+    mailboxRole,
     session,
     userProfile,
     mapMailboxId,

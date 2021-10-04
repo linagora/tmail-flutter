@@ -341,6 +341,7 @@ class EmailController extends BaseController {
           emailActionType: emailActionType,
           presentationEmail: mailboxDashBoardController.selectedEmail.value!,
           emailContent: emailContent.value,
+          mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
           session: mailboxDashBoardController.sessionCurrent!,
           userProfile: mailboxDashBoardController.userProfile.value!,
           mapMailboxId: mailboxDashBoardController.mapMailboxId));
