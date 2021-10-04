@@ -21,6 +21,7 @@ class _HtmlContentViewState extends State<HtmlContentView> {
       crossPlatform: InAppWebViewOptions(
         useShouldOverrideUrlLoading: true,
         mediaPlaybackRequiresUserGesture: false,
+        preferredContentMode: UserPreferredContentMode.MOBILE
       ),
       android: AndroidInAppWebViewOptions(
         useHybridComposition: true,
@@ -28,6 +29,7 @@ class _HtmlContentViewState extends State<HtmlContentView> {
       ios: IOSInAppWebViewOptions(
         allowsInlineMediaPlayback: true,
         enableViewportScale: true,
+        
       ));
    double webViewContentHeight = 1.0;
 

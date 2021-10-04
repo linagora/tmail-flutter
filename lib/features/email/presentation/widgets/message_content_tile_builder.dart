@@ -59,7 +59,8 @@ class MessageContentTileBuilder {
       ? '${messageContent.getContentHasInlineAttachment(session!.getDownloadUrl(), accountId!, attachmentInlines)}'
       : '${messageContent.content}';
     
-    final trustedHtml = sanitizeHtml(htmlString);
-    return trustedHtml;
+    return htmlString.changeStyleBackground()
+      .removeFontSizeZeroPixel()
+      .addBorderLefForBlockQuote();
   }
 }
