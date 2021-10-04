@@ -31,30 +31,24 @@ class AppBarThreadWidgetBuilder {
     this._userProfile,
   );
 
-  AppBarThreadWidgetBuilder onOpenUserInformationAction(
+  void onOpenUserInformationAction(
       OnOpenUserInformationActionClick onOpenUserInformationActionClick) {
     _onOpenUserInformationActionClick = onOpenUserInformationActionClick;
-    return this;
   }
 
-  AppBarThreadWidgetBuilder onOpenSearchMailActionClick(
-      OnOpenSearchMailActionClick onOpenSearchMailActionClick) {
+  void onOpenSearchMailActionClick(OnOpenSearchMailActionClick onOpenSearchMailActionClick) {
     _onOpenSearchMailActionClick = onOpenSearchMailActionClick;
-    return this;
   }
 
-  AppBarThreadWidgetBuilder onOpenListMailboxActionClick(
-      OnOpenListMailboxActionClick onOpenListMailboxActionClick) {
+  void onOpenListMailboxActionClick(OnOpenListMailboxActionClick onOpenListMailboxActionClick) {
     _onOpenListMailboxActionClick = onOpenListMailboxActionClick;
-    return this;
   }
 
   Widget build() {
     return Container(
       key: Key('app_bar_thread_widget'),
       alignment: Alignment.center,
-      padding: EdgeInsets.only(top: 8, bottom: 2),
-      color: Colors.white,
+      padding: EdgeInsets.only(top: 8, bottom: 8),
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
@@ -88,7 +82,8 @@ class AppBarThreadWidgetBuilder {
     return Padding(
       padding: EdgeInsets.only(left: 16),
       child: IconButton(
-        icon: SvgPicture.asset(_imagePaths.icSearch, width: 24, height: 24, fit: BoxFit.fill),
+        color: AppColor.baseTextColor,
+        icon: SvgPicture.asset(_imagePaths.icSearch, color: AppColor.baseTextColor, fit: BoxFit.fill),
         onPressed: () => {
           if (_onOpenSearchMailActionClick != null) {
             _onOpenSearchMailActionClick!()
