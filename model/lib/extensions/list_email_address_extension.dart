@@ -6,6 +6,8 @@ extension ListEmailAddressExtension on Set<EmailAddress>? {
 
   List<String>? getListAddress() => this?.map((emailAddress) => emailAddress.getEmail()).toList();
 
+  List<EmailAddress> asList() => this != null ? this!.toList() : List.empty();
+
   List<String> getListEmailAddress({ExpandMode expandMode = ExpandMode.EXPAND, int limitAddress = 1, bool isFullEmailAddress = false}) {
     if (this != null) {
       if (expandMode == ExpandMode.EXPAND) {
@@ -24,4 +26,11 @@ extension ListEmailAddressExtension on Set<EmailAddress>? {
   }
 
   int numberEmailAddress() => this != null ? this!.length : 0;
+
+  List<EmailAddress> filterEmailAddress(EmailAddress emailAddressNotExist) {
+    return this != null
+      ? this!.where((emailAddress) => emailAddress.email != emailAddressNotExist.email)
+             .toList()
+      : List.empty();
+  }
 }
