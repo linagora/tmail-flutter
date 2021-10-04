@@ -69,4 +69,8 @@ extension PresentationEmailExtension on PresentationEmail {
         replyTo: replyTo
     );
   }
+
+  String recipientsName() {
+    return to.listEmailAddressToString() + cc.listEmailAddressToString() + bcc.listEmailAddressToString();
+  }
 }
