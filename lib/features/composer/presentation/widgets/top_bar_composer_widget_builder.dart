@@ -2,6 +2,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnBackActionClick = void Function();
 typedef OnSendEmailActionClick = void Function();
@@ -34,7 +35,6 @@ class TopBarComposerWidgetBuilder {
       key: Key('top_bar_composer_widget'),
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
-      color: Colors.white,
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
@@ -53,14 +53,15 @@ class TopBarComposerWidgetBuilder {
   }
 
   Widget _buildBackButton() {
-    return ButtonBuilder(_imagePaths.icComposerClose)
-      .padding(5)
-      .size(30)
-      .onPressActionClick(() {
+    return IconButton(
+      color: AppColor.baseTextColor,
+      icon: SvgPicture.asset(_imagePaths.icComposerClose, color: AppColor.baseTextColor, fit: BoxFit.fill),
+      onPressed: () {
         if (_onBackActionClick != null) {
           _onBackActionClick!();
-        }})
-      .build();
+        }
+      }
+    );
   }
 
   Widget _buildListOptionButton() {
@@ -68,26 +69,41 @@ class TopBarComposerWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        ButtonBuilder(_imagePaths.icComposerFileShare).key(Key('button_file_share')).build(),
-        SizedBox(width: 2),
-        ButtonBuilder(_imagePaths.icShare)
-          .key(Key('button_attachment'))
-          .onPressActionClick(() {
-            if (_onAttachFileActionClick != null) {
-              _onAttachFileActionClick!();
-            }})
-          .build(),
-        SizedBox(width: 2),
-        ButtonBuilder(_imagePaths.icComposerSend)
-          .key(Key('button_send_email'))
-          .color(_isEnableEmailSendButton ? AppColor.enableSendEmailButtonColor : AppColor.disableSendEmailButtonColor)
-          .onPressActionClick(() {
-            if (_onSendEmailActionClick != null && _isEnableEmailSendButton) {
-              _onSendEmailActionClick!();
-            }})
-          .build(),
-        SizedBox(width: 2),
-        ButtonBuilder(_imagePaths.icComposerMenu).key(Key('button_menu_composer')).build(),
+        IconButton(
+          key: Key('button_file_share'),
+          color: AppColor.baseTextColor,
+          icon: SvgPicture.asset(_imagePaths.icComposerFileShare, color: AppColor.baseTextColor, fit: BoxFit.fill),
+          onPressed: () {}
+        ),
+        IconButton(
+            key: Key('button_attachment'),
+            color: AppColor.baseTextColor,
+            icon: SvgPicture.asset(_imagePaths.icShare, color: AppColor.baseTextColor, fit: BoxFit.fill),
+            onPressed: () {
+              if (_onAttachFileActionClick != null) {
+                _onAttachFileActionClick!();
+              }
+            }
+        ),
+        IconButton(
+            key: Key('button_send_email'),
+            color: _isEnableEmailSendButton ? AppColor.enableSendEmailButtonColor : AppColor.disableSendEmailButtonColor,
+            icon: SvgPicture.asset(
+                _imagePaths.icComposerSend,
+                color: _isEnableEmailSendButton ? AppColor.enableSendEmailButtonColor : AppColor.disableSendEmailButtonColor,
+                fit: BoxFit.fill),
+            onPressed: () {
+              if (_onSendEmailActionClick != null) {
+                _onSendEmailActionClick!();
+              }
+            }
+        ),
+        IconButton(
+          key: Key('button_menu_composer'),
+          color: AppColor.baseTextColor,
+          icon: SvgPicture.asset(_imagePaths.icComposerMenu, color: AppColor.baseTextColor, fit: BoxFit.fill),
+          onPressed: () {}
+        )
       ]
     );
   }

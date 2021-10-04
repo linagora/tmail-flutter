@@ -52,7 +52,7 @@ class ComposerView extends GetWidget<ComposerController> {
 
   Widget _buildTopBar(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Obx(() => (TopBarComposerWidgetBuilder(imagePaths, controller.isEnableEmailSendButton.value)
           ..addSendEmailActionClick(() => controller.sendEmailAction(context))
           ..addAttachFileActionClick(() => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context)))
