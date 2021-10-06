@@ -59,12 +59,11 @@ dependencies:
   # getwidget
   getwidget: 2.0.4
 
-  # Used to fix bugs in the official version of flutter_inappwebview: https://githubmemory.com/repo/pichillilorenzo/flutter_inappwebview/issues/873
-  # flutter_inappwebview
-  flutter_inappwebview:
+  # enough_html_editor
+  enough_html_editor:
     git:
-      url: git://github.com/robert-virkus/flutter_inappwebview.git
-      ref: master
+      url: git://github.com/dab246/enough_html_editor.git
+      ref: fix_bug_enough_platform_widgets
 
 dev_dependencies:
   flutter_test:

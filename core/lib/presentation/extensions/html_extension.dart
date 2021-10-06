@@ -26,4 +26,8 @@ extension HtmlExtension on String {
     }
     return htmlString;
   }
+
+  String addBlockQuoteTag() => addBlockTag(
+    'blockquote',
+    attribute: 'style=\"margin-left:8px;margin-right:8px;padding-left:12px;padding-right:12px;border-left:5px solid #eee;\"');
 }

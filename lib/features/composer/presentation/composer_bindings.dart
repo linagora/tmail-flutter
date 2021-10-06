@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/autocomplete_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
@@ -53,7 +52,6 @@ class ComposerBindings extends Bindings {
     Get.lazyPut<AutoCompleteRepository>(() => Get.find<AutoCompleteRepositoryImpl>());
     Get.lazyPut(() => GetAutoCompleteInteractor(Get.find<AutoCompleteRepository>()));
     Get.lazyPut(() => Uuid());
-    Get.lazyPut(() => HtmlEditorController());
     Get.lazyPut(() => TextEditingController());
     Get.lazyPut(() => ContactDataSourceImpl());
     Get.lazyPut<ContactDataSource>(() => Get.find<ContactDataSourceImpl>());
@@ -74,7 +72,6 @@ class ComposerBindings extends Bindings {
       Get.find<GetAutoCompleteWithDeviceContactInteractor>(),
       Get.find<AppToast>(),
       Get.find<Uuid>(),
-      Get.find<HtmlEditorController>(),
       Get.find<TextEditingController>(),
       Get.find<HtmlMessagePurifier>(),
       Get.find<LocalFilePickerInteractor>(),
