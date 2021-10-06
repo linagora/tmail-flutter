@@ -6,11 +6,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnPressActionClick = void Function();
-typedef OnTapDownActionClick = void Function(TapDownDetails details);
 
 class ButtonBuilder {
   OnPressActionClick? _onPressActionClick;
-  OnTapDownActionClick? _onTapActionClick;
 
   String? _icon;
   String? _text;
@@ -20,63 +18,47 @@ class ButtonBuilder {
   Key? _key;
   Color? _color;
 
-  ButtonBuilder key(Key key) {
+  void key(Key key) {
     _key = key;
-    return this;
   }
 
-  ButtonBuilder size(double size) {
+  void size(double size) {
     _size = size;
-    return this;
   }
 
-  ButtonBuilder color(Color color) {
+  void color(Color color) {
     _color = color;
-    return this;
   }
 
-  ButtonBuilder padding(double padding) {
+  void padding(double padding) {
     _padding = padding;
-    return this;
   }
 
-  ButtonBuilder text(String text, {required bool isVertical}) {
+  void text(String text, {required bool isVertical}) {
     _text = text;
     _isVertical = isVertical;
-    return this;
   }
 
   ButtonBuilder(this._icon);
 
-  ButtonBuilder onPressActionClick(OnPressActionClick onPressActionClick) {
+  void onPressActionClick(OnPressActionClick onPressActionClick) {
     _onPressActionClick = onPressActionClick;
-    return this;
-  }
-
-  ButtonBuilder onTapActionClick(OnTapDownActionClick onTapActionClick) {
-    _onTapActionClick = onTapActionClick;
-    return this;
   }
 
   Widget build() {
-    return Container(
-      key: _key,
-      alignment: Alignment.center,
-      color: Colors.transparent,
-      child: MediaQuery(
-        data: MediaQueryData(padding: EdgeInsets.zero),
-        child: GestureDetector(
-          child: _buildBody(),
-          onTap: () {
-            if (_onPressActionClick != null) {
-              _onPressActionClick!();
-            }
-          },
-          onTapDown: (detail) {
-            if (_onTapActionClick != null) {
-              _onTapActionClick!(detail);
-            }
-          },
+    return GestureDetector(
+      onTap: () {
+        if (_onPressActionClick != null) {
+          _onPressActionClick!();
+        }
+      },
+      child: Container(
+        key: _key,
+        alignment: Alignment.center,
+        color: Colors.transparent,
+        child: MediaQuery(
+          data: MediaQueryData(padding: EdgeInsets.zero),
+          child: _buildBody()
         )
       )
     );
