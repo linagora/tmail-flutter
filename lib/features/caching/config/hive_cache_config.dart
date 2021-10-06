@@ -6,6 +6,8 @@ import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_rights_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/thread/data/model/email_address_hive_cache.dart';
+import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 
 class HiveCacheConfig {
 
@@ -29,5 +31,7 @@ class HiveCacheConfig {
     Hive.registerAdapter(MailboxRightsCacheAdapter());
     Hive.registerAdapter(StateCacheAdapter());
     Hive.registerAdapter(StateTypeAdapter());
+    Hive.registerAdapter(EmailAddressHiveCacheAdapter());
+    Hive.registerAdapter(EmailCacheAdapter());
   }
 }
