@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
@@ -8,8 +9,13 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class SessionController extends GetxController {
   final GetSessionInteractor _getSessionInteractor;
   final DeleteCredentialInteractor _deleteCredentialInteractor;
+  final CachingManager _cachingManager;
 
-  SessionController(this._getSessionInteractor, this._deleteCredentialInteractor);
+  SessionController(
+    this._getSessionInteractor,
+    this._deleteCredentialInteractor,
+    this._cachingManager,
+  );
 
   @override
   void onReady() {
@@ -28,8 +34,13 @@ class SessionController extends GetxController {
     await _deleteCredentialInteractor.execute();
   }
 
+  void _clearAllCache() async {
+    await _cachingManager.clearAll();
+  }
+
   void _goToLogin() {
     _deleteCredential();
+    _clearAllCache();
     pushAndPop(AppRoutes.LOGIN);
   }
 
