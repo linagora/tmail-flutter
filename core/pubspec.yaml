@@ -59,6 +59,13 @@ dependencies:
   # getwidget
   getwidget: 2.0.4
 
+  # Used to fix bugs in the official version of flutter_inappwebview: https://githubmemory.com/repo/pichillilorenzo/flutter_inappwebview/issues/873
+  # flutter_inappwebview
+  flutter_inappwebview:
+    git:
+      url: git://github.com/robert-virkus/flutter_inappwebview.git
+      ref: master
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
