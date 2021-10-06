@@ -4,10 +4,10 @@ import 'dart:async';
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:dartz/dartz.dart';
+import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -55,7 +55,6 @@ class ComposerController extends BaseController {
   final GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
   final AppToast _appToast;
   final Uuid _uuid;
-  final HtmlEditorController composerEditorController;
   final TextEditingController subjectEmailInputController;
   final HtmlMessagePurifier _htmlMessagePurifier;
   final LocalFilePickerInteractor _localFilePickerInteractor;
@@ -66,6 +65,7 @@ class ComposerController extends BaseController {
   List<EmailAddress> listBccEmailAddress = [];
   String? _subjectEmail;
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.localContact;
+  HtmlEditorApi? htmlEditorApi;
 
   void setSubjectEmail(String subject) => _subjectEmail = subject;
 
@@ -76,7 +76,6 @@ class ComposerController extends BaseController {
     this._getAutoCompleteWithDeviceContactInteractor,
     this._appToast,
     this._uuid,
-    this.composerEditorController,
     this.subjectEmailInputController,
     this._htmlMessagePurifier,
     this._localFilePickerInteractor,
@@ -139,13 +138,14 @@ class ComposerController extends BaseController {
     }
   }
 
-  void initContentEmail() {
+  String getContentEmail() {
     if (composerArguments.value != null
         && composerArguments.value!.emailActionType != EmailActionType.compose
         && Get.context != null) {
       final contentEmailQuoted = _getBodyEmailQuotedAsHtml(Get.context!, _htmlMessagePurifier);
-      composerEditorController.setText(contentEmailQuoted);
+      return contentEmailQuoted;
     }
+    return '';
   }
 
   Tuple2<String, String>? getHeaderEmailQuoted(String locale) {
@@ -238,24 +238,11 @@ class ComposerController extends BaseController {
 
     var trustAsHtml = '';
     if (contentEmail != null && contentEmail.value1.isNotEmpty) {
-
       final messageContent = contentEmail.value1.first;
-      final attachmentInlines = contentEmail.value2;
-      final session = contentEmail.value3;
-      final baseDownloadUrl = session.getDownloadUrl();
-      final accountId = session.accounts.keys.first;
-
-      final message = (attachmentInlines.isNotEmpty && messageContent.hasImageInlineWithCid())
-          ? '${messageContent.getContentHasInlineAttachment(baseDownloadUrl, accountId, attachmentInlines)}'
-          : '${messageContent.content}';
-
-      trustAsHtml = htmlMessagePurifier.purifyHtmlMessage(message, allowAttributes: {'style', 'input', 'form'})
-          .addBlockTag('div', attribute: 'style=\"margin-left:8px;margin-right:8px;padding-left:12px;padding-right:12px;border-left:6px solid #EFEFEF;\"')
-          .addNewLineTag(count: 2);
+      trustAsHtml = messageContent.content;
     }
 
-    final emailQuotedHtml = '$headerEmailQuotedAsHtml$trustAsHtml'
-        .addBlockTag('div', attribute: 'style=\"padding-right:16px;padding-left:16px;background-color:#FBFBFF;width:100%\"');
+    final emailQuotedHtml = '</br></br></br>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}</br>';
 
     return emailQuotedHtml;
   }
@@ -269,7 +256,7 @@ class ComposerController extends BaseController {
     final generatePartId = PartId(_uuid.v1());
     final generateBlobId = Id(_uuid.v1());
 
-    final emailBodyText = await composerEditorController.getText();
+    final emailBodyText = (await htmlEditorApi?.getFullHtml()) ?? '';
 
     return Email(
       generateEmailId,
