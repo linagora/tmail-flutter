@@ -7,6 +7,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
@@ -30,6 +31,7 @@ class MailboxController extends BaseController {
   final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
   final TreeBuilder _treeBuilder;
   final ResponsiveUtils responsiveUtils;
+  final CachingManager _cachingManager;
 
   final defaultMailboxList = <PresentationMailbox>[].obs;
   final folderMailboxNodeList = <MailboxNode>[].obs;
@@ -41,7 +43,8 @@ class MailboxController extends BaseController {
     this._deleteCredentialInteractor,
     this._refreshAllMailboxInteractor,
     this._treeBuilder,
-    this.responsiveUtils
+    this.responsiveUtils,
+    this._cachingManager,
   );
 
   @override
@@ -185,8 +188,13 @@ class MailboxController extends BaseController {
     await _deleteCredentialInteractor.execute();
   }
 
+  void _clearAllCache() async {
+    await _cachingManager.clearAll();
+  }
+
   void closeMailboxScreen() {
     _deleteCredential();
+    _clearAllCache();
     pushAndPopAll(AppRoutes.LOGIN);
   }
 }
