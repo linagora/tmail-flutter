@@ -86,12 +86,6 @@ dependencies:
       url: git://github.com/dab246/flutter_chips_input.git
       ref: master
 
-  # html_editor_enhanced
-  html_editor_enhanced:
-    git:
-      url: git://github.com/dab246/html-editor-enhanced.git
-      ref: master
-
   # uuid
   uuid: 3.0.4
 
@@ -124,6 +118,12 @@ dependencies:
 
   # hive
   hive: 2.0.4
+
+  # enough_html_editor
+  enough_html_editor:
+    git:
+      url: git://github.com/dab246/enough_html_editor.git
+      ref: fix_bug_enough_platform_widgets
 
 dev_dependencies:
   flutter_test:

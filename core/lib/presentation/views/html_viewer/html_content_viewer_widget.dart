@@ -52,7 +52,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   String? _htmlData;
   bool? _wereExternalImagesBlocked;
   bool _isGenerating = false;
-  double? _webViewContentHeight;
+  double? _webViewContentHeight = 1.0;
 
   @override
   void initState() {
@@ -114,7 +114,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
     final size = MediaQuery.of(context).size;
     return SizedBox(
-      height: _webViewContentHeight ?? size.height,
+      height: _webViewContentHeight,
       width: size.width,
       child: Padding(
         padding: EdgeInsets.only(top: 16),

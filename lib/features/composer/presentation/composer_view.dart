@@ -1,11 +1,11 @@
 import 'package:core/core.dart';
+import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:model/email/attachment.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_composer_widget_builder.dart';
@@ -22,7 +22,10 @@ class ComposerView extends GetWidget<ComposerController> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+        controller.htmlEditorApi?.unfocus();
+      },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: AppColor.primaryLightColor,
@@ -148,34 +151,46 @@ class ComposerView extends GetWidget<ComposerController> {
       child: Column(
         children: [
           _buildEmailHeader(context),
-          Padding(
-            padding: EdgeInsets.only(bottom: 30, top: 16, left: 16, right: 16),
-            child: _buildComposerEditor(context),
-          ),
-          _buildAttachmentsLoadingView(),
-          _buildAttachments(context),
+          Container(
+            color: AppColor.primaryLightColor,
+            margin: EdgeInsets.zero,
+            padding: EdgeInsets.zero,
+            alignment: Alignment.topCenter,
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 30),
+                  child: _buildComposerEditor(context)),
+                _buildAttachmentsLoadingView(),
+                _buildAttachments(context),
+              ],
+            ),
+          )
         ]
       )
     );
   }
 
   Widget _buildComposerEditor(BuildContext context) {
-    return HtmlEditor(
-      key: Key('email_body_editor_quoted'),
-      controller: controller.composerEditorController,
-      htmlEditorOptions: HtmlEditorOptions(
-        hint: AppLocalizations.of(context).hint_content_email_composer,
-        shouldEnsureVisible: true),
-      otherOptions: OtherOptions(decoration: BoxDecoration()),
-      callbacks: Callbacks(
-        onFocus: () {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-        onInit: () {
-          controller.initContentEmail();
-        }
-      ),
-    );
+    return Obx(() {
+      if (controller.composerArguments.value?.emailActionType == EmailActionType.compose) {
+        return PackagedHtmlEditor(
+          key: Key('composer_editor'),
+          minHeight: 400,
+          onCreated: (editorApi) => controller.htmlEditorApi = editorApi,
+        );
+      } else {
+        final message = controller.getContentEmail();
+        return message.isNotEmpty
+          ? PackagedHtmlEditor(
+              key: Key('composer_editor'),
+              minHeight: 400,
+              onCreated: (editorApi) => controller.htmlEditorApi = editorApi,
+              initialContent: message,
+            )
+          : SizedBox.shrink();
+      }
+    });
   }
 
   Widget _buildAttachmentsLoadingView() {
