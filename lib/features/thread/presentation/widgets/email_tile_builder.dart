@@ -133,19 +133,19 @@ class EmailTileBuilder {
                           overflow:TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 12, color: AppColor.baseTextColor))),
                       if (_presentationEmail.hasAttachment == true)
-                        ButtonBuilder(_imagePaths.icShare)
-                          .padding(5)
-                          .size(20)
+                        (ButtonBuilder(_imagePaths.icShare)
+                            ..padding(5)
+                            ..size(20))
                           .build(),
-                      ButtonBuilder(_presentationEmail.isFlaggedEmail() ? _imagePaths.icFlagged : _imagePaths.icFlag)
-                          .padding(5)
-                          .size(20)
-                          .onPressActionClick(() {
+                      (ButtonBuilder(_presentationEmail.isFlaggedEmail() ? _imagePaths.icFlagged : _imagePaths.icFlag)
+                          ..padding(5)
+                          ..size(20)
+                          ..onPressActionClick(() {
                               if (_onMarkAsStarEmailActionClick != null) {
                                 _onMarkAsStarEmailActionClick!(_presentationEmail);
                               }
-                            })
-                          .build(),
+                            }))
+                        .build(),
                     ],
                   )
                 ],
