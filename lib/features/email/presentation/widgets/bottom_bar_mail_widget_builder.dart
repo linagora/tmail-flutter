@@ -41,29 +41,29 @@ class BottomBarMailWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        ButtonBuilder(_imagePaths.icReplyAll)
-          .key(Key('button_reply_all_message'))
-          .onPressActionClick(() {
-            if (_onPressEmailActionClick != null) {
-              _onPressEmailActionClick!(EmailActionType.replyAll);
-            }})
-          .text(AppLocalizations.of(_context).reply_all, isVertical: _responsiveUtils.isMobile(_context))
+        (ButtonBuilder(_imagePaths.icReplyAll)
+            ..key(Key('button_reply_all_message'))
+            ..onPressActionClick(() {
+              if (_onPressEmailActionClick != null) {
+                _onPressEmailActionClick!(EmailActionType.replyAll);
+              }})
+            ..text(AppLocalizations.of(_context).reply_all, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        ButtonBuilder(_imagePaths.icReply)
-          .key(Key('button_reply_message'))
-          .onPressActionClick(() {
-            if (_onPressEmailActionClick != null) {
-              _onPressEmailActionClick!(EmailActionType.reply);
-            }})
-          .text(AppLocalizations.of(_context).reply, isVertical: _responsiveUtils.isMobile(_context))
+        (ButtonBuilder(_imagePaths.icReply)
+            ..key(Key('button_reply_message'))
+            ..onPressActionClick(() {
+              if (_onPressEmailActionClick != null) {
+                _onPressEmailActionClick!(EmailActionType.reply);
+              }})
+            ..text(AppLocalizations.of(_context).reply, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        ButtonBuilder(_imagePaths.icForward)
-          .key(Key('button_forward_message'))
-          .onPressActionClick(() {
-            if (_onPressEmailActionClick != null) {
-              _onPressEmailActionClick!(EmailActionType.forward);
-            }})
-          .text(AppLocalizations.of(_context).forward, isVertical: _responsiveUtils.isMobile(_context))
+        (ButtonBuilder(_imagePaths.icForward)
+            ..key(Key('button_forward_message'))
+            ..onPressActionClick(() {
+              if (_onPressEmailActionClick != null) {
+                _onPressEmailActionClick!(EmailActionType.forward);
+              }})
+            ..text(AppLocalizations.of(_context).forward, isVertical: _responsiveUtils.isMobile(_context)))
           .build()
       ]
     );
