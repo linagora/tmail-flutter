@@ -7,12 +7,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/text_format.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_content_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/list_attachment_extension.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/message_content_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/sender_and_receiver_information_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:filesize/filesize.dart';
@@ -121,7 +121,7 @@ class EmailView extends GetView {
       (failure) => SizedBox.shrink(),
       (success) => success is LoadingState
         ? Center(child: Padding(
-            padding: EdgeInsets.only(top: 25, bottom: 16),
+            padding: EdgeInsets.only(top: 16, bottom: 16),
             child: SizedBox(
               width: 30,
               height: 30,
@@ -131,7 +131,7 @@ class EmailView extends GetView {
 
   Widget _buildEmailMessage(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 12, right: 12, top: 16, bottom: 24),
+      padding: EdgeInsets.only(left: 12, right: 12, top: 16, bottom: 16),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -281,25 +281,19 @@ class EmailView extends GetView {
 
   Widget _buildListMessageContent() {
     return Obx(() {
-      if (emailController.emailContent.value != null) {
-        final messageContents = emailController.emailContent.value!.getListMessageContent();
-        final attachmentsInline = emailController.emailContent.value!.getListAttachmentInline();
-        return messageContents.isNotEmpty
-          ? ListView.builder(
-              primary: false,
-              shrinkWrap: true,
+      final messageContents = emailController.emailContent.value?.getListMessageContent();
+
+      if (messageContents != null && messageContents.isNotEmpty) {
+        return messageContents.first.textFormat == TextFormat.PLAIN
+          ? Padding(
               padding: EdgeInsets.only(top: 16),
-              key: Key('list_message_content'),
-              itemCount: messageContents.length,
-              itemBuilder: (context, index) =>
-                  MessageContentTileBuilder(
-                      htmlMessagePurifier: htmlMessagePurifier,
-                      messageContent: messageContents[index],
-                      attachmentInlines: attachmentsInline,
-                      session: emailController.mailboxDashBoardController.sessionCurrent,
-                      accountId: emailController.mailboxDashBoardController.accountId.value)
-                .build())
-          : SizedBox.shrink();
+              child: Text(
+                '${messageContents.first.content}',
+                style: TextStyle(fontSize: 12,
+                color: AppColor.mailboxTextColor)))
+          : HtmlContentViewer(
+              message: messageContents.first.content,
+            );
       } else {
         return SizedBox.shrink();
       }
