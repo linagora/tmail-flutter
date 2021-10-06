@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
@@ -46,6 +47,7 @@ class MailboxBindings extends Bindings {
       Get.find<DeleteCredentialInteractor>(),
       Get.find<RefreshAllMailboxInteractor>(),
       Get.find<TreeBuilder>(),
-      Get.find<ResponsiveUtils>()));
+      Get.find<ResponsiveUtils>(),
+      Get.find<CachingManager>()));
   }
 }

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -22,6 +23,9 @@ class SessionBindings extends Bindings {
     Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
     Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
     Get.lazyPut(() => DeleteCredentialInteractor(Get.find<CredentialRepository>()));
-    Get.lazyPut(() => SessionController(Get.find<GetSessionInteractor>(), Get.find<DeleteCredentialInteractor>()));
+    Get.lazyPut(() => SessionController(
+      Get.find<GetSessionInteractor>(),
+      Get.find<DeleteCredentialInteractor>(),
+      Get.find<CachingManager>()));
   }
 }
