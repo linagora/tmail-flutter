@@ -1,8 +1,8 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
+import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
-import 'package:tmail_ui_user/features/mailbox/data/utils/caching_constants.dart';
 
 part 'state_cache.g.dart';
 
