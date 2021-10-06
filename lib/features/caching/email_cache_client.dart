@@ -1,0 +1,121 @@
+
+import 'package:hive/hive.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_client.dart';
+import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
+
+class EmailCacheClient extends HiveCacheClient<EmailCache> {
+
+  @override
+  String get tableName => 'EmailCache';
+
+  @override
+  Future<Box<EmailCache>> openBox() {
+    return Future.sync(() async {
+      if (Hive.isBoxOpen(tableName)) {
+        return Hive.box<EmailCache>(tableName);
+      }
+      return await Hive.openBox<EmailCache>(tableName);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<bool> isExistItem(String key) {
+    return Future.sync(() async {
+      final boxEmail = await openBox();
+      return boxEmail.containsKey(key);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<void> deleteItem(String key) {
+    return Future.sync(() async {
+      final boxEmail = await openBox();
+      return boxEmail.delete(key);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<EmailCache?> getItem(String key) {
+    return Future.sync(() async {
+      final boxEmail = await openBox();
+      return boxEmail.get(key);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<List<EmailCache>> getAll() {
+    return Future.sync(() async {
+      final boxEmail = await openBox();
+      return boxEmail.values.toList();
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<void> insertItem(String key, EmailCache newObject) {
+    return Future.sync(() async {
+      final boxEmail = await openBox();
+      boxEmail.put(key, newObject);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<void> insertMultipleItem(Map<String, EmailCache> mapObject) {
+    return Future.sync(() async {
+      final boxEmail = await openBox();
+      boxEmail.putAll(mapObject);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<void> updateItem(String key, EmailCache newObject) {
+    return Future.sync(() async {
+      final boxEmail = await openBox();
+      boxEmail.put(key, newObject);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<bool> isExistTable() {
+    return Future.sync(() async {
+      return await Hive.boxExists(tableName);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<void> deleteMultipleItem(List<String> listKey) {
+    return Future.sync(() async {
+      final boxEmail = await openBox();
+      return boxEmail.deleteAll(listKey);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<void> updateMultipleItem(Map<String, EmailCache> mapObject) {
+    return Future.sync(() async {
+      final boxEmail = await openBox();
+      boxEmail.putAll(mapObject);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+}
