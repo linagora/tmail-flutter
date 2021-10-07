@@ -8,7 +8,7 @@ import 'package:jmap_dart_client/jmap/core/extensions/unsigned_int_extension.dar
 
 extension ListEmailExtension on List<Email> {
 
-  Email? findEmail(EmailId emailId) {
+  Email? findEmailById(EmailId emailId) {
     try {
       return firstWhere((email) => email.id == emailId);
     } catch (e) {

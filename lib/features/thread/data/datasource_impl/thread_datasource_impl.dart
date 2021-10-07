@@ -18,23 +18,18 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   ThreadDataSourceImpl(this.threadAPI);
 
   @override
-  Future<EmailResponse> getAllEmail(
+  Future<EmailsResponse> getAllEmail(
     AccountId accountId,
     {
-      int? position,
       UnsignedInt? limit,
       Set<Comparator>? sort,
       Filter? filter,
       Properties? properties,
-      Properties? propertiesCreated,
-      Properties? propertiesUpdated,
-      MailboxId? inMailboxId
     }
   ) {
     return Future.sync(() async {
       return await threadAPI.getAllEmail(
         accountId,
-        position: position,
         limit: limit,
         sort: sort,
         filter: filter,
@@ -65,7 +60,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<List<Email>> getAllEmailCache({MailboxId? inMailboxId, Set<Comparator>? sort}) {
+  Future<List<Email>> getAllEmailCache({MailboxId? inMailboxId, Set<Comparator>? sort, UnsignedInt? limit}) {
     throw UnimplementedError();
   }
 

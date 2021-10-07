@@ -38,20 +38,21 @@ void main() {
       when(threadRepository.getAllEmail(
           AccountFixtures.aliceAccountId,
           limit: UnsignedInt(20),
-          position: 0,
           sort: Set()..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
-          filter: EmailFilterCondition(inMailbox: MailboxFixtures.inboxMailbox.id),
+          emailFilter: EmailFilter(
+            filter: EmailFilterCondition(inMailbox: MailboxFixtures.inboxMailbox.id),
+            mailboxId: MailboxFixtures.inboxMailbox.id,
+          ),
           propertiesCreated: ThreadConstants.propertiesDefault,
           propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-          inMailboxId: MailboxFixtures.inboxMailbox.id
       )).thenAnswer((_) => Stream.fromIterable({
-          EmailResponse(
+          EmailsResponse(
             emailList: {
               EmailFixtures.email1,
               EmailFixtures.email2
             }.toList(),
             state: jmap.State('s1')),
-          EmailResponse(
+          EmailsResponse(
             emailList: {
               EmailFixtures.email1,
               EmailFixtures.email2,
@@ -65,12 +66,13 @@ void main() {
       final streamStates = getEmailsInMailboxInteractor.execute(
         AccountFixtures.aliceAccountId,
         limit: UnsignedInt(20),
-        position: 0,
         sort: Set()..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
-        filter: EmailFilterCondition(inMailbox: MailboxFixtures.inboxMailbox.id),
+        emailFilter: EmailFilter(
+          filter: EmailFilterCondition(inMailbox: MailboxFixtures.inboxMailbox.id),
+          mailboxId: MailboxFixtures.inboxMailbox.id,
+        ),
         propertiesCreated: ThreadConstants.propertiesDefault,
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        inMailboxId: MailboxFixtures.inboxMailbox.id);
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault);
 
       final states = await streamStates.toList();
 

@@ -10,10 +10,9 @@ import 'package:tmail_ui_user/features/thread/data/model/email_change_response.d
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 
 abstract class ThreadDataSource {
-  Future<EmailResponse> getAllEmail(
+  Future<EmailsResponse> getAllEmail(
     AccountId accountId,
     {
-      int? position,
       UnsignedInt? limit,
       Set<Comparator>? sort,
       Filter? filter,
