@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:model/model.dart';
@@ -41,7 +42,7 @@ void main() {
           propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
           inMailboxId: MailboxFixtures.inboxMailbox.id
       )).thenAnswer((_) => Stream.fromIterable({
-          EmailResponse(
+        EmailsResponse(
             emailList: {
               EmailFixtures.email1,
               EmailFixtures.email2,
@@ -62,8 +63,9 @@ void main() {
 
       final states = await streamStates.toList();
 
-      expect(states.length, equals(1));
+      expect(states.length, equals(2));
       expect(states, containsAllInOrder({
+        Right(RefreshingState()),
         Right(GetAllEmailSuccess(
           emailList: {
             EmailFixtures.email1.toPresentationEmail(),

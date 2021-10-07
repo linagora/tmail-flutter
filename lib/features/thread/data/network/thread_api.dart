@@ -24,10 +24,9 @@ class ThreadAPI {
 
   ThreadAPI(this.httpClient);
 
-  Future<EmailResponse> getAllEmail(
+  Future<EmailsResponse> getAllEmail(
     AccountId accountId,
     {
-      int? position,
       UnsignedInt? limit,
       Set<Comparator>? sort,
       Filter? filter,
@@ -39,8 +38,6 @@ class ThreadAPI {
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
 
     final queryEmailMethod = QueryEmailMethod(accountId);
-
-    if (position != null) queryEmailMethod..addPosition(position);
 
     if (limit != null) queryEmailMethod..addLimit(limit);
 
@@ -74,7 +71,7 @@ class ThreadAPI {
       });
     }
 
-    return EmailResponse(emailList: resultList?.list, state: resultList?.state);
+    return EmailsResponse(emailList: resultList?.list, state: resultList?.state);
   }
 
   Future<EmailChangeResponse> getChanges(

@@ -3,11 +3,11 @@ import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 
-class EmailResponse with EquatableMixin {
+class EmailsResponse with EquatableMixin {
   final List<Email>? emailList;
   final State? state;
 
-  EmailResponse({
+  EmailsResponse({
     this.emailList,
     this.state
   });

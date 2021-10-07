@@ -24,10 +24,11 @@ class LocalBindings extends Bindings {
     Get.put(MailboxCacheClient());
     Get.put(StateCacheClient());
     Get.put(MailboxCacheManager(Get.find<MailboxCacheClient>()));
-    Get.put(CachingManager(
-      Get.find<MailboxCacheClient>(),
-      Get.find<StateCacheClient>()));
     Get.put(EmailCacheClient());
     Get.put(EmailCacheManager(Get.find<EmailCacheClient>()));
+    Get.put(CachingManager(
+      Get.find<MailboxCacheClient>(),
+      Get.find<StateCacheClient>(),
+      Get.find<EmailCacheClient>()));
   }
 }

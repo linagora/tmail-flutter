@@ -28,6 +28,7 @@ export 'email/attachment.dart';
 export 'email/move_action.dart';
 export 'email/mark_star_action.dart';
 export 'email/email_property.dart';
+export 'email/email_filter.dart';
 
 // Extensions
 export 'extensions/email_address_extension.dart';
