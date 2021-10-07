@@ -7,41 +7,28 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
+import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
-import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 
-class ThreadDataSourceImpl extends ThreadDataSource {
+class LocalThreadDataSourceImpl extends ThreadDataSource {
 
-  final ThreadAPI threadAPI;
+  final EmailCacheManager _emailCacheManager;
 
-  ThreadDataSourceImpl(this.threadAPI);
+  LocalThreadDataSourceImpl(this._emailCacheManager);
 
   @override
   Future<EmailResponse> getAllEmail(
-    AccountId accountId,
-    {
-      int? position,
-      UnsignedInt? limit,
-      Set<Comparator>? sort,
-      Filter? filter,
-      Properties? properties,
-      Properties? propertiesCreated,
-      Properties? propertiesUpdated,
-      MailboxId? inMailboxId
-    }
+      AccountId accountId,
+      {
+        int? position,
+        UnsignedInt? limit,
+        Set<Comparator>? sort,
+        Filter? filter,
+        Properties? properties
+      }
   ) {
-    return Future.sync(() async {
-      return await threadAPI.getAllEmail(
-        accountId,
-        position: position,
-        limit: limit,
-        sort: sort,
-        filter: filter,
-        properties: properties);
-    }).catchError((error) {
-      throw error;
-    });
+    throw UnimplementedError();
   }
 
   @override
@@ -53,24 +40,24 @@ class ThreadDataSourceImpl extends ThreadDataSource {
         Properties? propertiesUpdated
       }
   ) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Email>> getAllEmailCache({MailboxId? inMailboxId, Set<Comparator>? sort}) {
     return Future.sync(() async {
-      return await threadAPI.getChanges(
-        accountId,
-        sinceState,
-        propertiesCreated: propertiesCreated,
-        propertiesUpdated: propertiesUpdated);
+      return await _emailCacheManager.getAllEmail(inMailboxId: inMailboxId, sort: sort);
     }).catchError((error) {
       throw error;
     });
   }
 
   @override
-  Future<List<Email>> getAllEmailCache({MailboxId? inMailboxId, Set<Comparator>? sort}) {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> update({List<Email>? updated, List<Email>? created, List<EmailId>? destroyed}) {
-    throw UnimplementedError();
+    return Future.sync(() async {
+      return await _emailCacheManager.update(updated: updated, created: created, destroyed: destroyed);
+    }).catchError((error) {
+      throw error;
+    });
   }
 }

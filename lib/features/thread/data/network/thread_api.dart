@@ -6,12 +6,17 @@ import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
+import 'package:jmap_dart_client/jmap/mail/email/changes/changes_email_method.dart';
+import 'package:jmap_dart_client/jmap/mail/email/changes/changes_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_method.dart';
+import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 
 class ThreadAPI {
 
@@ -19,7 +24,7 @@ class ThreadAPI {
 
   ThreadAPI(this.httpClient);
 
-  Future<List<Email>> getAllEmail(
+  Future<EmailResponse> getAllEmail(
     AccountId accountId,
     {
       int? position,
@@ -69,6 +74,72 @@ class ThreadAPI {
       });
     }
 
-    return resultList == null ? [] : resultList.list;
+    return EmailResponse(emailList: resultList?.list, state: resultList?.state);
+  }
+
+  Future<EmailChangeResponse> getChanges(
+    AccountId accountId,
+    State sinceState,
+    {
+      Properties? propertiesCreated,
+      Properties? propertiesUpdated
+    }
+  ) async {
+    final processingInvocation = ProcessingInvocation();
+
+    final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+
+    final changesEmailMethod = ChangesEmailMethod(accountId, sinceState, maxChanges: UnsignedInt(128));
+
+    final changesEmailInvocation = jmapRequestBuilder.invocation(changesEmailMethod);
+
+    final getMailboxUpdated = GetEmailMethod(accountId)
+      ..addReferenceIds(processingInvocation.createResultReference(
+          changesEmailInvocation.methodCallId,
+          ReferencePath.updatedPath));
+
+    if (propertiesUpdated != null) {
+      getMailboxUpdated..addProperties(propertiesUpdated);
+    }
+
+    final getEmailCreated = GetEmailMethod(accountId)
+      ..addReferenceIds(processingInvocation.createResultReference(
+          changesEmailInvocation.methodCallId,
+          ReferencePath.createdPath));
+
+    if (propertiesCreated != null) {
+      getEmailCreated..addProperties(propertiesCreated);
+    }
+
+    final getEmailUpdatedInvocation = jmapRequestBuilder.invocation(getMailboxUpdated);
+    final getEmailCreatedInvocation = jmapRequestBuilder.invocation(getEmailCreated);
+
+    final result = await (jmapRequestBuilder
+        ..usings(getEmailCreated.requiredCapabilities))
+      .build()
+      .execute();
+
+    final resultChanges = result.parse<ChangesEmailResponse>(
+      changesEmailInvocation.methodCallId,
+      ChangesEmailResponse.deserialize);
+
+    final resultUpdated = result.parse<GetEmailResponse>(
+      getEmailUpdatedInvocation.methodCallId,
+      GetEmailResponse.deserialize);
+
+    final resultCreated = result.parse<GetEmailResponse>(
+      getEmailCreatedInvocation.methodCallId,
+      GetEmailResponse.deserialize);
+
+    final listMailboxIdDestroyed = resultChanges?.destroyed.map((id) => EmailId(id)).toList() ?? <EmailId>[];
+
+    return EmailChangeResponse(
+      updated: resultUpdated?.list,
+      created: resultCreated?.list,
+      destroyed: listMailboxIdDestroyed,
+      newStateEmail: resultUpdated?.state,
+      newStateChanges: resultChanges?.newState,
+      hasMoreChanges: resultChanges?.hasMoreChanges ?? false,
+      updatedProperties: propertiesUpdated);
   }
 }
