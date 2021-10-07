@@ -19,3 +19,17 @@ class LoadingState extends UIState {
   @override
   List<Object?> get props => [];
 }
+
+class LoadingMoreState extends UIState {
+  LoadingMoreState();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class RefreshingState extends UIState {
+  RefreshingState();
+
+  @override
+  List<Object?> get props => [];
+}

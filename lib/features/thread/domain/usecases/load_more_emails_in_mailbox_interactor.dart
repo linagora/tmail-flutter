@@ -1,44 +1,42 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:model/model.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 
-class RefreshChangesEmailsInMailboxInteractor {
+class LoadMoreEmailsInMailboxInteractor {
   final ThreadRepository threadRepository;
 
-  RefreshChangesEmailsInMailboxInteractor(this.threadRepository);
+  LoadMoreEmailsInMailboxInteractor(this.threadRepository);
 
   Stream<Either<Failure, Success>> execute(
     AccountId accountId,
-    jmap.State currentState,
     {
+      UnsignedInt? limit,
       Set<Comparator>? sort,
-      Properties? propertiesCreated,
-      Properties? propertiesUpdated,
-      MailboxId? inMailboxId
+      Filter? filter,
+      Properties? properties
     }
   ) async* {
-    yield Right<Failure, Success>(RefreshingState());
-
     try {
+      yield Right<Failure, Success>(LoadingMoreState());
+
       yield* threadRepository
-        .refreshChanges(
+        .loadMoreEmails(
           accountId,
-          currentState,
+          limit: limit,
           sort: sort,
-          propertiesCreated: propertiesCreated,
-          propertiesUpdated: propertiesUpdated,
-          inMailboxId: inMailboxId)
+          filter: filter,
+          properties: properties)
         .map(_toGetEmailState);
     } catch (e) {
-      yield Left(GetAllEmailFailure(e));
+      yield Left(LoadMoreEmailsFailure(e));
     }
   }
 
@@ -46,8 +44,6 @@ class RefreshChangesEmailsInMailboxInteractor {
     final presentationEmailList = emailResponse.emailList
       ?.map((email) => email.toPresentationEmail()).toList() ?? List.empty();
 
-    return Right<Failure, Success>(GetAllEmailSuccess(
-      emailList: presentationEmailList,
-      currentEmailState: emailResponse.state));
+    return Right<Failure, Success>(LoadMoreEmailsSuccess(presentationEmailList));
   }
 }

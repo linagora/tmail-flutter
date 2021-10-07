@@ -25,9 +25,9 @@ class EmailChangeResponse with EquatableMixin {
   });
 
   EmailChangeResponse union(EmailChangeResponse other) => EmailChangeResponse(
-    updated: updated.union(other.updated),
-    created: created.union(other.created),
-    destroyed: destroyed.union(other.destroyed),
+    updated: updated.unite(other.updated),
+    created: created.unite(other.created),
+    destroyed: destroyed.unite(other.destroyed),
     newStateEmail: other.newStateEmail,
     newStateChanges: other.newStateChanges,
     hasMoreChanges: other.hasMoreChanges,
