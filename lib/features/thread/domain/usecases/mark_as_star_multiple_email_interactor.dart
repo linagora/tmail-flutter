@@ -17,8 +17,6 @@ class MarkAsStarMultipleEmailInteractor {
       MarkStarAction markStarAction
   ) async* {
     try {
-      yield Right<Failure, Success>(LoadingState());
-
       final listEmailNeedMarkStar = emails
           .where((email) => markStarAction == MarkStarAction.unMarkStar ? email.isFlaggedEmail() : !email.isFlaggedEmail())
           .toList();

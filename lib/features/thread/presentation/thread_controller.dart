@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
-import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
@@ -30,6 +29,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mail
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/load_more_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -47,6 +47,7 @@ class ThreadController extends BaseController {
   final MoveMultipleEmailToMailboxInteractor _moveMultipleEmailToMailboxInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
   final MarkAsStarMultipleEmailInteractor _markAsStarMultipleEmailInteractor;
+  final RefreshChangesEmailsInMailboxInteractor _refreshChangesEmailsInMailboxInteractor;
 
   final emailList = <PresentationEmail>[].obs;
   final loadMoreState = LoadMoreState.IDLE.obs;
@@ -64,6 +65,8 @@ class ThreadController extends BaseController {
     ..add(EmailComparator(EmailComparatorProperty.sentAt)
       ..setIsAscending(false));
 
+  AccountId? get _accountId => mailboxDashBoardController.accountId.value;
+
   ThreadController(
     this.responsiveUtils,
     this._getEmailsInMailboxInteractor,
@@ -73,6 +76,7 @@ class ThreadController extends BaseController {
     this._moveMultipleEmailToMailboxInteractor,
     this._markAsStarEmailInteractor,
     this._markAsStarMultipleEmailInteractor,
+    this._refreshChangesEmailsInMailboxInteractor,
   );
 
   @override
@@ -96,14 +100,11 @@ class ThreadController extends BaseController {
       state.map((success) {
         if (success is MarkAsEmailReadSuccess
             || success is MarkAsMultipleEmailReadAllSuccess
-            || success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-          _refreshListEmail();
-          mailboxDashBoardController.clearState();
-        } else if (success is MoveToMailboxSuccess) {
-          _refreshListEmail();
-          mailboxDashBoardController.clearState();
-        } else if (success is MarkAsStarEmailSuccess) {
-          _refreshListEmail();
+            || success is MarkAsMultipleEmailReadHasSomeEmailFailure
+            || success is MoveToMailboxSuccess
+            || success is MarkAsStarEmailSuccess) {
+          cancelSelectEmail();
+          _refreshEmailChanges();
           mailboxDashBoardController.clearState();
         }
       });
@@ -163,10 +164,8 @@ class ThreadController extends BaseController {
   void onError(error) {}
 
   void _getAllEmail() {
-    final accountId = mailboxDashBoardController.accountId.value;
-
-    if (accountId != null) {
-      _getAllEmailAction(accountId, inMailboxId: _currentMailboxId);
+    if (_accountId != null) {
+      _getAllEmailAction(_accountId!, inMailboxId: _currentMailboxId);
     }
   }
 
@@ -192,13 +191,6 @@ class ThreadController extends BaseController {
     }
   }
 
-  void _resetPositionCurrentAndLoadMoreState() {
-    if (loadMoreState.value == LoadMoreState.LOADING) {
-      _currentPosition -= _totalNumberOfEmails;
-    }
-    loadMoreState.value = LoadMoreState.IDLE;
-  }
-
   void _getAllEmailAction(AccountId accountId, {MailboxId? inMailboxId}) {
     consumeState(_getEmailsInMailboxInteractor.execute(
       accountId,
@@ -212,15 +204,23 @@ class ThreadController extends BaseController {
     ));
   }
 
-  void refreshGetAllEmailAction() {
+  void refreshAllEmail() {
+    dispatchState(Right(LoadingState()));
     loadMoreState.value = LoadMoreState.IDLE;
     _currentPosition = 0;
-    dispatchState(Right(LoadingState()));
+    _getAllEmail();
+  }
 
-    final accountId = mailboxDashBoardController.accountId.value;
-
-    if (accountId != null) {
-      _getAllEmailAction(accountId);
+  void _refreshEmailChanges() {
+    if (_accountId != null && _currentEmailState != null) {
+      consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
+        _accountId!,
+        _currentEmailState!,
+        sort: _sortOrder,
+        propertiesCreated: ThreadConstants.propertiesDefault,
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        inMailboxId: _currentMailboxId,
+      ));
     }
   }
 
@@ -228,11 +228,16 @@ class ThreadController extends BaseController {
     loadMoreState.value = LoadMoreState.LOADING;
     _currentPosition += _totalNumberOfEmails;
 
-    final accountId = mailboxDashBoardController.accountId.value;
-
-    if (accountId != null) {
-      _getAllEmailAction(accountId);
+    if (_accountId != null) {
+      _getAllEmailAction(_accountId!);
     }
+  }
+
+  void _resetPositionCurrentAndLoadMoreState() {
+    if (loadMoreState.value == LoadMoreState.LOADING) {
+      _currentPosition -= _totalNumberOfEmails;
+    }
+    loadMoreState.value = LoadMoreState.IDLE;
   }
 
   SelectMode getSelectMode(PresentationEmail presentationEmail, PresentationEmail? selectedEmail) {
@@ -272,28 +277,6 @@ class ThreadController extends BaseController {
     currentSelectMode.value = SelectMode.INACTIVE;
   }
 
-  void _refreshListEmail() {
-      currentSelectMode.value = SelectMode.INACTIVE;
-      final newLimit = emailList.isNotEmpty ? UnsignedInt(emailList.length) : ThreadConstants.defaultLimit;
-      loadMoreState.value = LoadMoreState.IDLE;
-      dispatchState(Right(LoadingState()));
-
-      final accountId = mailboxDashBoardController.accountId.value;
-
-      if (accountId != null) {
-        consumeState(_getEmailsInMailboxInteractor.execute(
-          accountId,
-          limit: newLimit,
-          position: 0,
-          sort: _sortOrder,
-          filter: _filterCondition,
-          propertiesCreated: ThreadConstants.propertiesDefault,
-          propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-          inMailboxId: _currentMailboxId
-        ));
-      }
-  }
-
   void markAsSelectedEmailRead(List<PresentationEmail> listPresentationEmail, {bool fromContextMenuAction = false}) {
     if (fromContextMenuAction) {
       popBack();
@@ -301,11 +284,10 @@ class ThreadController extends BaseController {
 
     final readAction = isAllEmailRead(listPresentationEmail) ? ReadActions.markAsUnread : ReadActions.markAsRead;
 
-    final accountId = mailboxDashBoardController.accountId.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
-    if (accountId != null && mailboxCurrent != null) {
+    if (_accountId != null && mailboxCurrent != null) {
       final listEmail = listPresentationEmail.map((presentationEmail) => presentationEmail.toEmail()).toList();
-      consumeState(_markAsMultipleEmailReadInteractor.execute(accountId, listEmail, readAction));
+      consumeState(_markAsMultipleEmailReadInteractor.execute(_accountId!, listEmail, readAction));
     }
   }
 
@@ -345,19 +327,18 @@ class ThreadController extends BaseController {
 
   void moveSelectedMultipleEmailToMailboxAction(List<PresentationEmail> listEmail) async {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
-    final accountId = mailboxDashBoardController.accountId.value;
-    if (currentMailbox != null && accountId != null) {
+    if (currentMailbox != null && _accountId != null) {
       popBack();
 
       final listEmailIds = listEmail.map((email) => email.id).toList();
       final destinationMailbox = await push(
           AppRoutes.DESTINATION_PICKER,
-          arguments: DestinationPickerArguments(accountId, listEmailIds, currentMailbox)
+          arguments: DestinationPickerArguments(_accountId!, listEmailIds, currentMailbox)
       );
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
         _moveSelectedEmailMultipleToMailbox(
-            accountId,
+            _accountId!,
             MoveRequest(
               listEmailIds,
               currentMailbox.id,
@@ -373,6 +354,7 @@ class ThreadController extends BaseController {
   }
 
   void _moveSelectedMultipleEmailToMailboxSuccess(Success success) {
+    cancelSelectEmail();
     mailboxDashBoardController.dispatchState(Right(success));
 
     String? destinationPath;
@@ -416,14 +398,12 @@ class ThreadController extends BaseController {
       );
     }
 
-    _refreshListEmail();
+    _refreshEmailChanges();
   }
 
   void _undoMoveSelectedMultipleEmailToMailbox(MoveRequest moveRequest) {
-    final accountId = mailboxDashBoardController.accountId.value;
-
-    if (accountId != null) {
-      _moveSelectedEmailMultipleToMailbox(accountId, moveRequest);
+    if (_accountId != null) {
+      _moveSelectedEmailMultipleToMailbox(_accountId!, moveRequest);
     }
   }
 
@@ -438,32 +418,31 @@ class ThreadController extends BaseController {
   }
 
   void markAsStarEmail(PresentationEmail presentationEmail) {
-    final accountId = mailboxDashBoardController.accountId.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
-    if (accountId != null && mailboxCurrent != null) {
+    if (_accountId != null && mailboxCurrent != null) {
       final importantAction = presentationEmail.isFlaggedEmail() ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
       dispatchState(Right(LoadingState()));
-      consumeState(_markAsStarEmailInteractor.execute(accountId, presentationEmail.toEmail(), importantAction));
+      consumeState(_markAsStarEmailInteractor.execute(_accountId!, presentationEmail.toEmail(), importantAction));
     }
   }
 
   void _markAsStarEmailSuccess(Success success) {
-    _refreshListEmail();
+    _refreshEmailChanges();
   }
 
   void markAsStarSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail, MarkStarAction markStarAction) {
     popBack();
 
-    final accountId = mailboxDashBoardController.accountId.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
-    if (accountId != null && mailboxCurrent != null) {
+    if (_accountId != null && mailboxCurrent != null) {
       final listEmail = listPresentationEmail.map((presentationEmail) => presentationEmail.toEmail()).toList();
-      consumeState(_markAsStarMultipleEmailInteractor.execute(accountId, listEmail, markStarAction));
+      consumeState(_markAsStarMultipleEmailInteractor.execute(_accountId!, listEmail, markStarAction));
     }
   }
 
   void _markAsStarMultipleEmailSuccess(Success success) {
     cancelSelectEmail();
+    _refreshEmailChanges();
 
     MarkStarAction? markStarAction;
     int countMarkStarSuccess = 0;
@@ -481,8 +460,6 @@ class ThreadController extends BaseController {
           ? AppLocalizations.of(Get.context!).marked_unstar_multiple_item(countMarkStarSuccess)
           : AppLocalizations.of(Get.context!).marked_star_multiple_item(countMarkStarSuccess));
     }
-
-    _refreshListEmail();
   }
 
   void _markAsStarMultipleEmailFailure(Failure failure) {
