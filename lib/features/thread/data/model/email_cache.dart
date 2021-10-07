@@ -48,6 +48,9 @@ class EmailCache extends HiveObject with EquatableMixin {
   @HiveField(12)
   final List<EmailAddressHiveCache>? replyTo;
 
+  @HiveField(13)
+  Map<String, bool>? mailboxIds;
+
   EmailCache(
     this.id,
     {
@@ -63,6 +66,7 @@ class EmailCache extends HiveObject with EquatableMixin {
       this.cc,
       this.bcc,
       this.replyTo,
+      this.mailboxIds,
     }
   );
 
@@ -80,6 +84,7 @@ class EmailCache extends HiveObject with EquatableMixin {
     sentAt,
     replyTo,
     preview,
-    hasAttachment
+    hasAttachment,
+    mailboxIds,
   ];
 }
