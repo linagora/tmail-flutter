@@ -14,8 +14,6 @@ class MoveMultipleEmailToMailboxInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, MoveRequest moveRequest) async* {
     try {
-      yield Right<Failure, Success>(LoadingState());
-
       final result = await _emailRepository.moveToMailbox(accountId, moveRequest);
 
       if (moveRequest.emailIds.length == result.length) {

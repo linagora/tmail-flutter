@@ -160,4 +160,66 @@ class ThreadRepositoryImpl extends ThreadRepository {
   Future<void> _updateState(State newState) async {
     await stateDataSource.saveState(newState.toStateCache(StateType.email));
   }
+
+  @override
+  Stream<EmailResponse> refreshChanges(
+      AccountId accountId,
+      State currentState,
+      {
+        Set<Comparator>? sort,
+        Properties? propertiesCreated,
+        Properties? propertiesUpdated,
+        MailboxId? inMailboxId
+      }
+  ) async* {
+    final localEmailList = await mapDataSource[DataSourceType.local]!.getAllEmailCache(
+        inMailboxId: inMailboxId,
+        sort: sort);
+
+    EmailChangeResponse? emailChangeResponse;
+    bool hasMoreChanges = true;
+    State? sinceState = currentState;
+
+    while(hasMoreChanges && sinceState != null) {
+      final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(
+        accountId,
+        sinceState,
+        propertiesCreated: propertiesCreated,
+        propertiesUpdated: propertiesUpdated);
+
+      hasMoreChanges = changesResponse.hasMoreChanges;
+      sinceState = changesResponse.newStateChanges;
+
+      if (emailChangeResponse != null) {
+        emailChangeResponse.union(changesResponse);
+      } else {
+        emailChangeResponse = changesResponse;
+      }
+    }
+
+    if (emailChangeResponse != null) {
+      final newEmailUpdated = await _combineEmailCache(
+        emailUpdated: emailChangeResponse.updated,
+        updatedProperties: emailChangeResponse.updatedProperties,
+        emailCacheList: localEmailList);
+
+      await _updateEmailCache(
+        newCreated: emailChangeResponse.created,
+        newUpdated: newEmailUpdated,
+        newDestroyed: emailChangeResponse.destroyed);
+
+      if (emailChangeResponse.newStateEmail != null) {
+        await _updateState(emailChangeResponse.newStateEmail!);
+      }
+    }
+
+    final newEmailResponse = await Future.wait([
+      mapDataSource[DataSourceType.local]!.getAllEmailCache(inMailboxId: inMailboxId, sort: sort),
+      stateDataSource.getState(StateType.email)
+    ]).then((List response) {
+      return EmailResponse(emailList: response.first, state: response.last);
+    });
+
+    yield newEmailResponse;
+  }
 }
