@@ -82,21 +82,16 @@ class MailboxController extends BaseController {
     super.onData(newState);
     newState.map((success) {
       if (success is GetAllMailboxSuccess) {
+        currentMailboxState = success.currentMailboxState;
+        defaultMailboxList.value = success.defaultMailboxList;
+        _setUpMapMailboxIdDefault(success.defaultMailboxList);
         _buildTree(success.folderMailboxList);
       }
     });
   }
 
   @override
-  void onDone() {
-    viewState.value.map((success) {
-      if (success is GetAllMailboxSuccess) {
-        currentMailboxState = success.currentMailboxState;
-        defaultMailboxList.value = success.defaultMailboxList;
-        _setUpMapMailboxIdDefault(success.defaultMailboxList);
-      }
-    });
-  }
+  void onDone() {}
 
   @override
   void onError(error) {}
