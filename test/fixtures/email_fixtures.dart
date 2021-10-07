@@ -4,6 +4,8 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 
+import 'mailbox_fixtures.dart';
+
 class EmailFixtures {
   static final email1 = Email(
       EmailId(Id("382312d0-fa5c-11eb-b647-2fef1ee78d9e")),
@@ -14,6 +16,7 @@ class EmailFixtures {
       sentAt: UTCDate(DateTime.parse("2021-08-11T04:25:34Z")),
       receivedAt: UTCDate(DateTime.parse("2021-08-11T04:25:55Z")),
       keywords: {KeyWordIdentifier.emailSeen : true},
+      mailboxIds: {MailboxFixtures.inboxMailbox.id : true},
       to: {EmailAddress("DatVu", "tdvu@linagora.com")},
   );
 
@@ -24,7 +27,8 @@ class EmailFixtures {
       subject: "Notification: Noti check",
       from: {EmailAddress(null, "noreply@qa.open-paas.org")},
       sentAt: UTCDate(DateTime.parse("2021-08-10T09:45:01Z")),
-      receivedAt: UTCDate(DateTime.parse("2021-08-11T04:00:59Z")),
+      receivedAt: UTCDate(DateTime.parse("2021-08-10T04:00:59Z")),
+      mailboxIds: {MailboxFixtures.inboxMailbox.id : true},
       to: {EmailAddress("DatVu", "tdvu@facebook.com")},
   );
 
@@ -34,9 +38,10 @@ class EmailFixtures {
       hasAttachment: false,
       subject: "Notification: Recurrencr",
       from: {EmailAddress(null, "noreply@qa.open-paas.org")},
-      sentAt: UTCDate(DateTime.parse("2021-08-11T03:00:00Z")),
-      receivedAt: UTCDate(DateTime.parse("2021-08-11T04:00:55Z")),
+      sentAt: UTCDate(DateTime.parse("2021-08-09T03:00:00Z")),
+      receivedAt: UTCDate(DateTime.parse("2021-08-09T04:00:55Z")),
       keywords: {KeyWordIdentifier.emailFlagged : true},
+      mailboxIds: {MailboxFixtures.inboxMailbox.id : true},
       to: {EmailAddress("DatVu", "tdvu@gmail.com")},
   );
 
@@ -46,9 +51,10 @@ class EmailFixtures {
       hasAttachment: true,
       subject: "test attachment",
       from: {EmailAddress("Haaheoo", "userc@qa.open-paas.org")},
-      sentAt: UTCDate(DateTime.parse("2021-08-11T06:46:25Z")),
-      receivedAt: UTCDate(DateTime.parse("2021-08-11T06:46:26Z")),
+      sentAt: UTCDate(DateTime.parse("2021-08-08T06:46:25Z")),
+      receivedAt: UTCDate(DateTime.parse("2021-08-08T06:46:26Z")),
       keywords: {KeyWordIdentifier.emailFlagged : true},
+      mailboxIds: {MailboxFixtures.inboxMailbox.id : true},
       to: {EmailAddress("DatVu", "tdvu@icloud.com")},
   );
 
@@ -58,9 +64,10 @@ class EmailFixtures {
       hasAttachment: false,
       subject: "test inline image",
       from: {EmailAddress("Haaheoo", "userc@qa.open-paas.org")},
-      sentAt: UTCDate(DateTime.parse("2021-08-11T04:34:13Z")),
-      receivedAt: UTCDate(DateTime.parse("2021-08-11T04:34:17Z")),
+      sentAt: UTCDate(DateTime.parse("2021-08-07T04:34:13Z")),
+      receivedAt: UTCDate(DateTime.parse("2021-08-07T04:34:17Z")),
       keywords: {KeyWordIdentifier.emailSeen : true},
+      mailboxIds: {MailboxFixtures.inboxMailbox.id : true},
       to: {EmailAddress("DatVu", "tdvu@yahoo.com")},
   );
 }
