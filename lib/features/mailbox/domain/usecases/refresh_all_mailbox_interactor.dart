@@ -15,6 +15,8 @@ class RefreshAllMailboxInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, jmapState.State currentState) async* {
     try {
+      yield Right<Failure, Success>(RefreshingState());
+
       yield* _mailboxRepository
         .refresh(accountId, currentState)
         .map(_toGetMailboxState);

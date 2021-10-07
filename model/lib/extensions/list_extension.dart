@@ -1,7 +1,7 @@
 
 extension ListExtension<T> on List<T>? {
 
-  List<T>? union(List<T>? other) {
+  List<T>? unite(List<T>? other) {
     if (other != null) {
       this?.addAll(other);
     }

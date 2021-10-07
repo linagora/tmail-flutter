@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/load_more_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_select_mode_active_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
@@ -184,7 +183,7 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),
-      (success) => success is LoadingState && controller.loadMoreState.value != LoadMoreState.LOADING
+      (success) => success is LoadingState
         ? Center(child: Padding(
             padding: EdgeInsets.only(top: 16, bottom: 16),
             child: SizedBox(
@@ -195,14 +194,16 @@ class ThreadView extends GetWidget<ThreadController> {
   }
 
   Widget _buildLoadingViewLoadMore() {
-    return Obx(() => controller.loadMoreState.value == LoadMoreState.LOADING
-      ? Center(child: Padding(
-          padding: EdgeInsets.only(top: 16, bottom: 16),
-          child: SizedBox(
-            width: 24,
-            height: 24,
-            child: CircularProgressIndicator(color: AppColor.primaryColor))))
-      : SizedBox.shrink());
+    return Obx(() => controller.viewState.value.fold(
+      (failure) => SizedBox.shrink(),
+      (success) => success is LoadingMoreState
+        ? Center(child: Padding(
+            padding: EdgeInsets.only(top: 16, bottom: 16),
+            child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(color: AppColor.primaryColor))))
+        : SizedBox.shrink()));
   }
 
   Widget _buildListEmail(BuildContext context) {
@@ -232,9 +233,8 @@ class ThreadView extends GetWidget<ThreadController> {
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification scrollInfo) {
         if (scrollInfo is ScrollEndNotification
-            && controller.loadMoreState.value == LoadMoreState.IDLE
             && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-          controller.loadMoreEmailAction();
+          controller.loadMoreEmails();
         }
         return false;
       },

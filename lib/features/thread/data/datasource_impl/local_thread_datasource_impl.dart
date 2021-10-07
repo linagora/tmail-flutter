@@ -18,10 +18,9 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   LocalThreadDataSourceImpl(this._emailCacheManager);
 
   @override
-  Future<EmailResponse> getAllEmail(
+  Future<EmailsResponse> getAllEmail(
       AccountId accountId,
       {
-        int? position,
         UnsignedInt? limit,
         Set<Comparator>? sort,
         Filter? filter,

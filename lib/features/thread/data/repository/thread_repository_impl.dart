@@ -25,34 +25,31 @@ class ThreadRepositoryImpl extends ThreadRepository {
   ThreadRepositoryImpl(this.mapDataSource, this.stateDataSource);
 
   @override
-  Stream<EmailResponse> getAllEmail(
+  Stream<EmailsResponse> getAllEmail(
     AccountId accountId,
     {
-      int? position,
       UnsignedInt? limit,
       Set<Comparator>? sort,
-      Filter? filter,
+      EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
-      MailboxId? inMailboxId
     }
   ) async* {
     final localEmailResponse = await Future.wait([
-      mapDataSource[DataSourceType.local]!.getAllEmailCache(inMailboxId: inMailboxId, sort: sort),
+      mapDataSource[DataSourceType.local]!.getAllEmailCache(inMailboxId: emailFilter?.mailboxId, sort: sort),
       stateDataSource.getState(StateType.email)
     ]).then((List response) {
-      return EmailResponse(emailList: response.first, state: response.last);
+      return EmailsResponse(emailList: response.first, state: response.last);
     });
 
-    EmailResponse? networkEmailResponse;
+    EmailsResponse? networkEmailResponse;
 
     if (!localEmailResponse.hasEmails()) {
       networkEmailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
         accountId,
-        position: position,
         limit: limit,
         sort: sort,
-        filter: filter,
+        filter: emailFilter?.filter,
         properties: propertiesCreated);
 
       yield networkEmailResponse;
@@ -113,10 +110,10 @@ class ThreadRepositoryImpl extends ThreadRepository {
     }
 
     final newEmailResponse = await Future.wait([
-      mapDataSource[DataSourceType.local]!.getAllEmailCache(inMailboxId: inMailboxId, sort: sort),
+      mapDataSource[DataSourceType.local]!.getAllEmailCache(inMailboxId: emailFilter?.mailboxId, sort: sort),
       stateDataSource.getState(StateType.email)
     ]).then((List response) {
-      return EmailResponse(emailList: response.first, state: response.last);
+      return EmailsResponse(emailList: response.first, state: response.last);
     });
 
     yield newEmailResponse;
@@ -132,7 +129,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         if (updatedProperties == null) {
           return email;
         } else {
-          final emailOld = emailCacheList?.findEmail(email.id);
+          final emailOld = emailCacheList?.findEmailById(email.id);
           if (emailOld != null) {
             return emailOld.combineEmail(email, updatedProperties);
           } else {
@@ -162,10 +159,11 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Stream<EmailResponse> refreshChanges(
+  Stream<EmailsResponse> refreshChanges(
       AccountId accountId,
       State currentState,
       {
+        UnsignedInt? limit,
         Set<Comparator>? sort,
         Properties? propertiesCreated,
         Properties? propertiesUpdated,
@@ -173,8 +171,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
       }
   ) async* {
     final localEmailList = await mapDataSource[DataSourceType.local]!.getAllEmailCache(
-        inMailboxId: inMailboxId,
-        sort: sort);
+      inMailboxId: inMailboxId,
+      sort: sort);
 
     EmailChangeResponse? emailChangeResponse;
     bool hasMoreChanges = true;
@@ -217,9 +215,38 @@ class ThreadRepositoryImpl extends ThreadRepository {
       mapDataSource[DataSourceType.local]!.getAllEmailCache(inMailboxId: inMailboxId, sort: sort),
       stateDataSource.getState(StateType.email)
     ]).then((List response) {
-      return EmailResponse(emailList: response.first, state: response.last);
+      return EmailsResponse(emailList: response.first, state: response.last);
     });
 
     yield newEmailResponse;
+  }
+
+  @override
+  Stream<EmailsResponse> loadMoreEmails(
+    AccountId accountId,
+    {
+      int? position,
+      UnsignedInt? limit,
+      Set<Comparator>? sort,
+      Filter? filter,
+      Properties? properties,
+    }
+  ) async* {
+    final emailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
+      accountId,
+      limit: limit,
+      sort: sort,
+      filter: filter,
+      properties: properties);
+
+    final newEmailList = emailResponse.emailList != null && emailResponse.emailList!.isNotEmpty
+      ? emailResponse.emailList!.sublist(1)
+      : <Email>[];
+
+    if (newEmailList.isNotEmpty) {
+      await _updateEmailCache(newCreated: newEmailList);
+    }
+
+    yield EmailsResponse(emailList: newEmailList, state: emailResponse.state);
   }
 }
