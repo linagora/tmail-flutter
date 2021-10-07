@@ -13,7 +13,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
-import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 
 class MailboxAPI {
 
