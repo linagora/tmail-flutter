@@ -4,8 +4,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
-import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -36,6 +34,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/load_more_state
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
 class ThreadController extends BaseController {
 
@@ -49,18 +48,21 @@ class ThreadController extends BaseController {
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
   final MarkAsStarMultipleEmailInteractor _markAsStarMultipleEmailInteractor;
 
-  final _properties = Properties({
-    'id', 'subject', 'from', 'to', 'cc', 'bcc', 'keywords', 'receivedAt',
-    'sentAt', 'preview', 'hasAttachment', 'replyTo'
-  });
-
   final emailList = <PresentationEmail>[].obs;
   final loadMoreState = LoadMoreState.IDLE.obs;
   final currentSelectMode = SelectMode.INACTIVE.obs;
 
-  int positionCurrent = 0;
-  int lastGetTotal = 0;
+  int _currentPosition = 0;
+  int _totalNumberOfEmails = 0;
   MailboxId? _currentMailboxId;
+  jmap.State? _currentEmailState;
+
+  EmailFilterCondition? get _filterCondition => EmailFilterCondition(
+    inMailbox: mailboxDashBoardController.selectedMailbox.value?.id);
+
+  Set<Comparator>? get _sortOrder => Set()
+    ..add(EmailComparator(EmailComparatorProperty.sentAt)
+      ..setIsAscending(false));
 
   ThreadController(
     this.responsiveUtils,
@@ -85,8 +87,8 @@ class ThreadController extends BaseController {
     mailboxDashBoardController.selectedMailbox.listen((selectedMailbox) {
       if (_currentMailboxId != selectedMailbox?.id) {
         _currentMailboxId = selectedMailbox?.id;
-        emailList.value = <PresentationEmail>[];
-        refreshGetAllEmailAction();
+        _resetToOriginalValue();
+        _getAllEmail();
       }
     });
 
@@ -117,6 +119,16 @@ class ThreadController extends BaseController {
   }
 
   @override
+  void onData(Either<Failure, Success> newState) {
+    super.onData(newState);
+    newState.map((success) {
+      if (success is GetAllEmailSuccess) {
+        _getAllEmailSuccess(success);
+      }
+    });
+  }
+
+  @override
   void onDone() {
     viewState.value.fold(
       (failure) {
@@ -131,9 +143,7 @@ class ThreadController extends BaseController {
         }
       },
       (success) {
-        if (success is GetAllEmailSuccess) {
-          _getAllEmailSuccess(success);
-        } else if (success is MarkAsMultipleEmailReadAllSuccess
+        if (success is MarkAsMultipleEmailReadAllSuccess
             || success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
           _markAsSelectedEmailReadSuccess(success);
         } else if (success is MoveMultipleEmailToMailboxAllSuccess
@@ -150,90 +160,78 @@ class ThreadController extends BaseController {
   }
 
   @override
-  void onError(error) {
+  void onError(error) {}
+
+  void _getAllEmail() {
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (accountId != null) {
+      _getAllEmailAction(accountId, inMailboxId: _currentMailboxId);
+    }
+  }
+
+  void _resetToOriginalValue() {
+    dispatchState(Right(LoadingState()));
+    emailList.value = <PresentationEmail>[];
+    loadMoreState.value = LoadMoreState.IDLE;
+    _currentPosition = 0;
   }
 
   void _getAllEmailSuccess(Success success) {
     if (success is GetAllEmailSuccess) {
+      _currentEmailState = success.currentEmailState;
+
       if (loadMoreState.value == LoadMoreState.LOADING) {
         emailList.addAll(success.emailList);
       } else {
         emailList.value = success.emailList;
       }
 
-      lastGetTotal = emailList.length;
+      _totalNumberOfEmails = emailList.length;
       loadMoreState.value = success.emailList.isEmpty ? LoadMoreState.COMPLETED : LoadMoreState.IDLE;
     }
   }
 
-  EmailFilterCondition? _getFilterConditionCurrent() {
-    return EmailFilterCondition(inMailbox: mailboxDashBoardController.selectedMailbox.value?.id);
-  }
-
-  Set<Comparator>? _getSortCurrent() {
-    return Set()
-      ..add(EmailComparator(EmailComparatorProperty.sentAt)
-        ..setIsAscending(false));
-  }
-
   void _resetPositionCurrentAndLoadMoreState() {
     if (loadMoreState.value == LoadMoreState.LOADING) {
-      positionCurrent -= lastGetTotal;
+      _currentPosition -= _totalNumberOfEmails;
     }
     loadMoreState.value = LoadMoreState.IDLE;
   }
 
-  void _getAllEmailAction(AccountId accountId,
-    {
-      UnsignedInt? limit,
-      int position = 0,
-      Set<Comparator>? sort,
-      Filter? filter,
-      Properties? properties,
-    }
-  ) {
+  void _getAllEmailAction(AccountId accountId, {MailboxId? inMailboxId}) {
     consumeState(_getEmailsInMailboxInteractor.execute(
       accountId,
-      limit: limit,
-      position: position,
-      sort: sort,
-      filter: filter,
-      properties: properties
+      limit: ThreadConstants.defaultLimit,
+      position: _currentPosition,
+      sort: _sortOrder,
+      filter: _filterCondition,
+      propertiesCreated: ThreadConstants.propertiesDefault,
+      propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+      inMailboxId: inMailboxId ?? _currentMailboxId
     ));
   }
 
   void refreshGetAllEmailAction() {
     loadMoreState.value = LoadMoreState.IDLE;
-    positionCurrent = 0;
+    _currentPosition = 0;
     dispatchState(Right(LoadingState()));
 
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (accountId != null) {
-      _getAllEmailAction(
-        accountId,
-        limit: ThreadConstants.defaultLimit,
-        position: positionCurrent,
-        sort: _getSortCurrent(),
-        properties: _properties,
-        filter: _getFilterConditionCurrent());
+      _getAllEmailAction(accountId);
     }
   }
 
   void loadMoreEmailAction() {
     loadMoreState.value = LoadMoreState.LOADING;
-    positionCurrent += lastGetTotal;
+    _currentPosition += _totalNumberOfEmails;
 
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (accountId != null) {
-      _getAllEmailAction(
-        accountId,
-        limit: ThreadConstants.defaultLimit,
-        position: positionCurrent,
-        sort: _getSortCurrent(),
-        properties: _properties,
-        filter: _getFilterConditionCurrent());
+      _getAllEmailAction(accountId);
     }
   }
 
@@ -283,13 +281,16 @@ class ThreadController extends BaseController {
       final accountId = mailboxDashBoardController.accountId.value;
 
       if (accountId != null) {
-        _getAllEmailAction(
+        consumeState(_getEmailsInMailboxInteractor.execute(
           accountId,
           limit: newLimit,
           position: 0,
-          sort: _getSortCurrent(),
-          properties: _properties,
-          filter: _getFilterConditionCurrent());
+          sort: _sortOrder,
+          filter: _filterCondition,
+          propertiesCreated: ThreadConstants.propertiesDefault,
+          propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+          inMailboxId: _currentMailboxId
+        ));
       }
   }
 
