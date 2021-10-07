@@ -15,6 +15,8 @@ class StateTypeAdapter extends TypeAdapter<StateType> {
     switch (reader.readByte()) {
       case 0:
         return StateType.mailbox;
+      case 1:
+        return StateType.email;
       default:
         return StateType.mailbox;
     }
@@ -25,6 +27,9 @@ class StateTypeAdapter extends TypeAdapter<StateType> {
     switch (obj) {
       case StateType.mailbox:
         writer.writeByte(0);
+        break;
+      case StateType.email:
+        writer.writeByte(1);
         break;
     }
   }
