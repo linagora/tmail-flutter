@@ -7,7 +7,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
-import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 

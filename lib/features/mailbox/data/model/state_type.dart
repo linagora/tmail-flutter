@@ -8,7 +8,10 @@ part 'state_type.g.dart';
 enum StateType {
 
   @HiveField(0)
-  mailbox
+  mailbox,
+
+  @HiveField(1)
+  email
 }
 
 extension StateTypeExtension on StateType {
@@ -16,6 +19,8 @@ extension StateTypeExtension on StateType {
     switch(this) {
       case StateType.mailbox:
         return 'mailbox';
+      case StateType.email:
+        return 'email';
     }
   }
 }

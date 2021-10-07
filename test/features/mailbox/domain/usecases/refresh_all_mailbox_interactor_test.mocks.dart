@@ -8,7 +8,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart' as _i5;
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as _i6;
 import 'package:jmap_dart_client/jmap/core/state.dart' as _i7;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_response.dart'
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart'
     as _i4;
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart'
     as _i2;
