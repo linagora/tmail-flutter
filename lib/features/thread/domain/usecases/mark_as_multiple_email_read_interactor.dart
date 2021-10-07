@@ -17,8 +17,6 @@ class MarkAsMultipleEmailReadInteractor {
       ReadActions readAction
   ) async* {
     try {
-      yield Right<Failure, Success>(LoadingState());
-
       final listEmailNeedMarkAsRead = emails
           .where((email) => readAction == ReadActions.markAsUnread ? email.isReadEmail() : email.isUnReadEmail())
           .toList();

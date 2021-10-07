@@ -217,11 +217,11 @@ class ThreadView extends GetWidget<ThreadController> {
         ? controller.emailList.isNotEmpty
             ? RefreshIndicator(
                 color: AppColor.primaryColor,
-                onRefresh: () async => controller.refreshGetAllEmailAction(),
+                onRefresh: () async => controller.refreshAllEmail(),
                 child: _buildListEmailBody(context, controller.emailList))
             : RefreshIndicator(
                 color: AppColor.primaryColor,
-                onRefresh: () async => controller.refreshGetAllEmailAction(),
+                onRefresh: () async => controller.refreshAllEmail(),
                 child: _buildEmptyEmail(context))
         : controller.emailList.isNotEmpty
             ? _buildListEmailBody(context, controller.emailList)
