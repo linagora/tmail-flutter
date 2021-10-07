@@ -30,13 +30,14 @@ class EmailCacheAdapter extends TypeAdapter<EmailCache> {
       cc: (fields[10] as List?)?.cast<EmailAddressHiveCache>(),
       bcc: (fields[11] as List?)?.cast<EmailAddressHiveCache>(),
       replyTo: (fields[12] as List?)?.cast<EmailAddressHiveCache>(),
+      mailboxIds: (fields[13] as Map?)?.cast<String, bool>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, EmailCache obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -62,7 +63,9 @@ class EmailCacheAdapter extends TypeAdapter<EmailCache> {
       ..writeByte(11)
       ..write(obj.bcc)
       ..writeByte(12)
-      ..write(obj.replyTo);
+      ..write(obj.replyTo)
+      ..writeByte(13)
+      ..write(obj.mailboxIds);
   }
 
   @override
