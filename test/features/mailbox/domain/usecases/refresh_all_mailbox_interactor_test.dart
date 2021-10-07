@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
@@ -46,9 +45,8 @@ void main() {
 
       final states = await streamStates.toList();
 
-      expect(states.length, equals(2));
+      expect(states.length, equals(1));
       expect(states, containsAllInOrder({
-        Right(LoadingState()),
         Right(GetAllMailboxSuccess(
           defaultMailboxList: {
             MailboxFixtures.inboxMailbox.toPresentationMailbox(),
