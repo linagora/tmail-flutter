@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:url_launcher/url_launcher.dart' as launcher;
 
 class _HtmlGenerationArguments {
   final String message;
@@ -35,12 +36,22 @@ class HtmlContentViewer extends StatefulWidget {
   /// Register this callback if you want a reference to the [InAppWebViewController].
   final void Function(InAppWebViewController controller)? onWebViewCreated;
 
+  final void Function(InAppWebViewController controller, Uri? uri)? onWebViewLoadStart;
+
+  final void Function(InAppWebViewController controller, Uri? uri)? onWebViewLoadStop;
+
+  /// Handler for mailto: links
+  final Future Function(Uri mailto)? mailtoDelegate;
+
   const HtmlContentViewer({
     Key? key,
     required this.message,
     this.blockExternalImages = false,
     this.onError,
     this.onWebViewCreated,
+    this.onWebViewLoadStart,
+    this.onWebViewLoadStop,
+    this.mailtoDelegate,
   }) : super(key: key);
 
   @override
@@ -144,6 +155,11 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
           enableViewportScale: true,
         )
       ),
+      onLoadStart: (controller, uri) {
+        if (widget.onWebViewLoadStart != null) {
+          widget.onWebViewLoadStart!(controller, uri);
+        }
+      },
       onWebViewCreated: widget.onWebViewCreated,
       onLoadStop: (controller, uri) async {
         var scrollHeight = (await controller.evaluateJavascript(source: 'document.body.scrollHeight'));
@@ -162,10 +178,34 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
             _webViewContentHeight = double.tryParse('${scrollHeight + 10.0}');
           });
         }
+
+        if (widget.onWebViewLoadStop != null) {
+          widget.onWebViewLoadStop!(controller, uri);
+        }
       },
+      shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
       gestureRecognizers: {
         Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
       },
     );
+  }
+
+  Future<NavigationActionPolicy> _shouldOverrideUrlLoading(
+      InAppWebViewController controller,
+      NavigationAction request
+  ) async {
+    final requestUri = request.request.url!;
+    final mailtoHandler = widget.mailtoDelegate;
+    if (mailtoHandler != null && requestUri.isScheme('mailto')) {
+      await mailtoHandler(requestUri);
+      return NavigationActionPolicy.CANCEL;
+    }
+    final url = requestUri.toString();
+    if (await launcher.canLaunch(url)) {
+      await launcher.launch(url);
+      return NavigationActionPolicy.CANCEL;
+    } else {
+      return NavigationActionPolicy.ALLOW;
+    }
   }
 }
