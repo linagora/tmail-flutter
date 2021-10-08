@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/text_format.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/web_view_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
@@ -119,7 +121,7 @@ class EmailView extends GetView {
   Widget _buildLoadingView() {
     return Obx(() => emailController.viewState.value.fold(
       (failure) => SizedBox.shrink(),
-      (success) => success is LoadingState
+      (success) => success is LoadingState || success is WebViewLoadingState
         ? Center(child: Padding(
             padding: EdgeInsets.only(top: 16, bottom: 16),
             child: SizedBox(
@@ -148,8 +150,8 @@ class EmailView extends GetView {
               emailController.emailAddressExpandMode.value)
             .onOpenExpandAddressReceiverActionClick(() => emailController.toggleDisplayEmailAddressAction(expandMode: ExpandMode.EXPAND))
             .build()),
-          _buildLoadingView(),
           _buildListAttachments(context),
+          _buildLoadingView(),
           _buildListMessageContent(),
         ],
       )
@@ -293,6 +295,13 @@ class EmailView extends GetView {
                 color: AppColor.mailboxTextColor)))
           : HtmlContentViewer(
               message: messageContents.first.content,
+              onWebViewLoadStart: (webController, uri) {
+                emailController.dispatchState(Right(WebViewLoadingState()));
+              },
+              onWebViewLoadStop: (webController, uri) {
+                emailController.clearState();
+              },
+              mailtoDelegate: (uri) async {},
             );
       } else {
         return SizedBox.shrink();
