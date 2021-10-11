@@ -182,9 +182,9 @@ class EmailAddressComposerWidgetBuilder {
                 title: Text(
                   emailAddress.asString(),
                   style: TextStyle(color: AppColor.nameUserColor, fontSize: 14, fontWeight: FontWeight.w500)),
-                subtitle: emailAddress.getName().isNotEmpty && emailAddress.getEmail().isNotEmpty
+                subtitle: emailAddress.displayName.isNotEmpty && emailAddress.emailAddress.isNotEmpty
                   ? Text(
-                      emailAddress.getEmail(),
+                      emailAddress.emailAddress,
                       style: TextStyle(color: AppColor.baseTextColor, fontSize: 12, fontWeight: FontWeight.w500))
                   : null,
                 onTap: () => state.selectSuggestion(emailAddress),

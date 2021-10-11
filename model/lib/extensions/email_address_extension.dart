@@ -1,32 +1,36 @@
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/email_address_cache.dart';
+import 'package:core/core.dart';
 
 extension EmailAddressExtension on EmailAddress {
 
   String asString() {
-    if (getName().isNotEmpty) {
-      return name!;
-    } else if (getEmail().isNotEmpty) {
-      return email!;
+    if (displayName.isNotEmpty) {
+      if (emailAddress.isNotEmpty && displayName == emailAddress) {
+        return displayName;
+      }
+      return displayName.capitalizeFirstEach;
+    } else if (emailAddress.isNotEmpty) {
+      return emailAddress;
     }
     return '';
   }
 
   String asFullString() {
-    if (getName().isNotEmpty) {
-      if (getEmail().isNotEmpty) {
-        return '${name!} <${email!}>';
+    if (displayName.isNotEmpty) {
+      if (emailAddress.isNotEmpty) {
+        return '${displayName.capitalizeFirstEach} <$emailAddress>';
       }
-      return name!;
-    } else if (getEmail().isNotEmpty) {
-      return email!;
+      return displayName.capitalizeFirstEach;
+    } else if (emailAddress.isNotEmpty) {
+      return emailAddress;
     }
     return '';
   }
 
-  String getEmail() => email != null ? email! : '';
+  String get emailAddress => email != null ? email! : '';
 
-  String getName() => name != null ? name! : '';
+  String get displayName => name != null ? name! : '';
 
-  EmailAddressCache toEmailAddressCache() => EmailAddressCache(name ?? '', email ?? '');
+  EmailAddressCache toEmailAddressCache() => EmailAddressCache(displayName, emailAddress);
 }

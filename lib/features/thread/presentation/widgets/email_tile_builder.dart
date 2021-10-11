@@ -86,8 +86,8 @@ class EmailTileBuilder {
                   Expanded(
                     child: Text(
                       _mailboxRole == PresentationMailbox.roleSent
-                          ? '${_presentationEmail.recipientsName().inCaps}'
-                          : '${_presentationEmail.getSenderName().inCaps}',
+                          ? '${_presentationEmail.recipientsName()}'
+                          : '${_presentationEmail.getSenderName()}',
                       maxLines: 1,
                       overflow:TextOverflow.ellipsis,
                       style: TextStyle(
