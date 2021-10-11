@@ -11,4 +11,12 @@ extension ListAttachmentExtension on List<Attachment> {
     });
     return totalSize;
   }
+
+  List<Attachment> get attachmentsWithDispositionAttachment {
+    return where((element) => element.disposition == ContentDisposition.attachment).toList();
+  }
+
+  List<Attachment> get attachmentWithDispositionInlines {
+    return where((element) => element.disposition == ContentDisposition.inline).toList();
+  }
 }

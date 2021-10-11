@@ -1,6 +1,8 @@
 
+import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/model.dart';
@@ -20,15 +22,6 @@ extension EmailExtension on Email {
     final listBccAddress = bcc.getListAddress() ?? [];
     listEmailAddress.addAll(listToAddress + listCcAddress + listBccAddress);
     return listEmailAddress;
-  }
-
-  EmailContent toEmailContent() {
-    return EmailContent(
-      id,
-      htmlBody: htmlBody,
-      attachments: attachments,
-      bodyValues: bodyValues
-    );
   }
 
   Email updatedEmail({Map<KeyWordIdentifier, bool>? newKeywords}) {
@@ -85,5 +78,33 @@ extension EmailExtension on Email {
       replyTo: updatedProperties.contain(EmailProperty.replyTo) ? newEmail.replyTo : replyTo,
       mailboxIds: updatedProperties.contain(EmailProperty.mailboxIds) ? newEmail.mailboxIds : mailboxIds,
     );
+  }
+
+  List<EmailContent> get emailContentList {
+    final newHtmlBody = htmlBody
+      ?.where((emailBody) => emailBody.partId != null && emailBody.type != null)
+      .toList() ?? <EmailBodyPart>[];
+
+    final mapHtmlBody = Map<PartId, MediaType>.fromIterable(
+      newHtmlBody,
+      key: (emailBody) => emailBody.partId!,
+      value: (emailBody) => emailBody.type!,
+    );
+
+    final emailContents = bodyValues?.entries
+      .map((entries) => EmailContent(mapHtmlBody[entries.key].toEmailContentType(), entries.value.value))
+      .toList();
+
+    return emailContents ?? [];
+  }
+
+  List<Attachment> get allAttachments {
+    if (attachments != null) {
+      return attachments!
+        .where((element) => element.disposition != null)
+        .map((item) => item.toAttachment())
+        .toList();
+    }
+    return [];
   }
 }

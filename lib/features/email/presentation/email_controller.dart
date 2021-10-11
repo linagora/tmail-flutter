@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/web_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -48,7 +49,8 @@ class EmailController extends BaseController {
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
-  final emailContent = Rxn<EmailContent>();
+  final emailContents = <EmailContent>[].obs;
+  final attachments = <Attachment>[].obs;
   EmailId? _currentEmailId;
 
   EmailController(
@@ -109,7 +111,7 @@ class EmailController extends BaseController {
       },
       (success) {
         if (success is GetEmailContentSuccess) {
-          emailContent.value = success.emailContent;
+          _getEmailContentSuccess(success);
         } else if (success is MarkAsEmailReadSuccess) {
           _markAsEmailReadSuccess(success);
         } else if (success is ExportAttachmentSuccess) {
@@ -126,10 +128,19 @@ class EmailController extends BaseController {
   void onError(error) {
   }
 
+  void _getEmailContentSuccess(GetEmailContentSuccess success) {
+    emailContents.value = success.emailContents;
+    attachments.value = success.attachments;
+    if (emailContents.isNotEmpty) {
+      dispatchState(Right(WebViewLoadingState()));
+    }
+  }
+
   void _clearEmailContent() {
     toggleDisplayEmailAddressAction(expandMode: ExpandMode.COLLAPSE);
     attachmentsExpandMode.value = ExpandMode.COLLAPSE;
-    emailContent.value = null;
+    emailContents.clear();
+    attachments.clear();
   }
 
   void toggleDisplayEmailAddressAction({required ExpandMode expandMode}) {
@@ -150,13 +161,19 @@ class EmailController extends BaseController {
     }
     mailboxDashBoardController.dispatchState(Right(success));
 
-    if (success is MarkAsEmailReadSuccess && success.readActions == ReadActions.markAsUnread) {
+    if (success is MarkAsEmailReadSuccess
+        && success.readActions == ReadActions.markAsUnread
+        && Get.context != null
+        && !responsiveUtils.isDesktop(Get.context!)) {
       backToThreadView();
     }
   }
 
   void _markAsEmailReadFailure(Failure failure) {
-    if (failure is MarkAsEmailReadFailure && failure.readActions == ReadActions.markAsUnread) {
+    if (failure is MarkAsEmailReadFailure
+        && failure.readActions == ReadActions.markAsUnread
+        && Get.context != null
+        && !responsiveUtils.isDesktop(Get.context!)) {
       backToThreadView();
     }
   }
@@ -330,17 +347,25 @@ class EmailController extends BaseController {
       && mailboxDashBoardController.selectedEmail.value != null;
 
   void backToThreadView() {
+    if (emailContents.isNotEmpty) {
+      dispatchState(Right(WebViewLoadCompletedState()));
+    }
     popBack();
   }
 
   void pressEmailAction(EmailActionType emailActionType) {
     if (canComposeEmail()) {
+      if (emailContents.isNotEmpty) {
+        clearState();
+      }
+
       push(
         AppRoutes.COMPOSER,
         arguments: ComposerArguments(
           emailActionType: emailActionType,
           presentationEmail: mailboxDashBoardController.selectedEmail.value!,
-          emailContent: emailContent.value,
+          emailContents: emailContents,
+          attachments: attachments,
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
           session: mailboxDashBoardController.sessionCurrent!,
           userProfile: mailboxDashBoardController.userProfile.value!,

@@ -15,7 +15,9 @@ class GetEmailContentInteractor {
     try {
       yield Right<Failure, Success>(LoadingState());
       final email = await emailRepository.getEmailContent(accountId, emailId);
-      yield Right<Failure, Success>(GetEmailContentSuccess(email.toEmailContent()));
+      yield Right<Failure, Success>(GetEmailContentSuccess(
+        email.emailContentList,
+        email.allAttachments));
     } catch (e) {
       yield Left(GetEmailContentFailure(e));
     }
