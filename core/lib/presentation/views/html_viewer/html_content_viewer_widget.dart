@@ -137,6 +137,8 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         crossPlatform: InAppWebViewOptions(
           useShouldOverrideUrlLoading: true,
           verticalScrollBarEnabled: false,
+          disableVerticalScroll: true,
+          transparentBackground: true,
         ),
         android: AndroidInAppWebViewOptions(
           useHybridComposition: true,
@@ -144,6 +146,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         ios: IOSInAppWebViewOptions(
           allowsInlineMediaPlayback: true,
           enableViewportScale: true,
+          allowsLinkPreview: false
         )
       ),
       onLoadStart: (controller, uri) {
@@ -157,8 +160,9 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         if (scrollHeight != null) {
           final scrollWidth = (await controller.evaluateJavascript(source: 'document.body.scrollWidth'));
           final size = MediaQuery.of(context).size;
-          if (scrollWidth > size.width) {
-            var scale = (size.width / scrollWidth);
+          final containerWidth = size.width - 60.0;
+          if (scrollWidth > containerWidth) {
+            var scale = (containerWidth / scrollWidth);
             if (scale < 0.2) {
               scale = 0.2;
             }
@@ -166,7 +170,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
             scrollHeight = (scrollHeight * scale).ceil();
           }
           setState(() {
-            _webViewContentHeight = double.tryParse('${scrollHeight + 10.0}');
+            _webViewContentHeight = double.tryParse('${scrollHeight + 24}');
           });
         }
 
