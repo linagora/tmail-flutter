@@ -1,4 +1,3 @@
-import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -109,15 +108,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   @override
   Widget build(BuildContext context) {
     if (_isGenerating) {
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: SizedBox(
-            width: 30,
-            height: 30,
-            child: CircularProgressIndicator(color: AppColor.primaryColor)),
-        ),
-      );
+      return SizedBox.shrink();
     }
     if (widget.blockExternalImages != _wereExternalImagesBlocked) {
       _generateHtml(widget.blockExternalImages);

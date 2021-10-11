@@ -9,15 +9,13 @@ import 'package:uri/uri.dart';
 
 class Attachment with EquatableMixin {
 
-  static final String dispositionAttachment = 'attachment';
-
   final PartId? partId;
   final Id? blobId;
   final UnsignedInt? size;
   final String? name;
   final MediaType? type;
   final String? cid;
-  final String? disposition;
+  final ContentDisposition? disposition;
 
   Attachment({
     this.partId,
@@ -42,4 +40,39 @@ class Attachment with EquatableMixin {
 
   @override
   List<Object?> get props => [partId, blobId, size, name, type, cid, disposition];
+}
+
+enum ContentDisposition {
+  inline,
+  attachment,
+  other
+}
+
+extension ContentDispositionExtension on ContentDisposition {
+  String get value {
+    switch(this) {
+      case ContentDisposition.inline:
+        return 'inline';
+      case ContentDisposition.attachment:
+        return 'attachment';
+      case ContentDisposition.other:
+        return this.toString();
+    }
+  }
+}
+
+extension DispositionStringExtension on String? {
+  ContentDisposition? toContentDisposition() {
+    if (this != null) {
+      switch(this) {
+        case 'inline':
+          return ContentDisposition.inline;
+        case 'attachment':
+          return ContentDisposition.attachment;
+        default:
+          return ContentDisposition.other;
+      }
+    }
+    return null;
+  }
 }
