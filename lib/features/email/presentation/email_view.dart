@@ -117,7 +117,7 @@ class EmailView extends GetView {
     return Padding(
       padding: EdgeInsets.only(left: 8, top: 4, bottom: 16),
       child: Text(
-          '${emailController.mailboxDashBoardController.selectedEmail.value?.subject}',
+          '${emailController.mailboxDashBoardController.selectedEmail.value?.getEmailTitle()}',
           style: TextStyle(fontSize: 18, color: AppColor.mailboxTextColor, fontWeight: FontWeight.w500)
       ));
   }
