@@ -1,13 +1,14 @@
 import 'package:core/core.dart';
-import 'package:model/email/email_content.dart';
+import 'package:model/model.dart';
 
 class GetEmailContentSuccess extends UIState {
-  final EmailContent? emailContent;
+  final List<EmailContent> emailContents;
+  final List<Attachment> attachments;
 
-  GetEmailContentSuccess(this.emailContent);
+  GetEmailContentSuccess(this.emailContents, this.attachments);
 
   @override
-  List<Object?> get props => [emailContent];
+  List<Object?> get props => [emailContents, attachments];
 }
 
 class GetEmailContentFailure extends FeatureFailure {

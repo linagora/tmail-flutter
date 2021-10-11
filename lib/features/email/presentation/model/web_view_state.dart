@@ -7,3 +7,10 @@ class WebViewLoadingState extends UIState {
   @override
   List<Object?> get props => [];
 }
+
+class WebViewLoadCompletedState extends UIState {
+  WebViewLoadCompletedState();
+
+  @override
+  List<Object?> get props => [];
+}
