@@ -4,7 +4,7 @@ import 'package:model/extensions/email_address_extension.dart';
 
 extension ListEmailAddressExtension on Set<EmailAddress>? {
 
-  List<String>? getListAddress() => this?.map((emailAddress) => emailAddress.getEmail()).toList();
+  List<String>? getListAddress() => this?.map((emailAddress) => emailAddress.emailAddress).toList();
 
   List<EmailAddress> asList() => this != null ? this!.toList() : List.empty();
 

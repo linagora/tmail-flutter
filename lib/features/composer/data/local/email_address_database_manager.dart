@@ -39,7 +39,7 @@ class EmailAddressDatabaseManager implements DatabaseManager<EmailAddress> {
     final res = await _databaseClient.updateData(
       EmailAddressTable.TABLE_NAME,
       EmailAddressTable.EMAIL,
-      emailAddress.getEmail(),
+      emailAddress.emailAddress,
       emailAddress.toEmailAddressCache().toJson());
     return res > 0 ? true : false;
   }
