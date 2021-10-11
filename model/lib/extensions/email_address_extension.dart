@@ -28,9 +28,9 @@ extension EmailAddressExtension on EmailAddress {
     return '';
   }
 
-  String get emailAddress => email != null ? email! : '';
+  String get emailAddress => email ?? '';
 
-  String get displayName => name != null ? name! : '';
+  String get displayName => name ?? '';
 
   EmailAddressCache toEmailAddressCache() => EmailAddressCache(displayName, emailAddress);
 }

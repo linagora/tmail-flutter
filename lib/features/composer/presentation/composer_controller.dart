@@ -129,7 +129,7 @@ class ComposerController extends BaseController {
         && composerArguments.value?.presentationEmail != null
         && Get.context != null) {
       final subject = '${composerArguments.value!.emailActionType.prefixSubjectComposer(Get.context!)} '
-          '${composerArguments.value!.presentationEmail?.subject}';
+          '${composerArguments.value!.presentationEmail?.getEmailTitle()}';
       setSubjectEmail(subject);
       subjectEmailInputController.text = subject;
     }
