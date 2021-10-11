@@ -44,12 +44,7 @@ class PresentationEmail with EquatableMixin {
     }
   );
 
-  String getSenderName() {
-    if (from != null && from!.isNotEmpty) {
-      return from!.first.asString();
-    }
-    return '';
-  }
+  String getSenderName() => from?.first.asString() ?? '';
 
   String getAvatarText() {
     if (getSenderName().isNotEmpty) {
@@ -58,9 +53,9 @@ class PresentationEmail with EquatableMixin {
     return '';
   }
 
-  String getEmailTitle() => subject != null ? subject! : '';
+  String getEmailTitle() => subject ?? '';
 
-  String getPartialContent() => preview != null ? preview! : '';
+  String getPartialContent() => preview ?? '';
 
   bool isUnReadEmail() => !(keywords?.containsKey(KeyWordIdentifier.emailSeen) == true);
 
