@@ -10,7 +10,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
@@ -30,9 +29,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_inter
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/constants/email_constants.dart';
-import 'package:tmail_ui_user/features/email/presentation/extensions/email_content_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/message_content.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
@@ -157,19 +154,6 @@ class ComposerController extends BaseController {
     return null;
   }
 
-  Tuple3<List<MessageContent>, List<Attachment>, Session>? getContentEmailQuoted() {
-    if (composerArguments.value != null) {
-      final emailContent = composerArguments.value!.emailContent;
-      final session = composerArguments.value!.session;
-      if (emailContent != null) {
-        final messageContents = emailContent.getListMessageContent();
-        final attachmentsInline = emailContent.getListAttachmentInline();
-        return Tuple3(messageContents, attachmentsInline, session);
-      }
-    }
-    return null;
-  }
-
   void expandEmailAddressAction() {
     final newExpandMode = expandMode.value == ExpandMode.COLLAPSE ? ExpandMode.EXPAND : ExpandMode.COLLAPSE;
     expandMode.value = newExpandMode;
@@ -229,7 +213,6 @@ class ComposerController extends BaseController {
 
   String _getBodyEmailQuotedAsHtml(BuildContext context, HtmlMessagePurifier htmlMessagePurifier) {
     final headerEmailQuoted = getHeaderEmailQuoted(Localizations.localeOf(context).toLanguageTag());
-    final contentEmail = getContentEmailQuoted();
 
     final headerEmailQuotedAsHtml = headerEmailQuoted != null
         ? AppLocalizations.of(context).header_email_quoted(headerEmailQuoted.value1, headerEmailQuoted.value2)
@@ -237,9 +220,12 @@ class ComposerController extends BaseController {
         : '';
 
     var trustAsHtml = '';
-    if (contentEmail != null && contentEmail.value1.isNotEmpty) {
-      final messageContent = contentEmail.value1.first;
-      trustAsHtml = messageContent.content;
+
+    if (composerArguments.value != null) {
+      final emailContents = composerArguments.value!.emailContents;
+      if (emailContents != null && emailContents.isNotEmpty) {
+        trustAsHtml = emailContents.first.content;
+      }
     }
 
     final emailQuotedHtml = '</br></br></br>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}</br>';
@@ -281,7 +267,7 @@ class ComposerController extends BaseController {
 
   Set<EmailBodyPart> _generateAttachments() {
     return attachments.map((attachment) =>
-      attachment.toEmailBodyPart(Attachment.dispositionAttachment)).toSet();
+      attachment.toEmailBodyPart(ContentDisposition.attachment.value)).toSet();
   }
 
   void sendEmailAction(BuildContext context) async {

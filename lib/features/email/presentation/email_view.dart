@@ -8,13 +8,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/text_format.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/web_view_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
-import 'package:tmail_ui_user/features/email/presentation/extensions/email_content_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/list_attachment_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_place_holder_loading_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/sender_and_receiver_information_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:filesize/filesize.dart';
@@ -28,6 +27,11 @@ class EmailView extends GetView {
 
   @override
   Widget build(BuildContext context) {
+    emailController.viewState.value.map((success) {
+      if (success is WebViewLoadCompletedState && emailController.emailContents.isNotEmpty) {
+        emailController.dispatchState(Right(WebViewLoadingState()));
+      }
+    });
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColor.primaryLightColor,
@@ -41,7 +45,7 @@ class EmailView extends GetView {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _buildAppBar(context),
-              Expanded(child: _buildEmailContent(context)),
+              Expanded(child: _buildEmailBody(context)),
               _buildBottomBar(context),
             ])
         )
@@ -74,7 +78,7 @@ class EmailView extends GetView {
         .build());
   }
 
-  Widget _buildEmailContent(BuildContext context) {
+  Widget _buildEmailBody(BuildContext context) {
     return Container(
       color: AppColor.bgMessenger,
       margin: EdgeInsets.zero,
@@ -122,12 +126,7 @@ class EmailView extends GetView {
     return Obx(() => emailController.viewState.value.fold(
       (failure) => SizedBox.shrink(),
       (success) => success is LoadingState || success is WebViewLoadingState
-        ? Center(child: Padding(
-            padding: EdgeInsets.only(top: 16, bottom: 16),
-            child: SizedBox(
-              width: 30,
-              height: 30,
-              child: CircularProgressIndicator(color: AppColor.primaryColor))))
+        ? EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils)
         : SizedBox.shrink()));
   }
 
@@ -150,29 +149,27 @@ class EmailView extends GetView {
               emailController.emailAddressExpandMode.value)
             .onOpenExpandAddressReceiverActionClick(() => emailController.toggleDisplayEmailAddressAction(expandMode: ExpandMode.EXPAND))
             .build()),
-          _buildListAttachments(context),
           _buildLoadingView(),
-          _buildListMessageContent(),
+          _buildAttachments(context),
+          _buildEmailContent(),
         ],
       )
     );
   }
 
-  Widget _buildListAttachments(BuildContext context) {
-    if (emailController.mailboxDashBoardController.selectedEmail.value?.hasAttachment == true) {
-      return Obx(() {
-        if (emailController.emailContent.value != null) {
-          final attachments = emailController.emailContent.value!.getListAttachment();
-          return attachments.isNotEmpty
-              ? _buildAttachmentsBody(context, attachments)
-              : SizedBox.shrink();
-        } else {
-          return SizedBox.shrink();
-        }
-      });
-    } else {
-      return SizedBox.shrink();
-    }
+  Widget _buildAttachments(BuildContext context) {
+   return Obx(() => emailController.viewState.value.fold(
+    (failure) => SizedBox.shrink(),
+    (success) {
+      if (success is LoadingState || success is WebViewLoadingState) {
+        return SizedBox.shrink();
+      } else {
+        final attachments = emailController.attachments.attachmentsWithDispositionAttachment;
+        return attachments.isNotEmpty
+          ? _buildAttachmentsBody(context, attachments)
+          : SizedBox.shrink();
+      }
+    }));
   }
 
   int _getAttachmentLimitDisplayed(BuildContext context) {
@@ -281,31 +278,12 @@ class EmailView extends GetView {
     );
   }
 
-  Widget _buildListMessageContent() {
-    return Obx(() {
-      final messageContents = emailController.emailContent.value?.getListMessageContent();
-
-      if (messageContents != null && messageContents.isNotEmpty) {
-        return messageContents.first.textFormat == TextFormat.PLAIN
-          ? Padding(
-              padding: EdgeInsets.only(top: 16),
-              child: Text(
-                '${messageContents.first.content}',
-                style: TextStyle(fontSize: 12,
-                color: AppColor.mailboxTextColor)))
-          : HtmlContentViewer(
-              message: messageContents.first.content,
-              onWebViewLoadStart: (webController, uri) {
-                emailController.dispatchState(Right(WebViewLoadingState()));
-              },
-              onWebViewLoadStop: (webController, uri) {
-                emailController.clearState();
-              },
-              mailtoDelegate: (uri) async {},
-            );
-      } else {
-        return SizedBox.shrink();
-      }
-    });
+  Widget _buildEmailContent() {
+    return Obx(() => emailController.emailContents.isNotEmpty
+      ? HtmlContentViewer(
+          message: emailController.emailContents.first.content,
+          onWebViewLoadStop: (webController, uri) => emailController.dispatchState(Right(WebViewLoadCompletedState())),
+          mailtoDelegate: (uri) async {})
+      : SizedBox.shrink());
   }
 }

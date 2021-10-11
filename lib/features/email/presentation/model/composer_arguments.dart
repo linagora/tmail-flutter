@@ -7,7 +7,8 @@ import 'package:model/model.dart';
 class ComposerArguments with EquatableMixin {
   final EmailActionType emailActionType;
   final PresentationEmail? presentationEmail;
-  final EmailContent? emailContent;
+  final List<EmailContent>? emailContents;
+  final List<Attachment>? attachments;
   final Session session;
   final UserProfile userProfile;
   final Map<Role, MailboxId> mapMailboxId;
@@ -16,7 +17,8 @@ class ComposerArguments with EquatableMixin {
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
     this.presentationEmail,
-    this.emailContent,
+    this.emailContents,
+    this.attachments,
     this.mailboxRole,
     required this.session,
     required this.userProfile,
@@ -27,7 +29,8 @@ class ComposerArguments with EquatableMixin {
   List<Object?> get props => [
     emailActionType,
     presentationEmail,
-    emailContent,
+    emailContents,
+    attachments,
     mailboxRole,
     session,
     userProfile,
