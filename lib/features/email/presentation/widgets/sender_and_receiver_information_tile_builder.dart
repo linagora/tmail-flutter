@@ -53,7 +53,7 @@ class SenderAndReceiverInformationTileBuilder {
           title: Transform(
             transform: Matrix4.translationValues(-15.0, 0.0, 0.0),
             child: Text(
-              '${AppLocalizations.of(_context).from_email_address_prefix}: ${_presentationEmail!.getSenderName().inCaps}',
+              '${AppLocalizations.of(_context).from_email_address_prefix}: ${_presentationEmail!.getSenderName()}',
               style: TextStyle(fontSize: 16, color: AppColor.nameUserColor, fontWeight: FontWeight.w500),
             )),
           subtitle: Transform(
