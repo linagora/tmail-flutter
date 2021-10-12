@@ -27,11 +27,6 @@ class EmailView extends GetView {
 
   @override
   Widget build(BuildContext context) {
-    emailController.viewState.value.map((success) {
-      if (success is WebViewLoadCompletedState && emailController.emailContents.isNotEmpty) {
-        emailController.dispatchState(Right(WebViewLoadingState()));
-      }
-    });
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColor.primaryLightColor,
@@ -279,11 +274,27 @@ class EmailView extends GetView {
   }
 
   Widget _buildEmailContent() {
-    return Obx(() => emailController.emailContents.isNotEmpty
-      ? HtmlContentViewer(
-          message: emailController.emailContents.first.content,
-          onWebViewLoadStop: (webController, uri) => emailController.dispatchState(Right(WebViewLoadCompletedState())),
-          mailtoDelegate: (uri) async {})
-      : SizedBox.shrink());
+    return Obx(() {
+      if (emailController.emailContent.value != null) {
+        switch(emailController.emailContent.value!.type) {
+          case EmailContentType.textHtml:
+            return HtmlContentViewer(
+              contentHtml: emailController.emailContent.value!.content,
+              onLoadStart: (webController, uri) => emailController.dispatchState(Right(WebViewLoadingState())),
+              onLoadStop: (webController, uri) => emailController.dispatchState(Right(WebViewLoadCompletedState())),
+              mailtoDelegate: (uri) async {});
+          case EmailContentType.textPlain:
+            return Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: Text(
+                emailController.emailContent.value!.content,
+                style: TextStyle(fontSize: 14, color: AppColor.nameUserColor)));
+          case EmailContentType.other:
+            return SizedBox.shrink();
+        }
+      } else {
+        return SizedBox.shrink();
+      }
+    });
   }
 }

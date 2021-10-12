@@ -34,4 +34,6 @@ abstract class EmailRepository {
     List<Email> emails,
     MarkStarAction markStarAction
   );
+
+  Future<String> transformEmailContentToHtml(EmailContent emailContent);
 }

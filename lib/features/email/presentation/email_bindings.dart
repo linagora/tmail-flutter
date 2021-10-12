@@ -3,7 +3,10 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -22,7 +25,11 @@ class EmailBindings extends Bindings {
   void dependencies() {
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
-    Get.lazyPut(() => EmailRepositoryImpl(Get.find<EmailDataSource>()));
+    Get.lazyPut(() => HtmlDataSourceImpl(Get.find<HtmlAnalyzer>()));
+    Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
+    Get.lazyPut(() => EmailRepositoryImpl(
+      Get.find<EmailDataSource>(),
+      Get.find<HtmlDataSource>()));
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
     Get.put(SendEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));

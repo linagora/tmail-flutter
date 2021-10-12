@@ -3,6 +3,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:device_info/device_info.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 
 class CoreBindings extends Bindings {
 
@@ -35,6 +36,7 @@ class CoreBindings extends Bindings {
 
   void _bindingValidator() {
     Get.put(HtmlMessagePurifier());
+    Get.put(HtmlAnalyzer());
   }
 
   void _bindingToast() {

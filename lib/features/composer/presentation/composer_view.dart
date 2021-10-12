@@ -174,17 +174,23 @@ class ComposerView extends GetWidget<ComposerController> {
   Widget _buildComposerEditor(BuildContext context) {
     return Obx(() {
       if (controller.composerArguments.value?.emailActionType == EmailActionType.compose) {
-        return PackagedHtmlEditor(
+        return HtmlEditor(
           key: Key('composer_editor'),
           minHeight: 400,
+          supportZoom: true,
+          disableHorizontalScroll: false,
+          disableVerticalScroll: false,
           onCreated: (editorApi) => controller.htmlEditorApi = editorApi,
         );
       } else {
         final message = controller.getContentEmail();
         return message.isNotEmpty
-          ? PackagedHtmlEditor(
+          ? HtmlEditor(
               key: Key('composer_editor'),
               minHeight: 400,
+              supportZoom: true,
+              disableHorizontalScroll: false,
+              disableVerticalScroll: false,
               onCreated: (editorApi) => controller.htmlEditorApi = editorApi,
               initialContent: message,
             )
