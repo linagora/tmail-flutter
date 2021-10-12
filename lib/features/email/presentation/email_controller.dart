@@ -49,7 +49,7 @@ class EmailController extends BaseController {
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
-  final emailContents = <EmailContent>[].obs;
+  final emailContent = Rxn<EmailContent>();
   final attachments = <Attachment>[].obs;
   EmailId? _currentEmailId;
 
@@ -129,9 +129,9 @@ class EmailController extends BaseController {
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
-    emailContents.value = success.emailContents;
+    emailContent.value = success.emailContent;
     attachments.value = success.attachments;
-    if (emailContents.isNotEmpty) {
+    if (emailContent.value != null && emailContent.value!.type == EmailContentType.textHtml) {
       dispatchState(Right(WebViewLoadingState()));
     }
   }
@@ -139,7 +139,7 @@ class EmailController extends BaseController {
   void _clearEmailContent() {
     toggleDisplayEmailAddressAction(expandMode: ExpandMode.COLLAPSE);
     attachmentsExpandMode.value = ExpandMode.COLLAPSE;
-    emailContents.clear();
+    emailContent.value = null;
     attachments.clear();
   }
 
@@ -347,24 +347,17 @@ class EmailController extends BaseController {
       && mailboxDashBoardController.selectedEmail.value != null;
 
   void backToThreadView() {
-    if (emailContents.isNotEmpty) {
-      dispatchState(Right(WebViewLoadCompletedState()));
-    }
     popBack();
   }
 
   void pressEmailAction(EmailActionType emailActionType) {
     if (canComposeEmail()) {
-      if (emailContents.isNotEmpty) {
-        clearState();
-      }
-
       push(
         AppRoutes.COMPOSER,
         arguments: ComposerArguments(
           emailActionType: emailActionType,
           presentationEmail: mailboxDashBoardController.selectedEmail.value!,
-          emailContents: emailContents,
+          emailContent: emailContent.value,
           attachments: attachments,
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
           session: mailboxDashBoardController.sessionCurrent!,

@@ -5,14 +5,16 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 
 class EmailRepositoryImpl extends EmailRepository {
 
   final EmailDataSource emailDataSource;
+  final HtmlDataSource _htmlDataSource;
 
-  EmailRepositoryImpl(this.emailDataSource);
+  EmailRepositoryImpl(this.emailDataSource, this._htmlDataSource);
 
   @override
   Future<Email> getEmailContent(AccountId accountId, EmailId emailId) {
@@ -67,5 +69,10 @@ class EmailRepositoryImpl extends EmailRepository {
       MarkStarAction markStarAction
   ) {
     return emailDataSource.markAsStar(accountId, emails, markStarAction);
+  }
+
+  @override
+  Future<String> transformEmailContentToHtml(EmailContent emailContent) {
+    return _htmlDataSource.transformToHtml(emailContent);
   }
 }
