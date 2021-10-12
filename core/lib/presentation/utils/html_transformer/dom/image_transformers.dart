@@ -12,23 +12,12 @@ class ImageTransformer extends DomTransformer {
     final imageElements = document.getElementsByTagName('img');
     for (final imageElement in imageElements) {
       final src = imageElement.attributes['src'];
-      if (src != null) {
-        if (src.startsWith('http')) {
-          if (configuration.blockExternalImages) {
-            imageElement.attributes.remove('src');
-          } else if (src.startsWith('http:')) {
-            // always at least enforce HTTPS images:
-            final url = src.substring('http:'.length);
-            imageElement.attributes['src'] = 'https:$url';
-          }
-        }
+      if (src != null && src.startsWith('http:')) {
+        // always at least enforce HTTPS images:
+        final url = src.substring('http:'.length);
+        imageElement.attributes['src'] = 'https:$url';
       }
-      final style = imageElement.attributes['style'];
-      if (style == null) {
-        imageElement.attributes['style'] = 'display: inline;max-width: 100%;height: auto;';
-      } else {
-        imageElement.attributes['style'] = 'display: inline;max-width: 100%;height: auto;' + style;
-      }
+      imageElement.attributes['style'] = 'display: inline;max-width: 100%;height: auto;';
     }
   }
 }
