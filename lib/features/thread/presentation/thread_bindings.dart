@@ -4,7 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -48,7 +51,11 @@ class ThreadBindings extends Bindings {
     Get.lazyPut(() => ScrollController());
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
-    Get.lazyPut(() => EmailRepositoryImpl(Get.find<EmailDataSource>()));
+    Get.lazyPut(() => HtmlDataSourceImpl(Get.find<HtmlAnalyzer>()));
+    Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
+    Get.lazyPut(() => EmailRepositoryImpl(
+      Get.find<EmailDataSource>(),
+      Get.find<HtmlDataSource>()));
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
     Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsMultipleEmailReadInteractor(Get.find<EmailRepository>()));

@@ -15,9 +15,20 @@ class GetEmailContentInteractor {
     try {
       yield Right<Failure, Success>(LoadingState());
       final email = await emailRepository.getEmailContent(accountId, emailId);
-      yield Right<Failure, Success>(GetEmailContentSuccess(
-        email.emailContentList,
-        email.allAttachments));
+
+      if (email.emailContentList.isNotEmpty) {
+        final emailContent = email.emailContentList.first;
+        if (emailContent.type == EmailContentType.textHtml) {
+          final contentHtml = await emailRepository.transformEmailContentToHtml(emailContent);
+          yield Right<Failure, Success>(GetEmailContentSuccess(
+            EmailContent(emailContent.type, contentHtml),
+            email.allAttachments));
+        } else {
+          yield Right<Failure, Success>(GetEmailContentSuccess(emailContent, email.allAttachments));
+        }
+      } else {
+        yield Left(GetEmailContentFailure(null));
+      }
     } catch (e) {
       yield Left(GetEmailContentFailure(e));
     }

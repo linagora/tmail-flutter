@@ -28,7 +28,6 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addre
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
-import 'package:tmail_ui_user/features/email/presentation/constants/email_constants.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
@@ -215,18 +214,11 @@ class ComposerController extends BaseController {
     final headerEmailQuoted = getHeaderEmailQuoted(Localizations.localeOf(context).toLanguageTag());
 
     final headerEmailQuotedAsHtml = headerEmailQuoted != null
-        ? AppLocalizations.of(context).header_email_quoted(headerEmailQuoted.value1, headerEmailQuoted.value2)
-            .addBlockTag('p', attribute: 'style=\"font-size:14px;font-style:italic;color:#182952;\"')
-        : '';
+      ? AppLocalizations.of(context).header_email_quoted(headerEmailQuoted.value1, headerEmailQuoted.value2)
+          .addBlockTag('p', attribute: 'style=\"font-size:14px;font-style:italic;color:#182952;\"')
+      : '';
 
-    var trustAsHtml = '';
-
-    if (composerArguments.value != null) {
-      final emailContents = composerArguments.value!.emailContents;
-      if (emailContents != null && emailContents.isNotEmpty) {
-        trustAsHtml = emailContents.first.content;
-      }
-    }
+    final trustAsHtml = composerArguments.value?.emailContent?.content ?? '';
 
     final emailQuotedHtml = '</br></br></br>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}</br>';
 
@@ -256,7 +248,7 @@ class ComposerController extends BaseController {
         EmailBodyPart(
           partId: generatePartId,
           blobId: generateBlobId,
-          type: MediaType.parse(EmailConstants.HTML_TEXT)
+          type: MediaType.parse('text/html')
         )},
       bodyValues: {
         generatePartId: EmailBodyValue(emailBodyText, false, false)
