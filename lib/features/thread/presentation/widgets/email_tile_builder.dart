@@ -174,7 +174,7 @@ class EmailTileBuilder {
           : AvatarBuilder()
               .text('${_presentationEmail.getAvatarText()}')
               .size(40)
-              .iconStatus(_imagePaths.icOffline)
+              // .iconStatus(_imagePaths.icOffline)
               .addOnTapActionClick(() {
                   if (_selectModeAll == SelectMode.ACTIVE && _onSelectEmailActionClick != null) {
                   _onSelectEmailActionClick!(_presentationEmail);
@@ -185,7 +185,7 @@ class EmailTileBuilder {
       return AvatarBuilder()
         .text('${_presentationEmail.getAvatarText()}')
         .size(40)
-        .iconStatus(_imagePaths.icOffline)
+        // .iconStatus(_imagePaths.icOffline)
         .build();
     }
   }

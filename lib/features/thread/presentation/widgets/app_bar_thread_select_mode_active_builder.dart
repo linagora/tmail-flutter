@@ -15,7 +15,7 @@ typedef OnOpenPopupMenuActionClick = void Function(List<PresentationEmail> listE
 class AppBarThreadSelectModeActiveBuilder {
   OnCloseActionClick? _onCloseActionClick;
   OnMarkAsEmailReadActionClick? _onMarkAsEmailReadActionClick;
-  OnRemoveEmailActionClick? _onRemoveEmailActionClick;
+  // OnRemoveEmailActionClick? _onRemoveEmailActionClick;
   OnOpenContextMenuActionClick? _onOpenContextMenuActionClick;
   OnOpenPopupMenuActionClick? _onOpenPopupMenuActionClick;
 
@@ -34,9 +34,9 @@ class AppBarThreadSelectModeActiveBuilder {
     _onMarkAsEmailReadActionClick = onMarkAsEmailReadActionClick;
   }
 
-  void addRemoveEmailActionClick(OnRemoveEmailActionClick onRemoveEmailActionClick) {
-    _onRemoveEmailActionClick = onRemoveEmailActionClick;
-  }
+  // void addRemoveEmailActionClick(OnRemoveEmailActionClick onRemoveEmailActionClick) {
+  //   _onRemoveEmailActionClick = onRemoveEmailActionClick;
+  // }
 
   void addOpenContextMenuActionClick(OnOpenContextMenuActionClick onOpenContextMenuActionClick) {
     _onOpenContextMenuActionClick = onOpenContextMenuActionClick;
@@ -93,15 +93,15 @@ class AppBarThreadSelectModeActiveBuilder {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          IconButton(
-            key: Key('button_remove_email_selected'),
-            color: AppColor.baseTextColor,
-            icon: SvgPicture.asset(_imagePaths.icTrash, color: AppColor.baseTextColor, fit: BoxFit.fill),
-            onPressed: () => {
-              if (_onRemoveEmailActionClick != null) {
-                _onRemoveEmailActionClick!(_listEmail)
-              }
-            }),
+          // IconButton(
+          //   key: Key('button_remove_email_selected'),
+          //   color: AppColor.baseTextColor,
+          //   icon: SvgPicture.asset(_imagePaths.icTrash, color: AppColor.baseTextColor, fit: BoxFit.fill),
+          //   onPressed: () => {
+          //     if (_onRemoveEmailActionClick != null) {
+          //       _onRemoveEmailActionClick!(_listEmail)
+          //     }
+          //   }),
           IconButton(
             key: Key('button_unread_email_selected'),
             color: AppColor.baseTextColor,

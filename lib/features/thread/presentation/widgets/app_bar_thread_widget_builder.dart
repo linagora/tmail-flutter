@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -13,19 +13,19 @@ typedef OnOpenListMailboxActionClick = void Function();
 typedef OnOpenUserInformationActionClick = void Function();
 
 class AppBarThreadWidgetBuilder {
-  OnOpenSearchMailActionClick? _onOpenSearchMailActionClick;
+  // OnOpenSearchMailActionClick? _onOpenSearchMailActionClick;
   OnOpenListMailboxActionClick? _onOpenListMailboxActionClick;
   OnOpenUserInformationActionClick? _onOpenUserInformationActionClick;
 
   final BuildContext _context;
-  final ImagePaths _imagePaths;
+  // final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
   final PresentationMailbox? _presentationMailbox;
   final UserProfile? _userProfile;
 
   AppBarThreadWidgetBuilder(
     this._context,
-    this._imagePaths,
+    // this._imagePaths,
     this._responsiveUtils,
     this._presentationMailbox,
     this._userProfile,
@@ -36,9 +36,9 @@ class AppBarThreadWidgetBuilder {
     _onOpenUserInformationActionClick = onOpenUserInformationActionClick;
   }
 
-  void onOpenSearchMailActionClick(OnOpenSearchMailActionClick onOpenSearchMailActionClick) {
-    _onOpenSearchMailActionClick = onOpenSearchMailActionClick;
-  }
+  // void onOpenSearchMailActionClick(OnOpenSearchMailActionClick onOpenSearchMailActionClick) {
+  //   _onOpenSearchMailActionClick = onOpenSearchMailActionClick;
+  // }
 
   void onOpenListMailboxActionClick(OnOpenListMailboxActionClick onOpenListMailboxActionClick) {
     _onOpenListMailboxActionClick = onOpenListMailboxActionClick;
@@ -48,7 +48,7 @@ class AppBarThreadWidgetBuilder {
     return Container(
       key: Key('app_bar_thread_widget'),
       alignment: Alignment.center,
-      padding: EdgeInsets.only(top: 8, bottom: 8),
+      padding: EdgeInsets.only(top: 16, bottom: 8),
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
@@ -57,7 +57,7 @@ class AppBarThreadWidgetBuilder {
           children: [
             if (_responsiveUtils.isMobile(_context)) _buildIconUser(),
             Expanded(child: _buildContentCenterAppBar()),
-            _buildIconSearch(),
+            // _buildIconSearch(),
           ]
         )
       )
@@ -78,19 +78,19 @@ class AppBarThreadWidgetBuilder {
           .build()));
   }
 
-  Widget _buildIconSearch() {
-    return Padding(
-      padding: EdgeInsets.only(left: 16),
-      child: IconButton(
-        color: AppColor.baseTextColor,
-        icon: SvgPicture.asset(_imagePaths.icSearch, color: AppColor.baseTextColor, fit: BoxFit.fill),
-        onPressed: () => {
-          if (_onOpenSearchMailActionClick != null) {
-            _onOpenSearchMailActionClick!()
-          }
-        }
-      ));
-  }
+  // Widget _buildIconSearch() {
+  //   return Padding(
+  //     padding: EdgeInsets.only(left: 16),
+  //     child: IconButton(
+  //       color: AppColor.baseTextColor,
+  //       icon: SvgPicture.asset(_imagePaths.icSearch, color: AppColor.baseTextColor, fit: BoxFit.fill),
+  //       onPressed: () => {
+  //         if (_onOpenSearchMailActionClick != null) {
+  //           _onOpenSearchMailActionClick!()
+  //         }
+  //       }
+  //     ));
+  // }
 
   Widget _buildContentCenterAppBar() {
     return Row(
