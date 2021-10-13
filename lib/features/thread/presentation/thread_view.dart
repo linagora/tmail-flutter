@@ -71,12 +71,12 @@ class ThreadView extends GetWidget<ThreadController> {
       padding: EdgeInsets.only(left: 15, right: 12),
       child: (AppBarThreadWidgetBuilder(
               context,
-              imagePaths,
+              // imagePaths,
               responsiveUtils,
               controller.mailboxDashBoardController.selectedMailbox.value,
               controller.mailboxDashBoardController.userProfile.value)
           ..onOpenUserInformationAction(() => {})
-          ..onOpenSearchMailActionClick(() => {})
+          // ..onOpenSearchMailActionClick(() => {})
           ..onOpenListMailboxActionClick(() => controller.openMailboxLeftMenu()))
         .build()));
   }
@@ -90,7 +90,7 @@ class ThreadView extends GetWidget<ThreadController> {
               controller.getListEmailSelected(),
               responsiveUtils)
           ..addCloseActionClick(() => controller.cancelSelectEmail())
-          ..addRemoveEmailActionClick((listEmail) => {})
+          // ..addRemoveEmailActionClick((listEmail) => {})
           ..addOnMarkAsEmailReadActionClick((listEmail) => controller.markAsSelectedEmailRead(listEmail))
           ..addOpenContextMenuActionClick((listEmail) =>
               controller.openContextMenuSelectedEmail(context, _contextMenuEmailActionTile(context, listEmail)))
@@ -101,11 +101,11 @@ class ThreadView extends GetWidget<ThreadController> {
 
   List<Widget> _contextMenuEmailActionTile(BuildContext context, List<PresentationEmail> listEmail) {
     return [
-      _moveToTrashAction(context, listEmail),
+      // _moveToTrashAction(context, listEmail),
       _moveToMailboxAction(context, listEmail),
       _markAsReadAction(context, listEmail),
       _markAsStarAction(context, listEmail),
-      _moveToSpamAction(context, listEmail),
+      // _moveToSpamAction(context, listEmail),
       SizedBox(height: 20),
     ];
   }
@@ -122,15 +122,15 @@ class ThreadView extends GetWidget<ThreadController> {
         .build();
   }
 
-  Widget _moveToTrashAction(BuildContext context, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-            Key('move_to_trash_context_menu_action'),
-            SvgPicture.asset(imagePaths.icTrash, width: 24, height: 24, fit: BoxFit.fill),
-            AppLocalizations.of(context).move_to_trash,
-            listEmail)
-        ..onActionClick((data) => {}))
-      .build();
-  }
+  // Widget _moveToTrashAction(BuildContext context, List<PresentationEmail> listEmail) {
+  //   return (EmailContextMenuActionBuilder(
+  //           Key('move_to_trash_context_menu_action'),
+  //           SvgPicture.asset(imagePaths.icTrash, width: 24, height: 24, fit: BoxFit.fill),
+  //           AppLocalizations.of(context).move_to_trash,
+  //           listEmail)
+  //       ..onActionClick((data) => {}))
+  //     .build();
+  // }
 
   Widget _moveToMailboxAction(BuildContext context, List<PresentationEmail> listEmail) {
     return (EmailContextMenuActionBuilder(
@@ -160,23 +160,23 @@ class ThreadView extends GetWidget<ThreadController> {
         .build();
   }
 
-  Widget _moveToSpamAction(BuildContext context, List<PresentationEmail> listEmail) {
-    return (EmailContextMenuActionBuilder(
-            Key('move_to_spam_context_menu_action'),
-            SvgPicture.asset(imagePaths.icMailboxSpam, width: 24, height: 24, fit: BoxFit.fill),
-            AppLocalizations.of(context).move_to_spam,
-            listEmail)
-        ..onActionClick((data) => {}))
-      .build();
-  }
+  // Widget _moveToSpamAction(BuildContext context, List<PresentationEmail> listEmail) {
+  //   return (EmailContextMenuActionBuilder(
+  //           Key('move_to_spam_context_menu_action'),
+  //           SvgPicture.asset(imagePaths.icMailboxSpam, width: 24, height: 24, fit: BoxFit.fill),
+  //           AppLocalizations.of(context).move_to_spam,
+  //           listEmail)
+  //       ..onActionClick((data) => {}))
+  //     .build();
+  // }
 
   List<PopupMenuItem> _popupMenuEmailActionTile(BuildContext context, List<PresentationEmail> listEmail) {
     return [
-      PopupMenuItem(child: _moveToTrashAction(context, listEmail)),
+      // PopupMenuItem(child: _moveToTrashAction(context, listEmail)),
       PopupMenuItem(child: _moveToMailboxAction(context, listEmail)),
       PopupMenuItem(child: _markAsReadAction(context, listEmail)),
       PopupMenuItem(child: _markAsStarAction(context, listEmail)),
-      PopupMenuItem(child: _moveToSpamAction(context, listEmail)),
+      // PopupMenuItem(child: _moveToSpamAction(context, listEmail)),
     ];
   }
 
