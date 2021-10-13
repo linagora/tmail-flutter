@@ -85,7 +85,9 @@ class EmailTileBuilder {
                 children: [
                   Expanded(
                     child: Text(
-                      _mailboxRole == PresentationMailbox.roleSent
+                      (_mailboxRole == PresentationMailbox.roleSent
+                        || _mailboxRole == PresentationMailbox.roleDrafts
+                        || _mailboxRole == PresentationMailbox.roleOutbox)
                           ? '${_presentationEmail.recipientsName()}'
                           : '${_presentationEmail.getSenderName()}',
                       maxLines: 1,
