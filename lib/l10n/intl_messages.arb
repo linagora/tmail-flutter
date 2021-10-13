@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-09-17T17:37:57.805293",
+  "@@last_modified": "2021-10-13T22:37:55.795262",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -304,6 +304,22 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "you_need_to_grant_files_permission_to_download_attachments": "You need to grant files permission to download attachments",
+  "@you_need_to_grant_files_permission_to_download_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "count_attachment": "{count} attachments",
+  "@count_attachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
   "attach_file_prepare_text": "Preparing to attach file...",
   "@attach_file_prepare_text": {
     "type": "text",
@@ -340,22 +356,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_need_to_grant_files_permission_to_download_attachments": "You need to grant files permission to download attachments",
-  "@you_need_to_grant_files_permission_to_download_attachments": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "count_attachment": "{count} attachments",
-  "@count_attachment": {
-    "type": "text",
-    "placeholders_order": [
-      "count"
-    ],
-    "placeholders": {
-      "count": {}
-    }
-  },
   "moved_to_mailbox": "Moved to {destinationMailboxPath}",
   "@moved_to_mailbox": {
     "type": "text",
@@ -371,22 +371,6 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
-  },
-  "you_need_to_grant_files_permission_to_download_attachments": "You need to grant files permission to download attachments",
-  "@you_need_to_grant_files_permission_to_download_attachments": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "count_attachment": "{count} attachments",
-  "@count_attachment": {
-    "type": "text",
-    "placeholders_order": [
-      "count"
-    ],
-    "placeholders": {
-      "count": {}
-    }
   },
   "mark_as_unstar": "Unstar",
   "@mark_as_unstar": {
