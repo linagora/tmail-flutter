@@ -76,7 +76,8 @@ extension PresentationEmailExtension on PresentationEmail {
   }
 
   String recipientsName() {
-    return to.listEmailAddressToString() + cc.listEmailAddressToString() + bcc.listEmailAddressToString();
+    final allEmailAddress = to.emailAddressToListString() + cc.emailAddressToListString() + bcc.emailAddressToListString();
+    return allEmailAddress.isNotEmpty ? allEmailAddress.join(', ') : '';
   }
 
   Tuple3<List<EmailAddress>, List<EmailAddress>, List<EmailAddress>> generateRecipientsEmailAddressForComposer(
