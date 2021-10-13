@@ -86,14 +86,14 @@ class AppBarMailWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        IconButton(
-          color: AppColor.baseTextColor,
-          icon: SvgPicture.asset(_imagePaths.icTrash, color: AppColor.baseTextColor, fit: BoxFit.fill),
-          onPressed: () {
-            if (_onBackActionClick != null) {
-              _onBackActionClick!();
-            }
-          }),
+        // IconButton(
+        //   color: AppColor.baseTextColor,
+        //   icon: SvgPicture.asset(_imagePaths.icTrash, color: AppColor.baseTextColor, fit: BoxFit.fill),
+        //   onPressed: () {
+        //     if (_onBackActionClick != null) {
+        //       _onBackActionClick!();
+        //     }
+        //   }),
         IconButton(
           key: Key('button_mark_as_unread_email'),
           color: AppColor.baseTextColor,

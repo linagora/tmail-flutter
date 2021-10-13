@@ -3,18 +3,21 @@ import 'dart:ui';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
 
 typedef OnOpenUserInformationActionClick = void Function();
 
 class UserInformationWidgetBuilder {
-  final ImagePaths _imagePaths;
+  // final ImagePaths _imagePaths;
   final UserProfile? _userProfile;
 
   OnOpenUserInformationActionClick? _onOpenUserInformationActionClick;
 
-  UserInformationWidgetBuilder(this._imagePaths, this._userProfile);
+  UserInformationWidgetBuilder(
+    // this._imagePaths,
+    this._userProfile
+  );
 
   UserInformationWidgetBuilder onOpenUserInformationAction(
       OnOpenUserInformationActionClick onOpenUserInformationActionClick) {
@@ -46,12 +49,12 @@ class UserInformationWidgetBuilder {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 16, color: AppColor.nameUserColor, fontWeight: FontWeight.w500),
-          )),
-        trailing: Transform(
-          transform: Matrix4.translationValues(0.0, 0.0, 0.0),
-          child: IconButton(
-            icon: SvgPicture.asset(_imagePaths.icNextArrow, width: 7, height: 12, fit: BoxFit.fill),
-            onPressed: () => {}))),
+          ))),
+        // trailing: Transform(
+        //   transform: Matrix4.translationValues(0.0, 0.0, 0.0),
+        //   child: IconButton(
+        //     icon: SvgPicture.asset(_imagePaths.icNextArrow, width: 7, height: 12, fit: BoxFit.fill),
+        //     onPressed: () => {}))),
     );
   }
 }
