@@ -1,6 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnTapAvatarActionClick = void Function();
 
@@ -8,7 +8,7 @@ class AvatarBuilder {
   Key? _key;
   String? _text;
   double? _size;
-  String? _iconStatus;
+  // String? _iconStatus;
   Color? _bgColor;
   OnTapAvatarActionClick? _onTapAvatarActionClick;
 
@@ -27,10 +27,10 @@ class AvatarBuilder {
     return this;
   }
 
-  AvatarBuilder iconStatus(String iconStatus) {
-    _iconStatus = iconStatus;
-    return this;
-  }
+  // AvatarBuilder iconStatus(String iconStatus) {
+  //   _iconStatus = iconStatus;
+  //   return this;
+  // }
 
   AvatarBuilder backgroundColor(Color bgColor) {
     _bgColor = bgColor;
@@ -66,10 +66,10 @@ class AvatarBuilder {
               child: Text(
                 '${_text ?? ''}',
                 style: TextStyle(fontSize: 20, color: AppColor.avatarTextColor, fontWeight: FontWeight.w500))),
-            if (_iconStatus != null && _iconStatus!.isNotEmpty)
-              Align(
-                child: SvgPicture.asset(_iconStatus!, width: 12, height: 12, fit: BoxFit.fill),
-                alignment: Alignment.bottomRight)
+            // if (_iconStatus != null && _iconStatus!.isNotEmpty)
+            //   Align(
+            //     child: SvgPicture.asset(_iconStatus!, width: 12, height: 12, fit: BoxFit.fill),
+            //     alignment: Alignment.bottomRight)
           ],
         )),
     );

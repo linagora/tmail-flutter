@@ -5,11 +5,11 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_button_new_folder_builder.dart';
+// import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_button_new_folder_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_tile_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/search_form_widget_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/storage_widget_builder.dart';
+// import 'package:tmail_ui_user/features/mailbox/presentation/widgets/search_form_widget_builder.dart';
+// import 'package:tmail_ui_user/features/mailbox/presentation/widgets/storage_widget_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -44,7 +44,7 @@ class MailboxView extends GetWidget<MailboxController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildHeaderMailbox(context),
-                        _buildSearchFormWidget(context),
+                        // _buildSearchFormWidget(context),
                         _buildLoadingView(),
                         _buildListMailbox(context)
                       ]
@@ -54,7 +54,7 @@ class MailboxView extends GetWidget<MailboxController> {
               )
             )
           )),
-        bottomNavigationBar: responsiveUtils.isMobile(context) ? _buildStorageWidget(context) : null
+        // bottomNavigationBar: responsiveUtils.isMobile(context) ? _buildStorageWidget(context) : null
       )
     );
   }
@@ -91,18 +91,18 @@ class MailboxView extends GetWidget<MailboxController> {
     return Padding(
       padding: EdgeInsets.only(left: 16, top: 8.0, right: 16),
       child: Obx(() => UserInformationWidgetBuilder(
-          imagePaths,
+          // imagePaths,
           controller.mailboxDashBoardController.userProfile.value)
         .build()));
   }
 
-  Widget _buildSearchFormWidget(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-      child: SearchFormWidgetBuilder(context, imagePaths)
-        .onNewSearchQuery((searchQuery) => {})
-        .build());
-  }
+  // Widget _buildSearchFormWidget(BuildContext context) {
+  //   return Padding(
+  //     padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+  //     child: SearchFormWidgetBuilder(context, imagePaths)
+  //       .onNewSearchQuery((searchQuery) => {})
+  //       .build());
+  // }
 
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
@@ -135,16 +135,17 @@ class MailboxView extends GetWidget<MailboxController> {
             maxLines: 1,
             style: TextStyle(fontSize: 12, color: AppColor.myFolderTitleColor, fontWeight: FontWeight.w500))
         ),
-        Padding(
-          padding: EdgeInsets.only(
-            left: 8,
-            right: 16,
-            top: 10),
-          child: (MailboxNewFolderTileBuilder()
-              ..addIcon(imagePaths.icMailboxNewFolder)
-              ..addName(AppLocalizations.of(context).new_folder))
-            .build()
-        ),
+        // Padding(
+        //   padding: EdgeInsets.only(
+        //     left: 8,
+        //     right: 16,
+        //     top: 10),
+        //   child: (MailboxNewFolderTileBuilder()
+        //       ..addIcon(imagePaths.icMailboxNewFolder)
+        //       ..addName(AppLocalizations.of(context).new_folder))
+        //     .build()
+        // ),
+        SizedBox(height: 10),
         _buildFolderMailbox(context),
       ]
     );
@@ -221,5 +222,5 @@ class MailboxView extends GetWidget<MailboxController> {
       .toList();
   }
 
-  Widget _buildStorageWidget(BuildContext context) => StorageWidgetBuilder(context).build();
+  // Widget _buildStorageWidget(BuildContext context) => StorageWidgetBuilder(context).build();
 }
