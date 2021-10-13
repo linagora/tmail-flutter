@@ -8,7 +8,7 @@ extension ListEmailAddressExtension on Set<EmailAddress>? {
 
   List<EmailAddress> asList() => this != null ? this!.toList() : List.empty();
 
-  List<String> getListEmailAddress({ExpandMode expandMode = ExpandMode.EXPAND, int limitAddress = 1, bool isFullEmailAddress = false}) {
+  List<String> emailAddressToListString({ExpandMode expandMode = ExpandMode.EXPAND, int limitAddress = 1, bool isFullEmailAddress = false}) {
     if (this != null) {
       if (expandMode == ExpandMode.EXPAND) {
         return this!.map((emailAddress) => isFullEmailAddress ? emailAddress.asFullString() : emailAddress.asString()).toList();
@@ -21,7 +21,7 @@ extension ListEmailAddressExtension on Set<EmailAddress>? {
   }
 
   String listEmailAddressToString({ExpandMode expandMode = ExpandMode.EXPAND, int limitAddress = 1, bool isFullEmailAddress = false}) {
-    final listEmail = getListEmailAddress(expandMode: expandMode, limitAddress: limitAddress, isFullEmailAddress: isFullEmailAddress);
+    final listEmail = emailAddressToListString(expandMode: expandMode, limitAddress: limitAddress, isFullEmailAddress: isFullEmailAddress);
     return listEmail.isNotEmpty ? listEmail.join(', ') : '';
   }
 
