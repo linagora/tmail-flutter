@@ -32,11 +32,11 @@ class LoginController extends GetxController {
 
   void setPasswordText(String password) => _passwordText = password;
 
-  Uri? _parseUri(String? url) => url != null ? Uri.parse(url) : null;
+  Uri? _parseUri(String? url) => url != null ? Uri.parse(url.trim()) : null;
 
-  UserName? _parseUserName(String? userName) => userName != null ? UserName(userName) : null;
+  UserName? _parseUserName(String? userName) => userName != null ? UserName(userName.trim()) : null;
 
-  Password? _parsePassword(String? password) => password != null ? Password(password) : null;
+  Password? _parsePassword(String? password) => password != null ? Password(password.trim()) : null;
 
   void handleLoginPressed() {
     final baseUri = _parseUri(_urlText);
