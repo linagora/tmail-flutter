@@ -68,7 +68,7 @@ class SenderAndReceiverInformationTileBuilder {
                 Padding(
                   padding: EdgeInsets.only(top: 6),
                   child: Text(
-                    '${_presentationEmail!.getEmailDateTime(Localizations.localeOf(_context).toLanguageTag(), pattern: 'dd/MM/yyyy h:mm a')}',
+                    '${_presentationEmail!.getReceivedAt(Localizations.localeOf(_context).toLanguageTag(), pattern: 'dd/MM/yyyy h:mm a')}',
                     style: TextStyle(fontSize: 12, color: AppColor.baseTextColor),
                   ))
               ],

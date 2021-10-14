@@ -9,8 +9,8 @@ extension PresentationEmailExtension on PresentationEmail {
 
   int numberOfAllEmailAddress() => to.numberEmailAddress() + cc.numberEmailAddress() + bcc.numberEmailAddress();
 
-  String getEmailDateTime(String newLocale, {String? pattern}) {
-    final emailTime = sentAt ?? receivedAt;
+  String getReceivedAt(String newLocale, {String? pattern}) {
+    final emailTime = receivedAt;
     if (emailTime != null) {
       return emailTime.formatDate(
         pattern: pattern ?? emailTime.value.toLocal().toPattern(),

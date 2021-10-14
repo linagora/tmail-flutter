@@ -97,7 +97,7 @@ class EmailTileBuilder {
                   Padding(
                     padding: EdgeInsets.only(right: 4),
                     child: Text(
-                      '${_presentationEmail.getEmailDateTime(Localizations.localeOf(_context).toLanguageTag())}',
+                      '${_presentationEmail.getReceivedAt(Localizations.localeOf(_context).toLanguageTag())}',
                       maxLines: 1,
                       overflow:TextOverflow.ellipsis,
                       style: TextStyle(
