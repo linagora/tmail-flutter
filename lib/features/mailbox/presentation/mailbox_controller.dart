@@ -84,7 +84,7 @@ class MailboxController extends BaseController {
       if (success is GetAllMailboxSuccess) {
         currentMailboxState = success.currentMailboxState;
         defaultMailboxList.value = success.defaultMailboxList;
-        _setUpMapMailboxIdDefault(success.defaultMailboxList);
+        _setUpMapMailboxIdDefault(success.defaultMailboxList, success.folderMailboxList);
         _buildTree(success.folderMailboxList);
       }
     });
@@ -131,32 +131,44 @@ class MailboxController extends BaseController {
     folderMailboxNodeList.value = newMailboxNodeList;
   }
 
-  void _setUpMapMailboxIdDefault(List<PresentationMailbox> defaultMailboxList) {
-    final mapMailboxId = Map<Role, MailboxId>.fromIterable(
+  void _setUpMapMailboxIdDefault(List<PresentationMailbox> defaultMailboxList, List<PresentationMailbox> folderMailboxList) {
+    final mapDefaultMailboxId = Map<Role, MailboxId>.fromIterable(
       defaultMailboxList,
       key: (presentationMailbox) => presentationMailbox.role!,
       value: (presentationMailbox) => presentationMailbox.id);
 
-    final mapMailboxDefault = Map<Role, PresentationMailbox>.fromIterable(
-        defaultMailboxList,
-        key: (presentationMailbox) => presentationMailbox.role!,
-        value: (presentationMailbox) => presentationMailbox);
+    final mapDefaultMailbox = Map<Role, PresentationMailbox>.fromIterable(
+      defaultMailboxList,
+      key: (presentationMailbox) => presentationMailbox.role!,
+      value: (presentationMailbox) => presentationMailbox);
 
-    mailboxDashBoardController.setMapMailboxId(mapMailboxId);
+    final mapFolderMailbox = Map<MailboxId, PresentationMailbox>.fromIterable(
+      folderMailboxList,
+      key: (presentationMailbox) => presentationMailbox.id,
+      value: (presentationMailbox) => presentationMailbox);
+
+    mailboxDashBoardController.setMapDefaultMailboxId(mapDefaultMailboxId);
 
     var mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
 
     if (mailboxCurrent != null) {
-      if (mapMailboxDefault.containsKey(mailboxCurrent.role)) {
-        mailboxDashBoardController.setNewFirstSelectedMailbox(mapMailboxDefault[mailboxCurrent.role]);
+      if (mailboxCurrent.hasRole()) {
+        mailboxDashBoardController.setNewFirstSelectedMailbox(mapDefaultMailbox.containsKey(mailboxCurrent.role)
+          ? mapDefaultMailbox[mailboxCurrent.role]
+          : mailboxCurrent);
       } else {
-        mailboxDashBoardController.setNewFirstSelectedMailbox(mailboxCurrent);
+        mailboxDashBoardController.setNewFirstSelectedMailbox(mapFolderMailbox.containsKey(mailboxCurrent.id)
+          ? mapFolderMailbox[mailboxCurrent.id]
+          : mailboxCurrent);
       }
     } else {
-      if (mapMailboxDefault.containsKey(PresentationMailbox.roleInbox)) {
-        mailboxDashBoardController.setNewFirstSelectedMailbox(mapMailboxDefault[PresentationMailbox.roleInbox]);
+      if (mapDefaultMailbox.containsKey(PresentationMailbox.roleInbox)) {
+        mailboxDashBoardController.setNewFirstSelectedMailbox(mapDefaultMailbox[PresentationMailbox.roleInbox]);
       } else {
-        mailboxDashBoardController.setNewFirstSelectedMailbox(mapMailboxDefault.values.first);
+        final allMailbox = defaultMailboxList + folderMailboxList;
+        if (allMailbox.isNotEmpty) {
+          mailboxDashBoardController.setNewFirstSelectedMailbox(allMailbox.first);
+        }
       }
     }
   }
