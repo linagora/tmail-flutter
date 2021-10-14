@@ -27,7 +27,6 @@ class ComposerView extends GetWidget<ComposerController> {
         controller.htmlEditorApi?.unfocus();
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
         backgroundColor: AppColor.primaryLightColor,
         body: SafeArea(
           right: false,
