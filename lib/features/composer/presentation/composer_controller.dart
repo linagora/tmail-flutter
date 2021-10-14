@@ -52,7 +52,6 @@ class ComposerController extends BaseController {
   final AppToast _appToast;
   final Uuid _uuid;
   final TextEditingController subjectEmailInputController;
-  final HtmlMessagePurifier _htmlMessagePurifier;
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final UploadMultipleAttachmentInteractor _uploadMultipleAttachmentInteractor;
 
@@ -73,7 +72,6 @@ class ComposerController extends BaseController {
     this._appToast,
     this._uuid,
     this.subjectEmailInputController,
-    this._htmlMessagePurifier,
     this._localFilePickerInteractor,
     this._uploadMultipleAttachmentInteractor,
   );
@@ -138,7 +136,7 @@ class ComposerController extends BaseController {
     if (composerArguments.value != null
         && composerArguments.value!.emailActionType != EmailActionType.compose
         && Get.context != null) {
-      final contentEmailQuoted = _getBodyEmailQuotedAsHtml(Get.context!, _htmlMessagePurifier);
+      final contentEmailQuoted = _getBodyEmailQuotedAsHtml(Get.context!);
       return contentEmailQuoted;
     }
     return '';
@@ -210,7 +208,7 @@ class ComposerController extends BaseController {
     }
   }
 
-  String _getBodyEmailQuotedAsHtml(BuildContext context, HtmlMessagePurifier htmlMessagePurifier) {
+  String _getBodyEmailQuotedAsHtml(BuildContext context) {
     final headerEmailQuoted = getHeaderEmailQuoted(Localizations.localeOf(context).toLanguageTag());
 
     final headerEmailQuotedAsHtml = headerEmailQuoted != null
