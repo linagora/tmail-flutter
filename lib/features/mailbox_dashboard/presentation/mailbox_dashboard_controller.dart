@@ -26,7 +26,7 @@ class MailboxDashBoardController extends BaseController {
   final userProfile = Rxn<UserProfile>();
 
   Session? sessionCurrent;
-  Map<Role, MailboxId> mapMailboxId = Map();
+  Map<Role, MailboxId> mapDefaultMailboxId = Map();
 
   MailboxDashBoardController(this._getUserProfileInteractor, this._appToast);
 
@@ -91,8 +91,8 @@ class MailboxDashBoardController extends BaseController {
     });
   }
 
-  void setMapMailboxId(Map<Role, MailboxId> newMapMailboxId) {
-    mapMailboxId = newMapMailboxId;
+  void setMapDefaultMailboxId(Map<Role, MailboxId> newMapMailboxId) {
+    mapDefaultMailboxId = newMapMailboxId;
   }
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
