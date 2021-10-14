@@ -94,48 +94,58 @@ class AppBarThreadWidgetBuilder {
 
   Widget _buildContentCenterAppBar() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        (_presentationMailbox != null && _presentationMailbox!.hasRole())
-          ? GestureDetector(
-              onTap: () => {
-                if (_onOpenListMailboxActionClick != null) {
-                  _onOpenListMailboxActionClick!()
-                }},
-              child: Padding(
-                padding: EdgeInsets.only(left: 16),
-                child: Text(
-                  '${_presentationMailbox?.name != null ? _presentationMailbox?.name?.name : ''}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 22, color: AppColor.titleAppBarMailboxListMail, fontWeight: FontWeight.w500))))
-          : Expanded(child: GestureDetector(
-              onTap: () => {
-                if (_onOpenListMailboxActionClick != null) {
-                  _onOpenListMailboxActionClick!()
-                }},
-              child: Padding(
-                  padding: EdgeInsets.only(left: 16),
-                  child: Text(
-                    '${_presentationMailbox?.name != null ? _presentationMailbox?.name?.name : ''}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 22, color: AppColor.titleAppBarMailboxListMail, fontWeight: FontWeight.w500))))),
-        if(_presentationMailbox != null && _presentationMailbox!.hasRole() && _presentationMailbox!.getCountUnReadEmails().isNotEmpty)
+        GestureDetector(
+          onTap: () => {
+            if (_onOpenListMailboxActionClick != null) {
+              _onOpenListMailboxActionClick!()
+            }},
+          child: Padding(
+            padding: EdgeInsets.only(left: 16, right: 8),
+            child: Container(
+              padding: EdgeInsets.zero,
+              margin: EdgeInsets.zero,
+              constraints: BoxConstraints(maxWidth: _getMaxWidthAppBarTitle()),
+              child: Text(
+                '${ _presentationMailbox?.name?.name ?? ''}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 22, color: AppColor.titleAppBarMailboxListMail, fontWeight: FontWeight.w500))
+            ))),
+        if(_presentationMailbox?.getCountUnReadEmails().isNotEmpty == true)
           Container(
-            margin: EdgeInsets.only(left: 9),
+            margin: EdgeInsets.zero,
             padding: EdgeInsets.only(left: 8, right: 8, top: 2.5, bottom: 2.5),
             decoration:BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: AppColor.backgroundCounterMailboxColor),
             child: Text(
-              '${_presentationMailbox!.getCountUnReadEmails()} ${AppLocalizations.of(_context).unread_email_notification}',
+              '${_presentationMailbox?.getCountUnReadEmails() ?? ''} ${AppLocalizations.of(_context).unread_email_notification}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 10, color: AppColor.counterMailboxColor, fontWeight: FontWeight.w500),
             )),
       ]
     );
+  }
+
+  double _getMaxWidthAppBarTitle() {
+    var width = MediaQuery.of(_context).size.width;
+    var widthSiblingsWidget = _presentationMailbox?.getCountUnReadEmails().isNotEmpty == true
+      ? 150
+      : 100;
+    if (_responsiveUtils.isTablet(_context)) {
+      width = width * 0.7;
+      widthSiblingsWidget = _presentationMailbox?.getCountUnReadEmails().isNotEmpty == true
+        ? 70
+        : 0;
+    } else if (_responsiveUtils.isDesktop(_context)) {
+      width = width * 0.2;
+      widthSiblingsWidget = _presentationMailbox?.getCountUnReadEmails().isNotEmpty == true
+        ? 50
+        : 0;
+    }
+    final maxWidth = width - widthSiblingsWidget;
+    return maxWidth;
   }
 }
