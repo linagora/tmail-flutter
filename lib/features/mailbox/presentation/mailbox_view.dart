@@ -22,38 +22,26 @@ class MailboxView extends GetWidget<MailboxController> {
   Widget build(BuildContext context) {
     return  Drawer(
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
         backgroundColor: AppColor.primaryLightColor,
-        body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: SafeArea(
-            right: false,
-            left: false,
-            child: RefreshIndicator(
-              color: AppColor.primaryColor,
-              onRefresh: () async => controller.refreshAllMailbox(),
-              child: SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildHeaderMailbox(context),
-                        // _buildSearchFormWidget(context),
-                        _buildLoadingView(),
-                        _buildListMailbox(context)
-                      ]
-                    )
-                  )
-                )
-              )
+        body: SafeArea(
+          child: Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.symmetric(vertical: 24),
+            child: Column(
+              children: [
+                _buildHeaderMailbox(context),
+                // _buildSearchFormWidget(context),
+                SizedBox(height: 16),
+                Divider(color: AppColor.dividerColor, height: 1),
+                _buildLoadingView(),
+                Expanded(child: RefreshIndicator(
+                  color: AppColor.primaryColor,
+                  onRefresh: () async => controller.refreshAllMailbox(),
+                  child: _buildListMailbox(context)))
+              ]
             )
-          )),
+          )
+        ),
         // bottomNavigationBar: responsiveUtils.isMobile(context) ? _buildStorageWidget(context) : null
       )
     );
@@ -119,7 +107,7 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildListMailbox(BuildContext context) {
     return ListView(
-      key: Key('mailbox_list'),
+      key: PageStorageKey('mailbox_list'),
       primary: false,
       shrinkWrap: true,
       children: [
@@ -154,7 +142,7 @@ class MailboxView extends GetWidget<MailboxController> {
   Widget _buildDefaultMailbox(BuildContext context, List<PresentationMailbox> defaultMailbox) {
     return ListView.builder(
       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-      key: Key('default_mailbox_list'),
+      key: PageStorageKey('default_mailbox_list'),
       itemCount: defaultMailbox.length,
       shrinkWrap: true,
       primary: false,
