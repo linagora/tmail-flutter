@@ -40,6 +40,7 @@ class _TreeViewData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      key: PageStorageKey('tree_view'),
       shrinkWrap: true,
       primary: false,
       itemCount: children.length,

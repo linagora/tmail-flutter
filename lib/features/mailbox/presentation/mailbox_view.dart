@@ -5,11 +5,11 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_button_new_folder_builder.dart';
+// import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_button_new_folder_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_tile_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/search_form_widget_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/storage_widget_builder.dart';
+// import 'package:tmail_ui_user/features/mailbox/presentation/widgets/search_form_widget_builder.dart';
+// import 'package:tmail_ui_user/features/mailbox/presentation/widgets/storage_widget_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -22,39 +22,27 @@ class MailboxView extends GetWidget<MailboxController> {
   Widget build(BuildContext context) {
     return  Drawer(
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
         backgroundColor: AppColor.primaryLightColor,
-        body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: SafeArea(
-            right: false,
-            left: false,
-            child: RefreshIndicator(
-              color: AppColor.primaryColor,
-              onRefresh: () async => controller.refreshAllMailbox(),
-              child: SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildHeaderMailbox(context),
-                        _buildSearchFormWidget(context),
-                        _buildLoadingView(),
-                        _buildListMailbox(context)
-                      ]
-                    )
-                  )
-                )
-              )
+        body: SafeArea(
+          child: Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.symmetric(vertical: 24),
+            child: Column(
+              children: [
+                _buildHeaderMailbox(context),
+                // _buildSearchFormWidget(context),
+                SizedBox(height: 16),
+                Divider(color: AppColor.dividerColor, height: 1),
+                _buildLoadingView(),
+                Expanded(child: RefreshIndicator(
+                  color: AppColor.primaryColor,
+                  onRefresh: () async => controller.refreshAllMailbox(),
+                  child: _buildListMailbox(context)))
+              ]
             )
-          )),
-        bottomNavigationBar: responsiveUtils.isMobile(context) ? _buildStorageWidget(context) : null
+          )
+        ),
+        // bottomNavigationBar: responsiveUtils.isMobile(context) ? _buildStorageWidget(context) : null
       )
     );
   }
@@ -91,18 +79,18 @@ class MailboxView extends GetWidget<MailboxController> {
     return Padding(
       padding: EdgeInsets.only(left: 16, top: 8.0, right: 16),
       child: Obx(() => UserInformationWidgetBuilder(
-          imagePaths,
+          // imagePaths,
           controller.mailboxDashBoardController.userProfile.value)
         .build()));
   }
 
-  Widget _buildSearchFormWidget(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-      child: SearchFormWidgetBuilder(context, imagePaths)
-        .onNewSearchQuery((searchQuery) => {})
-        .build());
-  }
+  // Widget _buildSearchFormWidget(BuildContext context) {
+  //   return Padding(
+  //     padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+  //     child: SearchFormWidgetBuilder(context, imagePaths)
+  //       .onNewSearchQuery((searchQuery) => {})
+  //       .build());
+  // }
 
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
@@ -119,7 +107,7 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildListMailbox(BuildContext context) {
     return ListView(
-      key: Key('mailbox_list'),
+      key: PageStorageKey('mailbox_list'),
       primary: false,
       shrinkWrap: true,
       children: [
@@ -135,16 +123,17 @@ class MailboxView extends GetWidget<MailboxController> {
             maxLines: 1,
             style: TextStyle(fontSize: 12, color: AppColor.myFolderTitleColor, fontWeight: FontWeight.w500))
         ),
-        Padding(
-          padding: EdgeInsets.only(
-            left: 8,
-            right: 16,
-            top: 10),
-          child: (MailboxNewFolderTileBuilder()
-              ..addIcon(imagePaths.icMailboxNewFolder)
-              ..addName(AppLocalizations.of(context).new_folder))
-            .build()
-        ),
+        // Padding(
+        //   padding: EdgeInsets.only(
+        //     left: 8,
+        //     right: 16,
+        //     top: 10),
+        //   child: (MailboxNewFolderTileBuilder()
+        //       ..addIcon(imagePaths.icMailboxNewFolder)
+        //       ..addName(AppLocalizations.of(context).new_folder))
+        //     .build()
+        // ),
+        SizedBox(height: 10),
         _buildFolderMailbox(context),
       ]
     );
@@ -153,7 +142,7 @@ class MailboxView extends GetWidget<MailboxController> {
   Widget _buildDefaultMailbox(BuildContext context, List<PresentationMailbox> defaultMailbox) {
     return ListView.builder(
       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-      key: Key('default_mailbox_list'),
+      key: PageStorageKey('default_mailbox_list'),
       itemCount: defaultMailbox.length,
       shrinkWrap: true,
       primary: false,
@@ -221,5 +210,5 @@ class MailboxView extends GetWidget<MailboxController> {
       .toList();
   }
 
-  Widget _buildStorageWidget(BuildContext context) => StorageWidgetBuilder(context).build();
+  // Widget _buildStorageWidget(BuildContext context) => StorageWidgetBuilder(context).build();
 }
