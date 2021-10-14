@@ -15,6 +15,7 @@ import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/address.dart';
@@ -81,7 +82,8 @@ class EmailAPI {
           EmailSubmissionId(ReferenceId(ReferencePrefix.defaultPrefix, emailRequest.submissionCreateId)): PatchObject({
             PatchObject.mailboxIdsProperty: {
               mailboxIdSaved?.id.value: true
-            }
+            },
+            KeyWordIdentifier.emailSeen.generatePath(): true
         })
       });
 
