@@ -48,7 +48,9 @@ class PresentationEmail with EquatableMixin {
 
   String getAvatarText() {
     if (getSenderName().isNotEmpty) {
-      return getSenderName()[0].toUpperCase();
+      final regexLetter = RegExp("([A-Za-z])");
+      final firstLetter = regexLetter.firstMatch(getSenderName().trim())?.group(0);
+      return firstLetter != null ? firstLetter.toUpperCase() : '';
     }
     return '';
   }
