@@ -68,7 +68,7 @@ class MailboxTileBuilder {
             title: Padding(
               padding: EdgeInsets.only(left: 8),
               child: Text(
-                '${_presentationMailbox.name?.name}',
+                '${_presentationMailbox.name?.name ?? ''}',
                 maxLines: 1,
                 overflow:TextOverflow.ellipsis,
                 style: TextStyle(
