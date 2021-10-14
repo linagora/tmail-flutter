@@ -62,7 +62,7 @@ class ThreadController extends BaseController {
     inMailbox: mailboxDashBoardController.selectedMailbox.value?.id);
 
   Set<Comparator>? get _sortOrder => Set()
-    ..add(EmailComparator(EmailComparatorProperty.sentAt)
+    ..add(EmailComparator(EmailComparatorProperty.receivedAt)
       ..setIsAscending(false));
 
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
