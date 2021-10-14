@@ -473,7 +473,7 @@ class ThreadController extends BaseController {
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
       && mailboxDashBoardController.userProfile.value != null
-      && mailboxDashBoardController.mapMailboxId.containsKey(PresentationMailbox.roleOutbox);
+      && mailboxDashBoardController.mapDefaultMailboxId.containsKey(PresentationMailbox.roleOutbox);
 
   void openMailboxLeftMenu() {
     mailboxDashBoardController.openDrawer();
@@ -490,7 +490,7 @@ class ThreadController extends BaseController {
         arguments: ComposerArguments(
           session: mailboxDashBoardController.sessionCurrent!,
           userProfile: mailboxDashBoardController.userProfile.value!,
-          mapMailboxId: mailboxDashBoardController.mapMailboxId));
+          mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
     }
   }
 }

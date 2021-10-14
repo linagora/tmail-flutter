@@ -343,7 +343,7 @@ class EmailController extends BaseController {
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
       && mailboxDashBoardController.userProfile.value != null
-      && mailboxDashBoardController.mapMailboxId.containsKey(PresentationMailbox.roleOutbox)
+      && mailboxDashBoardController.mapDefaultMailboxId.containsKey(PresentationMailbox.roleOutbox)
       && mailboxDashBoardController.selectedEmail.value != null;
 
   void backToThreadView() {
@@ -362,7 +362,7 @@ class EmailController extends BaseController {
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
           session: mailboxDashBoardController.sessionCurrent!,
           userProfile: mailboxDashBoardController.userProfile.value!,
-          mapMailboxId: mailboxDashBoardController.mapMailboxId));
+          mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
     }
   }
 }
