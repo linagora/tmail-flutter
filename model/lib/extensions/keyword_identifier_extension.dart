@@ -4,19 +4,19 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 
 extension KeyWordIdentifierExtension on KeyWordIdentifier {
-  String _generatePath() {
+  String generatePath() {
     return '${PatchObject.keywordsProperty}/$value';
   }
 
   PatchObject generateReadActionPath(ReadActions readActions) {
     return PatchObject({
-      _generatePath(): readActions == ReadActions.markAsRead ? true : null
+      generatePath(): readActions == ReadActions.markAsRead ? true : null
     });
   }
 
   PatchObject generateMarkStarActionPath(MarkStarAction markStarAction) {
     return PatchObject({
-      _generatePath(): markStarAction == MarkStarAction.markStar ? true : null
+      generatePath(): markStarAction == MarkStarAction.markStar ? true : null
     });
   }
 }
