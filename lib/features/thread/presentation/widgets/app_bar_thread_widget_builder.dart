@@ -128,12 +128,12 @@ class AppBarThreadWidgetBuilder {
             padding: EdgeInsets.only(left: 8, right: 8, top: 2.5, bottom: 2.5),
             decoration:BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: AppColor.bgNotifyCountAppBarMailboxListMail),
+              color: AppColor.backgroundCounterMailboxColor),
             child: Text(
               '${_presentationMailbox!.getCountUnReadEmails()} ${AppLocalizations.of(_context).unread_email_notification}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 10, color: AppColor.notifyCountAppBarMailboxListMail, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 10, color: AppColor.counterMailboxColor, fontWeight: FontWeight.w500),
             )),
       ]
     );
