@@ -62,9 +62,6 @@ export 'presentation/state/success.dart';
 export 'presentation/state/failure.dart';
 export 'presentation/state/app_state.dart';
 
-// Validator
-export 'presentation/validator/html_message_purifier.dart';
-
 // Local
 export 'data/local/config/database_config.dart';
 export 'data/local/config/email_address_table.dart';

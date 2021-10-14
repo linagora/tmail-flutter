@@ -73,7 +73,6 @@ class ComposerBindings extends Bindings {
       Get.find<AppToast>(),
       Get.find<Uuid>(),
       Get.find<TextEditingController>(),
-      Get.find<HtmlMessagePurifier>(),
       Get.find<LocalFilePickerInteractor>(),
       Get.find<UploadMultipleAttachmentInteractor>()));
   }

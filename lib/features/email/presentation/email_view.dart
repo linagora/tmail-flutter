@@ -23,7 +23,6 @@ class EmailView extends GetView {
   final emailController = Get.find<EmailController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
-  final htmlMessagePurifier = Get.find<HtmlMessagePurifier>();
 
   @override
   Widget build(BuildContext context) {
@@ -279,6 +278,7 @@ class EmailView extends GetView {
         switch(emailController.emailContent.value!.type) {
           case EmailContentType.textHtml:
             return HtmlContentViewer(
+              minHeight: 400,
               contentHtml: emailController.emailContent.value!.content,
               onLoadStart: (webController, uri) => emailController.dispatchState(Right(WebViewLoadingState())),
               onLoadStop: (webController, uri) => emailController.dispatchState(Right(WebViewLoadCompletedState())),
