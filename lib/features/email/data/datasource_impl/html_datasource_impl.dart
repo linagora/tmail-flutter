@@ -9,9 +9,9 @@ class HtmlDataSourceImpl extends HtmlDataSource {
   HtmlDataSourceImpl(this._htmlAnalyzer);
 
   @override
-  Future<String> transformToHtml(EmailContent emailContent) {
+  Future<EmailContent> transformEmailContent(EmailContent emailContent) {
     return Future.sync(() async {
-      return await _htmlAnalyzer.transformToHtml(emailContent);
+      return await _htmlAnalyzer.transformEmailContent(emailContent);
     }).catchError((error) {
       throw error;
     });

@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ class HtmlContentViewer extends StatefulWidget {
 
   final String contentHtml;
   final int minHeight;
+  final double widthContent;
+  final Widget? loadingWidget;
 
   /// Register this callback if you want a reference to the [InAppWebViewController].
   final void Function(InAppWebViewController controller)? onCreated;
@@ -22,7 +25,9 @@ class HtmlContentViewer extends StatefulWidget {
   const HtmlContentViewer({
     Key? key,
     required this.contentHtml,
+    required this.widthContent,
     this.minHeight = 100,
+    this.loadingWidget,
     this.onCreated,
     this.onLoadStart,
     this.onLoadStop,
@@ -39,6 +44,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   double? _documentWidth = 1.0;
   String? _initialPageContent;
   late InAppWebViewController _webViewController;
+  bool loading = true;
 
   @override
   void initState() {
@@ -101,13 +107,31 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    _documentWidth = size.width - 30;
-    return SizedBox(
-      height: _documentHeight,
-      width: _documentWidth,
-      child: _buildWebView(),
+    _documentWidth = widget.widthContent;
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: [
+        SizedBox(
+          height: _documentHeight,
+          width: _documentWidth,
+          child: _buildWebView(),
+        ),
+        if (loading) _buildLoadingView()
+      ],
     );
+  }
+
+  Widget _buildLoadingView() {
+    if (widget.loadingWidget != null) {
+      return widget.loadingWidget!;
+    } else {
+      return Padding(
+        padding: EdgeInsets.all(16),
+        child: SizedBox(
+          width: 30,
+          height: 30,
+          child: CircularProgressIndicator(color: AppColor.primaryColor)));
+    }
   }
 
   Widget _buildWebView() {
@@ -148,6 +172,9 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
             _documentHeight = (scrollHeight + 30.0);
           });
         }
+        setState(() {
+          loading = false;
+        });
         if (widget.onLoadStop != null) {
           widget.onLoadStop!(controller, uri);
         }
