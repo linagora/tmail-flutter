@@ -72,7 +72,11 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<String> transformEmailContentToHtml(EmailContent emailContent) {
-    return _htmlDataSource.transformToHtml(emailContent);
+  Future<List<EmailContent>> transformEmailContent(List<EmailContent> emailContents) async {
+    return await Future.wait(emailContents
+      .map((emailContent) async {
+        return await _htmlDataSource.transformEmailContent(emailContent);
+      })
+      .toList());
   }
 }
