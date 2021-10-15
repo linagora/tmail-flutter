@@ -5,13 +5,14 @@ import 'package:model/model.dart';
 
 class HtmlAnalyzer {
 
-  Future<String> transformToHtml(EmailContent emailContent) async {
+  Future<EmailContent> transformEmailContent(EmailContent emailContent) async {
     switch(emailContent.type) {
       case EmailContentType.textHtml:
         final htmlTransform = HtmlTransform(emailContent.content);
-        return htmlTransform.transformToHtml();
+        final htmlContent = htmlTransform.transformToHtml();
+        return EmailContent(emailContent.type, htmlContent);
       default:
-        return emailContent.content;
+        return emailContent;
     }
   }
 }
