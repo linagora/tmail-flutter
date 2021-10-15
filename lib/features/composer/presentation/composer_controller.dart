@@ -214,7 +214,10 @@ class ComposerController extends BaseController {
           .addBlockTag('p', attribute: 'style=\"font-size:14px;font-style:italic;color:#182952;\"')
       : '';
 
-    final trustAsHtml = composerArguments.value?.emailContent?.content ?? '';
+    final trustAsHtml = composerArguments.value?.emailContents
+      ?.map((emailContent) => emailContent.content)
+      .toList()
+      .join('</br>') ?? '';
 
     final emailQuotedHtml = '</br></br></br>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}</br>';
 
