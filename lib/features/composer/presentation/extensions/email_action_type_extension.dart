@@ -4,13 +4,21 @@ import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 extension EmailActionTypeExtension on EmailActionType {
-  String prefixSubjectComposer(BuildContext context) {
+  String getSubjectComposer(BuildContext context, String subject) {
     switch(this) {
       case EmailActionType.reply:
       case EmailActionType.replyAll:
-        return AppLocalizations.of(context).prefix_reply_email;
+        if (subject.toLowerCase().startsWith('re:')) {
+          return subject;
+        } else {
+          return '${AppLocalizations.of(context).prefix_reply_email} $subject';
+        }
       case EmailActionType.forward:
-        return AppLocalizations.of(context).prefix_forward_email;
+        if (subject.toLowerCase().startsWith('fwd:')) {
+          return subject;
+        } else {
+          return '${AppLocalizations.of(context).prefix_forward_email} $subject';
+        }
       default:
         return '';
     }
