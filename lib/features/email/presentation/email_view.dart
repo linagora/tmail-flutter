@@ -1,18 +1,18 @@
 import 'dart:io';
 
 import 'package:core/core.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/web_view_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_place_holder_loading_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/list_attachment_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_item_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_place_holder_loading_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/sender_and_receiver_information_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -28,21 +28,17 @@ class EmailView extends GetView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: AppColor.primaryLightColor,
       body: SafeArea(
         right: false,
         left: false,
-        child: Container(
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildAppBar(context),
-              Expanded(child: _buildEmailBody(context)),
-              _buildBottomBar(context),
-            ])
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildAppBar(context),
+            Expanded(child: _buildEmailBody(context)),
+            _buildBottomBar(context),
+          ]
         )
       ));
   }
@@ -117,14 +113,6 @@ class EmailView extends GetView {
       ));
   }
 
-  Widget _buildLoadingView() {
-    return Obx(() => emailController.viewState.value.fold(
-      (failure) => SizedBox.shrink(),
-      (success) => success is LoadingState || success is WebViewLoadingState
-        ? EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils)
-        : SizedBox.shrink()));
-  }
-
   Widget _buildEmailMessage(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(left: 12, right: 12, top: 16, bottom: 16),
@@ -144,9 +132,8 @@ class EmailView extends GetView {
               emailController.emailAddressExpandMode.value)
             .onOpenExpandAddressReceiverActionClick(() => emailController.toggleDisplayEmailAddressAction(expandMode: ExpandMode.EXPAND))
             .build()),
-          _buildLoadingView(),
           _buildAttachments(context),
-          _buildEmailContent(),
+          _buildListEmailContent(),
         ],
       )
     );
@@ -156,8 +143,8 @@ class EmailView extends GetView {
    return Obx(() => emailController.viewState.value.fold(
     (failure) => SizedBox.shrink(),
     (success) {
-      if (success is LoadingState || success is WebViewLoadingState) {
-        return SizedBox.shrink();
+      if (success is LoadingState) {
+        return AttachmentsPlaceHolderLoading(responsiveUtils: responsiveUtils);
       } else {
         final attachments = emailController.attachments.attachmentsWithDispositionAttachment;
         return attachments.isNotEmpty
@@ -273,28 +260,30 @@ class EmailView extends GetView {
     );
   }
 
-  Widget _buildEmailContent() {
-    return Obx(() {
-      if (emailController.emailContent.value != null) {
-        switch(emailController.emailContent.value!.type) {
-          case EmailContentType.textHtml:
-            return HtmlContentViewer(
-              contentHtml: emailController.emailContent.value!.content,
-              onLoadStart: (webController, uri) => emailController.dispatchState(Right(WebViewLoadingState())),
-              onLoadStop: (webController, uri) => emailController.dispatchState(Right(WebViewLoadCompletedState())),
-              mailtoDelegate: (uri) async {});
-          case EmailContentType.textPlain:
-            return Padding(
-              padding: EdgeInsets.only(top: 16),
-              child: Text(
-                emailController.emailContent.value!.content,
-                style: TextStyle(fontSize: 14, color: AppColor.nameUserColor)));
-          case EmailContentType.other:
+  Widget _buildListEmailContent() {
+    return Obx(() => emailController.viewState.value.fold(
+      (failure) => SizedBox.shrink(),
+      (success) {
+        if (success is LoadingState) {
+          return EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils);
+        } else {
+          if (emailController.emailContents.isNotEmpty) {
+            return ListView.builder(
+              primary: false,
+              shrinkWrap: true,
+              padding: EdgeInsets.only(top: 10),
+              key: Key('list_email_content'),
+              itemCount: emailController.emailContents.length,
+              itemBuilder: (context, index) =>
+                EmailContentItemBuilder(
+                  context,
+                  emailController.emailContents[index],
+                  loadingWidget: EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils)
+                ).build());
+          } else {
             return SizedBox.shrink();
+          }
         }
-      } else {
-        return SizedBox.shrink();
-      }
-    });
+      }));
   }
 }

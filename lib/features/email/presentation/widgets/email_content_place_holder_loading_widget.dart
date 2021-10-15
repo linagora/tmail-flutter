@@ -41,7 +41,7 @@ class EmailContentPlaceHolderLoading extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _EmailContentPlaceHolderLoadingState createState() => _EmailContentPlaceHolderLoadingState();
+  State<StatefulWidget> createState() => _EmailContentPlaceHolderLoadingState();
 }
 
 class _EmailContentPlaceHolderLoadingState extends State<EmailContentPlaceHolderLoading> with SingleTickerProviderStateMixin {
@@ -68,25 +68,11 @@ class _EmailContentPlaceHolderLoadingState extends State<EmailContentPlaceHolder
       animation: _animation,
       builder: (BuildContext context, Widget? child) {
         return Container(
-          margin: EdgeInsets.only(top: 20),
+          margin: EdgeInsets.only(top: 16),
           padding: EdgeInsets.zero,
           color: Colors.transparent,
           child: Column(
             children: [
-              Row(children: [
-                _placeHolderAttachment(context),
-                SizedBox(width: 16),
-                _placeHolderAttachment(context),
-                if (!widget.responsiveUtils.isMobile(context))
-                  SizedBox(width: 16),
-                if (!widget.responsiveUtils.isMobile(context))
-                  _placeHolderAttachment(context),
-                if (widget.responsiveUtils.isTablet(context))
-                  SizedBox(width: 16),
-                if (widget.responsiveUtils.isTablet(context))
-                  _placeHolderAttachment(context),
-              ]),
-              SizedBox(height: 16),
               Container(
                 margin: EdgeInsets.only(right: 64),
                 height: 10,
@@ -104,42 +90,6 @@ class _EmailContentPlaceHolderLoadingState extends State<EmailContentPlaceHolder
           ),
         );
       },
-    );
-  }
-
-  Widget _placeHolderAttachment(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    final percentAttachment = widget.responsiveUtils.isMobile(context)
-        ? 0.4
-        : widget.responsiveUtils.isTablet(context) ? 0.22 : 0.14;
-    return Container(
-      height: 55,
-      width: width * percentAttachment,
-      margin: EdgeInsets.zero,
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-      decoration: _radiusBoxDecoration(animation: _animation),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 24,
-            width: 24,
-            decoration: _radiusBoxDecoration(animation: _animation, radius: 12)),
-          SizedBox(width: 8),
-          Expanded(child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 5,
-                decoration: _radiusBoxDecoration(animation: _animation)),
-              SizedBox(height: 10),
-              Container(
-                height: 5,
-                decoration: _radiusBoxDecoration(animation: _animation))
-            ],
-          ))
-        ]
-      )
     );
   }
 }

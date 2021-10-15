@@ -26,7 +26,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/web_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -49,7 +48,7 @@ class EmailController extends BaseController {
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
-  final emailContent = Rxn<EmailContent>();
+  final emailContents = <EmailContent>[].obs;
   final attachments = <Attachment>[].obs;
   EmailId? _currentEmailId;
 
@@ -129,17 +128,14 @@ class EmailController extends BaseController {
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
-    emailContent.value = success.emailContent;
+    emailContents.value = success.emailContents;
     attachments.value = success.attachments;
-    if (emailContent.value != null && emailContent.value!.type == EmailContentType.textHtml) {
-      dispatchState(Right(WebViewLoadingState()));
-    }
   }
 
   void _clearEmailContent() {
     toggleDisplayEmailAddressAction(expandMode: ExpandMode.COLLAPSE);
     attachmentsExpandMode.value = ExpandMode.COLLAPSE;
-    emailContent.value = null;
+    emailContents.clear();
     attachments.clear();
   }
 
@@ -357,7 +353,7 @@ class EmailController extends BaseController {
         arguments: ComposerArguments(
           emailActionType: emailActionType,
           presentationEmail: mailboxDashBoardController.selectedEmail.value!,
-          emailContent: emailContent.value,
+          emailContents: emailContents,
           attachments: attachments,
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
           session: mailboxDashBoardController.sessionCurrent!,
