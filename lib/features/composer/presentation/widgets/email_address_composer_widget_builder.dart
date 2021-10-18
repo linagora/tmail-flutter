@@ -123,6 +123,7 @@ class EmailAddressComposerWidgetBuilder {
           autofocus: prefixEmailAddress == PrefixEmailAddress.to ? true : false,
           textStyle: TextStyle(color: AppColor.nameUserColor, fontSize: 14, fontWeight: FontWeight.w500),
           cursorColor: AppColor.primaryColor,
+          inputType: TextInputType.emailAddress,
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: AppLocalizations.of(_context).hint_text_email_address,
