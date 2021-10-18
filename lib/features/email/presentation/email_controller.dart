@@ -88,7 +88,8 @@ class EmailController extends BaseController {
   }
 
   void _getEmailContentAction(AccountId accountId, EmailId emailId) async {
-    consumeState(_getEmailContentInteractor.execute(accountId, emailId));
+    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
+    consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
   }
 
   @override
