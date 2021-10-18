@@ -10,6 +10,7 @@ class TextFieldBuilder {
   bool? _obscureText;
   int? _maxLines = 1;
   TextEditingController? _textController;
+  TextInputType? _keyboardType;
 
   void key(Key key) {
     _key = key;
@@ -47,6 +48,10 @@ class TextFieldBuilder {
     _maxLines = value;
   }
 
+  void keyboardType(TextInputType? value) {
+    _keyboardType = value;
+  }
+
   TextField build() {
     return TextField(
       key: _key ?? Key('TextFieldBuilder'),
@@ -60,6 +65,7 @@ class TextFieldBuilder {
       keyboardAppearance: Brightness.light,
       style: _textStyle ?? TextStyle(color: AppColor.textFieldTextColor),
       obscureText: _obscureText ?? false,
+      keyboardType: _keyboardType,
     );
   }
 }
