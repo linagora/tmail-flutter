@@ -67,14 +67,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
           color: #182952;
           font-family: verdana;
         }
-        blockquote {
-          font: normal helvetica, verdana;
-          margin-top: 10px;
-          margin-bottom: 10px;
-          margin-left: 20px;
-          padding-left: 15px;
-          border-left: 5px solid #eee;
-        }
         table {
           width: 100%;
           max-width: 100%;

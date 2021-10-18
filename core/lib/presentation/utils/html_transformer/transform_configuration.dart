@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/link_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/meta_transformers.dart';
@@ -61,6 +62,7 @@ class TransformConfiguration {
     RemoveScriptTransformer(),
     ImageTransformer(),
     EnsureRelationNoReferrerTransformer(),
+    BlockQuotedTransformer(),
   ];
 
   static const List<TextTransformer> standardTextTransformers = [
