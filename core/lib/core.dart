@@ -10,6 +10,7 @@ export 'presentation/extensions/html_extension.dart';
 
 // Exceptions
 export 'domain/exceptions/download_file_exception.dart';
+export 'data/extensions/options_extensions.dart';
 
 // Utils
 export 'presentation/utils/theme_utils.dart';

@@ -11,13 +11,17 @@ class GetEmailContentInteractor {
 
   GetEmailContentInteractor(this.emailRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, EmailId emailId) async* {
+  Stream<Either<Failure, Success>> execute(AccountId accountId, EmailId emailId, String? baseDownloadUrl) async* {
     try {
       yield Right<Failure, Success>(LoadingState());
       final email = await emailRepository.getEmailContent(accountId, emailId);
 
       if (email.emailContentList.isNotEmpty) {
-        final newEmailContents = await emailRepository.transformEmailContent(email.emailContentList);
+        final newEmailContents = await emailRepository.transformEmailContent(
+            email.emailContentList,
+            email.allAttachments.attachmentWithDispositionInlines,
+            baseDownloadUrl,
+            accountId);
         yield Right<Failure, Success>(GetEmailContentSuccess(newEmailContents, email.allAttachments));
       } else {
         yield Left(GetEmailContentFailure(null));

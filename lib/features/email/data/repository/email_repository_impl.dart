@@ -72,10 +72,19 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<List<EmailContent>> transformEmailContent(List<EmailContent> emailContents) async {
+  Future<List<EmailContent>> transformEmailContent(
+      List<EmailContent> emailContents,
+      List<Attachment> attachmentInlines,
+      String? baseUrlDownload,
+      AccountId accountId
+    ) async {
+    final mapUrlDownloadCID = Map<String, String>.fromIterable(
+        attachmentInlines,
+        key: (attachment) => attachment.cid!,
+        value: (attachment) => attachment.getDownloadUrl(baseUrlDownload, accountId));
     return await Future.wait(emailContents
       .map((emailContent) async {
-        return await _htmlDataSource.transformEmailContent(emailContent);
+        return await _htmlDataSource.transformEmailContent(emailContent, mapUrlDownloadCID);
       })
       .toList());
   }

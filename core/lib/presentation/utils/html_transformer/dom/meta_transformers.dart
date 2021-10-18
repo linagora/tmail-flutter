@@ -1,4 +1,5 @@
 
+import 'package:core/data/network/dio_client.dart';
 import 'package:html/dom.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
@@ -13,11 +14,18 @@ class ViewPortTransformer extends DomTransformer {
   const ViewPortTransformer();
 
   @override
-  void process(Document document, String message, TransformConfiguration configuration) {
+  Future<void> process(
+      Document document,
+      String message,
+      Map<String, String>? mapUrlDownloadCID,
+      TransformConfiguration configuration,
+      DioClient dioClient
+  ) async {
     final metaElements = document.getElementsByTagName('meta');
     var viewportNeedsToBeAdded = true;
     var contentTypeNeedsToBeAdded = true;
-    for (final metaElement in metaElements) {
+
+    await Future.wait(metaElements.map((metaElement) async {
       if (metaElement.attributes['name'] == 'viewport') {
         viewportNeedsToBeAdded = false;
         metaElement.attributes['content'] = 'width=device-width, initial-scale=1.0';
@@ -30,7 +38,8 @@ class ViewPortTransformer extends DomTransformer {
           metaElement.attributes['content'] = 'text/html; charset=utf-8';
         }
       }
-    }
+    }));
+
     if (contentTypeNeedsToBeAdded) {
       ensureDocumentHeadIsAvailable(document);
       document.head!.append(_contentTypeMetaElement);
