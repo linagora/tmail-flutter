@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
@@ -6,23 +7,24 @@ import 'package:html/parser.dart' show parse;
 class MessageContentTransformer {
   /// The configuration used for the transformation
   final TransformConfiguration configuration;
+  final DioClient dioClient;
 
-  MessageContentTransformer(this.configuration);
+  MessageContentTransformer(this.configuration, this.dioClient);
 
-  void transformDocument(Document document, String message) {
-    for (final domTransformer in configuration.domTransformers) {
-      domTransformer.process(document, message, configuration);
-    }
+  Future<void> transformDocument(
+      Document document,
+      String message,
+      Map<String, String>? mapUrlDownloadCID,
+  ) async {
+    await Future.wait(configuration.domTransformers.map((domTransformer) async {
+      await domTransformer.process(document, message, mapUrlDownloadCID, configuration, dioClient);
+    }));
   }
 
-  Document toDocument(String message) {
+  Future<Document> toDocument(String message, Map<String, String>? mapUrlDownloadCID) async {
     var html = message;
     final document = parse(html);
-    transformDocument(document, message);
+    await transformDocument(document, message, mapUrlDownloadCID);
     return document;
-  }
-
-  String toHtml(String message) {
-    return toDocument(message).outerHtml;
   }
 }

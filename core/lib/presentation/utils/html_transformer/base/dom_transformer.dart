@@ -1,4 +1,5 @@
 
+import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:html/dom.dart';
 
@@ -10,7 +11,13 @@ abstract class DomTransformer {
   /// Uses the `DOM` [document] and specified [message] to transform the `document`.
   ///
   /// All changes will be visible to subsequent transformers.
-  void process(Document document, String message, TransformConfiguration configuration);
+  Future<void> process(
+      Document document,
+      String message,
+      Map<String, String>? mapUrlDownloadCID,
+      TransformConfiguration configuration,
+      DioClient dioClient
+  );
 
   /// Adds a HEAD element if necessary
   void ensureDocumentHeadIsAvailable(Document document) {

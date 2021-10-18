@@ -35,5 +35,10 @@ abstract class EmailRepository {
     MarkStarAction markStarAction
   );
 
-  Future<List<EmailContent>> transformEmailContent(List<EmailContent> emailContents);
+  Future<List<EmailContent>> transformEmailContent(
+    List<EmailContent> emailContents,
+    List<Attachment> attachmentInlines,
+    String? baseUrlDownload,
+    AccountId accountId
+  );
 }
