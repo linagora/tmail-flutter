@@ -11,7 +11,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_w
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_place_holder_loading_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
-import 'package:tmail_ui_user/features/email/presentation/extensions/list_attachment_extension.dart';
+import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_item_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_place_holder_loading_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/sender_and_receiver_information_tile_builder.dart';

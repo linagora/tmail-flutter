@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:core/core.dart';
 
 class DioClient {
   static const jmapHeader = 'application/json;jmapVersion=rfc-8621';
@@ -16,10 +19,13 @@ class DioClient {
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
   }) async {
+    final newOptions = options?.appendHeaders({HttpHeaders.acceptHeader : jmapHeader})
+        ?? Options(headers: {HttpHeaders.acceptHeader : jmapHeader}) ;
+
     return await _dio.get(
         path,
         queryParameters: queryParameters,
-        options: options,
+        options: newOptions,
         cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress)
       .then((value) => value.data)
@@ -35,10 +41,13 @@ class DioClient {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
+    final newOptions = options?.appendHeaders({HttpHeaders.acceptHeader : jmapHeader})
+        ?? Options(headers: {HttpHeaders.acceptHeader : jmapHeader}) ;
+
     return await _dio.post(path,
         data: data,
         queryParameters: queryParameters,
-        options: options,
+        options: newOptions,
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress)
@@ -53,11 +62,14 @@ class DioClient {
     Options? options,
     CancelToken? cancelToken,
   }) async {
+    final newOptions = options?.appendHeaders({HttpHeaders.acceptHeader : jmapHeader})
+        ?? Options(headers: {HttpHeaders.acceptHeader : jmapHeader}) ;
+
     return await _dio.delete(
         path,
         data: data,
         queryParameters: queryParameters,
-        options: options,
+        options: newOptions,
         cancelToken: cancelToken)
       .then((value) => value.data)
       .catchError((error) => throw(error));
@@ -72,11 +84,14 @@ class DioClient {
         ProgressCallback? onSendProgress,
         ProgressCallback? onReceiveProgress
   }) async {
+    final newOptions = options?.appendHeaders({HttpHeaders.acceptHeader : jmapHeader})
+        ?? Options(headers: {HttpHeaders.acceptHeader : jmapHeader}) ;
+
     return await _dio.put(
         path,
         data: data,
         queryParameters: queryParameters,
-        options: options,
+        options: newOptions,
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress)

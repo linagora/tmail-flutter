@@ -51,7 +51,9 @@ class ThreadBindings extends Bindings {
     Get.lazyPut(() => ScrollController());
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
-    Get.lazyPut(() => HtmlDataSourceImpl(Get.find<HtmlAnalyzer>()));
+    Get.lazyPut(() => HtmlDataSourceImpl(
+      Get.find<HtmlAnalyzer>(),
+      Get.find<DioClient>()));
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
     Get.lazyPut(() => EmailRepositoryImpl(
       Get.find<EmailDataSource>(),

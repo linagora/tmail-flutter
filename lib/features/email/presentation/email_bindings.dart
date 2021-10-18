@@ -25,14 +25,17 @@ class EmailBindings extends Bindings {
   void dependencies() {
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
-    Get.lazyPut(() => HtmlDataSourceImpl(Get.find<HtmlAnalyzer>()));
+    Get.lazyPut(() => HtmlDataSourceImpl(
+      Get.find<HtmlAnalyzer>(),
+      Get.find<DioClient>()));
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
     Get.lazyPut(() => EmailRepositoryImpl(
       Get.find<EmailDataSource>(),
       Get.find<HtmlDataSource>()));
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
     Get.put(SendEmailInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => GetEmailContentInteractor(
+      Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
     Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
