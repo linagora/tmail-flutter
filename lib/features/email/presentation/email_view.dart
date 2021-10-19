@@ -29,8 +29,8 @@ class EmailView extends GetView {
     return Scaffold(
       backgroundColor: AppColor.primaryLightColor,
       body: SafeArea(
-        right: false,
-        left: false,
+        right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+        left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -154,7 +154,7 @@ class EmailView extends GetView {
   }
 
   int _getAttachmentLimitDisplayed(BuildContext context) {
-    if (responsiveUtils.isMobile(context)) {
+    if (responsiveUtils.isMobileDevice(context)) {
       return 2;
     } else if (responsiveUtils.isTablet(context)) {
       return 4;

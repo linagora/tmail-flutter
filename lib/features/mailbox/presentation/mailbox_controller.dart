@@ -186,7 +186,7 @@ class MailboxController extends BaseController {
     mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
     mailboxDashBoardController.clearSelectedEmail();
 
-    if (responsiveUtils.isMobile(context)) {
+    if (responsiveUtils.isMobileDevice(context)) {
       mailboxDashBoardController.closeDrawer();
     }
   }
