@@ -1,14 +1,14 @@
 
+import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/base/text_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/link_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/meta_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/text/convert_tags_text_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/text/linebreak_text_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/text/links_text_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/base/text_transformer.dart';
 
 /// Contains the configuration for all transformations.
 class TransformConfiguration {

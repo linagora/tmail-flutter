@@ -15,7 +15,6 @@ abstract class DomTransformer {
       Document document,
       String message,
       Map<String, String>? mapUrlDownloadCID,
-      TransformConfiguration configuration,
       DioClient dioClient
   );
 

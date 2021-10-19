@@ -13,7 +13,6 @@ class EnsureRelationNoReferrerTransformer extends DomTransformer {
       Document document,
       String message,
       Map<String, String>? mapUrlDownloadCID,
-      TransformConfiguration configuration,
       DioClient dioClient
   ) async {
     final linkElements = document.getElementsByTagName('a');
