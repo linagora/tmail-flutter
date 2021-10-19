@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
@@ -13,13 +12,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await MainBindings().dependencies();
   await HiveCacheConfig().setUp();
-  // Disable landscape on device mobile
-  if (Get.size.shortestSide < ResponsiveUtils.minTabletWidth) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-  }
   runApp(TMailApp());
 }
 

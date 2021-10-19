@@ -14,6 +14,8 @@ class ResponsiveUtils {
   static const double _desktopVerticalMargin = 144.0;
   static const double _desktopHorizontalMargin = 234.0;
 
+  bool isMobileDevice(BuildContext context) => MediaQuery.of(context).size.shortestSide < 600;
+
   double getSizeWidthScreen(BuildContext context) => MediaQuery.of(context).size.width;
 
   double getSizeHeightScreen(BuildContext context) => MediaQuery.of(context).size.height;
@@ -23,6 +25,10 @@ class ResponsiveUtils {
   bool isTablet(BuildContext context) => getSizeWidthScreen(context) >= minTabletWidth && getSizeWidthScreen(context) < minDesktopWidth;
 
   bool isDesktop(BuildContext context) => getSizeWidthScreen(context) >= minDesktopWidth;
+
+  bool isPortrait(BuildContext context) => MediaQuery.of(context).orientation == Orientation.portrait;
+
+  bool isLandscape(BuildContext context) => MediaQuery.of(context).orientation == Orientation.landscape;
 
   double getWidthLoginTextField(BuildContext context) => isMobile(context) ? _loginTextFieldWidthSmallScreen : _loginTextFieldWidthLargeScreen;
 
