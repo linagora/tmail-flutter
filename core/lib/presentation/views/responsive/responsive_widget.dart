@@ -19,7 +19,9 @@ class ResponsiveWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      if (responsiveUtils.isDesktop(context)) {
+      if (responsiveUtils.isMobileDevice(context)) {
+        return mobile;
+      } else if (responsiveUtils.isDesktop(context)) {
         return desktop ?? tablet;
       } else if (responsiveUtils.isTablet(context)) {
         return tablet;

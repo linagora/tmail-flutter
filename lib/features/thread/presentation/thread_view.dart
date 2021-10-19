@@ -23,8 +23,8 @@ class ThreadView extends GetWidget<ThreadController> {
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColor.primaryLightColor,
       body: SafeArea(
-        right: false,
-        left: false,
+        right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+        left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
         child: Container(
           alignment: Alignment.center,
           padding: EdgeInsets.zero,

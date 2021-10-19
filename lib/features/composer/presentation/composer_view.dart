@@ -30,8 +30,8 @@ class ComposerView extends GetWidget<ComposerController> {
         resizeToAvoidBottomInset: false,
         backgroundColor: AppColor.primaryLightColor,
         body: SafeArea(
-          right: false,
-          left: false,
+          right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+          left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
           child: Container(
             margin: EdgeInsets.zero,
             alignment: Alignment.topCenter,

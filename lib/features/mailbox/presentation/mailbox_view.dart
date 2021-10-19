@@ -24,9 +24,10 @@ class MailboxView extends GetWidget<MailboxController> {
       child: Scaffold(
         backgroundColor: AppColor.primaryLightColor,
         body: SafeArea(
+          right: false,
+          left: false,
           child: Container(
             alignment: Alignment.center,
-            margin: EdgeInsets.symmetric(vertical: 24),
             child: Column(
               children: [
                 _buildHeaderMailbox(context),
@@ -110,6 +111,7 @@ class MailboxView extends GetWidget<MailboxController> {
       key: PageStorageKey('mailbox_list'),
       primary: false,
       shrinkWrap: true,
+      padding: EdgeInsets.zero,
       children: [
         Obx(() => controller.defaultMailboxList.isNotEmpty
           ? _buildDefaultMailbox(context, controller.defaultMailboxList)
