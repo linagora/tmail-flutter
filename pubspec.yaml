@@ -77,9 +77,6 @@ dependencies:
   # file_size
   filesize: 2.0.1
 
-  # flutter_widget_from_html
-  flutter_widget_from_html: 0.6.2
-
   # flutter_chips_input
   flutter_chips_input:
     git:
