@@ -14,17 +14,23 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: controller.scaffoldKey,
-      drawer: responsiveUtils.isMobile(context)
+      drawer: responsiveUtils.isMobileDevice(context)
         ? Container(
             child: MailboxView(),
-            width: responsiveUtils.getSizeWidthScreen(context))
+            width: responsiveUtils.isPortrait(context)
+              ? responsiveUtils.getSizeWidthScreen(context)
+              : responsiveUtils.getSizeWidthScreen(context) / 2)
         : null,
-      drawerEnableOpenDragGesture: responsiveUtils.isMobile(context),
-      body: SafeArea(
+      drawerEnableOpenDragGesture: responsiveUtils.isMobileDevice(context),
+      body: Container(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            if (!responsiveUtils.isMobile(context)) Expanded(child: MailboxView()),
+            if (!responsiveUtils.isMobileDevice(context))
+              Expanded(
+                flex: responsiveUtils.isDesktop(context) ? 1 : 2,
+                child: MailboxView()),
             Expanded(
               flex: responsiveUtils.isDesktop(context) ? 1 : 3,
               child: ThreadView(),
