@@ -2,10 +2,9 @@
 import 'dart:convert';
 
 import 'package:core/core.dart';
+import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:dio/dio.dart';
 import 'package:html/dom.dart';
-import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 
 class ImageTransformer extends DomTransformer {
 
@@ -16,7 +15,6 @@ class ImageTransformer extends DomTransformer {
       Document document,
       String message,
       Map<String, String>? mapUrlDownloadCID,
-      TransformConfiguration configuration,
       DioClient dioClient
   ) async {
     final imageElements = document.getElementsByTagName('img');
