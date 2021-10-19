@@ -17,7 +17,7 @@ class MessageContentTransformer {
       Map<String, String>? mapUrlDownloadCID,
   ) async {
     await Future.wait(configuration.domTransformers.map((domTransformer) async {
-      await domTransformer.process(document, message, mapUrlDownloadCID, configuration, dioClient);
+      await domTransformer.process(document, message, mapUrlDownloadCID, dioClient);
     }));
   }
 
