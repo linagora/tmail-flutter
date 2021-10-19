@@ -77,13 +77,13 @@ class _AttachmentsPlaceHolderLoadingState extends State<AttachmentsPlaceHolderLo
                 _placeHolderAttachment(context),
                 SizedBox(width: 16),
                 _placeHolderAttachment(context),
-                if (!widget.responsiveUtils.isMobile(context))
+                if (!widget.responsiveUtils.isMobileDevice(context))
                   SizedBox(width: 16),
-                if (!widget.responsiveUtils.isMobile(context))
+                if (!widget.responsiveUtils.isMobileDevice(context))
                   _placeHolderAttachment(context),
-                if (widget.responsiveUtils.isTablet(context))
+                if (!widget.responsiveUtils.isMobileDevice(context) && widget.responsiveUtils.isTablet(context))
                   SizedBox(width: 16),
-                if (widget.responsiveUtils.isTablet(context))
+                if (!widget.responsiveUtils.isMobileDevice(context) && widget.responsiveUtils.isTablet(context))
                   _placeHolderAttachment(context),
               ]),
             ],
@@ -95,7 +95,7 @@ class _AttachmentsPlaceHolderLoadingState extends State<AttachmentsPlaceHolderLo
 
   Widget _placeHolderAttachment(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    final percentAttachment = widget.responsiveUtils.isMobile(context)
+    final percentAttachment = widget.responsiveUtils.isMobileDevice(context)
         ? 0.4
         : widget.responsiveUtils.isTablet(context) ? 0.22 : 0.14;
     return Container(
