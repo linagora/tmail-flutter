@@ -18,7 +18,6 @@ class ViewPortTransformer extends DomTransformer {
       Document document,
       String message,
       Map<String, String>? mapUrlDownloadCID,
-      TransformConfiguration configuration,
       DioClient dioClient
   ) async {
     final metaElements = document.getElementsByTagName('meta');
