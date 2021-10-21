@@ -15,6 +15,12 @@ extension DateTimeExtension on DateTime {
     final now = DateTime.now();
     return now.year == this.year;
   }
+
+  int daysBetween(DateTime from) {
+    from = DateTime(from.year, from.month, from.day);
+    final to = DateTime(year, month, day);
+    return (to.difference(from).inHours / 24).round().abs();
+  }
 }
 
 extension DateTimeNullableExtension on DateTime? {
