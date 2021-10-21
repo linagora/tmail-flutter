@@ -1,10 +1,12 @@
 
+import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/model/cleanup_rule.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_address_hive_cache_extension.dart';
 
@@ -30,5 +32,16 @@ extension EmailCacheExtension on EmailCache {
         ? Map.fromIterables(mailboxIds!.keys.map((value) => MailboxId(Id(value))), mailboxIds!.values)
         : null,
     );
+  }
+
+  bool expireTimeCaching(CleanupRule cleanupRule) {
+    final currentTime = DateTime.now();
+    if (receivedAt != null) {
+      final countDay = currentTime.daysBetween(receivedAt!.toLocal());
+      if (countDay >= cleanupRule.cachingEmailPeriod.countDay) {
+        return true;
+      }
+    }
+    return false;
   }
 }
