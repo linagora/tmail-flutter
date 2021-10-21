@@ -96,6 +96,15 @@ class EmailTileBuilder {
                         fontSize: 14,
                         color: AppColor.mailboxTextColor,
                         fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500))),
+                  Expanded(
+                      child: Text(
+                          '${_presentationEmail.id}',
+                          maxLines: 1,
+                          overflow:TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: AppColor.mailboxTextColor,
+                              fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500))),
                   Padding(
                     padding: EdgeInsets.only(right: 4),
                     child: Text(
