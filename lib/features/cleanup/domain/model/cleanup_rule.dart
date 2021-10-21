@@ -11,7 +11,7 @@ class CleanupRule with EquatableMixin {
 }
 
 class Duration with EquatableMixin {
-  static final defaultValue = Duration(7);
+  static final defaultCacheInternal = Duration(30);
 
   final int countDay;
 
