@@ -96,15 +96,6 @@ class EmailTileBuilder {
                         fontSize: 14,
                         color: AppColor.mailboxTextColor,
                         fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500))),
-                  Expanded(
-                      child: Text(
-                          '${_presentationEmail.id}',
-                          maxLines: 1,
-                          overflow:TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: AppColor.mailboxTextColor,
-                              fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500))),
                   Padding(
                     padding: EdgeInsets.only(right: 4),
                     child: Text(
@@ -115,7 +106,7 @@ class EmailTileBuilder {
                         fontSize: 12,
                         color: _presentationEmail.isUnReadEmail() ? AppColor.sentTimeTextColorUnRead : AppColor.baseTextColor)))
                 ],
-              )
+              ),
             ),
             subtitle: Transform(
               transform: Matrix4.translationValues(-10.0, 8.0, 0.0),
@@ -158,7 +149,16 @@ class EmailTileBuilder {
                             }))
                         .build(),
                     ],
-                  )
+                  ),
+                  Expanded(
+                      child: Text(
+                          '${_presentationEmail.id.id.value}',
+                          maxLines: 1,
+                          overflow:TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: AppColor.mailboxTextColor,
+                              fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500))),
                 ],
               )
             ),
