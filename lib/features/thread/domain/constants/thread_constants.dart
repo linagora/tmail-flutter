@@ -3,7 +3,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:model/email/email_property.dart';
 
 class ThreadConstants {
-  static final defaultLimit = UnsignedInt(3);
+  static final defaultLimit = UnsignedInt(20);
   static final propertiesDefault = Properties({
     EmailProperty.id,
     EmailProperty.subject,
