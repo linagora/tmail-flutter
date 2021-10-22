@@ -9,12 +9,11 @@ features to the [TMail back-end](https://github.com/linagora/tmail-backend).
 
 Here is how TMail looks like on a phone:
 
-![Screenshots Mobile](https://user-images.githubusercontent.com/6928740/129556356-3099bc0f-2af8-4635-afc2-6ccb385abd03.jpg)
-
+![Screenshots Mobile](https://user-images.githubusercontent.com/6928740/138420419-867405e0-a1d4-4561-8068-5d37c3f96035.png)
 
 Here is how TMail looks like on a tablet:
 
-![Screenshot Tablet](https://user-images.githubusercontent.com/6928740/129555644-229abd19-d1db-4d31-bfe1-3f1f7e59804c.png)
+![Screenshot Tablet](https://user-images.githubusercontent.com/6928740/138420547-4faac0a8-dfd7-448d-a3ba-2b575453c3fa.jpeg)
 
 ## FAQ
 
