@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_composer_widget_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/top_bar_composer_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -40,11 +40,7 @@ class ComposerView extends GetWidget<ComposerController> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 _buildTopBar(context),
-                Expanded(child: Container(
-                  color: AppColor.bgComposer,
-                  margin: EdgeInsets.zero,
-                  alignment: Alignment.topCenter,
-                  child: _buildBodyComposer(context)))
+                Expanded(child: _buildBodyComposer(context))
             ])
           )
         ),
@@ -108,18 +104,76 @@ class ComposerView extends GetWidget<ComposerController> {
   }
   
   Widget _buildEmailAddress(BuildContext context) {
-    return Obx(() => (EmailAddressComposerWidgetBuilder(
-            context,
-            imagePaths,
-            controller.expandMode.value,
-            controller.listToEmailAddress,
-            controller.listCcEmailAddress,
-            controller.listBccEmailAddress,
-            controller.composerArguments.value?.userProfile)
-        ..addExpandAddressActionClick(() => controller.expandEmailAddressAction())
-        ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-        ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
-      .build()
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(right: 8),
+                child: Text(
+                  '${AppLocalizations.of(context).from_email_address_prefix}:',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(fontSize: 14, color: AppColor.nameUserColor, fontWeight: FontWeight.w500))),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Obx(() => controller.composerArguments.value != null
+                      ? Text(
+                        '<${controller.composerArguments.value?.userProfile.email ?? ''}>',
+                        style: TextStyle(fontSize: 14, color: AppColor.nameUserColor))
+                      : SizedBox.shrink()
+                    )
+                  ],
+                )
+              )
+            ]
+          )
+        ),
+        Obx(() => (EmailAddressInputBuilder(
+                context,
+                imagePaths,
+                PrefixEmailAddress.to,
+                controller.listToEmailAddress,
+                keyInput: controller.keyToEmailAddress,
+                expandMode: controller.expandMode.value)
+            ..addExpandAddressActionClick(() => controller.expandEmailAddressAction())
+            ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+            ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+          .build()
+        ),
+        Obx(() => controller.expandMode.value == ExpandMode.EXPAND
+          ? (EmailAddressInputBuilder(
+                  context,
+                  imagePaths,
+                  PrefixEmailAddress.cc,
+                  controller.listCcEmailAddress,
+                  keyInput: controller.keyCcEmailAddress)
+              ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+              ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+            .build()
+          : SizedBox.shrink()
+        ),
+        Obx(() => controller.expandMode.value == ExpandMode.EXPAND
+          ? (EmailAddressInputBuilder(
+                context,
+                imagePaths,
+                PrefixEmailAddress.bcc,
+                controller.listBccEmailAddress,
+                keyInput: controller.keyBccEmailAddress)
+              ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+              ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+            .build()
+          : SizedBox.shrink()
+        ),
+      ],
     );
   }
 
@@ -158,7 +212,7 @@ class ComposerView extends GetWidget<ComposerController> {
             child: Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 30),
+                  padding: EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 24),
                   child: _buildComposerEditor(context)),
                 _buildAttachmentsLoadingView(),
                 _buildAttachments(context),
@@ -175,7 +229,7 @@ class ComposerView extends GetWidget<ComposerController> {
       if (controller.composerArguments.value?.emailActionType == EmailActionType.compose) {
         return HtmlEditor(
           key: Key('composer_editor'),
-          minHeight: 400,
+          minHeight: 100,
           supportZoom: true,
           disableHorizontalScroll: false,
           disableVerticalScroll: false,
@@ -186,7 +240,7 @@ class ComposerView extends GetWidget<ComposerController> {
         return message.isNotEmpty
           ? HtmlEditor(
               key: Key('composer_editor'),
-              minHeight: 400,
+              minHeight: 100,
               supportZoom: true,
               disableHorizontalScroll: false,
               disableVerticalScroll: false,
@@ -203,7 +257,7 @@ class ComposerView extends GetWidget<ComposerController> {
       (failure) => SizedBox.shrink(),
       (success) => success is UploadingAttachmentState
         ? Center(child: Padding(
-            padding: EdgeInsets.only(top: 8),
+            padding: EdgeInsets.only(bottom: controller.attachments.isNotEmpty ? 0 : 24),
             child: SizedBox(
                 width: 20,
                 height: 20,

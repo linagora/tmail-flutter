@@ -7,6 +7,7 @@ import 'package:dartz/dartz.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -61,6 +62,9 @@ class ComposerController extends BaseController {
   String? _subjectEmail;
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.localContact;
   HtmlEditorApi? htmlEditorApi;
+  final keyToEmailAddress = GlobalKey<ChipsInputState>();
+  final keyCcEmailAddress = GlobalKey<ChipsInputState>();
+  final keyBccEmailAddress = GlobalKey<ChipsInputState>();
 
   void setSubjectEmail(String subject) => _subjectEmail = subject;
 
@@ -176,6 +180,18 @@ class ComposerController extends BaseController {
         expandMode.value = ExpandMode.EXPAND;
       } else {
         expandMode.value = ExpandMode.COLLAPSE;
+      }
+
+      if (listToEmailAddress.isNotEmpty) {
+        keyToEmailAddress.currentState?.addMultipleValue(listToEmailAddress);
+      }
+
+      if (listCcEmailAddress.isNotEmpty) {
+        keyCcEmailAddress.currentState?.addMultipleValue(listCcEmailAddress);
+      }
+
+      if (listBccEmailAddress.isNotEmpty) {
+        keyBccEmailAddress.currentState?.addMultipleValue(listBccEmailAddress);
       }
     }
     _updateStatusEmailSendButton();
