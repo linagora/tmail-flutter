@@ -57,6 +57,9 @@ dependencies:
   # http_parser
   http_parser: 4.0.0
 
+  # mime
+  mime: 1.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
