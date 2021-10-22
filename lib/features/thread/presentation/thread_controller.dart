@@ -230,6 +230,7 @@ class ThreadController extends BaseController {
             inMailbox: mailboxDashBoardController.selectedMailbox.value?.id,
             before: emailList.last.receivedAt),
           properties: ThreadConstants.propertiesDefault,
+          lastEmailId: emailList.last.id
         ));
       }
     }
