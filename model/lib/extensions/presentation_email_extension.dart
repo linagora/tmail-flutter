@@ -34,6 +34,8 @@ extension PresentationEmailExtension on PresentationEmail {
         cc: cc,
         bcc: bcc,
         replyTo: replyTo,
+        mailboxIds: mailboxIds,
+        mailboxNames: mailboxNames,
         selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE
     );
   }
@@ -53,6 +55,8 @@ extension PresentationEmailExtension on PresentationEmail {
       cc: cc,
       bcc: bcc,
       replyTo: replyTo,
+      mailboxIds: mailboxIds,
+      mailboxNames: mailboxNames,
       selectMode: selectMode
     );
   }
@@ -101,5 +105,38 @@ extension PresentationEmailExtension on PresentationEmail {
       default:
         return Tuple3([], [], []);
     }
+  }
+
+  PresentationEmail toSearchPresentationEmail(Map<MailboxId, PresentationMailbox> mapMailboxes) {
+    mailboxIds?.removeWhere((key, value) => !value);
+
+    final listMailboxId = mailboxIds?.entries
+      .where((entry) => entry.value)
+      .map((entry) => entry.key)
+      .toList();
+
+    final listMailboxName = listMailboxId
+      ?.map((mailboxId) => mapMailboxes.containsKey(mailboxId) ? mapMailboxes[mailboxId]?.name : null)
+      .where((mailboxName) => mailboxName != null)
+      .toList();
+
+    return PresentationEmail(
+      this.id,
+      keywords: keywords,
+      size: size,
+      receivedAt: receivedAt,
+      hasAttachment: hasAttachment,
+      preview: preview,
+      subject: subject,
+      sentAt: sentAt,
+      from: from,
+      to: to,
+      cc: cc,
+      bcc: bcc,
+      replyTo: replyTo,
+      mailboxIds: mailboxIds,
+      mailboxNames: listMailboxName,
+      selectMode: selectMode
+    );
   }
 }

@@ -1,9 +1,12 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
+typedef OnOpenSearchMailActionClick = void Function();
+
 class TextFieldBuilder {
   Key? _key;
   ValueChanged<String>? _onTextChange;
+  ValueChanged<String>? _onTextSubmitted;
   TextStyle? _textStyle;
   TextInputAction? _textInputAction;
   InputDecoration? _inputDecoration;
@@ -11,6 +14,9 @@ class TextFieldBuilder {
   int? _maxLines = 1;
   TextEditingController? _textController;
   TextInputType? _keyboardType;
+  Color? _cursorColor;
+  bool? _autoFocus;
+  FocusNode? _focusNode;
 
   void key(Key key) {
     _key = key;
@@ -18,6 +24,10 @@ class TextFieldBuilder {
 
   void onChange(ValueChanged<String> onChange) {
     _onTextChange = onChange;
+  }
+
+  void onSubmitted(ValueChanged<String> onSubmitted) {
+    _onTextSubmitted = onSubmitted;
   }
 
   void textStyle(TextStyle style) {
@@ -40,7 +50,7 @@ class TextFieldBuilder {
     _textController = TextEditingController.fromValue(TextEditingValue(text: value));
   }
 
-  void addController(TextEditingController textEditingController) {
+  void addController(TextEditingController? textEditingController) {
     _textController = textEditingController;
   }
 
@@ -52,11 +62,23 @@ class TextFieldBuilder {
     _keyboardType = value;
   }
 
+  void cursorColor(Color? color) {
+    _cursorColor = color;
+  }
+
+  void autoFocus(bool autoFocus) {
+    _autoFocus = autoFocus;
+  }
+
+  void addFocusNode(FocusNode? focusNode) {
+    _focusNode = focusNode;
+  }
+
   TextField build() {
     return TextField(
       key: _key ?? Key('TextFieldBuilder'),
       onChanged: _onTextChange,
-      cursorColor: AppColor.primaryColor,
+      cursorColor: _cursorColor ?? AppColor.primaryColor,
       controller: _textController,
       autocorrect: false,
       textInputAction: _textInputAction,
@@ -66,6 +88,9 @@ class TextFieldBuilder {
       style: _textStyle ?? TextStyle(color: AppColor.textFieldTextColor),
       obscureText: _obscureText ?? false,
       keyboardType: _keyboardType,
+      onSubmitted: _onTextSubmitted,
+      autofocus: _autoFocus ?? false,
+      focusNode: _focusNode,
     );
   }
 }

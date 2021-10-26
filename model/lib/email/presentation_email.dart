@@ -5,8 +5,8 @@ import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
-import 'package:model/mailbox/select_mode.dart';
-import 'package:model/extensions/email_address_extension.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/model.dart';
 
 class PresentationEmail with EquatableMixin {
 
@@ -23,6 +23,8 @@ class PresentationEmail with EquatableMixin {
   final Set<EmailAddress>? cc;
   final Set<EmailAddress>? bcc;
   final Set<EmailAddress>? replyTo;
+  final Map<MailboxId, bool>? mailboxIds;
+  final List<MailboxName?>? mailboxNames;
   final SelectMode selectMode;
 
   PresentationEmail(
@@ -40,6 +42,8 @@ class PresentationEmail with EquatableMixin {
       this.cc,
       this.bcc,
       this.replyTo,
+      this.mailboxIds,
+      this.mailboxNames,
       this.selectMode = SelectMode.INACTIVE
     }
   );
@@ -64,6 +68,8 @@ class PresentationEmail with EquatableMixin {
   bool isReadEmail() => keywords?.containsKey(KeyWordIdentifier.emailSeen) == true;
 
   bool isFlaggedEmail() => keywords?.containsKey(KeyWordIdentifier.emailFlagged) == true;
+
+  String get mailboxName => mailboxNames?.first?.name ?? '';
 
   @override
   List<Object?> get props => [
