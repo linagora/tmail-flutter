@@ -57,6 +57,7 @@ extension EmailExtension on Email {
       cc: cc,
       bcc: bcc,
       replyTo: replyTo,
+      mailboxIds: mailboxIds,
       selectMode: selectMode
     );
   }
