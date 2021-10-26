@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 
 typedef OnOpenEmailActionClick = void Function(PresentationEmail selectedEmail);
 typedef OnSelectEmailActionClick = void Function(PresentationEmail selectedEmail);
@@ -20,6 +22,8 @@ class EmailTileBuilder {
   final ResponsiveUtils _responsiveUtils;
   final SelectMode _selectModeAll;
   final Role? _mailboxRole;
+  final SearchStatus _searchStatus;
+  final SearchQuery? _searchQuery;
 
   OnOpenEmailActionClick? _onOpenEmailActionClick;
   OnSelectEmailActionClick? _onSelectEmailActionClick;
@@ -33,6 +37,8 @@ class EmailTileBuilder {
     this._responsiveUtils,
     this._mailboxRole,
     this._selectModeAll,
+    this._searchStatus,
+    this._searchQuery,
   );
 
   void onOpenEmailAction(OnOpenEmailActionClick onOpenEmailActionClick) {
@@ -84,18 +90,28 @@ class EmailTileBuilder {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(
-                      (_mailboxRole == PresentationMailbox.roleSent
-                        || _mailboxRole == PresentationMailbox.roleDrafts
-                        || _mailboxRole == PresentationMailbox.roleOutbox)
-                          ? '${_presentationEmail.recipientsName()}'
-                          : '${_presentationEmail.getSenderName()}',
-                      maxLines: 1,
-                      overflow:TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColor.mailboxTextColor,
-                        fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500))),
+                    child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
+                      ? RichTextBuilder(
+                          _getInformationSender(),
+                          '${_searchQuery!.value}',
+                          TextStyle(
+                              fontSize: 14,
+                              color: AppColor.mailboxTextColor,
+                              fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500),
+                          TextStyle(
+                              fontSize: 14,
+                              color: AppColor.mailboxTextColor,
+                              backgroundColor: AppColor.bgWordSearch,
+                              fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500)).build()
+                      : Text(
+                          _getInformationSender(),
+                          maxLines: 1,
+                          overflow:TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColor.mailboxTextColor,
+                            fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500))
+                  ),
                   Padding(
                     padding: EdgeInsets.only(right: 4),
                     child: Text(
@@ -116,24 +132,65 @@ class EmailTileBuilder {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(bottom: 3),
-                    child: Text(
-                      '${_presentationEmail.getEmailTitle()}',
-                      maxLines: 1,
-                      overflow:TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: _presentationEmail.isUnReadEmail() ? AppColor.subjectEmailTextColorUnRead : AppColor.baseTextColor,
-                          fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500))),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
+                            ? RichTextBuilder(
+                                '${_presentationEmail.getEmailTitle()}',
+                                '${_searchQuery!.value}',
+                                TextStyle(
+                                    fontSize: 12,
+                                    color: _presentationEmail.isUnReadEmail() ? AppColor.subjectEmailTextColorUnRead : AppColor.baseTextColor,
+                                    fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500),
+                                TextStyle(
+                                    fontSize: 12,
+                                    backgroundColor: AppColor.bgWordSearch,
+                                    color: _presentationEmail.isUnReadEmail() ? AppColor.subjectEmailTextColorUnRead : AppColor.baseTextColor,
+                                    fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500)).build()
+                            : Text(
+                                '${_presentationEmail.getEmailTitle()}',
+                                maxLines: 1,
+                                overflow:TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: _presentationEmail.isUnReadEmail() ? AppColor.subjectEmailTextColorUnRead : AppColor.baseTextColor,
+                                    fontWeight: _presentationEmail.isUnReadEmail() ? FontWeight.bold : FontWeight.w500))
+                        ),
+                        if (_searchStatus == SearchStatus.ACTIVE && _presentationEmail.mailboxName.isNotEmpty)
+                          Container(
+                            margin: EdgeInsets.only(left: 8),
+                            padding: EdgeInsets.only(left: 8, right: 8, top: 3, bottom: 3),
+                            constraints: BoxConstraints(maxWidth: 100),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: AppColor.backgroundCounterMailboxColor),
+                            child: Text(
+                              '${_presentationEmail.mailboxName}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 10, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
+                            )
+                          )
+                      ],
+                    )),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: Text(
-                          '${_presentationEmail.getPartialContent()}',
-                          maxLines: 1,
-                          overflow:TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 12, color: AppColor.baseTextColor))),
+                        child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
+                          ? RichTextBuilder(
+                              '${_presentationEmail.getPartialContent()}',
+                              '${_searchQuery!.value}',
+                              TextStyle(fontSize: 12, color: AppColor.baseTextColor),
+                              TextStyle(fontSize: 12, color: AppColor.baseTextColor, backgroundColor: AppColor.bgWordSearch)).build()
+                          : Text(
+                              '${_presentationEmail.getPartialContent()}',
+                              maxLines: 1,
+                              overflow:TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 12, color: AppColor.baseTextColor))
+                      ),
                       if (_presentationEmail.hasAttachment == true)
                         (ButtonBuilder(_imagePaths.icShare)
                             ..padding(5)
@@ -223,5 +280,14 @@ class EmailTileBuilder {
         return Colors.white;
       }
     }
+  }
+
+  String _getInformationSender() {
+    if (_mailboxRole == PresentationMailbox.roleSent
+        || _mailboxRole == PresentationMailbox.roleDrafts
+        || _mailboxRole == PresentationMailbox.roleOutbox) {
+      return '${_presentationEmail.recipientsName()}';
+    }
+    return '${_presentationEmail.getSenderName()}';
   }
 }

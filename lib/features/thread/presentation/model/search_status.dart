@@ -1,0 +1,4 @@
+
+enum SearchStatus {
+  ACTIVE, INACTIVE
+}
