@@ -21,17 +21,20 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -50,13 +53,17 @@ class ThreadController extends BaseController {
   final MarkAsStarMultipleEmailInteractor _markAsStarMultipleEmailInteractor;
   final RefreshChangesEmailsInMailboxInteractor _refreshChangesEmailsInMailboxInteractor;
   final LoadMoreEmailsInMailboxInteractor _loadMoreEmailsInMailboxInteractor;
+  final SearchEmailInteractor _searchEmailInteractor;
 
   final emailList = <PresentationEmail>[].obs;
+  final emailListSearch = <PresentationEmail>[].obs;
   final currentSelectMode = SelectMode.INACTIVE.obs;
 
   bool canLoadMore = true;
   MailboxId? _currentMailboxId;
   jmap.State? _currentEmailState;
+
+  SearchQuery? get searchQuery => mailboxDashBoardController.searchQuery;
 
   EmailFilterCondition? get _filterCondition => EmailFilterCondition(
     inMailbox: mailboxDashBoardController.selectedMailbox.value?.id);
@@ -78,6 +85,7 @@ class ThreadController extends BaseController {
     this._markAsStarMultipleEmailInteractor,
     this._refreshChangesEmailsInMailboxInteractor,
     this._loadMoreEmailsInMailboxInteractor,
+    this._searchEmailInteractor,
   );
 
   @override
@@ -107,6 +115,8 @@ class ThreadController extends BaseController {
           cancelSelectEmail();
           _refreshEmailChanges();
           mailboxDashBoardController.clearState();
+        } else if (success is SearchEmailNewQuery){
+          _searchEmail();
         }
       });
     });
@@ -127,6 +137,8 @@ class ThreadController extends BaseController {
       (failure) {
         if (failure is LoadMoreEmailsFailure) {
           canLoadMore = false;
+        } else if (failure is SearchEmailFailure) {
+          emailListSearch.clear();
         }
       },
       (success) {
@@ -134,6 +146,8 @@ class ThreadController extends BaseController {
           _getAllEmailSuccess(success);
         } else if (success is LoadMoreEmailsSuccess) {
           _loadMoreEmailsSuccess(success);
+        } else if (success is SearchEmailSuccess) {
+          _searchEmailsSuccess(success);
         }
       }
     );
@@ -181,6 +195,8 @@ class ThreadController extends BaseController {
     dispatchState(Right(LoadingState()));
     emailList.value = <PresentationEmail>[];
     canLoadMore = true;
+    disableSearch();
+    cancelSelectEmail();
   }
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
@@ -220,8 +236,10 @@ class ThreadController extends BaseController {
   }
 
   void loadMoreEmails() {
-    if (canLoadMore) {
-      if (_accountId != null) {
+    if (isSearchActive()) {
+      return;
+    } else {
+      if (canLoadMore && _accountId != null) {
         consumeState(_loadMoreEmailsInMailboxInteractor.execute(
           _accountId!,
           limit: ThreadConstants.defaultLimit,
@@ -257,7 +275,16 @@ class ThreadController extends BaseController {
   }
 
   void selectEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
-    emailList.value = emailList.map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email).toList();
+    if (isSearchActive()) {
+      emailListSearch.value = emailListSearch
+        .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
+        .toList();
+    } else {
+      emailList.value = emailList
+        .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
+        .toList();
+    }
+
     if (_isUnSelectedAll()) {
       currentSelectMode.value = SelectMode.INACTIVE;
     } else {
@@ -267,16 +294,32 @@ class ThreadController extends BaseController {
     }
   }
 
-  List<PresentationEmail> getListEmailSelected() => emailList.where((email) => email.selectMode == SelectMode.ACTIVE).toList();
+  List<PresentationEmail> getListEmailSelected() {
+    if (isSearchActive()) {
+      return emailListSearch.where((email) => email.selectMode == SelectMode.ACTIVE).toList();
+    } else {
+      return emailList.where((email) => email.selectMode == SelectMode.ACTIVE).toList();
+    }
+  }
 
-  bool _isUnSelectedAll() => emailList.every((email) => email.selectMode == SelectMode.INACTIVE);
+  bool _isUnSelectedAll() {
+    if (isSearchActive()) {
+      return emailListSearch.every((email) => email.selectMode == SelectMode.INACTIVE);
+    } else {
+      return emailList.every((email) => email.selectMode == SelectMode.INACTIVE);
+    }
+  }
 
   bool isAllEmailRead(List<PresentationEmail> listEmail) => listEmail.every((email) => email.isReadEmail());
 
   bool isAllEmailMarkAsStar(List<PresentationEmail> listEmail) => listEmail.every((email) => email.isFlaggedEmail());
 
   void cancelSelectEmail() {
-    emailList.value = emailList.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
+    if (isSearchActive()) {
+      emailListSearch.value = emailListSearch.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
+    } else {
+      emailList.value = emailList.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
+    }
     currentSelectMode.value = SelectMode.INACTIVE;
   }
 
@@ -469,6 +512,39 @@ class ThreadController extends BaseController {
     if (Get.context != null) {
       _appToast.showErrorToast(AppLocalizations.of(Get.context!).an_error_occurred);
     }
+  }
+
+  bool isSearchActive() => mailboxDashBoardController.isSearchActive();
+
+  void enableSearch(BuildContext context) {
+    mailboxDashBoardController.enableSearch();
+  }
+
+  void disableSearch() {
+    emailListSearch.clear();
+    mailboxDashBoardController.disableSearch();
+  }
+
+  void _searchEmail() {
+    emailListSearch.clear();
+
+    if (_accountId != null && searchQuery != null) {
+      consumeState(_searchEmailInteractor.execute(
+        _accountId!,
+        limit: ThreadConstants.defaultLimit,
+        sort: _sortOrder,
+        filter: EmailFilterCondition(text: searchQuery!.value),
+        properties: ThreadConstants.propertiesDefault,
+      ));
+    }
+  }
+
+  void _searchEmailsSuccess(SearchEmailSuccess success) {
+    final resultEmailSearchList = success.emailList
+        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox))
+        .toList();
+
+    emailListSearch.value = resultEmailSearchList;
   }
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null

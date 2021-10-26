@@ -12,6 +12,10 @@ import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.da
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class MailboxDashBoardController extends BaseController {
@@ -24,9 +28,15 @@ class MailboxDashBoardController extends BaseController {
   final selectedEmail = Rxn<PresentationEmail>();
   final accountId = Rxn<AccountId>();
   final userProfile = Rxn<UserProfile>();
+  final searchState = SearchState.initial().obs;
+  final suggestionSearch = <String>[].obs;
 
+  TextEditingController searchInputController = TextEditingController();
+  FocusNode searchFocus = FocusNode();
+  SearchQuery? searchQuery;
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxId = Map();
+  Map<MailboxId, PresentationMailbox> mapMailbox = Map();
 
   MailboxDashBoardController(this._getUserProfileInteractor, this._appToast);
 
@@ -95,6 +105,10 @@ class MailboxDashBoardController extends BaseController {
     mapDefaultMailboxId = newMapMailboxId;
   }
 
+  void setMapMailbox(Map<MailboxId, PresentationMailbox> newMapMailbox) {
+    mapMailbox = newMapMailbox;
+  }
+
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
     selectedMailbox.value = newPresentationMailbox;
   }
@@ -120,9 +134,51 @@ class MailboxDashBoardController extends BaseController {
     scaffoldKey.currentState?.openEndDrawer();
   }
 
+  bool isSearchActive() {
+    return searchState.value.searchStatus == SearchStatus.ACTIVE;
+  }
+
+  void enableSearch() {
+    searchState.value = searchState.value.enableSearchState();
+  }
+
+  void disableSearch() {
+    searchState.value = searchState.value.disableSearchState();
+    searchQuery = SearchQuery('');
+    clearSuggestionSearch();
+    searchInputController.clear();
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
+  void clearSearchText() {
+    searchQuery = SearchQuery('');
+    clearSuggestionSearch();
+    searchFocus.requestFocus();
+  }
+
+  void clearSuggestionSearch() {
+    suggestionSearch.clear();
+  }
+
+  void addSuggestionSearch(String query) {
+    if (query.trim().isNotEmpty) {
+      suggestionSearch.value = [query];
+    } else {
+      clearSearchText();
+    }
+  }
+
+  void searchEmail(String value) {
+    searchQuery = SearchQuery(value);
+    dispatchState(Right(SearchEmailNewQuery(searchQuery ?? SearchQuery(''))));
+    clearSuggestionSearch();
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
   @override
   void onClose() {
-    super.onClose();
+    searchInputController.dispose();
     Get.delete<EmailController>();
+    super.onClose();
   }
 }
