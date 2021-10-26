@@ -5,11 +5,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_select_mode_active_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_context_menu_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/suggestion_box_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ThreadView extends GetWidget<ThreadController> {
@@ -19,72 +22,100 @@ class ThreadView extends GetWidget<ThreadController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: AppColor.primaryLightColor,
-      body: SafeArea(
-        right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-        left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-        child: Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.zero,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildAppBarThread(context),
-              Expanded(child: Container(
-                alignment: Alignment.center,
-                padding: EdgeInsets.zero,
-                color: responsiveUtils.isMobile(context) ? AppColor.bgMailboxListMail : AppColor.primaryLightColor,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+          left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+          child: Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.zero,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildAppBarThread(context),
+                Expanded(child: Stack(
                   children: [
-                    _buildLoadingView(),
-                    Expanded(child: _buildListEmail(context)),
-                    _buildLoadingViewLoadMore()
-                  ]
-                )
-              )),
-            ]
+                    Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.zero,
+                      color: responsiveUtils.isMobile(context) ? AppColor.bgMailboxListMail : AppColor.primaryLightColor,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildStatusResultSearch(context),
+                          _buildLoadingView(),
+                          Expanded(child: _buildListEmail(context)),
+                          _buildLoadingViewLoadMore()
+                        ]
+                      )
+                    ),
+                    _buildSuggestionBox(context)
+                  ],
+                )),
+              ]
+            )
           )
-        )
+        ),
+        floatingActionButton: Obx(() => !controller.isSearchActive()
+          ? FloatingActionButton(
+              elevation: 4.0,
+              child: new Icon(Icons.add),
+              backgroundColor: AppColor.appColor,
+              onPressed: () => controller.composeEmailAction())
+          : SizedBox.shrink())
       ),
-      floatingActionButton: FloatingActionButton(
-        elevation: 4.0,
-        child: new Icon(Icons.add),
-        backgroundColor: AppColor.appColor,
-        onPressed: () => controller.composeEmailAction()
-      )
     );
   }
 
   Widget _buildAppBarThread(BuildContext context) {
-    return Obx(() => controller.currentSelectMode.value == SelectMode.ACTIVE
-      ? _buildAppBarSelectModeActive(context)
-      : _buildAppBarNormal(context));
+    return Obx(() {
+      return Stack(
+        children: [
+          _buildAppBarNormal(context),
+          if (controller.isSearchActive()) _buildSearchForm(context),
+          if (controller.currentSelectMode.value == SelectMode.ACTIVE) _buildAppBarSelectModeActive(context),
+        ],
+      );
+    });
+  }
+
+  Widget _buildSearchForm(BuildContext context) {
+    return (SearchAppBarWidget(
+          context,
+          imagePaths,
+          controller.searchQuery,
+          controller.mailboxDashBoardController.suggestionSearch,
+          controller.mailboxDashBoardController.searchFocus,
+          controller.mailboxDashBoardController.searchInputController)
+      ..addDecoration(BoxDecoration(color: Colors.white))
+      ..addOnCancelSearchPressed(() => controller.disableSearch())
+      ..addOnClearTextSearchAction(() => controller.mailboxDashBoardController.clearSearchText())
+      ..addOnSuggestionSearchQuery((query) => controller.mailboxDashBoardController.addSuggestionSearch(query))
+      ..addOnSearchTextAction((query) => controller.mailboxDashBoardController.searchEmail(query)))
+    .build();
   }
 
   Widget _buildAppBarNormal(BuildContext context) {
-    return Obx(() => Padding(
-      padding: EdgeInsets.only(left: 15, right: 12),
-      child: (AppBarThreadWidgetBuilder(
+    return (AppBarThreadWidgetBuilder(
               context,
-              // imagePaths,
+              imagePaths,
               responsiveUtils,
               controller.mailboxDashBoardController.selectedMailbox.value,
               controller.mailboxDashBoardController.userProfile.value)
           ..onOpenUserInformationAction(() => {})
-          // ..onOpenSearchMailActionClick(() => {})
+          ..onOpenSearchMailActionClick(() => controller.enableSearch(context))
           ..onOpenListMailboxActionClick(() => controller.openMailboxLeftMenu()))
-        .build()));
+        .build();
   }
 
   Widget _buildAppBarSelectModeActive(BuildContext context) {
-    return Obx(() => Padding(
-      padding: EdgeInsets.only(left: 12, right: 12),
-      child: (AppBarThreadSelectModeActiveBuilder(
+    return (AppBarThreadSelectModeActiveBuilder(
               context,
               imagePaths,
               controller.getListEmailSelected(),
@@ -96,7 +127,7 @@ class ThreadView extends GetWidget<ThreadController> {
               controller.openContextMenuSelectedEmail(context, _contextMenuEmailActionTile(context, listEmail)))
           ..addOnOpenPopupMenuActionClick((listEmail, position) =>
               controller.openPopupMenuSelectedEmail(context, position, _popupMenuEmailActionTile(context, listEmail))))
-        .build()));
+        .build();
   }
 
   List<Widget> _contextMenuEmailActionTile(BuildContext context, List<PresentationEmail> listEmail) {
@@ -183,7 +214,7 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),
-      (success) => success is LoadingState
+      (success) => success is LoadingState || success is SearchingState
         ? Center(child: Padding(
             padding: EdgeInsets.only(top: 16, bottom: 16),
             child: SizedBox(
@@ -214,19 +245,42 @@ class ThreadView extends GetWidget<ThreadController> {
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
       color: responsiveUtils.isMobile(context) ? AppColor.bgMailboxListMail : Colors.white,
-      child: Obx(() => controller.currentSelectMode.value == SelectMode.INACTIVE
-        ? controller.emailList.isNotEmpty
-            ? RefreshIndicator(
-                color: AppColor.primaryColor,
-                onRefresh: () async => controller.refreshAllEmail(),
-                child: _buildListEmailBody(context, controller.emailList))
-            : RefreshIndicator(
-                color: AppColor.primaryColor,
-                onRefresh: () async => controller.refreshAllEmail(),
-                child: _buildEmptyEmail(context))
-        : controller.emailList.isNotEmpty
-            ? _buildListEmailBody(context, controller.emailList)
-            : _buildEmptyEmail(context)));
+      child: Obx(() {
+        if (controller.isSearchActive()) {
+          if (controller.mailboxDashBoardController.suggestionSearch.isNotEmpty) {
+            return SizedBox.shrink();
+          } else {
+            return _buildResultSearchEmails(context, controller.emailListSearch);
+          }
+        } else {
+          return _buildResultListEmail(context, controller.emailList);
+        }
+      })
+    );
+  }
+
+  Widget _buildResultSearchEmails(BuildContext context, List<PresentationEmail> listPresentationEmail) {
+    return listPresentationEmail.isNotEmpty
+      ? _buildListEmailBody(context, listPresentationEmail)
+      : _buildEmptyEmail(context);
+  }
+
+  Widget _buildResultListEmail(BuildContext context, List<PresentationEmail> listPresentationEmail) {
+    if (controller.currentSelectMode.value == SelectMode.INACTIVE) {
+      return listPresentationEmail.isNotEmpty
+        ? RefreshIndicator(
+            color: AppColor.primaryColor,
+            onRefresh: () async => controller.refreshAllEmail(),
+            child: _buildListEmailBody(context, listPresentationEmail))
+        : RefreshIndicator(
+            color: AppColor.primaryColor,
+            onRefresh: () async => controller.refreshAllEmail(),
+            child: _buildEmptyEmail(context));
+    } else {
+      return listPresentationEmail.isNotEmpty
+        ? _buildListEmailBody(context, listPresentationEmail)
+        : _buildEmptyEmail(context);
+    }
   }
 
   Widget _buildListEmailBody(BuildContext context, List<PresentationEmail> listPresentationEmail) {
@@ -251,7 +305,9 @@ class ThreadView extends GetWidget<ThreadController> {
                 listPresentationEmail[index],
                 responsiveUtils,
                 controller.mailboxDashBoardController.selectedMailbox.value?.role,
-                controller.currentSelectMode.value)
+                controller.currentSelectMode.value,
+                controller.mailboxDashBoardController.searchState.value.searchStatus,
+                controller.searchQuery)
             ..onOpenEmailAction((selectedEmail) => controller.previewEmail(context, selectedEmail))
             ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail))
             ..addOnMarkAsStarEmailActionClick((selectedEmail) => controller.markAsStarEmail(selectedEmail)))
@@ -262,13 +318,47 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget _buildEmptyEmail(BuildContext context) {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),
-      (success) => !(success is LoadingState)
+      (success) => !(success is LoadingState) && !(success is SearchingState)
         ? (BackgroundWidgetBuilder(context)
             ..key(Key('empty_email_background'))
             ..image(SvgPicture.asset(imagePaths.icEmptyImageDefault, width: 120, height: 120, fit: BoxFit.fill))
-            ..text(AppLocalizations.of(context).no_emails))
+            ..text(controller.isSearchActive()
+                ? AppLocalizations.of(context).no_emails_matching_your_search
+                : AppLocalizations.of(context).no_emails))
           .build()
         : SizedBox.shrink())
     );
+  }
+
+  Widget _buildSuggestionBox(BuildContext context) {
+    return Obx(() => controller.mailboxDashBoardController.suggestionSearch.isNotEmpty
+      ? (SuggestionBoxWidget(
+              context,
+              imagePaths,
+              controller.mailboxDashBoardController.suggestionSearch)
+          ..addOnSelectedSuggestion((suggestion) => controller.mailboxDashBoardController.searchEmail(suggestion)))
+        .build()
+      : SizedBox.shrink()
+    );
+  }
+
+  Widget _buildStatusResultSearch(BuildContext context) {
+    return Obx(() {
+      if (controller.isSearchActive()) {
+        return controller.emailListSearch.length > 0
+          ? Container(
+              width: double.infinity,
+              margin: EdgeInsets.zero,
+              color: AppColor.bgStatusResultSearch,
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              child: Text(
+                AppLocalizations.of(context).results,
+                style: TextStyle(color: AppColor.baseTextColor, fontSize: 14, fontWeight: FontWeight.w500),
+              ))
+         : SizedBox.shrink();
+      } else {
+        return SizedBox.shrink();
+      }
+    });
   }
 }

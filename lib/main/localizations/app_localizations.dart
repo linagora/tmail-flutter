@@ -431,5 +431,33 @@ class AppLocalizations {
         args: [count]
     );
   }
+
+  String get search_mail {
+    return Intl.message(
+      'Search mail',
+      name: 'search_mail',
+    );
+  }
+
+  String get prefix_suggestion_search {
+    return Intl.message(
+      'Search for',
+      name: 'prefix_suggestion_search',
+    );
+  }
+
+  String get no_emails_matching_your_search {
+    return Intl.message(
+      'No emails are matching your search',
+      name: 'no_emails_matching_your_search',
+    );
+  }
+
+  String get results {
+    return Intl.message(
+      'Results',
+      name: 'results',
+    );
+  }
 }
 
