@@ -249,4 +249,24 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
     yield EmailsResponse(emailList: newEmailList, state: emailResponse.state);
   }
+
+  @override
+  Future<List<Email>> searchEmails(
+    AccountId accountId,
+    {
+      UnsignedInt? limit,
+      Set<Comparator>? sort,
+      Filter? filter,
+      Properties? properties
+    }
+  ) async {
+    final emailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
+      accountId,
+      limit: limit,
+      sort: sort,
+      filter: filter,
+      properties: properties);
+
+    return emailResponse.emailList ?? List.empty();
+  }
 }
