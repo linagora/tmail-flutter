@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_select_mode_active_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
@@ -214,27 +215,53 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),
-      (success) => success is LoadingState || success is SearchingState
-        ? Center(child: Padding(
-            padding: EdgeInsets.only(top: 16, bottom: 16),
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(color: AppColor.primaryColor))))
-        : SizedBox.shrink()));
+      (success) {
+        if (controller.isSearchActive()) {
+          return success is SearchingState
+              ? Center(child: Padding(
+                  padding: EdgeInsets.only(top: 16, bottom: 16),
+                  child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(color: AppColor.primaryColor))))
+              : SizedBox.shrink();
+        } else {
+          return success is LoadingState
+            ? Center(child: Padding(
+                padding: EdgeInsets.only(top: 16, bottom: 16),
+                child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(color: AppColor.primaryColor))))
+            : SizedBox.shrink();
+        }
+      }));
   }
 
   Widget _buildLoadingViewLoadMore() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),
-      (success) => success is LoadingMoreState
-        ? Center(child: Padding(
-            padding: EdgeInsets.only(top: 16, bottom: 16),
-            child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(color: AppColor.primaryColor))))
-        : SizedBox.shrink()));
+      (success) {
+        if (controller.isSearchActive()) {
+          return success is SearchingMoreState
+            ? Center(child: Padding(
+                padding: EdgeInsets.only(top: 16, bottom: 16),
+                child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(color: AppColor.primaryColor))))
+            : SizedBox.shrink();
+        } else {
+          return success is LoadingMoreState
+            ? Center(child: Padding(
+                padding: EdgeInsets.only(top: 16, bottom: 16),
+                child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(color: AppColor.primaryColor))))
+            : SizedBox.shrink();
+        }
+      }));
   }
 
   Widget _buildListEmail(BuildContext context) {
@@ -288,7 +315,11 @@ class ThreadView extends GetWidget<ThreadController> {
       onNotification: (ScrollNotification scrollInfo) {
         if (scrollInfo is ScrollEndNotification
             && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-          controller.loadMoreEmails();
+          if (controller.isSearchActive()) {
+            controller.searchMoreEmails();
+          } else {
+            controller.loadMoreEmails();
+          }
         }
         return false;
       },
