@@ -59,4 +59,7 @@ extension AppColor on Color {
   static const toastWithActionBackgroundColor = Color(0xFF3F3F3F);
   static const buttonActionToastWithActionColor = Color(0xFF7ADCF8);
   static const backgroundCountAttachment = Color(0x681C1C1C);
+  static const bgStatusResultSearch = Color(0xFFF5F5F7);
+  static const bgWordSearch = Color(0xFFD7D6FC);
 }
+
