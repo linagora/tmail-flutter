@@ -132,6 +132,8 @@ class MailboxController extends BaseController {
   }
 
   void _setUpMapMailboxIdDefault(List<PresentationMailbox> defaultMailboxList, List<PresentationMailbox> folderMailboxList) {
+    final allMailbox = defaultMailboxList + folderMailboxList;
+
     final mapDefaultMailboxId = Map<Role, MailboxId>.fromIterable(
       defaultMailboxList,
       key: (presentationMailbox) => presentationMailbox.role!,
@@ -142,12 +144,14 @@ class MailboxController extends BaseController {
       key: (presentationMailbox) => presentationMailbox.role!,
       value: (presentationMailbox) => presentationMailbox);
 
-    final mapFolderMailbox = Map<MailboxId, PresentationMailbox>.fromIterable(
-      folderMailboxList,
+    final mapMailbox = Map<MailboxId, PresentationMailbox>.fromIterable(
+      allMailbox,
       key: (presentationMailbox) => presentationMailbox.id,
       value: (presentationMailbox) => presentationMailbox);
 
     mailboxDashBoardController.setMapDefaultMailboxId(mapDefaultMailboxId);
+
+    mailboxDashBoardController.setMapMailbox(mapMailbox);
 
     var mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
 
@@ -157,15 +161,14 @@ class MailboxController extends BaseController {
           ? mapDefaultMailbox[mailboxCurrent.role]
           : mailboxCurrent);
       } else {
-        mailboxDashBoardController.setNewFirstSelectedMailbox(mapFolderMailbox.containsKey(mailboxCurrent.id)
-          ? mapFolderMailbox[mailboxCurrent.id]
+        mailboxDashBoardController.setNewFirstSelectedMailbox(mapMailbox.containsKey(mailboxCurrent.id)
+          ? mapMailbox[mailboxCurrent.id]
           : mailboxCurrent);
       }
     } else {
       if (mapDefaultMailbox.containsKey(PresentationMailbox.roleInbox)) {
         mailboxDashBoardController.setNewFirstSelectedMailbox(mapDefaultMailbox[PresentationMailbox.roleInbox]);
       } else {
-        final allMailbox = defaultMailboxList + folderMailboxList;
         if (allMailbox.isNotEmpty) {
           mailboxDashBoardController.setNewFirstSelectedMailbox(allMailbox.first);
         }

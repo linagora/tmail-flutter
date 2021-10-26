@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-10-13T22:37:55.795262",
+  "@@last_modified": "2021-10-26T14:38:31.924635",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -397,5 +397,29 @@
     "placeholders": {
       "count": {}
     }
+  },
+  "search_mail": "Search mail",
+  "@search_mail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "prefix_suggestion_search": "Search for",
+  "@prefix_suggestion_search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_emails_matching_your_search": "No emails are matching your search",
+  "@no_emails_matching_your_search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "results": "Results",
+  "@results": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

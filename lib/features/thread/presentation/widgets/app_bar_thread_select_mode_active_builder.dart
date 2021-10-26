@@ -49,8 +49,10 @@ class AppBarThreadSelectModeActiveBuilder {
   Widget build() {
     return Container(
         key: Key('app_bar_thread_select_mode_active'),
-        alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(vertical: 8),
+        alignment: Alignment.topCenter,
+        color: Colors.white,
+        margin: EdgeInsets.zero,
+        padding: EdgeInsets.only(left: 10, right: 16, top: 10, bottom: 10),
         child: MediaQuery(
             data: MediaQueryData(padding: EdgeInsets.zero),
             child: Row(
@@ -77,15 +79,18 @@ class AppBarThreadSelectModeActiveBuilder {
   }
 
   Widget _buildBackButton() {
-    return IconButton(
-      color: AppColor.baseTextColor,
-      icon: SvgPicture.asset(_imagePaths.icComposerClose, color: AppColor.baseTextColor, fit: BoxFit.fill),
-      onPressed: () => {
-        if (_onCloseActionClick != null) {
-          _onCloseActionClick!()
+    return Material(
+      borderRadius: BorderRadius.circular(12),
+      color: Colors.transparent,
+      child: IconButton(
+        color: AppColor.baseTextColor,
+        icon: SvgPicture.asset(_imagePaths.icComposerClose, color: AppColor.baseTextColor, fit: BoxFit.fill),
+        onPressed: () => {
+          if (_onCloseActionClick != null) {
+            _onCloseActionClick!()
+          }
         }
-      }
-    );
+      ));
   }
 
   Widget _buildListOptionButton() {
@@ -102,15 +107,18 @@ class AppBarThreadSelectModeActiveBuilder {
           //       _onRemoveEmailActionClick!(_listEmail)
           //     }
           //   }),
-          IconButton(
-            key: Key('button_unread_email_selected'),
-            color: AppColor.baseTextColor,
-            icon: SvgPicture.asset(_imagePaths.icEyeDisable, color: AppColor.baseTextColor, fit: BoxFit.fill),
-            onPressed: () => {
-              if (_onMarkAsEmailReadActionClick != null) {
-                _onMarkAsEmailReadActionClick!(_listEmail)
-              }
-            }),
+          Material(
+            borderRadius: BorderRadius.circular(12),
+            color: Colors.transparent,
+            child: IconButton(
+              key: Key('button_unread_email_selected'),
+              color: AppColor.baseTextColor,
+              icon: SvgPicture.asset(_imagePaths.icEyeDisable, color: AppColor.baseTextColor, fit: BoxFit.fill),
+              onPressed: () => {
+                if (_onMarkAsEmailReadActionClick != null) {
+                  _onMarkAsEmailReadActionClick!(_listEmail)
+                }
+              })),
           GestureDetector(
             key: Key('button_menu_select_email'),
             onTap: () => {
