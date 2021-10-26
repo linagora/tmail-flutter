@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
@@ -228,15 +229,28 @@ class ThreadController extends BaseController {
   }
 
   void _refreshEmailChanges() {
-    if (_accountId != null && _currentEmailState != null) {
-      consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
-        _accountId!,
-        _currentEmailState!,
-        sort: _sortOrder,
-        propertiesCreated: ThreadConstants.propertiesDefault,
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        inMailboxId: _currentMailboxId,
-      ));
+    if (isSearchActive()) {
+      if (_accountId != null && searchQuery != null) {
+        final limit = emailListSearch.length > 0 ? UnsignedInt(emailListSearch.length) : ThreadConstants.defaultLimit;
+        consumeState(_searchEmailInteractor.execute(
+          _accountId!,
+          limit: limit,
+          sort: _sortOrder,
+          filter: EmailFilterCondition(text: searchQuery!.value),
+          properties: ThreadConstants.propertiesDefault,
+        ));
+      }
+    } else {
+      if (_accountId != null && _currentEmailState != null) {
+        consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
+          _accountId!,
+          _currentEmailState!,
+          sort: _sortOrder,
+          propertiesCreated: ThreadConstants.propertiesDefault,
+          propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+          inMailboxId: _currentMailboxId,
+        ));
+      }
     }
   }
 
