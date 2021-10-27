@@ -39,6 +39,7 @@ abstract class ThreadRepository {
       Set<Comparator>? sort,
       Filter? filter,
       Properties? properties,
+      EmailId? lastEmailId,
     }
   );
 

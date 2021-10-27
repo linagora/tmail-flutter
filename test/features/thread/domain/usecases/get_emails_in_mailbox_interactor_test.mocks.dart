@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as _i9;
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart' as _i7;
 import 'package:jmap_dart_client/jmap/core/state.dart' as _i10;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart' as _i6;
+import 'package:jmap_dart_client/jmap/mail/email/email.dart' as _i13;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart' as _i11;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:model/email/email_filter.dart' as _i8;
@@ -75,7 +76,8 @@ class MockThreadRepository extends _i1.Mock implements _i2.ThreadRepository {
           {_i6.UnsignedInt? limit,
           Set<_i7.Comparator>? sort,
           _i12.Filter? filter,
-          _i9.Properties? properties}) =>
+          _i9.Properties? properties,
+          _i13.EmailId? lastEmailId}) =>
       (super.noSuchMethod(
               Invocation.method(#loadMoreEmails, [
                 accountId
@@ -83,8 +85,26 @@ class MockThreadRepository extends _i1.Mock implements _i2.ThreadRepository {
                 #limit: limit,
                 #sort: sort,
                 #filter: filter,
-                #properties: properties
+                #properties: properties,
+                #lastEmailId: lastEmailId
               }),
               returnValue: Stream<_i4.EmailsResponse>.empty())
           as _i3.Stream<_i4.EmailsResponse>);
+  @override
+  _i3.Future<List<_i13.Email>> searchEmails(_i5.AccountId? accountId,
+          {_i6.UnsignedInt? limit,
+          Set<_i7.Comparator>? sort,
+          _i12.Filter? filter,
+          _i9.Properties? properties}) =>
+      (super.noSuchMethod(
+              Invocation.method(#searchEmails, [
+                accountId
+              ], {
+                #limit: limit,
+                #sort: sort,
+                #filter: filter,
+                #properties: properties
+              }),
+              returnValue: Future<List<_i13.Email>>.value(<_i13.Email>[]))
+          as _i3.Future<List<_i13.Email>>);
 }

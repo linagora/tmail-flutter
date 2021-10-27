@@ -230,6 +230,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       Set<Comparator>? sort,
       Filter? filter,
       Properties? properties,
+      EmailId? lastEmailId,
     }
   ) async* {
     final emailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
@@ -240,7 +241,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       properties: properties);
 
     final newEmailList = emailResponse.emailList != null && emailResponse.emailList!.isNotEmpty
-      ? emailResponse.emailList!.sublist(1)
+      ? emailResponse.emailList!.where((email) => email.id != lastEmailId).toList()
       : <Email>[];
 
     if (newEmailList.isNotEmpty) {
