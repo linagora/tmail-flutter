@@ -44,7 +44,7 @@ dependencies:
   intl_generator: 0.2.0+0
 
   # flutter_svg
-  flutter_svg: 0.22.0
+  flutter_svg: 0.23.0+1
 
   # Http client
   dio: 4.0.0

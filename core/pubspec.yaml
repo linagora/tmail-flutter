@@ -31,7 +31,7 @@ dependencies:
   cupertino_icons: ^1.0.4
 
   # flutter_svg
-  flutter_svg: 0.22.0
+  flutter_svg: 0.23.0+1
 
   # Http client
   dio: 4.0.0
