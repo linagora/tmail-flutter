@@ -38,7 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.4
 
   # GetX
-  get: 4.1.4
+  get: 4.3.8
 
   # intl
   intl_generator: 0.2.0+0
