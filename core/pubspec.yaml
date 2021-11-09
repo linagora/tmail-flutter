@@ -67,7 +67,7 @@ dependencies:
       url: https://github.com/robert-virkus/flutter_inappwebview.git
 
   # url_launcher
-  url_launcher: 6.0.6
+  url_launcher: 6.0.12
 
 dev_dependencies:
   flutter_test:
