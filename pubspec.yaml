@@ -84,7 +84,7 @@ dependencies:
       ref: master
 
   # uuid
-  uuid: 3.0.4
+  uuid: 3.0.5
 
   # flutter_downloader
   flutter_downloader: 1.7.0
