@@ -87,7 +87,7 @@ dependencies:
   uuid: 3.0.5
 
   # flutter_downloader
-  flutter_downloader: 1.7.0
+  flutter_downloader: 1.7.1
 
   # external_path
   external_path: 1.0.1
