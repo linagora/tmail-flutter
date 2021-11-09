@@ -22,7 +22,7 @@ environment:
 
 dependencies:
   flutter:
-    sdk: flutter
+    sdk: flutter # 2.5.3
 
   flutter_localizations:
     sdk: flutter
@@ -122,13 +122,18 @@ dependencies:
       url: git://github.com/dab246/enough_html_editor.git
       ref: fix_bug_enough_platform_widgets
 
+dependency_overrides:
+  # From what could find on the web, it seems some lib is using flutter_colorpicker to 0.4.0
+  # which conflicts with flutter sdk 2.5.3. Will see when upgradings libs if it's still present
+  flutter_colorpicker: ^0.6.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   build_runner: 2.0.5
 
-  test: 1.16.8
+  test: 1.17.10
 
   mockito: 5.0.10
 
