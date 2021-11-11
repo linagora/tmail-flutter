@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-10-26T14:38:31.924635",
+  "@@last_modified": "2021-11-12T11:15:02.318577",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -18,8 +18,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "username": "username",
-  "@username": {
+  "email": "email",
+  "@email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
