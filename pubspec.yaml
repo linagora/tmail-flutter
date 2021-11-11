@@ -61,7 +61,7 @@ dependencies:
   # flutter_typeahead
   flutter_typeahead: 3.2.1
 
-  built_collection: 5.1.0
+  built_collection: 5.1.1
 
   # jmap_dart_client
   jmap_dart_client:
