@@ -135,7 +135,7 @@ dev_dependencies:
 
   test: 1.17.10
 
-  mockito: 5.0.10
+  mockito: 5.0.16
 
   hive_generator: 1.1.1
 # For information on the generic Dart part of this file, see the
