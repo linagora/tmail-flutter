@@ -66,8 +66,8 @@ dependencies:
   # jmap_dart_client
   jmap_dart_client:
     git:
-      url: git://github.com/linagora/jmap-dart-client.git
-      ref: master
+      url: git://github.com/Arsnael/jmap-dart-client.git
+      ref: upgrade-flutter-version
 
   # http_parser
   http_parser: 4.0.0
