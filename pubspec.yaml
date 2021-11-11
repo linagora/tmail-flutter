@@ -41,7 +41,7 @@ dependencies:
   get: 4.3.8
 
   # intl
-  intl_generator: 0.2.0+0
+  intl_generator: 0.2.1
 
   # flutter_svg
   flutter_svg: 0.23.0+1
