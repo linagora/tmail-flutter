@@ -34,9 +34,9 @@ class AppLocalizations {
         name: 'prefix_https');
   }
 
-  String get username {
-    return Intl.message('username',
-        name: 'username');
+  String get email {
+    return Intl.message('email',
+        name: 'email');
   }
 
   String get password {

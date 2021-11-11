@@ -114,8 +114,8 @@ class LoginView extends GetWidget<LoginController> {
             ..textInputAction(TextInputAction.next)
             ..keyboardType(TextInputType.emailAddress)
             ..textDecoration(LoginInputDecorationBuilder()
-                .setLabelText(AppLocalizations.of(context).username)
-                .setHintText(AppLocalizations.of(context).username)
+                .setLabelText(AppLocalizations.of(context).email)
+                .setHintText(AppLocalizations.of(context).email)
                 .build()))
           .build()));
   }
