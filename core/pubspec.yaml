@@ -37,7 +37,7 @@ dependencies:
   dio: 4.0.1
 
   # dartz
-  dartz: 0.10.0-nullsafety.2
+  dartz: 0.10.0
 
   # equatable
   equatable: 2.0.3
