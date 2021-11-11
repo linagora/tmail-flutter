@@ -111,7 +111,7 @@ dependencies:
       ref: master
 
   # file_picker
-  file_picker: 4.2.1
+  file_picker: 4.2.2+1
 
   # hive
   hive: 2.0.4
