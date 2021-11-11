@@ -18,8 +18,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "username": "username",
-  "@username": {
+  "email": "email",
+  "@email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
