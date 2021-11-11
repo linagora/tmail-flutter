@@ -34,7 +34,7 @@ dependencies:
   flutter_svg: 0.23.0+1
 
   # Http client
-  dio: 4.0.0
+  dio: 4.0.1
 
   # dartz
   dartz: 0.10.0-nullsafety.2

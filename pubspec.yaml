@@ -47,7 +47,7 @@ dependencies:
   flutter_svg: 0.23.0+1
 
   # Http client
-  dio: 4.0.0
+  dio: 4.0.1
 
   # equatable
   equatable: 2.0.3
