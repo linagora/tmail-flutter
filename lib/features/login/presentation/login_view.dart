@@ -95,7 +95,7 @@ class LoginView extends GetWidget<LoginController> {
             ..key(Key('login_url_input'))
             ..onChange((value) => loginController.setUrlText(value))
             ..textInputAction(TextInputAction.next)
-            ..keyboardType(TextInputType.emailAddress)
+            ..keyboardType(TextInputType.url)
             ..textDecoration(LoginInputDecorationBuilder()
                 .setLabelText(AppLocalizations.of(context).prefix_https)
                 .setPrefixText(AppLocalizations.of(context).prefix_https)
