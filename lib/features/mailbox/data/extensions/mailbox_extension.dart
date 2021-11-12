@@ -19,4 +19,8 @@ extension MailboxExtension on Mailbox {
       isSubscribed: isSubscribed?.value
     );
   }
+
+  int compareTo(Mailbox other) {
+    return this.sortOrder!.value.value.compareTo(other.sortOrder!.value.value);
+  }
 }
