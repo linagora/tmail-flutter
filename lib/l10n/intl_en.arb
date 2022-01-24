@@ -36,13 +36,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login_text_login_to_continue": "Please login to continue",
+  "login_text_login_to_continue": "Please log in to continue",
   "@login_text_login_to_continue": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unknown_error_login_message": "Unknown error occurred, please try again",
+  "unknown_error_login_message": "An unknown error occurred. Please try again.",
   "@unknown_error_login_message": {
     "type": "text",
     "placeholders_order": [],
