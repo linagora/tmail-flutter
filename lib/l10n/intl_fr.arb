@@ -1,6 +1,6 @@
 {
   "@@last_modified": "2021-10-13T22:37:55.795262",
-  "initializing_data": "Initializing data...",
+  "initializing_data": "Initialisation des données...",
   "@initializing_data": {
     "type": "text",
     "placeholders_order": [],
@@ -18,7 +18,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email": "courriel",
+  "email": "email",
   "@email": {
     "type": "text",
     "placeholders_order": [],
@@ -48,7 +48,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_folder": "Dossier de recherche",
+  "search_folder": "Rechercher dans vos dossiers",
   "@search_folder": {
     "type": "text",
     "placeholders_order": [],
@@ -174,31 +174,31 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_being_sent": "Your email being sent...",
+  "your_email_being_sent": "Votre email est en cours d'envoi...",
   "@your_email_being_sent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_should_have_at_least_one_recipient": "Your email should have at least one recipient",
+  "your_email_should_have_at_least_one_recipient": "Votre email doit avoir au moins un destinataire",
   "@your_email_should_have_at_least_one_recipient": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_sent": "Message sent",
+  "message_sent": "Message envoyé",
   "@message_sent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "error_message_sent": "Error message sent",
+  "error_message_sent": "Erreur lors de l'envoi du message",
   "@error_message_sent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "count_email_selected": "{count} selected",
+  "count_email_selected": "{count} sélectionnés",
   "@count_email_selected": {
     "type": "text",
     "placeholders_order": [
@@ -208,43 +208,43 @@
       "count": {}
     }
   },
-  "mark_as_unread": "Mark as unread",
+  "mark_as_unread": "Marquer comme non lu",
   "@mark_as_unread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_read": "Mark as read",
+  "mark_as_read": "Marquer comme lu",
   "@mark_as_read": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_trash": "Move to trash",
+  "move_to_trash": "Mettre à la corbeille",
   "@move_to_trash": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_mailbox": "Move to mailbox",
+  "move_to_mailbox": "Déplacer vers la boîte aux lettres",
   "@move_to_mailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_star": "Star",
+  "mark_as_star": "Important",
   "@mark_as_star": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_spam": "Move to spam",
+  "move_to_spam": "Déplacer vers les spams",
   "@move_to_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_multiple_item_as_read": "Marked {count} item as read",
+  "marked_multiple_item_as_read": "{count} éléments marqués comme lu",
   "@marked_multiple_item_as_read": {
     "type": "text",
     "placeholders_order": [
@@ -254,7 +254,7 @@
       "count": {}
     }
   },
-  "marked_multiple_item_as_unread": "Marked {count} item as unread",
+  "marked_multiple_item_as_unread": "{count} éléments marqués comme non lu",
   "@marked_multiple_item_as_unread": {
     "type": "text",
     "placeholders_order": [
@@ -264,19 +264,19 @@
       "count": {}
     }
   },
-  "an_error_occurred": "Error! An error occurred. Please try again later.",
+  "an_error_occurred": "Erreur ! Une erreur s'est produite. Veuillez réessayer plus tard.",
   "@an_error_occurred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachment_download_failed": "Attachment download failed",
+  "attachment_download_failed": "Le téléchargement de la pièce jointe a échoué",
   "@attachment_download_failed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloading_file": "Downloading {fileName}",
+  "downloading_file": "Téléchargement de {fileName}",
   "@downloading_file": {
     "type": "text",
     "placeholders_order": [
@@ -286,31 +286,31 @@
       "fileName": {}
     }
   },
-  "preparing_to_export": "Preparing to export",
+  "preparing_to_export": "Se préparer à exporter",
   "@preparing_to_export": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cancel": "Cancel",
+  "cancel": "Annuler",
   "@cancel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "user_cancel_download_file": "User cancel download file",
+  "user_cancel_download_file": "L'utilisateur a annulé le téléchargement du fichier",
   "@user_cancel_download_file": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_need_to_grant_files_permission_to_download_attachments": "You need to grant files permission to download attachments",
+  "you_need_to_grant_files_permission_to_download_attachments": "Vous devez accorder l'autorisation de télécharger des pièces jointes",
   "@you_need_to_grant_files_permission_to_download_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "count_attachment": "{count} attachments",
+  "count_attachment": "{count} pièces jointes",
   "@count_attachment": {
     "type": "text",
     "placeholders_order": [
@@ -320,43 +320,43 @@
       "count": {}
     }
   },
-  "attach_file_prepare_text": "Preparing to attach file...",
+  "attach_file_prepare_text": "Préparation pour joindre le fichier...",
   "@attach_file_prepare_text": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "can_not_upload_this_file_as_attachments": "Can not upload this file as attachments",
+  "can_not_upload_this_file_as_attachments": "Impossible de téléverser ce fichier en tant que pièces jointes",
   "@can_not_upload_this_file_as_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments_uploaded_successfully": "Attachments uploaded successfully",
+  "attachments_uploaded_successfully": "Pièces jointes téléversées avec succès",
   "@attachments_uploaded_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pick_attachments": "Pick attachments",
+  "pick_attachments": "Choisissez des pièces jointes",
   "@pick_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "photos_and_videos": "Photos and Videos",
+  "photos_and_videos": "Photos et vidéos",
   "@photos_and_videos": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "browse": "Browse",
+  "browse": "Parcourir",
   "@browse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moved_to_mailbox": "Moved to {destinationMailboxPath}",
+  "moved_to_mailbox": "Déplacé vers {destinationMailboxPath}",
   "@moved_to_mailbox": {
     "type": "text",
     "placeholders_order": [
@@ -366,19 +366,19 @@
       "destinationMailboxPath": {}
     }
   },
-  "undo_action": "UNDO",
+  "undo_action": "ANNULER",
   "@undo_action": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_unstar": "Unstar",
+  "mark_as_unstar": "Non-Important",
   "@mark_as_unstar": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_star_multiple_item": "Marked star {count} item",
+  "marked_star_multiple_item": "{count} éléments marqués comme important",
   "@marked_star_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -388,7 +388,7 @@
       "count": {}
     }
   },
-  "marked_unstar_multiple_item": "Marked unstar {count} item",
+  "marked_unstar_multiple_item": "{count} éléments marqués comme non important",
   "@marked_unstar_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -398,25 +398,25 @@
       "count": {}
     }
   },
-  "search_mail": "Search mail",
+  "search_mail": "Rechercher dans les courriers",
   "@search_mail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_suggestion_search": "Search for",
+  "prefix_suggestion_search": "Rechercher",
   "@prefix_suggestion_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_emails_matching_your_search": "No emails are matching your search",
+  "no_emails_matching_your_search": "Aucun email ne correspond à votre recherche",
   "@no_emails_matching_your_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "results": "Results",
+  "results": "Résultats",
   "@results": {
     "type": "text",
     "placeholders_order": [],
