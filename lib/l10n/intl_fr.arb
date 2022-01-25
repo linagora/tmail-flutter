@@ -18,7 +18,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email": "email",
+  "email": "courriel",
   "@email": {
     "type": "text",
     "placeholders_order": [],
@@ -180,7 +180,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_should_have_at_least_one_recipient": "Votre email doit avoir au moins un destinataire",
+  "your_email_should_have_at_least_one_recipient": "Votre courriel doit avoir au moins un destinataire",
   "@your_email_should_have_at_least_one_recipient": {
     "type": "text",
     "placeholders_order": [],
@@ -372,7 +372,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_unstar": "Non-Important",
+  "mark_as_unstar": "Non important",
   "@mark_as_unstar": {
     "type": "text",
     "placeholders_order": [],
