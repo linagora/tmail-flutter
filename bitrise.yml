@@ -49,7 +49,7 @@ workflows:
     - git-clone@6: {}
     - flutter-installer@0:
         inputs:
-        - installation_bundle_url: https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_2.2.3-stable.zip
+        - installation_bundle_url: https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_2.8.1-stable.zip
         - is_update: 'false'
     - script@1:
         title: Do anything with Script step
