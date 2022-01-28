@@ -66,7 +66,7 @@ dependencies:
   # jmap_dart_client
   jmap_dart_client:
     git:
-      url: git://github.com/linagora/jmap-dart-client.git
+      url: https://github.com/linagora/jmap-dart-client.git
       ref: master
 
   # http_parser
@@ -80,7 +80,7 @@ dependencies:
   # flutter_chips_input
   flutter_chips_input:
     git:
-      url: git://github.com/dab246/flutter_chips_input.git
+      url: https://github.com/dab246/flutter_chips_input.git
       ref: master
 
   # uuid
@@ -107,7 +107,7 @@ dependencies:
   # flutter_contacts
   contacts_service:
     git:
-      url: git://github.com/linagora/flutter_contacts.git
+      url: https://github.com/linagora/flutter_contacts.git
       ref: master
 
   # file_picker
@@ -119,7 +119,7 @@ dependencies:
   # enough_html_editor
   enough_html_editor:
     git:
-      url: git://github.com/dab246/enough_html_editor.git
+      url: https://github.com/dab246/enough_html_editor.git
       ref: fix_bug_enough_platform_widgets
 
 dev_dependencies:
