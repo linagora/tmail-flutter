@@ -182,3 +182,12 @@ flutter:
         - asset: assets/fonts/CircularStd/CircularStd-Medium.otf
           weight: 500
         - asset: assets/fonts/CircularStd/CircularStd-Book.otf
+    - family: SFProText
+      fonts:
+        - asset: assets/fonts/SFProText/SF-Pro-Text-Bold.otf
+          weight: 700
+        - asset: assets/fonts/SFProText/SF-Pro-Text-Semibold.otf
+          weight: 600
+        - asset: assets/fonts/SFProText/SF-Pro-Text-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/SFProText/SF-Pro-Text-Regular.ttf
