@@ -71,6 +71,7 @@ class AvatarBuilder {
                   ? LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
+                      tileMode: TileMode.decal,
                       colors: _avatarColors ?? [])
                   : null,
                 color: _bgColor ?? AppColor.avatarColor),
