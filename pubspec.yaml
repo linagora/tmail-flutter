@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -41,13 +41,13 @@ dependencies:
   get: 4.1.4
 
   # intl
-  intl_generator: 0.2.0+0
+  intl_generator: 0.2.1
 
   # flutter_svg
-  flutter_svg: 0.22.0
+  flutter_svg: 1.0.3
 
   # Http client
-  dio: 4.0.0
+  dio: 4.0.4
 
   # equatable
   equatable: 2.0.3
@@ -56,12 +56,12 @@ dependencies:
   shared_preferences: 2.0.5
 
   # either
-  dartz: 0.10.0-nullsafety.2
+  dartz: 0.10.1
 
   # flutter_typeahead
   flutter_typeahead: 3.1.1
 
-  built_collection: 5.1.0
+  built_collection: 5.1.1
 
   # jmap_dart_client
   jmap_dart_client:
@@ -126,9 +126,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  build_runner: 2.0.5
+  build_runner: 2.1.7
 
-  mockito: 5.0.10
+  mockito: 5.0.17
 
   hive_generator: 1.1.1
 # For information on the generic Dart part of this file, see the
