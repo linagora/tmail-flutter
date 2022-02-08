@@ -1,9 +1,7 @@
 import 'package:core/core.dart';
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:model/email/presentation_email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
@@ -44,7 +42,7 @@ class ThreadView extends GetWidget<ThreadController> {
                     Container(
                       alignment: Alignment.center,
                       padding: EdgeInsets.zero,
-                      color: responsiveUtils.isMobile(context) ? AppColor.bgMailboxListMail : AppColor.primaryLightColor,
+                      color: Colors.white,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,11 +105,8 @@ class ThreadView extends GetWidget<ThreadController> {
               context,
               imagePaths,
               responsiveUtils,
-              controller.mailboxDashBoardController.selectedMailbox.value,
-              controller.mailboxDashBoardController.userProfile.value)
-          ..onOpenUserInformationAction(() => {})
-          ..onOpenSearchMailActionClick(() => controller.enableSearch(context))
-          ..onOpenListMailboxActionClick(() => controller.openMailboxLeftMenu()))
+              controller.mailboxDashBoardController.selectedMailbox.value)
+          ..addOpenListMailboxActionClick(() => controller.openMailboxLeftMenu()))
         .build();
   }
 
@@ -271,7 +266,7 @@ class ThreadView extends GetWidget<ThreadController> {
       height: double.infinity,
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
-      color: responsiveUtils.isMobile(context) ? AppColor.bgMailboxListMail : Colors.white,
+      color: Colors.white,
       child: Obx(() {
         if (controller.isSearchActive()) {
           if (controller.mailboxDashBoardController.suggestionSearch.isNotEmpty) {
@@ -332,9 +327,7 @@ class ThreadView extends GetWidget<ThreadController> {
         itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
                 context,
                 imagePaths,
-                controller.getSelectMode(listPresentationEmail[index], controller.mailboxDashBoardController.selectedEmail.value),
                 listPresentationEmail[index],
-                responsiveUtils,
                 controller.mailboxDashBoardController.selectedMailbox.value?.role,
                 controller.currentSelectMode.value,
                 controller.mailboxDashBoardController.searchState.value.searchStatus,
