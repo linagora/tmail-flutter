@@ -42,6 +42,7 @@ class ImagePaths {
   String get icMore => _getImagePath('ic_more.svg');
   String get icPhotoLibrary => _getImagePath('ic_photo_library.svg');
   String get icEmptyImageDefault => _getImagePath('empty_image_default.svg');
+  String get icUnread => _getImagePath('ic_unread.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
