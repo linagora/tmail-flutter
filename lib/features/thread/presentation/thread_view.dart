@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_threa
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_context_menu_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/search_bar_thread_view_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/suggestion_box_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -37,6 +38,11 @@ class ThreadView extends GetWidget<ThreadController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildAppBarThread(context),
+                Obx(() => !controller.isSearchActive()
+                  ? (SearchBarThreadViewWidget(context, imagePaths)
+                      ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
+                    .build()
+                  : SizedBox.shrink()),
                 Expanded(child: Stack(
                   children: [
                     Container(
@@ -76,7 +82,7 @@ class ThreadView extends GetWidget<ThreadController> {
     return Obx(() {
       return Stack(
         children: [
-          _buildAppBarNormal(context),
+          if (!controller.isSearchActive()) _buildAppBarNormal(context),
           if (controller.isSearchActive()) _buildSearchForm(context),
           if (controller.currentSelectMode.value == SelectMode.ACTIVE) _buildAppBarSelectModeActive(context),
         ],

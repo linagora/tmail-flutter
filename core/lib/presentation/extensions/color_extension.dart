@@ -65,6 +65,8 @@ extension AppColor on Color {
   static const colorNameEmail = Color(0xFF000000);
   static const colorContentEmail = Color(0xFF6D7885);
   static const colorTextButton = Color(0xFF007AFF);
+  static const colorHintSearchBar = Color(0xFF818C99);
+  static const colorBgSearchBar = Color(0xFFEBEDF0);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
