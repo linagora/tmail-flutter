@@ -74,9 +74,9 @@ class AppBarThreadWidgetBuilder {
         }},
       child: Padding(
         padding: EdgeInsets.zero,
-        child: AvatarBuilder()
-          .text(_userProfile != null ? _userProfile!.getAvatarText() : '')
-          .size(36)
+        child: (AvatarBuilder()
+            ..text(_userProfile != null ? _userProfile!.getAvatarText() : '')
+            ..size(36))
           .build()));
   }
 
