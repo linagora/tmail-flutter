@@ -38,7 +38,8 @@ extension PresentationEmailExtension on PresentationEmail {
         replyTo: replyTo,
         mailboxIds: mailboxIds,
         mailboxNames: mailboxNames,
-        selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE
+        selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
+        avatarColors: avatarColors,
     );
   }
 
@@ -59,7 +60,8 @@ extension PresentationEmailExtension on PresentationEmail {
       replyTo: replyTo,
       mailboxIds: mailboxIds,
       mailboxNames: mailboxNames,
-      selectMode: selectMode
+      selectMode: selectMode,
+      avatarColors: avatarColors,
     );
   }
 

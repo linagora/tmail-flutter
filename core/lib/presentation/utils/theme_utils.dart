@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 ThemeData appTheme() {
   return ThemeData(
     scaffoldBackgroundColor: Colors.white,
-    fontFamily: ConstantsUI.fontApp,
+    fontFamily: ConstantsUI.fontSFProText,
     appBarTheme: appBarTheme(),
     textTheme: textTheme(),
     visualDensity: VisualDensity.adaptivePlatformDensity,

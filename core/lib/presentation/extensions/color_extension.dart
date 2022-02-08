@@ -61,6 +61,9 @@ extension AppColor on Color {
   static const backgroundCountAttachment = Color(0x681C1C1C);
   static const bgStatusResultSearch = Color(0xFFF5F5F7);
   static const bgWordSearch = Color(0xFFD7D6FC);
+  static const lineItemListColor = Color(0xFF99A2AD);
+  static const colorNameEmail = Color(0xFF000000);
+  static const colorContentEmail = Color(0xFF6D7885);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
