@@ -1,46 +1,35 @@
-import 'dart:ui';
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-typedef OnOpenSearchMailActionClick = void Function();
+typedef OnFilterEmailAction = void Function();
 typedef OnOpenListMailboxActionClick = void Function();
-typedef OnOpenUserInformationActionClick = void Function();
 
 class AppBarThreadWidgetBuilder {
-  OnOpenSearchMailActionClick? _onOpenSearchMailActionClick;
+  OnFilterEmailAction? _onFilterEmailAction;
   OnOpenListMailboxActionClick? _onOpenListMailboxActionClick;
-  OnOpenUserInformationActionClick? _onOpenUserInformationActionClick;
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
   final PresentationMailbox? _presentationMailbox;
-  final UserProfile? _userProfile;
 
   AppBarThreadWidgetBuilder(
     this._context,
     this._imagePaths,
     this._responsiveUtils,
     this._presentationMailbox,
-    this._userProfile,
   );
 
-  void onOpenUserInformationAction(
-      OnOpenUserInformationActionClick onOpenUserInformationActionClick) {
-    _onOpenUserInformationActionClick = onOpenUserInformationActionClick;
+  void addOnFilterEmailAction(OnFilterEmailAction onFilterEmailAction) {
+    _onFilterEmailAction = onFilterEmailAction;
   }
 
-  void onOpenSearchMailActionClick(OnOpenSearchMailActionClick onOpenSearchMailActionClick) {
-    _onOpenSearchMailActionClick = onOpenSearchMailActionClick;
-  }
-
-  void onOpenListMailboxActionClick(OnOpenListMailboxActionClick onOpenListMailboxActionClick) {
+  void addOpenListMailboxActionClick(OnOpenListMailboxActionClick onOpenListMailboxActionClick) {
     _onOpenListMailboxActionClick = onOpenListMailboxActionClick;
   }
 
@@ -50,37 +39,38 @@ class AppBarThreadWidgetBuilder {
       alignment: Alignment.topCenter,
       color: Colors.white,
       margin: EdgeInsets.zero,
-      padding: EdgeInsets.only(left: 16, top: 16, bottom: 8, right: 16),
+      padding: EdgeInsets.only(left: 8, top: 16, bottom: 8, right: 8),
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            if (_responsiveUtils.isMobile(_context)) _buildIconUser(),
+            _buildEditButton(),
             Expanded(child: _buildContentCenterAppBar()),
-            _buildIconSearch(),
+            _buildFilterButton(),
           ]
         )
       )
     );
   }
 
-  Widget _buildIconUser() {
-    return GestureDetector(
-      onTap: () => {
-        if (_onOpenUserInformationActionClick != null) {
-          _onOpenUserInformationActionClick!()
-        }},
-      child: Padding(
-        padding: EdgeInsets.zero,
-        child: (AvatarBuilder()
-            ..text(_userProfile != null ? _userProfile!.getAvatarText() : '')
-            ..size(36))
-          .build()));
+  Widget _buildEditButton() {
+    return Material(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.transparent,
+        child: Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: TextButton(
+              onPressed: () {},
+              child: Text(
+                AppLocalizations.of(_context).edit,
+                style: TextStyle(fontSize: 17, color: AppColor.colorTextButton),
+              ),
+            )
+        )
+    );
   }
 
-  Widget _buildIconSearch() {
+  Widget _buildFilterButton() {
     return Material(
       borderRadius: BorderRadius.circular(12),
       color: Colors.transparent,
@@ -88,12 +78,8 @@ class AppBarThreadWidgetBuilder {
         padding: EdgeInsets.only(left: 16),
         child: IconButton(
           color: AppColor.baseTextColor,
-          icon: SvgPicture.asset(_imagePaths.icSearch, color: AppColor.baseTextColor, fit: BoxFit.fill),
-          onPressed: () => {
-            if (_onOpenSearchMailActionClick != null) {
-              _onOpenSearchMailActionClick!()
-            }
-          }
+          icon: SvgPicture.asset(_imagePaths.icFilter, color: AppColor.baseTextColor, fit: BoxFit.fill),
+          onPressed: () => _onFilterEmailAction?.call()
         )
       )
     );
@@ -101,56 +87,46 @@ class AppBarThreadWidgetBuilder {
 
   Widget _buildContentCenterAppBar() {
     return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: () => {
-            if (_onOpenListMailboxActionClick != null) {
-              _onOpenListMailboxActionClick!()
-            }},
+          onTap: () => _onOpenListMailboxActionClick?.call(),
           child: Padding(
-            padding: EdgeInsets.only(left: 16, right: 8),
+            padding: EdgeInsets.zero,
             child: Container(
               padding: EdgeInsets.zero,
               margin: EdgeInsets.zero,
               constraints: BoxConstraints(maxWidth: _getMaxWidthAppBarTitle()),
               child: Text(
-                '${ _presentationMailbox?.name?.name ?? ''}',
+                '${_presentationMailbox?.name?.name.capitalizeFirstEach ?? ''}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 22, color: AppColor.titleAppBarMailboxListMail, fontWeight: FontWeight.w500))
+                style: TextStyle(fontSize: 21, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700))
             ))),
-        if(_presentationMailbox?.getCountUnReadEmails().isNotEmpty == true)
-          Container(
-            margin: EdgeInsets.zero,
-            padding: EdgeInsets.only(left: 8, right: 8, top: 2.5, bottom: 2.5),
-            decoration:BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: AppColor.backgroundCounterMailboxColor),
-            child: Text(
-              '${_presentationMailbox?.getCountUnReadEmails() ?? ''} ${AppLocalizations.of(_context).unread_email_notification}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 10, color: AppColor.counterMailboxColor, fontWeight: FontWeight.w500),
-            )),
+        Transform(
+          transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+          child: Material(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.transparent,
+                child: IconButton(
+                    padding: EdgeInsets.zero,
+                    color: AppColor.baseTextColor,
+                    icon: SvgPicture.asset(_imagePaths.icChevronDown, width: 20, height: 16, fit: BoxFit.fill),
+                    onPressed: () => _onOpenListMailboxActionClick?.call())))
       ]
     );
   }
 
   double _getMaxWidthAppBarTitle() {
     var width = MediaQuery.of(_context).size.width;
-    var widthSiblingsWidget = _presentationMailbox?.getCountUnReadEmails().isNotEmpty == true
-      ? 150
-      : 100;
+    var widthSiblingsWidget = 220;
     if (_responsiveUtils.isTablet(_context)) {
       width = width * 0.7;
-      widthSiblingsWidget = _presentationMailbox?.getCountUnReadEmails().isNotEmpty == true
-        ? 70
-        : 0;
+      widthSiblingsWidget = 300;
     } else if (_responsiveUtils.isDesktop(_context)) {
       width = width * 0.2;
-      widthSiblingsWidget = _presentationMailbox?.getCountUnReadEmails().isNotEmpty == true
-        ? 50
-        : 0;
+      widthSiblingsWidget = 300;
     }
     final maxWidth = width - widthSiblingsWidget;
     return maxWidth;

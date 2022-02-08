@@ -459,5 +459,10 @@ class AppLocalizations {
       name: 'results',
     );
   }
+
+  String get edit {
+    return Intl.message('Edit',
+        name: 'edit');
+  }
 }
 
