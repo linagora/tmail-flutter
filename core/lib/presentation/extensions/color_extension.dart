@@ -67,7 +67,7 @@ extension AppColor on Color {
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
-    [Color(0xFF43E97B), Color(0xFF38F9D7)],
+    [Color(0xFF38F9D7), Color(0xFF43E97B)],
     [Color(0xFF11E6F0), Color(0xFF4FACFE)],
     [Color(0xFFE88395), Color(0xFFEF9C8F)],
     [Color(0xFF8DDAD5), Color(0xFF00CDAC)],

@@ -88,12 +88,10 @@ class EmailTileBuilder {
               title: Transform(
                   transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       if (_presentationEmail.isUnReadEmail())
                         Padding(
-                          padding: EdgeInsets.only(top: 6, right: 5),
+                          padding: EdgeInsets.only(right: 5),
                           child: SvgPicture.asset(_imagePaths.icUnread, width: 9, height: 9, fit: BoxFit.fill)),
                       Expanded(
                           child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
@@ -108,13 +106,24 @@ class EmailTileBuilder {
                                   overflow:TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 15, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600))
                       ),
+                      if (_presentationEmail.hasAttachment == true)
+                        Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: (ButtonBuilder(_imagePaths.icAttachment)
+                              ..padding(0)
+                              ..size(16))
+                            .build()),
                       Padding(
-                          padding: EdgeInsets.only(right: 4),
+                          padding: EdgeInsets.only(right: 4, left: 8),
                           child: Text(
                               '${_presentationEmail.getReceivedAt(Localizations.localeOf(_context).toLanguageTag())}',
                               maxLines: 1,
                               overflow:TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail)))
+                              style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail))),
+                      (ButtonBuilder(_imagePaths.icChevron)
+                          ..padding(0)
+                          ..size(16))
+                        .build(),
                     ],
                   )
               ),
@@ -123,28 +132,24 @@ class EmailTileBuilder {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Padding(
                           padding: EdgeInsets.zero,
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Expanded(
-                                  child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
-                                      ? RichTextBuilder(
-                                          '${_presentationEmail.getEmailTitle()}',
-                                          '${_searchQuery!.value}',
-                                          TextStyle(
-                                              fontSize: 13,
-                                              color: _presentationEmail.isUnReadEmail() ? AppColor.subjectEmailTextColorUnRead : AppColor.colorNameEmail),
-                                          TextStyle(
-                                              fontSize: 13,
-                                              backgroundColor: AppColor.bgWordSearch,
-                                              color: _presentationEmail.isUnReadEmail() ? AppColor.subjectEmailTextColorUnRead : AppColor.colorNameEmail)).build()
-                                      : Text(
-                                          '${_presentationEmail.getEmailTitle()}',
-                                          maxLines: 1,
-                                          overflow:TextOverflow.ellipsis,
-                                          style: TextStyle(fontSize: 13, color: AppColor.colorNameEmail))
+                              Expanded(child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
+                                  ? RichTextBuilder(
+                                      '${_presentationEmail.getEmailTitle()}',
+                                      '${_searchQuery!.value}',
+                                      TextStyle(fontSize: 13, color: AppColor.colorNameEmail),
+                                      TextStyle(fontSize: 13, backgroundColor: AppColor.bgWordSearch, color: AppColor.colorNameEmail)).build()
+                                  : Text(
+                                      '${_presentationEmail.getEmailTitle()}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(fontSize: 13, color: AppColor.colorNameEmail))
                               ),
                               if (_searchStatus == SearchStatus.ACTIVE && _presentationEmail.mailboxName.isNotEmpty)
                                 Container(
@@ -160,48 +165,36 @@ class EmailTileBuilder {
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(fontSize: 10, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
                                     )
-                                )
+                                ),
+                              if (_presentationEmail.isFlaggedEmail() )
+                                (ButtonBuilder(_imagePaths.icStar)
+                                  ..padding(0)
+                                  ..size(15))
+                                .build(),
                             ],
                           )),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Expanded(
-                              child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
-                                  ? RichTextBuilder(
-                                      '${_presentationEmail.getPartialContent()}',
-                                      '${_searchQuery!.value}',
-                                      TextStyle(fontSize: 13, color: AppColor.colorContentEmail),
-                                      TextStyle(fontSize: 13, color: AppColor.colorContentEmail, backgroundColor: AppColor.bgWordSearch)).build()
-                                  : Text(
-                                      '${_presentationEmail.getPartialContent()}',
-                                      maxLines: 1,
-                                      overflow:TextOverflow.ellipsis,
-                                      style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail))
+                      Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: Row(children: [
+                          Expanded(child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
+                              ? RichTextBuilder(
+                                  '${_presentationEmail.getPartialContent()}',
+                                  '${_searchQuery!.value}',
+                                  TextStyle(fontSize: 13, color: AppColor.colorContentEmail),
+                                  TextStyle(fontSize: 13, color: AppColor.colorContentEmail, backgroundColor: AppColor.bgWordSearch)).build()
+                              : Text(
+                                  '${_presentationEmail.getPartialContent()}',
+                                  maxLines: 1,
+                                  overflow:TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail))
                           ),
-                          if (_presentationEmail.hasAttachment == true)
-                            (ButtonBuilder(_imagePaths.icShare)
-                              ..padding(5)
-                              ..size(20))
-                            .build(),
-                          (ButtonBuilder(_presentationEmail.isFlaggedEmail() ? _imagePaths.icFlagged : _imagePaths.icFlag)
-                            ..padding(5)
-                            ..size(20)
-                            ..onPressActionClick(() {
-                              if (_onMarkAsStarEmailActionClick != null) {
-                                _onMarkAsStarEmailActionClick!(_presentationEmail);
-                              }
-                            }))
-                          .build(),
-                        ],
-                      )
+                        ]))
                     ],
                   )
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 8, right: 12),
+              padding: EdgeInsets.only(top: 12, right: 12),
               child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
           ]),
         )

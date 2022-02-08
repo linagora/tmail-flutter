@@ -28,7 +28,7 @@ extension DateTimeNullableExtension on DateTime? {
   String toPattern() {
     if (this != null) {
       if (this!.isToday()) {
-        return 'h:mm a';
+        return 'H:mm';
       } else if (this!.isYesterday()) {
         return 'EEE';
       } else if (this!.isThisYear()) {
