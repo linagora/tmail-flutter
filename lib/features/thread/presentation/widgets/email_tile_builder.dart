@@ -81,7 +81,7 @@ class EmailTileBuilder {
               }
             },
             leading: Transform(
-              transform: Matrix4.translationValues(-10.0, -10.0, 0.0),
+              transform: Matrix4.translationValues(-10.0, -2.0, 0.0),
               child: _buildAvatarIcon()),
             title: Transform(
               transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
@@ -216,7 +216,7 @@ class EmailTileBuilder {
     );
   }
 
-  Widget _buildAvatarIcon () {
+  Widget _buildAvatarIcon() {
     if (_selectModeAll == SelectMode.ACTIVE) {
       return AnimatedSwitcher(
         duration: Duration(milliseconds: 600),
@@ -228,20 +228,24 @@ class EmailTileBuilder {
                     _onSelectEmailActionClick!(_presentationEmail);
                   }}))
               .build()
-          : AvatarBuilder()
-              .text('${_presentationEmail.getAvatarText()}')
-              .size(40)
-              // .iconStatus(_imagePaths.icOffline)
-              .addOnTapActionClick(() {
-                  if (_selectModeAll == SelectMode.ACTIVE && _onSelectEmailActionClick != null) {
-                  _onSelectEmailActionClick!(_presentationEmail);
-                  }})
+          : (AvatarBuilder()
+                ..text('${_presentationEmail.getAvatarText()}')
+                ..size(56)
+                ..textColor(Colors.white)
+                ..avatarColor(_presentationEmail.avatarColors)
+                // .iconStatus(_imagePaths.icOffline)
+                ..addOnTapActionClick(() {
+                    if (_selectModeAll == SelectMode.ACTIVE && _onSelectEmailActionClick != null) {
+                    _onSelectEmailActionClick!(_presentationEmail);
+                    }}))
               .build()
       );
     } else {
-      return AvatarBuilder()
-        .text('${_presentationEmail.getAvatarText()}')
-        .size(40)
+      return (AvatarBuilder()
+          ..text('${_presentationEmail.getAvatarText()}')
+          ..size(56)
+          ..textColor(Colors.white)
+          ..avatarColor(_presentationEmail.avatarColors))
         // .iconStatus(_imagePaths.icOffline)
         .build();
     }
