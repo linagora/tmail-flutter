@@ -20,7 +20,7 @@ publish_to: none
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -31,18 +31,18 @@ dependencies:
   cupertino_icons: ^1.0.2
 
   # flutter_svg
-  flutter_svg: 0.22.0
+  flutter_svg: 1.0.3
 
   # Http client
-  dio: 4.0.0
+  dio: 4.0.4
 
   # dartz
-  dartz: 0.10.0-nullsafety.2
+  dartz: 0.10.1
 
   # equatable
   equatable: 2.0.3
 
-  built_collection: 5.1.0
+  built_collection: 5.1.1
 
   html: 0.15.0
 
