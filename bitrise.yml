@@ -75,6 +75,9 @@ workflows:
             flutter pub get && flutter pub run intl_generator:extract_to_arb --output-dir=./lib/l10n lib/main/localizations/app_localizations.dart
 
             flutter pub get && flutter pub run intl_generator:generate_from_arb --output-dir=lib/l10n --no-use-deferred-loading lib/main/localizations/app_localizations.dart lib/l10n/intl*.arb
+
+            # Workaround solution for issue: https://github.com/bitrise-steplib/bitrise-step-flutter-test/issues/34
+            dart pub global activate junitreport
         is_always_run: true
     - flutter-analyze@0:
         inputs:
