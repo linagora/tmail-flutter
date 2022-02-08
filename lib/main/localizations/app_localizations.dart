@@ -464,5 +464,11 @@ class AppLocalizations {
     return Intl.message('Edit',
         name: 'edit');
   }
+
+  String get hint_search_emails {
+    return Intl.message(
+        'Search for emails and files',
+        name: 'hint_search_emails');
+  }
 }
 
