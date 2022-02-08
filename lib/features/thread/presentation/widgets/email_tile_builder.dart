@@ -1,9 +1,7 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
@@ -16,11 +14,9 @@ typedef OnMarkAsStarEmailActionClick = void Function(PresentationEmail selectedE
 
 class EmailTileBuilder {
 
-  final SelectMode _selectMode;
   final ImagePaths _imagePaths;
   final PresentationEmail _presentationEmail;
   final BuildContext _context;
-  final ResponsiveUtils _responsiveUtils;
   final SelectMode _selectModeAll;
   final Role? _mailboxRole;
   final SearchStatus _searchStatus;
@@ -33,9 +29,7 @@ class EmailTileBuilder {
   EmailTileBuilder(
     this._context,
     this._imagePaths,
-    this._selectMode,
     this._presentationEmail,
-    this._responsiveUtils,
     this._mailboxRole,
     this._selectModeAll,
     this._searchStatus,
@@ -66,7 +60,7 @@ class EmailTileBuilder {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(0),
-          color: _getBackgroundColorItem()),
+          color: Colors.white),
         child: MediaQuery(
           data: MediaQueryData(padding: EdgeInsets.zero),
           child: Column(children: [
@@ -206,7 +200,7 @@ class EmailTileBuilder {
     if (_selectModeAll == SelectMode.ACTIVE) {
       return AnimatedSwitcher(
         duration: Duration(milliseconds: 600),
-        transitionBuilder: __transitionBuilder,
+        transitionBuilder: _transitionBuilder,
         child: _presentationEmail.selectMode == SelectMode.ACTIVE
           ? (IconBuilder(_imagePaths.icSelected)
                 ..addOnTapActionClick(() {
@@ -237,7 +231,7 @@ class EmailTileBuilder {
     }
   }
 
-  Widget __transitionBuilder(Widget widget, Animation<double> animation) {
+  Widget _transitionBuilder(Widget widget, Animation<double> animation) {
     final rotateAnim = Tween(begin: pi, end: 0.0).animate(animation);
     return AnimatedBuilder(
       animation: rotateAnim,
@@ -252,10 +246,6 @@ class EmailTileBuilder {
         );
       },
     );
-  }
-
-  Color _getBackgroundColorItem() {
-    return _responsiveUtils.isMobile(_context) ? AppColor.bgMailboxListMail : Colors.white;
   }
 
   String _getInformationSender() {

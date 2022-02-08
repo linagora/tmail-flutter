@@ -47,6 +47,8 @@ class ImagePaths {
   String get icUnStar => _getImagePath('ic_unstar.svg');
   String get icAttachment => _getImagePath('ic_attachment.svg');
   String get icChevron => _getImagePath('ic_chevron.svg');
+  String get icChevronDown => _getImagePath('ic_chevron_down.svg');
+  String get icFilter => _getImagePath('ic_filter.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
