@@ -45,9 +45,9 @@ class SenderAndReceiverInformationTileBuilder {
         child: ListTile(
           leading: Transform(
             transform: Matrix4.translationValues(-15.0, -8.0, 0.0),
-            child: AvatarBuilder()
-              .text('${_presentationEmail!.getAvatarText()}')
-              .size(40)
+            child: (AvatarBuilder()
+                ..text('${_presentationEmail!.getAvatarText()}')
+                ..size(40))
               // .iconStatus(_imagePaths.icOffline)
               .build()),
           title: Transform(

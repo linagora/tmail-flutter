@@ -1,4 +1,6 @@
 
+import 'dart:ui';
+
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
@@ -26,6 +28,7 @@ class PresentationEmail with EquatableMixin {
   final Map<MailboxId, bool>? mailboxIds;
   final List<MailboxName?>? mailboxNames;
   final SelectMode selectMode;
+  final List<Color>? avatarColors;
 
   PresentationEmail(
     this.id,
@@ -44,7 +47,8 @@ class PresentationEmail with EquatableMixin {
       this.replyTo,
       this.mailboxIds,
       this.mailboxNames,
-      this.selectMode = SelectMode.INACTIVE
+      this.selectMode = SelectMode.INACTIVE,
+      this.avatarColors,
     }
   );
 
@@ -52,9 +56,26 @@ class PresentationEmail with EquatableMixin {
 
   String getAvatarText() {
     if (getSenderName().isNotEmpty) {
-      final regexLetter = RegExp("([A-Za-z])");
-      final firstLetter = regexLetter.firstMatch(getSenderName().trim())?.group(0);
-      return firstLetter != null ? firstLetter.toUpperCase() : '';
+      final listWord = getSenderName().split(' ');
+      if (listWord.length > 1) {
+        final regexLetter = RegExp("([A-Za-z])");
+        final firstLetterOfFirstWord = regexLetter.firstMatch(listWord[0].trim())?.group(0);
+        final firstLetterOfSecondWord = regexLetter.firstMatch(listWord[1].trim())?.group(0);
+
+        if (firstLetterOfFirstWord != null && firstLetterOfSecondWord != null) {
+          return '${firstLetterOfFirstWord.toUpperCase()}${firstLetterOfSecondWord.toUpperCase()}';
+        } else if (firstLetterOfFirstWord != null && firstLetterOfSecondWord == null) {
+          return '${firstLetterOfFirstWord.toUpperCase()}${firstLetterOfFirstWord.toUpperCase()}';
+        } else if (firstLetterOfFirstWord == null && firstLetterOfSecondWord != null) {
+          return '${firstLetterOfSecondWord.toUpperCase()}${firstLetterOfSecondWord.toUpperCase()}';
+        } else {
+          return '';
+        }
+      } else {
+        final regexLetter = RegExp("([A-Za-z])");
+        final firstLetter = regexLetter.firstMatch(getSenderName().trim())?.group(0);
+        return firstLetter != null ? '${firstLetter.toUpperCase()}${firstLetter.toUpperCase()}' : '';
+      }
     }
     return '';
   }

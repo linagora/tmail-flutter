@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:dartz/dartz.dart';
@@ -62,6 +64,8 @@ class ThreadController extends BaseController {
   final emailList = <PresentationEmail>[].obs;
   final emailListSearch = <PresentationEmail>[].obs;
   final currentSelectMode = SelectMode.INACTIVE.obs;
+
+  final random = Random();
 
   bool canLoadMore = true;
   bool canSearchMore = true;
@@ -207,7 +211,10 @@ class ThreadController extends BaseController {
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
     _currentEmailState = success.currentEmailState;
-    emailList.value = success.emailList;
+    final listEmailHaveAvatarGradientColor = success.emailList
+        .map((email) => email.asAvatarGradientColor(random))
+        .toList();
+    emailList.value = listEmailHaveAvatarGradientColor;
   }
 
   void _getAllEmailAction(AccountId accountId, {MailboxId? mailboxId}) {
@@ -271,7 +278,10 @@ class ThreadController extends BaseController {
 
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
     if (success.emailList.isNotEmpty) {
-      emailList.addAll(success.emailList);
+      final listEmailHaveAvatarGradientColor = success.emailList
+          .map((email) => email.asAvatarGradientColor(random))
+          .toList();
+      emailList.addAll(listEmailHaveAvatarGradientColor);
     } else {
       canLoadMore = false;
     }
