@@ -10,21 +10,20 @@ class AvatarBuilder {
   double? _size;
   // String? _iconStatus;
   Color? _bgColor;
+  Color? _textColor;
   OnTapAvatarActionClick? _onTapAvatarActionClick;
+  List<Color>? _avatarColors;
 
-  AvatarBuilder key(Key key) {
+  void key(Key key) {
     _key = key;
-    return this;
   }
 
-  AvatarBuilder size(double size) {
+  void size(double size) {
     _size = size;
-    return this;
   }
 
-  AvatarBuilder text(String text) {
+  void text(String text) {
     _text = text;
-    return this;
   }
 
   // AvatarBuilder iconStatus(String iconStatus) {
@@ -32,14 +31,20 @@ class AvatarBuilder {
   //   return this;
   // }
 
-  AvatarBuilder backgroundColor(Color bgColor) {
+  void backgroundColor(Color bgColor) {
     _bgColor = bgColor;
-    return this;
   }
 
-  AvatarBuilder addOnTapActionClick(OnTapAvatarActionClick onTapAvatarActionClick) {
+  void textColor(Color textColor) {
+    _textColor = textColor;
+  }
+
+  void avatarColor(List<Color>? avatarColors) {
+    _avatarColors = avatarColors;
+  }
+
+  void addOnTapActionClick(OnTapAvatarActionClick onTapAvatarActionClick) {
     _onTapAvatarActionClick = onTapAvatarActionClick;
-    return this;
   }
 
   Widget build() {
@@ -61,11 +66,17 @@ class AvatarBuilder {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular((_size ?? 40) / 2),
-                border: Border.all(color: Colors.white),
+                border: Border.all(color: Colors.transparent),
+                gradient: _avatarColors?.isNotEmpty == true
+                  ? LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: _avatarColors ?? [])
+                  : null,
                 color: _bgColor ?? AppColor.avatarColor),
               child: Text(
                 '${_text ?? ''}',
-                style: TextStyle(fontSize: 20, color: AppColor.avatarTextColor, fontWeight: FontWeight.w500))),
+                style: TextStyle(fontSize: 20, color: _textColor ?? AppColor.avatarTextColor, fontWeight: FontWeight.w500))),
             // if (_iconStatus != null && _iconStatus!.isNotEmpty)
             //   Align(
             //     child: SvgPicture.asset(_iconStatus!, width: 12, height: 12, fit: BoxFit.fill),

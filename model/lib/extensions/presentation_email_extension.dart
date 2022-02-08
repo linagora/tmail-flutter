@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:dartz/dartz.dart';
@@ -136,7 +138,32 @@ extension PresentationEmailExtension on PresentationEmail {
       replyTo: replyTo,
       mailboxIds: mailboxIds,
       mailboxNames: listMailboxName,
-      selectMode: selectMode
+      selectMode: selectMode,
+      avatarColors: avatarColors
+    );
+  }
+
+  PresentationEmail asAvatarGradientColor(Random random) {
+    final newAvatarColors = AppColor.mapGradientColor[random.nextInt(AppColor.mapGradientColor.length)];
+
+    return PresentationEmail(
+      this.id,
+      keywords: keywords,
+      size: size,
+      receivedAt: receivedAt,
+      hasAttachment: hasAttachment,
+      preview: preview,
+      subject: subject,
+      sentAt: sentAt,
+      from: from,
+      to: to,
+      cc: cc,
+      bcc: bcc,
+      replyTo: replyTo,
+      mailboxIds: mailboxIds,
+      mailboxNames: mailboxNames,
+      selectMode: selectMode,
+      avatarColors: avatarColors ?? newAvatarColors,
     );
   }
 }

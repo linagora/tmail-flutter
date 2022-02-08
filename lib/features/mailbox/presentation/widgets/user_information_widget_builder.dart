@@ -38,9 +38,9 @@ class UserInformationWidgetBuilder {
             _onOpenUserInformationActionClick!();
           }
         },
-        leading: AvatarBuilder()
-          .text(_userProfile != null ? _userProfile!.getAvatarText() : '')
-          .size(40)
+        leading: (AvatarBuilder()
+            ..text(_userProfile != null ? _userProfile!.getAvatarText() : '')
+            ..size(40))
           .build(),
         title: Transform(
           transform: Matrix4.translationValues(0.0, 0.0, 0.0),
