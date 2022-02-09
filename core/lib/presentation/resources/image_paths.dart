@@ -61,6 +61,11 @@ class ImagePaths {
   String get icFlagV2 => _getImagePath('ic_flag_v2.svg');
   String get icReadToast => _getImagePath('ic_read_toast.svg');
   String get icUnreadToast => _getImagePath('ic_unread_toast.svg');
+  String get icReplyAllV2 => _getImagePath('ic_reply_all_v2.svg');
+  String get icReplyV2 => _getImagePath('ic_reply_v2.svg');
+  String get icForwardV2 => _getImagePath('ic_forward_v2.svg');
+  String get icMoveEmail => _getImagePath('ic_move_email.svg');
+  String get icUnreadEmail => _getImagePath('ic_unread_email.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

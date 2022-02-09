@@ -297,7 +297,7 @@ class ThreadController extends BaseController {
 
   void previewEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
     mailboxDashBoardController.setSelectedEmail(presentationEmailSelected);
-    if (!responsiveUtils.isDesktop(context)) {
+    if (!responsiveUtils.isDesktop(context) && !responsiveUtils.isTabletLarge(context)) {
       goToEmail(context);
     }
   }

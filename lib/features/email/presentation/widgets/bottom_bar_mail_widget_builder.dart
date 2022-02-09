@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -11,6 +10,7 @@ class BottomBarMailWidgetBuilder {
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
+  final PresentationEmail? _presentationEmail;
 
   OnPressEmailActionClick? _onPressEmailActionClick;
 
@@ -18,6 +18,7 @@ class BottomBarMailWidgetBuilder {
     this._context,
     this._imagePaths,
     this._responsiveUtils,
+    this._presentationEmail,
   );
 
   void addOnPressEmailAction(OnPressEmailActionClick onPressEmailActionClick) {
@@ -31,7 +32,7 @@ class BottomBarMailWidgetBuilder {
       color: Colors.white,
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
-        child: _buildListOptionButton()
+        child: _presentationEmail != null ? _buildListOptionButton() : SizedBox.shrink()
       )
     );
   }
@@ -41,24 +42,51 @@ class BottomBarMailWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        (ButtonBuilder(_imagePaths.icReplyAll)
+        (ButtonBuilder(_imagePaths.icReplyAllV2)
             ..key(Key('button_reply_all_message'))
+            ..size(20)
+            ..paddingIcon(EdgeInsets.only(
+                top: _responsiveUtils.isMobileDevice(_context) ? 10 : 16,
+                bottom: _responsiveUtils.isMobileDevice(_context) ? 8 : 16,
+                right: 5))
+            ..textStyle(TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: _responsiveUtils.isMobileDevice(_context) ? 13 : 16,
+                color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailActionClick != null) {
                 _onPressEmailActionClick!(EmailActionType.replyAll);
               }})
             ..text(AppLocalizations.of(_context).reply_all, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        (ButtonBuilder(_imagePaths.icReply)
+        (ButtonBuilder(_imagePaths.icReplyV2)
             ..key(Key('button_reply_message'))
+            ..size(20)
+            ..paddingIcon(EdgeInsets.only(
+                top: _responsiveUtils.isMobileDevice(_context) ? 10 : 16,
+                bottom: _responsiveUtils.isMobileDevice(_context) ? 8 : 16,
+                right: 5))
+            ..textStyle(TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: _responsiveUtils.isMobileDevice(_context) ? 13 : 16,
+                color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailActionClick != null) {
                 _onPressEmailActionClick!(EmailActionType.reply);
               }})
             ..text(AppLocalizations.of(_context).reply, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        (ButtonBuilder(_imagePaths.icForward)
+        (ButtonBuilder(_imagePaths.icForwardV2)
             ..key(Key('button_forward_message'))
+            ..size(20)
+            ..paddingIcon(EdgeInsets.only(
+                top: _responsiveUtils.isMobileDevice(_context) ? 10 : 16,
+                bottom: _responsiveUtils.isMobileDevice(_context) ? 8 : 16,
+                right: 5))
+            ..textStyle(TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: _responsiveUtils.isMobileDevice(_context) ? 13 : 16,
+                color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailActionClick != null) {
                 _onPressEmailActionClick!(EmailActionType.forward);

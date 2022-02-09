@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:core/core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -11,7 +10,6 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_w
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_place_holder_loading_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
-import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_item_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_place_holder_loading_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/sender_and_receiver_information_tile_builder.dart';
@@ -63,14 +61,18 @@ class EmailView extends GetView {
   Widget _buildBottomBar(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 6, top: 6, right: 6, bottom: 6),
-      child: (BottomBarMailWidgetBuilder(context, imagePaths, responsiveUtils)
+      child: (BottomBarMailWidgetBuilder(
+              context,
+              imagePaths,
+              responsiveUtils,
+              emailController.mailboxDashBoardController.selectedEmail.value)
           ..addOnPressEmailAction((emailActionType) => emailController.pressEmailAction(emailActionType)))
         .build());
   }
 
   Widget _buildEmailBody(BuildContext context) {
     return Container(
-      color: AppColor.bgMessenger,
+      color: Colors.white,
       margin: EdgeInsets.zero,
       alignment: Alignment.topCenter,
       child: Obx(() => emailController.mailboxDashBoardController.selectedEmail.value != null
@@ -80,14 +82,17 @@ class EmailView extends GetView {
               margin: EdgeInsets.zero,
               width: double.infinity,
               alignment: Alignment.center,
-              padding: EdgeInsets.all(16),
-              color: AppColor.bgMessenger,
+              padding: EdgeInsets.only(
+                  left: responsiveUtils.isMobile(context) ? 16 : 24,
+                  right: responsiveUtils.isMobile(context) ? 16 : 24,
+                  bottom: responsiveUtils.isMobile(context) ? 16 : 24,
+                  top: responsiveUtils.isMobile(context) ? 10 : 16),
+              color: Colors.white,
               child:  Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  _buildEmailSubject(),
                   _buildEmailMessage(context),
                 ])
             ))
@@ -105,19 +110,31 @@ class EmailView extends GetView {
 
   Widget _buildEmailSubject() {
     return Padding(
-      padding: EdgeInsets.only(left: 8, top: 4, bottom: 16),
+      padding: EdgeInsets.only(left: 8, top: 25, bottom: 16),
       child: Text(
           '${emailController.mailboxDashBoardController.selectedEmail.value?.getEmailTitle()}',
-          style: TextStyle(fontSize: 18, color: AppColor.mailboxTextColor, fontWeight: FontWeight.w500)
+          style: TextStyle(fontSize: 22, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700)
       ));
   }
 
   Widget _buildEmailMessage(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 12, right: 12, top: 16, bottom: 16),
+      padding: EdgeInsets.only(
+          bottom: responsiveUtils.isMobile(context) ? 16 : 24,
+          left: responsiveUtils.isMobile(context) ? 16 : 24,
+          right: responsiveUtils.isMobile(context) ? 16 : 24,
+          top: 10),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: AppColor.colorShadowBgContentEmail,
+            spreadRadius: 3,
+            blurRadius: 3,
+            offset: Offset(0, 2), // changes position of shadow
+          ),
+        ],
         color: Colors.white),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -131,6 +148,10 @@ class EmailView extends GetView {
               emailController.emailAddressExpandMode.value)
             .onOpenExpandAddressReceiverActionClick(() => emailController.toggleDisplayEmailAddressAction(expandMode: ExpandMode.EXPAND))
             .build()),
+          Padding(
+              padding: EdgeInsets.zero,
+              child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.1)),
+          _buildEmailSubject(),
           _buildAttachments(context),
           _buildListEmailContent(),
         ],

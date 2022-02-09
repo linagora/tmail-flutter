@@ -2,7 +2,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -169,11 +168,14 @@ class AppBarThreadWidgetBuilder {
     if (_responsiveUtils.isTablet(_context)) {
       width = width * 0.7;
       widthSiblingsWidget = 300;
+    } else if (_responsiveUtils.isTabletLarge(_context)) {
+      width = width * 0.35;
+      widthSiblingsWidget = 250;
     } else if (_responsiveUtils.isDesktop(_context)) {
       width = width * 0.2;
       widthSiblingsWidget = 300;
     }
-    final maxWidth = width - widthSiblingsWidget;
+    final maxWidth = width > widthSiblingsWidget ? width - widthSiblingsWidget : 0.0;
     return maxWidth;
   }
 }
