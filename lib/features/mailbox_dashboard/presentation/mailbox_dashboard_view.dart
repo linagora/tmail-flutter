@@ -14,31 +14,53 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: controller.scaffoldKey,
-      drawer: responsiveUtils.isMobileDevice(context)
-        ? Container(
+      drawer: ResponsiveWidget(
+        responsiveUtils: responsiveUtils,
+        mobile: Container(
             child: MailboxView(),
             width: responsiveUtils.isPortrait(context)
-              ? responsiveUtils.getSizeWidthScreen(context)
-              : responsiveUtils.getSizeWidthScreen(context) / 2)
-        : null,
-      drawerEnableOpenDragGesture: responsiveUtils.isMobileDevice(context),
-      body: Container(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            if (!responsiveUtils.isMobileDevice(context))
-              Expanded(
-                flex: responsiveUtils.isDesktop(context) ? 1 : 2,
-                child: MailboxView()),
-            Expanded(
-              flex: responsiveUtils.isDesktop(context) ? 1 : 3,
-              child: ThreadView(),
-            ),
-            if (responsiveUtils.isDesktop(context)) Expanded(flex: 2, child: EmailView()),
-          ],
-        ),
+                ? responsiveUtils.getSizeWidthScreen(context)
+                : responsiveUtils.getSizeWidthScreen(context) / 2),
+        tablet: Container(
+            child: MailboxView(),
+            width: responsiveUtils.getSizeWidthScreen(context) * 0.35),
+        desktop: null
       ),
+      drawerEnableOpenDragGesture: !responsiveUtils.isDesktop(context),
+      body: ResponsiveWidget(
+        responsiveUtils: responsiveUtils,
+        desktop: Container(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Expanded(flex: 1, child: MailboxView()),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: ThreadView(),
+                )),
+              Expanded(flex: 2, child: EmailView()),
+            ],
+          ),
+        ),
+        tabletLarge: Container(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                width: responsiveUtils.getSizeWidthScreen(context) * 0.35,
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: ThreadView()
+              ),
+              Expanded(child: EmailView()),
+            ],
+          ),
+        ),
+        tablet: ThreadView(),
+        mobile: ThreadView()),
     );
   }
 }

@@ -74,7 +74,9 @@ class ThreadView extends GetWidget<ThreadController> {
         ),
         floatingActionButton: Obx(() => !controller.isSearchActive() && !controller.isSelectionEnabled()
           ? Container(
-              padding: EdgeInsets.only(bottom: controller.isSelectionEnabled() ? 80 : 0),
+              padding: EdgeInsets.only(bottom: controller.isSelectionEnabled()
+                  ? 80
+                  : responsiveUtils.isMobileDevice(context) ? 0 : 16),
               child: Align(
                   alignment: Alignment.bottomRight,
                   child: ScrollingFloatingButtonAnimated(
