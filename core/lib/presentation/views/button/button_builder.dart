@@ -13,10 +13,11 @@ class ButtonBuilder {
   String? _icon;
   String? _text;
   double? _size;
-  double? _padding;
+  EdgeInsets? _paddingIcon;
   bool? _isVertical;
   Key? _key;
-  Color? _color;
+  Color? _iconColor;
+  TextStyle? _textStyle;
 
   void key(Key key) {
     _key = key;
@@ -26,12 +27,16 @@ class ButtonBuilder {
     _size = size;
   }
 
-  void color(Color color) {
-    _color = color;
+  void iconColor(Color color) {
+    _iconColor = color;
   }
 
-  void padding(double padding) {
-    _padding = padding;
+  void textStyle(TextStyle style) {
+    _textStyle = style;
+  }
+
+  void paddingIcon(EdgeInsets paddingIcon) {
+    _paddingIcon = paddingIcon;
   }
 
   void text(String text, {required bool isVertical}) {
@@ -87,15 +92,15 @@ class ButtonBuilder {
   }
 
   Widget _buildIcon() => Padding(
-    padding: EdgeInsets.all(_padding ?? 10),
-    child: SvgPicture.asset(_icon ?? '', width: _size ?? 24, height: _size ?? 24, fit: BoxFit.fill, color: _color));
+    padding: _paddingIcon ?? EdgeInsets.all(10),
+    child: SvgPicture.asset(_icon ?? '', width: _size ?? 24, height: _size ?? 24, fit: BoxFit.fill, color: _iconColor));
 
   Widget _buildText() {
     return Text(
       '${_text ?? ''}',
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: TextStyle(fontSize: 12, color: AppColor.textButtonColor, fontWeight: FontWeight.w500),
+      style: _textStyle ?? TextStyle(fontSize: 12, color: AppColor.textButtonColor, fontWeight: FontWeight.w500),
     );
   }
 }

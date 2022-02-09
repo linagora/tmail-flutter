@@ -476,5 +476,46 @@ class AppLocalizations {
         'Compose',
         name: 'compose');
   }
-}
 
+  String get delete {
+    return Intl.message(
+        'Delete',
+        name: 'delete');
+  }
+
+  String get move {
+    return Intl.message(
+        'Move',
+        name: 'move');
+  }
+
+  String get spam {
+    return Intl.message(
+        'Spam',
+        name: 'spam');
+  }
+
+  String get flag {
+    return Intl.message(
+        'Flag',
+        name: 'flag');
+  }
+
+  String get read {
+    return Intl.message(
+        'Read',
+        name: 'read');
+  }
+
+  String get unread {
+    return Intl.message(
+        'Unread',
+        name: 'unread');
+  }
+
+  String get the_feature_is_under_development {
+    return Intl.message(
+        'This feature is under development.',
+        name: 'the_feature_is_under_development');
+  }
+}

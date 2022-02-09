@@ -7,6 +7,7 @@ class IconBuilder {
   Key? _key;
   double? _size;
   String? _icon;
+  EdgeInsets? _padding;
   OnPressIconActionClick? _onPressIconActionClick;
 
   IconBuilder(this._icon);
@@ -19,6 +20,10 @@ class IconBuilder {
     _size = size;
   }
 
+  void padding(EdgeInsets padding) {
+    _padding = padding;
+  }
+
   void addOnTapActionClick(OnPressIconActionClick onPressIconActionClick) {
     _onPressIconActionClick = onPressIconActionClick;
   }
@@ -29,16 +34,21 @@ class IconBuilder {
       width: _size ?? 40,
       height: _size ?? 40,
       alignment: Alignment.center,
-      padding: EdgeInsets.all(3),
-      child: IconButton(
-        padding: EdgeInsets.zero,
-        iconSize: _size ?? 40,
-        icon: SvgPicture.asset(_icon!, width: _size ?? 40, height: _size ?? 40, fit: BoxFit.fill),
-        onPressed: () => {
-          if (_onPressIconActionClick != null) {
-            _onPressIconActionClick!()
-          }
-        })
+      padding: _padding ?? EdgeInsets.all(3),
+      child: Material(
+          borderRadius: BorderRadius.circular((_size ?? 40) / 2),
+          color: Colors.transparent,
+          child: IconButton(
+              padding: EdgeInsets.zero,
+              iconSize: _size ?? 40,
+              icon: SvgPicture.asset(_icon!, width: _size ?? 40, height: _size ?? 40, fit: BoxFit.fill),
+              onPressed: () => {
+                if (_onPressIconActionClick != null) {
+                  _onPressIconActionClick!()
+                }
+              }
+          )
+      )
     );
   }
 }
