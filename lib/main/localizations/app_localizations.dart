@@ -470,5 +470,11 @@ class AppLocalizations {
         'Search for emails and files',
         name: 'hint_search_emails');
   }
+
+  String get compose {
+    return Intl.message(
+        'Compose',
+        name: 'compose');
+  }
 }
 
