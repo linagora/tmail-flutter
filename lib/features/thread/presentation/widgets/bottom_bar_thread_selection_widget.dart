@@ -76,7 +76,8 @@ class BottomBarThreadSelectionWidget {
               }})
             ..text(AppLocalizations.of(_context).move, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        (ButtonBuilder(_imagePaths.icSpamV2)
+        if (!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context))
+          (ButtonBuilder(_imagePaths.icSpamV2)
             ..key(Key('button_spam_email'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
@@ -86,7 +87,8 @@ class BottomBarThreadSelectionWidget {
               }})
             ..text(AppLocalizations.of(_context).spam, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        (ButtonBuilder(_imagePaths.icDeleteV2)
+        if (!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context))
+          (ButtonBuilder(_imagePaths.icDeleteV2)
             ..key(Key('button_delete_email'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))

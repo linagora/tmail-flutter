@@ -43,36 +43,51 @@ class SenderAndReceiverInformationTileBuilder {
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: ListTile(
+          contentPadding: EdgeInsets.zero,
           leading: Transform(
-            transform: Matrix4.translationValues(-15.0, -8.0, 0.0),
+            transform: Matrix4.translationValues(0.0, 0.0, 0.0),
             child: (AvatarBuilder()
                 ..text('${_presentationEmail!.getAvatarText()}')
+                ..textColor(Colors.white)
+                ..avatarColor(_presentationEmail?.avatarColors)
                 ..size(40))
               // .iconStatus(_imagePaths.icOffline)
               .build()),
           title: Transform(
-            transform: Matrix4.translationValues(-15.0, 0.0, 0.0),
-            child: Text(
-              '${AppLocalizations.of(_context).from_email_address_prefix}: ${_presentationEmail!.getSenderName()}',
-              style: TextStyle(fontSize: 16, color: AppColor.nameUserColor, fontWeight: FontWeight.w500),
-            )),
+            transform: Matrix4.translationValues(0.0, 0.0, 0.0),
+            child: Row(children: [
+              Expanded(child: Text(
+                '${_presentationEmail!.getSenderName()}',
+                style: TextStyle(fontSize: 17, color: AppColor.colorNameEmail, fontWeight: FontWeight.w500),
+              )),
+              Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Text(
+                  '${_presentationEmail!.getReceivedAt(Localizations.localeOf(_context).toLanguageTag())}',
+                  maxLines: 1,
+                  overflow:TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 15, color: AppColor.colorContentEmail)))
+            ])),
           subtitle: Transform(
-            transform: Matrix4.translationValues(-15.0, 0.0, 0.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (_presentationEmail!.to.numberEmailAddress() > 0) _buildAddressToReceiverWidget(),
-                if (_presentationEmail!.cc.numberEmailAddress() > 0) _buildAddressCcReceiverWidget(),
-                if (_presentationEmail!.bcc.numberEmailAddress() > 0) _buildAddressBccReceiverWidget(),
+            transform: Matrix4.translationValues(0.0, 0.0, 0.0),
+            child: Row(children: [
+              Expanded(child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_presentationEmail!.to.numberEmailAddress() > 0) _buildAddressToReceiverWidget(),
+                  if (_presentationEmail!.cc.numberEmailAddress() > 0) _buildAddressCcReceiverWidget(),
+                  if (_presentationEmail!.bcc.numberEmailAddress() > 0) _buildAddressBccReceiverWidget(),
+                ],
+              )),
+              if (_presentationEmail?.hasAttachment == true)
                 Padding(
-                  padding: EdgeInsets.only(top: 6),
-                  child: Text(
-                    '${_presentationEmail!.getReceivedAt(Localizations.localeOf(_context).toLanguageTag(), pattern: 'dd/MM/yyyy h:mm a')}',
-                    style: TextStyle(fontSize: 12, color: AppColor.baseTextColor),
-                  ))
-              ],
-            ))
+                    padding: EdgeInsets.only(left: 8),
+                    child: (ButtonBuilder(_imagePaths.icAttachment)
+                        ..paddingIcon(EdgeInsets.zero)
+                        ..size(16))
+                      .build()),
+            ]))
         )
       )
     );
