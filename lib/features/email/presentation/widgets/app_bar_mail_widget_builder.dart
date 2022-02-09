@@ -57,12 +57,13 @@ class AppBarMailWidgetBuilder {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (!_responsiveUtils.isDesktop(_context) || Get.currentRoute != AppRoutes.MAILBOX_DASHBOARD)
+            if ((!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context))
+                || Get.currentRoute != AppRoutes.MAILBOX_DASHBOARD)
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children:[_buildBackButton()])),
-            _buildListOptionButton(),
+            if (_presentationEmail != null) _buildListOptionButton(),
           ]
         )
       )
@@ -95,30 +96,30 @@ class AppBarMailWidgetBuilder {
         //     }
         //   }),
         IconButton(
-          key: Key('button_mark_as_unread_email'),
-          color: AppColor.baseTextColor,
-          icon: SvgPicture.asset(_imagePaths.icEyeDisable, color: AppColor.baseTextColor, fit: BoxFit.fill),
-          onPressed: () {
-            if (_onUnreadEmailActionClick != null && _presentationEmail != null && _presentationEmail!.isReadEmail()) {
-              _onUnreadEmailActionClick!(_presentationEmail!);
-            }
-          }),
-        IconButton(
           key: Key('button_mark_as_star_email'),
           icon: SvgPicture.asset(
-            (_presentationEmail != null && _presentationEmail!.isFlaggedEmail())
-              ? _imagePaths.icFlagged
-              : _imagePaths.icFlag,
-            fit: BoxFit.fill),
+              (_presentationEmail != null && _presentationEmail!.isFlaggedEmail())
+                  ? _imagePaths.icStar
+                  : _imagePaths.icUnStar,
+              fit: BoxFit.fill),
           onPressed: () {
             if (_markAsStarActionClick != null && _presentationEmail != null) {
               _markAsStarActionClick!(_presentationEmail!);
             }
           }),
         IconButton(
+          key: Key('button_mark_as_unread_email'),
+          color: AppColor.baseTextColor,
+          icon: SvgPicture.asset(_imagePaths.icUnreadEmail, fit: BoxFit.fill),
+          onPressed: () {
+            if (_onUnreadEmailActionClick != null && _presentationEmail != null && _presentationEmail!.isReadEmail()) {
+              _onUnreadEmailActionClick!(_presentationEmail!);
+            }
+          }),
+        IconButton(
           key: Key('button_move_to_mailbox_email'),
           color: AppColor.baseTextColor,
-          icon: SvgPicture.asset(_imagePaths.icFolder, color: AppColor.baseTextColor, fit: BoxFit.fill),
+          icon: SvgPicture.asset(_imagePaths.icMoveEmail, fit: BoxFit.fill),
           onPressed: () {
             if (_onMoveToMailboxActionClick != null && _presentationEmail != null) {
               _onMoveToMailboxActionClick!(_presentationEmail!);

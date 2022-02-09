@@ -2,8 +2,9 @@ import 'package:flutter/widgets.dart';
 
 class ResponsiveUtils {
 
-  static const int minDesktopWidth = 1200;
+  static const int minDesktopWidth = 1366;
   static const int minTabletWidth = 600;
+  static const int minTabletLargeWidth = 800;
 
   static const double _loginTextFieldWidthSmallScreen = 280.0;
   static const double _loginTextFieldWidthLargeScreen = 320.0;
@@ -20,11 +21,15 @@ class ResponsiveUtils {
 
   double getSizeHeightScreen(BuildContext context) => MediaQuery.of(context).size.height;
 
+  double getMinSizeScreen(BuildContext context) => MediaQuery.of(context).size.shortestSide;
+
   bool isMobile(BuildContext context) => getSizeWidthScreen(context) < minTabletWidth;
 
-  bool isTablet(BuildContext context) => getSizeWidthScreen(context) >= minTabletWidth && getSizeWidthScreen(context) < minDesktopWidth;
+  bool isTablet(BuildContext context) => getSizeWidthScreen(context) >= minTabletWidth && getSizeWidthScreen(context) < minTabletLargeWidth;
 
-  bool isDesktop(BuildContext context) => getSizeWidthScreen(context) >= minDesktopWidth;
+  bool isDesktop(BuildContext context) => getSizeWidthScreen(context) > minDesktopWidth;
+
+  bool isTabletLarge(BuildContext context) => getMinSizeScreen(context) >= minTabletLargeWidth && getMinSizeScreen(context) <= minDesktopWidth;
 
   bool isPortrait(BuildContext context) => MediaQuery.of(context).orientation == Orientation.portrait;
 

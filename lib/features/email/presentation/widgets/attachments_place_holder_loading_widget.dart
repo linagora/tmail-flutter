@@ -75,15 +75,13 @@ class _AttachmentsPlaceHolderLoadingState extends State<AttachmentsPlaceHolderLo
             children: [
               Row(children: [
                 _placeHolderAttachment(context),
-                SizedBox(width: 16),
-                _placeHolderAttachment(context),
-                if (!widget.responsiveUtils.isMobileDevice(context))
+                if (widget.responsiveUtils.isDesktop(context))
                   SizedBox(width: 16),
-                if (!widget.responsiveUtils.isMobileDevice(context))
+                if (widget.responsiveUtils.isDesktop(context))
                   _placeHolderAttachment(context),
-                if (!widget.responsiveUtils.isMobileDevice(context) && widget.responsiveUtils.isTablet(context))
+                if (widget.responsiveUtils.isDesktop(context))
                   SizedBox(width: 16),
-                if (!widget.responsiveUtils.isMobileDevice(context) && widget.responsiveUtils.isTablet(context))
+                if (widget.responsiveUtils.isDesktop(context))
                   _placeHolderAttachment(context),
               ]),
             ],

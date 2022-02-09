@@ -161,7 +161,8 @@ class EmailController extends BaseController {
     if (success is MarkAsEmailReadSuccess
         && success.readActions == ReadActions.markAsUnread
         && Get.context != null
-        && !responsiveUtils.isDesktop(Get.context!)) {
+        && !responsiveUtils.isDesktop(Get.context!)
+        && !responsiveUtils.isTabletLarge(Get.context!)) {
       backToThreadView();
     }
   }
@@ -170,7 +171,8 @@ class EmailController extends BaseController {
     if (failure is MarkAsEmailReadFailure
         && failure.readActions == ReadActions.markAsUnread
         && Get.context != null
-        && !responsiveUtils.isDesktop(Get.context!)) {
+        && !responsiveUtils.isDesktop(Get.context!)
+        && !responsiveUtils.isTabletLarge(Get.context!)) {
       backToThreadView();
     }
   }
