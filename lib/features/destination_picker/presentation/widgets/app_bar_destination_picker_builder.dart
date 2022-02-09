@@ -41,7 +41,7 @@ class AppBarDestinationPickerBuilder {
 
   Widget _buildBackButton() {
     return (ButtonBuilder(_imagePaths.icComposerClose)
-        ..padding(5)
+        ..paddingIcon(EdgeInsets.all(5))
         ..size(30)
         ..onPressActionClick(() {
           if (_onCloseActionClick != null) {
