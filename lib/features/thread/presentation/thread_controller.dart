@@ -52,6 +52,7 @@ class ThreadController extends BaseController {
   final MarkAsMultipleEmailReadInteractor _markAsMultipleEmailReadInteractor;
   final AppToast _appToast;
   final ResponsiveUtils responsiveUtils;
+  final ImagePaths _imagePaths;
   final ScrollController listEmailController;
   final MoveMultipleEmailToMailboxInteractor _moveMultipleEmailToMailboxInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
@@ -89,6 +90,7 @@ class ThreadController extends BaseController {
     this.listEmailController,
     this._markAsMultipleEmailReadInteractor,
     this._appToast,
+    this._imagePaths,
     this._moveMultipleEmailToMailboxInteractor,
     this._markAsStarEmailInteractor,
     this._markAsStarMultipleEmailInteractor,
@@ -373,20 +375,21 @@ class ThreadController extends BaseController {
     mailboxDashBoardController.dispatchState(Right(success));
 
     ReadActions? readActions;
-    int countMarkAsReadSuccess = 0;
 
     if (success is MarkAsMultipleEmailReadAllSuccess) {
       readActions = success.readActions;
-      countMarkAsReadSuccess = success.countMarkAsReadSuccess;
     } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
       readActions = success.readActions;
-      countMarkAsReadSuccess = success.countMarkAsReadSuccess;
     }
 
-    if (Get.context != null && readActions != null) {
-      _appToast.showSuccessToast(readActions == ReadActions.markAsUnread
-          ? AppLocalizations.of(Get.context!).marked_multiple_item_as_unread(countMarkAsReadSuccess)
-          : AppLocalizations.of(Get.context!).marked_multiple_item_as_read(countMarkAsReadSuccess));
+    if (Get.context != null && readActions != null && Get.overlayContext != null) {
+      final message = readActions == ReadActions.markAsUnread
+        ? AppLocalizations.of(Get.context!).marked_message_toast(AppLocalizations.of(Get.context!).unread)
+        : AppLocalizations.of(Get.context!).marked_message_toast(AppLocalizations.of(Get.context!).read);
+      _appToast.showToastWithIcon(
+          Get.overlayContext!,
+          message: message,
+          icon: readActions == ReadActions.markAsUnread ? _imagePaths.icUnreadToast : _imagePaths.icReadToast);
     }
   }
 
