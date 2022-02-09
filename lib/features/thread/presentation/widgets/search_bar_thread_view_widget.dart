@@ -2,24 +2,20 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnOpenSearchViewAction = Function();
 
 class SearchBarThreadViewWidget {
  OnOpenSearchViewAction? _onOpenSearchViewAction;
 
- final BuildContext _context;
  final ImagePaths _imagePaths;
 
   double? _heightSearchBar;
   EdgeInsets? _padding;
   EdgeInsets? _margin;
+  String? _hintTextSearch;
 
- SearchBarThreadViewWidget(
-    this._context,
-    this._imagePaths,
-  );
+ SearchBarThreadViewWidget(this._imagePaths);
 
   void addOnOpenSearchViewAction(OnOpenSearchViewAction onOpenSearchViewAction) {
     _onOpenSearchViewAction = onOpenSearchViewAction;
@@ -35,6 +31,10 @@ class SearchBarThreadViewWidget {
 
   void addMargin(EdgeInsets margin) {
     _margin = margin;
+  }
+
+  void hintTextSearch(String text) {
+    _hintTextSearch = text;
   }
 
   Widget build() {
@@ -56,7 +56,7 @@ class SearchBarThreadViewWidget {
                 children: [
                   _buildSearchButton(),
                   Text(
-                    AppLocalizations.of(_context).hint_search_emails,
+                    _hintTextSearch ?? '',
                     style: TextStyle(fontSize: 17, color: AppColor.colorHintSearchBar),)
                 ]
               )

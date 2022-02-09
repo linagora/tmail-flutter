@@ -23,6 +23,9 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> {
                 : responsiveUtils.getSizeWidthScreen(context) / 2),
         tablet: Container(
             child: MailboxView(),
+            width: responsiveUtils.getSizeWidthScreen(context) / 2),
+        tabletLarge: Container(
+            child: MailboxView(),
             width: responsiveUtils.getSizeWidthScreen(context) * 0.35),
         desktop: null
       ),
