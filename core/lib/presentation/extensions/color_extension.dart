@@ -68,6 +68,9 @@ extension AppColor on Color {
   static const colorHintSearchBar = Color(0xFF818C99);
   static const colorBgSearchBar = Color(0xFFEBEDF0);
   static const colorShadowBgContentEmail = Color(0x14000000);
+  static const colorDividerMailbox = Color(0xFF99A2AD);
+  static const colorArrowUserMailbox = Color(0xFFB8C1CC);
+  static const colorBgMailbox = Color(0xFFF7F7F7);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

@@ -13,6 +13,7 @@ class AvatarBuilder {
   Color? _textColor;
   OnTapAvatarActionClick? _onTapAvatarActionClick;
   List<Color>? _avatarColors;
+  List<BoxShadow>? _boxShadows;
 
   void key(Key key) {
     _key = key;
@@ -43,6 +44,10 @@ class AvatarBuilder {
     _avatarColors = avatarColors;
   }
 
+  void addBoxShadows(List<BoxShadow>? boxShadows) {
+    _boxShadows = boxShadows;
+  }
+
   void addOnTapActionClick(OnTapAvatarActionClick onTapAvatarActionClick) {
     _onTapAvatarActionClick = onTapAvatarActionClick;
   }
@@ -67,6 +72,7 @@ class AvatarBuilder {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular((_size ?? 40) / 2),
                 border: Border.all(color: Colors.transparent),
+                boxShadow: _boxShadows ?? [],
                 gradient: _avatarColors?.isNotEmpty == true
                   ? LinearGradient(
                       begin: Alignment.topCenter,

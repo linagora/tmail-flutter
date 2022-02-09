@@ -203,6 +203,10 @@ class MailboxController extends BaseController {
   }
 
   void closeMailboxScreen() {
+    mailboxDashBoardController.closeDrawer();
+  }
+
+  void logoutAction() {
     _deleteCredential();
     _clearAllCache();
     pushAndPopAll(AppRoutes.LOGIN);

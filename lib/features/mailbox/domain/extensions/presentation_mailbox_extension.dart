@@ -7,26 +7,26 @@ extension PresentationMailboxExtension on PresentationMailbox {
      if (hasRole()) {
         switch(role!.value) {
           case 'inbox':
-            return imagePaths.icMailboxInbox;
+            return imagePaths.icMailboxInboxV2;
           case 'drafts':
-            return imagePaths.icMailboxDrafts;
+            return imagePaths.icMailboxDraftsV2;
           case 'outbox':
-            return imagePaths.icMailboxInbox;
+            return imagePaths.icMailboxArchivedV2;
           case 'sent':
-            return imagePaths.icMailboxSent;
+            return imagePaths.icMailboxSentV2;
           case 'trash':
-            return imagePaths.icMailboxTrash;
+            return imagePaths.icMailboxTrashV2;
           case 'spam':
-            return imagePaths.icMailboxSpam;
+            return imagePaths.icMailboxSpamV2;
           case 'templates':
             return imagePaths.icMailboxTemplate;
           case 'all_mail':
             return imagePaths.icMailboxAllMail;
           default:
-            return imagePaths.icMailboxFolder;
+            return imagePaths.icFolderMailbox;
         }
      } else {
-       return imagePaths.icMailboxFolder;
+       return imagePaths.icFolderMailbox;
      }
   }
 }

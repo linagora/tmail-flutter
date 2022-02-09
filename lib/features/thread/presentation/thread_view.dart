@@ -38,7 +38,8 @@ class ThreadView extends GetWidget<ThreadController> {
               children: [
                 _buildAppBarThread(context),
                 Obx(() => !controller.isSearchActive()
-                  ? (SearchBarThreadViewWidget(context, imagePaths)
+                  ? (SearchBarThreadViewWidget(imagePaths)
+                      ..hintTextSearch(AppLocalizations.of(context).hint_search_emails)
                       ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
                     .build()
                   : SizedBox.shrink()),
