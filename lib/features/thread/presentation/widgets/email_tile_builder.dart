@@ -10,7 +10,6 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_status.d
 
 typedef OnOpenEmailActionClick = void Function(PresentationEmail selectedEmail);
 typedef OnSelectEmailActionClick = void Function(PresentationEmail selectedEmail);
-typedef OnMarkAsStarEmailActionClick = void Function(PresentationEmail selectedEmail);
 
 class EmailTileBuilder {
 
@@ -24,7 +23,6 @@ class EmailTileBuilder {
 
   OnOpenEmailActionClick? _onOpenEmailActionClick;
   OnSelectEmailActionClick? _onSelectEmailActionClick;
-  OnMarkAsStarEmailActionClick? _onMarkAsStarEmailActionClick;
 
   EmailTileBuilder(
     this._context,
@@ -42,10 +40,6 @@ class EmailTileBuilder {
 
   void onSelectEmailAction(OnSelectEmailActionClick onSelectEmailActionClick) {
     _onSelectEmailActionClick = onSelectEmailActionClick;
-  }
-
-  void addOnMarkAsStarEmailActionClick(OnMarkAsStarEmailActionClick onMarkAsStarEmailActionClick) {
-    _onMarkAsStarEmailActionClick = onMarkAsStarEmailActionClick;
   }
 
   Widget build() {
@@ -104,7 +98,7 @@ class EmailTileBuilder {
                         Padding(
                           padding: EdgeInsets.only(left: 8),
                           child: (ButtonBuilder(_imagePaths.icAttachment)
-                              ..padding(0)
+                              ..paddingIcon(EdgeInsets.zero)
                               ..size(16))
                             .build()),
                       Padding(
@@ -115,7 +109,7 @@ class EmailTileBuilder {
                               overflow:TextOverflow.ellipsis,
                               style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail))),
                       (ButtonBuilder(_imagePaths.icChevron)
-                          ..padding(0)
+                          ..paddingIcon(EdgeInsets.zero)
                           ..size(16))
                         .build(),
                     ],
@@ -162,7 +156,7 @@ class EmailTileBuilder {
                                 ),
                               if (_presentationEmail.isFlaggedEmail() )
                                 (ButtonBuilder(_imagePaths.icStar)
-                                  ..padding(0)
+                                  ..paddingIcon(EdgeInsets.zero)
                                   ..size(15))
                                 .build(),
                             ],
@@ -201,24 +195,15 @@ class EmailTileBuilder {
       return AnimatedSwitcher(
         duration: Duration(milliseconds: 600),
         transitionBuilder: _transitionBuilder,
-        child: _presentationEmail.selectMode == SelectMode.ACTIVE
-          ? (IconBuilder(_imagePaths.icSelected)
-                ..addOnTapActionClick(() {
-                  if (_selectModeAll == SelectMode.ACTIVE && _onSelectEmailActionClick != null) {
-                    _onSelectEmailActionClick!(_presentationEmail);
-                  }}))
-              .build()
-          : (AvatarBuilder()
-                ..text('${_presentationEmail.getAvatarText()}')
-                ..size(56)
-                ..textColor(Colors.white)
-                ..avatarColor(_presentationEmail.avatarColors)
-                // .iconStatus(_imagePaths.icOffline)
-                ..addOnTapActionClick(() {
-                    if (_selectModeAll == SelectMode.ACTIVE && _onSelectEmailActionClick != null) {
-                    _onSelectEmailActionClick!(_presentationEmail);
-                    }}))
-              .build()
+        child: (IconBuilder(_presentationEmail.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelectedV2 : _imagePaths.icUnSelectedV2)
+            ..padding(EdgeInsets.all(14))
+            ..size(55)
+            ..addOnTapActionClick(() {
+              if (_selectModeAll == SelectMode.ACTIVE && _onSelectEmailActionClick != null) {
+                _onSelectEmailActionClick!(_presentationEmail);
+              }}))
+          .build()
+
       );
     } else {
       return (AvatarBuilder()

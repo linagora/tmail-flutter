@@ -4,4 +4,10 @@ enum EmailActionType {
   forward,
   replyAll,
   compose,
+  markAsRead,
+  markAsUnread,
+  markAsFlag,
+  move,
+  markAsSpam,
+  delete,
 }
