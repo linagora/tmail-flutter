@@ -68,11 +68,20 @@ class ThreadView extends GetWidget<ThreadController> {
           )
         ),
         floatingActionButton: Obx(() => !controller.isSearchActive()
-          ? FloatingActionButton(
+          ? ScrollingFloatingButtonAnimated(
+              icon: SvgPicture.asset(imagePaths.icCompose, width: 20, height: 20, fit: BoxFit.fill),
+              text: Padding(
+                padding: EdgeInsets.only(right: 10),
+                child: Text(
+                    AppLocalizations.of(context).compose,
+                    style: TextStyle(color: AppColor.colorTextButton, fontSize: 15.0, fontWeight: FontWeight.w500))
+              ),
+              onPress: () => controller.composeEmailAction(),
+              scrollController: controller.listEmailController,
+              color: Colors.white,
               elevation: 4.0,
-              child: new Icon(Icons.add),
-              backgroundColor: AppColor.appColor,
-              onPressed: () => controller.composeEmailAction())
+              width: 140,
+              animateIcon: false)
           : SizedBox.shrink())
       ),
     );
