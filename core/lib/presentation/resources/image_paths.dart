@@ -2,7 +2,7 @@ import 'package:core/presentation/resources/assets_paths.dart';
 
 class ImagePaths {
   String get icTMailLogo => _getImagePath('tmail_logo.svg');
-  String get icCloseMailbox => _getImagePath('ic_close.svg');
+  String get icClose => _getImagePath('ic_close.svg');
   String get icSearch => _getImagePath('ic_search.svg');
   String get icNextArrow => _getImagePath('ic_next_arrow.svg');
   String get icMailboxInbox => _getImagePath('ic_mailbox_inbox.svg');
@@ -66,6 +66,15 @@ class ImagePaths {
   String get icForwardV2 => _getImagePath('ic_forward_v2.svg');
   String get icMoveEmail => _getImagePath('ic_move_email.svg');
   String get icUnreadEmail => _getImagePath('ic_unread_email.svg');
+  String get icCloseMailbox => _getImagePath('ic_close_mailbox.svg');
+  String get icAddNewFolder => _getImagePath('ic_add_new_folder.svg');
+  String get icFolderMailbox => _getImagePath('ic_folder_mailbox.svg');
+  String get icMailboxInboxV2 => _getImagePath('ic_mailbox_inbox_v2.svg');
+  String get icMailboxDraftsV2 => _getImagePath('ic_mailbox_drafts_v2.svg');
+  String get icMailboxSentV2 => _getImagePath('ic_mailbox_sent_v2.svg');
+  String get icMailboxArchivedV2 => _getImagePath('ic_mailbox_archived_v2.svg');
+  String get icMailboxSpamV2 => _getImagePath('ic_mailbox_spam_v2.svg');
+  String get icMailboxTrashV2 => _getImagePath('ic_mailbox_trash_v2.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

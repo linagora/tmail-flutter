@@ -526,4 +526,22 @@ class AppLocalizations {
         args: [action]
     );
   }
+
+  String get folders {
+    return Intl.message(
+        'Folders',
+        name: 'folders'
+    );
+  }
+
+  String get logout {
+    return Intl.message('Logout',
+        name: 'logout');
+  }
+
+  String get hint_search_mailboxes {
+    return Intl.message(
+        'Search for mailboxes',
+        name: 'hint_search_mailboxes');
+  }
 }
