@@ -50,6 +50,7 @@ class ImagePaths {
   String get icChevronDown => _getImagePath('ic_chevron_down.svg');
   String get icFilter => _getImagePath('ic_filter.svg');
   String get icSearchBar => _getImagePath('ic_search_bar.svg');
+  String get icCompose => _getImagePath('ic_compose.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

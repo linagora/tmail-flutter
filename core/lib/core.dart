@@ -41,6 +41,7 @@ export 'presentation/views/dialog/loading_dialog_builder.dart';
 export 'presentation/views/dialog/downloading_file_dialog_builder.dart';
 export 'presentation/views/background/background_widget_builder.dart';
 export 'presentation/views/html_viewer/html_content_viewer_widget.dart';
+export 'presentation/views/floating_button/scrolling_floating_button_animated.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';
