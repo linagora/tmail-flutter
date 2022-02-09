@@ -320,6 +320,10 @@ class ThreadController extends BaseController {
     }
   }
 
+  void enableSelectionEmail() {
+    currentSelectMode.value = SelectMode.ACTIVE;
+  }
+
   List<PresentationEmail> getListEmailSelected() {
     if (isSearchActive()) {
       return emailListSearch.where((email) => email.selectMode == SelectMode.ACTIVE).toList();
@@ -603,6 +607,27 @@ class ThreadController extends BaseController {
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
       && mailboxDashBoardController.userProfile.value != null
       && mailboxDashBoardController.mapDefaultMailboxId.containsKey(PresentationMailbox.roleOutbox);
+
+  bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
+
+  void pressEmailSelectionAction(BuildContext context, EmailActionType actionType, List<PresentationEmail> selectionEmail) {
+    switch(actionType) {
+      case EmailActionType.markAsRead:
+      case EmailActionType.markAsUnread:
+        markAsSelectedEmailRead(selectionEmail);
+        break;
+      case EmailActionType.move:
+        moveSelectedMultipleEmailToMailboxAction(selectionEmail);
+        break;
+      case EmailActionType.markAsFlag:
+      case EmailActionType.markAsSpam:
+      case EmailActionType.delete:
+        _appToast.showToast(AppLocalizations.of(context).the_feature_is_under_development);
+        break;
+      default:
+        break;
+    }
+  }
 
   void openMailboxLeftMenu() {
     mailboxDashBoardController.openDrawer();

@@ -7,22 +7,30 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnFilterEmailAction = void Function();
+typedef OnEditThreadAction = void Function();
 typedef OnOpenListMailboxActionClick = void Function();
+typedef OnCancelEditThread = void Function();
 
 class AppBarThreadWidgetBuilder {
   OnFilterEmailAction? _onFilterEmailAction;
   OnOpenListMailboxActionClick? _onOpenListMailboxActionClick;
+  OnEditThreadAction? _onEditThreadAction;
+  OnCancelEditThread? _onCancelEditThread;
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
   final PresentationMailbox? _presentationMailbox;
+  final List<PresentationEmail> _listSelectionEmail;
+  final SelectMode _selectMode;
 
   AppBarThreadWidgetBuilder(
     this._context,
     this._imagePaths,
     this._responsiveUtils,
     this._presentationMailbox,
+    this._listSelectionEmail,
+    this._selectMode,
   );
 
   void addOnFilterEmailAction(OnFilterEmailAction onFilterEmailAction) {
@@ -31,6 +39,14 @@ class AppBarThreadWidgetBuilder {
 
   void addOpenListMailboxActionClick(OnOpenListMailboxActionClick onOpenListMailboxActionClick) {
     _onOpenListMailboxActionClick = onOpenListMailboxActionClick;
+  }
+
+  void addOnEditThreadAction(OnEditThreadAction onEditThreadAction) {
+    _onEditThreadAction = onEditThreadAction;
+  }
+
+  void addOnCancelEditThread(OnCancelEditThread onCancelEditThread) {
+    _onCancelEditThread = onCancelEditThread;
   }
 
   Widget build() {
@@ -44,7 +60,9 @@ class AppBarThreadWidgetBuilder {
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
           children: [
-            _buildEditButton(),
+            if (_selectMode != SelectMode.ACTIVE) _buildEditButton(),
+            if (_selectMode == SelectMode.ACTIVE) _buildBackButton(),
+            if (_selectMode == SelectMode.ACTIVE) _buildCountItemSelected(),
             Expanded(child: _buildContentCenterAppBar()),
             _buildFilterButton(),
           ]
@@ -60,7 +78,7 @@ class AppBarThreadWidgetBuilder {
         child: Padding(
             padding: EdgeInsets.only(right: 16),
             child: TextButton(
-              onPressed: () {},
+              onPressed: () => _onEditThreadAction?.call(),
               child: Text(
                 AppLocalizations.of(_context).edit,
                 style: TextStyle(fontSize: 17, color: AppColor.colorTextButton),
@@ -78,11 +96,38 @@ class AppBarThreadWidgetBuilder {
         padding: EdgeInsets.only(left: 16),
         child: IconButton(
           color: AppColor.baseTextColor,
-          icon: SvgPicture.asset(_imagePaths.icFilter, color: AppColor.baseTextColor, fit: BoxFit.fill),
+          icon: SvgPicture.asset(_imagePaths.icFilter, fit: BoxFit.fill),
           onPressed: () => _onFilterEmailAction?.call()
         )
       )
     );
+  }
+
+  Widget _buildBackButton() {
+    return Material(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.transparent,
+        child: IconButton(
+            color: AppColor.baseTextColor,
+            icon: SvgPicture.asset(
+                _imagePaths.icBack,
+                width: 20,
+                height: 20,
+                color: AppColor.colorTextButton,
+                fit: BoxFit.fill),
+            onPressed: () => _onCancelEditThread?.call()
+        )
+    );
+  }
+
+  Widget _buildCountItemSelected() {
+    return Padding(
+        padding: EdgeInsets.zero,
+        child: Text(
+            '${_listSelectionEmail.length}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 17, color: AppColor.colorTextButton)));
   }
 
   Widget _buildContentCenterAppBar() {

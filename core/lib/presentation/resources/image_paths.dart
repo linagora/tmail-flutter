@@ -51,6 +51,14 @@ class ImagePaths {
   String get icFilter => _getImagePath('ic_filter.svg');
   String get icSearchBar => _getImagePath('ic_search_bar.svg');
   String get icCompose => _getImagePath('ic_compose.svg');
+  String get icReadV2 => _getImagePath('ic_read_v2.svg');
+  String get icUnreadV2 => _getImagePath('ic_unread_v2.svg');
+  String get icSelectedV2 => _getImagePath('ic_selected_v2.svg');
+  String get icUnSelectedV2 => _getImagePath('ic_unselected_v2.svg');
+  String get icDeleteV2 => _getImagePath('ic_delete_v2.svg');
+  String get icSpamV2 => _getImagePath('ic_spam_v2.svg');
+  String get icMoveV2 => _getImagePath('ic_move_v2.svg');
+  String get icFlagV2 => _getImagePath('ic_flag_v2.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

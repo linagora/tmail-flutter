@@ -103,16 +103,20 @@ class _ScrollingFloatingButtonAnimatedState
           _scrollController.position.userScrollDirection ==
               ScrollDirection.reverse) {
         if (widget.animateIcon!) _animationController.forward();
-        setState(() {
-          _onTop = false;
-        });
+        if (mounted) {
+          setState(() {
+            _onTop = false;
+          });
+        }
       } else if (_scrollController.position.pixels <= widget.limitIndicator! &&
           _scrollController.position.userScrollDirection ==
               ScrollDirection.forward) {
         if (widget.animateIcon!) _animationController.reverse();
-        setState(() {
-          _onTop = true;
-        });
+        if (mounted) {
+          setState(() {
+            _onTop = true;
+          });
+        }
       }
     });
   }
@@ -128,9 +132,11 @@ class _ScrollingFloatingButtonAnimatedState
         height: widget.height,
         width: _onTop ? widget.width : widget.height,
         onEnd: () {
-          setState(() {
-            _visibleText = !_visibleText;
-          });
+          if (mounted) {
+            setState(() {
+              _visibleText = !_visibleText;
+            });
+          }
         },
         decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(widget.height! / 2))),
         child: InkWell(
