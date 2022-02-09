@@ -59,6 +59,8 @@ class ImagePaths {
   String get icSpamV2 => _getImagePath('ic_spam_v2.svg');
   String get icMoveV2 => _getImagePath('ic_move_v2.svg');
   String get icFlagV2 => _getImagePath('ic_flag_v2.svg');
+  String get icReadToast => _getImagePath('ic_read_toast.svg');
+  String get icUnreadToast => _getImagePath('ic_unread_toast.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

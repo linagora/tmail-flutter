@@ -77,6 +77,7 @@ class ThreadBindings extends Bindings {
       Get.find<ScrollController>(),
       Get.find<MarkAsMultipleEmailReadInteractor>(),
       Get.find<AppToast>(),
+      Get.find<ImagePaths>(),
       Get.find<MoveMultipleEmailToMailboxInteractor>(),
       Get.find<MarkAsStarEmailInteractor>(),
       Get.find<MarkAsStarMultipleEmailInteractor>(),

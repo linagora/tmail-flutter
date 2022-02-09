@@ -518,4 +518,12 @@ class AppLocalizations {
         'This feature is under development.',
         name: 'the_feature_is_under_development');
   }
+
+  String marked_message_toast(String action) {
+    return Intl.message(
+        'You’ve marked messages as "$action"',
+        name: 'marked_message_toast',
+        args: [action]
+    );
+  }
 }
