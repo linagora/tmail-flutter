@@ -26,7 +26,7 @@ class MailboxView extends GetWidget<MailboxController> {
       child: ClipRRect(
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(responsiveUtils.isMobile(context) ? 14 : 0),
-          topLeft: Radius.circular(14)),
+          topLeft: Radius.circular(responsiveUtils.isMobile(context) ? 14 : 0)),
         child: Drawer(
           child: Scaffold(
             backgroundColor: Colors.white,
@@ -162,7 +162,7 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildDefaultMailbox(BuildContext context, List<PresentationMailbox> defaultMailbox) {
     return ListView.builder(
-      padding: EdgeInsets.only(top: 8, left: 8, right: 8),
+      padding: EdgeInsets.all(8),
       key: PageStorageKey('default_mailbox_list'),
       itemCount: defaultMailbox.length,
       shrinkWrap: true,
@@ -173,7 +173,8 @@ class MailboxView extends GetWidget<MailboxController> {
               defaultMailbox[index],
               selectMode: controller.getSelectMode(
                   defaultMailbox[index],
-                  controller.mailboxDashBoardController.selectedMailbox.value))
+                  controller.mailboxDashBoardController.selectedMailbox.value),
+              isLastElement: index == defaultMailbox.length - 1)
           ..onOpenMailboxAction((mailbox) => controller.selectMailbox(context, mailbox)))
         .build()));
   }
@@ -183,7 +184,7 @@ class MailboxView extends GetWidget<MailboxController> {
         ? Transform(
             transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
             child: Padding(
-              padding: EdgeInsets.only(right: 12, top: 10),
+              padding: EdgeInsets.only(top: 10, bottom: 10),
               child: TreeView(
                 startExpanded: false,
                 key: Key('folder_mailbox_list'),
@@ -205,7 +206,6 @@ class MailboxView extends GetWidget<MailboxController> {
                   parent: Obx(() => (MailBoxFolderTileBuilder(
                           context,
                           imagePaths,
-                          responsiveUtils,
                           mailboxNode,
                           selectMode: controller.getSelectMode(
                               mailboxNode.item,
@@ -220,7 +220,6 @@ class MailboxView extends GetWidget<MailboxController> {
               child: Obx(() => (MailBoxFolderTileBuilder(
                       context,
                       imagePaths,
-                      responsiveUtils,
                       mailboxNode,
                       selectMode: controller.getSelectMode(
                           mailboxNode.item,

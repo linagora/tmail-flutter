@@ -27,7 +27,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> {
         tabletLarge: Container(
             child: MailboxView(),
             width: responsiveUtils.getSizeWidthScreen(context) * 0.35),
-        desktop: null
+        desktop: SizedBox.shrink()
       ),
       drawerEnableOpenDragGesture: !responsiveUtils.isDesktop(context),
       body: ResponsiveWidget(
@@ -38,12 +38,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Expanded(flex: 1, child: MailboxView()),
-              Expanded(
-                flex: 1,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: ThreadView(),
-                )),
+              Expanded(flex: 1, child: ThreadView()),
               Expanded(flex: 2, child: EmailView()),
             ],
           ),

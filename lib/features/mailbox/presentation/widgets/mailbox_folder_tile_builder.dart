@@ -14,7 +14,6 @@ class MailBoxFolderTileBuilder {
   final MailboxNode _mailboxNode;
   final BuildContext _context;
   final ImagePaths _imagePaths;
-  final ResponsiveUtils _responsiveUtils;
   final SelectMode selectMode;
   final MailboxDisplayed mailboxDisplayed;
 
@@ -24,7 +23,6 @@ class MailBoxFolderTileBuilder {
   MailBoxFolderTileBuilder(
     this._context,
     this._imagePaths,
-    this._responsiveUtils,
     this._mailboxNode,
     {
       this.selectMode = SelectMode.INACTIVE,
@@ -49,10 +47,8 @@ class MailBoxFolderTileBuilder {
         key: Key('mailbox_folder_tile'),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(mailboxDisplayed == MailboxDisplayed.mailbox ? 10 : 0),
-          color: mailboxDisplayed == MailboxDisplayed.mailbox
-            ? selectMode == SelectMode.ACTIVE ? AppColor.mailboxSelectedBackgroundColor : AppColor.mailboxBackgroundColor
-            : Colors.white
+          borderRadius: BorderRadius.circular(0),
+          color: Colors.white
         ),
         child: MediaQuery(
           data: MediaQueryData(padding: EdgeInsets.zero),
@@ -70,8 +66,9 @@ class MailBoxFolderTileBuilder {
               title: _buildTitleFolderItem(),
               trailing: _mailboxNode.hasChildren()
                   ? Padding(
-                      padding: EdgeInsets.only(right: mailboxDisplayed == MailboxDisplayed.mailbox ? _responsiveUtils.isMobile(_context) ? 0 : 8 : 0, left: 16),
+                      padding: EdgeInsets.only(right: 0, left: 16),
                       child: IconButton(
+                          padding: EdgeInsets.zero,
                           color: AppColor.primaryColor,
                           icon: SvgPicture.asset(
                               _mailboxNode.expandMode == ExpandMode.EXPAND ? _imagePaths.icExpandFolder : _imagePaths.icFolderArrow,

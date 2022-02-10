@@ -123,6 +123,10 @@ class _ScrollingFloatingButtonAnimatedState
 
   @override
   Widget build(BuildContext context) {
+    final shortestSide = MediaQuery.of(context).size.shortestSide;
+    if (shortestSide < 60) {
+      return SizedBox.shrink();
+    }
     return Card(
       elevation: widget.elevation,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(widget.height! / 2))),
