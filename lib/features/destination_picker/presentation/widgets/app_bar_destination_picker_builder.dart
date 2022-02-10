@@ -1,6 +1,7 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnCloseActionClick = void Function();
@@ -39,14 +40,15 @@ class AppBarDestinationPickerBuilder {
   }
 
   Widget _buildBackButton() {
-    return (ButtonBuilder(_imagePaths.icComposerClose)
-        ..paddingIcon(EdgeInsets.all(5))
-        ..size(30)
-        ..onPressActionClick(() {
-          if (_onCloseActionClick != null) {
-            _onCloseActionClick!();
-          }}))
-      .build();
+    return Material(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.transparent,
+        child: IconButton(
+            color: AppColor.baseTextColor,
+            icon: SvgPicture.asset(_imagePaths.icComposerClose, fit: BoxFit.fill),
+            onPressed: () => _onCloseActionClick?.call()
+        )
+    );
   }
 
   Widget _buildCountItemSelected() {
