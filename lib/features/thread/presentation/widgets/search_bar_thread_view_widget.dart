@@ -55,9 +55,10 @@ class SearchBarThreadViewWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildSearchButton(),
-                  Text(
+                  Expanded(child: Text(
                     _hintTextSearch ?? '',
-                    style: TextStyle(fontSize: 17, color: AppColor.colorHintSearchBar),)
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 17, color: AppColor.colorHintSearchBar)))
                 ]
               )
           )

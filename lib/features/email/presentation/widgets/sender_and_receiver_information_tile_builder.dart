@@ -2,6 +2,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -48,7 +49,7 @@ class SenderAndReceiverInformationTileBuilder {
                 ..text('${_presentationEmail!.getAvatarText()}')
                 ..textColor(Colors.white)
                 ..avatarColor(_presentationEmail?.avatarColors)
-                ..size(40))
+                ..size(GetPlatform.isWeb ? 48 : 56))
               // .iconStatus(_imagePaths.icOffline)
               .build()),
           title: Transform(

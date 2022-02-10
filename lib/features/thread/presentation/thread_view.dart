@@ -378,7 +378,8 @@ class ThreadView extends GetWidget<ThreadController> {
             ..onOpenEmailAction((selectedEmail) => controller.previewEmail(context, selectedEmail))
             ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail)))
           .build()),
-      ));
+      )
+    );
   }
 
   Widget _buildEmptyEmail(BuildContext context) {

@@ -2,6 +2,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -57,15 +58,23 @@ class AppBarThreadWidgetBuilder {
       padding: EdgeInsets.only(left: 8, top: 16, bottom: 8, right: 8),
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
-        child: Row(
-          children: [
-            if (_selectMode != SelectMode.ACTIVE) _buildEditButton(),
-            if (_selectMode == SelectMode.ACTIVE) _buildBackButton(),
-            if (_selectMode == SelectMode.ACTIVE) _buildCountItemSelected(),
-            Expanded(child: _buildContentCenterAppBar()),
-            _buildFilterButton(),
-          ]
-        )
+        child: Row(children: [
+          Expanded(child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (_selectMode != SelectMode.ACTIVE)
+                Positioned(left: 0,child: _buildEditButton()),
+              if (_selectMode == SelectMode.ACTIVE)
+                Positioned(left: 0, child: _buildBackButton()),
+              if (_selectMode == SelectMode.ACTIVE)
+                Positioned(left: 40, child: _buildCountItemSelected()),
+              Positioned(right: 0, child: _buildFilterButton()),
+              Padding(
+                padding: EdgeInsets.only(left: 60, right: 40),
+                child: _buildContentCenterAppBar()),
+            ]
+          ))
+        ])
       )
     );
   }
@@ -135,7 +144,7 @@ class AppBarThreadWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: () => _onOpenListMailboxActionClick?.call(),
+          onTap: () => !_responsiveUtils.isDesktop(_context) ? _onOpenListMailboxActionClick?.call() : null,
           child: Padding(
             padding: EdgeInsets.zero,
             child: Container(
@@ -145,19 +154,17 @@ class AppBarThreadWidgetBuilder {
               child: Text(
                 '${_presentationMailbox?.name?.name.capitalizeFirstEach ?? ''}',
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                overflow: GetPlatform.isWeb ? TextOverflow.clip : TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 21, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700))
             ))),
-        Transform(
-          transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
-          child: Material(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.transparent,
-                child: IconButton(
-                    padding: EdgeInsets.zero,
-                    color: AppColor.baseTextColor,
-                    icon: SvgPicture.asset(_imagePaths.icChevronDown, width: 20, height: 16, fit: BoxFit.fill),
-                    onPressed: () => _onOpenListMailboxActionClick?.call())))
+        if (!_responsiveUtils.isDesktop(_context))
+          Transform(
+            transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              color: AppColor.baseTextColor,
+              icon: SvgPicture.asset(_imagePaths.icChevronDown, width: 20, height: 16, fit: BoxFit.fill),
+              onPressed: () => !_responsiveUtils.isDesktop(_context) ? _onOpenListMailboxActionClick?.call() : null))
       ]
     );
   }
@@ -172,8 +179,8 @@ class AppBarThreadWidgetBuilder {
       width = width * 0.35;
       widthSiblingsWidget = 250;
     } else if (_responsiveUtils.isDesktop(_context)) {
-      width = width * 0.2;
-      widthSiblingsWidget = 300;
+      width = width * 0.25;
+      widthSiblingsWidget = 150;
     }
     final maxWidth = width > widthSiblingsWidget ? width - widthSiblingsWidget : 0.0;
     return maxWidth;

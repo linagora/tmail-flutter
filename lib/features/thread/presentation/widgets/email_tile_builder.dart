@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -197,18 +198,17 @@ class EmailTileBuilder {
         transitionBuilder: _transitionBuilder,
         child: (IconBuilder(_presentationEmail.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelectedV2 : _imagePaths.icUnSelectedV2)
             ..padding(EdgeInsets.all(14))
-            ..size(55)
+            ..size(GetPlatform.isWeb ? 48 : 56)
             ..addOnTapActionClick(() {
               if (_selectModeAll == SelectMode.ACTIVE && _onSelectEmailActionClick != null) {
                 _onSelectEmailActionClick!(_presentationEmail);
               }}))
           .build()
-
       );
     } else {
       return (AvatarBuilder()
           ..text('${_presentationEmail.getAvatarText()}')
-          ..size(56)
+          ..size(GetPlatform.isWeb ? 48 : 56)
           ..textColor(Colors.white)
           ..avatarColor(_presentationEmail.avatarColors))
         // .iconStatus(_imagePaths.icOffline)
