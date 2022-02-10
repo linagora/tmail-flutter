@@ -1,6 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/presentation/state/failure.dart';
-import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 

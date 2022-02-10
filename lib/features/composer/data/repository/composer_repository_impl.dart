@@ -2,7 +2,6 @@
 import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
-import 'package:model/upload/upload_request.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 

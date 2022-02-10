@@ -1,6 +1,5 @@
 
 import 'package:core/core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 const List<Color> _defaultColors = [Color.fromRGBO(0, 0, 0, 0.1), Color(0x44CCCCCC), Color.fromRGBO(0, 0, 0, 0.1)];
@@ -71,21 +70,13 @@ class _AttachmentsPlaceHolderLoadingState extends State<AttachmentsPlaceHolderLo
           margin: EdgeInsets.only(top: 20),
           padding: EdgeInsets.zero,
           color: Colors.transparent,
-          child: Column(
-            children: [
-              Row(children: [
-                _placeHolderAttachment(context),
-                if (widget.responsiveUtils.isDesktop(context))
-                  SizedBox(width: 16),
-                if (widget.responsiveUtils.isDesktop(context))
-                  _placeHolderAttachment(context),
-                if (widget.responsiveUtils.isDesktop(context))
-                  SizedBox(width: 16),
-                if (widget.responsiveUtils.isDesktop(context))
-                  _placeHolderAttachment(context),
-              ]),
-            ],
-          ),
+          child: Row(children: [
+            _placeHolderAttachment(context),
+            if (widget.responsiveUtils.isDesktop(context))
+              SizedBox(width: 16),
+            if (widget.responsiveUtils.isDesktop(context))
+              _placeHolderAttachment(context),
+          ]),
         );
       },
     );

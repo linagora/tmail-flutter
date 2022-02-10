@@ -1,6 +1,7 @@
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 ThemeData appTheme() {
   return ThemeData(
@@ -38,10 +39,8 @@ AppBarTheme appBarTheme() {
   return AppBarTheme(
     color: Colors.white,
     elevation: 0,
-    brightness: Brightness.light,
+    systemOverlayStyle: SystemUiOverlayStyle.light,
     iconTheme: IconThemeData(color: Colors.black),
-    textTheme: TextTheme(
-      headline6: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
-    ),
+    titleTextStyle: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
   );
 }
