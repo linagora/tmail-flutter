@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/session/presentation/session_controller.dart';
 

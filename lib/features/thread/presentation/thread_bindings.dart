@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';

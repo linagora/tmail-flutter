@@ -4,7 +4,6 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
-import 'package:model/email/email_property.dart';
 import 'package:model/model.dart';
 
 extension EmailExtension on Email {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 class TreeView extends InheritedWidget {
   final List<Widget> children;

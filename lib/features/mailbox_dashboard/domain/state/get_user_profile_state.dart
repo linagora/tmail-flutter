@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/presentation/state/failure.dart';
 import 'package:model/model.dart';
 
 class GetUserProfileSuccess extends UIState {
