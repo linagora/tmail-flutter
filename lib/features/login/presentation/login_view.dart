@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';

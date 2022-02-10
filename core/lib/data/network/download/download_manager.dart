@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:core/core.dart';
-import 'package:core/data/network/download/download_client.dart';
 import 'package:dio/dio.dart';
 
 class DownloadManager {

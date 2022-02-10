@@ -1,7 +1,6 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnCloseActionClick = void Function();

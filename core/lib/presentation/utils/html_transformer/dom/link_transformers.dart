@@ -1,7 +1,6 @@
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:html/dom.dart';
 
 class EnsureRelationNoReferrerTransformer extends DomTransformer {

@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/presentation/state/failure.dart';
 
 class DeleteCredentialSuccess extends UIState {
   DeleteCredentialSuccess();
