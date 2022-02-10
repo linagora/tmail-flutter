@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
@@ -20,9 +21,10 @@ class HiveCacheConfig {
     if (databasePath != null) {
       Hive.init(databasePath);
     } else {
-      Directory directory = await pathProvider
-        .getApplicationDocumentsDirectory();
-      Hive.init(directory.path);
+      if (!GetPlatform.isWeb) {
+        Directory directory = await pathProvider.getApplicationDocumentsDirectory();
+        Hive.init(directory.path);
+      }
     }
   }
 

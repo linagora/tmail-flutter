@@ -25,7 +25,9 @@ class HomeController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    _initFlutterDownloader();
+    if (!GetPlatform.isWeb) {
+      _initFlutterDownloader();
+    }
     _cleanupEmailCache();
   }
 
