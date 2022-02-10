@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/autocomplete_datasource.dart';
