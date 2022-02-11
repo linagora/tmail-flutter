@@ -42,7 +42,7 @@ class EmailContentItemBuilder {
           padding: EdgeInsets.zero,
           child: Text(
             _emailContent.content,
-            style: TextStyle(fontSize: 14, color: AppColor.nameUserColor)));
+            style: TextStyle(fontSize: 14, color: AppColor.colorNameEmail)));
       case EmailContentType.other:
         return SizedBox.shrink();
     }

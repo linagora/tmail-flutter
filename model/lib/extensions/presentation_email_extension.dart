@@ -111,7 +111,7 @@ extension PresentationEmailExtension on PresentationEmail {
     }
   }
 
-  PresentationEmail toSearchPresentationEmail(Map<MailboxId, PresentationMailbox> mapMailboxes) {
+  PresentationEmail toSearchPresentationEmail(Map<MailboxId, PresentationMailbox> mapMailboxes, Random random) {
     mailboxIds?.removeWhere((key, value) => !value);
 
     final listMailboxId = mailboxIds?.entries
@@ -123,6 +123,8 @@ extension PresentationEmailExtension on PresentationEmail {
       ?.map((mailboxId) => mapMailboxes.containsKey(mailboxId) ? mapMailboxes[mailboxId]?.name : null)
       .where((mailboxName) => mailboxName != null)
       .toList();
+
+    final newAvatarColors = AppColor.mapGradientColor[random.nextInt(AppColor.mapGradientColor.length)];
 
     return PresentationEmail(
       this.id,
@@ -141,7 +143,7 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       mailboxNames: listMailboxName,
       selectMode: selectMode,
-      avatarColors: avatarColors
+      avatarColors: avatarColors ?? newAvatarColors
     );
   }
 
