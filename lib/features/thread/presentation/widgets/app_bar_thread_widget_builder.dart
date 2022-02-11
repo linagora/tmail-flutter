@@ -7,7 +7,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/filter_message_option.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-typedef OnFilterEmailAction = void Function(FilterMessageOption);
+typedef OnFilterEmailAction = void Function(FilterMessageOption, RelativeRect? position);
 typedef OnEditThreadAction = void Function();
 typedef OnOpenListMailboxActionClick = void Function();
 typedef OnCancelEditThread = void Function();
@@ -75,10 +75,10 @@ class AppBarThreadWidgetBuilder {
               _filterMessageOption.getTitle(_context).isNotEmpty
                 ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Padding(
-                      padding: EdgeInsets.only(left: 60, right: 40),
+                      padding: EdgeInsets.only(left: 40, right: 40),
                       child: _buildContentCenterAppBar()),
                     Transform(
-                      transform: Matrix4.translationValues(-2.0, -8.0, 0.0),
+                      transform: Matrix4.translationValues(_responsiveUtils.isDesktop(_context) ? -2.0 : -16.0, -8.0, 0.0),
                       child: Text(
                           _filterMessageOption.getTitle(_context),
                           style: TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
@@ -115,16 +115,32 @@ class AppBarThreadWidgetBuilder {
       borderRadius: BorderRadius.circular(12),
       color: Colors.transparent,
       child: Padding(
-        padding: EdgeInsets.only(left: 16),
-        child: IconButton(
-          icon: SvgPicture.asset(
+        padding: EdgeInsets.only(left: 16, right: 16),
+        child: GestureDetector(
+            onTap: () {
+              if (_onFilterEmailAction != null && _responsiveUtils.isMobileDevice(_context)) {
+                _onFilterEmailAction!.call(_filterMessageOption, null);
+              }
+            },
+            child: SvgPicture.asset(
               _imagePaths.icFilter,
               color: _filterMessageOption == FilterMessageOption.all
-                ? AppColor.colorFilterMessageDisabled
-                : AppColor.colorFilterMessageEnabled,
+                  ? AppColor.colorFilterMessageDisabled
+                  : AppColor.colorFilterMessageEnabled,
               fit: BoxFit.fill),
-          onPressed: () => _onFilterEmailAction?.call(_filterMessageOption)
-        )
+            onTapDown: (detail) {
+              if (_onFilterEmailAction != null && !_responsiveUtils.isMobileDevice(_context)) {
+                final screenSize = MediaQuery.of(_context).size;
+                final offset = detail.globalPosition;
+                final position = RelativeRect.fromLTRB(
+                  offset.dx,
+                  offset.dy,
+                  screenSize.width - offset.dx,
+                  screenSize.height - offset.dy,
+                );
+                _onFilterEmailAction!.call(_filterMessageOption, position);
+              }
+            })
       )
     );
   }
@@ -164,7 +180,7 @@ class AppBarThreadWidgetBuilder {
         GestureDetector(
           onTap: () => !_responsiveUtils.isDesktop(_context) ? _onOpenListMailboxActionClick?.call() : null,
           child: Padding(
-            padding: EdgeInsets.zero,
+            padding: !_responsiveUtils.isDesktop(_context) ? EdgeInsets.zero : EdgeInsets.only(bottom: 8, top: 8),
             child: Container(
               padding: EdgeInsets.zero,
               margin: EdgeInsets.zero,
