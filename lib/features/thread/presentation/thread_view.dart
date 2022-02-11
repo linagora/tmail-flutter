@@ -1,14 +1,17 @@
 import 'package:core/core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_bar_thread_view_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/suggestion_box_widget.dart';
@@ -146,11 +149,70 @@ class ThreadView extends GetWidget<ThreadController> {
               responsiveUtils,
               controller.mailboxDashBoardController.selectedMailbox.value,
               controller.getListEmailSelected(),
-              controller.currentSelectMode.value)
+              controller.currentSelectMode.value,
+              controller.filterMessageOption.value)
           ..addOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
           ..addOnEditThreadAction(() => controller.enableSelectionEmail())
+          ..addOnFilterEmailAction((filterMessageOption) =>
+              controller.openFilterMessagesCupertinoActionSheet(
+                  context,
+                  _filterMessagesCupertinoActionTile(context, filterMessageOption),
+                  cancelButton: _buildCupertinoActionCancelButton(context)))
           ..addOnCancelEditThread(() => controller.cancelSelectEmail()))
         .build();
+  }
+
+  List<Widget> _filterMessagesCupertinoActionTile(BuildContext context, FilterMessageOption optionCurrent) {
+    return <Widget>[
+      _filterMessageWithAttachmentsAction(context, optionCurrent),
+      _filterMessagesUnreadAction(context, optionCurrent),
+      _filterMessageStarredAction(context, optionCurrent),
+    ];
+  }
+
+  Widget _buildCupertinoActionCancelButton(BuildContext context) {
+    return CupertinoActionSheetAction(
+      child: Text(
+        AppLocalizations.of(context).cancel,
+        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorTextButton)),
+      onPressed: () => controller.closeFilterMessageActionSheet(),
+    );
+  }
+
+  Widget _filterMessageWithAttachmentsAction(BuildContext context, FilterMessageOption optionCurrent) {
+    return (FilterMessageCupertinoActionSheetActionBuilder(
+          Key('filter_attachment_action'),
+          SvgPicture.asset(imagePaths.icAttachment, width: 28, height: 28, fit: BoxFit.fill, color: AppColor.colorTextButton),
+          AppLocalizations.of(context).with_attachments,
+          FilterMessageOption.attachments,
+          optionCurrent: optionCurrent,
+          actionSelected: SvgPicture.asset(imagePaths.icFilterSelected, fit: BoxFit.fill))
+      ..onActionClick((option) => controller.filterMessagesAction(context, option)))
+    .build();
+  }
+
+  Widget _filterMessagesUnreadAction(BuildContext context, FilterMessageOption optionCurrent) {
+    return (FilterMessageCupertinoActionSheetActionBuilder(
+          Key('filter_unread_action'),
+          SvgPicture.asset(imagePaths.icUnreadV2, width: 28, height: 28, fit: BoxFit.fill),
+          AppLocalizations.of(context).unread,
+          FilterMessageOption.unread,
+          optionCurrent: optionCurrent,
+          actionSelected: SvgPicture.asset(imagePaths.icFilterSelected, fit: BoxFit.fill))
+      ..onActionClick((option) => controller.filterMessagesAction(context, option)))
+    .build();
+  }
+
+  Widget _filterMessageStarredAction(BuildContext context, FilterMessageOption optionCurrent) {
+    return (FilterMessageCupertinoActionSheetActionBuilder(
+          Key('filter_starred_action'),
+          SvgPicture.asset(imagePaths.icStar, width: 28, height: 28, fit: BoxFit.fill),
+          AppLocalizations.of(context).starred,
+          FilterMessageOption.starred,
+          optionCurrent: optionCurrent,
+          actionSelected: SvgPicture.asset(imagePaths.icFilterSelected, fit: BoxFit.fill))
+      ..onActionClick((option) => controller.filterMessagesAction(context, option)))
+    .build();
   }
 
   // Widget _buildAppBarSelectModeActive(BuildContext context) {
@@ -318,7 +380,9 @@ class ThreadView extends GetWidget<ThreadController> {
             return _buildResultSearchEmails(context, controller.emailListSearch);
           }
         } else {
-          return _buildResultListEmail(context, controller.emailList);
+          return _buildResultListEmail(
+              context,
+              controller.isFilterMessagesEnabled ? controller.emailListFiltered : controller.emailList);
         }
       })
     );
