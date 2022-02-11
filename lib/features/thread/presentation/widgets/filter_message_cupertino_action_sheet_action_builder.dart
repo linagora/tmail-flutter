@@ -11,6 +11,8 @@ class FilterMessageCupertinoActionSheetActionBuilder extends CupertinoActionShee
   final FilterMessageOption? optionCurrent;
   final SvgPicture? actionSelected;
   final Color? bgColor;
+  final EdgeInsets? iconLeftPadding;
+  final EdgeInsets? iconRightPadding;
 
   FilterMessageCupertinoActionSheetActionBuilder(
       Key key,
@@ -21,6 +23,8 @@ class FilterMessageCupertinoActionSheetActionBuilder extends CupertinoActionShee
         this.optionCurrent,
         this.actionSelected,
         this.bgColor,
+        this.iconLeftPadding,
+        this.iconRightPadding,
       }
   ) : super(key, actionIcon, actionName);
 
@@ -32,12 +36,12 @@ class FilterMessageCupertinoActionSheetActionBuilder extends CupertinoActionShee
         key: key,
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Padding(
-              padding: EdgeInsets.only(left: 12, right: 16),
+              padding: iconLeftPadding ?? EdgeInsets.only(left: 12, right: 16),
               child: actionIcon),
           Expanded(child: Text(actionName, textAlign: TextAlign.left, style: actionTextStyle())),
           if (optionCurrent == option && actionSelected != null)
             Padding(
-              padding: EdgeInsets.only(right: 12),
+              padding: iconRightPadding ?? EdgeInsets.only(right: 12),
               child: actionSelected!),
         ]),
         onPressed: () {
