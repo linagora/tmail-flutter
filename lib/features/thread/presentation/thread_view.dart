@@ -153,11 +153,16 @@ class ThreadView extends GetWidget<ThreadController> {
               controller.filterMessageOption.value)
           ..addOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
           ..addOnEditThreadAction(() => controller.enableSelectionEmail())
-          ..addOnFilterEmailAction((filterMessageOption) =>
-              controller.openFilterMessagesCupertinoActionSheet(
-                  context,
-                  _filterMessagesCupertinoActionTile(context, filterMessageOption),
-                  cancelButton: _buildCupertinoActionCancelButton(context)))
+          ..addOnFilterEmailAction((filterMessageOption, position) =>
+              responsiveUtils.isMobileDevice(context)
+                ? controller.openFilterMessagesCupertinoActionSheet(
+                    context,
+                    _filterMessagesCupertinoActionTile(context, filterMessageOption),
+                    cancelButton: _buildCupertinoActionCancelButton(context))
+                : controller.openFilterMessagesForTablet(
+                    context,
+                    position,
+                    _popupMenuEmailActionTile(context, filterMessageOption)))
           ..addOnCancelEditThread(() => controller.cancelSelectEmail()))
         .build();
   }
@@ -186,6 +191,12 @@ class ThreadView extends GetWidget<ThreadController> {
           AppLocalizations.of(context).with_attachments,
           FilterMessageOption.attachments,
           optionCurrent: optionCurrent,
+          iconLeftPadding: responsiveUtils.isMobile(context)
+              ? EdgeInsets.only(left: 12, right: 16)
+              : EdgeInsets.only(right: 12),
+          iconRightPadding: responsiveUtils.isMobile(context)
+              ? EdgeInsets.only(right: 12)
+              : EdgeInsets.zero,
           actionSelected: SvgPicture.asset(imagePaths.icFilterSelected, fit: BoxFit.fill))
       ..onActionClick((option) => controller.filterMessagesAction(context, option)))
     .build();
@@ -198,6 +209,12 @@ class ThreadView extends GetWidget<ThreadController> {
           AppLocalizations.of(context).unread,
           FilterMessageOption.unread,
           optionCurrent: optionCurrent,
+          iconLeftPadding: responsiveUtils.isMobile(context)
+            ? EdgeInsets.only(left: 12, right: 16)
+            : EdgeInsets.only(right: 12),
+          iconRightPadding: responsiveUtils.isMobile(context)
+            ? EdgeInsets.only(right: 12)
+            : EdgeInsets.zero,
           actionSelected: SvgPicture.asset(imagePaths.icFilterSelected, fit: BoxFit.fill))
       ..onActionClick((option) => controller.filterMessagesAction(context, option)))
     .build();
@@ -210,107 +227,26 @@ class ThreadView extends GetWidget<ThreadController> {
           AppLocalizations.of(context).starred,
           FilterMessageOption.starred,
           optionCurrent: optionCurrent,
+          iconLeftPadding: responsiveUtils.isMobile(context)
+              ? EdgeInsets.only(left: 12, right: 16)
+              : EdgeInsets.only(right: 12),
+          iconRightPadding: responsiveUtils.isMobile(context)
+              ? EdgeInsets.only(right: 12)
+              : EdgeInsets.zero,
           actionSelected: SvgPicture.asset(imagePaths.icFilterSelected, fit: BoxFit.fill))
       ..onActionClick((option) => controller.filterMessagesAction(context, option)))
     .build();
   }
 
-  // Widget _buildAppBarSelectModeActive(BuildContext context) {
-  //   return (AppBarThreadSelectModeActiveBuilder(
-  //             context,
-  //             imagePaths,
-  //             controller.getListEmailSelected(),
-  //             responsiveUtils)
-  //         ..addCloseActionClick(() => controller.cancelSelectEmail())
-  //         // ..addRemoveEmailActionClick((listEmail) => {})
-  //         ..addOnMarkAsEmailReadActionClick((listEmail) => controller.markAsSelectedEmailRead(listEmail))
-  //         ..addOpenContextMenuActionClick((listEmail) =>
-  //             controller.openContextMenuSelectedEmail(context, _contextMenuEmailActionTile(context, listEmail)))
-  //         ..addOnOpenPopupMenuActionClick((listEmail, position) =>
-  //             controller.openPopupMenuSelectedEmail(context, position, _popupMenuEmailActionTile(context, listEmail))))
-  //       .build();
-  // }
-
-  // List<Widget> _contextMenuEmailActionTile(BuildContext context, List<PresentationEmail> listEmail) {
-  //   return [
-  //     // _moveToTrashAction(context, listEmail),
-  //     _moveToMailboxAction(context, listEmail),
-  //     _markAsReadAction(context, listEmail),
-  //     _markAsStarAction(context, listEmail),
-  //     // _moveToSpamAction(context, listEmail),
-  //     SizedBox(height: 20),
-  //   ];
-  // }
-
-  // Widget _markAsReadAction(BuildContext context, List<PresentationEmail> listEmail) {
-  //   return (EmailContextMenuActionBuilder(
-  //           Key('mark_as_read_context_menu_action'),
-  //           SvgPicture.asset(imagePaths.icEyeDisable, width: 24, height: 24, fit: BoxFit.fill),
-  //           controller.isAllEmailRead(listEmail)
-  //               ? AppLocalizations.of(context).mark_as_unread
-  //               : AppLocalizations.of(context).mark_as_read,
-  //           listEmail)
-  //         ..onActionClick((data) => controller.markAsSelectedEmailRead(data, fromContextMenuAction: true)))
-  //       .build();
-  // }
-
-  // Widget _moveToTrashAction(BuildContext context, List<PresentationEmail> listEmail) {
-  //   return (EmailContextMenuActionBuilder(
-  //           Key('move_to_trash_context_menu_action'),
-  //           SvgPicture.asset(imagePaths.icTrash, width: 24, height: 24, fit: BoxFit.fill),
-  //           AppLocalizations.of(context).move_to_trash,
-  //           listEmail)
-  //       ..onActionClick((data) => {}))
-  //     .build();
-  // }
-
-  // Widget _moveToMailboxAction(BuildContext context, List<PresentationEmail> listEmail) {
-  //   return (EmailContextMenuActionBuilder(
-  //           Key('move_to_mailbox_context_menu_action'),
-  //           SvgPicture.asset(imagePaths.icFolder, width: 24, height: 24, fit: BoxFit.fill),
-  //           AppLocalizations.of(context).move_to_mailbox,
-  //           listEmail)
-  //       ..onActionClick((data) => controller.moveSelectedMultipleEmailToMailboxAction(data)))
-  //     .build();
-  // }
-  //
-  // Widget _markAsStarAction(BuildContext context, List<PresentationEmail> listEmail) {
-  //   final markStarAction = controller.isAllEmailMarkAsStar(listEmail) ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
-  //
-  //   return (EmailContextMenuActionBuilder(
-  //           Key('mark_as_star_context_menu_action'),
-  //           SvgPicture.asset(
-  //               markStarAction == MarkStarAction.markStar ? imagePaths.icFlag : imagePaths.icFlagged,
-  //               width: 24,
-  //               height: 24,
-  //               fit: BoxFit.fill),
-  //           markStarAction == MarkStarAction.markStar
-  //               ? AppLocalizations.of(context).mark_as_star
-  //               : AppLocalizations.of(context).mark_as_unstar,
-  //           listEmail)
-  //         ..onActionClick((data) => controller.markAsStarSelectedMultipleEmail(data, markStarAction)))
-  //       .build();
-  // }
-
-  // Widget _moveToSpamAction(BuildContext context, List<PresentationEmail> listEmail) {
-  //   return (EmailContextMenuActionBuilder(
-  //           Key('move_to_spam_context_menu_action'),
-  //           SvgPicture.asset(imagePaths.icMailboxSpam, width: 24, height: 24, fit: BoxFit.fill),
-  //           AppLocalizations.of(context).move_to_spam,
-  //           listEmail)
-  //       ..onActionClick((data) => {}))
-  //     .build();
-  // }
-
-  // List<PopupMenuItem> _popupMenuEmailActionTile(BuildContext context, List<PresentationEmail> listEmail) {
-  //   return [
-  //     // PopupMenuItem(child: _moveToTrashAction(context, listEmail)),
-  //     PopupMenuItem(child: _moveToMailboxAction(context, listEmail)),
-  //     PopupMenuItem(child: _markAsReadAction(context, listEmail)),
-  //     PopupMenuItem(child: _markAsStarAction(context, listEmail)),
-  //     // PopupMenuItem(child: _moveToSpamAction(context, listEmail)),
-  //   ];
-  // }
+  List<PopupMenuEntry> _popupMenuEmailActionTile(BuildContext context, FilterMessageOption option) {
+    return [
+      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _filterMessageWithAttachmentsAction(context, option)),
+      PopupMenuDivider(height: 0.5),
+      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _filterMessagesUnreadAction(context, option)),
+      PopupMenuDivider(height: 0.5),
+      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _filterMessageStarredAction(context, option)),
+    ];
+  }
 
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(

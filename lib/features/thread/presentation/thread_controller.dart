@@ -439,6 +439,16 @@ class ThreadController extends BaseController {
       .build();
   }
 
+  void openFilterMessagesForTablet(BuildContext context, RelativeRect? position, List<PopupMenuEntry> popupMenuItems) async {
+    await showMenu(
+        context: context,
+        position: position ?? RelativeRect.fromLTRB(16, 40, 16, 16),
+        color: Colors.white,
+        elevation: 5,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        items: popupMenuItems);
+  }
+
   void closeFilterMessageActionSheet() {
     popBack();
   }
@@ -459,12 +469,6 @@ class ThreadController extends BaseController {
         Get.overlayContext!,
         message: newFilterOption.getMessageToast(context),
         icon: newFilterOption.getIconToast(_imagePaths));
-  }
-
-  void openContextMenuSelectedEmail(BuildContext context, List<Widget> actionTiles) {
-      (ContextMenuBuilder(context)
-        ..addTiles(actionTiles))
-    .build();
   }
 
   void moveSelectedMultipleEmailToMailboxAction(List<PresentationEmail> listEmail) async {
@@ -547,16 +551,6 @@ class ThreadController extends BaseController {
     if (_accountId != null) {
       _moveSelectedEmailMultipleToMailbox(_accountId!, moveRequest);
     }
-  }
-
-  void openPopupMenuSelectedEmail(BuildContext context, RelativeRect position, List<PopupMenuItem> popupMenuItems) async {
-    await showMenu(
-      context: context,
-      position: position,
-      color: Colors.white,
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      items: popupMenuItems);
   }
 
   void markAsStarEmail(PresentationEmail presentationEmail) {
