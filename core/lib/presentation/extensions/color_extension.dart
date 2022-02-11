@@ -71,6 +71,9 @@ extension AppColor on Color {
   static const colorDividerMailbox = Color(0xFF99A2AD);
   static const colorArrowUserMailbox = Color(0xFFB8C1CC);
   static const colorBgMailbox = Color(0xFFF7F7F7);
+  static const colorFilterMessageDisabled = Color(0xFF99A2AD);
+  static const colorFilterMessageEnabled = Color(0xFF007AFF);
+  static const colorDefaultCupertinoActionSheet = Color(0x66000000);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/filter_message_option.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-typedef OnFilterEmailAction = void Function();
+typedef OnFilterEmailAction = void Function(FilterMessageOption);
 typedef OnEditThreadAction = void Function();
 typedef OnOpenListMailboxActionClick = void Function();
 typedef OnCancelEditThread = void Function();
@@ -23,6 +24,7 @@ class AppBarThreadWidgetBuilder {
   final PresentationMailbox? _presentationMailbox;
   final List<PresentationEmail> _listSelectionEmail;
   final SelectMode _selectMode;
+  final FilterMessageOption _filterMessageOption;
 
   AppBarThreadWidgetBuilder(
     this._context,
@@ -31,6 +33,7 @@ class AppBarThreadWidgetBuilder {
     this._presentationMailbox,
     this._listSelectionEmail,
     this._selectMode,
+    this._filterMessageOption,
   );
 
   void addOnFilterEmailAction(OnFilterEmailAction onFilterEmailAction) {
@@ -69,9 +72,20 @@ class AppBarThreadWidgetBuilder {
               if (_selectMode == SelectMode.ACTIVE)
                 Positioned(left: 40, child: _buildCountItemSelected()),
               Positioned(right: 0, child: _buildFilterButton()),
-              Padding(
-                padding: EdgeInsets.only(left: 60, right: 40),
-                child: _buildContentCenterAppBar()),
+              _filterMessageOption.getTitle(_context).isNotEmpty
+                ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 60, right: 40),
+                      child: _buildContentCenterAppBar()),
+                    Transform(
+                      transform: Matrix4.translationValues(-2.0, -8.0, 0.0),
+                      child: Text(
+                          _filterMessageOption.getTitle(_context),
+                          style: TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
+                  ])
+                : Padding(
+                    padding: EdgeInsets.only(left: 60, right: 40),
+                    child: _buildContentCenterAppBar()),
             ]
           ))
         ])
@@ -103,9 +117,13 @@ class AppBarThreadWidgetBuilder {
       child: Padding(
         padding: EdgeInsets.only(left: 16),
         child: IconButton(
-          color: AppColor.baseTextColor,
-          icon: SvgPicture.asset(_imagePaths.icFilter, fit: BoxFit.fill),
-          onPressed: () => _onFilterEmailAction?.call()
+          icon: SvgPicture.asset(
+              _imagePaths.icFilter,
+              color: _filterMessageOption == FilterMessageOption.all
+                ? AppColor.colorFilterMessageDisabled
+                : AppColor.colorFilterMessageEnabled,
+              fit: BoxFit.fill),
+          onPressed: () => _onFilterEmailAction?.call(_filterMessageOption)
         )
       )
     );

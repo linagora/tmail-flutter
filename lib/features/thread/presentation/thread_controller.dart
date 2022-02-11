@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multi
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/filter_message_option.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -63,7 +64,9 @@ class ThreadController extends BaseController {
 
   final emailList = <PresentationEmail>[].obs;
   final emailListSearch = <PresentationEmail>[].obs;
+  final emailListFiltered = <PresentationEmail>[].obs;
   final currentSelectMode = SelectMode.INACTIVE.obs;
+  final filterMessageOption = FilterMessageOption.all.obs;
 
   final random = Random();
 
@@ -204,7 +207,8 @@ class ThreadController extends BaseController {
 
   void _resetToOriginalValue() {
     dispatchState(Right(LoadingState()));
-    emailList.value = <PresentationEmail>[];
+    emailList.clear();
+    emailListFiltered.clear();
     canLoadMore = true;
     disableSearch();
     cancelSelectEmail();
@@ -216,6 +220,12 @@ class ThreadController extends BaseController {
         .map((email) => email.asAvatarGradientColor(random))
         .toList();
     emailList.value = listEmailHaveAvatarGradientColor;
+    if (isFilterMessagesEnabled) {
+      final emailsFiltered = listEmailHaveAvatarGradientColor
+          .where((email) => filterMessageOption.value.filterEmail(email))
+          .toList();
+      emailListFiltered.addAll(emailsFiltered);
+    }
   }
 
   void _getAllEmailAction(AccountId accountId, {MailboxId? mailboxId}) {
@@ -283,6 +293,13 @@ class ThreadController extends BaseController {
           .map((email) => email.asAvatarGradientColor(random))
           .toList();
       emailList.addAll(listEmailHaveAvatarGradientColor);
+
+      if (isFilterMessagesEnabled) {
+        final emailsFilteredMore = listEmailHaveAvatarGradientColor
+            .where((email) => filterMessageOption.value.filterEmail(email))
+            .toList();
+        emailListFiltered.addAll(emailsFilteredMore);
+      }
     } else {
       canLoadMore = false;
     }
@@ -307,9 +324,15 @@ class ThreadController extends BaseController {
         .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
         .toList();
     } else {
-      emailList.value = emailList
-        .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
-        .toList();
+      if (isFilterMessagesEnabled) {
+        emailListFiltered.value = emailListFiltered
+          .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
+          .toList();
+      } else {
+        emailList.value = emailList
+          .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
+          .toList();
+      }
     }
 
     if (_isUnSelectedAll()) {
@@ -329,7 +352,11 @@ class ThreadController extends BaseController {
     if (isSearchActive()) {
       return emailListSearch.where((email) => email.selectMode == SelectMode.ACTIVE).toList();
     } else {
-      return emailList.where((email) => email.selectMode == SelectMode.ACTIVE).toList();
+      if (isFilterMessagesEnabled) {
+        return emailListFiltered.where((email) => email.selectMode == SelectMode.ACTIVE).toList();
+      } else {
+        return emailList.where((email) => email.selectMode == SelectMode.ACTIVE).toList();
+      }
     }
   }
 
@@ -337,7 +364,11 @@ class ThreadController extends BaseController {
     if (isSearchActive()) {
       return emailListSearch.every((email) => email.selectMode == SelectMode.INACTIVE);
     } else {
-      return emailList.every((email) => email.selectMode == SelectMode.INACTIVE);
+      if (isFilterMessagesEnabled) {
+        return emailListFiltered.every((email) => email.selectMode == SelectMode.INACTIVE);
+      } else {
+        return emailList.every((email) => email.selectMode == SelectMode.INACTIVE);
+      }
     }
   }
 
@@ -349,7 +380,11 @@ class ThreadController extends BaseController {
     if (isSearchActive()) {
       emailListSearch.value = emailListSearch.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
     } else {
-      emailList.value = emailList.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
+      if (isFilterMessagesEnabled) {
+        emailListFiltered.value = emailListFiltered.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
+      } else {
+        emailList.value = emailList.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
+      }
     }
     currentSelectMode.value = SelectMode.INACTIVE;
   }
@@ -395,6 +430,35 @@ class ThreadController extends BaseController {
   void _markAsSelectedEmailReadFailure(Failure failure) {
     cancelSelectEmail();
     _appToast.showErrorToast(AppLocalizations.of(Get.context!).an_error_occurred);
+  }
+
+  void openFilterMessagesCupertinoActionSheet(BuildContext context, List<Widget> actionTiles, {Widget? cancelButton}) {
+    (CupertinoActionSheetBuilder(context)
+        ..addTiles(actionTiles)
+        ..addCancelButton(cancelButton))
+      .build();
+  }
+
+  void closeFilterMessageActionSheet() {
+    popBack();
+  }
+
+  bool get isFilterMessagesEnabled => filterMessageOption != FilterMessageOption.all;
+
+  void filterMessagesAction(BuildContext context, FilterMessageOption filterOption) {
+    popBack();
+
+    final newFilterOption = filterMessageOption.value == filterOption ? FilterMessageOption.all : filterOption;
+
+    final emailsFiltered = emailList.where((email) => newFilterOption.filterEmail(email)).toList();
+    emailListFiltered.value = emailsFiltered;
+
+    filterMessageOption.value = newFilterOption;
+
+    _appToast.showToastWithIcon(
+        Get.overlayContext!,
+        message: newFilterOption.getMessageToast(context),
+        icon: newFilterOption.getIconToast(_imagePaths));
   }
 
   void openContextMenuSelectedEmail(BuildContext context, List<Widget> actionTiles) {
@@ -573,7 +637,7 @@ class ThreadController extends BaseController {
 
   void _searchEmailsSuccess(SearchEmailSuccess success) {
     final resultEmailSearchList = success.emailList
-        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox))
+        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox, random))
         .toList();
 
     emailListSearch.value = resultEmailSearchList;
@@ -597,7 +661,7 @@ class ThreadController extends BaseController {
   void _searchMoreEmailsSuccess(SearchMoreEmailSuccess success) {
     if (success.emailList.isNotEmpty) {
       final resultEmailSearchList = success.emailList
-          .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox))
+          .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox, random))
           .where((email) => !emailListSearch.contains(email))
           .toList();
       emailListSearch.addAll(resultEmailSearchList);

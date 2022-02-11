@@ -40,7 +40,12 @@ class ResponsiveUtils {
   double getWidthLoginButton() => _loginButtonWidth;
 
   EdgeInsets getMarginDestinationPicker(BuildContext context) {
-    if (isTablet(context)) {
+    if (isMobileDevice(context) && isLandscape(context)) {
+      return EdgeInsets.only(
+          left: _tabletHorizontalMargin,
+          right: _tabletHorizontalMargin,
+          top: 50.0);
+    } else if (isTablet(context)) {
       return getSizeHeightScreen(context) <= _tabletVerticalMargin * 2
         ? EdgeInsets.symmetric(
             horizontal: _tabletHorizontalMargin,
@@ -62,7 +67,9 @@ class ResponsiveUtils {
   }
 
   BorderRadius radiusDestinationPicker(BuildContext context, double radius) {
-    if (isTablet(context)) {
+    if (isMobileDevice(context) && isLandscape(context)) {
+      return BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius));
+    } else if (isTablet(context)) {
       return getSizeHeightScreen(context) <= _tabletVerticalMargin * 2
           ? BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius))
           : BorderRadius.circular(radius);
