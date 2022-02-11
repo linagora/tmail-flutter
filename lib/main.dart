@@ -7,12 +7,15 @@ import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/utils/app_logger.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await MainBindings().dependencies();
-  await HiveCacheConfig().setUp();
-  runApp(TMailApp());
+  initLogger(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await MainBindings().dependencies();
+    await HiveCacheConfig().setUp();
+    runApp(TMailApp());
+  });
 }
 
 class TMailApp extends StatelessWidget {
