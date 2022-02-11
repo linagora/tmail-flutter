@@ -24,7 +24,9 @@ class AppBarDestinationPickerBuilder {
         key: Key('app_bar_destination_picker'),
         alignment: Alignment.center,
         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        color: Colors.white,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          color: Colors.white),
         child: MediaQuery(
             data: MediaQueryData(padding: EdgeInsets.zero),
             child: Row(

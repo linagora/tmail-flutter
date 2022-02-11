@@ -75,6 +75,9 @@ class ImagePaths {
   String get icMailboxArchivedV2 => _getImagePath('ic_mailbox_archived_v2.svg');
   String get icMailboxSpamV2 => _getImagePath('ic_mailbox_spam_v2.svg');
   String get icMailboxTrashV2 => _getImagePath('ic_mailbox_trash_v2.svg');
+  String get icFilterSelected => _getImagePath('ic_filter_selected.svg');
+  String get icFilterMessageAll => _getImagePath('ic_filter_message_all.svg');
+  String get icFilterMessageAttachments => _getImagePath('ic_filter_message_attachments.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

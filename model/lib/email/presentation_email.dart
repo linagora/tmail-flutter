@@ -90,6 +90,8 @@ class PresentationEmail with EquatableMixin {
 
   bool isFlaggedEmail() => keywords?.containsKey(KeyWordIdentifier.emailFlagged) == true;
 
+  bool get withAttachments => hasAttachment == true;
+
   String get mailboxName => mailboxNames?.first?.name ?? '';
 
   @override

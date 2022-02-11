@@ -83,10 +83,10 @@ class EmailView extends GetView {
               width: double.infinity,
               alignment: Alignment.center,
               padding: EdgeInsets.only(
-                  left: responsiveUtils.isMobile(context) ? 16 : 24,
-                  right: responsiveUtils.isMobile(context) ? 16 : 24,
-                  bottom: responsiveUtils.isMobile(context) ? 16 : 24,
-                  top: responsiveUtils.isMobile(context) ? 10 : 16),
+                  left: 16,
+                  right: 16,
+                  bottom: 16,
+                  top: 16),
               color: Colors.white,
               child:  Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -120,9 +120,9 @@ class EmailView extends GetView {
   Widget _buildEmailMessage(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(
-          bottom: responsiveUtils.isMobile(context) ? 16 : 24,
-          left: responsiveUtils.isMobile(context) ? 16 : 24,
-          right: responsiveUtils.isMobile(context) ? 16 : 24,
+          bottom: 16,
+          left: 16,
+          right: 16,
           top: 10),
       alignment: Alignment.center,
       decoration: BoxDecoration(

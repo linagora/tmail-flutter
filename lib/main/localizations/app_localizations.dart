@@ -544,4 +544,45 @@ class AppLocalizations {
         'Search for mailboxes',
         name: 'hint_search_mailboxes');
   }
+
+  String get with_attachments {
+    return Intl.message(
+        'With attachments',
+        name: 'with_attachments'
+    );
+  }
+
+  String get starred {
+    return Intl.message(
+        'Starred',
+        name: 'starred'
+    );
+  }
+
+  String filter_message_toast(String filterOption) {
+    return Intl.message(
+        'You’ve filtered messages by "$filterOption"',
+        name: 'filter_message_toast',
+        args: [filterOption]
+    );
+  }
+
+  String get disable_filter_message_toast {
+    return Intl.message(
+        'You’ve disabled filtered messages',
+        name: 'disable_filter_message_toast'
+    );
+  }
+
+  String get with_unread {
+    return Intl.message(
+        'With Unread',
+        name: 'with_unread');
+  }
+
+  String get with_starred {
+    return Intl.message(
+        'With Starred',
+        name: 'with_starred');
+  }
 }
