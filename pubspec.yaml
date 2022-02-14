@@ -122,6 +122,9 @@ dependencies:
       url: https://github.com/dab246/enough_html_editor.git
       ref: fix_bug_enough_platform_widgets
 
+  # fk_user_agent
+  fk_user_agent: 2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
