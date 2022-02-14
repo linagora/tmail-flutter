@@ -5,7 +5,9 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
@@ -14,6 +16,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
+import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -34,7 +37,9 @@ import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_sta
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_logger.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:developer' as developer;
 
 class ComposerController extends BaseController {
 
@@ -78,6 +83,14 @@ class ComposerController extends BaseController {
     this._localFilePickerInteractor,
     this._uploadMultipleAttachmentInteractor,
   );
+
+  @override
+  void onInit() {
+    super.onInit();
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
+      await FkUserAgent.init();
+    });
+  }
 
   @override
   void onReady() async {
@@ -267,8 +280,20 @@ class ComposerController extends BaseController {
       bodyValues: {
         generatePartId: EmailBodyValue(emailBodyText, false, false)
       },
-      attachments: attachments.isNotEmpty ? _generateAttachments() : null
+      headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgentPlatform},
+      attachments: attachments.isNotEmpty ? _generateAttachments() : null,
     );
+  }
+
+  String get userAgentPlatform {
+    String userAgent;
+    try {
+      userAgent = FkUserAgent.userAgent ?? '';
+      log('ComposerController - userAgentPlatform(): userAgent: $userAgent');
+    } on PlatformException {
+      userAgent = '';
+    }
+    return userAgent;
   }
 
   Set<EmailBodyPart> _generateAttachments() {
