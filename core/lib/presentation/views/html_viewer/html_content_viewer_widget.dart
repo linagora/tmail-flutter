@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:easy_web_view/easy_web_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class HtmlContentViewer extends StatefulWidget {
   final String contentHtml;
   final int minHeight;
   final double widthContent;
+  final double? heightContent;
   final Widget? loadingWidget;
 
   /// Register this callback if you want a reference to the [InAppWebViewController].
@@ -26,6 +28,7 @@ class HtmlContentViewer extends StatefulWidget {
     Key? key,
     required this.contentHtml,
     required this.widthContent,
+    this.heightContent,
     this.minHeight = 100,
     this.loadingWidget,
     this.onCreated,
@@ -99,18 +102,22 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   @override
   Widget build(BuildContext context) {
-    _documentWidth = widget.widthContent;
-    return Stack(
-      alignment: AlignmentDirectional.center,
-      children: [
-        SizedBox(
-          height: _documentHeight,
-          width: _documentWidth,
-          child: _buildWebView(),
-        ),
-        if (loading) _buildLoadingView()
-      ],
-    );
+    if (kIsWeb) {
+      return _buildWebViewOnBrowser();
+    }  else {
+      _documentWidth = widget.widthContent;
+      return Stack(
+        alignment: AlignmentDirectional.center,
+        children: [
+          SizedBox(
+            height: _documentHeight,
+            width: _documentWidth,
+            child: _buildWebView(),
+          ),
+          if (loading) _buildLoadingView()
+        ],
+      );
+    }
   }
 
   Widget _buildLoadingView() {
@@ -124,6 +131,20 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
           height: 30,
           child: CircularProgressIndicator(color: AppColor.primaryColor)));
     }
+  }
+
+  Widget _buildWebViewOnBrowser() {
+    if (_initialPageContent == null || _initialPageContent?.isEmpty == true) {
+      return Container();
+    }
+    return EasyWebView(
+      key: ValueKey('WebViewOnBrowser'),
+      src: _initialPageContent!,
+      onLoaded: () => {},
+      isHtml: true,
+      webNavigationDelegate: (_) => WebNavigationDecision.prevent,
+      height: widget.heightContent,
+    );
   }
 
   Widget _buildWebView() {
