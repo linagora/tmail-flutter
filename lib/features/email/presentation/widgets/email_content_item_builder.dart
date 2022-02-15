@@ -34,6 +34,7 @@ class EmailContentItemBuilder {
       case EmailContentType.textHtml:
         return HtmlContentViewer(
           widthContent: MediaQuery.of(_context).size.width,
+          heightContent: MediaQuery.of(_context).size.height,
           contentHtml: _emailContent.content,
           loadingWidget: loadingWidget,
           mailtoDelegate: (uri) async {});
