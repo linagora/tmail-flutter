@@ -66,8 +66,12 @@ dependencies:
     git:
       url: https://github.com/robert-virkus/flutter_inappwebview.git
 
+  easy_web_view:
+      git:
+        url: https://github.com/dab246/easy_web_view.git
+
   # url_launcher
-  url_launcher: 6.0.6
+  url_launcher: 6.0.12
 
 dev_dependencies:
   flutter_test:
