@@ -58,7 +58,7 @@ class LoginView extends GetWidget<LoginController> {
       .setSloganText(AppLocalizations.of(context).login_text_slogan)
       .setSloganTextAlign(TextAlign.center)
       .setSloganTextStyle(TextStyle(color: AppColor.primaryColor, fontSize: 16, fontWeight: FontWeight.w700))
-      .setLogo(imagePaths.icTMailLogo)
+      .setLogo(imagePaths.icLogoTMailV2)
       .build();
   }
 

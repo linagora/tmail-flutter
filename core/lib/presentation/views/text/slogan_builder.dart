@@ -9,6 +9,7 @@ class SloganBuilder {
   String? _text;
   TextStyle? _textStyle;
   TextAlign? _textAlign;
+  String? _logoSVG;
   String? _logo;
 
   SloganBuilder key(Key key) {
@@ -36,16 +37,35 @@ class SloganBuilder {
     return this;
   }
 
+  SloganBuilder setLogoSVG(String logoSVG) {
+    _logoSVG = logoSVG;
+    return this;
+  }
+
   Widget build() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _logo != null ? SvgPicture.asset(_logo!, width: 150, height: 150) : SizedBox.shrink(),
+        _logoApp(),
         Padding(
           padding: EdgeInsets.only(top: 16, left: 16, right: 16),
           child: Text(_text ?? '', key: _key, style: _textStyle, textAlign: _textAlign),
         ),
       ],
     );
+  }
+
+  Widget _logoApp() {
+    if (_logoSVG != null) {
+      return SvgPicture.asset(_logoSVG!, width: 150, height: 150);
+    } else if (_logo != null) {
+      return Image(
+          image: AssetImage(_logo!),
+          fit: BoxFit.fill,
+          width: 150,
+          height: 150,
+          alignment: Alignment.center);
+    }
+    return SizedBox.shrink();
   }
 }
