@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "logo_tmail_v2.png",
+      "filename" : "SplashImage.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "logo_tmail_v2@2x.png",
+      "filename" : "SplashImage@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "logo_tmail_v2@3x.png",
+      "filename" : "SplashImage@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
