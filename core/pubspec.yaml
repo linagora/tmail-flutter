@@ -61,17 +61,17 @@ dependencies:
   # getwidget
   getwidget: 2.0.4
 
-  # flutter_inappwebview
-  flutter_inappwebview:
-    git:
-      url: https://github.com/robert-virkus/flutter_inappwebview.git
+  # webview_flutter
+  webview_flutter: 3.0.0
 
+  # easy_web_view: Display html for web browser
   easy_web_view:
       git:
         url: https://github.com/dab246/easy_web_view.git
+        ref: easy_web_improvements
 
   # url_launcher
-  url_launcher: 6.0.12
+  url_launcher: 6.0.17
 
 dev_dependencies:
   flutter_test:
