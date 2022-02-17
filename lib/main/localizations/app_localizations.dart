@@ -214,20 +214,6 @@ class AppLocalizations {
     );
   }
 
-  String get message_sent {
-    return Intl.message(
-      'Message sent',
-      name: 'message_sent',
-    );
-  }
-
-  String get error_message_sent {
-    return Intl.message(
-      'Error message sent',
-      name: 'error_message_sent',
-    );
-  }
-
   String count_email_selected(int count) {
     return Intl.message(
         '$count selected',
@@ -584,5 +570,19 @@ class AppLocalizations {
     return Intl.message(
         'With Starred',
         name: 'with_starred');
+  }
+
+  String get message_has_been_sent_successfully {
+    return Intl.message(
+      'Message has been sent successfully',
+      name: 'message_has_been_sent_successfully',
+    );
+  }
+
+  String get message_has_been_sent_failure {
+    return Intl.message(
+      'Message has been sent failure',
+      name: 'message_has_been_sent_failure',
+    );
   }
 }

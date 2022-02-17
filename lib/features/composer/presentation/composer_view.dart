@@ -1,6 +1,8 @@
 import 'package:core/core.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
+import 'package:html_editor_enhanced/html_editor.dart' as HtmlEditorBrowser;
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -22,8 +24,7 @@ class ComposerView extends GetWidget<ComposerController> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-        controller.htmlEditorApi?.unfocus();
+        controller.htmlEditorApi?.unfocus(context);
       },
       child: Scaffold(
         backgroundColor: AppColor.primaryLightColor,
@@ -225,28 +226,36 @@ class ComposerView extends GetWidget<ComposerController> {
 
   Widget _buildComposerEditor(BuildContext context) {
     return Obx(() {
-      if (controller.composerArguments.value?.emailActionType == EmailActionType.compose) {
-        return HtmlEditor(
+      if (kIsWeb) {
+        return HtmlEditorBrowser.HtmlEditor(
           key: Key('composer_editor'),
-          minHeight: 100,
-          supportZoom: true,
-          disableHorizontalScroll: false,
-          disableVerticalScroll: false,
-          onCreated: (editorApi) => controller.htmlEditorApi = editorApi,
+          controller: controller.htmlControllerBrowser,
+          htmlEditorOptions: HtmlEditorBrowser.HtmlEditorOptions(
+            shouldEnsureVisible: true,
+            initialText: controller.getContentEmail(),
+            autoAdjustHeight: controller.getContentEmail().isNotEmpty,
+          ),
+          htmlToolbarOptions: HtmlEditorBrowser.HtmlToolbarOptions(
+              toolbarPosition: HtmlEditorBrowser.ToolbarPosition.custom
+          ),
+          otherOptions: HtmlEditorBrowser.OtherOptions(height: 550),
         );
       } else {
-        final message = controller.getContentEmail();
-        return message.isNotEmpty
-          ? HtmlEditor(
+        if (controller.composerArguments.value?.emailActionType == EmailActionType.compose) {
+          return HtmlEditor(
               key: Key('composer_editor'),
               minHeight: 100,
-              supportZoom: true,
-              disableHorizontalScroll: false,
-              disableVerticalScroll: false,
-              onCreated: (editorApi) => controller.htmlEditorApi = editorApi,
-              initialContent: message,
-            )
-          : SizedBox.shrink();
+              onCreated: (editorApi) => controller.htmlEditorApi = editorApi);
+        } else {
+          final message = controller.getContentEmail();
+          return message.isNotEmpty
+              ? HtmlEditor(
+                  key: Key('composer_editor'),
+                  minHeight: 100,
+                  onCreated: (editorApi) => controller.htmlEditorApi = editorApi,
+                  initialContent: message)
+              : SizedBox.shrink();
+        }
       }
     });
   }
