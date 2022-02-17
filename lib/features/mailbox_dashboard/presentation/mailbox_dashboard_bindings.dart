@@ -16,11 +16,12 @@ class MailboxDashBoardBindings extends Bindings {
     Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
     Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
     Get.lazyPut(() => GetUserProfileInteractor(Get.find<CredentialRepository>()));
-    Get.lazyPut(() => AppToast());
 
     Get.put(MailboxDashBoardController(
       Get.find<GetUserProfileInteractor>(),
-      Get.find<AppToast>()));
+      Get.find<AppToast>(),
+      Get.find<ImagePaths>(),
+    ));
 
     MailboxBindings().dependencies();
     ThreadBindings().dependencies();

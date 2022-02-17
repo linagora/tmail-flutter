@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/autocomplete_datasource.dart';
@@ -70,7 +71,9 @@ class ComposerBindings extends Bindings {
       Get.find<GetAutoCompleteInteractor>(),
       Get.find<GetAutoCompleteWithDeviceContactInteractor>(),
       Get.find<AppToast>(),
+      Get.find<ImagePaths>(),
       Get.find<Uuid>(),
+      Get.find<DeviceInfoPlugin>(),
       Get.find<TextEditingController>(),
       Get.find<LocalFilePickerInteractor>(),
       Get.find<UploadMultipleAttachmentInteractor>()));
