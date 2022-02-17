@@ -1,10 +1,13 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:easy_web_view/easy_web_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
+import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:developer' as developer;
 
 class HtmlContentViewer extends StatefulWidget {
 
@@ -14,15 +17,16 @@ class HtmlContentViewer extends StatefulWidget {
   final double? heightContent;
   final Widget? loadingWidget;
 
-  /// Register this callback if you want a reference to the [InAppWebViewController].
-  final void Function(InAppWebViewController controller)? onCreated;
-
-  final void Function(InAppWebViewController controller, Uri? uri)? onLoadStart;
-
-  final void Function(InAppWebViewController controller, Uri? uri)? onLoadStop;
+  /// Register this callback if you want a reference to the [WebViewController].
+  final void Function(WebViewController controller)? onCreated;
 
   /// Handler for mailto: links
   final Future Function(Uri mailto)? mailtoDelegate;
+
+  /// Handler for any non-media URLs that the user taps on the website.
+  ///
+  /// Returns `true` when the given `url` was handled.
+  final Future<bool> Function(String url)? urlLauncherDelegate;
 
   const HtmlContentViewer({
     Key? key,
@@ -32,8 +36,7 @@ class HtmlContentViewer extends StatefulWidget {
     this.minHeight = 100,
     this.loadingWidget,
     this.onCreated,
-    this.onLoadStart,
-    this.onLoadStop,
+    this.urlLauncherDelegate,
     this.mailtoDelegate,
   }) : super(key: key);
 
@@ -43,16 +46,17 @@ class HtmlContentViewer extends StatefulWidget {
 
 class _HtmlContentViewState extends State<HtmlContentViewer> {
 
-  double? _documentHeight = 1.0;
-  double? _documentWidth = 1.0;
-  String? _initialPageContent;
-  late InAppWebViewController _webViewController;
-  bool loading = true;
+  double? _webViewHeight = 1.0;
+  double? _webViewWidth = 1.0;
+  String? _htmlData;
+  late WebViewController _webViewController;
+  // late EasyWebViewControllerWrapperBase _easyWebViewControllerWrapperBase;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _initialPageContent = _generateHtmlDocument(widget.contentHtml);
+    _htmlData = _generateHtmlDocument(widget.contentHtml);
   }
 
   String _generateHtmlDocument(String content) {
@@ -103,18 +107,24 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   @override
   Widget build(BuildContext context) {
     if (kIsWeb) {
-      return _buildWebViewOnBrowser();
+      return Stack(
+        alignment: AlignmentDirectional.center,
+        children: [
+          _buildWebViewOnBrowser(),
+          if (_isLoading) _buildLoadingView()
+        ],
+      );
     }  else {
-      _documentWidth = widget.widthContent;
+      _webViewWidth = widget.widthContent;
       return Stack(
         alignment: AlignmentDirectional.center,
         children: [
           SizedBox(
-            height: _documentHeight,
-            width: _documentWidth,
+            height: _webViewHeight,
+            width: _webViewWidth,
             child: _buildWebView(),
           ),
-          if (loading) _buildLoadingView()
+          if (_isLoading) _buildLoadingView()
         ],
       );
     }
@@ -134,99 +144,113 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   }
 
   Widget _buildWebViewOnBrowser() {
-    if (_initialPageContent == null || _initialPageContent?.isEmpty == true) {
+    final htmlData = _htmlData;
+    if (htmlData == null || htmlData.isEmpty) {
       return Container();
     }
     return EasyWebView(
-      key: ValueKey('WebViewOnBrowser'),
-      src: _initialPageContent!,
-      onLoaded: () => {},
+      key: ValueKey(htmlData),
+      src: htmlData,
+      onLoaded: (controller) async {
+        // _easyWebViewControllerWrapperBase = controller;
+        if (mounted && _isLoading) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      },
       isHtml: true,
-      webNavigationDelegate: (_) => WebNavigationDecision.prevent,
       height: widget.heightContent,
+      webNavigationDelegate: _onNavigationOnWebBrowser,
     );
   }
 
   Widget _buildWebView() {
-    if (_initialPageContent == null || _initialPageContent?.isEmpty == true) {
+    final htmlData = _htmlData;
+    if (htmlData == null || htmlData.isEmpty) {
       return Container();
     }
-    return InAppWebView(
-      key: ValueKey(_initialPageContent),
-      initialData: InAppWebViewInitialData(data: _initialPageContent!),
-      initialOptions: InAppWebViewGroupOptions(
-        crossPlatform: InAppWebViewOptions(
-          useShouldOverrideUrlLoading: true,
-          verticalScrollBarEnabled: false,
-          disableVerticalScroll: false,
-          disableHorizontalScroll: false,
-          supportZoom: true,
-        ),
-        android: AndroidInAppWebViewOptions(
-          useWideViewPort: false,
-          loadWithOverviewMode: true,
-          useHybridComposition: true,
-        ),
-        ios: IOSInAppWebViewOptions(
-          enableViewportScale: false,
-          allowsLinkPreview: false
-        ),
-      ),
-      onLoadStart: (controller, uri) {
-        if (widget.onLoadStart != null) {
-          widget.onLoadStart!(controller, uri);
-        }
+    return WebView(
+      key: ValueKey(htmlData),
+      javascriptMode: JavascriptMode.unrestricted,
+      backgroundColor: Colors.white,
+      onWebViewCreated: (controller) async {
+        _webViewController = controller;
+        developer.log('onWebViewCreated(): html: $htmlData', name: 'HtmlContentViewer');
+        await controller.loadHtmlString(htmlData, baseUrl: null);
+        widget.onCreated?.call(controller);
       },
-      onWebViewCreated: _onWebViewCreated,
-      onLoadStop: (controller, uri) async {
-        final scrollHeight = await _webViewController.evaluateJavascript(source: 'document.body.scrollHeight');
-        if ((scrollHeight != null) && mounted && (scrollHeight + 30.0 > widget.minHeight)) {
+      onPageFinished: (url) async {
+        final scrollHeightText = await _webViewController.runJavascriptReturningResult('document.body.scrollHeight');
+        final scrollHeight = double.tryParse(scrollHeightText);
+        developer.log('onPageFinished(): scrollHeightText: $scrollHeightText', name: 'HtmlContentViewer');
+        final scrollWidthText = await _webViewController.runJavascriptReturningResult('document.body.scrollWidth');
+        // var scrollWidth = double.tryParse(scrollWidthText);
+        developer.log('onPageFinished(): scrollWidthText: $scrollWidthText', name: 'HtmlContentViewer');
+        if ((scrollHeight != null) && mounted) {
+          final scrollHeightWithBuffer = scrollHeight + 30.0;
+
+          if (scrollHeightWithBuffer > widget.minHeight) {
+            setState(() {
+              _webViewHeight = scrollHeightWithBuffer;
+              _isLoading = false;
+            });
+          }
+        }
+        if (mounted && _isLoading) {
           setState(() {
-            _documentHeight = (scrollHeight + 30.0);
+            _isLoading = false;
           });
         }
-        setState(() {
-          loading = false;
-        });
-        if (widget.onLoadStop != null) {
-          widget.onLoadStop!(controller, uri);
-        }
       },
-      onScrollChanged: (controller, x, y) {
-        if (y != 0) {
-          controller.scrollTo(x: 0, y: 0);
-        }
-      },
-      shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+      navigationDelegate: _onNavigation,
       gestureRecognizers: {
         Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
       },
     );
   }
 
-  void _onWebViewCreated(InAppWebViewController controller) {
-    _webViewController = controller;
-    if (widget.onCreated != null) {
-      widget.onCreated!(_webViewController);
+  FutureOr<NavigationDecision> _onNavigation(NavigationRequest navigation) async {
+    developer.log('_onNavigation()', name: 'HtmlContentViewer');
+    // for iOS / WKWebView necessary:
+    if (navigation.isForMainFrame && navigation.url == 'about:blank') {
+      return NavigationDecision.navigate;
     }
-  }
-
-  Future<NavigationActionPolicy> _shouldOverrideUrlLoading(
-      InAppWebViewController controller,
-      NavigationAction request
-  ) async {
-    final requestUri = request.request.url!;
+    final requestUri = Uri.parse(navigation.url);
     final mailtoHandler = widget.mailtoDelegate;
     if (mailtoHandler != null && requestUri.isScheme('mailto')) {
       await mailtoHandler(requestUri);
-      return NavigationActionPolicy.CANCEL;
+      return NavigationDecision.prevent;
     }
-    final url = requestUri.toString();
-    if (await launcher.canLaunch(url)) {
-      await launcher.launch(url);
-      return NavigationActionPolicy.CANCEL;
-    } else {
-      return NavigationActionPolicy.ALLOW;
+    final url = navigation.url;
+    final urlDelegate = widget.urlLauncherDelegate;
+    if (urlDelegate != null) {
+      final handled = await urlDelegate(url);
+      if (handled) {
+        return NavigationDecision.prevent;
+      }
     }
+    await launcher.launch(url);
+    return NavigationDecision.prevent;
+  }
+
+  FutureOr<WebNavigationDecision> _onNavigationOnWebBrowser(WebNavigationRequest navigation) async {
+    developer.log('_onNavigationOnWebBrowser()', name: 'HtmlContentViewer');
+    final requestUri = Uri.parse(navigation.url);
+    final mailtoHandler = widget.mailtoDelegate;
+    if (mailtoHandler != null && requestUri.isScheme('mailto')) {
+      await mailtoHandler(requestUri);
+      return WebNavigationDecision.prevent;
+    }
+    final url = navigation.url;
+    final urlDelegate = widget.urlLauncherDelegate;
+    if (urlDelegate != null) {
+      final handled = await urlDelegate(url);
+      if (handled) {
+        return WebNavigationDecision.prevent;
+      }
+    }
+    await launcher.launch(url);
+    return WebNavigationDecision.prevent;
   }
 }
