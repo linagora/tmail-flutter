@@ -21,6 +21,7 @@ class MailboxDashBoardController extends BaseController {
 
   final GetUserProfileInteractor _getUserProfileInteractor;
   final AppToast _appToast;
+  final ImagePaths _imagePaths;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -37,7 +38,11 @@ class MailboxDashBoardController extends BaseController {
   Map<Role, MailboxId> mapDefaultMailboxId = Map();
   Map<MailboxId, PresentationMailbox> mapMailbox = Map();
 
-  MailboxDashBoardController(this._getUserProfileInteractor, this._appToast);
+  MailboxDashBoardController(
+      this._getUserProfileInteractor,
+      this._appToast,
+      this._imagePaths,
+  );
 
   @override
   void onReady() {
@@ -51,8 +56,11 @@ class MailboxDashBoardController extends BaseController {
     super.onData(newState);
     viewState.value.map((success) {
       if (success is SendingEmailState) {
-        if (Get.context != null) {
-          _appToast.showToast(AppLocalizations.of(Get.context!).your_email_being_sent);
+        if (Get.overlayContext != null && Get.context != null) {
+          _appToast.showToastWithIcon(
+              Get.overlayContext!,
+              message: AppLocalizations.of(Get.context!).your_email_being_sent,
+              icon: _imagePaths.icSendToast);
         }
       }
     });
@@ -63,20 +71,28 @@ class MailboxDashBoardController extends BaseController {
     viewState.value.fold(
       (failure) {
         if (failure is SendEmailFailure) {
-          if (Get.context != null) {
-            _appToast.showErrorToast(AppLocalizations.of(Get.context!).error_message_sent);
-            clearState();
+          if (Get.overlayContext != null && Get.context != null) {
+            _appToast.showToastWithIcon(
+                Get.overlayContext!,
+                textColor: AppColor.toastErrorBackgroundColor,
+                message: AppLocalizations.of(Get.context!).message_has_been_sent_failure,
+                icon: _imagePaths.icSendToast);
           }
+          clearState();
         }
       },
       (success) {
         if (success is GetUserProfileSuccess) {
           userProfile.value = success.userProfile;
         } else if (success is SendEmailSuccess) {
-          if (Get.context != null) {
-            _appToast.showSuccessToast(AppLocalizations.of(Get.context!).message_sent);
-            clearState();
+          if (Get.overlayContext != null && Get.context != null) {
+            _appToast.showToastWithIcon(
+                Get.overlayContext!,
+                textColor: AppColor.toastSuccessBackgroundColor,
+                message: AppLocalizations.of(Get.context!).message_has_been_sent_successfully,
+                icon: _imagePaths.icSendToast);
           }
+          clearState();
         }
       }
     );
