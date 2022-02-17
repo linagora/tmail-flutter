@@ -61,7 +61,8 @@ class AppToast {
   }
 
   void showToastWithIcon(BuildContext context,
-      {String? message, String? icon, Color? bgColor, double? radius, EdgeInsets? padding, TextStyle? textStyle}) {
+      {String? message, String? icon, Color? bgColor,
+      Color? textColor, double? radius, EdgeInsets? padding, TextStyle? textStyle}) {
     final toast = Material(
       color: bgColor ?? Colors.white,
       elevation: 10,
@@ -71,7 +72,7 @@ class AppToast {
         padding: padding ?? EdgeInsets.symmetric(horizontal: 12.0, vertical: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(radius ?? 10.0),
-          color: Colors.white,
+          color: bgColor ?? Colors.white,
         ),
         width: 320,
         child: Row(
@@ -81,7 +82,7 @@ class AppToast {
             SizedBox(width: 10.0),
             Expanded(child: Text(
                 message ?? '',
-                style: textStyle ?? TextStyle(fontSize: 15, color: Colors.black))),
+                style: textStyle ?? TextStyle(fontSize: 15, color: textColor ?? Colors.black))),
           ],
         ),
       ),

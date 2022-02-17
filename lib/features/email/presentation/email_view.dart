@@ -61,13 +61,13 @@ class EmailView extends GetView {
   Widget _buildBottomBar(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 6, top: 6, right: 6, bottom: 6),
-      child: (BottomBarMailWidgetBuilder(
+      child: Obx(() => (BottomBarMailWidgetBuilder(
               context,
               imagePaths,
               responsiveUtils,
               emailController.mailboxDashBoardController.selectedEmail.value)
           ..addOnPressEmailAction((emailActionType) => emailController.pressEmailAction(emailActionType)))
-        .build());
+        .build()));
   }
 
   Widget _buildEmailBody(BuildContext context) {

@@ -55,8 +55,8 @@ dependencies:
   # GetX
   get: 4.1.4
 
-  # device_info
-  device_info: 2.0.2
+  # device_info_plus
+  device_info_plus: 3.2.2
 
   # getwidget
   getwidget: 2.0.4

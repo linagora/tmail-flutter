@@ -3,13 +3,15 @@ import 'dart:async';
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:get/get.dart';
+import 'package:html_editor_enhanced/html_editor.dart' as HtmlEditorBrowser;
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -39,7 +41,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_logger.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:developer' as developer;
 
 class ComposerController extends BaseController {
 
@@ -55,10 +56,12 @@ class ComposerController extends BaseController {
   final GetAutoCompleteInteractor _getAutoCompleteInteractor;
   final GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
   final AppToast _appToast;
+  final ImagePaths _imagePaths;
   final Uuid _uuid;
   final TextEditingController subjectEmailInputController;
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final UploadMultipleAttachmentInteractor _uploadMultipleAttachmentInteractor;
+  final DeviceInfoPlugin _deviceInfoPlugin;
 
   List<EmailAddress> listToEmailAddress = [];
   List<EmailAddress> listCcEmailAddress = [];
@@ -66,11 +69,20 @@ class ComposerController extends BaseController {
   String? _subjectEmail;
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.localContact;
   HtmlEditorApi? htmlEditorApi;
+  final HtmlEditorBrowser.HtmlEditorController htmlControllerBrowser = HtmlEditorBrowser.HtmlEditorController();
   final keyToEmailAddress = GlobalKey<ChipsInputState>();
   final keyCcEmailAddress = GlobalKey<ChipsInputState>();
   final keyBccEmailAddress = GlobalKey<ChipsInputState>();
 
   void setSubjectEmail(String subject) => _subjectEmail = subject;
+
+  Future<String> _getEmailBodyText() async {
+    if (kIsWeb) {
+      return await htmlControllerBrowser.getText();
+    } else {
+      return (await htmlEditorApi?.getFullHtml()) ?? '';
+    }
+  }
 
   ComposerController(
     this._sendEmailInteractor,
@@ -78,7 +90,9 @@ class ComposerController extends BaseController {
     this._getAutoCompleteInteractor,
     this._getAutoCompleteWithDeviceContactInteractor,
     this._appToast,
+    this._imagePaths,
     this._uuid,
+    this._deviceInfoPlugin,
     this.subjectEmailInputController,
     this._localFilePickerInteractor,
     this._uploadMultipleAttachmentInteractor,
@@ -124,7 +138,13 @@ class ComposerController extends BaseController {
 
   @override
   void onError(error) {
-    _appToast.showErrorToast(AppLocalizations.of(Get.context!).error_message_sent);
+    if (Get.overlayContext != null && Get.context != null) {
+      _appToast.showToastWithIcon(
+          Get.overlayContext!,
+          textColor: AppColor.toastErrorBackgroundColor,
+          message: AppLocalizations.of(Get.context!).message_has_been_sent_failure,
+          icon: _imagePaths.icSendToast);
+    }
     popBack();
   }
   
@@ -261,7 +281,8 @@ class ComposerController extends BaseController {
     final generatePartId = PartId(_uuid.v1());
     final generateBlobId = Id(_uuid.v1());
 
-    final emailBodyText = (await htmlEditorApi?.getFullHtml()) ?? '';
+    final emailBodyText = await _getEmailBodyText();
+    final userAgent = await userAgentPlatform;
 
     return Email(
       generateEmailId,
@@ -280,17 +301,22 @@ class ComposerController extends BaseController {
       bodyValues: {
         generatePartId: EmailBodyValue(emailBodyText, false, false)
       },
-      headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgentPlatform},
+      headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgent},
       attachments: attachments.isNotEmpty ? _generateAttachments() : null,
     );
   }
 
-  String get userAgentPlatform {
+  Future<String> get userAgentPlatform async {
     String userAgent;
     try {
-      userAgent = FkUserAgent.userAgent ?? '';
+      if (kIsWeb) {
+        final webBrowserInfo = await _deviceInfoPlugin.webBrowserInfo;
+        userAgent = webBrowserInfo.userAgent ?? '';
+      } else {
+        userAgent = FkUserAgent.userAgent ?? '';
+      }
       log('ComposerController - userAgentPlatform(): userAgent: $userAgent');
-    } on PlatformException {
+    } on Exception {
       userAgent = '';
     }
     return userAgent;
