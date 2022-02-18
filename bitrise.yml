@@ -103,6 +103,7 @@ workflows:
         inputs:
         - is_debug_mode: 'true'
         - ios_additional_params: "--release"
+        - additional_build_params: "--dart-define=SERVER_URL=$SERVER_URL"
         - ios_codesign_identity: 'iPhone Developer: Tung Tran (B8V9X882MX)'
     - sign-apk@1: {}
     - xcode-archive@3:
