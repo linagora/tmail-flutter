@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
@@ -36,7 +37,7 @@ class LoginView extends GetWidget<LoginController> {
                     children: [
                       _buildSlogan(context),
                       Obx(() => _buildLoginMessage(context, loginController.loginState.value)),
-                      _buildUrlInput(context),
+                      if (!kIsWeb) _buildUrlInput(context),
                       _buildUserNameInput(context),
                       _buildPasswordInput(context),
                       Obx(() => loginController.loginState.value.viewState.fold(
