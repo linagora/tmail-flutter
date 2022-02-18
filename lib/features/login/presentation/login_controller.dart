@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
@@ -7,6 +8,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class LoginController extends GetxController {
 
@@ -39,7 +41,7 @@ class LoginController extends GetxController {
   Password? _parsePassword(String? password) => password != null ? Password(password.trim()) : null;
 
   void handleLoginPressed() {
-    final baseUri = _parseUri(_urlText);
+    final baseUri = kIsWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
     final userName = _parseUserName(_userNameText);
     final password = _parsePassword(_passwordText);
     if (baseUri != null && userName != null && password != null) {
@@ -59,7 +61,7 @@ class LoginController extends GetxController {
 
   void _loginSuccessAction(AuthenticationUserViewState success) {
     loginState.value = LoginState(Right(success));
-    _dynamicUrlInterceptors.changeBaseUrl(_urlText);
+    _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
     _authorizationInterceptors.changeAuthorization(_userNameText, _passwordText);
     pushAndPop(AppRoutes.SESSION);
   }
