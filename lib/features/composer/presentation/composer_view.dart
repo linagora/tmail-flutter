@@ -59,9 +59,16 @@ class ComposerView extends GetWidget<ComposerController> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Obx(() => (TopBarComposerWidgetBuilder(imagePaths, controller.isEnableEmailSendButton.value)
-          ..addSendEmailActionClick(() => controller.sendEmailAction(context))
-          ..addAttachFileActionClick(() => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context)))
+          ..addSendEmailActionClick(() {
+            controller.htmlEditorApi?.unfocus(context);
+            controller.sendEmailAction(context);
+          })
+          ..addAttachFileActionClick(() {
+            controller.htmlEditorApi?.unfocus(context);
+            controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context));
+          })
           ..addBackActionClick(() {
+            controller.htmlEditorApi?.unfocus(context);
             controller.saveEmailAsDrafts();
             controller.backToEmailViewAction();
           }))
@@ -137,8 +144,8 @@ class ComposerView extends GetWidget<ComposerController> {
                   children: [
                     Obx(() => controller.composerArguments.value != null
                       ? Text(
-                        '<${controller.composerArguments.value?.userProfile.email ?? ''}>',
-                        style: TextStyle(fontSize: 14, color: AppColor.nameUserColor))
+                          '<${controller.getEmailAddressSender()}>',
+                          style: TextStyle(fontSize: 14, color: AppColor.nameUserColor))
                       : SizedBox.shrink()
                     )
                   ],

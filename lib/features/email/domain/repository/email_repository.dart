@@ -45,4 +45,6 @@ abstract class EmailRepository {
   Future<Email?> saveEmailAsDrafts(AccountId accountId, Email email);
 
   Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId);
+
+  Future<Email?> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId);
 }

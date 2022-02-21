@@ -342,7 +342,7 @@ class EmailController extends BaseController {
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
       && mailboxDashBoardController.userProfile.value != null
-      && mailboxDashBoardController.mapDefaultMailboxId.containsKey(PresentationMailbox.roleOutbox)
+      && mailboxDashBoardController.mapDefaultMailboxId.isNotEmpty
       && mailboxDashBoardController.selectedEmail.value != null;
 
   void backToThreadView() {

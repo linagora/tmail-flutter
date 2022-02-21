@@ -375,7 +375,13 @@ class ThreadView extends GetWidget<ThreadController> {
                 controller.currentSelectMode.value,
                 controller.mailboxDashBoardController.searchState.value.searchStatus,
                 controller.searchQuery)
-            ..onOpenEmailAction((selectedEmail) => controller.previewEmail(context, selectedEmail))
+            ..onOpenEmailAction((selectedEmail) {
+              if (controller.mailboxDashBoardController.selectedMailbox.value?.role == PresentationMailbox.roleDrafts) {
+                controller.editEmail(selectedEmail);
+              } else {
+                controller.previewEmail(context, selectedEmail);
+              }
+            })
             ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail)))
           .build()),
       )
