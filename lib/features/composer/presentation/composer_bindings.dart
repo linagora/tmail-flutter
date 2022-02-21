@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/composer/domain/repository/contact_reposi
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
@@ -36,6 +37,7 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:uuid/uuid.dart';
 
@@ -113,6 +115,8 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => UploadMultipleAttachmentInteractor(Get.find<UploadAttachmentInteractor>()));
     Get.lazyPut(() => SendEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => SaveEmailAsDraftsInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => UpdateEmailDraftsInteractor(Get.find<EmailRepository>()));
   }
 
   @override
@@ -130,7 +134,9 @@ class ComposerBindings extends BaseBindings {
         Get.find<TextEditingController>(),
         Get.find<LocalFilePickerInteractor>(),
         Get.find<UploadMultipleAttachmentInteractor>(),
-        Get.find<SaveEmailAsDraftsInteractor>()
+        Get.find<SaveEmailAsDraftsInteractor>(),
+        Get.find<GetEmailContentInteractor>(),
+        Get.find<UpdateEmailDraftsInteractor>(),
     ));
   }
 }

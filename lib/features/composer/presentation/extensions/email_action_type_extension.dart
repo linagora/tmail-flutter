@@ -19,6 +19,8 @@ extension EmailActionTypeExtension on EmailActionType {
         } else {
           return '${AppLocalizations.of(context).prefix_forward_email} $subject';
         }
+      case EmailActionType.edit:
+        return subject;
       default:
         return '';
     }

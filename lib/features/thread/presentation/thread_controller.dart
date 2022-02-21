@@ -15,6 +15,8 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
@@ -135,7 +137,9 @@ class ThreadController extends BaseController {
         } else if (success is SearchEmailNewQuery){
           _searchEmail();
         } else if (success is SaveEmailAsDraftsSuccess
-            || success is RemoveEmailDraftsSuccess) {
+            || success is RemoveEmailDraftsSuccess
+            || success is SendEmailSuccess
+            || success is UpdateEmailDraftsSuccess) {
           cancelSelectEmail();
           _refreshEmailChanges();
         }
@@ -673,7 +677,7 @@ class ThreadController extends BaseController {
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
       && mailboxDashBoardController.userProfile.value != null
-      && mailboxDashBoardController.mapDefaultMailboxId.containsKey(PresentationMailbox.roleOutbox);
+      && mailboxDashBoardController.mapDefaultMailboxId.isNotEmpty;
 
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
@@ -702,6 +706,20 @@ class ThreadController extends BaseController {
 
   void goToEmail(BuildContext context) {
     push(AppRoutes.EMAIL);
+  }
+
+  void editEmail(PresentationEmail presentationEmail) {
+    if (canComposeEmail()) {
+      push(
+          AppRoutes.COMPOSER,
+          arguments: ComposerArguments(
+              emailActionType: EmailActionType.edit,
+              presentationEmail: presentationEmail,
+              mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
+              session: mailboxDashBoardController.sessionCurrent!,
+              userProfile: mailboxDashBoardController.userProfile.value!,
+              mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
+    }
   }
 
   void composeEmailAction() {

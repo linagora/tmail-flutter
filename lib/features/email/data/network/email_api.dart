@@ -68,6 +68,11 @@ class EmailAPI {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addCreate(emailRequest.email.id.id, emailRequest.email);
 
+    if (emailRequest.emailIdDestroyed != null) {
+      setEmailMethod
+        ..addDestroy({emailRequest.emailIdDestroyed!.id});
+    }
+
     final setEmailSubmissionMethod = SetEmailSubmissionMethod(accountId)
       ..addCreate(
           emailRequest.submissionCreateId,
@@ -107,8 +112,11 @@ class EmailAPI {
       methodName: setEmailInvocation.methodName);
 
     return Future.sync(() async {
-      final emailCreated = setEmailResponse!.created![emailRequest.email.id.id];
-      return setEmailSubmissionResponse!.updated![emailCreated!.id.id] == null;
+      final emailCreated = setEmailResponse?.created?[emailRequest.email.id.id];
+      if (emailCreated != null) {
+        return setEmailSubmissionResponse?.updated?[emailCreated.id.id] == null;
+      }
+      return false;
     }).catchError((error) {
       throw error;
     });
@@ -297,6 +305,36 @@ class EmailAPI {
 
     return Future.sync(() async {
       return setEmailResponse?.destroyed?.contains(emailId.id) == true;
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  Future<Email?> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addCreate(newEmail.id.id, newEmail)
+      ..addDestroy({oldEmailId.id});
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final response = await (requestBuilder
+        ..usings(setEmailMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+        setEmailInvocation.methodCallId,
+        SetEmailResponse.deserialize);
+
+    return Future.sync(() async {
+      final emailUpdated = setEmailResponse?.created?[newEmail.id.id];
+      final emailDestroyed = setEmailResponse?.destroyed?.contains(oldEmailId.id);
+      if (emailUpdated != null && emailDestroyed == true) {
+        return emailUpdated;
+      }
+      return null;
     }).catchError((error) {
       throw error;
     });

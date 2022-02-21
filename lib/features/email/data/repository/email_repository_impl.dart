@@ -98,4 +98,9 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId) {
     return emailDataSource.removeEmailDrafts(accountId, emailId);
   }
+
+  @override
+  Future<Email?> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) {
+    return emailDataSource.updateEmailDrafts(accountId, newEmail, oldEmailId);
+  }
 }
