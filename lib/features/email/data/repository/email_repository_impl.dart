@@ -88,4 +88,9 @@ class EmailRepositoryImpl extends EmailRepository {
       })
       .toList());
   }
+
+  @override
+  Future<bool> saveEmailAsDrafts(AccountId accountId, Email email) {
+    return emailDataSource.saveEmailAsDrafts(accountId, email);
+  }
 }

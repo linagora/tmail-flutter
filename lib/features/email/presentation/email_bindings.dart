@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
@@ -33,7 +32,6 @@ class EmailBindings extends Bindings {
       Get.find<EmailDataSource>(),
       Get.find<HtmlDataSource>()));
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
-    Get.put(SendEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => GetEmailContentInteractor(
       Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
