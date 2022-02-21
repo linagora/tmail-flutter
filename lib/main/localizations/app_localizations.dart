@@ -649,4 +649,18 @@ class AppLocalizations {
         name: 'new_mailbox_is_created'
     );
   }
+
+  String get drafts_saved {
+    return Intl.message(
+      'Draft saved',
+      name: 'drafts_saved',
+    );
+  }
+
+  String get discard {
+    return Intl.message(
+        'Discard',
+        name: 'discard'
+    );
+  }
 }

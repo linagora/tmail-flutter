@@ -7,6 +7,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
@@ -93,6 +94,8 @@ class MailboxDashBoardController extends BaseController {
                 icon: _imagePaths.icSendToast);
           }
           clearState();
+        } else if (success is SaveEmailAsDraftsSuccess) {
+          _saveEmailAsDraftsSuccess(success);
         }
       }
     );
@@ -188,6 +191,17 @@ class MailboxDashBoardController extends BaseController {
     dispatchState(Right(SearchEmailNewQuery(searchQuery ?? SearchQuery(''))));
     clearSuggestionSearch();
     FocusManager.instance.primaryFocus?.unfocus();
+  }
+
+  void _saveEmailAsDraftsSuccess(SaveEmailAsDraftsSuccess success) {
+    if (Get.context != null && Get.overlayContext != null) {
+      _appToast.showToastWithAction(
+          Get.overlayContext!,
+          AppLocalizations.of(Get.context!).drafts_saved,
+          AppLocalizations.of(Get.context!).discard,
+          () {}
+      );
+    }
   }
 
   @override

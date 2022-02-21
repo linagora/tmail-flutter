@@ -22,28 +22,35 @@ class ComposerView extends GetWidget<ComposerController> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
+    return WillPopScope(
+      onWillPop: () async {
         controller.htmlEditorApi?.unfocus(context);
+        controller.saveEmailAsDrafts();
+        return true;
       },
-      child: Scaffold(
-        backgroundColor: AppColor.primaryLightColor,
-        body: SafeArea(
-          right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-          left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-          child: Container(
-            margin: EdgeInsets.zero,
-            alignment: Alignment.topCenter,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                _buildTopBar(context),
-                Expanded(child: _buildBodyComposer(context))
-            ])
-          )
-        ),
+      child: GestureDetector(
+        onTap: () {
+          controller.htmlEditorApi?.unfocus(context);
+        },
+        child: Scaffold(
+          backgroundColor: AppColor.primaryLightColor,
+          body: SafeArea(
+            right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+            left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+            child: Container(
+              margin: EdgeInsets.zero,
+              alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  _buildTopBar(context),
+                  Expanded(child: _buildBodyComposer(context))
+              ])
+            )
+          ),
+        )
       )
     );
   }
@@ -54,7 +61,10 @@ class ComposerView extends GetWidget<ComposerController> {
       child: Obx(() => (TopBarComposerWidgetBuilder(imagePaths, controller.isEnableEmailSendButton.value)
           ..addSendEmailActionClick(() => controller.sendEmailAction(context))
           ..addAttachFileActionClick(() => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context)))
-          ..addBackActionClick(() => controller.backToEmailViewAction()))
+          ..addBackActionClick(() {
+            controller.saveEmailAsDrafts();
+            controller.backToEmailViewAction();
+          }))
         .build()),
     );
   }
