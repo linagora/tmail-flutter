@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -22,6 +23,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_b
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
@@ -83,6 +85,10 @@ class MailboxController extends BaseController {
         } else if (success is MoveMultipleEmailToMailboxAllSuccess
             || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
           mailboxDashBoardController.clearState();
+          refreshMailboxChanges();
+        } else if (success is SaveEmailAsDraftsSuccess) {
+          refreshMailboxChanges();
+        } else if (success is RemoveEmailDraftsSuccess) {
           refreshMailboxChanges();
         }
       });

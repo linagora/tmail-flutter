@@ -1,30 +1,77 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
+import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
+import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
+import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_bindings.dart';
 
-class MailboxDashBoardBindings extends Bindings {
+class MailboxDashBoardBindings extends BaseBindings {
 
   @override
   void dependencies() {
-    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
-    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
-    Get.lazyPut(() => GetUserProfileInteractor(Get.find<CredentialRepository>()));
+    super.dependencies();
+    MailboxBindings().dependencies();
+    ThreadBindings().dependencies();
+    EmailBindings().dependencies();
+  }
 
+  @override
+  void bindingsController() {
     Get.put(MailboxDashBoardController(
       Get.find<GetUserProfileInteractor>(),
       Get.find<AppToast>(),
       Get.find<ImagePaths>(),
+      Get.find<RemoveEmailDraftsInteractor>(),
     ));
+  }
 
-    MailboxBindings().dependencies();
-    ThreadBindings().dependencies();
-    EmailBindings().dependencies();
+  @override
+  void bindingsDataSource() {
+    Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
+    Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
+  }
+
+  @override
+  void bindingsDataSourceImpl() {
+    Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
+    Get.lazyPut(() => HtmlDataSourceImpl(
+        Get.find<HtmlAnalyzer>(),
+        Get.find<DioClient>()
+    ));
+  }
+
+  @override
+  void bindingsInteractor() {
+    Get.lazyPut(() => GetUserProfileInteractor(Get.find<CredentialRepository>()));
+    Get.lazyPut(() => RemoveEmailDraftsInteractor(Get.find<EmailRepository>()));
+  }
+
+  @override
+  void bindingsRepository() {
+    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
+    Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
+  }
+
+  @override
+  void bindingsRepositoryImpl() {
+    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
+    Get.lazyPut(() => EmailRepositoryImpl(
+        Get.find<EmailDataSource>(),
+        Get.find<HtmlDataSource>()
+    ));
   }
 }

@@ -90,7 +90,12 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<bool> saveEmailAsDrafts(AccountId accountId, Email email) {
+  Future<Email?> saveEmailAsDrafts(AccountId accountId, Email email) {
     return emailDataSource.saveEmailAsDrafts(accountId, email);
+  }
+
+  @override
+  Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId) {
+    return emailDataSource.removeEmailDrafts(accountId, emailId);
   }
 }

@@ -254,7 +254,7 @@ class EmailAPI {
     });
   }
 
-  Future<bool> saveEmailAsDrafts(AccountId accountId, Email email) async {
+  Future<Email?> saveEmailAsDrafts(AccountId accountId, Email email) async {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addCreate(email.id.id, email);
 
@@ -272,7 +272,31 @@ class EmailAPI {
         SetEmailResponse.deserialize);
 
     return Future.sync(() async {
-     return setEmailResponse?.created?[email.id.id] != null;
+      return setEmailResponse?.created?[email.id.id];
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addDestroy({emailId.id});
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final response = await (requestBuilder
+        ..usings(setEmailMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+        setEmailInvocation.methodCallId,
+        SetEmailResponse.deserialize);
+
+    return Future.sync(() async {
+      return setEmailResponse?.destroyed?.contains(emailId.id) == true;
     }).catchError((error) {
       throw error;
     });

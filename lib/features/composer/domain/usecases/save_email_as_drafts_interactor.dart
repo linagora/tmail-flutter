@@ -12,11 +12,11 @@ class SaveEmailAsDraftsInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, Email email) async* {
     try {
-      final result = await emailRepository.saveEmailAsDrafts(accountId, email);
-      if (result) {
-        yield Right<Failure, Success>(SaveEmailAsDraftsSuccess(email));
+      final emailAsDrafts = await emailRepository.saveEmailAsDrafts(accountId, email);
+      if (emailAsDrafts != null) {
+        yield Right<Failure, Success>(SaveEmailAsDraftsSuccess(emailAsDrafts));
       } else {
-        yield Left<Failure, Success>(SaveEmailAsDraftsFailure(result));
+        yield Left<Failure, Success>(SaveEmailAsDraftsFailure(null));
       }
     } catch (e) {
       yield Left<Failure, Success>(SaveEmailAsDraftsFailure(e));

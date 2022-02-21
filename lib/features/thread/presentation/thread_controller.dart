@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
@@ -22,6 +23,7 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -132,6 +134,10 @@ class ThreadController extends BaseController {
           mailboxDashBoardController.clearState();
         } else if (success is SearchEmailNewQuery){
           _searchEmail();
+        } else if (success is SaveEmailAsDraftsSuccess
+            || success is RemoveEmailDraftsSuccess) {
+          cancelSelectEmail();
+          _refreshEmailChanges();
         }
       });
     });

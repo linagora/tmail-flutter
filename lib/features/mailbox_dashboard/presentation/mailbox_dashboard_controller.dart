@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -11,7 +12,9 @@ import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_draft
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -23,6 +26,7 @@ class MailboxDashBoardController extends BaseController {
   final GetUserProfileInteractor _getUserProfileInteractor;
   final AppToast _appToast;
   final ImagePaths _imagePaths;
+  final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -43,6 +47,7 @@ class MailboxDashBoardController extends BaseController {
       this._getUserProfileInteractor,
       this._appToast,
       this._imagePaths,
+      this._removeEmailDraftsInteractor,
   );
 
   @override
@@ -96,6 +101,9 @@ class MailboxDashBoardController extends BaseController {
           clearState();
         } else if (success is SaveEmailAsDraftsSuccess) {
           _saveEmailAsDraftsSuccess(success);
+          clearState();
+        } else if (success is RemoveEmailDraftsSuccess) {
+          clearState();
         }
       }
     );
@@ -199,8 +207,15 @@ class MailboxDashBoardController extends BaseController {
           Get.overlayContext!,
           AppLocalizations.of(Get.context!).drafts_saved,
           AppLocalizations.of(Get.context!).discard,
-          () {}
+          () => _discardEmail(success.emailAsDrafts)
       );
+    }
+  }
+
+  void _discardEmail(Email email) {
+    final currentAccountId = accountId.value;
+    if (currentAccountId != null) {
+      consumeState(_removeEmailDraftsInteractor.execute(currentAccountId, email.id));
     }
   }
 

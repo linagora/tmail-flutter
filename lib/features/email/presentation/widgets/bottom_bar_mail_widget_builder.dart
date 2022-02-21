@@ -32,17 +32,18 @@ class BottomBarMailWidgetBuilder {
       color: Colors.white,
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
-        child: _presentationEmail != null ? _buildListOptionButton() : SizedBox.shrink()
+        child: _presentationEmail != null ? _buildListOptionButton(_presentationEmail!) : SizedBox.shrink()
       )
     );
   }
 
-  Widget _buildListOptionButton() {
+  Widget _buildListOptionButton(PresentationEmail presentationEmail) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        (ButtonBuilder(_imagePaths.icReplyAllV2)
+        if (presentationEmail.numberOfAllEmailAddress() > 1)
+          (ButtonBuilder(_imagePaths.icReplyAllV2)
             ..key(Key('button_reply_all_message'))
             ..size(20)
             ..paddingIcon(EdgeInsets.only(
