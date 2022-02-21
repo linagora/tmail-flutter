@@ -86,4 +86,13 @@ class EmailDataSourceImpl extends EmailDataSource {
       throw error;
     });
   }
+
+  @override
+  Future<bool> saveEmailAsDrafts(AccountId accountId, Email email) {
+    return Future.sync(() async {
+      return await emailAPI.saveEmailAsDrafts(accountId, email);
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }

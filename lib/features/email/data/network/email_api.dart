@@ -253,4 +253,28 @@ class EmailAPI {
       throw error;
     });
   }
+
+  Future<bool> saveEmailAsDrafts(AccountId accountId, Email email) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addCreate(email.id.id, email);
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final response = await (requestBuilder
+        ..usings(setEmailMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+        setEmailInvocation.methodCallId,
+        SetEmailResponse.deserialize);
+
+    return Future.sync(() async {
+     return setEmailResponse?.created?[email.id.id] != null;
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }

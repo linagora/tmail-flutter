@@ -19,6 +19,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -30,6 +31,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
@@ -62,6 +64,7 @@ class ComposerController extends BaseController {
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final UploadMultipleAttachmentInteractor _uploadMultipleAttachmentInteractor;
   final DeviceInfoPlugin _deviceInfoPlugin;
+  final SaveEmailAsDraftsInteractor _saveEmailAsDraftsInteractor;
 
   List<EmailAddress> listToEmailAddress = [];
   List<EmailAddress> listCcEmailAddress = [];
@@ -96,6 +99,7 @@ class ComposerController extends BaseController {
     this.subjectEmailInputController,
     this._localFilePickerInteractor,
     this._uploadMultipleAttachmentInteractor,
+    this._saveEmailAsDraftsInteractor,
   );
 
   @override
@@ -272,9 +276,10 @@ class ComposerController extends BaseController {
     return emailQuotedHtml;
   }
 
-  Future<Email> generateEmail() async {
+  Future<Email> generateEmail({bool asDrafts = false}) async {
     final generateEmailId = EmailId(Id(_uuid.v1()));
     final outboxMailboxId = composerArguments.value!.mapMailboxId[PresentationMailbox.roleOutbox];
+    final draftMailboxId = composerArguments.value!.mapMailboxId[PresentationMailbox.roleDrafts];
     final listFromEmailAddress = {
       EmailAddress(null, composerArguments.value!.userProfile.email)
     };
@@ -286,11 +291,12 @@ class ComposerController extends BaseController {
 
     return Email(
       generateEmailId,
-      mailboxIds: {outboxMailboxId!: true},
+      mailboxIds: asDrafts ? {draftMailboxId!: true} : {outboxMailboxId!: true},
       from: listFromEmailAddress,
       to: listToEmailAddress.toSet(),
       cc: listCcEmailAddress.toSet(),
       bcc: listBccEmailAddress.toSet(),
+      keywords: asDrafts ? {KeyWordIdentifier.emailDraft : true} : null,
       subject: _subjectEmail,
       htmlBody: {
         EmailBodyPart(
@@ -448,6 +454,15 @@ class ComposerController extends BaseController {
 
   void removeAttachmentAction(Attachment attachmentRemoved) {
     attachments.removeWhere((attachment) => attachment == attachmentRemoved);
+  }
+
+  void saveEmailAsDrafts() async {
+    _saveEmailAddress();
+
+    final newEmail = await generateEmail(asDrafts: true);
+    final accountId = composerArguments.value!.session.accounts.keys.first;
+
+    mailboxDashBoardController.consumeState(_saveEmailAsDraftsInteractor.execute(accountId, newEmail));
   }
 
   void backToEmailViewAction() {

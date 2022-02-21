@@ -41,4 +41,6 @@ abstract class EmailRepository {
     String? baseUrlDownload,
     AccountId accountId
   );
+
+  Future<bool> saveEmailAsDrafts(AccountId accountId, Email email);
 }
