@@ -33,8 +33,11 @@ import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_s
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
@@ -52,6 +55,7 @@ class ComposerController extends BaseController {
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
   final attachments = <Attachment>[].obs;
+  final emailContents = <EmailContent>[].obs;
 
   final SendEmailInteractor _sendEmailInteractor;
   final SaveEmailAddressesInteractor _saveEmailAddressInteractor;
@@ -65,6 +69,8 @@ class ComposerController extends BaseController {
   final UploadMultipleAttachmentInteractor _uploadMultipleAttachmentInteractor;
   final DeviceInfoPlugin _deviceInfoPlugin;
   final SaveEmailAsDraftsInteractor _saveEmailAsDraftsInteractor;
+  final GetEmailContentInteractor _getEmailContentInteractor;
+  final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
 
   List<EmailAddress> listToEmailAddress = [];
   List<EmailAddress> listCcEmailAddress = [];
@@ -100,6 +106,8 @@ class ComposerController extends BaseController {
     this._localFilePickerInteractor,
     this._uploadMultipleAttachmentInteractor,
     this._saveEmailAsDraftsInteractor,
+    this._getEmailContentInteractor,
+    this._updateEmailDraftsInteractor,
   );
 
   @override
@@ -113,7 +121,7 @@ class ComposerController extends BaseController {
   @override
   void onReady() async {
     super.onReady();
-    _getSelectedEmail();
+    _initEmail();
 
     Future.delayed(Duration(milliseconds: 500), () => _checkContactPermission());
   }
@@ -136,6 +144,8 @@ class ComposerController extends BaseController {
           || success is UploadMultipleAttachmentAllSuccess
           || success is UploadMultipleAttachmentHasSomeFailure) {
           _uploadAttachmentsSuccess(success);
+        } else if (success is GetEmailContentSuccess) {
+          _getEmailContentSuccess(success);
         }
       });
   }
@@ -152,19 +162,22 @@ class ComposerController extends BaseController {
     popBack();
   }
   
-  void _getSelectedEmail() {
+  void _initEmail() {
     final arguments = Get.arguments;
     if (arguments is ComposerArguments) {
       composerArguments.value = arguments;
-      _initToEmailAddress();
-      _initSubjectEmail();
+      if (arguments.emailActionType == EmailActionType.edit) {
+        _getEmailContentAction(arguments);
+      }
+      _initToEmailAddress(arguments);
+      _initSubjectEmail(arguments);
     }
   }
 
-  void _initSubjectEmail() {
+  void _initSubjectEmail(ComposerArguments arguments) {
     if (Get.context != null) {
-      final subjectEmail = composerArguments.value?.presentationEmail?.getEmailTitle().trim() ?? '';
-      final newSubject = composerArguments.value?.emailActionType.getSubjectComposer(Get.context!, subjectEmail) ?? '';
+      final subjectEmail = arguments.presentationEmail?.getEmailTitle().trim() ?? '';
+      final newSubject = arguments.emailActionType.getSubjectComposer(Get.context!, subjectEmail);
       setSubjectEmail(newSubject);
       subjectEmailInputController.text = newSubject;
     }
@@ -174,16 +187,19 @@ class ComposerController extends BaseController {
     if (composerArguments.value != null
         && composerArguments.value!.emailActionType != EmailActionType.compose
         && Get.context != null) {
-      final contentEmailQuoted = _getBodyEmailQuotedAsHtml(Get.context!);
-      return contentEmailQuoted;
+      if (composerArguments.value?.emailActionType == EmailActionType.edit) {
+        return _getOldEmailContentAsHtml(Get.context!);
+      } else {
+        return _getBodyEmailQuotedAsHtml(Get.context!, composerArguments.value!);
+      }
     }
     return '';
   }
 
-  Tuple2<String, String>? getHeaderEmailQuoted(String locale) {
-    if (composerArguments.value != null && composerArguments.value?.presentationEmail != null) {
-      final sentDate = composerArguments.value!.presentationEmail?.sentAt;
-      final emailAddress = composerArguments.value!.presentationEmail?.from.listEmailAddressToString(isFullEmailAddress: true) ?? '';
+  Tuple2<String, String>? _getHeaderEmailQuoted(String locale, ComposerArguments arguments) {
+    if (arguments.presentationEmail != null) {
+      final sentDate = arguments.presentationEmail?.sentAt;
+      final emailAddress = arguments.presentationEmail?.from.listEmailAddressToString(isFullEmailAddress: true) ?? '';
       return Tuple2(sentDate.formatDate(pattern: 'MMM d, y h:mm a', locale: locale), emailAddress);
     }
     return null;
@@ -194,15 +210,13 @@ class ComposerController extends BaseController {
     expandMode.value = newExpandMode;
   }
 
-  void _initToEmailAddress() {
-    if (composerArguments.value != null && composerArguments.value?.presentationEmail != null) {
-      final userEmailAddress = EmailAddress(null, composerArguments.value!.userProfile.email);
+  void _initToEmailAddress(ComposerArguments arguments) {
+    if (arguments.presentationEmail != null) {
+      final userEmailAddress = EmailAddress(null, arguments.userProfile.email);
 
-      final recipients = composerArguments.value!.presentationEmail!.generateRecipientsEmailAddressForComposer(
-        composerArguments.value?.emailActionType,
-        composerArguments.value?.mailboxRole);
+      final recipients = arguments.presentationEmail!.generateRecipientsEmailAddressForComposer(arguments.emailActionType, arguments.mailboxRole);
 
-      if (composerArguments.value?.mailboxRole == PresentationMailbox.roleSent) {
+      if (arguments.mailboxRole == PresentationMailbox.roleSent || arguments.emailActionType == EmailActionType.edit) {
         listToEmailAddress = recipients.value1;
         listCcEmailAddress = recipients.value2;
         listBccEmailAddress = recipients.value3;
@@ -258,15 +272,15 @@ class ComposerController extends BaseController {
     }
   }
 
-  String _getBodyEmailQuotedAsHtml(BuildContext context) {
-    final headerEmailQuoted = getHeaderEmailQuoted(Localizations.localeOf(context).toLanguageTag());
+  String _getBodyEmailQuotedAsHtml(BuildContext context, ComposerArguments arguments) {
+    final headerEmailQuoted = _getHeaderEmailQuoted(Localizations.localeOf(context).toLanguageTag(), arguments);
 
     final headerEmailQuotedAsHtml = headerEmailQuoted != null
       ? AppLocalizations.of(context).header_email_quoted(headerEmailQuoted.value1, headerEmailQuoted.value2)
           .addBlockTag('p', attribute: 'style=\"font-size:14px;font-style:italic;color:#182952;\"')
       : '';
 
-    final trustAsHtml = composerArguments.value?.emailContents
+    final trustAsHtml = arguments.emailContents
       ?.map((emailContent) => emailContent.content)
       .toList()
       .join('</br>') ?? '';
@@ -276,12 +290,12 @@ class ComposerController extends BaseController {
     return emailQuotedHtml;
   }
 
-  Future<Email> generateEmail({bool asDrafts = false}) async {
+  Future<Email> _generateEmail(ComposerArguments arguments, {bool asDrafts = false}) async {
     final generateEmailId = EmailId(Id(_uuid.v1()));
-    final outboxMailboxId = composerArguments.value!.mapMailboxId[PresentationMailbox.roleOutbox];
-    final draftMailboxId = composerArguments.value!.mapMailboxId[PresentationMailbox.roleDrafts];
+    final outboxMailboxId = arguments.mapMailboxId[PresentationMailbox.roleOutbox];
+    final draftMailboxId = arguments.mapMailboxId[PresentationMailbox.roleDrafts];
     final listFromEmailAddress = {
-      EmailAddress(null, composerArguments.value!.userProfile.email)
+      EmailAddress(null, arguments.userProfile.email)
     };
     final generatePartId = PartId(_uuid.v1());
     final generateBlobId = Id(_uuid.v1());
@@ -335,16 +349,23 @@ class ComposerController extends BaseController {
 
   void sendEmailAction(BuildContext context) async {
     if (isEnableEmailSendButton.value) {
-      _saveEmailAddress();
+      final arguments = composerArguments.value;
+      if (arguments != null) {
+        _saveEmailAddress();
 
-      final email = await generateEmail();
-      final accountId = composerArguments.value!.session.accounts.keys.first;
-      final sentMailboxId = composerArguments.value!.mapMailboxId[PresentationMailbox.roleSent];
-      final submissionCreateId = Id(_uuid.v1());
+        final email = await _generateEmail(arguments);
+        final accountId = arguments.session.accounts.keys.first;
+        final sentMailboxId = arguments.mapMailboxId[PresentationMailbox.roleSent];
+        final submissionCreateId = Id(_uuid.v1());
 
-      mailboxDashBoardController.consumeState(_sendEmailInteractor.execute(
-          accountId,
-          EmailRequest(email, submissionCreateId, mailboxIdSaved: sentMailboxId)));
+        mailboxDashBoardController.consumeState(_sendEmailInteractor.execute(
+            accountId,
+            EmailRequest(
+                email,
+                submissionCreateId,
+                mailboxIdSaved: sentMailboxId,
+                emailIdDestroyed: arguments.emailActionType == EmailActionType.edit ? arguments.presentationEmail?.id : null)));
+      }
 
       popBack();
     } else {
@@ -457,12 +478,57 @@ class ComposerController extends BaseController {
   }
 
   void saveEmailAsDrafts() async {
-    _saveEmailAddress();
+    final arguments = composerArguments.value;
+    if (arguments != null) {
+      _saveEmailAddress();
 
-    final newEmail = await generateEmail(asDrafts: true);
-    final accountId = composerArguments.value!.session.accounts.keys.first;
+      final newEmail = await _generateEmail(arguments, asDrafts: true);
+      final accountId = arguments.session.accounts.keys.first;
+      final oldEmail = arguments.presentationEmail;
 
-    mailboxDashBoardController.consumeState(_saveEmailAsDraftsInteractor.execute(accountId, newEmail));
+      if (arguments.emailActionType == EmailActionType.edit && oldEmail != null) {
+        mailboxDashBoardController.consumeState(_updateEmailDraftsInteractor.execute(accountId, newEmail, oldEmail.id));
+      } else {
+        mailboxDashBoardController.consumeState(_saveEmailAsDraftsInteractor.execute(accountId, newEmail));
+      }
+    }
+  }
+
+  void _getEmailContentAction(ComposerArguments arguments) async {
+    final baseDownloadUrl = arguments.session.getDownloadUrl();
+    final accountId = arguments.session.accounts.keys.first;
+    final emailId = arguments.presentationEmail?.id;
+    if (emailId != null) {
+      consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
+    }
+  }
+
+  void _getEmailContentSuccess(GetEmailContentSuccess success) {
+    emailContents.value = success.emailContents;
+    attachments.value = success.attachments;
+  }
+
+  String _getOldEmailContentAsHtml(BuildContext context) {
+    if (emailContents.isNotEmpty) {
+      final trustAsHtml = emailContents
+          .map((emailContent) => emailContent.content)
+          .toList()
+          .join('</br>');
+      return trustAsHtml;
+    }
+    return '';
+  }
+
+  String getEmailAddressSender() {
+    final arguments = composerArguments.value;
+    if (arguments != null) {
+      if (arguments.emailActionType == EmailActionType.edit) {
+        return arguments.presentationEmail?.from?.first.emailAddress ?? '';
+      } else {
+        return arguments.userProfile.email;
+      }
+    }
+    return '';
   }
 
   void backToEmailViewAction() {
