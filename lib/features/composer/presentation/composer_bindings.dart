@@ -58,6 +58,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => AutoCompleteDataSourceImpl());
     Get.lazyPut(() => LocalAutoCompleteDataSourceImpl(Get.find<EmailAddressDatabaseManager>()));
     Get.lazyPut(() => ContactDataSourceImpl());
+    Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
         Get.find<HtmlAnalyzer>(),
         Get.find<DioClient>()
@@ -84,7 +85,6 @@ class ComposerBindings extends BaseBindings {
       DataSourceType.local: Get.find<LocalAutoCompleteDataSourceImpl>(),
     }));
     Get.lazyPut(() => ContactRepositoryImpl(Get.find<ContactDataSource>()));
-    Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut(() => EmailRepositoryImpl(
         Get.find<EmailDataSource>(),
         Get.find<HtmlDataSource>()
@@ -97,7 +97,6 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut<AutoCompleteRepository>(() => Get.find<AutoCompleteRepositoryImpl>());
     Get.lazyPut<ContactRepository>(() => Get.find<ContactRepositoryImpl>());
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
-
   }
 
   @override
