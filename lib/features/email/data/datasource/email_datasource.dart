@@ -35,5 +35,7 @@ abstract class EmailDataSource {
     MarkStarAction markStarAction
   );
 
-  Future<bool> saveEmailAsDrafts(AccountId accountId, Email email);
+  Future<Email?> saveEmailAsDrafts(AccountId accountId, Email email);
+
+  Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId);
 }
