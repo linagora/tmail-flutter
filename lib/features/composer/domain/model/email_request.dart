@@ -9,8 +9,9 @@ class EmailRequest with EquatableMixin {
   final Email email;
   final Id submissionCreateId;
   final MailboxId? mailboxIdSaved;
+  final EmailId? emailIdDestroyed;
 
-  EmailRequest(this.email, this.submissionCreateId, {this.mailboxIdSaved});
+  EmailRequest(this.email, this.submissionCreateId, {this.mailboxIdSaved, this.emailIdDestroyed});
 
   @override
   List<Object?> get props => [email, submissionCreateId, mailboxIdSaved];

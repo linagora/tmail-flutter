@@ -106,6 +106,8 @@ extension PresentationEmailExtension on PresentationEmail {
         } else {
           return Tuple3(to.asList() + from.asList(), cc.asList(), bcc.asList());
         }
+      case EmailActionType.edit:
+        return Tuple3(to.asList(), cc.asList(), bcc.asList());
       default:
         return Tuple3([], [], []);
     }

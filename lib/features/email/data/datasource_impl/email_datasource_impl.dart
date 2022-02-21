@@ -104,4 +104,13 @@ class EmailDataSourceImpl extends EmailDataSource {
       throw error;
     });
   }
+
+  @override
+  Future<Email?> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) {
+    return Future.sync(() async {
+      return await emailAPI.updateEmailDrafts(accountId, newEmail, oldEmailId);
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }

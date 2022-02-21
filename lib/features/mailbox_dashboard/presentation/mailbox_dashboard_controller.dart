@@ -10,6 +10,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
@@ -85,6 +86,10 @@ class MailboxDashBoardController extends BaseController {
                 icon: _imagePaths.icSendToast);
           }
           clearState();
+        } else if (failure is SaveEmailAsDraftsFailure
+            || failure is RemoveEmailDraftsFailure
+            || failure is UpdateEmailDraftsFailure) {
+          clearState();
         }
       },
       (success) {
@@ -102,7 +107,8 @@ class MailboxDashBoardController extends BaseController {
         } else if (success is SaveEmailAsDraftsSuccess) {
           _saveEmailAsDraftsSuccess(success);
           clearState();
-        } else if (success is RemoveEmailDraftsSuccess) {
+        } else if (success is RemoveEmailDraftsSuccess
+          || success is UpdateEmailDraftsSuccess) {
           clearState();
         }
       }
