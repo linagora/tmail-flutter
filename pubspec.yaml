@@ -58,6 +58,9 @@ dependencies:
   # either
   dartz: 0.10.1
 
+  # flutter_dotenv
+  flutter_dotenv: 5.0.2
+
   # flutter_typeahead
   flutter_typeahead: 3.1.1
 
@@ -153,6 +156,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/
+    - env.file
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
