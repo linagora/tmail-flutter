@@ -207,10 +207,13 @@ class MailboxController extends BaseController {
   }
 
   void createNewMailbox() async {
-    final newMailboxArguments = await push(
-        AppRoutes.MAILBOX_CREATOR,
-        arguments: MailboxCreatorArguments(allMailboxes)
-    );
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null) {
+      final newMailboxArguments = await push(
+          AppRoutes.MAILBOX_CREATOR,
+          arguments: MailboxCreatorArguments(accountId, allMailboxes)
+      );
+    }
   }
 
   void closeMailboxScreen() {

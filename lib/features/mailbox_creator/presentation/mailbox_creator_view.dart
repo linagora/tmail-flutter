@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/app_bar_mailbox_creator_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/app_bar_mailbox_creator_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -93,11 +93,12 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
   Widget _buildAppBar(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 5),
-      child: Obx(() => (AppBarMailboxCreatorWidget(
+      child: Obx(() => (AppBarMailboxCreatorBuilder(
               context,
+              title: AppLocalizations.of(context).new_mailbox,
               isValidated: controller.isCreateMailboxValidated(context))
           ..addOnCancelActionClick(() => controller.closeMailboxCreator(context))
-          ..addOnCreateActionClick(() => {}))
+          ..addOnDoneActionClick(() => {}))
         .build())
     );
   }
@@ -139,7 +140,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
             data: MediaQueryData(padding: EdgeInsets.zero),
             child: ListTile(
                 contentPadding: EdgeInsets.zero,
-                onTap: () => {},
+                onTap: () => controller.selectMailboxLocation(context),
                 leading: Padding(
                     padding: EdgeInsets.only(left: 16),
                     child: SvgPicture.asset(
@@ -150,21 +151,23 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                 title: Transform(
                     transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
                     child: Row(children: [
-                      Expanded(child: Text(
+                      Expanded(child: Obx(() => Text(
                         '${controller.selectedMailbox.value?.name?.name ?? AppLocalizations.of(context).default_mailbox}',
                         maxLines: 1,
                         overflow:TextOverflow.ellipsis,
                         style: TextStyle(
                             fontSize: 15,
-                            color: controller.selectedMailbox.isBlank == true ? AppColor.colorHintSearchBar : AppColor.colorNameEmail),
-                      )),
+                            color: controller.selectedMailbox.value == null
+                                ? AppColor.colorHintSearchBar
+                                : AppColor.colorNameEmail),
+                      ))),
                     ])),
                 trailing: Transform(
-                    transform: Matrix4.translationValues(8.0, 0.0, 0.0),
+                    transform: Matrix4.translationValues(4.0, 0.0, 0.0),
                     child: IconButton(
                         color: AppColor.primaryColor,
                         icon: SvgPicture.asset(_imagePaths.icFolderArrow, color: AppColor.colorArrowUserMailbox, fit: BoxFit.fill),
-                        onPressed: () {}
+                        onPressed: () => controller.selectMailboxLocation(context)
                     ))
             ),
           )

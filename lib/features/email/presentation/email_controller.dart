@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -275,7 +276,7 @@ class EmailController extends BaseController {
     if (currentMailbox != null && accountId != null) {
       final destinationMailbox = await push(
         AppRoutes.DESTINATION_PICKER,
-        arguments: DestinationPickerArguments(accountId, [email.id], currentMailbox)
+        arguments: DestinationPickerArguments(accountId, MailboxAction.moveEmail)
       );
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {

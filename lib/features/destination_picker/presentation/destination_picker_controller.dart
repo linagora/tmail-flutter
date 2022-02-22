@@ -1,11 +1,13 @@
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -21,8 +23,8 @@ class DestinationPickerController extends BaseController {
   MailboxTree folderMailboxTree = MailboxTree(MailboxNode.root());
   final defaultMailboxList = <PresentationMailbox>[].obs;
   final folderMailboxNodeList = <MailboxNode>[].obs;
-
-  DestinationPickerArguments? destinationPickerArguments;
+  final mailboxAction = Rxn<MailboxAction>();
+  AccountId? accountId;
 
   DestinationPickerController(
     this._getAllMailboxInteractor,
@@ -32,8 +34,10 @@ class DestinationPickerController extends BaseController {
   @override
   void onReady() {
     super.onReady();
-    if (Get.arguments != null && Get.arguments is DestinationPickerArguments) {
-      destinationPickerArguments = Get.arguments;
+    final arguments = Get.arguments;
+    if (arguments != null && arguments is DestinationPickerArguments) {
+      mailboxAction.value = arguments.mailboxAction;
+      accountId = arguments.accountId;
       getAllMailboxAction();
     }
   }
@@ -61,9 +65,8 @@ class DestinationPickerController extends BaseController {
   void onError(error) {}
 
   void getAllMailboxAction() {
-    final accountId = destinationPickerArguments?.accountId;
     if (accountId != null) {
-      consumeState(_getAllMailboxInteractor.execute(accountId));
+      consumeState(_getAllMailboxInteractor.execute(accountId!));
     }
   }
 
