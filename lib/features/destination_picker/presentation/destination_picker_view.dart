@@ -24,9 +24,9 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
         borderOnForeground: false,
         color: Colors.transparent,
         child: Container(
-          margin: _responsiveUtils.getMarginDestinationPicker(context),
+          margin: _getMarginDestinationPicker(context),
           child: ClipRRect(
-            borderRadius: _responsiveUtils.radiusDestinationPicker(context, 20),
+            borderRadius: _radiusDestinationPicker(context, 20),
             child: GestureDetector(
               onTap: () => {},
               child: SafeArea(
@@ -193,5 +193,48 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                 .build(),
               ))
       .toList();
+  }
+
+  EdgeInsets _getMarginDestinationPicker(BuildContext context) {
+    if (_responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context)) {
+      return EdgeInsets.only(
+          left: _responsiveUtils.tabletHorizontalMargin,
+          right: _responsiveUtils.tabletHorizontalMargin,
+          top: 50.0);
+    } else if (_responsiveUtils.isTablet(context)) {
+      return _responsiveUtils.getSizeHeightScreen(context) <= _responsiveUtils.tabletVerticalMargin * 2
+          ? EdgeInsets.symmetric(
+              horizontal: _responsiveUtils.tabletHorizontalMargin,
+              vertical: 0.0)
+          : EdgeInsets.symmetric(
+              horizontal: _responsiveUtils.tabletHorizontalMargin,
+              vertical: _responsiveUtils.tabletVerticalMargin);
+    } else if (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) {
+      return _responsiveUtils.getSizeHeightScreen(context) <= _responsiveUtils.desktopVerticalMargin * 2
+          ? EdgeInsets.symmetric(
+              horizontal: _responsiveUtils.desktopHorizontalMargin,
+              vertical: 0.0)
+          : EdgeInsets.symmetric(
+              horizontal: _responsiveUtils.desktopHorizontalMargin,
+              vertical: _responsiveUtils.desktopVerticalMargin);
+    } else {
+      return EdgeInsets.zero;
+    }
+  }
+
+  BorderRadius _radiusDestinationPicker(BuildContext context, double radius) {
+    if (_responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context)) {
+      return BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius));
+    } else if (_responsiveUtils.isTablet(context)) {
+      return _responsiveUtils.getSizeHeightScreen(context) <= _responsiveUtils.tabletVerticalMargin * 2
+          ? BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius))
+          : BorderRadius.circular(radius);
+    } else if (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) {
+      return _responsiveUtils.getSizeHeightScreen(context) <= _responsiveUtils.desktopVerticalMargin * 2
+          ? BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius))
+          : BorderRadius.circular(radius);
+    } else {
+      return BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius));
+    }
   }
 }

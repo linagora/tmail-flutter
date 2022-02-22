@@ -2,9 +2,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 typedef OnBackActionClick = void Function();
 typedef OnUnreadEmailActionClick = void Function(PresentationEmail presentationEmail);
@@ -56,8 +54,7 @@ class AppBarMailWidgetBuilder {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if ((!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context))
-                || Get.currentRoute != AppRoutes.MAILBOX_DASHBOARD)
+            if ((!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context)))
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -86,14 +83,6 @@ class AppBarMailWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // IconButton(
-        //   color: AppColor.baseTextColor,
-        //   icon: SvgPicture.asset(_imagePaths.icTrash, color: AppColor.baseTextColor, fit: BoxFit.fill),
-        //   onPressed: () {
-        //     if (_onBackActionClick != null) {
-        //       _onBackActionClick!();
-        //     }
-        //   }),
         IconButton(
           key: Key('button_mark_as_star_email'),
           icon: SvgPicture.asset(

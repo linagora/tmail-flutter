@@ -74,6 +74,12 @@ extension AppColor on Color {
   static const colorFilterMessageDisabled = Color(0xFF99A2AD);
   static const colorFilterMessageEnabled = Color(0xFF007AFF);
   static const colorDefaultCupertinoActionSheet = Color(0x66000000);
+  static const colorDisableMailboxCreateButton = Color(0x2E3C3C43);
+  static const colorInputBorderErrorVerifyName = Color(0xFFE64646);
+  static const colorInputBorderCreateMailbox = Color(0x1F000000);
+  static const colorInputBackgroundErrorVerifyName = Color(0xFFFAEBEB);
+  static const colorInputBackgroundCreateMailbox = Color(0xFFF2F3F5);
+  static const colorHintInputCreateMailbox= Color(0xFFA9B4C2);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
