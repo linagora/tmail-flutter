@@ -77,17 +77,20 @@ class MailboxTileBuilder {
                                 maxLines: 1,
                                 style: TextStyle(fontSize: 13, color: AppColor.colorNameEmail)))
                     ])),
-                trailing: Transform(
-                    transform: Matrix4.translationValues(8.0, 0.0, 0.0),
-                    child: IconButton(
-                        color: AppColor.primaryColor,
-                        icon: SvgPicture.asset(_imagePaths.icFolderArrow, color: AppColor.colorArrowUserMailbox, fit: BoxFit.fill),
-                        onPressed: () {
-                          if (_onOpenMailboxActionClick != null) {
-                            _onOpenMailboxActionClick!(_presentationMailbox);
+                trailing: (mailboxDisplayed == MailboxDisplayed.mailbox)
+                  ? Transform(
+                      transform: Matrix4.translationValues(8.0, 0.0, 0.0),
+                      child: IconButton(
+                          color: AppColor.primaryColor,
+                          icon: SvgPicture.asset(_imagePaths.icFolderArrow, color: AppColor.colorArrowUserMailbox, fit: BoxFit.fill),
+                          onPressed: () {
+                            if (_onOpenMailboxActionClick != null) {
+                              _onOpenMailboxActionClick!(_presentationMailbox);
+                            }
                           }
-                        }
-                    ))
+                      )
+                    )
+                  : null
             ),
             if (!isLastElement)
               Padding(
