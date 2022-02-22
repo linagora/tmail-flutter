@@ -16,6 +16,9 @@ class CreateMailboxNameInputDecorationBuilder extends InputDecorationBuilder {
       errorBorder: errorBorder ?? OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
         borderSide: BorderSide(width: 1, color: AppColor.colorInputBorderErrorVerifyName)),
+      focusedErrorBorder: errorBorder ?? OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderSide: BorderSide(width: 1, color: AppColor.colorInputBorderErrorVerifyName)),
       prefixText: prefixText,
       labelText: labelText,
       floatingLabelBehavior: FloatingLabelBehavior.never,

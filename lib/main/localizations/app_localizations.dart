@@ -613,4 +613,25 @@ class AppLocalizations {
       name: 'default_mailbox',
     );
   }
+
+  String get name_of_mailbox_is_required {
+    return Intl.message(
+      'Name of mailbox is required',
+      name: 'name_of_mailbox_is_required',
+    );
+  }
+
+  String get mailbox_name_cannot_contain_special_characters {
+    return Intl.message(
+      'Mailbox name cannot contain special characters',
+      name: 'mailbox_name_cannot_contain_special_characters',
+    );
+  }
+
+  String get this_folder_name_is_already_taken {
+    return Intl.message(
+      'This folder name is already taken',
+      name: 'this_folder_name_is_already_taken',
+    );
+  }
 }
