@@ -1,16 +1,14 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action.dart';
 
-class DestinationPickerArguments with EquatableMixin{
+class DestinationPickerArguments with EquatableMixin {
   final AccountId accountId;
-  final List<EmailId> emailIds;
-  final PresentationMailbox currentMailbox;
+  final MailboxAction mailboxAction;
 
-  DestinationPickerArguments(this.accountId, this.emailIds, this.currentMailbox);
+  DestinationPickerArguments(this.accountId, this.mailboxAction);
 
   @override
-  List<Object?> get props => [accountId, emailIds, currentMailbox];
+  List<Object?> get props => [accountId, mailboxAction];
 }

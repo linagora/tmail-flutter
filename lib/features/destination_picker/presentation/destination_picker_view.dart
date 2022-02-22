@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/app_bar_destination_picker_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
@@ -17,44 +19,130 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => controller.closeDestinationPicker(),
-      child: Card(
-        margin: EdgeInsets.zero,
-        borderOnForeground: false,
-        color: Colors.transparent,
-        child: Container(
-          margin: _getMarginDestinationPicker(context),
-          child: ClipRRect(
-            borderRadius: _radiusDestinationPicker(context, 20),
-            child: GestureDetector(
-              onTap: () => {},
-              child: SafeArea(
-                  top: _responsiveUtils.isMobile(context) ? true : false,
-                  bottom: false,
-                  right: false,
-                  left: false,
-                  child: Column(
-                    children: [
-                      _buildAppBar(context),
-                      Expanded(child:
-                      Container(
-                          color: AppColor.colorBgMailbox,
-                          child: _buildBodyDestinationPicker(context)))
-                    ],
+    DestinationPickerArguments? _destinationPickerArguments;
+    final arguments = Get.arguments;
+    if (arguments != null && arguments is DestinationPickerArguments) {
+      _destinationPickerArguments = arguments;
+    }
+
+    if (_destinationPickerArguments?.mailboxAction == MailboxAction.create) {
+      return Card(
+          margin: EdgeInsets.zero,
+          borderOnForeground: false,
+          color: Colors.transparent,
+          child: GestureDetector(
+            onTap: () => controller.closeDestinationPicker(),
+            child: ResponsiveWidget(
+                responsiveUtils: _responsiveUtils,
+                mobile: Container(
+                    child: _buildBody(context),
+                    width: _responsiveUtils.getSizeWidthScreen(context)),
+                tablet: Container(
+                    child: Row(
+                        children: [
+                          Expanded(flex: 1, child: Container(color: Colors.transparent)),
+                          Expanded(flex: 1, child: _buildBody(context)),
+                        ]
+                    )
+                ),
+                tabletLarge: Container(
+                    child: Row(
+                        children: [
+                          Expanded(flex: 7, child: Container(color: Colors.transparent)),
+                          Expanded(flex: 13, child: _buildBody(context)),
+                        ]
+                    )
+                ),
+                desktop: Container(
+                    child: Row(
+                        children: [
+                          Expanded(flex: 1, child: Container(color: Colors.transparent)),
+                          Expanded(flex: 3, child: _buildBody(context)),
+                        ]
+                    )
+                )
+            ),
+          )
+      );
+    } else {
+      return GestureDetector(
+          onTap: () => controller.closeDestinationPicker(),
+          child: Card(
+              margin: EdgeInsets.zero,
+              borderOnForeground: false,
+              color: Colors.transparent,
+              child: Container(
+                  margin: _getMarginDestinationPicker(context),
+                  child: ClipRRect(
+                      borderRadius: _radiusDestinationPicker(context, 14),
+                      child: GestureDetector(
+                          onTap: () => {},
+                          child: SafeArea(
+                              top: _responsiveUtils.isMobile(context) ? true : false,
+                              bottom: false,
+                              right: false,
+                              left: false,
+                              child: Column(
+                                children: [
+                                  _buildAppBar(context),
+                                  Expanded(child:
+                                  Container(
+                                      color: AppColor.colorBgMailbox,
+                                      child: _buildBodyDestinationPicker(context)))
+                                ],
+                              )
+                          )
+                      )
                   )
               )
-            )
           )
+      );
+    }
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return SafeArea(
+        top: _responsiveUtils.isMobile(context) ? true : false,
+        bottom: false,
+        left: false,
+        right: false,
+        child: ClipRRect(
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(_responsiveUtils.isMobile(context) ? 14 : 0),
+                topLeft: Radius.circular(_responsiveUtils.isMobile(context) ? 14 : 0)),
+            child: Drawer(
+                child: Container(
+                    color: AppColor.colorBgMailbox,
+                    width: double.infinity,
+                    child: SafeArea(
+                      top: false,
+                      bottom: false,
+                      left: _responsiveUtils.isMobileDevice(context) ? true : false,
+                      right: _responsiveUtils.isMobileDevice(context) ? true : false,
+                      child: Column(
+                          children: [
+                            _buildAppBar(context),
+                            Expanded(child:
+                            Container(
+                                color: AppColor.colorBgMailbox,
+                                child: _buildBodyDestinationPicker(context)))
+                          ]
+                      ),
+                    )
+                )
+            )
         )
-      )
     );
   }
 
   Widget _buildAppBar(BuildContext context) {
-    return (AppBarDestinationPickerBuilder(context, _imagePaths, _responsiveUtils)
+    return Obx(() => (AppBarDestinationPickerBuilder(
+            context,
+            _imagePaths,
+            _responsiveUtils,
+            controller.mailboxAction.value)
         ..addCloseActionClick(() => controller.closeDestinationPicker()))
-      .build();
+      .build());
   }
 
   Widget _buildBodyDestinationPicker(BuildContext context) {
