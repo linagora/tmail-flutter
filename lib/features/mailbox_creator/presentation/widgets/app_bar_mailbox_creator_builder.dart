@@ -4,26 +4,30 @@ import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnCancelActionClick = void Function();
-typedef OnCreateActionClick = void Function();
+typedef OnDoneActionClick = void Function();
 
-class AppBarMailboxCreatorWidget {
+class AppBarMailboxCreatorBuilder {
   OnCancelActionClick? _cancelActionClick;
-  OnCreateActionClick? _createActionClick;
+  OnDoneActionClick? _onDoneActionClick;
 
   final BuildContext _context;
   final bool isValidated;
+  final String? title;
 
-  AppBarMailboxCreatorWidget(
+  AppBarMailboxCreatorBuilder(
       this._context,
-      {this.isValidated = false}
+      {
+        this.title,
+        this.isValidated = false
+      }
   );
 
   void addOnCancelActionClick(OnCancelActionClick onCancelActionClick) {
     _cancelActionClick = onCancelActionClick;
   }
 
-  void addOnCreateActionClick(OnCreateActionClick onCreateActionClick) {
-    _createActionClick = onCreateActionClick;
+  void addOnDoneActionClick(OnDoneActionClick onDoneActionClick) {
+    _onDoneActionClick = onDoneActionClick;
   }
 
   Widget build() {
@@ -71,7 +75,7 @@ class AppBarMailboxCreatorWidget {
               AppLocalizations.of(_context).done,
               style: TextStyle(fontSize: 17, color: isValidated ? AppColor.colorTextButton : AppColor.colorDisableMailboxCreateButton),
             ),
-            onPressed: () => isValidated ? _createActionClick?.call() : null
+            onPressed: () => isValidated ? _onDoneActionClick?.call() : null
         )
     );
   }
@@ -80,7 +84,7 @@ class AppBarMailboxCreatorWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Text(
-        AppLocalizations.of(_context).new_mailbox,
+        title ?? '',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 17, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700)));
   }
