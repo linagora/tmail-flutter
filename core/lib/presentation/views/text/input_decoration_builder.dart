@@ -44,7 +44,7 @@ abstract class InputDecorationBuilder {
     errorBorder = newErrorBorder;
   }
 
-  void setErrorText(String newText) {
+  void setErrorText(String? newText) {
     errorText = newText;
   }
 
