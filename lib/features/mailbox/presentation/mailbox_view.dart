@@ -84,7 +84,7 @@ class MailboxView extends GetWidget<MailboxController> {
         padding: EdgeInsets.only(left: 16, right: 16),
         child: IconButton(
             key: Key('mailbox_add_new_folder_button'),
-            onPressed: () => {},
+            onPressed: () => controller.createNewMailbox(),
             icon: SvgPicture.asset(imagePaths.icAddNewFolder, width: 30, height: 30, fit: BoxFit.fill)));
   }
 

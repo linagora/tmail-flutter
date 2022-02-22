@@ -8,40 +8,48 @@ abstract class InputDecorationBuilder {
   TextStyle? hintStyle;
   EdgeInsets? contentPadding;
   OutlineInputBorder? enabledBorder;
+  OutlineInputBorder? errorBorder;
+  String? errorText;
+  TextStyle? errorTextStyle;
 
-  InputDecorationBuilder setPrefixText(String newPrefixText) {
+  void setPrefixText(String newPrefixText) {
     prefixText = newPrefixText;
-    return this;
   }
 
-  InputDecorationBuilder setLabelText(String newLabelText) {
+  void setLabelText(String newLabelText) {
     labelText = newLabelText;
-    return this;
   }
 
-  InputDecorationBuilder setLabelStyle(TextStyle newLabelStyle) {
+  void setLabelStyle(TextStyle newLabelStyle) {
     labelStyle = newLabelStyle;
-    return this;
   }
 
-  InputDecorationBuilder setHintText(String newHintText) {
+  void setHintText(String newHintText) {
     hintText = newHintText;
-    return this;
   }
 
-  InputDecorationBuilder setHintStyle(TextStyle newHintStyle) {
+  void setHintStyle(TextStyle newHintStyle) {
     hintStyle = newHintStyle;
-    return this;
   }
 
-  InputDecorationBuilder setContentPadding(EdgeInsets newContentPadding) {
+  void setContentPadding(EdgeInsets newContentPadding) {
     contentPadding = newContentPadding;
-    return this;
   }
 
-  InputDecorationBuilder setEnabledBorder(OutlineInputBorder newEnabledBorder) {
+  void setEnabledBorder(OutlineInputBorder newEnabledBorder) {
     enabledBorder = newEnabledBorder;
-    return this;
+  }
+
+  void setErrorBorder(OutlineInputBorder newErrorBorder) {
+    errorBorder = newErrorBorder;
+  }
+
+  void setErrorText(String newText) {
+    errorText = newText;
+  }
+
+  void setErrorTextStyle(TextStyle newStyle) {
+    errorTextStyle = newStyle;
   }
 
   InputDecoration build() {
@@ -52,6 +60,9 @@ abstract class InputDecorationBuilder {
       hintText: hintText,
       hintStyle: hintStyle,
       contentPadding: contentPadding,
+      errorBorder: errorBorder,
+      errorText: errorText,
+      errorStyle: errorTextStyle,
       enabledBorder: enabledBorder);
   }
 }

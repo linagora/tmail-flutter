@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailb
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
@@ -35,6 +36,8 @@ class MailboxController extends BaseController {
 
   final defaultMailboxList = <PresentationMailbox>[].obs;
   final folderMailboxNodeList = <MailboxNode>[].obs;
+
+  List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
 
   jmapState.State? currentMailboxState;
 
@@ -82,6 +85,7 @@ class MailboxController extends BaseController {
     super.onData(newState);
     newState.map((success) {
       if (success is GetAllMailboxSuccess) {
+        allMailboxes = success.defaultMailboxList + success.folderMailboxList;
         currentMailboxState = success.currentMailboxState;
         defaultMailboxList.value = success.defaultMailboxList;
         _setUpMapMailboxIdDefault(success.defaultMailboxList, success.folderMailboxList);
@@ -200,6 +204,13 @@ class MailboxController extends BaseController {
 
   void _clearAllCache() async {
     await _cachingManager.clearAll();
+  }
+
+  void createNewMailbox() async {
+    final newMailboxArguments = await push(
+        AppRoutes.MAILBOX_CREATOR,
+        arguments: MailboxCreatorArguments(allMailboxes)
+    );
   }
 
   void closeMailboxScreen() {
