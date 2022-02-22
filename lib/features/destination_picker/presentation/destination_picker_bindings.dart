@@ -32,7 +32,7 @@ class DestinationPickerBindings extends Bindings {
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => TreeBuilder());
-    Get.put(DestinationPickerController(
+    Get.lazyPut(() => DestinationPickerController(
       Get.find<GetAllMailboxInteractor>(),
       Get.find<TreeBuilder>()));
   }

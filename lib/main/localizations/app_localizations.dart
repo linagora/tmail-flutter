@@ -585,4 +585,32 @@ class AppLocalizations {
       name: 'message_has_been_sent_failure',
     );
   }
+
+  String get done {
+    return Intl.message(
+        'Done',
+        name: 'done'
+    );
+  }
+
+  String get new_mailbox {
+    return Intl.message(
+      'New mailbox',
+      name: 'new_mailbox',
+    );
+  }
+
+  String get mailbox_location {
+    return Intl.message(
+      'Mailbox location',
+      name: 'mailbox_location',
+    );
+  }
+
+  String get default_mailbox {
+    return Intl.message(
+      'Default mailbox',
+      name: 'default_mailbox',
+    );
+  }
 }
