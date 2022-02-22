@@ -96,9 +96,9 @@ class LoginView extends GetWidget<LoginController> {
             ..onChange((value) => loginController.setUrlText(value))
             ..textInputAction(TextInputAction.next)
             ..keyboardType(TextInputType.url)
-            ..textDecoration(LoginInputDecorationBuilder()
-                .setLabelText(AppLocalizations.of(context).prefix_https)
-                .setPrefixText(AppLocalizations.of(context).prefix_https)
+            ..textDecoration((LoginInputDecorationBuilder()
+                ..setLabelText(AppLocalizations.of(context).prefix_https)
+                ..setPrefixText(AppLocalizations.of(context).prefix_https))
                 .build()))
           .build()));
   }
@@ -113,9 +113,9 @@ class LoginView extends GetWidget<LoginController> {
             ..onChange((value) => loginController.setUserNameText(value))
             ..textInputAction(TextInputAction.next)
             ..keyboardType(TextInputType.emailAddress)
-            ..textDecoration(LoginInputDecorationBuilder()
-                .setLabelText(AppLocalizations.of(context).email)
-                .setHintText(AppLocalizations.of(context).email)
+            ..textDecoration((LoginInputDecorationBuilder()
+                ..setLabelText(AppLocalizations.of(context).email)
+                ..setHintText(AppLocalizations.of(context).email))
                 .build()))
           .build()));
   }
@@ -130,9 +130,9 @@ class LoginView extends GetWidget<LoginController> {
             ..obscureText(true)
             ..onChange((value) => loginController.setPasswordText(value))
             ..textInputAction(TextInputAction.done)
-            ..textDecoration(LoginInputDecorationBuilder()
-                .setLabelText(AppLocalizations.of(context).password)
-                .setHintText(AppLocalizations.of(context).password)
+            ..textDecoration((LoginInputDecorationBuilder()
+                ..setLabelText(AppLocalizations.of(context).password)
+                ..setHintText(AppLocalizations.of(context).password))
                 .build()))
           .build()));
   }
