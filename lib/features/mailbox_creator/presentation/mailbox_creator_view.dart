@@ -19,7 +19,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
         borderOnForeground: false,
         color: Colors.transparent,
         child: GestureDetector(
-          onTap: () => controller.closeMailboxCreator(),
+          onTap: () => controller.closeMailboxCreator(context),
           child: ResponsiveWidget(
               responsiveUtils: _responsiveUtils,
               mobile: Container(
@@ -92,22 +92,31 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
 
   Widget _buildAppBar(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 10, bottom: 4),
-      child: (AppBarMailboxCreatorWidget(context)
-          ..addOnCancelActionClick(() => controller.closeMailboxCreator())
-          ..addOnCreateActionClick(() {}))
-        .build());
+      padding: EdgeInsets.only(top: 5),
+      child: Obx(() => (AppBarMailboxCreatorWidget(
+              context,
+              isValidated: controller.isCreateMailboxValidated(context))
+          ..addOnCancelActionClick(() => controller.closeMailboxCreator(context))
+          ..addOnCreateActionClick(() => {}))
+        .build())
+    );
   }
 
   Widget _buildCreateMailboxNameInput(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: (TextFieldBuilder()
+      child: Obx(() => (TextFieldBuilder()
           ..key(Key('create_mailbox_name_input'))
-          ..onChange((value) => {})
+          ..onChange((value) => controller.setNewNameMailbox(value))
           ..keyboardType(TextInputType.visiblePassword)
-          ..textDecoration((CreateMailboxNameInputDecorationBuilder()).build()))
-        .build());
+          ..cursorColor(AppColor.colorTextButton)
+          ..autoFocus(true)
+          ..textStyle(TextStyle(color: AppColor.colorNameEmail, fontSize: 16))
+          ..textDecoration((CreateMailboxNameInputDecorationBuilder()
+                ..setErrorText(controller.getErrorInputNameString(context)))
+              .build()))
+        .build())
+    );
   }
 
   Widget _buildMailboxLocation(BuildContext context) {

@@ -71,7 +71,7 @@ class AppBarMailboxCreatorWidget {
               AppLocalizations.of(_context).done,
               style: TextStyle(fontSize: 17, color: isValidated ? AppColor.colorTextButton : AppColor.colorDisableMailboxCreateButton),
             ),
-            onPressed: () => _createActionClick?.call()
+            onPressed: () => isValidated ? _createActionClick?.call() : null
         )
     );
   }
