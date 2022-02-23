@@ -73,7 +73,6 @@ class SearchBarThreadViewWidget {
      child: Padding(
        padding: EdgeInsets.only(left: 2),
        child: IconButton(
-         color: AppColor.appColor,
          icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 18, height: 18, fit: BoxFit.fill),
          onPressed: () => _onOpenSearchViewAction?.call()
        )

@@ -114,6 +114,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
           ..autoFocus(true)
           ..textStyle(TextStyle(color: AppColor.colorNameEmail, fontSize: 16))
           ..textDecoration((CreateMailboxNameInputDecorationBuilder()
+                ..setHintText(AppLocalizations.of(context).hint_input_create_new_mailbox)
                 ..setErrorText(controller.getErrorInputNameString(context)))
               .build()))
         .build())

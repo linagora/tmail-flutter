@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -46,6 +47,8 @@ class MailboxBindings extends Bindings {
     Get.lazyPut(() => TreeBuilder());
     Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => Uuid());
+    Get.lazyPut(() => TextEditingController());
+    Get.lazyPut(() => FocusNode());
     Get.put(MailboxController(
       Get.find<GetAllMailboxInteractor>(),
       Get.find<DeleteCredentialInteractor>(),
@@ -56,6 +59,8 @@ class MailboxBindings extends Bindings {
       Get.find<AppToast>(),
       Get.find<ImagePaths>(),
       Get.find<ResponsiveUtils>(),
+      Get.find<TextEditingController>(),
+      Get.find<FocusNode>(),
       Get.find<CachingManager>()));
   }
 }

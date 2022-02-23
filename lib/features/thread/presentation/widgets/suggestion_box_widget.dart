@@ -75,7 +75,7 @@ class SuggestionBoxWidget {
                     '"${_listData[index]}"',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 15, color: AppColor.nameUserColor, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 15, color: AppColor.colorNameEmail),
                   ))
                 ],
               )
