@@ -6,6 +6,10 @@ class SearchQuery with EquatableMixin {
 
   SearchQuery(this.value);
 
+  factory SearchQuery.initial() {
+    return SearchQuery('');
+  }
+
   @override
   List<Object?> get props => [value];
 }
