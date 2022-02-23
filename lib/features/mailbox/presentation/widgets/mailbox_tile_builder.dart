@@ -14,6 +14,7 @@ class MailboxTileBuilder {
   final ImagePaths _imagePaths;
   final MailboxDisplayed mailboxDisplayed;
   final bool isLastElement;
+  final bool isSearchActive;
 
   OnOpenMailboxActionClick? _onOpenMailboxActionClick;
 
@@ -24,6 +25,7 @@ class MailboxTileBuilder {
       this.selectMode = SelectMode.INACTIVE,
       this.mailboxDisplayed = MailboxDisplayed.mailbox,
       this.isLastElement = false,
+      this.isSearchActive = false,
     }
   );
 
@@ -67,9 +69,9 @@ class MailboxTileBuilder {
                         '${_presentationMailbox.name?.name ?? ''}',
                         maxLines: 1,
                         overflow:TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 15, color: AppColor.colorNameEmail),
+                        style: TextStyle(fontSize: isSearchActive ? 17 : 15, color: AppColor.colorNameEmail),
                       )),
-                      if (mailboxDisplayed == MailboxDisplayed.mailbox)
+                      if (mailboxDisplayed == MailboxDisplayed.mailbox && !isSearchActive)
                         Transform(
                             transform: Matrix4.translationValues(40.0, 0.0, 0.0),
                             child: Text(
@@ -77,7 +79,18 @@ class MailboxTileBuilder {
                                 maxLines: 1,
                                 style: TextStyle(fontSize: 13, color: AppColor.colorNameEmail)))
                     ])),
-                trailing: (mailboxDisplayed == MailboxDisplayed.mailbox)
+                subtitle: isSearchActive && _presentationMailbox.mailboxPath?.isNotEmpty == true
+                    ? Transform(
+                        transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+                        child: Text(
+                          _presentationMailbox.mailboxPath ?? '',
+                          maxLines: 1,
+                          overflow:TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail),
+                        ),
+                      )
+                    : null,
+                trailing: (mailboxDisplayed == MailboxDisplayed.mailbox && !isSearchActive)
                   ? Transform(
                       transform: Matrix4.translationValues(8.0, 0.0, 0.0),
                       child: IconButton(

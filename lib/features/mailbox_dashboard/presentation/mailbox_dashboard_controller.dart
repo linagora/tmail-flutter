@@ -28,8 +28,6 @@ class MailboxDashBoardController extends BaseController {
   final AppToast _appToast;
   final ImagePaths _imagePaths;
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor;
-  final TextEditingController searchInputController;
-  final FocusNode searchFocus;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -43,13 +41,13 @@ class MailboxDashBoardController extends BaseController {
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxId = Map();
   Map<MailboxId, PresentationMailbox> mapMailbox = Map();
+  TextEditingController searchInputController = TextEditingController();
+  FocusNode searchFocus = FocusNode();
 
   MailboxDashBoardController(
       this._getUserProfileInteractor,
       this._appToast,
       this._imagePaths,
-      this.searchInputController,
-      this.searchFocus,
       this._removeEmailDraftsInteractor,
   );
 
@@ -230,6 +228,7 @@ class MailboxDashBoardController extends BaseController {
   @override
   void onClose() {
     searchInputController.dispose();
+    searchFocus.dispose();
     Get.delete<EmailController>();
     super.onClose();
   }

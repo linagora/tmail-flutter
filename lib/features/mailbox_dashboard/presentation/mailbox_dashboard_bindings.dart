@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
