@@ -72,9 +72,9 @@ class ComposerController extends BaseController {
   final GetEmailContentInteractor _getEmailContentInteractor;
   final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
 
-  List<EmailAddress> listToEmailAddress = [];
-  List<EmailAddress> listCcEmailAddress = [];
-  List<EmailAddress> listBccEmailAddress = [];
+  List<EmailAddress> listToEmailAddress = <EmailAddress>[];
+  List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
+  List<EmailAddress> listBccEmailAddress = <EmailAddress>[];
   String? _subjectEmail;
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.localContact;
   HtmlEditorApi? htmlEditorApi;
@@ -83,13 +83,19 @@ class ComposerController extends BaseController {
   final keyCcEmailAddress = GlobalKey<ChipsInputState>();
   final keyBccEmailAddress = GlobalKey<ChipsInputState>();
 
+  List<Attachment> initialAttachments = <Attachment>[];
+
   void setSubjectEmail(String subject) => _subjectEmail = subject;
 
-  Future<String> _getEmailBodyText() async {
+  Future<String> _getEmailBodyText({bool onlyText = false}) async {
     if (kIsWeb) {
       return await htmlControllerBrowser.getText();
     } else {
-      return (await htmlEditorApi?.getFullHtml()) ?? '';
+      if (onlyText) {
+        return (await htmlEditorApi?.getText()) ?? '';
+      } else {
+        return (await htmlEditorApi?.getFullHtml()) ?? '';
+      }
     }
   }
 
@@ -188,7 +194,7 @@ class ComposerController extends BaseController {
         && composerArguments.value!.emailActionType != EmailActionType.compose
         && Get.context != null) {
       if (composerArguments.value?.emailActionType == EmailActionType.edit) {
-        return _getOldEmailContentAsHtml(Get.context!);
+        return _getOldEmailContentAsHtml();
       } else {
         return _getBodyEmailQuotedAsHtml(Get.context!, composerArguments.value!);
       }
@@ -283,9 +289,9 @@ class ComposerController extends BaseController {
     final trustAsHtml = arguments.emailContents
       ?.map((emailContent) => emailContent.content)
       .toList()
-      .join('</br>') ?? '';
+      .join('<br>') ?? '';
 
-    final emailQuotedHtml = '</br></br></br>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}</br>';
+    final emailQuotedHtml = '<br><br><br>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}<br>';
 
     return emailQuotedHtml;
   }
@@ -477,19 +483,59 @@ class ComposerController extends BaseController {
     attachments.removeWhere((attachment) => attachment == attachmentRemoved);
   }
 
+  Future<bool> _isEmailChanged(ComposerArguments arguments) async {
+    final newEmailBody = await _getEmailBodyText(onlyText: true);
+    final oldEmailBody = kIsWeb ? getContentEmail() : '\n${getContentEmail()}\n';
+    final isEmailBodyChanged = !oldEmailBody.isSame(newEmailBody);
+
+    final newEmailSubject = _subjectEmail;
+    final subjectEmail = arguments.presentationEmail?.getEmailTitle().trim() ?? '';
+    final oldEmailSubject = arguments.emailActionType.getSubjectComposer(Get.context!, subjectEmail);
+    final isEmailSubjectChanged = !oldEmailSubject.isSame(newEmailSubject);
+
+    final recipients = arguments.presentationEmail
+        ?.generateRecipientsEmailAddressForComposer(arguments.emailActionType, arguments.mailboxRole)
+        ?? Tuple3(<EmailAddress>[], <EmailAddress>[], <EmailAddress>[]);
+
+    final newToEmailAddress = listToEmailAddress;
+    final oldToEmailAddress = recipients.value1;
+    final isToEmailAddressChanged = !oldToEmailAddress.isSame(newToEmailAddress);
+
+    final newCcEmailAddress = listToEmailAddress;
+    final oldCcEmailAddress = recipients.value1;
+    final isCcEmailAddressChanged = !oldCcEmailAddress.isSame(newCcEmailAddress);
+
+    final newBccEmailAddress = listToEmailAddress;
+    final oldBccEmailAddress = recipients.value1;
+    final isBccEmailAddressChanged = !oldBccEmailAddress.isSame(newBccEmailAddress);
+
+    final isAttachmentsChanged = !initialAttachments.isSame(attachments.toList());
+
+    if (isEmailBodyChanged || isEmailSubjectChanged
+        || isToEmailAddressChanged || isCcEmailAddressChanged
+        || isBccEmailAddressChanged || isAttachmentsChanged) {
+      return true;
+    }
+
+    return false;
+  }
+
   void saveEmailAsDrafts() async {
     final arguments = composerArguments.value;
-    if (arguments != null) {
-      _saveEmailAddress();
+    if (arguments != null && Get.context != null) {
+      final isChanged = await _isEmailChanged(arguments);
+      if (isChanged) {
+        _saveEmailAddress();
 
-      final newEmail = await _generateEmail(arguments, asDrafts: true);
-      final accountId = arguments.session.accounts.keys.first;
-      final oldEmail = arguments.presentationEmail;
+        final newEmail = await _generateEmail(arguments, asDrafts: true);
+        final accountId = arguments.session.accounts.keys.first;
+        final oldEmail = arguments.presentationEmail;
 
-      if (arguments.emailActionType == EmailActionType.edit && oldEmail != null) {
-        mailboxDashBoardController.consumeState(_updateEmailDraftsInteractor.execute(accountId, newEmail, oldEmail.id));
-      } else {
-        mailboxDashBoardController.consumeState(_saveEmailAsDraftsInteractor.execute(accountId, newEmail));
+        if (arguments.emailActionType == EmailActionType.edit && oldEmail != null) {
+          mailboxDashBoardController.consumeState(_updateEmailDraftsInteractor.execute(accountId, newEmail, oldEmail.id));
+        } else {
+          mailboxDashBoardController.consumeState(_saveEmailAsDraftsInteractor.execute(accountId, newEmail));
+        }
       }
     }
   }
@@ -506,9 +552,10 @@ class ComposerController extends BaseController {
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
     emailContents.value = success.emailContents;
     attachments.value = success.attachments;
+    initialAttachments = success.attachments;
   }
 
-  String _getOldEmailContentAsHtml(BuildContext context) {
+  String _getOldEmailContentAsHtml() {
     if (emailContents.isNotEmpty) {
       final trustAsHtml = emailContents
           .map((emailContent) => emailContent.content)
