@@ -4,10 +4,11 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/special_character_validator.dart';
@@ -15,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_logger.dart';
@@ -97,11 +99,21 @@ class MailboxCreatorController extends BaseController {
     if (accountId != null) {
       final destinationMailbox = await push(
           AppRoutes.DESTINATION_PICKER,
-          arguments: DestinationPickerArguments(accountId!, MailboxAction.create)
+          arguments: DestinationPickerArguments(accountId!, MailboxActions.create)
       );
-      if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
-        selectedMailbox.value = destinationMailbox;
-      }
+
+      selectedMailbox.value = destinationMailbox;
+    }
+  }
+
+  void createNewMailbox(BuildContext context) {
+    FocusScope.of(context).unfocus();
+    final nameMailbox = newNameMailbox.value;
+    if (nameMailbox != null && nameMailbox.isNotEmpty) {
+      final newMailboxArguments = NewMailboxArguments(
+          MailboxName(nameMailbox),
+          mailboxLocation: selectedMailbox.value);
+      popBack(result: newMailboxArguments);
     }
   }
 

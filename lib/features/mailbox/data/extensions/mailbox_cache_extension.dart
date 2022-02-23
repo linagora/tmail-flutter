@@ -8,17 +8,17 @@ import 'package:tmail_ui_user/features/mailbox/data/extensions/mailbox_rights_ca
 extension MailboxCacheExtension on MailboxCache {
   Mailbox toMailbox() {
     return Mailbox(
-        MailboxId(Id(id)),
-        name != null ? MailboxName(name!) : null,
-        parentId != null ? MailboxId(Id(parentId!)) : null,
-        role != null ? Role(role!) : null,
-        sortOrder != null ? SortOrder(sortValue: sortOrder!) : null,
-        totalEmails != null ? TotalEmails(UnsignedInt(totalEmails!)) : null,
-        unreadEmails != null ? UnreadEmails(UnsignedInt(unreadEmails!)) : null,
-        totalThreads != null ? TotalThreads(UnsignedInt(totalThreads!)) : null,
-        unreadThreads != null ? UnreadThreads(UnsignedInt(unreadThreads!)) : null,
-        myRights != null ? myRights!.toMailboxRights() : null,
-        isSubscribed != null ? IsSubscribed(isSubscribed!) : null
+        id: MailboxId(Id(id)),
+        name: name != null ? MailboxName(name!) : null,
+        parentId: parentId != null ? MailboxId(Id(parentId!)) : null,
+        role: role != null ? Role(role!) : null,
+        sortOrder: sortOrder != null ? SortOrder(sortValue: sortOrder!) : null,
+        totalEmails: totalEmails != null ? TotalEmails(UnsignedInt(totalEmails!)) : null,
+        unreadEmails: unreadEmails != null ? UnreadEmails(UnsignedInt(unreadEmails!)) : null,
+        totalThreads: totalThreads != null ? TotalThreads(UnsignedInt(totalThreads!)) : null,
+        unreadThreads: unreadThreads != null ? UnreadThreads(UnsignedInt(unreadThreads!)) : null,
+        myRights: myRights != null ? myRights!.toMailboxRights() : null,
+        isSubscribed: isSubscribed != null ? IsSubscribed(isSubscribed!) : null
     );
   }
 }

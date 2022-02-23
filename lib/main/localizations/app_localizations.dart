@@ -634,4 +634,19 @@ class AppLocalizations {
       name: 'this_folder_name_is_already_taken',
     );
   }
+
+  String new_mailbox_is_created(String nameMailbox) {
+    return Intl.message(
+        '$nameMailbox is created',
+        name: 'new_mailbox_is_created',
+        args: [nameMailbox]
+    );
+  }
+
+  String get create_new_mailbox_failure {
+    return Intl.message(
+        'Create new mailbox failure',
+        name: 'new_mailbox_is_created'
+    );
+  }
 }
