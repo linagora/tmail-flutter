@@ -15,10 +15,12 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
+import 'package:uuid/uuid.dart';
 
 class MailboxBindings extends Bindings {
   @override
@@ -42,11 +44,17 @@ class MailboxBindings extends Bindings {
     Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => RefreshAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => TreeBuilder());
+    Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => Uuid());
     Get.put(MailboxController(
       Get.find<GetAllMailboxInteractor>(),
       Get.find<DeleteCredentialInteractor>(),
       Get.find<RefreshAllMailboxInteractor>(),
+      Get.find<CreateNewMailboxInteractor>(),
       Get.find<TreeBuilder>(),
+      Get.find<Uuid>(),
+      Get.find<AppToast>(),
+      Get.find<ImagePaths>(),
       Get.find<ResponsiveUtils>(),
       Get.find<CachingManager>()));
   }
