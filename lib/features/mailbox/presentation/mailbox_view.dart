@@ -35,15 +35,15 @@ class MailboxView extends GetWidget<MailboxController> {
                 children: [
                   _buildHeaderMailbox(context),
                   Obx(() => controller.isSearchActive() ? _buildInputSearchFormWidget(context) : SizedBox.shrink()),
-                  Expanded(child: Container(
+                  Expanded(child: Obx(() => Container(
                     color: controller.isSearchActive() ? Colors.white : AppColor.colorBgMailbox,
                     child: RefreshIndicator(
                         color: AppColor.primaryColor,
                         onRefresh: () async => controller.refreshAllMailbox(),
-                        child: Obx(() => controller.isSearchActive()
-                          ? _buildListMailboxSearched(context, controller.listMailboxSearched)
-                          : _buildListMailbox(context))),
-                  ))
+                        child: controller.isSearchActive()
+                            ? _buildListMailboxSearched(context, controller.listMailboxSearched)
+                            : _buildListMailbox(context)),
+                  )))
                 ]
             ),
           )
@@ -283,7 +283,7 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildListMailboxSearched(BuildContext context, List<PresentationMailbox> listMailbox) {
     return ListView.builder(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.only(left: 16, right: 8, bottom: 30),
         key: Key('list_mailbox_searched'),
         itemCount: listMailbox.length,
         shrinkWrap: true,
@@ -292,6 +292,7 @@ class MailboxView extends GetWidget<MailboxController> {
             Obx(() => (MailboxTileBuilder(
                     imagePaths,
                     listMailbox[index],
+                    isSearchActive: controller.isSearchActive(),
                     isLastElement: index == listMailbox.length - 1)
                 ..onOpenMailboxAction((mailbox) => controller.selectMailbox(context, mailbox)))
               .build()));
