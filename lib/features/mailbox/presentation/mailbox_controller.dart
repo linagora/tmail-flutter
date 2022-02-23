@@ -27,8 +27,11 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbo
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -47,12 +50,17 @@ class MailboxController extends BaseController {
   final AppToast _appToast;
   final ImagePaths _imagePaths;
   final ResponsiveUtils responsiveUtils;
+  final TextEditingController searchInputController;
+  final FocusNode searchFocus;
   final CachingManager _cachingManager;
 
   final defaultMailboxList = <PresentationMailbox>[].obs;
   final folderMailboxNodeList = <MailboxNode>[].obs;
+  final searchState = SearchState.initial().obs;
+  final searchQuery = SearchQuery.initial().obs;
 
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
+  List<PresentationMailbox> listMailboxSearched = <PresentationMailbox>[];
 
   jmapState.State? currentMailboxState;
 
@@ -66,6 +74,8 @@ class MailboxController extends BaseController {
     this._appToast,
     this._imagePaths,
     this.responsiveUtils,
+    this.searchInputController,
+    this.searchFocus,
     this._cachingManager,
   );
 
@@ -101,6 +111,7 @@ class MailboxController extends BaseController {
   @override
   void onClose() {
     mailboxDashBoardController.accountId.close();
+    searchFocus.dispose();
     super.onClose();
   }
 
@@ -142,9 +153,11 @@ class MailboxController extends BaseController {
   }
 
   void refreshAllMailbox() {
-    final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null) {
-      consumeState(_getAllMailboxInteractor.execute(accountId));
+    if (!isSearchActive()) {
+      final accountId = mailboxDashBoardController.accountId.value;
+      if (accountId != null) {
+        consumeState(_getAllMailboxInteractor.execute(accountId));
+      }
     }
   }
 
@@ -287,7 +300,28 @@ class MailboxController extends BaseController {
     }
   }
 
-  void closeMailboxScreen() {
+  bool isSearchActive() => searchState.value.searchStatus == SearchStatus.ACTIVE;
+
+  void enableSearch() => searchState.value = searchState.value.enableSearchState();
+
+  void disableSearch(BuildContext context) {
+    listMailboxSearched.clear();
+    searchState.value = searchState.value.disableSearchState();
+    searchQuery.value = SearchQuery.initial();
+    searchInputController.clear();
+    FocusScope.of(context).unfocus();
+  }
+
+  void clearSearchText() {
+    searchQuery.value = SearchQuery.initial();
+    searchFocus.requestFocus();
+  }
+
+  void searchMailbox(String value) {
+    searchQuery.value = SearchQuery(value);
+  }
+
+  void closeMailboxScreen(BuildContext context) {
     mailboxDashBoardController.closeDrawer();
   }
 
