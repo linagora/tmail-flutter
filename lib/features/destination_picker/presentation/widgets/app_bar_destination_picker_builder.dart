@@ -2,7 +2,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 
 typedef OnCloseActionClick = void Function();
 
@@ -12,7 +12,7 @@ class AppBarDestinationPickerBuilder {
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
-  final MailboxAction? _mailboxAction;
+  final MailboxActions? _mailboxAction;
 
   AppBarDestinationPickerBuilder(
       this._context,
@@ -53,7 +53,7 @@ class AppBarDestinationPickerBuilder {
         color: Colors.transparent,
         child: _responsiveUtils.isMobile(_context)
           ? IconButton(
-              color: _mailboxAction == MailboxAction.create ? AppColor.colorTextButton : AppColor.baseTextColor,
+              color: _mailboxAction == MailboxActions.create ? AppColor.colorTextButton : AppColor.baseTextColor,
               icon: _getBackIcon(),
               onPressed: () => _onCloseActionClick?.call())
           : SizedBox(width: 40, height: 40)
@@ -74,7 +74,7 @@ class AppBarDestinationPickerBuilder {
   }
 
   TextAlign _getAlignTitle() {
-    if (_mailboxAction == MailboxAction.create) {
+    if (_mailboxAction == MailboxActions.create) {
       return TextAlign.center;
     } else {
       return _responsiveUtils.isMobile(_context) ? TextAlign.start : TextAlign.center;
@@ -82,7 +82,7 @@ class AppBarDestinationPickerBuilder {
   }
 
   Widget _getBackIcon() {
-    if (_mailboxAction == MailboxAction.create) {
+    if (_mailboxAction == MailboxActions.create) {
       return SvgPicture.asset(_imagePaths.icBack, fit: BoxFit.fill);
     } else {
       return SvgPicture.asset(_imagePaths.icComposerClose, fit: BoxFit.fill);

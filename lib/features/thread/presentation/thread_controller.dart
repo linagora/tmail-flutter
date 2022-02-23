@@ -21,7 +21,7 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_sta
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -480,7 +480,7 @@ class ThreadController extends BaseController {
       final listEmailIds = listEmail.map((email) => email.id).toList();
       final destinationMailbox = await push(
           AppRoutes.DESTINATION_PICKER,
-          arguments: DestinationPickerArguments(_accountId!, MailboxAction.moveEmail)
+          arguments: DestinationPickerArguments(_accountId!, MailboxActions.moveEmail)
       );
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {

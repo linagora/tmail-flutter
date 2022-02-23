@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasourc
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 
 class MailboxCacheDataSourceImpl extends MailboxDataSource {
@@ -42,5 +43,10 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
     }).catchError((error) {
       throw error;
     });
+  }
+
+  @override
+  Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
+    throw UnimplementedError();
   }
 }

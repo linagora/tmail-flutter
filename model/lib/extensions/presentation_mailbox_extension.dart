@@ -23,17 +23,17 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   Mailbox toMailbox() {
     return Mailbox(
-      id,
-      name,
-      parentId,
-      role,
-      sortOrder,
-      totalEmails,
-      unreadEmails,
-      totalThreads,
-      unreadThreads,
-      myRights,
-      isSubscribed
+      id: id,
+      name: name,
+      parentId: parentId,
+      role: role,
+      sortOrder: sortOrder,
+      totalEmails: totalEmails,
+      unreadEmails: unreadEmails,
+      totalThreads: totalThreads,
+      unreadThreads: unreadThreads,
+      myRights: myRights,
+      isSubscribed: isSubscribed
     );
   }
 }

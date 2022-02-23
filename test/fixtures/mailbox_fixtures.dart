@@ -5,16 +5,16 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
 
 class MailboxFixtures {
   static final inboxMailbox = Mailbox(
-      MailboxId(Id('1')),
-      MailboxName('Inbox'),
-      null,
-      Role('inbox'),
-      SortOrder(sortValue: 10),
-      TotalEmails(UnsignedInt(2758)),
-      UnreadEmails(UnsignedInt(34)),
-      TotalThreads(UnsignedInt(2758)),
-      UnreadThreads(UnsignedInt(34)),
-      MailboxRights(
+      id: MailboxId(Id('1')),
+      name: MailboxName('Inbox'),
+      parentId: null,
+      role: Role('inbox'),
+      sortOrder: SortOrder(sortValue: 10),
+      totalEmails: TotalEmails(UnsignedInt(2758)),
+      unreadEmails: UnreadEmails(UnsignedInt(34)),
+      totalThreads: TotalThreads(UnsignedInt(2758)),
+      unreadThreads: UnreadThreads(UnsignedInt(34)),
+      myRights: MailboxRights(
           true,
           true,
           true,
@@ -24,20 +24,20 @@ class MailboxFixtures {
           true,
           true,
           true),
-      IsSubscribed(true)
+      isSubscribed: IsSubscribed(true)
   );
 
   static final sentMailbox = Mailbox(
-      MailboxId(Id('2')),
-      MailboxName('Sent'),
-      null,
-      Role('sent'),
-      SortOrder(sortValue: 3),
-      TotalEmails(UnsignedInt(123)),
-      UnreadEmails(UnsignedInt(12)),
-      TotalThreads(UnsignedInt(123)),
-      UnreadThreads(UnsignedInt(12)),
-      MailboxRights(
+      id: MailboxId(Id('2')),
+      name: MailboxName('Sent'),
+      parentId: null,
+      role: Role('sent'),
+      sortOrder: SortOrder(sortValue: 3),
+      totalEmails: TotalEmails(UnsignedInt(123)),
+      unreadEmails: UnreadEmails(UnsignedInt(12)),
+      totalThreads: TotalThreads(UnsignedInt(123)),
+      unreadThreads: UnreadThreads(UnsignedInt(12)),
+      myRights: MailboxRights(
           true,
           true,
           true,
@@ -47,20 +47,20 @@ class MailboxFixtures {
           true,
           true,
           true),
-      IsSubscribed(true)
+      isSubscribed: IsSubscribed(true)
   );
 
   static final folder1 = Mailbox(
-      MailboxId(Id('b1')),
-      MailboxName('folder 1'),
-      null,
-      null,
-      SortOrder(sortValue: 1000),
-      TotalEmails(UnsignedInt(123)),
-      UnreadEmails(UnsignedInt(12)),
-      TotalThreads(UnsignedInt(123)),
-      UnreadThreads(UnsignedInt(12)),
-      MailboxRights(
+      id: MailboxId(Id('b1')),
+      name: MailboxName('folder 1'),
+      parentId: null,
+      role: null,
+      sortOrder: SortOrder(sortValue: 1000),
+      totalEmails: TotalEmails(UnsignedInt(123)),
+      unreadEmails: UnreadEmails(UnsignedInt(12)),
+      totalThreads: TotalThreads(UnsignedInt(123)),
+      unreadThreads: UnreadThreads(UnsignedInt(12)),
+      myRights: MailboxRights(
           true,
           true,
           true,
@@ -70,20 +70,20 @@ class MailboxFixtures {
           true,
           true,
           true),
-      IsSubscribed(true)
+      isSubscribed: IsSubscribed(true)
   );
 
   static final folder1_1 = Mailbox(
-      MailboxId(Id('b11')),
-      MailboxName('folder 1_1'),
-      MailboxId(Id("b1")),
-      null,
-      SortOrder(sortValue: 1000),
-      TotalEmails(UnsignedInt(123)),
-      UnreadEmails(UnsignedInt(12)),
-      TotalThreads(UnsignedInt(123)),
-      UnreadThreads(UnsignedInt(12)),
-      MailboxRights(
+      id: MailboxId(Id('b11')),
+      name: MailboxName('folder 1_1'),
+      parentId: MailboxId(Id("b1")),
+      role: null,
+      sortOrder: SortOrder(sortValue: 1000),
+      totalEmails: TotalEmails(UnsignedInt(123)),
+      unreadEmails: UnreadEmails(UnsignedInt(12)),
+      totalThreads: TotalThreads(UnsignedInt(123)),
+      unreadThreads: UnreadThreads(UnsignedInt(12)),
+      myRights: MailboxRights(
           true,
           true,
           true,
@@ -93,6 +93,6 @@ class MailboxFixtures {
           true,
           true,
           true),
-      IsSubscribed(true)
+      isSubscribed: IsSubscribed(true)
   );
 }

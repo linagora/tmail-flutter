@@ -12,7 +12,11 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/changes/changes_mailbox_respo
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 
 class MailboxAPI {
@@ -94,5 +98,34 @@ class MailboxAPI {
       newStateChanges: resultChanges?.newState,
       hasMoreChanges: resultChanges?.hasMoreChanges ?? false,
       updatedProperties: resultChanges?.updatedProperties);
+  }
+
+  Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest request) async {
+    final setMailboxMethod = SetMailboxMethod(accountId)
+      ..addCreate(request.creationId, Mailbox(name: request.newName, parentId: request.parentId));
+
+    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+
+    final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
+
+    final response = await (requestBuilder
+          ..usings(setMailboxMethod.requiredCapabilities))
+        .build()
+        .execute();
+
+    final setMailboxResponse = response.parse<SetMailboxResponse>(
+        setMailboxInvocation.methodCallId,
+        SetMailboxResponse.deserialize);
+
+    return Future.sync(() async {
+      final newMailbox = setMailboxResponse?.created?[request.creationId];
+      if (newMailbox != null) {
+        return newMailbox.addMailboxName(newMailbox, request.newName, parentId: request.parentId);
+      } else {
+        return null;
+      }
+    }).catchError((error) {
+      throw error;
+    });
   }
 }

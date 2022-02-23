@@ -2,18 +2,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-enum MailboxAction {
+enum MailboxActions {
   create,
   moveEmail,
 }
 
-extension MailboxActionExtension on MailboxAction {
+extension MailboxActionsExtension on MailboxActions {
 
   String getTitle(BuildContext context) {
     switch(this) {
-      case MailboxAction.create:
+      case MailboxActions.create:
         return AppLocalizations.of(context).mailbox_location;
-      case MailboxAction.moveEmail:
+      case MailboxActions.moveEmail:
         return AppLocalizations.of(context).move_to_mailbox;
       default:
         return '';
