@@ -136,6 +136,7 @@ class ThreadController extends BaseController {
           mailboxDashBoardController.clearState();
         } else if (success is SearchEmailNewQuery){
           _searchEmail();
+          mailboxDashBoardController.clearState();
         } else if (success is SaveEmailAsDraftsSuccess
             || success is RemoveEmailDraftsSuccess
             || success is SendEmailSuccess

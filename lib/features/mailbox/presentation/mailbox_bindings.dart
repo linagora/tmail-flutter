@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_reposit
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:uuid/uuid.dart';
@@ -46,6 +47,7 @@ class MailboxBindings extends Bindings {
     Get.lazyPut(() => RefreshAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => TreeBuilder());
     Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => SearchMailboxInteractor());
     Get.lazyPut(() => Uuid());
     Get.lazyPut(() => TextEditingController());
     Get.lazyPut(() => FocusNode());
@@ -54,13 +56,12 @@ class MailboxBindings extends Bindings {
       Get.find<DeleteCredentialInteractor>(),
       Get.find<RefreshAllMailboxInteractor>(),
       Get.find<CreateNewMailboxInteractor>(),
+      Get.find<SearchMailboxInteractor>(),
       Get.find<TreeBuilder>(),
       Get.find<Uuid>(),
       Get.find<AppToast>(),
       Get.find<ImagePaths>(),
       Get.find<ResponsiveUtils>(),
-      Get.find<TextEditingController>(),
-      Get.find<FocusNode>(),
       Get.find<CachingManager>()));
   }
 }

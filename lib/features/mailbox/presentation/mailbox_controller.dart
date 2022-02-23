@@ -17,10 +17,13 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_i
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
@@ -45,22 +48,24 @@ class MailboxController extends BaseController {
   final DeleteCredentialInteractor _deleteCredentialInteractor;
   final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
+  final SearchMailboxInteractor _searchMailboxInteractor;
   final TreeBuilder _treeBuilder;
   final Uuid _uuid;
   final AppToast _appToast;
   final ImagePaths _imagePaths;
   final ResponsiveUtils responsiveUtils;
-  final TextEditingController searchInputController;
-  final FocusNode searchFocus;
   final CachingManager _cachingManager;
 
   final defaultMailboxList = <PresentationMailbox>[].obs;
   final folderMailboxNodeList = <MailboxNode>[].obs;
+  final listMailboxSearched = <PresentationMailbox>[].obs;
   final searchState = SearchState.initial().obs;
   final searchQuery = SearchQuery.initial().obs;
 
+  MailboxTree folderMailboxTree = MailboxTree(MailboxNode.root());
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
-  List<PresentationMailbox> listMailboxSearched = <PresentationMailbox>[];
+  TextEditingController searchInputController = TextEditingController();
+  FocusNode searchFocus = FocusNode();
 
   jmapState.State? currentMailboxState;
 
@@ -69,13 +74,12 @@ class MailboxController extends BaseController {
     this._deleteCredentialInteractor,
     this._refreshAllMailboxInteractor,
     this._createNewMailboxInteractor,
+    this._searchMailboxInteractor,
     this._treeBuilder,
     this._uuid,
     this._appToast,
     this._imagePaths,
     this.responsiveUtils,
-    this.searchInputController,
-    this.searchFocus,
     this._cachingManager,
   );
 
@@ -111,6 +115,7 @@ class MailboxController extends BaseController {
   @override
   void onClose() {
     mailboxDashBoardController.accountId.close();
+    searchInputController.dispose();
     searchFocus.dispose();
     super.onClose();
   }
@@ -135,11 +140,15 @@ class MailboxController extends BaseController {
         (failure) {
           if (failure is CreateNewMailboxFailure) {
             _createNewMailboxFailure(failure);
+          } else if (failure is SearchMailboxFailure) {
+            _searchMailboxFailure(failure);
           }
         },
         (success) {
           if (success is CreateNewMailboxSuccess) {
             _createNewMailboxSuccess(success);
+          } else if (success is SearchMailboxSuccess) {
+            _searchMailboxSuccess(success);
           }
         }
     );
@@ -158,6 +167,8 @@ class MailboxController extends BaseController {
       if (accountId != null) {
         consumeState(_getAllMailboxInteractor.execute(accountId));
       }
+    } else {
+      _searchMailboxAction(allMailboxes, searchQuery.value);
     }
   }
 
@@ -169,8 +180,8 @@ class MailboxController extends BaseController {
   }
 
   void _buildTree(List<PresentationMailbox> folderMailboxList) async {
-    final _folderMailboxTree = await _treeBuilder.generateMailboxTree(folderMailboxList);
-    folderMailboxNodeList.value = _folderMailboxTree.root.childrenItems ?? [];
+    folderMailboxTree = await _treeBuilder.generateMailboxTree(folderMailboxList);
+    folderMailboxNodeList.value = folderMailboxTree.root.childrenItems ?? [];
   }
 
   void toggleMailboxFolder(MailboxNode mailboxNode) {
@@ -240,6 +251,8 @@ class MailboxController extends BaseController {
       BuildContext context,
       PresentationMailbox presentationMailboxSelected
   ) {
+    FocusScope.of(context).unfocus();
+
     mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
     mailboxDashBoardController.clearSelectedEmail();
 
@@ -315,10 +328,48 @@ class MailboxController extends BaseController {
   void clearSearchText() {
     searchQuery.value = SearchQuery.initial();
     searchFocus.requestFocus();
+    listMailboxSearched.clear();
   }
 
   void searchMailbox(String value) {
     searchQuery.value = SearchQuery(value);
+    _searchMailboxAction(allMailboxes, searchQuery.value);
+  }
+
+  void _searchMailboxAction(List<PresentationMailbox> allMailboxes, SearchQuery searchQuery) {
+    if (searchQuery.value.isNotEmpty) {
+      consumeState(_searchMailboxInteractor.execute(allMailboxes, searchQuery));
+    } else {
+      listMailboxSearched.clear();
+    }
+  }
+
+  void _searchMailboxSuccess(SearchMailboxSuccess success) {
+    final mailboxesSearchedWithPath = _findMailboxPath(success.mailboxesSearched);
+    listMailboxSearched.value = mailboxesSearchedWithPath;
+  }
+
+  List<PresentationMailbox> _findMailboxPath(List<PresentationMailbox> mailboxes) {
+    return mailboxes.map((presentationMailbox) {
+      if (!presentationMailbox.hasParentId()) {
+        return presentationMailbox;
+      } else {
+        final mailboxNode = folderMailboxTree.findNode(presentationMailbox.id);
+        if (mailboxNode != null) {
+          String mailboxPath = mailboxNode.getPathMailboxNode(folderMailboxTree, defaultMailboxList);
+          if (mailboxPath.contains('/')) {
+            mailboxPath = mailboxPath.substring(0, mailboxPath.lastIndexOf('/')).replaceAll('/', ' / ');
+          }
+          return presentationMailbox.toPresentationMailboxWithMailboxPath(mailboxPath);
+        } else {
+          return presentationMailbox;
+        }
+      }
+    }).toList();
+  }
+
+  void _searchMailboxFailure(SearchMailboxFailure failure) {
+    listMailboxSearched.clear();
   }
 
   void closeMailboxScreen(BuildContext context) {
