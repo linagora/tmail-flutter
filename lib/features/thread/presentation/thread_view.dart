@@ -128,17 +128,18 @@ class ThreadView extends GetWidget<ThreadController> {
 
   Widget _buildSearchForm(BuildContext context) {
     return (SearchAppBarWidget(
-          context,
           imagePaths,
           controller.searchQuery,
-          controller.mailboxDashBoardController.suggestionSearch,
           controller.mailboxDashBoardController.searchFocus,
-          controller.mailboxDashBoardController.searchInputController)
+          controller.mailboxDashBoardController.searchInputController,
+          suggestionSearch: controller.mailboxDashBoardController.suggestionSearch,)
       ..addDecoration(BoxDecoration(color: Colors.white))
+      ..setMargin(EdgeInsets.only(right: 10))
+      ..setHintText(AppLocalizations.of(context).search_mail)
       ..addOnCancelSearchPressed(() => controller.disableSearch())
       ..addOnClearTextSearchAction(() => controller.mailboxDashBoardController.clearSearchText())
-      ..addOnSuggestionSearchQuery((query) => controller.mailboxDashBoardController.addSuggestionSearch(query))
-      ..addOnSearchTextAction((query) => controller.mailboxDashBoardController.searchEmail(query)))
+      ..addOnTextChangeSearchAction((query) => controller.mailboxDashBoardController.addSuggestionSearch(query))
+      ..addOnSearchTextAction((query) => controller.mailboxDashBoardController.searchEmail(context, query)))
     .build();
   }
 
@@ -409,7 +410,8 @@ class ThreadView extends GetWidget<ThreadController> {
               context,
               imagePaths,
               controller.mailboxDashBoardController.suggestionSearch)
-          ..addOnSelectedSuggestion((suggestion) => controller.mailboxDashBoardController.searchEmail(suggestion)))
+          ..addOnSelectedSuggestion((suggestion) =>
+              controller.mailboxDashBoardController.searchEmail(context, suggestion)))
         .build()
       : SizedBox.shrink()
     );

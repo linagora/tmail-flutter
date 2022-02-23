@@ -28,6 +28,8 @@ class MailboxDashBoardController extends BaseController {
   final AppToast _appToast;
   final ImagePaths _imagePaths;
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor;
+  final TextEditingController searchInputController;
+  final FocusNode searchFocus;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -37,8 +39,6 @@ class MailboxDashBoardController extends BaseController {
   final searchState = SearchState.initial().obs;
   final suggestionSearch = <String>[].obs;
 
-  TextEditingController searchInputController = TextEditingController();
-  FocusNode searchFocus = FocusNode();
   SearchQuery? searchQuery;
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxId = Map();
@@ -48,6 +48,8 @@ class MailboxDashBoardController extends BaseController {
       this._getUserProfileInteractor,
       this._appToast,
       this._imagePaths,
+      this.searchInputController,
+      this.searchFocus,
       this._removeEmailDraftsInteractor,
   );
 
@@ -176,14 +178,14 @@ class MailboxDashBoardController extends BaseController {
 
   void disableSearch() {
     searchState.value = searchState.value.disableSearchState();
-    searchQuery = SearchQuery('');
+    searchQuery = SearchQuery.initial();
     clearSuggestionSearch();
     searchInputController.clear();
     FocusManager.instance.primaryFocus?.unfocus();
   }
 
   void clearSearchText() {
-    searchQuery = SearchQuery('');
+    searchQuery = SearchQuery.initial();
     clearSuggestionSearch();
     searchFocus.requestFocus();
   }
@@ -200,11 +202,11 @@ class MailboxDashBoardController extends BaseController {
     }
   }
 
-  void searchEmail(String value) {
+  void searchEmail(BuildContext context, String value) {
     searchQuery = SearchQuery(value);
-    dispatchState(Right(SearchEmailNewQuery(searchQuery ?? SearchQuery(''))));
+    dispatchState(Right(SearchEmailNewQuery(searchQuery ?? SearchQuery.initial())));
     clearSuggestionSearch();
-    FocusManager.instance.primaryFocus?.unfocus();
+    FocusScope.of(context).unfocus();
   }
 
   void _saveEmailAsDraftsSuccess(SaveEmailAsDraftsSuccess success) {
