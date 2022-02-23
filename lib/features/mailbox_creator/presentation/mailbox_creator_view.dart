@@ -98,7 +98,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
               title: AppLocalizations.of(context).new_mailbox,
               isValidated: controller.isCreateMailboxValidated(context))
           ..addOnCancelActionClick(() => controller.closeMailboxCreator(context))
-          ..addOnDoneActionClick(() => {}))
+          ..addOnDoneActionClick(() => controller.createNewMailbox(context)))
         .build())
     );
   }

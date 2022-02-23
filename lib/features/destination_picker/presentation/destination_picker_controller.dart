@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -23,7 +23,7 @@ class DestinationPickerController extends BaseController {
   MailboxTree folderMailboxTree = MailboxTree(MailboxNode.root());
   final defaultMailboxList = <PresentationMailbox>[].obs;
   final folderMailboxNodeList = <MailboxNode>[].obs;
-  final mailboxAction = Rxn<MailboxAction>();
+  final mailboxAction = Rxn<MailboxActions>();
   AccountId? accountId;
 
   DestinationPickerController(
@@ -87,7 +87,7 @@ class DestinationPickerController extends BaseController {
     folderMailboxNodeList.value = newMailboxNodeList;
   }
 
-  void moveEmailToMailboxAction(PresentationMailbox destinationMailbox) {
+  void selectMailboxAction(PresentationMailbox? destinationMailbox) {
     popBack(result: destinationMailbox);
   }
 

@@ -6,7 +6,7 @@ extension MailboxExtension on Mailbox {
 
   MailboxCache toMailboxCache() {
     return MailboxCache(
-      id.id.value,
+      id!.id.value,
       name: name?.name,
       parentId: parentId?.id.value,
       role: role?.value,

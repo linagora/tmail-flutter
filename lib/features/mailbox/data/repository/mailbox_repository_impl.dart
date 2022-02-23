@@ -7,6 +7,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
@@ -83,7 +84,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
         if (updatedProperties == null) {
           return mailboxUpdated;
         } else {
-          final mailboxOld = mailboxCacheList?.findMailbox(mailboxUpdated.id);
+          final mailboxOld = mailboxCacheList?.findMailbox(mailboxUpdated.id!);
           if (mailboxOld != null) {
             return mailboxOld.combineMailbox(mailboxUpdated, updatedProperties);
           } else {
@@ -133,5 +134,10 @@ class MailboxRepositoryImpl extends MailboxRepository {
     });
 
     yield newMailboxResponse;
+  }
+
+  @override
+  Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
+    return mapDataSource[DataSourceType.network]!.createNewMailbox(accountId, newMailboxRequest);
   }
 }

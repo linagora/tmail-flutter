@@ -4,25 +4,32 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmapState;
+import 'package:uuid/uuid.dart';
 
 class MailboxController extends BaseController {
 
@@ -30,7 +37,11 @@ class MailboxController extends BaseController {
   final GetAllMailboxInteractor _getAllMailboxInteractor;
   final DeleteCredentialInteractor _deleteCredentialInteractor;
   final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
+  final CreateNewMailboxInteractor _createNewMailboxInteractor;
   final TreeBuilder _treeBuilder;
+  final Uuid _uuid;
+  final AppToast _appToast;
+  final ImagePaths _imagePaths;
   final ResponsiveUtils responsiveUtils;
   final CachingManager _cachingManager;
 
@@ -45,7 +56,11 @@ class MailboxController extends BaseController {
     this._getAllMailboxInteractor,
     this._deleteCredentialInteractor,
     this._refreshAllMailboxInteractor,
+    this._createNewMailboxInteractor,
     this._treeBuilder,
+    this._uuid,
+    this._appToast,
+    this._imagePaths,
     this.responsiveUtils,
     this._cachingManager,
   );
@@ -95,7 +110,20 @@ class MailboxController extends BaseController {
   }
 
   @override
-  void onDone() {}
+  void onDone() {
+    viewState.value.fold(
+        (failure) {
+          if (failure is CreateNewMailboxFailure) {
+            _createNewMailboxFailure(failure);
+          }
+        },
+        (success) {
+          if (success is CreateNewMailboxSuccess) {
+            _createNewMailboxSuccess(success);
+          }
+        }
+    );
+  }
 
   @override
   void onError(error) {}
@@ -206,13 +234,47 @@ class MailboxController extends BaseController {
     await _cachingManager.clearAll();
   }
 
-  void createNewMailbox() async {
+  void goToCreateNewMailboxView() async {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {
       final newMailboxArguments = await push(
           AppRoutes.MAILBOX_CREATOR,
           arguments: MailboxCreatorArguments(accountId, allMailboxes)
       );
+
+      if (newMailboxArguments != null && newMailboxArguments is NewMailboxArguments) {
+        final generateCreateId = Id(_uuid.v1());
+        _createNewMailboxAction(accountId, CreateNewMailboxRequest(
+            generateCreateId,
+            newMailboxArguments.newName,
+            parentId: newMailboxArguments.mailboxLocation?.id));
+      }
+    }
+  }
+
+  void _createNewMailboxAction(AccountId accountId, CreateNewMailboxRequest request) async {
+    consumeState(_createNewMailboxInteractor.execute(accountId, request));
+  }
+
+  void _createNewMailboxSuccess(CreateNewMailboxSuccess success) {
+    if (Get.overlayContext != null && Get.context != null) {
+      _appToast.showToastWithIcon(
+          Get.overlayContext!,
+          textColor: AppColor.toastSuccessBackgroundColor,
+          message: AppLocalizations.of(Get.context!).new_mailbox_is_created(success.newMailbox.name?.name ?? ''),
+          icon: _imagePaths.icFolderMailbox);
+    }
+
+    refreshMailboxChanges();
+  }
+
+  void _createNewMailboxFailure(CreateNewMailboxFailure failure) {
+    if (Get.overlayContext != null && Get.context != null) {
+      _appToast.showToastWithIcon(
+          Get.overlayContext!,
+          textColor: AppColor.toastErrorBackgroundColor,
+          message: AppLocalizations.of(Get.context!).create_new_mailbox_failure,
+          icon: _imagePaths.icFolderMailbox);
     }
   }
 
