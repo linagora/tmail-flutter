@@ -7,6 +7,8 @@ export 'presentation/extensions/capitalize_extension.dart';
 export 'presentation/extensions/list_extensions.dart';
 export 'domain/extensions/datetime_extension.dart';
 export 'presentation/extensions/html_extension.dart';
+export 'presentation/extensions/compare_string_extension.dart';
+export 'presentation/extensions/compare_list_extensions.dart';
 
 // Exceptions
 export 'domain/exceptions/download_file_exception.dart';
