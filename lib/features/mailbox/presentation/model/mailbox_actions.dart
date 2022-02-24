@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 enum MailboxActions {
   create,
   moveEmail,
+  delete,
 }
 
 extension MailboxActionsExtension on MailboxActions {

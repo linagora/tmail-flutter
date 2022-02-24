@@ -670,4 +670,10 @@ class AppLocalizations {
         name: 'hint_input_create_new_mailbox'
     );
   }
+
+  String get rename {
+    return Intl.message(
+        'Rename',
+        name: 'rename');
+  }
 }

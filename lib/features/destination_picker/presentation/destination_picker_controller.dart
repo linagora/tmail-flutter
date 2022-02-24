@@ -82,7 +82,7 @@ class DestinationPickerController extends BaseController {
 
     final newMailboxNodeList = folderMailboxNodeList.updateNode(
         selectedMailboxNode.item.id,
-        selectedMailboxNode.copyWith(newExpandMode: newExpandMode)) ?? [];
+        selectedMailboxNode.copyWith(newExpandMode: newExpandMode));
 
     folderMailboxNodeList.value = newMailboxNodeList;
   }
