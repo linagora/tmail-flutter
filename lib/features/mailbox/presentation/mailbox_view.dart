@@ -70,14 +70,28 @@ class MailboxView extends GetWidget<MailboxController> {
               bottom: 10),
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             !responsiveUtils.isDesktop(context) ? _buildCloseScreenButton(context) : SizedBox(width: 50),
-            Obx(() => controller.currentSelectMode.value == SelectMode.INACTIVE
-                ? SizedBox(width: 40)
-                : SizedBox(width: 49)),
+            Obx(() {
+              if (controller.isSearchActive()) {
+                return controller.listMailboxSearched.isNotEmpty
+                    ? SizedBox(width: controller.isSelectionEnabled() ? 49 : 40)
+                    : SizedBox.shrink();
+              } else {
+                return SizedBox(width: controller.isSelectionEnabled() ? 49 : 40);
+              }
+            }),
             Expanded(child: Text(
               AppLocalizations.of(context).folders,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700))),
-            Obx(() => _buildEditMailboxButton(context, controller.currentSelectMode.value)),
+            Obx(() {
+              if (controller.isSearchActive()) {
+                return controller.listMailboxSearched.isNotEmpty
+                    ? _buildEditMailboxButton(context, controller.isSelectionEnabled())
+                    : SizedBox(width: 25);
+              } else {
+                return _buildEditMailboxButton(context, controller.isSelectionEnabled());
+              }
+            }),
             _buildAddNewFolderButton(context),
           ])),
         Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
@@ -103,15 +117,15 @@ class MailboxView extends GetWidget<MailboxController> {
             icon: SvgPicture.asset(imagePaths.icAddNewFolder, width: 30, height: 30, fit: BoxFit.fill)));
   }
 
-  Widget _buildEditMailboxButton(BuildContext context, SelectMode selectMode) {
+  Widget _buildEditMailboxButton(BuildContext context, bool isSelectionEnabled) {
     return Material(
         borderRadius: BorderRadius.circular(20),
         color: Colors.transparent,
         child: TextButton(
             child: Text(
-                selectMode == SelectMode.INACTIVE ? AppLocalizations.of(context).edit : AppLocalizations.of(context).cancel,
+              !isSelectionEnabled ? AppLocalizations.of(context).edit : AppLocalizations.of(context).cancel,
               style: TextStyle(fontSize: 17, color: AppColor.colorTextButton)),
-            onPressed: () => selectMode == SelectMode.INACTIVE
+            onPressed: () => !isSelectionEnabled
                 ? controller.enableSelectionMailbox()
                 : controller.disableSelectionMailbox()
         )
@@ -283,7 +297,6 @@ class MailboxView extends GetWidget<MailboxController> {
               ..addDecoration(BoxDecoration(borderRadius: BorderRadius.circular(12), color: AppColor.colorBgSearchBar))
               ..addIconClearText(SvgPicture.asset(imagePaths.icClearTextSearch, width: 20, height: 20, fit: BoxFit.fill))
               ..setHintText(AppLocalizations.of(context).hint_search_mailboxes)
-              ..addOnCancelSearchPressed(() => controller.disableSearch(context))
               ..addOnClearTextSearchAction(() => controller.clearSearchText())
               ..addOnTextChangeSearchAction((query) => controller.searchMailbox(query))
               ..addOnSearchTextAction((query) => controller.searchMailbox(query)))
@@ -324,8 +337,10 @@ class MailboxView extends GetWidget<MailboxController> {
                     imagePaths,
                     listMailbox[index],
                     isSearchActive: controller.isSearchActive(),
+                    allSelectMode: controller.currentSelectMode.value,
                     isLastElement: index == listMailbox.length - 1)
-                ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox)))
+                ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox))
+                ..addOnSelectMailboxActionClick((mailbox) => controller.selectMailbox(context, mailbox)))
               .build()));
   }
 

@@ -82,6 +82,8 @@ class ImagePaths {
   String get icSendToast => _getImagePath('ic_send_toast.svg');
   String get icClearTextSearch => _getImagePath('ic_clear_text_search.svg');
   String get icRenameMailbox => _getImagePath('ic_rename_mailbox.svg');
+  String get icDeleteToast => _getImagePath('ic_delete_toast.svg');
+  String get icRemoveDialog => _getImagePath('ic_remove_dialog.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

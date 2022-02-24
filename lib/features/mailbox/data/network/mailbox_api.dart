@@ -128,4 +128,29 @@ class MailboxAPI {
       throw error;
     });
   }
+
+  Future<bool> deleteMultipleMailbox(AccountId accountId, List<MailboxId> mailboxIds) async {
+    final setMailboxMethod = SetMailboxMethod(accountId)
+      ..addDestroy(mailboxIds.map((mailboxId) => mailboxId.id).toSet())
+      ..addOnDestroyRemoveEmails(true);
+
+    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+
+    final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
+
+    final response = await (requestBuilder
+        ..usings(setMailboxMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final setMailboxResponse = response.parse<SetMailboxResponse>(
+        setMailboxInvocation.methodCallId,
+        SetMailboxResponse.deserialize);
+
+    return Future.sync(() async {
+      return setMailboxResponse?.destroyed?.isNotEmpty == true;
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }

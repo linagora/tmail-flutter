@@ -11,4 +11,6 @@ abstract class MailboxRepository {
   Stream<MailboxResponse> refresh(AccountId accountId, State currentState);
 
   Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest);
+
+  Future<bool> deleteMultipleMailbox(AccountId accountId, List<MailboxId> mailboxIds);
 }
