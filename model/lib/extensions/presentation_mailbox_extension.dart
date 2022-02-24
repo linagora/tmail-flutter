@@ -36,4 +36,40 @@ extension PresentationMailboxExtension on PresentationMailbox {
       isSubscribed: isSubscribed
     );
   }
+
+  PresentationMailbox toggleSelectPresentationMailbox() {
+    return PresentationMailbox(
+        id,
+        name: name,
+        parentId: parentId,
+        role: role,
+        sortOrder: sortOrder,
+        totalEmails: totalEmails,
+        unreadEmails: unreadEmails,
+        totalThreads: totalThreads,
+        unreadThreads: unreadThreads,
+        myRights: myRights,
+        isSubscribed: isSubscribed,
+        mailboxPath: mailboxPath,
+        selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
+    );
+  }
+
+  PresentationMailbox toSelectedPresentationMailbox({required SelectMode selectMode}) {
+    return PresentationMailbox(
+      id,
+      name: name,
+      parentId: parentId,
+      role: role,
+      sortOrder: sortOrder,
+      totalEmails: totalEmails,
+      unreadEmails: unreadEmails,
+      totalThreads: totalThreads,
+      unreadThreads: unreadThreads,
+      myRights: myRights,
+      isSubscribed: isSubscribed,
+      mailboxPath: mailboxPath,
+      selectMode: selectMode,
+    );
+  }
 }

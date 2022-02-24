@@ -1,7 +1,7 @@
 import 'package:core/core.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
@@ -12,8 +12,8 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
-import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
@@ -24,44 +24,76 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:uuid/uuid.dart';
 
-class MailboxBindings extends Bindings {
+class MailboxBindings extends BaseBindings {
+
   @override
   void dependencies() {
-    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
-    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
-    Get.lazyPut(() => DeleteCredentialInteractor(Get.find<CredentialRepository>()));
-    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
+    _bindingsUtils();
+    super.dependencies();
+  }
+
+  void _bindingsUtils() {
+    Get.lazyPut(() => TreeBuilder());
+    Get.lazyPut(() => Uuid());
+  }
+
+  @override
+  void bindingsController() {
+    Get.put(MailboxController(
+        Get.find<GetAllMailboxInteractor>(),
+        Get.find<DeleteCredentialInteractor>(),
+        Get.find<RefreshAllMailboxInteractor>(),
+        Get.find<CreateNewMailboxInteractor>(),
+        Get.find<SearchMailboxInteractor>(),
+        Get.find<TreeBuilder>(),
+        Get.find<Uuid>(),
+        Get.find<AppToast>(),
+        Get.find<ImagePaths>(),
+        Get.find<ResponsiveUtils>(),
+        Get.find<CachingManager>(),
+    ));
+  }
+
+  @override
+  void bindingsDataSource() {
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
+    Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
+
+  }
+
+  @override
+  void bindingsDataSourceImpl() {
+    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
     Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
-    Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
+
+  }
+
+  @override
+  void bindingsInteractor() {
+    Get.lazyPut(() => DeleteCredentialInteractor(Get.find<CredentialRepository>()));
+    Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => RefreshAllMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => SearchMailboxInteractor());
+  }
+
+  @override
+  void bindingsRepository() {
+    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
+    Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
+
+  }
+
+  @override
+  void bindingsRepositoryImpl() {
+    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
     Get.lazyPut(() => MailboxRepositoryImpl(
       {
         DataSourceType.network: Get.find<MailboxDataSource>(),
         DataSourceType.local: Get.find<MailboxCacheDataSourceImpl>()
       },
-      Get.find<StateDataSource>()
+      Get.find<StateDataSource>(),
     ));
-    Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
-    Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
-    Get.lazyPut(() => RefreshAllMailboxInteractor(Get.find<MailboxRepository>()));
-    Get.lazyPut(() => TreeBuilder());
-    Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));
-    Get.lazyPut(() => SearchMailboxInteractor());
-    Get.lazyPut(() => Uuid());
-    Get.lazyPut(() => TextEditingController());
-    Get.lazyPut(() => FocusNode());
-    Get.put(MailboxController(
-      Get.find<GetAllMailboxInteractor>(),
-      Get.find<DeleteCredentialInteractor>(),
-      Get.find<RefreshAllMailboxInteractor>(),
-      Get.find<CreateNewMailboxInteractor>(),
-      Get.find<SearchMailboxInteractor>(),
-      Get.find<TreeBuilder>(),
-      Get.find<Uuid>(),
-      Get.find<AppToast>(),
-      Get.find<ImagePaths>(),
-      Get.find<ResponsiveUtils>(),
-      Get.find<CachingManager>()));
   }
 }

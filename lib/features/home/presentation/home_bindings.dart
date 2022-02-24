@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource/cleanup_datasource.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource_impl/cleanup_datasource_impl.dart';
 import 'package:tmail_ui_user/features/cleanup/data/repository/cleanup_repository_impl.dart';
@@ -12,23 +13,51 @@ import 'package:tmail_ui_user/features/login/domain/repository/credential_reposi
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 
-class HomeBindings extends Bindings {
+class HomeBindings extends BaseBindings {
+
   @override
   void dependencies() {
-    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
-    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
-    Get.lazyPut(() => GetCredentialInteractor(Get.find<CredentialRepository>()));
-    Get.lazyPut(() => CleanupDataSourceImpl(
-      Get.find<EmailCacheManager>(),
-      Get.find<SharedPreferences>()));
-    Get.lazyPut<CleanupDataSource>(() => Get.find<CleanupDataSourceImpl>());
-    Get.lazyPut(() => CleanupRepositoryImpl(Get.find<CleanupDataSource>()));
-    Get.lazyPut<CleanupRepository>(() => Get.find<CleanupRepositoryImpl>());
-    Get.lazyPut(() => CleanupEmailCacheInteractor(Get.find<CleanupRepository>()));
+    super.dependencies();
+  }
+
+  @override
+  void bindingsController() {
     Get.lazyPut(() => HomeController(
-      Get.find<GetCredentialInteractor>(),
-      Get.find<DynamicUrlInterceptors>(),
-      Get.find<AuthorizationInterceptors>(),
-      Get.find<CleanupEmailCacheInteractor>()));
+        Get.find<GetCredentialInteractor>(),
+        Get.find<DynamicUrlInterceptors>(),
+        Get.find<AuthorizationInterceptors>(),
+        Get.find<CleanupEmailCacheInteractor>(),
+    ));
+  }
+
+  @override
+  void bindingsDataSource() {
+    Get.lazyPut<CleanupDataSource>(() => Get.find<CleanupDataSourceImpl>());
+  }
+
+  @override
+  void bindingsDataSourceImpl() {
+    Get.lazyPut(() => CleanupDataSourceImpl(
+        Get.find<EmailCacheManager>(),
+        Get.find<SharedPreferences>(),
+    ));
+  }
+
+  @override
+  void bindingsInteractor() {
+    Get.lazyPut(() => GetCredentialInteractor(Get.find<CredentialRepository>()));
+    Get.lazyPut(() => CleanupEmailCacheInteractor(Get.find<CleanupRepository>()));
+  }
+
+  @override
+  void bindingsRepository() {
+    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
+    Get.lazyPut<CleanupRepository>(() => Get.find<CleanupRepositoryImpl>());
+  }
+
+  @override
+  void bindingsRepositoryImpl() {
+    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
+    Get.lazyPut(() => CleanupRepositoryImpl(Get.find<CleanupDataSource>()));
   }
 }

@@ -6,7 +6,7 @@ extension MailboxExtension on Mailbox {
 
   bool hasRole() => role != null && role!.value.isNotEmpty;
 
-  PresentationMailbox toPresentationMailbox({SelectMode selectMode = SelectMode.INACTIVE}) {
+  PresentationMailbox toPresentationMailbox() {
     return PresentationMailbox(
       id!,
       name: name,
@@ -19,7 +19,6 @@ extension MailboxExtension on Mailbox {
       unreadThreads: unreadThreads,
       myRights: myRights,
       isSubscribed: isSubscribed,
-      selectMode: selectMode
     );
   }
 

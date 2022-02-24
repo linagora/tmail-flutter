@@ -240,7 +240,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                     defaultMailboxList[index],
                     mailboxDisplayed: MailboxDisplayed.destinationPicker,
                     isLastElement: index == defaultMailboxList.length - 1)
-                ..onOpenMailboxAction((mailbox) =>
+                ..addOnOpenMailboxAction((mailbox) =>
                     controller.selectMailboxAction(mailbox.toPresentationMailboxWithMailboxPath(mailbox.name?.name ?? ''))))
               .build());
         } else {
