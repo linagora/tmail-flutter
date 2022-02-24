@@ -49,4 +49,9 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<bool> deleteMultipleMailbox(AccountId accountId, List<MailboxId> mailboxIds) {
+    throw UnimplementedError();
+  }
 }

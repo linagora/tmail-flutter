@@ -80,6 +80,11 @@ extension AppColor on Color {
   static const colorInputBackgroundErrorVerifyName = Color(0xFFFAEBEB);
   static const colorInputBackgroundCreateMailbox = Color(0xFFF2F3F5);
   static const colorHintInputCreateMailbox= Color(0xFFA9B4C2);
+  static const colorMessageConfirmDialog= Color(0xFF6D7885);
+  static const colorActionDeleteConfirmDialog= Color(0xFFE64646);
+  static const colorActionCancelDialog= Color(0xFF007AFF);
+  static const colorMessageDialog= Color(0xFF222222);
+  static const colorConfirmActionDialog= Color(0xFFF2F2F2);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

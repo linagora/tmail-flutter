@@ -27,6 +27,24 @@ class MailboxTree with EquatableMixin {
     return result;
   }
 
+  List<MailboxNode> getAllNodes(MailboxNode node){
+    List<MailboxNode> listOfNodes = <MailboxNode>[];
+    _addAllNodes(node, listOfNodes);
+    return listOfNodes;
+  }
+
+  void _addAllNodes(MailboxNode? node, List<MailboxNode> listOfNodes) {
+    if (node != null) {
+      listOfNodes.add(node);
+      List<MailboxNode>? childrenItems = node.childrenItems;
+      if (childrenItems != null) {
+        childrenItems.forEach((child) {
+          _addAllNodes(child, listOfNodes);
+        });
+      }
+    }
+  }
+
   @override
   List<Object?> get props => [root];
 }

@@ -29,7 +29,7 @@ class CupertinoActionSheetBuilder {
     _actionTiles.addAll(tiles);
   }
 
-  void build() {
+  void show() {
     showCupertinoModalPopup(
       context: _context,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,

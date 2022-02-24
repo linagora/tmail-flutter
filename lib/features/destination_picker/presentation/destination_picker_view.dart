@@ -276,7 +276,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                             _imagePaths,
                             mailboxNode,
                             mailboxDisplayed: MailboxDisplayed.destinationPicker)
-                        ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxAction(mailboxNode.item.toPresentationMailboxWithMailboxPath(
+                        ..addOnOpenMailboxFolderClick((mailboxNode) => controller.selectMailboxAction(mailboxNode.item.toPresentationMailboxWithMailboxPath(
                             mailboxNode.getPathMailboxNode(
                               controller.folderMailboxTree,
                               controller.defaultMailboxList,
@@ -292,7 +292,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                       _imagePaths,
                       mailboxNode,
                       mailboxDisplayed: MailboxDisplayed.destinationPicker)
-                  ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxAction(mailboxNode.item.toPresentationMailboxWithMailboxPath(
+                  ..addOnOpenMailboxFolderClick((mailboxNode) => controller.selectMailboxAction(mailboxNode.item.toPresentationMailboxWithMailboxPath(
                       mailboxNode.getPathMailboxNode(
                         controller.folderMailboxTree,
                         controller.defaultMailboxList,

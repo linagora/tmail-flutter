@@ -1,7 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -16,9 +16,11 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_sta
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
@@ -50,6 +52,7 @@ class MailboxController extends BaseController {
   final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
   final SearchMailboxInteractor _searchMailboxInteractor;
+  final DeleteMultipleMailboxInteractor _deleteMultipleMailboxInteractor;
   final TreeBuilder _treeBuilder;
   final Uuid _uuid;
   final AppToast _appToast;
@@ -77,6 +80,7 @@ class MailboxController extends BaseController {
     this._refreshAllMailboxInteractor,
     this._createNewMailboxInteractor,
     this._searchMailboxInteractor,
+    this._deleteMultipleMailboxInteractor,
     this._treeBuilder,
     this._uuid,
     this._appToast,
@@ -144,6 +148,8 @@ class MailboxController extends BaseController {
             _createNewMailboxFailure(failure);
           } else if (failure is SearchMailboxFailure) {
             _searchMailboxFailure(failure);
+          } else if (failure is DeleteMultipleMailboxFailure) {
+            _deleteMailboxFailure(failure);
           }
         },
         (success) {
@@ -151,6 +157,12 @@ class MailboxController extends BaseController {
             _createNewMailboxSuccess(success);
           } else if (success is SearchMailboxSuccess) {
             _searchMailboxSuccess(success);
+          } else if (success is DeleteMultipleMailboxSuccess) {
+            _deleteMailboxSuccess(success);
+          } else if (success is GetAllMailboxSuccess) {
+            if (isSearchActive()) {
+              _searchMailboxAction(allMailboxes, searchQuery.value);
+            }
           }
         }
     );
@@ -310,9 +322,14 @@ class MailboxController extends BaseController {
 
   bool isSearchActive() => searchState.value.searchStatus == SearchStatus.ACTIVE;
 
-  void enableSearch() => searchState.value = searchState.value.enableSearchState();
+  void enableSearch() {
+    _cancelSelectMailbox();
+    searchState.value = searchState.value.enableSearchState();
+  }
 
   void disableSearch(BuildContext context) {
+    _cancelSelectMailbox();
+
     listMailboxSearched.clear();
     searchState.value = searchState.value.disableSearchState();
     searchQuery.value = SearchQuery.initial();
@@ -446,13 +463,80 @@ class MailboxController extends BaseController {
       List<PresentationMailbox> selectionMailbox) {
     switch(actions) {
       case MailboxActions.delete:
+        _openConfirmationDialogDeleteMailboxAction(context, selectionMailbox.first);
         break;
       default:
         break;
     }
   }
 
+  void _openConfirmationDialogDeleteMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
+    if (responsiveUtils.isMobile(context) || responsiveUtils.isMobileDevice(context)) {
+      (ConfirmationDialogActionSheetBuilder(context)
+          ..messageText(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
+          ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
+          ..onConfirmAction(AppLocalizations.of(context).delete, () => _deleteMailboxAction(presentationMailbox)))
+        .show();
+    } else {
+      showDialog(
+          context: context,
+          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+          builder: (BuildContext context) => (ConfirmDialogBuilder(_imagePaths)
+              ..key(Key('confirm_dialog_delete_mailbox'))
+              ..title(AppLocalizations.of(context).delete_mailboxes)
+              ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
+              ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog, fit: BoxFit.fill))
+              ..onCloseButtonAction(() => popBack())
+              ..onConfirmButtonAction(AppLocalizations.of(context).delete, () => _deleteMailboxAction(presentationMailbox))
+              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
+            .build());
+    }
+  }
+
+  void _deleteMailboxAction(PresentationMailbox presentationMailbox) {
+    final newFolderMailboxTree = MailboxTree(MailboxNode(
+        MailboxNode.rootItem(),
+        childrenItems: folderMailboxNodeList));
+    final mailboxNode = newFolderMailboxTree.findNode(presentationMailbox.id);
+
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (mailboxNode != null && accountId != null) {
+      final allMailboxId = newFolderMailboxTree
+          .getAllNodes(mailboxNode)
+          .map((node) => node.item.id)
+          .toList();
+      final allMailboxIdReversed = allMailboxId.reversed.toList();
+      consumeState(_deleteMultipleMailboxInteractor.execute(accountId, allMailboxIdReversed));
+    } else {
+      _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
+    }
+
+    _cancelSelectMailbox();
+    popBack();
+  }
+
+  void _deleteMailboxSuccess(DeleteMultipleMailboxSuccess success) {
+    if (Get.overlayContext != null && Get.context != null) {
+      _appToast.showToastWithIcon(
+          Get.overlayContext!,
+          message: AppLocalizations.of(Get.context!).delete_mailboxes_successfully,
+          icon: _imagePaths.icSelectedV2);
+    }
+    refreshMailboxChanges();
+  }
+
+  void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
+    if (Get.overlayContext != null && Get.context != null) {
+      _appToast.showToastWithIcon(
+          Get.overlayContext!,
+          message: AppLocalizations.of(Get.context!).delete_mailboxes_failure,
+          icon: _imagePaths.icDeleteToast);
+    }
+  }
+
   void closeMailboxScreen(BuildContext context) {
+    _cancelSelectMailbox();
     mailboxDashBoardController.closeDrawer();
   }
 

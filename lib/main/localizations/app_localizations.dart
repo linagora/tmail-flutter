@@ -676,4 +676,30 @@ class AppLocalizations {
         'Rename',
         name: 'rename');
   }
+
+  String get delete_mailboxes_successfully {
+    return Intl.message(
+        'Delete mailboxes successfully',
+        name: 'delete_mailboxes_successfully');
+  }
+
+  String get delete_mailboxes_failure {
+    return Intl.message(
+        'Delete mailboxes failure',
+        name: 'delete_mailboxes_failure');
+  }
+
+  String get delete_mailboxes {
+    return Intl.message(
+        'Delete mailboxes',
+        name: 'delete_mailboxes');
+  }
+
+  String message_confirmation_dialog_delete_mailbox(String nameMailbox) {
+    return Intl.message(
+        '"$nameMailbox" mailbox and all of the sub-folders and messages it contains will be deleted and won\'t be able to recover. Do you want to continue to delete?',
+        name: 'message_confirmation_dialog_delete_mailbox',
+        args: [nameMailbox]
+    );
+  }
 }
