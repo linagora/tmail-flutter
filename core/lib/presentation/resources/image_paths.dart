@@ -81,6 +81,7 @@ class ImagePaths {
   String get icLogoTMailV2 => _getImagePath('logo_tmail_v2.png');
   String get icSendToast => _getImagePath('ic_send_toast.svg');
   String get icClearTextSearch => _getImagePath('ic_clear_text_search.svg');
+  String get icRenameMailbox => _getImagePath('ic_rename_mailbox.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

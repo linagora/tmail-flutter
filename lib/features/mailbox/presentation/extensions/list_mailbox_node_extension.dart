@@ -5,7 +5,7 @@ import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 
 extension ListMailboxNodeExtensions on List<MailboxNode> {
-  List<MailboxNode>? updateNode(MailboxId currentMailboxId, MailboxNode newNode) {
+  List<MailboxNode> updateNode(MailboxId currentMailboxId, MailboxNode newNode) {
     return map((MailboxNode child) {
       if (child.item.id == currentMailboxId) {
         return newNode;
@@ -18,7 +18,7 @@ extension ListMailboxNodeExtensions on List<MailboxNode> {
     }).toList();
   }
 
-  List<MailboxNode>? toggleSelectMailboxNode(MailboxNode selectedMailboxMode) {
+  List<MailboxNode> toggleSelectMailboxNode(MailboxNode selectedMailboxMode) {
     return map((MailboxNode child) {
       if (child.item.id == selectedMailboxMode.item.id) {
         return child.toggleSelectMailboxNode();
@@ -31,7 +31,7 @@ extension ListMailboxNodeExtensions on List<MailboxNode> {
     }).toList();
   }
 
-  List<MailboxNode>? toSelectMailboxNode({required SelectMode selectMode, ExpandMode? newExpandMode}) {
+  List<MailboxNode> toSelectMailboxNode({required SelectMode selectMode, ExpandMode? newExpandMode}) {
     return map((MailboxNode child) {
       if (child.hasChildren()) {
         return child.copyWith(
