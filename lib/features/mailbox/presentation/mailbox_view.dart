@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
@@ -43,7 +44,13 @@ class MailboxView extends GetWidget<MailboxController> {
                         child: controller.isSearchActive()
                             ? _buildListMailboxSearched(context, controller.listMailboxSearched)
                             : _buildListMailbox(context)),
-                  )))
+                  ))),
+                  Obx(() => controller.isSelectionEnabled()
+                      ? Column(children: [
+                          Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
+                          _buildOptionSelectionBottomBar(context)
+                        ])
+                    : SizedBox.shrink()),
                 ]
             ),
           )
@@ -151,10 +158,12 @@ class MailboxView extends GetWidget<MailboxController> {
       shrinkWrap: true,
       padding: EdgeInsets.zero,
       children: [
-        _buildUserInformationWidget(context),
-        Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2)),
+        Obx(() => (controller.isSelectionEnabled() && responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context))
+            ? SizedBox.shrink()
+            : _buildUserInformationWidget(context)),
+        Obx(() => (controller.isSelectionEnabled() && responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context))
+            ? SizedBox.shrink()
+            : _buildLineSpaceUserInformation()),
         _buildSearchBarWidget(context),
         _buildLoadingView(),
         Obx(() => controller.defaultMailboxList.isNotEmpty
@@ -181,6 +190,12 @@ class MailboxView extends GetWidget<MailboxController> {
         ),
       ]
     );
+  }
+
+  Widget _buildLineSpaceUserInformation() {
+    return Padding(
+        padding: EdgeInsets.only(top: 16),
+        child: Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2));
   }
 
   Widget _buildDefaultMailbox(BuildContext context, List<PresentationMailbox> defaultMailbox) {
@@ -312,5 +327,18 @@ class MailboxView extends GetWidget<MailboxController> {
                     isLastElement: index == listMailbox.length - 1)
                 ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox)))
               .build()));
+  }
+
+  Widget _buildOptionSelectionBottomBar(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.only(bottom: 30, top: 5),
+        child: (BottomBarSelectionMailboxWidget(
+              context,
+              imagePaths,
+              controller.listMailboxSelected)
+            ..addOnMailboxActionsClick((actions, listMailboxSelected) =>
+                controller.pressMailboxSelectionAction(context, actions, listMailboxSelected)))
+          .build()
+    );
   }
 }

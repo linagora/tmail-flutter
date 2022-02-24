@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbo
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -193,10 +194,7 @@ class MailboxController extends BaseController {
     final newMailboxNodeList = folderMailboxNodeList.updateNode(
         mailboxNode.item.id,
         mailboxNode.copyWith(newExpandMode: newExpandMode));
-
-    if (newMailboxNodeList != null) {
-      folderMailboxNodeList.value = newMailboxNodeList;
-    }
+    folderMailboxNodeList.value = newMailboxNodeList;
   }
 
   void _setUpMapMailboxIdDefault(List<PresentationMailbox> defaultMailboxList, List<PresentationMailbox> folderMailboxList) {
@@ -377,6 +375,8 @@ class MailboxController extends BaseController {
     _cancelSelectMailbox();
   }
 
+  bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
+
   void selectMailbox(BuildContext context, PresentationMailbox mailboxSelected) {
     if (isSearchActive()) {
       listMailboxSearched.value = listMailboxSearched
@@ -395,9 +395,7 @@ class MailboxController extends BaseController {
 
   void selectMailboxNode(BuildContext context, MailboxNode mailboxNodeSelected) {
     final newMailboxNodeList = folderMailboxNodeList.toggleSelectMailboxNode(mailboxNodeSelected);
-    if (newMailboxNodeList != null) {
-      folderMailboxNodeList.value = newMailboxNodeList;
-    }
+    folderMailboxNodeList.value = newMailboxNodeList;
   }
 
   void _cancelSelectMailbox() {
@@ -413,11 +411,45 @@ class MailboxController extends BaseController {
       final newMailboxNodeList = folderMailboxNodeList.toSelectMailboxNode(
           selectMode: SelectMode.INACTIVE,
           newExpandMode: ExpandMode.COLLAPSE);
-      if (newMailboxNodeList != null) {
-        folderMailboxNodeList.value = newMailboxNodeList;
-      }
+      folderMailboxNodeList.value = newMailboxNodeList;
     }
     currentSelectMode.value = SelectMode.INACTIVE;
+  }
+
+  List<PresentationMailbox> get listMailboxSelected {
+    if (isSearchActive()) {
+      return listMailboxSearched
+          .where((mailbox) => mailbox.selectMode == SelectMode.ACTIVE)
+          .toList();
+    } else {
+      final defaultMailboxSelected = defaultMailboxList
+          .where((mailbox) => mailbox.selectMode == SelectMode.ACTIVE)
+          .toList();
+
+      final newFolderMailboxTree = MailboxTree(MailboxNode(
+          MailboxNode.rootItem(),
+          childrenItems: folderMailboxNodeList));
+      final folderMailboxList = allMailboxes.where((mailbox) => !mailbox.hasRole()).toList();
+
+      final folderMailboxSelected = folderMailboxList
+          .where((mailbox) {
+            final node = newFolderMailboxTree.findNode(mailbox.id);
+            return node != null && node.selectMode == SelectMode.ACTIVE;
+          })
+          .toList();
+
+      return defaultMailboxSelected + folderMailboxSelected;
+    }
+  }
+
+  void pressMailboxSelectionAction(BuildContext context, MailboxActions actions,
+      List<PresentationMailbox> selectionMailbox) {
+    switch(actions) {
+      case MailboxActions.delete:
+        break;
+      default:
+        break;
+    }
   }
 
   void closeMailboxScreen(BuildContext context) {
