@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
@@ -32,44 +33,16 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_inter
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 
-class ThreadBindings extends Bindings {
+class ThreadBindings extends BaseBindings {
+
   @override
   void dependencies() {
-    Get.lazyPut(() => ThreadDataSourceImpl(Get.find<ThreadAPI>()));
-    Get.lazyPut<ThreadDataSource>(() => Get.find<ThreadDataSourceImpl>());
-    Get.lazyPut(() => LocalThreadDataSourceImpl(Get.find<EmailCacheManager>()));
-    Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
-    Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
-    Get.lazyPut(() => ThreadRepositoryImpl(
-      {
-        DataSourceType.network: Get.find<ThreadDataSource>(),
-        DataSourceType.local: Get.find<LocalThreadDataSourceImpl>()
-      },
-      Get.find<StateDataSource>()
-    ));
-    Get.lazyPut<ThreadRepository>(() => Get.find<ThreadRepositoryImpl>());
-    Get.lazyPut(() => GetEmailsInMailboxInteractor(Get.find<ThreadRepository>()));
+    super.dependencies();
+  }
+
+  @override
+  void bindingsController() {
     Get.lazyPut(() => ScrollController());
-    Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
-    Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
-    Get.lazyPut(() => HtmlDataSourceImpl(
-      Get.find<HtmlAnalyzer>(),
-      Get.find<DioClient>()));
-    Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
-    Get.lazyPut(() => EmailRepositoryImpl(
-      Get.find<EmailDataSource>(),
-      Get.find<HtmlDataSource>()));
-    Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
-    Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => MarkAsMultipleEmailReadInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => MoveMultipleEmailToMailboxInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => MarkAsStarMultipleEmailInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => RefreshChangesEmailsInMailboxInteractor(Get.find<ThreadRepository>()));
-    Get.lazyPut(() => LoadMoreEmailsInMailboxInteractor(Get.find<ThreadRepository>()));
-    Get.lazyPut(() => SearchEmailInteractor(Get.find<ThreadRepository>()));
-    Get.lazyPut(() => SearchMoreEmailInteractor(Get.find<ThreadRepository>()));
     Get.put(ThreadController(
       Get.find<ResponsiveUtils>(),
       Get.find<GetEmailsInMailboxInteractor>(),
@@ -84,6 +57,62 @@ class ThreadBindings extends Bindings {
       Get.find<LoadMoreEmailsInMailboxInteractor>(),
       Get.find<SearchEmailInteractor>(),
       Get.find<SearchMoreEmailInteractor>(),
+    ));
+  }
+
+  @override
+  void bindingsDataSource() {
+    Get.lazyPut<ThreadDataSource>(() => Get.find<ThreadDataSourceImpl>());
+    Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
+    Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
+    Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
+  }
+
+  @override
+  void bindingsDataSourceImpl() {
+    Get.lazyPut(() => ThreadDataSourceImpl(Get.find<ThreadAPI>()));
+    Get.lazyPut(() => LocalThreadDataSourceImpl(Get.find<EmailCacheManager>()));
+    Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
+    Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
+    Get.lazyPut(() => HtmlDataSourceImpl(
+        Get.find<HtmlAnalyzer>(),
+        Get.find<DioClient>(),
+    ));
+  }
+
+  @override
+  void bindingsInteractor() {
+    Get.lazyPut(() => GetEmailsInMailboxInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MarkAsMultipleEmailReadInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MoveMultipleEmailToMailboxInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MarkAsStarMultipleEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => RefreshChangesEmailsInMailboxInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => LoadMoreEmailsInMailboxInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => SearchEmailInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => SearchMoreEmailInteractor(Get.find<ThreadRepository>()));
+  }
+
+  @override
+  void bindingsRepository() {
+    Get.lazyPut<ThreadRepository>(() => Get.find<ThreadRepositoryImpl>());
+    Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
+  }
+
+  @override
+  void bindingsRepositoryImpl() {
+    Get.lazyPut(() => ThreadRepositoryImpl(
+        {
+          DataSourceType.network: Get.find<ThreadDataSource>(),
+          DataSourceType.local: Get.find<LocalThreadDataSourceImpl>()
+        },
+        Get.find<StateDataSource>()
+    ));
+    Get.lazyPut(() => EmailRepositoryImpl(
+        Get.find<EmailDataSource>(),
+        Get.find<HtmlDataSource>()
     ));
   }
 }

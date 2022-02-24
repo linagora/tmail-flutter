@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
@@ -19,40 +20,70 @@ import 'package:tmail_ui_user/features/email/presentation/email_controller.dart'
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 
-class EmailBindings extends Bindings {
+class EmailBindings extends BaseBindings {
+
   @override
   void dependencies() {
-    Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
+    super.dependencies();
+  }
+
+  @override
+  void bindingsController() {
+    Get.put(EmailController(
+        Get.find<GetEmailContentInteractor>(),
+        Get.find<MarkAsEmailReadInteractor>(),
+        Get.find<DownloadAttachmentsInteractor>(),
+        Get.find<DeviceManager>(),
+        Get.find<AppToast>(),
+        Get.find<ExportAttachmentInteractor>(),
+        Get.find<MoveToMailboxInteractor>(),
+        Get.find<MarkAsStarEmailInteractor>(),
+    ));
+  }
+
+  @override
+  void bindingsDataSource() {
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
-    Get.lazyPut(() => HtmlDataSourceImpl(
-      Get.find<HtmlAnalyzer>(),
-      Get.find<DioClient>()));
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
-    Get.lazyPut(() => EmailRepositoryImpl(
-      Get.find<EmailDataSource>(),
-      Get.find<HtmlDataSource>()));
-    Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
-    Get.lazyPut(() => GetEmailContentInteractor(
-      Get.find<EmailRepository>()));
+  }
+
+  @override
+  void bindingsDataSourceImpl() {
+    Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
+    Get.lazyPut(() => HtmlDataSourceImpl(
+        Get.find<HtmlAnalyzer>(),
+        Get.find<DioClient>(),
+    ));
+  }
+
+  @override
+  void bindingsInteractor() {
+    Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
-    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
     Get.lazyPut(() => DownloadAttachmentsInteractor(
-      Get.find<EmailRepository>(),
-      Get.find<CredentialRepository>()));
+        Get.find<EmailRepository>(),
+        Get.find<CredentialRepository>(),
+    ));
     Get.lazyPut(() => ExportAttachmentInteractor(
-      Get.find<EmailRepository>(),
-      Get.find<CredentialRepository>()));
+        Get.find<EmailRepository>(),
+        Get.find<CredentialRepository>(),
+    ));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
-    Get.put(EmailController(
-      Get.find<GetEmailContentInteractor>(),
-      Get.find<MarkAsEmailReadInteractor>(),
-      Get.find<DownloadAttachmentsInteractor>(),
-      Get.find<DeviceManager>(),
-      Get.find<AppToast>(),
-      Get.find<ExportAttachmentInteractor>(),
-      Get.find<MoveToMailboxInteractor>(),
-      Get.find<MarkAsStarEmailInteractor>()));
+  }
+
+  @override
+  void bindingsRepository() {
+    Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
+    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
+  }
+
+  @override
+  void bindingsRepositoryImpl() {
+    Get.lazyPut(() => EmailRepositoryImpl(
+        Get.find<EmailDataSource>(),
+        Get.find<HtmlDataSource>(),
+    ));
+    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
   }
 }

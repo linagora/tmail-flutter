@@ -63,10 +63,14 @@ class MailboxView extends GetWidget<MailboxController> {
               bottom: 10),
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             !responsiveUtils.isDesktop(context) ? _buildCloseScreenButton(context) : SizedBox(width: 50),
+            Obx(() => controller.currentSelectMode.value == SelectMode.INACTIVE
+                ? SizedBox(width: 40)
+                : SizedBox(width: 49)),
             Expanded(child: Text(
               AppLocalizations.of(context).folders,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700),)),
+              style: TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700))),
+            Obx(() => _buildEditMailboxButton(context, controller.currentSelectMode.value)),
             _buildAddNewFolderButton(context),
           ])),
         Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
@@ -85,11 +89,26 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildAddNewFolderButton(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.only(left: 16, right: 16),
+        padding: EdgeInsets.only(right: 10),
         child: IconButton(
             key: Key('create_new_mailbox_button'),
             onPressed: () => controller.goToCreateNewMailboxView(),
             icon: SvgPicture.asset(imagePaths.icAddNewFolder, width: 30, height: 30, fit: BoxFit.fill)));
+  }
+
+  Widget _buildEditMailboxButton(BuildContext context, SelectMode selectMode) {
+    return Material(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.transparent,
+        child: TextButton(
+            child: Text(
+                selectMode == SelectMode.INACTIVE ? AppLocalizations.of(context).edit : AppLocalizations.of(context).cancel,
+              style: TextStyle(fontSize: 17, color: AppColor.colorTextButton)),
+            onPressed: () => selectMode == SelectMode.INACTIVE
+                ? controller.enableSelectionMailbox()
+                : controller.disableSelectionMailbox()
+        )
+    );
   }
 
   Widget _buildUserInformationWidget(BuildContext context) {
@@ -175,11 +194,10 @@ class MailboxView extends GetWidget<MailboxController> {
         Obx(() => (MailboxTileBuilder(
               imagePaths,
               defaultMailbox[index],
-              selectMode: controller.getSelectMode(
-                  defaultMailbox[index],
-                  controller.mailboxDashBoardController.selectedMailbox.value),
+              allSelectMode: controller.currentSelectMode.value,
               isLastElement: index == defaultMailbox.length - 1)
-          ..onOpenMailboxAction((mailbox) => controller.selectMailbox(context, mailbox)))
+          ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox))
+          ..addOnSelectMailboxActionClick((mailbox) => controller.selectMailbox(context, mailbox)))
         .build()));
   }
 
@@ -211,11 +229,10 @@ class MailboxView extends GetWidget<MailboxController> {
                           context,
                           imagePaths,
                           mailboxNode,
-                          selectMode: controller.getSelectMode(
-                              mailboxNode.item,
-                              controller.mailboxDashBoardController.selectedMailbox.value))
-                      ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailbox(context, mailboxNode.item))
-                      ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode)))
+                          allSelectMode: controller.currentSelectMode.value)
+                      ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
+                      ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
+                      ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(context, mailboxNode)))
                     .build()),
                   children: _buildListChildTileWidget(context, mailboxNode.childrenItems!)
               ).build())
@@ -225,10 +242,9 @@ class MailboxView extends GetWidget<MailboxController> {
                       context,
                       imagePaths,
                       mailboxNode,
-                      selectMode: controller.getSelectMode(
-                          mailboxNode.item,
-                          controller.mailboxDashBoardController.selectedMailbox.value))
-                  ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailbox(context, mailboxNode.item)))
+                      allSelectMode: controller.currentSelectMode.value)
+                  ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
+                  ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(context, mailboxNode)))
                 .build(),
               )))
       .toList();
@@ -294,7 +310,7 @@ class MailboxView extends GetWidget<MailboxController> {
                     listMailbox[index],
                     isSearchActive: controller.isSearchActive(),
                     isLastElement: index == listMailbox.length - 1)
-                ..onOpenMailboxAction((mailbox) => controller.selectMailbox(context, mailbox)))
+                ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox)))
               .build()));
   }
 }

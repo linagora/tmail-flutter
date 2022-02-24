@@ -61,6 +61,7 @@ class MailboxController extends BaseController {
   final listMailboxSearched = <PresentationMailbox>[].obs;
   final searchState = SearchState.initial().obs;
   final searchQuery = SearchQuery.initial().obs;
+  final currentSelectMode = SelectMode.INACTIVE.obs;
 
   MailboxTree folderMailboxTree = MailboxTree(MailboxNode.root());
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
@@ -191,9 +192,11 @@ class MailboxController extends BaseController {
 
     final newMailboxNodeList = folderMailboxNodeList.updateNode(
         mailboxNode.item.id,
-        mailboxNode.copyWith(newExpandMode: newExpandMode)) ?? [];
+        mailboxNode.copyWith(newExpandMode: newExpandMode));
 
-    folderMailboxNodeList.value = newMailboxNodeList;
+    if (newMailboxNodeList != null) {
+      folderMailboxNodeList.value = newMailboxNodeList;
+    }
   }
 
   void _setUpMapMailboxIdDefault(List<PresentationMailbox> defaultMailboxList, List<PresentationMailbox> folderMailboxList) {
@@ -241,13 +244,7 @@ class MailboxController extends BaseController {
     }
   }
 
-  SelectMode getSelectMode(PresentationMailbox presentationMailbox, PresentationMailbox? selectedMailbox) {
-    return presentationMailbox.id == selectedMailbox?.id
-      ? SelectMode.ACTIVE
-      : SelectMode.INACTIVE;
-  }
-
-  void selectMailbox(
+  void openMailbox(
       BuildContext context,
       PresentationMailbox presentationMailboxSelected
   ) {
@@ -370,6 +367,57 @@ class MailboxController extends BaseController {
 
   void _searchMailboxFailure(SearchMailboxFailure failure) {
     listMailboxSearched.clear();
+  }
+
+  void enableSelectionMailbox() {
+    currentSelectMode.value = SelectMode.ACTIVE;
+  }
+
+  void disableSelectionMailbox() {
+    _cancelSelectMailbox();
+  }
+
+  void selectMailbox(BuildContext context, PresentationMailbox mailboxSelected) {
+    if (isSearchActive()) {
+      listMailboxSearched.value = listMailboxSearched
+          .map((mailbox) => mailbox.id == mailboxSelected.id
+              ? mailbox.toggleSelectPresentationMailbox()
+              : mailbox)
+          .toList();
+    } else {
+      defaultMailboxList.value = defaultMailboxList
+          .map((mailbox) => mailbox.id == mailboxSelected.id
+              ? mailbox.toggleSelectPresentationMailbox()
+              : mailbox)
+          .toList();
+    }
+  }
+
+  void selectMailboxNode(BuildContext context, MailboxNode mailboxNodeSelected) {
+    final newMailboxNodeList = folderMailboxNodeList.toggleSelectMailboxNode(mailboxNodeSelected);
+    if (newMailboxNodeList != null) {
+      folderMailboxNodeList.value = newMailboxNodeList;
+    }
+  }
+
+  void _cancelSelectMailbox() {
+    if (isSearchActive()) {
+      listMailboxSearched.value = listMailboxSearched
+          .map((mailbox) => mailbox.toSelectedPresentationMailbox(selectMode: SelectMode.INACTIVE))
+          .toList();
+    } else {
+      defaultMailboxList.value = defaultMailboxList
+          .map((mailbox) => mailbox.toSelectedPresentationMailbox(selectMode: SelectMode.INACTIVE))
+          .toList();
+
+      final newMailboxNodeList = folderMailboxNodeList.toSelectMailboxNode(
+          selectMode: SelectMode.INACTIVE,
+          newExpandMode: ExpandMode.COLLAPSE);
+      if (newMailboxNodeList != null) {
+        folderMailboxNodeList.value = newMailboxNodeList;
+      }
+    }
+    currentSelectMode.value = SelectMode.INACTIVE;
   }
 
   void closeMailboxScreen(BuildContext context) {
