@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
@@ -45,6 +46,7 @@ class MailboxBindings extends BaseBindings {
         Get.find<RefreshAllMailboxInteractor>(),
         Get.find<CreateNewMailboxInteractor>(),
         Get.find<SearchMailboxInteractor>(),
+        Get.find<DeleteMultipleMailboxInteractor>(),
         Get.find<TreeBuilder>(),
         Get.find<Uuid>(),
         Get.find<AppToast>(),
@@ -58,7 +60,6 @@ class MailboxBindings extends BaseBindings {
   void bindingsDataSource() {
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
-
   }
 
   @override
@@ -66,7 +67,6 @@ class MailboxBindings extends BaseBindings {
     Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
     Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
-
   }
 
   @override
@@ -76,13 +76,13 @@ class MailboxBindings extends BaseBindings {
     Get.lazyPut(() => RefreshAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => SearchMailboxInteractor());
+    Get.lazyPut(() => DeleteMultipleMailboxInteractor(Get.find<MailboxRepository>()));
   }
 
   @override
   void bindingsRepository() {
     Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
-
   }
 
   @override

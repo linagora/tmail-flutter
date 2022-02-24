@@ -50,4 +50,13 @@ class MailboxDataSourceImpl extends MailboxDataSource {
       throw error;
     });
   }
+
+  @override
+  Future<bool> deleteMultipleMailbox(AccountId accountId, List<MailboxId> mailboxIds) {
+    return Future.sync(() async {
+      return await mailboxAPI.deleteMultipleMailbox(accountId, mailboxIds);
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }

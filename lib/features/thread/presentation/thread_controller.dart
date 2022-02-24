@@ -448,7 +448,7 @@ class ThreadController extends BaseController {
     (CupertinoActionSheetBuilder(context)
         ..addTiles(actionTiles)
         ..addCancelButton(cancelButton))
-      .build();
+      .show();
   }
 
   void openFilterMessagesForTablet(BuildContext context, RelativeRect? position, List<PopupMenuEntry> popupMenuItems) async {
