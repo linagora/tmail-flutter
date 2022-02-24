@@ -5,32 +5,38 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 
-typedef OnOpenMailboxActionClick = void Function(PresentationMailbox mailbox);
+typedef OnOpenMailboxActionClick = void Function(PresentationMailbox);
+typedef OnSelectMailboxActionClick = void Function(PresentationMailbox);
 
 class MailboxTileBuilder {
 
   final PresentationMailbox _presentationMailbox;
-  final SelectMode selectMode;
+  final SelectMode allSelectMode;
   final ImagePaths _imagePaths;
   final MailboxDisplayed mailboxDisplayed;
   final bool isLastElement;
   final bool isSearchActive;
 
   OnOpenMailboxActionClick? _onOpenMailboxActionClick;
+  OnSelectMailboxActionClick? _onSelectMailboxActionClick;
 
   MailboxTileBuilder(
     this._imagePaths,
     this._presentationMailbox,
     {
-      this.selectMode = SelectMode.INACTIVE,
+      this.allSelectMode = SelectMode.INACTIVE,
       this.mailboxDisplayed = MailboxDisplayed.mailbox,
       this.isLastElement = false,
       this.isSearchActive = false,
     }
   );
 
-  void onOpenMailboxAction(OnOpenMailboxActionClick onOpenMailboxActionClick) {
+  void addOnOpenMailboxAction(OnOpenMailboxActionClick onOpenMailboxActionClick) {
     _onOpenMailboxActionClick = onOpenMailboxActionClick;
+  }
+
+  void addOnSelectMailboxActionClick(OnSelectMailboxActionClick onSelectMailboxActionClick) {
+    _onSelectMailboxActionClick = onSelectMailboxActionClick;
   }
 
   Widget build() {
@@ -50,21 +56,17 @@ class MailboxTileBuilder {
           child: Column(children: [
             ListTile(
                 contentPadding: EdgeInsets.zero,
-                onTap: () => {
-                  if (_onOpenMailboxActionClick != null) {
-                    _onOpenMailboxActionClick!(_presentationMailbox)
-                  }
-                },
-                leading: Padding(
-                    padding: EdgeInsets.only(left: 8),
-                    child: SvgPicture.asset(
-                        '${_presentationMailbox.getMailboxIcon(_imagePaths)}',
-                        width: 28,
-                        height: 28,
-                        fit: BoxFit.fill)),
+                onTap: () => _onOpenMailboxActionClick?.call(_presentationMailbox),
+                leading: allSelectMode == SelectMode.ACTIVE
+                    ? _buildSelectModeIcon()
+                    : _buildMailboxIcon(),
                 title: Transform(
                     transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
                     child: Row(children: [
+                      if (allSelectMode == SelectMode.ACTIVE)
+                        Transform(
+                            transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+                            child: _buildMailboxIcon()),
                       Expanded(child: Text(
                         '${_presentationMailbox.name?.name ?? ''}',
                         maxLines: 1,
@@ -96,22 +98,48 @@ class MailboxTileBuilder {
                       child: IconButton(
                           color: AppColor.primaryColor,
                           icon: SvgPicture.asset(_imagePaths.icFolderArrow, color: AppColor.colorArrowUserMailbox, fit: BoxFit.fill),
-                          onPressed: () {
-                            if (_onOpenMailboxActionClick != null) {
-                              _onOpenMailboxActionClick!(_presentationMailbox);
-                            }
-                          }
+                          onPressed: () => _onOpenMailboxActionClick?.call(_presentationMailbox)
                       )
                     )
                   : null
             ),
             if (!isLastElement)
               Padding(
-                padding: EdgeInsets.only(left: 45),
+                padding: EdgeInsets.only(left: allSelectMode == SelectMode.ACTIVE ? 50 : 45),
                 child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
           ]),
         )
       )
+    );
+  }
+
+  Widget _buildMailboxIcon() {
+    return Padding(
+        padding: EdgeInsets.only(
+            left: allSelectMode == SelectMode.ACTIVE ? 4 : 8,
+            right: allSelectMode == SelectMode.ACTIVE ? 4 : 0),
+        child: SvgPicture.asset(
+          '${_presentationMailbox.getMailboxIcon(_imagePaths)}',
+          width: 28,
+          height: 28,
+          fit: BoxFit.fill
+        )
+    );
+  }
+
+  Widget _buildSelectModeIcon() {
+    return Material(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.transparent,
+        child: IconButton(
+            padding: EdgeInsets.zero,
+            icon: SvgPicture.asset(
+                _presentationMailbox.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelectedV2 : _imagePaths.icUnSelectedV2,
+                width: 20,
+                height: 20,
+                fit: BoxFit.fill),
+            onPressed: () => _onSelectMailboxActionClick?.call(_presentationMailbox)
+        )
     );
   }
 }

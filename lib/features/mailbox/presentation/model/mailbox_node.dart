@@ -3,6 +3,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 
 class MailboxNode with EquatableMixin{
@@ -11,6 +12,7 @@ class MailboxNode with EquatableMixin{
   PresentationMailbox item;
   List<MailboxNode>? childrenItems;
   ExpandMode expandMode;
+  SelectMode selectMode;
 
   factory MailboxNode.root() => MailboxNode(_root);
 
@@ -18,7 +20,14 @@ class MailboxNode with EquatableMixin{
 
   bool hasChildren() => childrenItems?.isNotEmpty ?? false;
 
-  MailboxNode(this.item, {this.childrenItems, this.expandMode = ExpandMode.COLLAPSE});
+  MailboxNode(
+    this.item,
+    {
+      this.childrenItems,
+      this.expandMode = ExpandMode.COLLAPSE,
+      this.selectMode = SelectMode.INACTIVE
+    }
+  );
 
   void addChildNode(MailboxNode node) {
     if (childrenItems == null) {
@@ -72,15 +81,66 @@ class MailboxNode with EquatableMixin{
     }).toList();
   }
 
+  List<MailboxNode>? toggleSelectNode(MailboxNode selectedMailboxMode, {MailboxNode? parent}) {
+    List<MailboxNode>? _children = parent == null ? this.childrenItems : parent.childrenItems;
+    return _children?.map((MailboxNode child) {
+      if (child.item.id == selectedMailboxMode.item.id) {
+        return child.toggleSelectMailboxNode();
+      } else {
+        if (child.hasChildren()) {
+          return child.copyWith(mailboxNodes: toggleSelectNode(selectedMailboxMode, parent: child));
+        }
+        return child;
+      }
+    }).toList();
+  }
+
+  List<MailboxNode>? toSelectedNode({required SelectMode selectMode, ExpandMode? newExpandMode, MailboxNode? parent}) {
+    List<MailboxNode>? _children = parent == null ? this.childrenItems : parent.childrenItems;
+    return _children?.map((MailboxNode child) {
+      if (child.hasChildren()) {
+        return child.copyWith(
+            mailboxNodes: toSelectedNode(selectMode: selectMode, newExpandMode: newExpandMode, parent: child),
+            newSelectMode: selectMode,
+            newExpandMode: newExpandMode);
+      }
+      return child.toSelectedMailboxNode(selectMode: selectMode, newExpandMode: newExpandMode);
+    }).toList();
+  }
+
   @override
   List<Object?> get props => [item, childrenItems];
 }
 
 extension MailboxNodeExtension on MailboxNode {
-  MailboxNode copyWith({ExpandMode? newExpandMode, List<MailboxNode>? mailboxNodes}) {
+  MailboxNode copyWith({
+    SelectMode? newSelectMode,
+    ExpandMode? newExpandMode,
+    List<MailboxNode>? mailboxNodes
+  }) {
     return MailboxNode(
       item,
       childrenItems: mailboxNodes ?? childrenItems,
-      expandMode: newExpandMode ?? expandMode);
+      expandMode: newExpandMode ?? expandMode,
+      selectMode: newSelectMode ?? selectMode,
+    );
+  }
+
+  MailboxNode toggleSelectMailboxNode() {
+    return MailboxNode(
+        item,
+        childrenItems: childrenItems,
+        expandMode: expandMode,
+        selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
+    );
+  }
+
+    MailboxNode toSelectedMailboxNode({required SelectMode selectMode, ExpandMode? newExpandMode}) {
+      return MailboxNode(
+          item,
+          childrenItems: childrenItems,
+          expandMode: newExpandMode ?? expandMode,
+          selectMode: selectMode,
+      );
   }
 }
