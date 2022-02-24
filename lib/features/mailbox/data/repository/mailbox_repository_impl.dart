@@ -140,4 +140,9 @@ class MailboxRepositoryImpl extends MailboxRepository {
   Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
     return mapDataSource[DataSourceType.network]!.createNewMailbox(accountId, newMailboxRequest);
   }
+
+  @override
+  Future<bool> deleteMultipleMailbox(AccountId accountId, List<MailboxId> mailboxIds) {
+    return mapDataSource[DataSourceType.network]!.deleteMultipleMailbox(accountId, mailboxIds);
+  }
 }

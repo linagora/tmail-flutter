@@ -16,4 +16,6 @@ abstract class MailboxDataSource {
   Future<void> update({List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed});
 
   Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest);
+
+  Future<bool> deleteMultipleMailbox(AccountId accountId, List<MailboxId> mailboxIds);
 }

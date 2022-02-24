@@ -135,12 +135,12 @@ extension MailboxNodeExtension on MailboxNode {
     );
   }
 
-    MailboxNode toSelectedMailboxNode({required SelectMode selectMode, ExpandMode? newExpandMode}) {
-      return MailboxNode(
-          item,
-          childrenItems: childrenItems,
-          expandMode: newExpandMode ?? expandMode,
-          selectMode: selectMode,
-      );
+  MailboxNode toSelectedMailboxNode({required SelectMode selectMode, ExpandMode? newExpandMode}) {
+    return MailboxNode(
+        item,
+        childrenItems: childrenItems,
+        expandMode: newExpandMode ?? expandMode,
+        selectMode: selectMode,
+    );
   }
 }
