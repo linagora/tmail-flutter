@@ -49,20 +49,13 @@ class ButtonBuilder {
   }
 
   Widget build() {
-    return GestureDetector(
-      onTap: () {
-        if (_onPressActionClick != null) {
-          _onPressActionClick!();
-        }
-      },
+    return InkWell(
+      onTap: () => _onPressActionClick?.call(),
       child: Container(
         key: _key,
         alignment: Alignment.center,
-        color: Colors.transparent,
-        child: MediaQuery(
-          data: MediaQueryData(padding: EdgeInsets.zero),
-          child: _buildBody()
-        )
+        color: Colors.white,
+        child: _buildBody()
       )
     );
   }
@@ -98,7 +91,7 @@ class ButtonBuilder {
       '${_text ?? ''}',
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: _textStyle ?? TextStyle(fontSize: 12, color: AppColor.textButtonColor, fontWeight: FontWeight.w500),
+      style: _textStyle ?? TextStyle(fontSize: 12, color: AppColor.colorTextButton),
     );
   }
 }
