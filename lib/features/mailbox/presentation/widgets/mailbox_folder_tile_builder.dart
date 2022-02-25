@@ -60,7 +60,9 @@ class MailBoxFolderTileBuilder {
           data: MediaQueryData(padding: EdgeInsets.zero),
           child: Column(children: [
             ListTile(
-              onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
+              onTap: () => allSelectMode == SelectMode.ACTIVE
+                  ? _onSelectMailboxFolderClick?.call(_mailboxNode)
+                  : _onOpenMailboxFolderClick?.call(_mailboxNode),
               contentPadding: EdgeInsets.zero,
               leading: allSelectMode == SelectMode.ACTIVE
                   ? _buildSelectModeIcon()
