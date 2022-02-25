@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.d
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 
 class MailboxRepositoryImpl extends MailboxRepository {
@@ -144,5 +145,10 @@ class MailboxRepositoryImpl extends MailboxRepository {
   @override
   Future<bool> deleteMultipleMailbox(AccountId accountId, List<MailboxId> mailboxIds) {
     return mapDataSource[DataSourceType.network]!.deleteMultipleMailbox(accountId, mailboxIds);
+  }
+
+  @override
+  Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) {
+    return mapDataSource[DataSourceType.network]!.renameMailbox(accountId, request);
   }
 }
