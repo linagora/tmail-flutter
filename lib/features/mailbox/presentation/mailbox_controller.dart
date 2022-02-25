@@ -29,6 +29,12 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/special_character_validator.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
@@ -53,6 +59,7 @@ class MailboxController extends BaseController {
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
   final SearchMailboxInteractor _searchMailboxInteractor;
   final DeleteMultipleMailboxInteractor _deleteMultipleMailboxInteractor;
+  final VerifyNameInteractor _verifyNameInteractor;
   final TreeBuilder _treeBuilder;
   final Uuid _uuid;
   final AppToast _appToast;
@@ -81,6 +88,7 @@ class MailboxController extends BaseController {
     this._createNewMailboxInteractor,
     this._searchMailboxInteractor,
     this._deleteMultipleMailboxInteractor,
+    this._verifyNameInteractor,
     this._treeBuilder,
     this._uuid,
     this._appToast,
@@ -465,6 +473,9 @@ class MailboxController extends BaseController {
       case MailboxActions.delete:
         _openConfirmationDialogDeleteMailboxAction(context, selectionMailbox.first);
         break;
+      case MailboxActions.rename:
+        _openDialogRenameMailboxAction(context, selectionMailbox.first);
+        break;
       default:
         break;
     }
@@ -533,6 +544,78 @@ class MailboxController extends BaseController {
           message: AppLocalizations.of(Get.context!).delete_mailboxes_failure,
           icon: _imagePaths.icDeleteToast);
     }
+  }
+
+  void _openDialogRenameMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
+    if (responsiveUtils.isMobile(context) || responsiveUtils.isMobileDevice(context)) {
+      (EditTextModalSheetBuilder()
+          ..key(Key('rename_mailbox_modal_sheet'))
+          ..title(AppLocalizations.of(context).rename_mailbox)
+          ..cancelText(AppLocalizations.of(context).cancel)
+          ..boxConstraints(responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context)
+              ? BoxConstraints(maxWidth: 400)
+              : null)
+          ..onConfirmAction(AppLocalizations.of(context).rename,
+              (value) => _renameMailboxAction(presentationMailbox, value))
+          ..setErrorString((value) => getErrorInputNameStringRenameMailbox(context, value))
+          ..setTextController(TextEditingController.fromValue(
+            TextEditingValue(
+                text: presentationMailbox.name?.name ?? '',
+                selection: TextSelection(
+                    baseOffset: 0,
+                    extentOffset: presentationMailbox.name?.name.length ?? 0
+                )
+            ))))
+          .show(context);
+    } else {
+      showDialog(
+          context: context,
+          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+          builder: (BuildContext context) => (EditTextDialogBuilder()
+              ..key(Key('rename_mailbox_dialog'))
+              ..title(AppLocalizations.of(context).rename_mailbox)
+              ..cancelText(AppLocalizations.of(context).cancel)
+              ..setErrorString((value) => getErrorInputNameStringRenameMailbox(context, value))
+              ..setTextController(TextEditingController.fromValue(
+                TextEditingValue(
+                    text: presentationMailbox.name?.name ?? '',
+                    selection: TextSelection(
+                        baseOffset: 0,
+                        extentOffset: presentationMailbox.name?.name.length ?? 0
+                    )
+                )))
+              ..onConfirmButtonAction(AppLocalizations.of(context).rename,
+                    (value) => _renameMailboxAction(presentationMailbox, value)))
+            .build());
+    }
+  }
+
+  String? getErrorInputNameStringRenameMailbox(BuildContext context, String newName) {
+    final listName = allMailboxes
+        .where((mailbox) => !(mailbox.name.isBlank == true))
+        .map((mailbox) => mailbox.name!.name).toList();
+
+    return _verifyNameInteractor.execute(
+        newName,
+        [
+          EmptyNameValidator(),
+          DuplicateNameValidator(listName),
+          SpecialCharacterValidator(),
+        ]
+    ).fold(
+        (failure) {
+          if (failure is VerifyNameFailure) {
+            return failure.getMessage(context, actions: MailboxActions.rename);
+          } else {
+            return null;
+          }
+        },
+        (success) => null
+    );
+  }
+
+  void _renameMailboxAction(PresentationMailbox presentationMailbox, String newName) {
+
   }
 
   void closeMailboxScreen(BuildContext context) {

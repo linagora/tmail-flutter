@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailb
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:uuid/uuid.dart';
 
 class MailboxBindings extends BaseBindings {
@@ -47,6 +48,7 @@ class MailboxBindings extends BaseBindings {
         Get.find<CreateNewMailboxInteractor>(),
         Get.find<SearchMailboxInteractor>(),
         Get.find<DeleteMultipleMailboxInteractor>(),
+        Get.find<VerifyNameInteractor>(),
         Get.find<TreeBuilder>(),
         Get.find<Uuid>(),
         Get.find<AppToast>(),
@@ -77,6 +79,7 @@ class MailboxBindings extends BaseBindings {
     Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => SearchMailboxInteractor());
     Get.lazyPut(() => DeleteMultipleMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => VerifyNameInteractor());
   }
 
   @override

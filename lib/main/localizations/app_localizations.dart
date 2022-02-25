@@ -702,4 +702,24 @@ class AppLocalizations {
         args: [nameMailbox]
     );
   }
+
+  String get rename_mailbox {
+    return Intl.message(
+        'Rename mailbox',
+        name: 'rename_mailbox');
+  }
+
+  String get this_field_cannot_be_blank {
+    return Intl.message(
+      'This field cannot be blank',
+      name: 'this_field_cannot_be_blank',
+    );
+  }
+
+  String get there_is_already_folder_with_the_same_name {
+    return Intl.message(
+      'There is already folder with the same name',
+      name: 'there_is_already_folder_with_the_same_name',
+    );
+  }
 }
