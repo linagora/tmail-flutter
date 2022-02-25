@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
@@ -18,6 +19,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 
 class MailboxAPI {
 
@@ -149,6 +151,30 @@ class MailboxAPI {
 
     return Future.sync(() async {
       return setMailboxResponse?.destroyed?.isNotEmpty == true;
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) async {
+    final setMailboxMethod = SetMailboxMethod(accountId)
+      ..addUpdates({request.mailboxId.id : PatchObject({'name' : request.newName.name})});
+
+    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+
+    final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
+
+    final response = await (requestBuilder
+          ..usings(setMailboxMethod.requiredCapabilities))
+        .build()
+        .execute();
+
+    final setMailboxResponse = response.parse<SetMailboxResponse>(
+        setMailboxInvocation.methodCallId,
+        SetMailboxResponse.deserialize);
+
+    return Future.sync(() async {
+      return setMailboxResponse?.updated?.isNotEmpty == true;
     }).catchError((error) {
       throw error;
     });
