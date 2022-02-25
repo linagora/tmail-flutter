@@ -15,14 +15,17 @@ import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -60,6 +63,7 @@ class MailboxController extends BaseController {
   final SearchMailboxInteractor _searchMailboxInteractor;
   final DeleteMultipleMailboxInteractor _deleteMultipleMailboxInteractor;
   final VerifyNameInteractor _verifyNameInteractor;
+  final RenameMailboxInteractor _renameMailboxInteractor;
   final TreeBuilder _treeBuilder;
   final Uuid _uuid;
   final AppToast _appToast;
@@ -89,6 +93,7 @@ class MailboxController extends BaseController {
     this._searchMailboxInteractor,
     this._deleteMultipleMailboxInteractor,
     this._verifyNameInteractor,
+    this._renameMailboxInteractor,
     this._treeBuilder,
     this._uuid,
     this._appToast,
@@ -171,6 +176,8 @@ class MailboxController extends BaseController {
             if (isSearchActive()) {
               _searchMailboxAction(allMailboxes, searchQuery.value);
             }
+          } else if (success is RenameMailboxSuccess) {
+            refreshMailboxChanges();
           }
         }
     );
@@ -615,7 +622,15 @@ class MailboxController extends BaseController {
   }
 
   void _renameMailboxAction(PresentationMailbox presentationMailbox, String newName) {
+    final accountId = mailboxDashBoardController.accountId.value;
 
+    if (accountId != null) {
+      consumeState(_renameMailboxInteractor.execute(
+          accountId,
+          RenameMailboxRequest(presentationMailbox.id, MailboxName(newName))));
+    }
+
+    _cancelSelectMailbox();
   }
 
   void closeMailboxScreen(BuildContext context) {
