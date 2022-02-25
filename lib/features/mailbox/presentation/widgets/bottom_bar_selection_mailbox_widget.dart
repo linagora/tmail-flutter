@@ -45,23 +45,29 @@ class BottomBarSelectionMailboxWidget {
             ..key(Key('button_move_all_mailbox'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(AppColor.colorTextButton.withOpacity(0.5))
+            ..iconColor(AppColor.colorTextButton.withOpacity(0.3))
             ..onPressActionClick(() => {})
             ..text(AppLocalizations.of(_context).move, isVertical: true))
           .build(),
         (ButtonBuilder(_imagePaths.icRenameMailbox)
             ..key(Key('button_rename_mailbox'))
             ..paddingIcon(EdgeInsets.all(8))
-            ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(AppColor.colorTextButton.withOpacity(0.5))
-            ..onPressActionClick(() => {})
+            ..textStyle(TextStyle(
+                fontSize: 12,
+                color: _isRenameMailboxValid ? AppColor.colorTextButton : AppColor.colorTextButton.withOpacity(0.3)))
+            ..iconColor(_isRenameMailboxValid ? AppColor.colorTextButton : AppColor.colorTextButton.withOpacity(0.3))
+            ..onPressActionClick(() {
+              if (_isRenameMailboxValid) {
+                _onMailboxActionsClick?.call(MailboxActions.rename, _listSelectionMailbox);
+              }
+            })
             ..text(AppLocalizations.of(_context).rename, isVertical: true))
           .build(),
         (ButtonBuilder(_imagePaths.icReadV2)
             ..key(Key('button_mark_read_all_mailbox'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(AppColor.colorTextButton.withOpacity(0.5))
+            ..iconColor(AppColor.colorTextButton.withOpacity(0.3))
             ..onPressActionClick(() => {})
             ..text(AppLocalizations.of(_context).mark_as_read, isVertical: true))
           .build(),
@@ -84,6 +90,8 @@ class BottomBarSelectionMailboxWidget {
   }
 
   bool get _isDeleteMailboxValid => _listSelectionMailbox.length == 1 && _isAllFolderMailbox;
+
+  bool get _isRenameMailboxValid => _listSelectionMailbox.length == 1 && _isAllFolderMailbox;
 
   bool get _isAllFolderMailbox => _listSelectionMailbox.every((mailbox) => !mailbox.hasRole());
 }

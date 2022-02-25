@@ -56,7 +56,9 @@ class MailboxTileBuilder {
           child: Column(children: [
             ListTile(
                 contentPadding: EdgeInsets.zero,
-                onTap: () => _onOpenMailboxActionClick?.call(_presentationMailbox),
+                onTap: () => allSelectMode == SelectMode.ACTIVE
+                    ? _onSelectMailboxActionClick?.call(_presentationMailbox)
+                    : _onOpenMailboxActionClick?.call(_presentationMailbox),
                 leading: allSelectMode == SelectMode.ACTIVE
                     ? _buildSelectModeIcon()
                     : _buildMailboxIcon(),
