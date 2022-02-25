@@ -77,6 +77,54 @@ Then, we have plan for multiple features including:
 
 No we do not plan to support such extensions, that are currently not standardized as RFCs, nor implemented on the TMail backend.
 
+### **Do you have a web application for TMail?**
+
+<details>
+  <summary>Read more...</summary>
+  Yes! It is still in early development but we do have one. It's easy for you to use locally, as you can just build a Docker
+  image locally from the sources of this repository, or even use our official Docker image `linagora/tmail-web`.
+
+  The web-app needs to include an environment file though (here you can see the dummy `env.file` at the root of the project),
+  with a `SERVER_URL` parameter, so it knows to which backend it needs to connect to.
+
+  For this to run it locally for example, 2 ways:
+
+  #### Edit the environment file before the build
+
+  Edit the `env.file` by replacing the default value of `SERVER_URL` to the one pointing to your JMAP backend server.
+  Then build your docker image:
+
+  ```bash
+  docker build -t tmail-web:latest .
+  ```
+
+  Then you can just simply run your web-app like this:
+
+  ```bash
+  docker run -d -ti -p 8080:80 --name web tmail-web:latest
+  ```
+
+  Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the TMail web-app.
+
+  #### Mount an environment file when running the container
+
+  You can use our official image `linagora/tmail-web` or just build the docker image locally without any prior changes:
+
+  ```bash
+  docker build -t tmail-web:latest .
+  ```
+
+  From then, create at the root of the project an environment file (like `env.dev.file`) where you put the `SERVER_URL`
+  you want to connect to. Then, to mount it and override the default one while running the container:
+
+  ```bash
+  docker run -d -ti -p 8080:80 --mount type=bind,source="$(pwd)"/env.dev.file,target=/usr/share/nginx/html/assets/env.file --name web tmail-web:latest
+  ```
+
+  Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the TMail web-app.
+
+</details>
+
 ### **Your work is awesome! I would like to help you. What can I do?**
 
 <details>
