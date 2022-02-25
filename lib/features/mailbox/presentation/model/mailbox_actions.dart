@@ -6,6 +6,7 @@ enum MailboxActions {
   create,
   moveEmail,
   delete,
+  rename,
 }
 
 extension MailboxActionsExtension on MailboxActions {
