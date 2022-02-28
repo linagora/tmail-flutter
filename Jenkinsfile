@@ -12,7 +12,6 @@ pipeline {
       when {
         anyOf {
           branch 'master'
-          branch 'release'
           buildingTag()
         }
       }
@@ -21,8 +20,6 @@ pipeline {
           env.DOCKER_TAG = 'master'
           if (env.TAG_NAME) {
             env.DOCKER_TAG = env.TAG_NAME
-          } else {
-            env.DOCKER_TAG = env.BRANCH_NAME
           }
 
           echo "Docker tag: ${env.DOCKER_TAG}"
