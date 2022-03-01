@@ -49,9 +49,9 @@ extension AppColor on Color {
   static const subjectEmailTextColorUnRead = Color(0xFF3840F7);
   static const dividerColor = Color(0xFFEAEAEA);
   static const bgComposer = Color(0xFFFBFBFF);
-  static const emailAddressChipColor = Color(0xFFF5F5F7);
-  static const enableSendEmailButtonColor = Color(0xFF3840F7);
-  static const disableSendEmailButtonColor = Color(0xFFACAFFF);
+  static const emailAddressChipColor = Color(0x0D001C3D);
+  static const enableSendEmailButtonColor = Color(0xFF007AFF);
+  static const disableSendEmailButtonColor = Color(0xFFA9B4C2);
   static const borderLeftEmailContentColor = Color(0xFFEFEFEF);
   static const toastBackgroundColor = Color(0xFFACAFFF);
   static const toastSuccessBackgroundColor = Color(0xFF04AA11);
@@ -85,6 +85,9 @@ extension AppColor on Color {
   static const colorActionCancelDialog= Color(0xFF007AFF);
   static const colorMessageDialog= Color(0xFF222222);
   static const colorConfirmActionDialog= Color(0xFFF2F2F2);
+  static const colorEmailAddress = Color(0xFF333333);
+  static const colorHintEmailAddressInput = Color(0x993C3C43);
+  static const coloDividerComposer = Color(0xFFC6C6C8);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
