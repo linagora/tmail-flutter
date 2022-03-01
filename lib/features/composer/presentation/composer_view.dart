@@ -1,11 +1,11 @@
 import 'package:core/core.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
-import 'package:html_editor_enhanced/html_editor.dart' as HtmlEditorBrowser;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:html_editor_enhanced/html_editor.dart' as HtmlEditorBrowser;
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -249,6 +249,7 @@ class ComposerView extends GetWidget<ComposerController> {
           controller: controller.htmlControllerBrowser,
           htmlEditorOptions: HtmlEditorBrowser.HtmlEditorOptions(
             shouldEnsureVisible: true,
+            hint: '',
             initialText: controller.getContentEmail(),
             autoAdjustHeight: controller.getContentEmail().isNotEmpty,
           ),
