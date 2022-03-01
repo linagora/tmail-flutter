@@ -68,16 +68,9 @@ class TopBarComposerWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // IconButton(
-        //   key: Key('button_file_share'),
-        //   color: AppColor.baseTextColor,
-        //   icon: SvgPicture.asset(_imagePaths.icComposerFileShare, color: AppColor.baseTextColor, fit: BoxFit.fill),
-        //   onPressed: () {}
-        // ),
         IconButton(
             key: Key('button_attachment'),
-            color: AppColor.baseTextColor,
-            icon: SvgPicture.asset(_imagePaths.icShare, color: AppColor.baseTextColor, fit: BoxFit.fill),
+            icon: SvgPicture.asset(_imagePaths.icShare, fit: BoxFit.fill),
             onPressed: () {
               if (_onAttachFileActionClick != null) {
                 _onAttachFileActionClick!();
@@ -98,12 +91,6 @@ class TopBarComposerWidgetBuilder {
             }
         ),
         SizedBox(width: 8)
-        // IconButton(
-        //   key: Key('button_menu_composer'),
-        //   color: AppColor.baseTextColor,
-        //   icon: SvgPicture.asset(_imagePaths.icComposerMenu, color: AppColor.baseTextColor, fit: BoxFit.fill),
-        //   onPressed: () {}
-        // )
       ]
     );
   }
