@@ -18,6 +18,7 @@ class ComposerView extends GetWidget<ComposerController> {
 
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
+  final _appToast = Get.find<AppToast>();
   final keyboardUtils = Get.find<KeyboardUtils>();
 
   @override
@@ -39,6 +40,7 @@ class ComposerView extends GetWidget<ComposerController> {
             left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
             child: Container(
               margin: EdgeInsets.zero,
+              padding: EdgeInsets.zero,
               alignment: Alignment.topCenter,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -106,18 +108,25 @@ class ComposerView extends GetWidget<ComposerController> {
     return Container(
       margin: EdgeInsets.zero,
       padding: EdgeInsets.only(top: 20),
-      color: AppColor.bgComposer,
+      color: Colors.white,
       alignment: Alignment.topCenter,
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.only(left: 16),
             child: _buildEmailAddress(context)),
+          _buildDivider(),
           _buildSubjectEmail(context),
-          Divider(color: AppColor.dividerColor, height: 1)
+          _buildDivider(),
         ],
       ),
     );
+  }
+
+  Widget _buildDivider(){
+    return Padding(
+      padding: EdgeInsets.only(left: 16),
+      child: Divider(color: AppColor.coloDividerComposer, height: 1));
   }
   
   Widget _buildEmailAddress(BuildContext context) {
@@ -126,7 +135,7 @@ class ComposerView extends GetWidget<ComposerController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(bottom: 8),
+          padding: EdgeInsets.only(bottom: 12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -136,7 +145,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   '${AppLocalizations.of(context).from_email_address_prefix}:',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                  style: TextStyle(fontSize: 14, color: AppColor.nameUserColor, fontWeight: FontWeight.w500))),
+                  style: TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput))),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -145,7 +154,7 @@ class ComposerView extends GetWidget<ComposerController> {
                     Obx(() => controller.composerArguments.value != null
                       ? Text(
                           '<${controller.getEmailAddressSender()}>',
-                          style: TextStyle(fontSize: 14, color: AppColor.nameUserColor))
+                          style: TextStyle(fontSize: 14, color: AppColor.colorEmailAddress, fontWeight: FontWeight.w500))
                       : SizedBox.shrink()
                     )
                   ],
@@ -154,12 +163,15 @@ class ComposerView extends GetWidget<ComposerController> {
             ]
           )
         ),
+        Divider(color: AppColor.coloDividerComposer, height: 1),
         Obx(() => (EmailAddressInputBuilder(
                 context,
                 imagePaths,
+                _appToast,
                 PrefixEmailAddress.to,
                 controller.listToEmailAddress,
-                keyInput: controller.keyToEmailAddress,
+                controller: controller.toEmailAddressController,
+                isInitial: controller.isInitialRecipient.value,
                 expandMode: controller.expandMode.value)
             ..addExpandAddressActionClick(() => controller.expandEmailAddressAction())
             ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
@@ -167,24 +179,34 @@ class ComposerView extends GetWidget<ComposerController> {
           .build()
         ),
         Obx(() => controller.expandMode.value == ExpandMode.EXPAND
+          ? Divider(color: AppColor.coloDividerComposer, height: 1)
+          : SizedBox.shrink()),
+        Obx(() => controller.expandMode.value == ExpandMode.EXPAND
           ? (EmailAddressInputBuilder(
                   context,
                   imagePaths,
+                  _appToast,
                   PrefixEmailAddress.cc,
                   controller.listCcEmailAddress,
-                  keyInput: controller.keyCcEmailAddress)
+                  controller: controller.ccEmailAddressController,
+                  isInitial: controller.isInitialRecipient.value,)
               ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
               ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
             .build()
           : SizedBox.shrink()
         ),
         Obx(() => controller.expandMode.value == ExpandMode.EXPAND
+          ? Divider(color: AppColor.coloDividerComposer, height: 1)
+          : SizedBox.shrink()),
+        Obx(() => controller.expandMode.value == ExpandMode.EXPAND
           ? (EmailAddressInputBuilder(
                 context,
                 imagePaths,
+                _appToast,
                 PrefixEmailAddress.bcc,
                 controller.listBccEmailAddress,
-                keyInput: controller.keyBccEmailAddress)
+                controller: controller.bccEmailAddressController,
+                isInitial: controller.isInitialRecipient.value,)
               ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
               ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
             .build()
@@ -196,22 +218,34 @@ class ComposerView extends GetWidget<ComposerController> {
 
   Widget _buildSubjectEmail(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 24, right: 24, bottom: 10, top: 8),
-      child: (TextFieldBuilder()
-            ..key(Key('subject_email_input'))
-            ..textInputAction(TextInputAction.newline)
-            ..maxLines(null)
-            ..onChange((value) => controller.setSubjectEmail(value))
-            ..textStyle(TextStyle(color: AppColor.nameUserColor, fontSize: 14, fontWeight: FontWeight.w500))
-            ..textDecoration(InputDecoration(
-                hintText: AppLocalizations.of(context).subject_email,
-                hintStyle: TextStyle(color: AppColor.baseTextColor, fontSize: 14, fontWeight: FontWeight.w500),
-                contentPadding: EdgeInsets.zero,
-                filled: true,
-                border: InputBorder.none,
-                fillColor: AppColor.bgComposer))
-            ..addController(controller.subjectEmailInputController))
-        .build()
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: Text(
+                  '${AppLocalizations.of(context).subject_email}:',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput))),
+          Expanded(
+              child: (TextFieldBuilder()
+                  ..key(Key('subject_email_input'))
+                  ..textInputAction(TextInputAction.newline)
+                  ..maxLines(null)
+                  ..cursorColor(AppColor.colorTextButton)
+                  ..onChange((value) => controller.setSubjectEmail(value))
+                  ..textStyle(TextStyle(color: AppColor.colorEmailAddress, fontSize: 15))
+                  ..textDecoration(InputDecoration(
+                      contentPadding: EdgeInsets.zero,
+                      border: InputBorder.none))
+                  ..addController(controller.subjectEmailInputController))
+                .build()
+          )
+        ]
+      )
     );
   }
 
@@ -222,7 +256,7 @@ class ComposerView extends GetWidget<ComposerController> {
         children: [
           _buildEmailHeader(context),
           Container(
-            color: AppColor.primaryLightColor,
+            color: Colors.white,
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
             alignment: Alignment.topCenter,
