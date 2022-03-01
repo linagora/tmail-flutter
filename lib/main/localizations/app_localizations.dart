@@ -722,4 +722,11 @@ class AppLocalizations {
       name: 'there_is_already_folder_with_the_same_name',
     );
   }
+
+  String get email_address_is_not_in_the_correct_format {
+    return Intl.message(
+      'Email address is not in the correct format',
+      name: 'email_address_is_not_in_the_correct_format',
+    );
+  }
 }

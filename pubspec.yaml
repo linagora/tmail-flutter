@@ -80,11 +80,11 @@ dependencies:
   # file_size
   filesize: 2.0.1
 
-  # flutter_chips_input
-  flutter_chips_input:
+  # material_tag_editor
+  material_tag_editor:
     git:
-      url: https://github.com/dab246/flutter_chips_input.git
-      ref: master
+      url: https://github.com/dab246/material_tag_editor.git
+      ref: feature/support_suggestion_box
 
   # uuid
   uuid: 3.0.4

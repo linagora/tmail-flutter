@@ -9,7 +9,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as HtmlEditorBrowser;
 import 'package:http_parser/http_parser.dart';
@@ -54,6 +53,7 @@ class ComposerController extends BaseController {
   final expandMode = ExpandMode.COLLAPSE.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
+  final isInitialRecipient = false.obs;
   final attachments = <Attachment>[].obs;
   final emailContents = <EmailContent>[].obs;
 
@@ -79,9 +79,10 @@ class ComposerController extends BaseController {
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.localContact;
   HtmlEditorApi? htmlEditorApi;
   final HtmlEditorBrowser.HtmlEditorController htmlControllerBrowser = HtmlEditorBrowser.HtmlEditorController();
-  final keyToEmailAddress = GlobalKey<ChipsInputState>();
-  final keyCcEmailAddress = GlobalKey<ChipsInputState>();
-  final keyBccEmailAddress = GlobalKey<ChipsInputState>();
+
+  final toEmailAddressController = TextEditingController();
+  final ccEmailAddressController = TextEditingController();
+  final bccEmailAddressController = TextEditingController();
 
   List<Attachment> initialAttachments = <Attachment>[];
 
@@ -130,6 +131,18 @@ class ComposerController extends BaseController {
     _initEmail();
 
     Future.delayed(Duration(milliseconds: 500), () => _checkContactPermission());
+  }
+
+  @override
+  void onClose() {
+    subjectEmailInputController.dispose();
+
+    toEmailAddressController.dispose();
+    ccEmailAddressController.dispose();
+    bccEmailAddressController.dispose();
+
+    htmlControllerBrowser.clearFocus();
+    super.onClose();
   }
 
   @override
@@ -238,16 +251,8 @@ class ComposerController extends BaseController {
         expandMode.value = ExpandMode.COLLAPSE;
       }
 
-      if (listToEmailAddress.isNotEmpty) {
-        keyToEmailAddress.currentState?.addMultipleValue(listToEmailAddress);
-      }
-
-      if (listCcEmailAddress.isNotEmpty) {
-        keyCcEmailAddress.currentState?.addMultipleValue(listCcEmailAddress);
-      }
-
-      if (listBccEmailAddress.isNotEmpty) {
-        keyBccEmailAddress.currentState?.addMultipleValue(listBccEmailAddress);
+      if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty) {
+        isInitialRecipient.value = true;
       }
     }
     _updateStatusEmailSendButton();
