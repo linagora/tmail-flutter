@@ -23,6 +23,7 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
@@ -34,7 +35,7 @@ android {
 
     defaultConfig {
         applicationId "com.linagora.android.teammail"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

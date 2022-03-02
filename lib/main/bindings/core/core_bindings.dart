@@ -4,6 +4,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
+import 'package:tmail_ui_user/main.dart';
+import 'package:tmail_ui_user/main/notification/firebase_push_notification.dart';
 
 class CoreBindings extends Bindings {
 
@@ -16,6 +18,7 @@ class CoreBindings extends Bindings {
     _bindingTransformer();
     _bindingToast();
     _bindingDeviceManager();
+    _bindingNotification();
   }
 
   void _bindingAppImagePaths() {
@@ -46,5 +49,9 @@ class CoreBindings extends Bindings {
   void _bindingDeviceManager() {
     Get.put(DeviceInfoPlugin());
     Get.put(DeviceManager(Get.find<DeviceInfoPlugin>()));
+  }
+
+  void _bindingNotification() {
+    Get.put(FirebasePushNotification(firebaseMessaging));
   }
 }
