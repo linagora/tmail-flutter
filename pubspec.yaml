@@ -130,9 +130,6 @@ dependencies:
   # fk_user_agent
   fk_user_agent: 2.1.0
 
-  # pointer_interceptor
-  pointer_interceptor: 0.9.3
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

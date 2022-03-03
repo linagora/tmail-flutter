@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -221,10 +222,14 @@ class EmailView extends GetView {
                 ..setExpandMode((countAttachments - 1 == index) ? emailController.attachmentsExpandMode.value : null)
                 ..onExpandAttachmentActionClick(() => emailController.toggleDisplayAttachmentsAction())
                 ..onDownloadAttachmentFileActionClick((attachment) {
-                  if (Platform.isAndroid) {
-                    emailController.downloadAttachments(context, [attachment]);
+                  if (kIsWeb) {
+                    emailController.downloadAttachmentForWeb(attachment);
                   } else {
-                    emailController.exportAttachment(context, attachment);
+                    if (Platform.isAndroid) {
+                      emailController.downloadAttachments(context, [attachment]);
+                    } else if (Platform.isIOS) {
+                      emailController.exportAttachment(context, attachment);
+                    }
                   }
                 }))
             .build())

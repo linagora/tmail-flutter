@@ -202,6 +202,19 @@ class EmailAPI {
       cancelToken: cancelToken);
   }
 
+  Future<bool> downloadAttachmentForWeb(
+      Attachment attachment,
+      AccountId accountId,
+      String baseDownloadUrl,
+      AccountRequest accountRequest,
+  ) async {
+    return _downloadManager.downloadFileForWeb(
+        attachment.getDownloadUrl(baseDownloadUrl, accountId),
+        attachment.name ?? '',
+        accountRequest.basicAuth,
+    );
+  }
+
   Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveRequest moveRequest) async {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addUpdates(moveRequest.emailIds

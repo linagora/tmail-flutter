@@ -27,6 +27,13 @@ abstract class EmailDataSource {
     CancelToken cancelToken
   );
 
+  Future<bool> downloadAttachmentForWeb(
+    Attachment attachment,
+    AccountId accountId,
+    String baseDownloadUrl,
+    AccountRequest accountRequest,
+  );
+
   Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveRequest moveRequest);
 
   Future<List<Email>> markAsStar(

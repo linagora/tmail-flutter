@@ -7,14 +7,17 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
+import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
@@ -43,6 +46,7 @@ class EmailController extends BaseController {
   final ExportAttachmentInteractor _exportAttachmentInteractor;
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
+  final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
@@ -60,6 +64,7 @@ class EmailController extends BaseController {
     this._exportAttachmentInteractor,
     this._moveToMailboxInteractor,
     this._markAsStarEmailInteractor,
+    this._downloadAttachmentForWebInteractor,
   );
 
   @override
@@ -107,6 +112,8 @@ class EmailController extends BaseController {
           _downloadAttachmentsFailure(failure);
         } else if (failure is ExportAttachmentFailure) {
           _exportAttachmentFailureAction(failure);
+        } else if (failure is DownloadAttachmentForWebFailure) {
+          _downloadAttachmentForWebFailureAction(failure);
         }
       },
       (success) {
@@ -120,6 +127,8 @@ class EmailController extends BaseController {
           _moveToMailboxSuccess(success);
         } else if (success is MarkAsStarEmailSuccess) {
           _markAsEmailStarSuccess(success);
+        } else if (success is DownloadAttachmentForWebSuccess) {
+          _downloadAttachmentForWebSuccessAction(success);
         }
       });
   }
@@ -229,23 +238,35 @@ class EmailController extends BaseController {
 
   void exportAttachment(BuildContext context, Attachment attachment) {
     final cancelToken = CancelToken();
-    _showDownloadingFileDialog(context, attachment, cancelToken);
+    _showDownloadingFileDialog(context, attachment, cancelToken: cancelToken);
     _exportAttachmentAction(attachment, cancelToken);
   }
 
-  void _showDownloadingFileDialog(BuildContext context, Attachment attachment, CancelToken cancelToken) {
-    showCupertinoDialog(
-      context: context,
-      builder: (_) => (DownloadingFileDialogBuilder()
-          ..key(Key('downloading_file_dialog'))
-          ..title(AppLocalizations.of(context).preparing_to_export)
-          ..content(AppLocalizations.of(context).downloading_file(attachment.name ?? ''))
-          ..actionText(AppLocalizations.of(context).cancel)
-          ..addCancelDownloadActionClick(() {
-              cancelToken.cancel([AppLocalizations.of(context).user_cancel_download_file]);
-              popBack();
-            }))
-        .build());
+  void _showDownloadingFileDialog(BuildContext context, Attachment attachment, {CancelToken? cancelToken}) {
+    if (cancelToken != null) {
+      showCupertinoDialog(
+          context: context,
+          builder: (_) =>
+              PointerInterceptor(child: (DownloadingFileDialogBuilder()
+                    ..key(Key('downloading_file_dialog'))
+                    ..title(AppLocalizations.of(context).preparing_to_export)
+                    ..content(AppLocalizations.of(context).downloading_file(attachment.name ?? ''))
+                    ..actionText(AppLocalizations.of(context).cancel)
+                    ..addCancelDownloadActionClick(() {
+                      cancelToken.cancel([AppLocalizations.of(context).user_cancel_download_file]);
+                      popBack();
+                    }))
+                .build()));
+    } else {
+      showCupertinoDialog(
+          context: context,
+          builder: (_) =>
+              PointerInterceptor(child: (DownloadingFileDialogBuilder()
+                  ..key(Key('downloading_file_for_web_dialog'))
+                  ..title(AppLocalizations.of(context).preparing_to_save)
+                  ..content(AppLocalizations.of(context).downloading_file(attachment.name ?? '')))
+                .build()));
+    }
   }
 
   void _exportAttachmentAction(Attachment attachment, CancelToken cancelToken) async {
@@ -267,6 +288,28 @@ class EmailController extends BaseController {
     if (success is ExportAttachmentSuccess) {
       await share_library.Share.shareFiles([success.filePath]);
     }
+  }
+
+  void downloadAttachmentForWeb(Attachment attachment) {
+    _downloadAttachmentForWebAction(attachment);
+  }
+
+  void _downloadAttachmentForWebAction(Attachment attachment) async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
+      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl();
+      consumeState(_downloadAttachmentForWebInteractor.execute(attachment, accountId, baseDownloadUrl));
+    }
+  }
+
+  void _downloadAttachmentForWebFailureAction(Failure failure) {
+    if (failure is DownloadAttachmentForWebFailure) {
+      popBack();
+    }
+  }
+
+  void _downloadAttachmentForWebSuccessAction(Success success) async {
+    popBack();
   }
 
   void openDestinationPickerView(PresentationEmail email) async {
