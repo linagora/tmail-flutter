@@ -1,21 +1,27 @@
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnBackActionClick = void Function();
 typedef OnSendEmailActionClick = void Function();
-typedef OnAttachFileActionClick = void Function();
+typedef OnAttachFileActionClick = void Function(RelativeRect? position);
 
 class TopBarComposerWidgetBuilder {
   OnBackActionClick? _onBackActionClick;
   OnSendEmailActionClick? _onSendEmailActionClick;
   OnAttachFileActionClick? _onAttachFileActionClick;
 
+  final BuildContext _context;
   final ImagePaths _imagePaths;
   final bool _isEnableEmailSendButton;
 
-  TopBarComposerWidgetBuilder(this._imagePaths, this._isEnableEmailSendButton);
+  TopBarComposerWidgetBuilder(
+      this._context,
+      this._imagePaths,
+      this._isEnableEmailSendButton,
+  );
 
   void addBackActionClick(OnBackActionClick onBackActionClick) {
     _onBackActionClick = onBackActionClick;
@@ -68,14 +74,32 @@ class TopBarComposerWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        IconButton(
-            key: Key('button_attachment'),
-            icon: SvgPicture.asset(_imagePaths.icShare, fit: BoxFit.fill),
-            onPressed: () {
-              if (_onAttachFileActionClick != null) {
-                _onAttachFileActionClick!();
+        MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child:  GestureDetector(
+            onTap: () {
+              if (!kIsWeb) {
+                _onAttachFileActionClick?.call(null);
               }
-            }
+            },
+            child: Padding(
+              padding: EdgeInsets.only(right: kIsWeb ? 16 : 0),
+              child: SvgPicture.asset(_imagePaths.icShare, fit: BoxFit.fill),
+            ),
+            onTapDown: (detail) {
+              if (kIsWeb) {
+                final screenSize = MediaQuery.of(_context).size;
+                final offset = detail.globalPosition;
+                final position = RelativeRect.fromLTRB(
+                  offset.dx,
+                  offset.dy,
+                  screenSize.width - offset.dx,
+                  screenSize.height - offset.dy,
+                );
+                _onAttachFileActionClick?.call(position);
+              }
+            },
+          ),
         ),
         IconButton(
             key: Key('button_send_email'),

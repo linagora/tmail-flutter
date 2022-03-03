@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/main/utils/app_logger.dart';
 
 class ComposerAPI {
 
@@ -13,15 +14,16 @@ class ComposerAPI {
   ComposerAPI(this._dioClient);
 
   Future<UploadResponse> uploadAttachment(UploadRequest uploadRequest) async {
-    final file = File(uploadRequest.fileInfo.filePath);
+    log('uploadAttachment: fileInfo: ${uploadRequest.fileInfo.props}');
     final headerParam = _dioClient.getHeaders();
     headerParam[HttpHeaders.contentTypeHeader] = uploadRequest.fileInfo.mimeType;
-    headerParam[HttpHeaders.contentLengthHeader] = file.readAsBytesSync().length;
+    headerParam[HttpHeaders.contentLengthHeader] = uploadRequest.fileInfo.fileSize;
 
     final resultJson = await _dioClient.post(
         Uri.decodeFull(uploadRequest.uploadUrl.toString()),
         options: Options(headers: headerParam),
-        data: file.openRead());
+        data: uploadRequest.fileInfo.readStream);
+
     return UploadResponse.fromJson(jsonDecode(resultJson));
   }
 }
