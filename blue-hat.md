@@ -14,17 +14,20 @@ Les élèves stagiaires auront la possibilité d'être accueillis sur place à E
 
 Nous souhaitons intégrer ensemble les logiciels libres [LinTO](https://linto.ai) (assitant vocal) et Team-Mail (suite email).
 
-Ainsi, le client mobile de TMail pourrait, en intégrant les technologies délivrées par le projet LinTO, fournir un assistant 
-à la saisie d'e-mail (Speech to text).
+Ainsi, le client mobile de TMail pourrait, en intégrant les technologies délivrées par le projet LinTO, fournir des fonctionnalités avancées. Par exemple:
+
+ - Saisie vocale: dictez votre e-mail à LinTO au lieu de le taper (speech to text)
+ - Lecture d'email (text to speech)
+ - Aide à la sasie: prédiction de réponses possibles, prédictions des mots suivants de la réponse.
+ - Natural language processing: reconnaissance d'évenements, de contacts, d'actions à effectuer.
+
+Le travail prendra la forme d'une fonctionnalité expérimentale que l'utilisateur pourra activer via les paramètre de son application mobile.
 
 # Compétences recherchées
 
-...
+Libriste convaincu, vous avez l'habitude des communautés libre: créer des tickets expliquant vos projets, communiquez en cherchant le consensus, s'impliquer et aider à impliquer les autres. Le gestionnaire de version git n'a pas de secrets pour vous.
 
-# Impact sur les éco-systèmes Team-Mail et LinTo
+Vous êtes à l'aise avec les technologies mobiles, notamment [Flutter](https://flutter.dev/).
 
-[En quoi TMail est novateur]
+Curieux, vous voulez en apprendre plus sur l'analyse de texte (natural language processing).
 
-[En quoi LinTO est novateur]
-
-[Impact sur ces deux communautés]
