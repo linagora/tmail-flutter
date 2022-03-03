@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/autocomplete_datasource.dart';
@@ -121,7 +120,6 @@ class ComposerBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.lazyPut(() => TextEditingController());
     Get.lazyPut(() => ComposerController(
         Get.find<SendEmailInteractor>(),
         Get.find<SaveEmailAddressesInteractor>(),
@@ -131,7 +129,6 @@ class ComposerBindings extends BaseBindings {
         Get.find<ImagePaths>(),
         Get.find<Uuid>(),
         Get.find<DeviceInfoPlugin>(),
-        Get.find<TextEditingController>(),
         Get.find<LocalFilePickerInteractor>(),
         Get.find<UploadMultipleAttachmentInteractor>(),
         Get.find<SaveEmailAsDraftsInteractor>(),
