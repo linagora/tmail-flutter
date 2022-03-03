@@ -25,13 +25,12 @@ class ComposerView extends GetWidget<ComposerController> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        controller.htmlEditorApi?.unfocus(context);
-        controller.saveEmailAsDrafts();
+        controller.saveEmailAsDrafts(context);
         return true;
       },
       child: GestureDetector(
         onTap: () {
-          controller.htmlEditorApi?.unfocus(context);
+          controller.clearFocusEditor(context);
         },
         child: Scaffold(
           backgroundColor: AppColor.primaryLightColor,
@@ -60,19 +59,20 @@ class ComposerView extends GetWidget<ComposerController> {
   Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      child: Obx(() => (TopBarComposerWidgetBuilder(imagePaths, controller.isEnableEmailSendButton.value)
+      child: Obx(() => (TopBarComposerWidgetBuilder(context, imagePaths, controller.isEnableEmailSendButton.value)
           ..addSendEmailActionClick(() {
-            controller.htmlEditorApi?.unfocus(context);
             controller.sendEmailAction(context);
           })
-          ..addAttachFileActionClick(() {
-            controller.htmlEditorApi?.unfocus(context);
-            controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context));
+          ..addAttachFileActionClick((position) {
+            if (kIsWeb) {
+              controller.openPickAttachmentsForWeb(context,position, _pickAttachmentsActionTilesForWeb(context));
+            } else {
+              controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context));
+            }
           })
           ..addBackActionClick(() {
-            controller.htmlEditorApi?.unfocus(context);
-            controller.saveEmailAsDrafts();
-            controller.backToEmailViewAction();
+            controller.saveEmailAsDrafts(context);
+            controller.backToEmailViewAction(context);
           }))
         .build()),
     );
@@ -82,7 +82,15 @@ class ComposerView extends GetWidget<ComposerController> {
     return [
       _pickPhotoAndVideoAction(context),
       _browseFileAction(context),
-      SizedBox(height: 30),
+      SizedBox(height: kIsWeb ? 16 : 30),
+    ];
+  }
+
+  List<PopupMenuEntry> _pickAttachmentsActionTilesForWeb(BuildContext context) {
+    return [
+      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _pickPhotoAndVideoAction(context)),
+      PopupMenuDivider(height: 0.5),
+      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _browseFileAction(context)),
     ];
   }
 
@@ -262,10 +270,11 @@ class ComposerView extends GetWidget<ComposerController> {
             alignment: Alignment.topCenter,
             child: Column(
               children: [
+                if (kIsWeb) _buildAttachmentsLoadingView(),
                 Padding(
                   padding: EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 24),
                   child: _buildComposerEditor(context)),
-                _buildAttachmentsLoadingView(),
+                if (!kIsWeb) _buildAttachmentsLoadingView(),
                 _buildAttachments(context),
               ],
             ),
@@ -290,7 +299,7 @@ class ComposerView extends GetWidget<ComposerController> {
           htmlToolbarOptions: HtmlEditorBrowser.HtmlToolbarOptions(
               toolbarPosition: HtmlEditorBrowser.ToolbarPosition.custom
           ),
-          otherOptions: HtmlEditorBrowser.OtherOptions(height: 550),
+          otherOptions: HtmlEditorBrowser.OtherOptions(height: 400),
         );
       } else {
         if (controller.composerArguments.value?.emailActionType == EmailActionType.compose) {
@@ -317,7 +326,7 @@ class ComposerView extends GetWidget<ComposerController> {
       (failure) => SizedBox.shrink(),
       (success) => success is UploadingAttachmentState
         ? Center(child: Padding(
-            padding: EdgeInsets.only(bottom: controller.attachments.isNotEmpty ? 0 : 24),
+            padding: EdgeInsets.only(bottom: controller.attachments.isNotEmpty ? 0 : 24, top: kIsWeb ? 20 : 0),
             child: SizedBox(
                 width: 20,
                 height: 20,
