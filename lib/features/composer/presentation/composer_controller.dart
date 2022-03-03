@@ -7,8 +7,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as HtmlEditorBrowser;
 import 'package:http_parser/http_parser.dart';
@@ -64,7 +64,6 @@ class ComposerController extends BaseController {
   final AppToast _appToast;
   final ImagePaths _imagePaths;
   final Uuid _uuid;
-  final TextEditingController subjectEmailInputController;
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final UploadMultipleAttachmentInteractor _uploadMultipleAttachmentInteractor;
   final DeviceInfoPlugin _deviceInfoPlugin;
@@ -80,6 +79,7 @@ class ComposerController extends BaseController {
   HtmlEditorApi? htmlEditorApi;
   final HtmlEditorBrowser.HtmlEditorController htmlControllerBrowser = HtmlEditorBrowser.HtmlEditorController();
 
+  final subjectEmailInputController = TextEditingController();
   final toEmailAddressController = TextEditingController();
   final ccEmailAddressController = TextEditingController();
   final bccEmailAddressController = TextEditingController();
@@ -109,7 +109,6 @@ class ComposerController extends BaseController {
     this._imagePaths,
     this._uuid,
     this._deviceInfoPlugin,
-    this.subjectEmailInputController,
     this._localFilePickerInteractor,
     this._uploadMultipleAttachmentInteractor,
     this._saveEmailAsDraftsInteractor,
@@ -136,12 +135,9 @@ class ComposerController extends BaseController {
   @override
   void onClose() {
     subjectEmailInputController.dispose();
-
     toEmailAddressController.dispose();
     ccEmailAddressController.dispose();
     bccEmailAddressController.dispose();
-
-    htmlControllerBrowser.clearFocus();
     super.onClose();
   }
 
@@ -359,6 +355,8 @@ class ComposerController extends BaseController {
   }
 
   void sendEmailAction(BuildContext context) async {
+    clearFocusEditor(context);
+
     if (isEnableEmailSendButton.value) {
       final arguments = composerArguments.value;
       if (arguments != null) {
@@ -416,13 +414,25 @@ class ComposerController extends BaseController {
   }
 
   void openPickAttachmentMenu(BuildContext context, List<Widget> actionTiles) {
-      (ContextMenuBuilder(context)
-        ..addHeader(
-              (ContextMenuHeaderBuilder(Key('attachment_picker_context_menu_header_builder'))
+    clearFocusEditor(context);
+
+    (ContextMenuBuilder(context)
+        ..addHeader((ContextMenuHeaderBuilder(Key('attachment_picker_context_menu_header_builder'))
               ..addLabel(AppLocalizations.of(context).pick_attachments))
             .build())
-        ..addTiles(actionTiles))
-    .build();
+        ..addTiles(actionTiles)
+        ..addOnCloseContextMenuAction(() => popBack()))
+      .build();
+  }
+
+  void openPickAttachmentsForWeb(BuildContext context, RelativeRect? position, List<PopupMenuEntry> popupMenuItems) async {
+    await showMenu(
+        context: context,
+        position: position ?? RelativeRect.fromLTRB(16, 40, 16, 16),
+        color: Colors.white,
+        elevation: 5,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        items: popupMenuItems);
   }
 
   void openFilePickerByType(BuildContext context, FileType fileType) async {
@@ -525,7 +535,9 @@ class ComposerController extends BaseController {
     return false;
   }
 
-  void saveEmailAsDrafts() async {
+  void saveEmailAsDrafts(BuildContext context) async {
+    clearFocusEditor(context);
+
     final arguments = composerArguments.value;
     if (arguments != null && Get.context != null) {
       final isChanged = await _isEmailChanged(arguments);
@@ -583,7 +595,14 @@ class ComposerController extends BaseController {
     return '';
   }
 
-  void backToEmailViewAction() {
+  void clearFocusEditor(BuildContext context) {
+    if (!kIsWeb) {
+      htmlEditorApi?.unfocus(context);
+    }
+  }
+
+  void backToEmailViewAction(BuildContext context) {
+    clearFocusEditor(context);
     popBack();
   }
 }
