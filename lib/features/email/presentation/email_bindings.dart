@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
@@ -38,6 +39,7 @@ class EmailBindings extends BaseBindings {
         Get.find<ExportAttachmentInteractor>(),
         Get.find<MoveToMailboxInteractor>(),
         Get.find<MarkAsStarEmailInteractor>(),
+        Get.find<DownloadAttachmentForWebInteractor>(),
     ));
   }
 
@@ -70,6 +72,10 @@ class EmailBindings extends BaseBindings {
     ));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => DownloadAttachmentForWebInteractor(
+      Get.find<EmailRepository>(),
+      Get.find<CredentialRepository>(),
+    ));
   }
 
   @override

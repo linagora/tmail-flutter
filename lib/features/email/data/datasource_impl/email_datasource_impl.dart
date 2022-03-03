@@ -113,4 +113,13 @@ class EmailDataSourceImpl extends EmailDataSource {
       throw error;
     });
   }
+
+  @override
+  Future<bool> downloadAttachmentForWeb(Attachment attachment, AccountId accountId, String baseDownloadUrl, AccountRequest accountRequest) {
+    return Future.sync(() async {
+      return await emailAPI.downloadAttachmentForWeb(attachment, accountId, baseDownloadUrl, accountRequest);
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }
