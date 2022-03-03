@@ -646,7 +646,7 @@ class AppLocalizations {
   String get create_new_mailbox_failure {
     return Intl.message(
         'Create new mailbox failure',
-        name: 'new_mailbox_is_created'
+        name: 'create_new_mailbox_failure'
     );
   }
 
@@ -727,6 +727,13 @@ class AppLocalizations {
     return Intl.message(
       'Email address is not in the correct format',
       name: 'email_address_is_not_in_the_correct_format',
+    );
+  }
+
+  String get preparing_to_save {
+    return Intl.message(
+        'Preparing to save',
+        name: 'preparing_to_save'
     );
   }
 }
