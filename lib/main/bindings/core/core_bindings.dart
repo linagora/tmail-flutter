@@ -1,10 +1,10 @@
 import 'package:core/core.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
-import 'package:tmail_ui_user/main.dart';
 import 'package:tmail_ui_user/main/notification/firebase_push_notification.dart';
 
 class CoreBindings extends Bindings {
@@ -52,6 +52,6 @@ class CoreBindings extends Bindings {
   }
 
   void _bindingNotification() {
-    Get.put(FirebasePushNotification(firebaseMessaging));
+    Get.put(FirebasePushNotification(FirebaseMessaging.instance));
   }
 }

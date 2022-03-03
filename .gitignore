@@ -122,3 +122,6 @@ messages_fr.dart
 messages_messages.dart
 messages_ru.dart
 messages_vi.dart
+
+# firebase
+/android/app/google-services.json

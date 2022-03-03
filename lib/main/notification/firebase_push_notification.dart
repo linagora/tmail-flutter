@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:core/core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class FirebasePushNotification {
@@ -8,6 +9,7 @@ class FirebasePushNotification {
   FirebasePushNotification(this._firebaseMessaging) {
     handleForegroundNotification();
     handleBackgroundNotification();
+    getToken();
   }
 
   void requestPermission() async {
@@ -16,23 +18,20 @@ class FirebasePushNotification {
 
   void handleForegroundNotification() {
     FirebaseMessaging.onMessage.listen((message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
-
-      if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
-      }
+      log('FirebasePushNotification::handleForegroundNotification(): Message title: ${message.notification?.title}');
+      log('FirebasePushNotification::handleForegroundNotification(): Message data: ${message.notification?.body}');
     });
   }
 
   void handleBackgroundNotification() {
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
+      log('FirebasePushNotification::handleBackgroundNotification(): Message clicked!');
+    });
+  }
 
-      if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
-      }
+  void getToken() {
+    _firebaseMessaging.getToken().then((token) {
+      log('FirebasePushNotification::getToken(): $token');
     });
   }
 }

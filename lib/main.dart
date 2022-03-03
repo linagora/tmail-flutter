@@ -12,15 +12,13 @@ import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  log('Handling a background message ${message.messageId}');
+  log('Handling a background message ${message.notification?.title} | ${message.notification?.body}');
 }
-
-FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
 void main() async {
   initLogger(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     await MainBindings().dependencies();
     await HiveCacheConfig().setUp();
