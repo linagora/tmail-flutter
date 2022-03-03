@@ -1,6 +1,6 @@
 {
   "@@last_modified": "2021-10-13T22:37:55.795262",
-  "initializing_data": "Khởi tạo...",
+  "initializing_data": "Khởi tạo ...",
   "@initializing_data": {
     "type": "text",
     "placeholders_order": [],
@@ -276,7 +276,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloading_file": "Downloading {fileName}",
+  "downloading_file": "Đang tải tệp {fileName}",
   "@downloading_file": {
     "type": "text",
     "placeholders_order": [
@@ -286,13 +286,13 @@
       "fileName": {}
     }
   },
-  "preparing_to_export": "Preparing to export",
+  "preparing_to_export": "Chuẩn bị xuất tệp",
   "@preparing_to_export": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cancel": "Huỷ",
+  "cancel": "Hủy",
   "@cancel": {
     "type": "text",
     "placeholders_order": [],
@@ -344,13 +344,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "photos_and_videos": "Photos and Videos",
+  "photos_and_videos": "Ảnh và Video",
   "@photos_and_videos": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "browse": "Browse",
+  "browse": "Duyệt",
   "@browse": {
     "type": "text",
     "placeholders_order": [],
