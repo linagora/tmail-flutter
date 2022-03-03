@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
+import 'package:universal_html/html.dart' as html;
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 
@@ -71,5 +72,32 @@ class DownloadManager {
       }
     }
     return streamController.stream.first;
+  }
+
+  Future<bool> downloadFileForWeb(String downloadUrl, String filename, String basicAuth) async {
+    final headerParam = Map<String, String>();
+    headerParam[HttpHeaders.authorizationHeader] = basicAuth;
+    headerParam[HttpHeaders.acceptHeader] = DioClient.jmapHeader;
+
+    http.Response res = await http.get(Uri.parse(downloadUrl), headers: headerParam);
+
+    if (res.statusCode == 200) {
+      final blob = html.Blob([res.bodyBytes]);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      final anchor = html.document.createElement('a') as html.AnchorElement
+        ..href = url
+        ..style.display = 'none'
+        ..download = filename;
+      html.document.body?.children.add(anchor);
+
+      anchor.click();
+
+      html.document.body?.children.remove(anchor);
+      html.Url.revokeObjectUrl(url);
+
+      return true;
+    }
+
+    return false;
   }
 }

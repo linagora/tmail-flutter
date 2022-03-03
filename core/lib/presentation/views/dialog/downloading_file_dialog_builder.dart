@@ -1,6 +1,7 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 typedef OnCancelDownloadActionClick = void Function();
@@ -57,13 +58,13 @@ class DownloadingFileDialogBuilder {
           ),
         )),
       actions: [
-        TextButton(
-          onPressed: () {
-            if (_onCancelDownloadActionClick != null) {
-              _onCancelDownloadActionClick!();
-            }},
-          child: Text(_actionText, style: TextStyle(fontSize: 17.0, color: AppColor.appColor)),
-        )
+        if (_actionText.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.only(bottom: kIsWeb ? 16 : 0, top: kIsWeb ? 16 : 0),
+            child: TextButton(
+              onPressed: () => _onCancelDownloadActionClick?.call(),
+              child: Text(_actionText, style: TextStyle(fontSize: 17.0, color: AppColor.appColor)),
+            ))
       ],
     );
   }

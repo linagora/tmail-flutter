@@ -103,4 +103,9 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<Email?> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) {
     return emailDataSource.updateEmailDrafts(accountId, newEmail, oldEmailId);
   }
+
+  @override
+  Future<bool> downloadAttachmentForWeb(Attachment attachment, AccountId accountId, String baseDownloadUrl, AccountRequest accountRequest) {
+    return emailDataSource.downloadAttachmentForWeb(attachment, accountId, baseDownloadUrl, accountRequest);
+  }
 }
