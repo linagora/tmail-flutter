@@ -1,6 +1,6 @@
 {
   "@@last_modified": "2021-10-13T22:37:55.795262",
-  "initializing_data": "Initializing data...",
+  "initializing_data": "Инициализация данных...",
   "@initializing_data": {
     "type": "text",
     "placeholders_order": [],
@@ -24,133 +24,133 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "password": "password",
+  "password": "пароль",
   "@password": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login": "Login",
+  "login": "Вход в систему",
   "@login": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login_text_login_to_continue": "Please login to continue",
+  "login_text_login_to_continue": "Пожалуйста, войдите в систему, чтобы продолжить",
   "@login_text_login_to_continue": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unknown_error_login_message": "Unknown error occurred, please try again",
+  "unknown_error_login_message": "Произошла неизвестная ошибка. Пожалуйста, попробуйте еще раз.",
   "@unknown_error_login_message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_folder": "Search folder",
+  "search_folder": "Поиск по папке",
   "@search_folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "storage": "STORAGE",
+  "storage": "ХРАНИЛИЩЕ",
   "@storage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "my_folders": "MY FOLDERS",
+  "my_folders": "МОИ ПАПКИ",
   "@my_folders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_folder": "New folder",
+  "new_folder": "Новая папка",
   "@new_folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply_all": "Reply all",
+  "reply_all": "Ответить всем",
   "@reply_all": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply": "Reply",
+  "reply": "Ответить",
   "@reply": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forward": "Forward",
+  "forward": "Переслать",
   "@forward": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_emails": "No emails in this mailbox",
+  "no_emails": "В этом почтовом ящике нет писем",
   "@no_emails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_mail_selected": "No email selected",
+  "no_mail_selected": "Адрес электронной почты не выбран",
   "@no_mail_selected": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "from_email_address_prefix": "From",
+  "from_email_address_prefix": "От",
   "@from_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "to_email_address_prefix": "To",
+  "to_email_address_prefix": "Кому",
   "@to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unread_email_notification": "new",
+  "unread_email_notification": "новое",
   "@unread_email_notification": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bcc_email_address_prefix": "Bcc",
+  "bcc_email_address_prefix": "Скрытая копия",
   "@bcc_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cc_email_address_prefix": "Cc",
+  "cc_email_address_prefix": "Копия",
   "@cc_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_text_email_address": "Name or email address",
+  "hint_text_email_address": "Имя или адрес электронной почты",
   "@hint_text_email_address": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subject_email": "Subject",
+  "subject_email": "Тема",
   "@subject_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_content_email_composer": "Start writing your email here",
+  "hint_content_email_composer": "Начните писать свое письмо здесь",
   "@hint_content_email_composer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "header_email_quoted": "On {sentDate}, from {emailAddress}",
+  "header_email_quoted": "{sentDate}, от {emailAddress}",
   "@header_email_quoted": {
     "type": "text",
     "placeholders_order": [
@@ -174,31 +174,31 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_being_sent": "Your email being sent...",
+  "your_email_being_sent": "Отправка письма...",
   "@your_email_being_sent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_should_have_at_least_one_recipient": "Your email should have at least one recipient",
+  "your_email_should_have_at_least_one_recipient": "У письма должен быть хотя бы один получатель",
   "@your_email_should_have_at_least_one_recipient": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_sent": "Message sent",
+  "message_sent": "Сообщение отправлено",
   "@message_sent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "error_message_sent": "Error message sent",
+  "error_message_sent": "Сообщение об ошибке отправлено",
   "@error_message_sent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "count_email_selected": "{count} selected",
+  "count_email_selected": "{count} выбрано",
   "@count_email_selected": {
     "type": "text",
     "placeholders_order": [
@@ -208,43 +208,43 @@
       "count": {}
     }
   },
-  "mark_as_unread": "Mark as unread",
+  "mark_as_unread": "Отметить как непрочитанное",
   "@mark_as_unread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_read": "Mark as read",
+  "mark_as_read": "Отметить как прочитанное",
   "@mark_as_read": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_trash": "Move to trash",
+  "move_to_trash": "Переместить в корзину",
   "@move_to_trash": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_mailbox": "Move to mailbox",
+  "move_to_mailbox": "Переместить в почтовый ящик",
   "@move_to_mailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_star": "Star",
+  "mark_as_star": "Избранное",
   "@mark_as_star": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_spam": "Move to spam",
+  "move_to_spam": "Переместить в спам",
   "@move_to_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_multiple_item_as_read": "Marked {count} item as read",
+  "marked_multiple_item_as_read": "Элемент {count} отмечен как прочитанный",
   "@marked_multiple_item_as_read": {
     "type": "text",
     "placeholders_order": [
@@ -254,7 +254,7 @@
       "count": {}
     }
   },
-  "marked_multiple_item_as_unread": "Marked {count} item as unread",
+  "marked_multiple_item_as_unread": "Элемент {count} отмечен как непрочитанный",
   "@marked_multiple_item_as_unread": {
     "type": "text",
     "placeholders_order": [
@@ -264,19 +264,19 @@
       "count": {}
     }
   },
-  "an_error_occurred": "Error! An error occurred. Please try again later.",
+  "an_error_occurred": "Ошибка! Произошла ошибка. Пожалуйста, повторите попытку позже.",
   "@an_error_occurred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachment_download_failed": "Attachment download failed",
+  "attachment_download_failed": "Не удалось загрузить вложение",
   "@attachment_download_failed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloading_file": "Downloading {fileName}",
+  "downloading_file": "Загрузка {fileName}",
   "@downloading_file": {
     "type": "text",
     "placeholders_order": [
@@ -286,31 +286,31 @@
       "fileName": {}
     }
   },
-  "preparing_to_export": "Preparing to export",
+  "preparing_to_export": "Подготовка к экспорту",
   "@preparing_to_export": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cancel": "Cancel",
+  "cancel": "Отмена",
   "@cancel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "user_cancel_download_file": "User cancel download file",
+  "user_cancel_download_file": "Пользователь отменил загрузку файла",
   "@user_cancel_download_file": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_need_to_grant_files_permission_to_download_attachments": "You need to grant files permission to download attachments",
+  "you_need_to_grant_files_permission_to_download_attachments": "Чтобы загружать вложения, необходимо предоставить разрешение для файлов",
   "@you_need_to_grant_files_permission_to_download_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "count_attachment": "{count} attachments",
+  "count_attachment": "{count} вложение/ия/ий",
   "@count_attachment": {
     "type": "text",
     "placeholders_order": [
@@ -320,43 +320,43 @@
       "count": {}
     }
   },
-  "attach_file_prepare_text": "Preparing to attach file...",
+  "attach_file_prepare_text": "Подготовка к вложению файла...",
   "@attach_file_prepare_text": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "can_not_upload_this_file_as_attachments": "Can not upload this file as attachments",
+  "can_not_upload_this_file_as_attachments": "Невозможно загрузить этот файл в качестве вложения",
   "@can_not_upload_this_file_as_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments_uploaded_successfully": "Attachments uploaded successfully",
+  "attachments_uploaded_successfully": "Вложения успешно загружены",
   "@attachments_uploaded_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pick_attachments": "Pick attachments",
+  "pick_attachments": "Выбрать вложения",
   "@pick_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "photos_and_videos": "Photos and Videos",
+  "photos_and_videos": "Фото и видео",
   "@photos_and_videos": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "browse": "Browse",
+  "browse": "Просмотреть",
   "@browse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moved_to_mailbox": "Moved to {destinationMailboxPath}",
+  "moved_to_mailbox": "Перемещено в {destinationMailboxPath}",
   "@moved_to_mailbox": {
     "type": "text",
     "placeholders_order": [
@@ -366,19 +366,19 @@
       "destinationMailboxPath": {}
     }
   },
-  "undo_action": "UNDO",
+  "undo_action": "ОТМЕНИТЬ",
   "@undo_action": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_unstar": "Unstar",
+  "mark_as_unstar": "Убрать из избранного",
   "@mark_as_unstar": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_star_multiple_item": "Marked star {count} item",
+  "marked_star_multiple_item": "{count} элементов перемещено в избранное",
   "@marked_star_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -388,7 +388,7 @@
       "count": {}
     }
   },
-  "marked_unstar_multiple_item": "Marked unstar {count} item",
+  "marked_unstar_multiple_item": "{count} элементов удалено из избранного",
   "@marked_unstar_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -398,25 +398,25 @@
       "count": {}
     }
   },
-  "search_mail": "Search mail",
+  "search_mail": "Поиск по почте",
   "@search_mail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_suggestion_search": "Search for",
+  "prefix_suggestion_search": "Поиск",
   "@prefix_suggestion_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_emails_matching_your_search": "No emails are matching your search",
+  "no_emails_matching_your_search": "Нет писем, соответствующих вашему запросу",
   "@no_emails_matching_your_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "results": "Results",
+  "results": "Результаты",
   "@results": {
     "type": "text",
     "placeholders_order": [],
