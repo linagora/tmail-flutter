@@ -139,7 +139,6 @@ dependencies:
 
   connectivity_plus: 2.2.1
 
-  firebase_analytics: 9.1.2
   firebase_core: 1.13.1
   firebase_messaging: 11.2.8
 

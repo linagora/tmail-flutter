@@ -125,3 +125,4 @@ messages_vi.dart
 
 # firebase
 /android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist
