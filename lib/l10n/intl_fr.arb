@@ -1,6 +1,6 @@
 {
   "@@last_modified": "2021-10-13T22:37:55.795262",
-  "initializing_data": "Initialisation des données...",
+  "initializing_data": "Initialisation des données…",
   "@initializing_data": {
     "type": "text",
     "placeholders_order": [],
@@ -174,7 +174,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_being_sent": "Votre email est en cours d'envoi...",
+  "your_email_being_sent": "Votre courriel est en cours d'envoi…",
   "@your_email_being_sent": {
     "type": "text",
     "placeholders_order": [],
@@ -286,7 +286,7 @@
       "fileName": {}
     }
   },
-  "preparing_to_export": "Se préparer à exporter",
+  "preparing_to_export": "Préparation à l'exportation",
   "@preparing_to_export": {
     "type": "text",
     "placeholders_order": [],
