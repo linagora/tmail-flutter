@@ -59,13 +59,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_emails": "Nessuna email in questa casella di posta",
+  "no_emails": "Nessuna e-mail in questa casella di posta",
   "@no_emails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_content_email_composer": "Inizia a scrivere la tua email qui",
+  "hint_content_email_composer": "Inizia a scrivere la tua e-mail qui",
   "@hint_content_email_composer": {
     "type": "text",
     "placeholders_order": [],
@@ -95,13 +95,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_being_sent": "La tua e-mail viene inviata...",
+  "your_email_being_sent": "La tua e-mail viene inviata…",
   "@your_email_being_sent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_should_have_at_least_one_recipient": "La tua email deve avere almeno un destinatario",
+  "your_email_should_have_at_least_one_recipient": "La tua e-mail deve avere almeno un destinatario",
   "@your_email_should_have_at_least_one_recipient": {
     "type": "text",
     "placeholders_order": [],
@@ -215,7 +215,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_emails_matching_your_search": "Nessuna email corrisponde alla tua ricerca",
+  "no_emails_matching_your_search": "Nessuna e-mail corrisponde alla tua ricerca",
   "@no_emails_matching_your_search": {
     "type": "text",
     "placeholders_order": [],
@@ -275,7 +275,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_text_email_address": "Nome o indirizzo email",
+  "hint_text_email_address": "Nome o indirizzo e-mail",
   "@hint_text_email_address": {
     "type": "text",
     "placeholders_order": [],
@@ -287,7 +287,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_mail_selected": "Nessuna email selezionata",
+  "no_mail_selected": "Nessuna e-mail selezionata",
   "@no_mail_selected": {
     "type": "text",
     "placeholders_order": [],
