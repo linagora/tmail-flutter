@@ -410,5 +410,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "marked_unstar_multiple_item": "{count} Elemente als nicht wichtig markiert",
+  "@marked_unstar_multiple_item": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
   }
 }
