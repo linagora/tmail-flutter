@@ -13,4 +13,16 @@ extension URLExtension on String {
       return '$prefixUrlHttps${this}';
     }
   }
+
+  String removePrefix() {
+    if (startsWith(prefixUrlHttps)) {
+      return replaceAll(prefixUrlHttps, '');
+    } else if (startsWith(prefixUrlHttp)) {
+      return replaceAll(prefixUrlHttp, '');
+    } else {
+      return this;
+    }
+  }
+
+  bool isValid() => startsWith(prefixUrlHttps) || startsWith(prefixUrlHttp);
 }
