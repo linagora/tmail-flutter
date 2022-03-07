@@ -292,7 +292,7 @@ class ComposerController extends BaseController {
       : '';
 
     final trustAsHtml = arguments.emailContents
-      ?.map((emailContent) => emailContent.content)
+      ?.map((emailContent) => emailContent.asHtml)
       .toList()
       .join('<br>') ?? '';
 
