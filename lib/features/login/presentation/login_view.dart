@@ -93,8 +93,9 @@ class LoginView extends GetWidget<LoginController> {
         width: responsiveUtils.getWidthLoginTextField(context),
         child: (TextFieldBuilder()
             ..key(Key('login_url_input'))
-            ..onChange((value) => loginController.setUrlText(value))
+            ..onChange((value) => loginController.formatUrl(value))
             ..textInputAction(TextInputAction.next)
+            ..addController(loginController.urlInputController)
             ..keyboardType(TextInputType.url)
             ..textDecoration((LoginInputDecorationBuilder()
                 ..setLabelText(AppLocalizations.of(context).prefix_https)

@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
@@ -15,6 +16,8 @@ class LoginController extends GetxController {
   final AuthenticationInteractor _authenticationInteractor;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
   final AuthorizationInterceptors _authorizationInterceptors;
+
+  final TextEditingController urlInputController = TextEditingController();
 
   LoginController(
     this._authenticationInteractor,
@@ -68,5 +71,18 @@ class LoginController extends GetxController {
 
   void _loginFailureAction(AuthenticationUserFailure failure) {
     loginState.value = LoginState(Left(failure));
+  }
+
+  void formatUrl(String url) {
+    if (url.isValid()) {
+      urlInputController.text = url.removePrefix();
+    }
+    setUrlText(urlInputController.text);
+  }
+
+  @override
+  void onClose() {
+    urlInputController.dispose();
+    super.onClose();
   }
 }
