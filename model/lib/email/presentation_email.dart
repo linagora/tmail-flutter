@@ -1,6 +1,4 @@
 
-import 'dart:ui';
-
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
@@ -28,7 +26,6 @@ class PresentationEmail with EquatableMixin {
   final Map<MailboxId, bool>? mailboxIds;
   final List<MailboxName?>? mailboxNames;
   final SelectMode selectMode;
-  final List<Color>? avatarColors;
 
   PresentationEmail(
     this.id,
@@ -48,7 +45,6 @@ class PresentationEmail with EquatableMixin {
       this.mailboxIds,
       this.mailboxNames,
       this.selectMode = SelectMode.INACTIVE,
-      this.avatarColors,
     }
   );
 
