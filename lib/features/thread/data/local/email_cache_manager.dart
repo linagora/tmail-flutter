@@ -16,11 +16,18 @@ class EmailCacheManager {
 
   EmailCacheManager(this._emailCacheClient);
 
-  Future<List<Email>> getAllEmail({MailboxId? inMailboxId, Set<Comparator>? sort}) async {
+  Future<List<Email>> getAllEmail({
+    MailboxId? inMailboxId,
+    Set<Comparator>? sort,
+    FilterMessageOption filterOption = FilterMessageOption.all
+  }) async {
     final emailCacheList = inMailboxId != null
       ? await _emailCacheClient.getListEmailCacheByMailboxId(inMailboxId)
       : await _emailCacheClient.getAll();
-    final emailList = emailCacheList.map((emailCache) => emailCache.toEmail()).toList();
+    final emailList = emailCacheList
+        .map((emailCache) => emailCache.toEmail())
+        .where((email) => filterOption.filterEmail(email))
+        .toList();
     if (sort != null) {
       sort.forEach((comparator) {
         emailList.sortBy(comparator);

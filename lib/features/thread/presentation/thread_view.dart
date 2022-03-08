@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
@@ -317,9 +316,7 @@ class ThreadView extends GetWidget<ThreadController> {
             return _buildResultSearchEmails(context, controller.emailListSearch);
           }
         } else {
-          return _buildResultListEmail(
-              context,
-              controller.isFilterMessagesEnabled ? controller.emailListFiltered : controller.emailList);
+          return _buildResultListEmail(context, controller.emailList);
         }
       })
     );

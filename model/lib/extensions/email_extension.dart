@@ -16,6 +16,8 @@ extension EmailExtension on Email {
 
   bool isFlaggedEmail() => keywords?.containsKey(KeyWordIdentifier.emailFlagged) == true;
 
+  bool get withAttachments => hasAttachment == true;
+
   Set<String> getRecipientEmailAddressList() {
     final listEmailAddress = Set<String>();
     final listToAddress = to.getListAddress() ?? [];

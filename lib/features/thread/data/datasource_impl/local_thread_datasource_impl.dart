@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
@@ -43,9 +44,9 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<List<Email>> getAllEmailCache({MailboxId? inMailboxId, Set<Comparator>? sort}) {
+  Future<List<Email>> getAllEmailCache({MailboxId? inMailboxId, Set<Comparator>? sort, FilterMessageOption? filterOption}) {
     return Future.sync(() async {
-      return await _emailCacheManager.getAllEmail(inMailboxId: inMailboxId, sort: sort);
+      return await _emailCacheManager.getAllEmail(inMailboxId: inMailboxId, sort: sort, filterOption: filterOption ?? FilterMessageOption.all);
     }).catchError((error) {
       throw error;
     });
