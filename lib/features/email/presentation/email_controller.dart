@@ -53,7 +53,6 @@ class EmailController extends BaseController {
   final emailContents = <EmailContent>[].obs;
   final attachments = <Attachment>[].obs;
   EmailId? _currentEmailId;
-  List<Color>? _currentAvatarColor;
 
   EmailController(
     this._getEmailContentInteractor,
@@ -73,7 +72,6 @@ class EmailController extends BaseController {
     mailboxDashBoardController.selectedEmail.listen((presentationEmail) {
       if (_currentEmailId != presentationEmail?.id) {
         _currentEmailId = presentationEmail?.id;
-        _currentAvatarColor = presentationEmail?.avatarColors;
         _clearEmailContent();
         final accountId = mailboxDashBoardController.accountId.value;
         if (accountId != null && presentationEmail != null) {
@@ -163,7 +161,7 @@ class EmailController extends BaseController {
 
   void _markAsEmailReadSuccess(Success success) {
     if (success is MarkAsEmailReadSuccess) {
-      mailboxDashBoardController.setSelectedEmail(success.updatedEmail.toPresentationEmail(selectMode: SelectMode.ACTIVE, avatarColors: _currentAvatarColor));
+      mailboxDashBoardController.setSelectedEmail(success.updatedEmail.toPresentationEmail(selectMode: SelectMode.ACTIVE));
     }
     mailboxDashBoardController.dispatchState(Right(success));
 
