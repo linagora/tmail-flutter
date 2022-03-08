@@ -75,8 +75,6 @@ class ThreadController extends BaseController {
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final filterMessageOption = FilterMessageOption.all.obs;
 
-  final random = Random();
-
   bool canLoadMore = true;
   bool canSearchMore = true;
   MailboxId? _currentMailboxId;
@@ -227,10 +225,7 @@ class ThreadController extends BaseController {
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
     _currentEmailState = success.currentEmailState;
-    final listEmailHaveAvatarGradientColor = success.emailList
-        .map((email) => email.asAvatarGradientColor(random))
-        .toList();
-    emailList.value = listEmailHaveAvatarGradientColor;
+    emailList.value = success.emailList;
   }
 
   void _getAllEmailAction(AccountId accountId, {MailboxId? mailboxId}) {
@@ -337,10 +332,7 @@ class ThreadController extends BaseController {
 
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
     if (success.emailList.isNotEmpty) {
-      final listEmailHaveAvatarGradientColor = success.emailList
-          .map((email) => email.asAvatarGradientColor(random))
-          .toList();
-      emailList.addAll(listEmailHaveAvatarGradientColor);
+      emailList.addAll(success.emailList);
     } else {
       canLoadMore = false;
     }
@@ -650,7 +642,7 @@ class ThreadController extends BaseController {
 
   void _searchEmailsSuccess(SearchEmailSuccess success) {
     final resultEmailSearchList = success.emailList
-        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox, random))
+        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox))
         .toList();
 
     emailListSearch.value = resultEmailSearchList;
@@ -674,7 +666,7 @@ class ThreadController extends BaseController {
   void _searchMoreEmailsSuccess(SearchMoreEmailSuccess success) {
     if (success.emailList.isNotEmpty) {
       final resultEmailSearchList = success.emailList
-          .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox, random))
+          .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox))
           .where((email) => !emailListSearch.contains(email))
           .toList();
       emailListSearch.addAll(resultEmailSearchList);

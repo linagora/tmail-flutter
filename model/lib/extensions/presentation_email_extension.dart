@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:ui';
 
 import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -6,8 +6,25 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
+import 'package:collection/collection.dart';
 
 extension PresentationEmailExtension on PresentationEmail {
+
+  List<Color> get avatarColors {
+    return AppColor.mapGradientColor[_generateIndexFromSender()];
+  }
+
+  int _generateIndexFromSender() {
+    if (from != null && from?.isNotEmpty == true) {
+      final codeUnits = from?.first.email?.codeUnits ?? List.empty();
+      if (codeUnits.isNotEmpty) {
+        final sumCodeUnits = codeUnits.sum;
+        final index = sumCodeUnits % AppColor.mapGradientColor.length;
+        return index;
+      }
+    }
+    return 0;
+  }
 
   int numberOfAllEmailAddress() => to.numberEmailAddress() + cc.numberEmailAddress() + bcc.numberEmailAddress();
 
@@ -39,7 +56,6 @@ extension PresentationEmailExtension on PresentationEmail {
         mailboxIds: mailboxIds,
         mailboxNames: mailboxNames,
         selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
-        avatarColors: avatarColors,
     );
   }
 
@@ -61,7 +77,6 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       mailboxNames: mailboxNames,
       selectMode: selectMode,
-      avatarColors: avatarColors,
     );
   }
 
@@ -113,7 +128,7 @@ extension PresentationEmailExtension on PresentationEmail {
     }
   }
 
-  PresentationEmail toSearchPresentationEmail(Map<MailboxId, PresentationMailbox> mapMailboxes, Random random) {
+  PresentationEmail toSearchPresentationEmail(Map<MailboxId, PresentationMailbox> mapMailboxes) {
     mailboxIds?.removeWhere((key, value) => !value);
 
     final listMailboxId = mailboxIds?.entries
@@ -125,8 +140,6 @@ extension PresentationEmailExtension on PresentationEmail {
       ?.map((mailboxId) => mapMailboxes.containsKey(mailboxId) ? mapMailboxes[mailboxId]?.name : null)
       .where((mailboxName) => mailboxName != null)
       .toList();
-
-    final newAvatarColors = AppColor.mapGradientColor[random.nextInt(AppColor.mapGradientColor.length)];
 
     return PresentationEmail(
       this.id,
@@ -145,31 +158,6 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       mailboxNames: listMailboxName,
       selectMode: selectMode,
-      avatarColors: avatarColors ?? newAvatarColors
-    );
-  }
-
-  PresentationEmail asAvatarGradientColor(Random random) {
-    final newAvatarColors = AppColor.mapGradientColor[random.nextInt(AppColor.mapGradientColor.length)];
-
-    return PresentationEmail(
-      this.id,
-      keywords: keywords,
-      size: size,
-      receivedAt: receivedAt,
-      hasAttachment: hasAttachment,
-      preview: preview,
-      subject: subject,
-      sentAt: sentAt,
-      from: from,
-      to: to,
-      cc: cc,
-      bcc: bcc,
-      replyTo: replyTo,
-      mailboxIds: mailboxIds,
-      mailboxNames: mailboxNames,
-      selectMode: selectMode,
-      avatarColors: avatarColors ?? newAvatarColors,
     );
   }
 }

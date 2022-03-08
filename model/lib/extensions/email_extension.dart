@@ -1,6 +1,4 @@
 
-import 'dart:ui';
-
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -45,7 +43,7 @@ extension EmailExtension on Email {
     );
   }
 
-  PresentationEmail toPresentationEmail({SelectMode selectMode = SelectMode.INACTIVE, List<Color>? avatarColors}) {
+  PresentationEmail toPresentationEmail({SelectMode selectMode = SelectMode.INACTIVE}) {
     return PresentationEmail(
       id,
       keywords: keywords,
@@ -62,7 +60,6 @@ extension EmailExtension on Email {
       replyTo: replyTo,
       mailboxIds: mailboxIds,
       selectMode: selectMode,
-      avatarColors: avatarColors,
     );
   }
 
