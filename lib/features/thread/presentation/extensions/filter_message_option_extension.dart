@@ -1,30 +1,10 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:model/email/presentation_email.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-enum FilterMessageOption {
-  all,
-  unread,
-  attachments,
-  starred,
-}
-
 extension FilterMessageOptionExtension on FilterMessageOption {
-
-  bool filterEmail(PresentationEmail email) {
-    switch(this) {
-      case FilterMessageOption.all:
-        return true;
-      case FilterMessageOption.unread:
-        return email.isUnReadEmail();
-      case FilterMessageOption.attachments:
-        return email.withAttachments;
-      case FilterMessageOption.starred:
-        return email.isFlaggedEmail();
-    }
-  }
 
   String getIconToast(ImagePaths imagePaths) {
     switch(this) {
