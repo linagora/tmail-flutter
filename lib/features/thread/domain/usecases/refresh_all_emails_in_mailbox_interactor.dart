@@ -3,41 +3,38 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:model/model.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
-class RefreshChangesEmailsInMailboxInteractor {
+class RefreshAllEmailsInMailboxInteractor {
   final ThreadRepository threadRepository;
 
-  RefreshChangesEmailsInMailboxInteractor(this.threadRepository);
+  RefreshAllEmailsInMailboxInteractor(this.threadRepository);
 
   Stream<Either<Failure, Success>> execute(
     AccountId accountId,
-    jmap.State currentState,
     {
+      UnsignedInt? limit,
       Set<Comparator>? sort,
+      EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
-      MailboxId? inMailboxId,
-      FilterMessageOption? filterOption,
     }
   ) async* {
-    yield Right<Failure, Success>(RefreshingState());
-
     try {
+      yield Right<Failure, Success>(LoadingState());
+
       yield* threadRepository
-        .refreshChanges(
+        .refreshAll(
           accountId,
-          currentState,
+          limit: limit,
           sort: sort,
+          emailFilter: emailFilter,
           propertiesCreated: propertiesCreated,
-          propertiesUpdated: propertiesUpdated,
-          inMailboxId: inMailboxId,
-          filterOption: filterOption)
+          propertiesUpdated: propertiesUpdated)
         .map(_toGetEmailState);
     } catch (e) {
       yield Left(GetAllEmailFailure(e));

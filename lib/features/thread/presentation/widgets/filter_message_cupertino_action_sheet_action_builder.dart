@@ -3,7 +3,7 @@ import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/filter_message_option.dart';
+import 'package:model/model.dart';
 
 class FilterMessageCupertinoActionSheetActionBuilder extends CupertinoActionSheetActionBuilder<FilterMessageOption> {
 

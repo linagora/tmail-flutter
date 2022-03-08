@@ -21,6 +21,17 @@ abstract class ThreadRepository {
     }
   );
 
+  Stream<EmailsResponse> refreshAll(
+      AccountId accountId,
+      {
+        UnsignedInt? limit,
+        Set<Comparator>? sort,
+        EmailFilter? emailFilter,
+        Properties? propertiesCreated,
+        Properties? propertiesUpdated,
+      }
+  );
+
   Stream<EmailsResponse> refreshChanges(
     AccountId accountId,
     jmap.State currentState,
@@ -28,7 +39,8 @@ abstract class ThreadRepository {
       Set<Comparator>? sort,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
-      MailboxId? inMailboxId
+      MailboxId? inMailboxId,
+      FilterMessageOption? filterOption,
     }
   );
 
