@@ -99,7 +99,6 @@ class AppBarMailWidgetBuilder {
               (_presentationEmail != null && _presentationEmail!.isFlaggedEmail())
                   ? _imagePaths.icStar
                   : _imagePaths.icUnStar,
-              color: AppColor.colorButton,
               fit: BoxFit.fill),
           onPressed: ()  {
             if (_presentationEmail != null) {

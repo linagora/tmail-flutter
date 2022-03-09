@@ -3,9 +3,11 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -27,6 +29,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -38,6 +42,7 @@ class EmailController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
+  final imagePaths = Get.find<ImagePaths>();
 
   final GetEmailContentInteractor _getEmailContentInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -398,7 +403,9 @@ class EmailController extends BaseController {
     mailboxDashBoardController.dispatchState(Right(success));
   }
 
-  void handleEmailAction(PresentationEmail presentationEmail, EmailActionType actionType) {
+  void handleEmailAction(BuildContext context, PresentationEmail presentationEmail, EmailActionType actionType) {
+    popBack();
+
     switch(actionType) {
       case EmailActionType.markAsUnread:
         markAsEmailRead(presentationEmail, ReadActions.markAsUnread);
@@ -413,6 +420,7 @@ class EmailController extends BaseController {
         moveToMailboxAction(presentationEmail);
         break;
       case EmailActionType.delete:
+        _appToast.showToast(AppLocalizations.of(context).the_feature_is_under_development);
         break;
       default:
         break;
@@ -440,6 +448,51 @@ class EmailController extends BaseController {
     isDisplayFullEmailAddress.value = true;
   }
 
+  void openEmailAddressDialog(BuildContext context, EmailAddress emailAddress) {
+    if (responsiveUtils.isMobile(context) || responsiveUtils.isMobileDevice(context)) {
+      (EmailAddressBottomSheetBuilder(context, imagePaths, emailAddress)
+          ..addOnCloseContextMenuAction(() => popBack())
+          ..addOnCopyEmailAddressAction((emailAddress) => copyEmailAddress(context, emailAddress))
+          ..addOnComposeEmailAction((emailAddress) => composeEmailFromEmailAddress(emailAddress)))
+        .show();
+    } else {
+      showDialog(
+          context: context,
+          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+          builder: (BuildContext context) => (EmailAddressDialogBuilder(context, imagePaths, emailAddress)
+              ..addOnCloseContextMenuAction(() => popBack())
+              ..addOnCopyEmailAddressAction((emailAddress) => copyEmailAddress(context, emailAddress))
+              ..addOnComposeEmailAction((emailAddress) => composeEmailFromEmailAddress(emailAddress)))
+            .build());
+    }
+  }
+
+  void copyEmailAddress(BuildContext context, EmailAddress emailAddress) {
+    popBack();
+
+    Clipboard.setData(ClipboardData(text: emailAddress.emailAddress)).then((_){
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).email_address_copied_to_clipboard))
+      );
+    });
+  }
+
+  void composeEmailFromEmailAddress(EmailAddress emailAddress) {
+    popBack();
+
+    if (canComposeEmail()) {
+      push(
+          AppRoutes.COMPOSER,
+          arguments: ComposerArguments(
+              emailActionType: EmailActionType.composeFromEmailAddress,
+              emailAddress: emailAddress,
+              mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
+              session: mailboxDashBoardController.sessionCurrent!,
+              userProfile: mailboxDashBoardController.userProfile.value!,
+              mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
+    }
+  }
+
   void closeMoreMenu() {
     popBack();
   }
@@ -457,18 +510,33 @@ class EmailController extends BaseController {
   }
 
   void pressEmailAction(EmailActionType emailActionType) {
+    if (emailActionType == EmailActionType.compose) {
+      composeEmailAction();
+    } else {
+      if (canComposeEmail()) {
+        push(
+            AppRoutes.COMPOSER,
+            arguments: ComposerArguments(
+                emailActionType: emailActionType,
+                presentationEmail: mailboxDashBoardController.selectedEmail.value!,
+                emailContents: emailContents,
+                attachments: attachments,
+                mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
+                session: mailboxDashBoardController.sessionCurrent!,
+                userProfile: mailboxDashBoardController.userProfile.value!,
+                mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
+      }
+    }
+  }
+
+  void composeEmailAction() {
     if (canComposeEmail()) {
       push(
-        AppRoutes.COMPOSER,
-        arguments: ComposerArguments(
-          emailActionType: emailActionType,
-          presentationEmail: mailboxDashBoardController.selectedEmail.value!,
-          emailContents: emailContents,
-          attachments: attachments,
-          mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
-          session: mailboxDashBoardController.sessionCurrent!,
-          userProfile: mailboxDashBoardController.userProfile.value!,
-          mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
+          AppRoutes.COMPOSER,
+          arguments: ComposerArguments(
+              session: mailboxDashBoardController.sessionCurrent!,
+              userProfile: mailboxDashBoardController.userProfile.value!,
+              mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
     }
   }
 }

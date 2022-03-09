@@ -93,6 +93,7 @@ extension AppColor on Color {
   static const colorTime = Color(0xFF92A1B4);
   static const colorEmailAddressPrefix = Color(0xFF9AA7B6);
   static const colorEmailAddressTag = Color(0x146D7885);
+  static const colorLineLeftEmailView = Color(0x2999A2AD);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
