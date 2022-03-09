@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:model/model.dart';
 
@@ -32,12 +33,17 @@ class EmailContentItemBuilder {
   Widget _buildItem() {
     switch(_emailContent.type) {
       case EmailContentType.textHtml:
-        return HtmlContentViewer(
-          widthContent: MediaQuery.of(_context).size.width,
-          heightContent: MediaQuery.of(_context).size.height,
-          contentHtml: _emailContent.content,
-          loadingWidget: loadingWidget,
-          mailtoDelegate: (uri) async {});
+        if (kIsWeb) {
+          return HtmlContentViewerOnWeb(
+              widthContent: MediaQuery.of(_context).size.width,
+              contentHtml: _emailContent.content,
+              controller: HtmlViewerControllerForWeb());
+        } else {
+          return HtmlContentViewer(
+              widthContent: MediaQuery.of(_context).size.width,
+              contentHtml: _emailContent.content,
+              loadingWidget: loadingWidget);
+        }
       case EmailContentType.textPlain:
         return Padding(
           padding: EdgeInsets.zero,
