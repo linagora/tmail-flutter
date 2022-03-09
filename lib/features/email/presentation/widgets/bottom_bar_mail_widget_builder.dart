@@ -45,7 +45,7 @@ class BottomBarMailWidgetBuilder {
         if (presentationEmail.numberOfAllEmailAddress() > 1)
           (ButtonBuilder(_imagePaths.icReplyAll)
             ..key(Key('button_reply_all_message'))
-            ..size(20)
+            ..size(15)
             ..paddingIcon(EdgeInsets.only(
                 top: _responsiveUtils.isMobileDevice(_context) ? 10 : 16,
                 bottom: _responsiveUtils.isMobileDevice(_context) ? 8 : 16,

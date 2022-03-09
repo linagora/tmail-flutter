@@ -743,4 +743,16 @@ class AppLocalizations {
       name: 'new_message',
     );
   }
+
+  String get details {
+    return Intl.message(
+        'Details',
+        name: 'details');
+  }
+
+  String get hide {
+    return Intl.message(
+        'Hide',
+        name: 'hide');
+  }
 }

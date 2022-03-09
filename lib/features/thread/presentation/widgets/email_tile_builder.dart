@@ -211,7 +211,6 @@ class EmailTileBuilder {
           ..size(GetPlatform.isWeb ? 48 : 56)
           ..textColor(Colors.white)
           ..avatarColor(_presentationEmail.avatarColors))
-        // .iconStatus(_imagePaths.icOffline)
         .build();
     }
   }
