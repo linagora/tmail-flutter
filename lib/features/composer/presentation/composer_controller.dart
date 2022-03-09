@@ -250,6 +250,9 @@ class ComposerController extends BaseController {
       if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty) {
         isInitialRecipient.value = true;
       }
+    } else if (arguments.emailAddress != null) {
+      listToEmailAddress.add(arguments.emailAddress!);
+      isInitialRecipient.value = true;
     }
     _updateStatusEmailSendButton();
   }
@@ -264,6 +267,8 @@ class ComposerController extends BaseController {
         break;
       case PrefixEmailAddress.bcc:
         listBccEmailAddress = newListEmailAddress;
+        break;
+      default:
         break;
     }
     _updateStatusEmailSendButton();

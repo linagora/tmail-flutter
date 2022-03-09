@@ -13,4 +13,5 @@ enum EmailActionType {
   markAsSpam,
   delete,
   edit,
+  composeFromEmailAddress
 }
