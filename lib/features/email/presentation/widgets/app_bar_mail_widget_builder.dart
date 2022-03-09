@@ -5,42 +5,38 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
 
 typedef OnBackActionClick = void Function();
-typedef OnUnreadEmailActionClick = void Function(PresentationEmail presentationEmail);
-typedef OnMoveToMailboxActionClick = void Function(PresentationEmail presentationEmail);
-typedef OnMarkAsStarActionClick = void Function(PresentationEmail presentationEmail);
+typedef OnEmailActionClick = void Function(PresentationEmail, EmailActionType);
+typedef OnMoreActionClick = void Function(PresentationEmail, RelativeRect?);
 
 class AppBarMailWidgetBuilder {
   OnBackActionClick? _onBackActionClick;
-  OnUnreadEmailActionClick? _onUnreadEmailActionClick;
-  OnMoveToMailboxActionClick? _onMoveToMailboxActionClick;
-  OnMarkAsStarActionClick? _markAsStarActionClick;
+  OnEmailActionClick? _onEmailActionClick;
+  OnMoreActionClick? _onMoreActionClick;
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
   final PresentationEmail? _presentationEmail;
+  final PresentationMailbox? _currentMailbox;
 
   AppBarMailWidgetBuilder(
     this._context,
     this._imagePaths,
     this._responsiveUtils,
     this._presentationEmail,
+    this._currentMailbox,
   );
 
   void onBackActionClick(OnBackActionClick onBackActionClick) {
     _onBackActionClick = onBackActionClick;
   }
 
-  void onUnreadEmailActionClick(OnUnreadEmailActionClick onUnreadEmailActionClick) {
-    _onUnreadEmailActionClick = onUnreadEmailActionClick;
+  void addOnEmailActionClick(OnEmailActionClick onEmailActionClick) {
+    _onEmailActionClick = onEmailActionClick;
   }
 
-  void addOnMoveToMailboxActionClick(OnMoveToMailboxActionClick onMoveToMailboxActionClick) {
-    _onMoveToMailboxActionClick = onMoveToMailboxActionClick;
-  }
-
-  void addOnMarkAsStarActionClick(OnMarkAsStarActionClick onMarkAsStarActionClick) {
-    _markAsStarActionClick = onMarkAsStarActionClick;
+  void addOnMoreActionClick(OnMoreActionClick onMoreActionClick) {
+    _onMoreActionClick = onMoreActionClick;
   }
 
   Widget build() {
@@ -48,6 +44,7 @@ class AppBarMailWidgetBuilder {
       key: Key('app_bar_messenger_widget'),
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
+      margin: EdgeInsets.zero,
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
@@ -55,10 +52,9 @@ class AppBarMailWidgetBuilder {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             if ((!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context)))
-              Expanded(child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children:[_buildBackButton()])),
+              _buildBackButton(),
+            if ((!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context)))
+              Expanded(child: _buildMailboxName()),
             if (_presentationEmail != null) _buildListOptionButton(),
           ]
         )
@@ -68,13 +64,19 @@ class AppBarMailWidgetBuilder {
 
   Widget _buildBackButton() {
     return IconButton(
-      color: AppColor.appColor,
-      icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.appColor, fit: BoxFit.fill),
-      onPressed: () {
-        if (_onBackActionClick != null) {
-          _onBackActionClick!();
-        }
-      }
+      icon: SvgPicture.asset(_imagePaths.icBack, width: 20, height: 20, color: AppColor.colorTextButton, fit: BoxFit.fill),
+      onPressed: () => _onBackActionClick?.call()
+    );
+  }
+
+  Widget _buildMailboxName() {
+    return Transform(
+      transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+      child: Text(
+        '${_currentMailbox?.name?.name.capitalizeFirstEach ?? ''}',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(fontSize: 17, color: AppColor.colorTextButton))
     );
   }
 
@@ -84,36 +86,68 @@ class AppBarMailWidgetBuilder {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IconButton(
+            key: Key('button_move_to_mailbox_email'),
+            icon: SvgPicture.asset(_imagePaths.icMoveEmail, color: AppColor.colorButton, fit: BoxFit.fill),
+            onPressed: () {
+              if (_presentationEmail != null) {
+                _onEmailActionClick?.call(_presentationEmail!, EmailActionType.move);
+              }
+            }),
+        IconButton(
           key: Key('button_mark_as_star_email'),
           icon: SvgPicture.asset(
               (_presentationEmail != null && _presentationEmail!.isFlaggedEmail())
                   ? _imagePaths.icStar
                   : _imagePaths.icUnStar,
+              color: AppColor.colorButton,
               fit: BoxFit.fill),
-          onPressed: () {
-            if (_markAsStarActionClick != null && _presentationEmail != null) {
-              _markAsStarActionClick!(_presentationEmail!);
+          onPressed: ()  {
+            if (_presentationEmail != null) {
+              _onEmailActionClick?.call(_presentationEmail!,
+                  _presentationEmail!.isFlaggedEmail() ? EmailActionType.markAsUnStar : EmailActionType.markAsStar);
             }
           }),
         IconButton(
-          key: Key('button_mark_as_unread_email'),
-          color: AppColor.baseTextColor,
-          icon: SvgPicture.asset(_imagePaths.icUnreadEmail, fit: BoxFit.fill),
+          key: Key('button_delete_email'),
+          icon: SvgPicture.asset(_imagePaths.icDeleteEmail, color: AppColor.colorButton, fit: BoxFit.fill),
           onPressed: () {
-            if (_onUnreadEmailActionClick != null && _presentationEmail != null && _presentationEmail!.isReadEmail()) {
-              _onUnreadEmailActionClick!(_presentationEmail!);
+            if (_presentationEmail != null) {
+              _onEmailActionClick?.call(_presentationEmail!, EmailActionType.delete);
             }
           }),
-        IconButton(
-          key: Key('button_move_to_mailbox_email'),
-          color: AppColor.baseTextColor,
-          icon: SvgPicture.asset(_imagePaths.icMoveEmail, fit: BoxFit.fill),
-          onPressed: () {
-            if (_onMoveToMailboxActionClick != null && _presentationEmail != null) {
-              _onMoveToMailboxActionClick!(_presentationEmail!);
-            }
-          }),
+        _buildMoreButton(),
       ]
+    );
+  }
+
+  Widget _buildMoreButton() {
+    return Material(
+        key: Key('button_more_email'),
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.transparent,
+        child: Padding(
+            padding: EdgeInsets.only(left: 10, right: 16),
+            child: GestureDetector(
+                onTap: () {
+                  if (_presentationEmail != null && _responsiveUtils.isMobileDevice(_context)) {
+                    _onMoreActionClick?.call(_presentationEmail!, null);
+                  }
+                },
+                child: SvgPicture.asset(_imagePaths.icMore, color: AppColor.colorButton, fit: BoxFit.fill),
+                onTapDown: (detail) {
+                  if (_presentationEmail != null && !_responsiveUtils.isMobileDevice(_context)) {
+                    final screenSize = MediaQuery.of(_context).size;
+                    final offset = detail.globalPosition;
+                    final position = RelativeRect.fromLTRB(
+                      offset.dx,
+                      offset.dy,
+                      screenSize.width - offset.dx,
+                      screenSize.height - offset.dy,
+                    );
+                    _onMoreActionClick?.call(_presentationEmail!, position);
+                  }
+                })
+        )
     );
   }
 }

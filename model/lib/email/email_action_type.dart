@@ -7,6 +7,8 @@ enum EmailActionType {
   markAsRead,
   markAsUnread,
   markAsFlag,
+  markAsStar,
+  markAsUnStar,
   move,
   markAsSpam,
   delete,

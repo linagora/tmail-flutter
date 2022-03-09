@@ -7,17 +7,17 @@ extension PresentationMailboxExtension on PresentationMailbox {
      if (hasRole()) {
         switch(role!.value) {
           case 'inbox':
-            return imagePaths.icMailboxInboxV2;
+            return imagePaths.icMailboxInbox;
           case 'drafts':
-            return imagePaths.icMailboxDraftsV2;
+            return imagePaths.icMailboxDrafts;
           case 'outbox':
-            return imagePaths.icMailboxArchivedV2;
+            return imagePaths.icMailboxArchived;
           case 'sent':
-            return imagePaths.icMailboxSentV2;
+            return imagePaths.icMailboxSent;
           case 'trash':
-            return imagePaths.icMailboxTrashV2;
+            return imagePaths.icMailboxTrash;
           case 'spam':
-            return imagePaths.icMailboxSpamV2;
+            return imagePaths.icMailboxSpam;
           case 'templates':
             return imagePaths.icMailboxTemplate;
           case 'all_mail':
