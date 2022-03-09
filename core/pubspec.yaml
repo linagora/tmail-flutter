@@ -64,12 +64,6 @@ dependencies:
   # webview_flutter
   webview_flutter: 3.0.0
 
-  # easy_web_view: Display html for web browser
-  easy_web_view:
-      git:
-        url: https://github.com/dab246/easy_web_view.git
-        ref: easy_web_improvements
-
   # url_launcher
   url_launcher: 6.0.17
 
@@ -77,6 +71,8 @@ dependencies:
   collection: 1.15.0
 
   universal_html: 2.0.8
+
+  http: 0.13.4
 
 dev_dependencies:
   flutter_test:

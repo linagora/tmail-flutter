@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:core/core.dart';
-import 'package:easy_web_view/easy_web_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +11,7 @@ import 'dart:developer' as developer;
 class HtmlContentViewer extends StatefulWidget {
 
   final String contentHtml;
-  final int minHeight;
   final double widthContent;
-  final double? heightContent;
   final Widget? loadingWidget;
 
   /// Register this callback if you want a reference to the [WebViewController].
@@ -32,8 +29,6 @@ class HtmlContentViewer extends StatefulWidget {
     Key? key,
     required this.contentHtml,
     required this.widthContent,
-    this.heightContent,
-    this.minHeight = 100,
     this.loadingWidget,
     this.onCreated,
     this.urlLauncherDelegate,
@@ -48,9 +43,9 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   double? _webViewHeight = 1.0;
   double? _webViewWidth = 1.0;
+  int minHeight = 100;
   String? _htmlData;
   late WebViewController _webViewController;
-  // late EasyWebViewControllerWrapperBase _easyWebViewControllerWrapperBase;
   bool _isLoading = true;
 
   @override
@@ -69,7 +64,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       <style>
         #editor {
           outline: 0px solid transparent;
-          min-height: ${widget.minHeight}px;
+          min-height: ${minHeight}px;
           min-width: 300px;
           color: #182952;
           font-family: verdana;
@@ -106,28 +101,18 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   @override
   Widget build(BuildContext context) {
-    if (kIsWeb) {
-      return Stack(
-        alignment: AlignmentDirectional.center,
-        children: [
-          _buildWebViewOnBrowser(),
-          if (_isLoading) _buildLoadingView()
-        ],
-      );
-    }  else {
-      _webViewWidth = widget.widthContent;
-      return Stack(
-        alignment: AlignmentDirectional.center,
-        children: [
-          SizedBox(
-            height: _webViewHeight,
-            width: _webViewWidth,
-            child: _buildWebView(),
-          ),
-          if (_isLoading) _buildLoadingView()
-        ],
-      );
-    }
+    _webViewWidth = widget.widthContent;
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: [
+        SizedBox(
+          height: _webViewHeight,
+          width: _webViewWidth,
+          child: _buildWebView(),
+        ),
+        if (_isLoading) _buildLoadingView()
+      ],
+    );
   }
 
   Widget _buildLoadingView() {
@@ -143,28 +128,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     }
   }
 
-  Widget _buildWebViewOnBrowser() {
-    final htmlData = _htmlData;
-    if (htmlData == null || htmlData.isEmpty) {
-      return Container();
-    }
-    return EasyWebView(
-      key: ValueKey(htmlData),
-      src: htmlData,
-      onLoaded: (controller) async {
-        // _easyWebViewControllerWrapperBase = controller;
-        if (mounted && _isLoading) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      },
-      isHtml: true,
-      height: widget.heightContent,
-      webNavigationDelegate: _onNavigationOnWebBrowser,
-    );
-  }
-
   Widget _buildWebView() {
     final htmlData = _htmlData;
     if (htmlData == null || htmlData.isEmpty) {
@@ -176,7 +139,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       backgroundColor: Colors.white,
       onWebViewCreated: (controller) async {
         _webViewController = controller;
-        developer.log('onWebViewCreated(): html: $htmlData', name: 'HtmlContentViewer');
         await controller.loadHtmlString(htmlData, baseUrl: null);
         widget.onCreated?.call(controller);
       },
@@ -184,13 +146,9 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         final scrollHeightText = await _webViewController.runJavascriptReturningResult('document.body.scrollHeight');
         final scrollHeight = double.tryParse(scrollHeightText);
         developer.log('onPageFinished(): scrollHeightText: $scrollHeightText', name: 'HtmlContentViewer');
-        final scrollWidthText = await _webViewController.runJavascriptReturningResult('document.body.scrollWidth');
-        // var scrollWidth = double.tryParse(scrollWidthText);
-        developer.log('onPageFinished(): scrollWidthText: $scrollWidthText', name: 'HtmlContentViewer');
         if ((scrollHeight != null) && mounted) {
           final scrollHeightWithBuffer = scrollHeight + 30.0;
-
-          if (scrollHeightWithBuffer > widget.minHeight) {
+          if (scrollHeightWithBuffer > minHeight) {
             setState(() {
               _webViewHeight = scrollHeightWithBuffer;
               _isLoading = false;
@@ -211,8 +169,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   }
 
   FutureOr<NavigationDecision> _onNavigation(NavigationRequest navigation) async {
-    developer.log('_onNavigation()', name: 'HtmlContentViewer');
-    // for iOS / WKWebView necessary:
     if (navigation.isForMainFrame && navigation.url == 'about:blank') {
       return NavigationDecision.navigate;
     }
@@ -232,25 +188,5 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     }
     await launcher.launch(url);
     return NavigationDecision.prevent;
-  }
-
-  FutureOr<WebNavigationDecision> _onNavigationOnWebBrowser(WebNavigationRequest navigation) async {
-    developer.log('_onNavigationOnWebBrowser()', name: 'HtmlContentViewer');
-    final requestUri = Uri.parse(navigation.url);
-    final mailtoHandler = widget.mailtoDelegate;
-    if (mailtoHandler != null && requestUri.isScheme('mailto')) {
-      await mailtoHandler(requestUri);
-      return WebNavigationDecision.prevent;
-    }
-    final url = navigation.url;
-    final urlDelegate = widget.urlLauncherDelegate;
-    if (urlDelegate != null) {
-      final handled = await urlDelegate(url);
-      if (handled) {
-        return WebNavigationDecision.prevent;
-      }
-    }
-    await launcher.launch(url);
-    return WebNavigationDecision.prevent;
   }
 }
