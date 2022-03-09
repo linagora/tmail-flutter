@@ -51,8 +51,7 @@ class BottomBarMailWidgetBuilder {
                 bottom: _responsiveUtils.isMobileDevice(_context) ? 8 : 16,
                 right: 5))
             ..textStyle(TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: _responsiveUtils.isMobileDevice(_context) ? 13 : 16,
+                fontSize: _responsiveUtils.isMobileDevice(_context) ? 12 : 16,
                 color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailActionClick != null) {
@@ -68,8 +67,7 @@ class BottomBarMailWidgetBuilder {
                 bottom: _responsiveUtils.isMobileDevice(_context) ? 8 : 16,
                 right: 5))
             ..textStyle(TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: _responsiveUtils.isMobileDevice(_context) ? 13 : 16,
+                fontSize: _responsiveUtils.isMobileDevice(_context) ? 12 : 16,
                 color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailActionClick != null) {
@@ -85,14 +83,29 @@ class BottomBarMailWidgetBuilder {
                 bottom: _responsiveUtils.isMobileDevice(_context) ? 8 : 16,
                 right: 5))
             ..textStyle(TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: _responsiveUtils.isMobileDevice(_context) ? 13 : 16,
+                fontSize: _responsiveUtils.isMobileDevice(_context) ? 12 : 16,
                 color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailActionClick != null) {
                 _onPressEmailActionClick!(EmailActionType.forward);
               }})
             ..text(AppLocalizations.of(_context).forward, isVertical: _responsiveUtils.isMobile(_context)))
+          .build(),
+        (ButtonBuilder(_imagePaths.icNewMessage)
+            ..key(Key('button_new_message'))
+            ..size(20)
+            ..paddingIcon(EdgeInsets.only(
+                top: _responsiveUtils.isMobileDevice(_context) ? 10 : 16,
+                bottom: _responsiveUtils.isMobileDevice(_context) ? 8 : 16,
+                right: 5))
+            ..textStyle(TextStyle(
+                fontSize: _responsiveUtils.isMobileDevice(_context) ? 12 : 16,
+                color: AppColor.colorTextButton))
+            ..onPressActionClick(() {
+              if (_onPressEmailActionClick != null) {
+                _onPressEmailActionClick!(EmailActionType.compose);
+              }})
+            ..text(AppLocalizations.of(_context).new_message, isVertical: _responsiveUtils.isMobile(_context)))
           .build()
       ]
     );
