@@ -90,6 +90,9 @@ extension AppColor on Color {
   static const colorDividerComposer = Color(0xFFC6C6C8);
   static const colorDividerEmailView = Color(0xFFD7D8D9);
   static const colorButton = Color(0xFF959DAD);
+  static const colorTime = Color(0xFF92A1B4);
+  static const colorEmailAddressPrefix = Color(0xFF9AA7B6);
+  static const colorEmailAddressTag = Color(0x146D7885);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

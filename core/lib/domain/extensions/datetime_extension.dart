@@ -39,4 +39,15 @@ extension DateTimeNullableExtension on DateTime? {
     }
     return 'yMMMd';
   }
+
+  String toPatternForEmailView() {
+    if (this != null) {
+      if (this!.isThisYear()) {
+        return 'dd.MM, HH:mm';
+      } else {
+        return 'dd/MM/yyyy';
+      }
+    }
+    return 'dd/MM/yyyy';
+  }
 }
