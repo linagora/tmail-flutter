@@ -38,6 +38,7 @@ class EmailView extends GetView {
             _buildAppBar(context),
             _buildDivider(),
             Expanded(child: _buildEmailBody(context)),
+            Divider(color: AppColor.colorDividerEmailView, height: 1),
             _buildBottomBar(context),
           ]
         )
@@ -75,7 +76,7 @@ class EmailView extends GetView {
 
   Widget _buildBottomBar(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 6, top: 6, right: 6, bottom: 6),
+      padding: EdgeInsets.zero,
       child: Obx(() => (BottomBarMailWidgetBuilder(
               context,
               imagePaths,

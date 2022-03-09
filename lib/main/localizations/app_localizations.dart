@@ -736,4 +736,11 @@ class AppLocalizations {
         name: 'preparing_to_save'
     );
   }
+
+  String get new_message {
+    return Intl.message(
+      'New message',
+      name: 'new_message',
+    );
+  }
 }
