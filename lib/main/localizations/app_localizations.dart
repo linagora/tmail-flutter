@@ -755,4 +755,22 @@ class AppLocalizations {
         'Hide',
         name: 'hide');
   }
+
+  String get copy_email_address {
+    return Intl.message(
+        'Copy email address',
+        name: 'copy_email_address');
+  }
+
+  String get compose_email {
+    return Intl.message(
+        'Compose email',
+        name: 'compose_email');
+  }
+
+  String get email_address_copied_to_clipboard {
+    return Intl.message(
+        'Email address copied to clipboard',
+        name: 'email_address_copied_to_clipboard');
+  }
 }

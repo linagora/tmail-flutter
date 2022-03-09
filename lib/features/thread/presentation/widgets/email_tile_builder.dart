@@ -81,7 +81,7 @@ class EmailTileBuilder {
                       if (_presentationEmail.isUnReadEmail())
                         Padding(
                           padding: EdgeInsets.only(right: 5),
-                          child: SvgPicture.asset(_imagePaths.icUnread, width: 9, height: 9, fit: BoxFit.fill)),
+                          child: SvgPicture.asset(_imagePaths.icUnreadStatus, width: 9, height: 9, fit: BoxFit.fill)),
                       Expanded(
                           child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
                               ? RichTextBuilder(
