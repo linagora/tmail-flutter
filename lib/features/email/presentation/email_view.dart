@@ -31,21 +31,33 @@ class EmailView extends GetView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.primaryLightColor,
-      body: SafeArea(
-        right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-        left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildAppBar(context),
-            _buildDivider(),
-            Expanded(child: _buildEmailBody(context)),
-            Divider(color: AppColor.colorDividerEmailView, height: 1),
-            _buildBottomBar(context),
-          ]
-        )
-      ));
+      backgroundColor: Colors.white,
+      body: Container(
+        padding: EdgeInsets.zero,
+        margin: EdgeInsets.zero,
+        decoration: !(responsiveUtils.isMobile(context) && responsiveUtils.isMobileDevice(context))
+          ? BoxDecoration(border: Border(left: BorderSide(color: AppColor.colorLineLeftEmailView, width: 1.0)))
+          : null,
+        child: SafeArea(
+            right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+            left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildAppBar(context),
+                  Obx(() => emailController.currentEmail != null
+                      ? _buildDivider()
+                      : SizedBox.shrink()),
+                  Expanded(child: _buildEmailBody(context)),
+                  Obx(() => emailController.currentEmail != null
+                      ? Divider(color: AppColor.colorDividerEmailView, height: 1)
+                      : SizedBox.shrink()),
+                  _buildBottomBar(context),
+                ]
+            )
+        ),
+      )
+    );
   }
 
   Widget _buildDivider({EdgeInsets? edgeInsets}){
@@ -64,7 +76,7 @@ class EmailView extends GetView {
               emailController.currentEmail,
               emailController.currentMailbox)
           ..onBackActionClick(() => emailController.backToThreadView())
-          ..addOnEmailActionClick((email, action) => emailController.handleEmailAction(email, action))
+          ..addOnEmailActionClick((email, action) => emailController.handleEmailAction(context, email, action))
           ..addOnMoreActionClick((email, position) => responsiveUtils.isMobileDevice(context)
               ? emailController.openMoreMenuEmailAction(
                   context,
@@ -235,20 +247,23 @@ class EmailView extends GetView {
               ...displayedEmailAddress.map((emailAddress) {
                 return Padding(
                     padding: EdgeInsets.only(left: 10),
-                    child: Chip(
-                      labelPadding: EdgeInsets.only(left: 8, right: 8, bottom: 2),
-                      label: Text('${emailAddress.emailAddress}', maxLines: 1, overflow: TextOverflow.ellipsis),
-                      labelStyle: TextStyle(color: AppColor.colorNameEmail, fontSize: 15, fontWeight: FontWeight.normal),
-                      backgroundColor: AppColor.colorEmailAddressTag,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(width: 0, color: AppColor.colorEmailAddressTag),
+                    child: GestureDetector(
+                      onTap: () => emailController.openEmailAddressDialog(context, emailAddress),
+                      child: Chip(
+                        labelPadding: EdgeInsets.only(left: 8, right: 8, bottom: 2),
+                        label: Text('${emailAddress.asString()}', maxLines: 1, overflow: TextOverflow.ellipsis),
+                        labelStyle: TextStyle(color: AppColor.colorNameEmail, fontSize: 15, fontWeight: FontWeight.normal),
+                        backgroundColor: AppColor.colorEmailAddressTag,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(width: 0, color: AppColor.colorEmailAddressTag),
+                        ),
+                        avatar: (AvatarBuilder()
+                            ..text('${emailAddress.asString().characters.first.toUpperCase()}')
+                            ..addTextStyle(TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600))
+                            ..avatarColor(emailAddress.avatarColors))
+                          .build(),
                       ),
-                      avatar: (AvatarBuilder()
-                          ..text('${emailAddress.emailAddress.characters.first.toUpperCase()}')
-                          ..addTextStyle(TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600))
-                          ..avatarColor(emailAddress.avatarColors))
-                        .build(),
                     )
                 );
               }).toList(),
@@ -484,7 +499,7 @@ class EmailView extends GetView {
             iconRightPadding: responsiveUtils.isMobile(context)
                 ? EdgeInsets.only(right: 12)
                 : EdgeInsets.zero)
-        ..onActionClick((email) => emailController.handleEmailAction(email, EmailActionType.markAsUnread)))
+        ..onActionClick((email) => emailController.handleEmailAction(context, email, EmailActionType.markAsUnread)))
       .build();
   }
 
