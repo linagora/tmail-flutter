@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -53,6 +54,10 @@ class EmailController extends BaseController {
   final emailContents = <EmailContent>[].obs;
   final attachments = <Attachment>[].obs;
   EmailId? _currentEmailId;
+
+  PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
+
+  PresentationEmail? get currentEmail => mailboxDashBoardController.selectedEmail.value;
 
   EmailController(
     this._getEmailContentInteractor,
@@ -310,7 +315,7 @@ class EmailController extends BaseController {
     popBack();
   }
 
-  void openDestinationPickerView(PresentationEmail email) async {
+  void moveToMailboxAction(PresentationEmail email) async {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     final accountId = mailboxDashBoardController.accountId.value;
 
@@ -365,11 +370,10 @@ class EmailController extends BaseController {
     }
   }
 
-  void markAsStarEmail(PresentationEmail presentationEmail) async {
+  void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction markStarAction) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (accountId != null && mailboxCurrent != null) {
-      final markStarAction = presentationEmail.isFlaggedEmail() ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
       consumeState(_markAsStarEmailInteractor.execute(accountId, presentationEmail.toEmail(), markStarAction));
     }
   }
@@ -379,6 +383,48 @@ class EmailController extends BaseController {
       mailboxDashBoardController.setSelectedEmail(success.updatedEmail.toPresentationEmail(selectMode: SelectMode.ACTIVE));
     }
     mailboxDashBoardController.dispatchState(Right(success));
+  }
+
+  void handleEmailAction(PresentationEmail presentationEmail, EmailActionType actionType) {
+    switch(actionType) {
+      case EmailActionType.markAsUnread:
+        markAsEmailRead(presentationEmail, ReadActions.markAsUnread);
+        break;
+      case EmailActionType.markAsStar:
+        markAsStarEmail(presentationEmail, MarkStarAction.markStar);
+        break;
+      case EmailActionType.markAsUnStar:
+        markAsStarEmail(presentationEmail, MarkStarAction.unMarkStar);
+        break;
+      case EmailActionType.move:
+        moveToMailboxAction(presentationEmail);
+        break;
+      case EmailActionType.delete:
+        break;
+      default:
+        break;
+    }
+  }
+
+  void openMoreMenuEmailAction(BuildContext context, List<Widget> actionTiles, {Widget? cancelButton}) {
+    (CupertinoActionSheetBuilder(context)
+        ..addTiles(actionTiles)
+        ..addCancelButton(cancelButton))
+      .show();
+  }
+
+  void openMoreMenuEmailActionForTablet(BuildContext context, RelativeRect? position, List<PopupMenuEntry> popupMenuItems) async {
+    await showMenu(
+        context: context,
+        position: position ?? RelativeRect.fromLTRB(16, 40, 16, 16),
+        color: Colors.white,
+        elevation: 5,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        items: popupMenuItems);
+  }
+
+  void closeMoreMenu() {
+    popBack();
   }
 
   bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null

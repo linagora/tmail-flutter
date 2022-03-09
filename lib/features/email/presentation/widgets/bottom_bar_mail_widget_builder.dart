@@ -43,7 +43,7 @@ class BottomBarMailWidgetBuilder {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (presentationEmail.numberOfAllEmailAddress() > 1)
-          (ButtonBuilder(_imagePaths.icReplyAllV2)
+          (ButtonBuilder(_imagePaths.icReplyAll)
             ..key(Key('button_reply_all_message'))
             ..size(20)
             ..paddingIcon(EdgeInsets.only(
@@ -60,7 +60,7 @@ class BottomBarMailWidgetBuilder {
               }})
             ..text(AppLocalizations.of(_context).reply_all, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        (ButtonBuilder(_imagePaths.icReplyV2)
+        (ButtonBuilder(_imagePaths.icReply)
             ..key(Key('button_reply_message'))
             ..size(20)
             ..paddingIcon(EdgeInsets.only(
@@ -77,7 +77,7 @@ class BottomBarMailWidgetBuilder {
               }})
             ..text(AppLocalizations.of(_context).reply, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        (ButtonBuilder(_imagePaths.icForwardV2)
+        (ButtonBuilder(_imagePaths.icForward)
             ..key(Key('button_forward_message'))
             ..size(20)
             ..paddingIcon(EdgeInsets.only(

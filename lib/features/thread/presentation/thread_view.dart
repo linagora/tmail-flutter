@@ -205,7 +205,7 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget _filterMessagesUnreadAction(BuildContext context, FilterMessageOption optionCurrent) {
     return (FilterMessageCupertinoActionSheetActionBuilder(
           Key('filter_unread_action'),
-          SvgPicture.asset(imagePaths.icUnreadV2, width: 28, height: 28, fit: BoxFit.fill),
+          SvgPicture.asset(imagePaths.icUnread, width: 28, height: 28, fit: BoxFit.fill),
           AppLocalizations.of(context).unread,
           FilterMessageOption.unread,
           optionCurrent: optionCurrent,

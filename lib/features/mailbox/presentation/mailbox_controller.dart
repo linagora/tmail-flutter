@@ -539,7 +539,7 @@ class MailboxController extends BaseController {
       _appToast.showToastWithIcon(
           Get.overlayContext!,
           message: AppLocalizations.of(Get.context!).delete_mailboxes_successfully,
-          icon: _imagePaths.icSelectedV2);
+          icon: _imagePaths.icSelected);
     }
     refreshMailboxChanges();
   }

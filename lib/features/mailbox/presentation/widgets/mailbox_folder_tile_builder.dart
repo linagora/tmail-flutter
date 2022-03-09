@@ -154,7 +154,7 @@ class MailBoxFolderTileBuilder {
         child: IconButton(
             padding: EdgeInsets.zero,
             icon: SvgPicture.asset(
-                _mailboxNode.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelectedV2 : _imagePaths.icUnSelectedV2,
+                _mailboxNode.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected,
                 width: 20,
                 height: 20,
                 fit: BoxFit.fill),
