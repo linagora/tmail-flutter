@@ -196,7 +196,7 @@ class EmailTileBuilder {
       return AnimatedSwitcher(
         duration: Duration(milliseconds: 600),
         transitionBuilder: _transitionBuilder,
-        child: (IconBuilder(_presentationEmail.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelectedV2 : _imagePaths.icUnSelectedV2)
+        child: (IconBuilder(_presentationEmail.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected)
             ..padding(EdgeInsets.all(14))
             ..size(GetPlatform.isWeb ? 48 : 56)
             ..addOnTapActionClick(() {

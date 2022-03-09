@@ -42,7 +42,7 @@ class BottomBarThreadSelectionWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        (ButtonBuilder(_listSelectionEmail.isAllEmailRead ? _imagePaths.icUnreadV2 : _imagePaths.icReadV2)
+        (ButtonBuilder(_listSelectionEmail.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead)
             ..key(Key('button_mark_read_email'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
@@ -56,7 +56,7 @@ class BottomBarThreadSelectionWidget {
                 _listSelectionEmail.isAllEmailRead ? AppLocalizations.of(_context).unread : AppLocalizations.of(_context).read,
                 isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        (ButtonBuilder(_imagePaths.icFlagV2)
+        (ButtonBuilder(_imagePaths.icFlag)
             ..key(Key('button_flag_email'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
@@ -66,7 +66,7 @@ class BottomBarThreadSelectionWidget {
               }})
             ..text(AppLocalizations.of(_context).flag, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        (ButtonBuilder(_imagePaths.icMoveV2)
+        (ButtonBuilder(_imagePaths.icMove)
             ..key(Key('button_move_email'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
@@ -77,7 +77,7 @@ class BottomBarThreadSelectionWidget {
             ..text(AppLocalizations.of(_context).move, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
         if (!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context))
-          (ButtonBuilder(_imagePaths.icSpamV2)
+          (ButtonBuilder(_imagePaths.icSpam)
             ..key(Key('button_spam_email'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
@@ -88,7 +88,7 @@ class BottomBarThreadSelectionWidget {
             ..text(AppLocalizations.of(_context).spam, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
         if (!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context))
-          (ButtonBuilder(_imagePaths.icDeleteV2)
+          (ButtonBuilder(_imagePaths.icDelete)
             ..key(Key('button_delete_email'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))

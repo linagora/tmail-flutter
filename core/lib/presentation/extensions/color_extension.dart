@@ -87,7 +87,9 @@ extension AppColor on Color {
   static const colorConfirmActionDialog= Color(0xFFF2F2F2);
   static const colorEmailAddress = Color(0xFF333333);
   static const colorHintEmailAddressInput = Color(0x993C3C43);
-  static const coloDividerComposer = Color(0xFFC6C6C8);
+  static const colorDividerComposer = Color(0xFFC6C6C8);
+  static const colorDividerEmailView = Color(0xFFD7D8D9);
+  static const colorButton = Color(0xFF959DAD);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
