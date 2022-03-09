@@ -6,7 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
@@ -15,7 +17,6 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mai
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_item_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_place_holder_loading_widget.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/sender_and_receiver_information_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:filesize/filesize.dart';
 
@@ -24,6 +25,8 @@ class EmailView extends GetView {
   final emailController = Get.find<EmailController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
+
+  static const int LIMIT_ADDRESS_DISPLAY = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +48,9 @@ class EmailView extends GetView {
       ));
   }
 
-  Widget _buildDivider(){
+  Widget _buildDivider({EdgeInsets? edgeInsets}){
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: edgeInsets ?? EdgeInsets.symmetric(horizontal: 16),
       child: Divider(color: AppColor.colorDividerEmailView, height: 0.5));
   }
 
@@ -91,26 +94,16 @@ class EmailView extends GetView {
       color: Colors.white,
       margin: EdgeInsets.zero,
       alignment: Alignment.topCenter,
-      child: Obx(() => emailController.mailboxDashBoardController.selectedEmail.value != null
+      child: Obx(() => emailController.currentEmail != null
         ? SingleChildScrollView(
             physics : ClampingScrollPhysics(),
             child: Container(
               margin: EdgeInsets.zero,
               width: double.infinity,
               alignment: Alignment.center,
-              padding: EdgeInsets.only(
-                  left: 16,
-                  right: 16,
-                  bottom: 16,
-                  top: 16),
+              padding: EdgeInsets.zero,
               color: Colors.white,
-              child:  Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  _buildEmailMessage(context),
-                ])
+              child:  _buildEmailMessage(context)
             ))
         : Center(child: _buildEmailEmpty(context))
       )
@@ -126,52 +119,189 @@ class EmailView extends GetView {
 
   Widget _buildEmailSubject() {
     return Padding(
-      padding: EdgeInsets.only(left: 8, top: 25, bottom: 16),
+      padding: EdgeInsets.only(right: 16),
       child: Text(
           '${emailController.mailboxDashBoardController.selectedEmail.value?.getEmailTitle()}',
-          style: TextStyle(fontSize: 22, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700)
+          style: TextStyle(fontSize: 20, color: AppColor.colorNameEmail)
       ));
   }
 
   Widget _buildEmailMessage(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(
-          bottom: 16,
-          left: 16,
-          right: 16,
-          top: 10),
+      padding: EdgeInsets.only(bottom: 16, left: 16, right: 16, top: 10),
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: AppColor.colorShadowBgContentEmail,
-            spreadRadius: 3,
-            blurRadius: 3,
-            offset: Offset(0, 2), // changes position of shadow
-          ),
-        ],
-        color: Colors.white),
+      color: Colors.white,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          Obx(() => SenderAndReceiverInformationTileBuilder(
-              context,
-              imagePaths,
-              emailController.mailboxDashBoardController.selectedEmail.value,
-              emailController.emailAddressExpandMode.value)
-            .onOpenExpandAddressReceiverActionClick(() => emailController.toggleDisplayEmailAddressAction(expandMode: ExpandMode.EXPAND))
-            .build()),
-          Padding(
-              padding: EdgeInsets.zero,
-              child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.1)),
-          _buildEmailSubject(),
+          Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(child: _buildEmailSubject()),
+                _buildEmailTime(context),
+              ]),
+          _buildDivider(edgeInsets: EdgeInsets.only(top: 16)),
+          Obx(() => emailController.currentEmail != null
+            ? _buildEmailAddress(
+                context,
+                emailController.currentEmail!,
+                emailController.emailAddressExpandMode.value,
+                emailController.isDisplayFullEmailAddress.value)
+            : SizedBox.shrink()),
+          _buildDivider(edgeInsets: EdgeInsets.only(top: 4)),
           _buildAttachments(context),
           _buildListEmailContent(),
         ],
       )
+    );
+  }
+
+  Widget _buildEmailTime(BuildContext context) {
+    return Transform(
+        transform: Matrix4.translationValues(0.0, 12.0, 0.0),
+        child: Text(
+            '${emailController.currentEmail?.getReceivedAt(
+                Localizations.localeOf(context).toLanguageTag(),
+                pattern: emailController.currentEmail?.receivedAt?.value.toLocal().toPatternForEmailView())}',
+            maxLines: 1,
+            overflow:TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 13, color: AppColor.colorTime)));
+  }
+
+  Widget _buildEmailAddress(BuildContext context, PresentationEmail email, ExpandMode expandMode, bool isDisplayFull) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (email.from.numberEmailAddress() > 0)
+          _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.from, isDisplayFull),
+        if (email.to.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND)
+          _buildDivider(edgeInsets: EdgeInsets.only(top: 4)),
+        if (email.to.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND)
+          _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.to, isDisplayFull),
+        if (email.cc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
+          _buildDivider(edgeInsets: EdgeInsets.only(top: 4)),
+        if (email.cc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
+          _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.cc, isDisplayFull),
+        if (email.bcc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
+          _buildDivider(edgeInsets: EdgeInsets.only(top: 4)),
+        if (email.bcc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
+          _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.bcc, isDisplayFull),
+      ],
+    );
+  }
+
+  Widget _buildEmailAddressByPrefix(
+      BuildContext context,
+      PresentationEmail presentationEmail,
+      PrefixEmailAddress prefixEmailAddress,
+      bool isDisplayFull,
+  ) {
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: Text(
+                  '${prefixEmailAddress.asName(context)}:',
+                  style: TextStyle(fontSize: 14, color: AppColor.colorEmailAddressPrefix))),
+          Expanded(child: _buildEmailAddressWidget(
+              context,
+              presentationEmail,
+              prefixEmailAddress.listEmailAddress(presentationEmail),
+              prefixEmailAddress,
+              isDisplayFull
+          )),
+          if (prefixEmailAddress == PrefixEmailAddress.from) _buildEmailAddressDetailButton(context),
+        ]
+    );
+  }
+
+  Widget _buildEmailAddressWidget(
+      BuildContext context,
+      PresentationEmail presentationEmail,
+      List<EmailAddress> listEmailAddress,
+      PrefixEmailAddress prefixEmailAddress,
+      bool isDisplayFull,
+  ) {
+    final displayedEmailAddress = isDisplayFull ? listEmailAddress : listEmailAddress.sublist(0, LIMIT_ADDRESS_DISPLAY);
+    return Padding(
+        padding: EdgeInsets.only(top: 4),
+        child: Wrap(
+            children: [
+              ...displayedEmailAddress.map((emailAddress) {
+                return Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Chip(
+                      labelPadding: EdgeInsets.only(left: 8, right: 8, bottom: 2),
+                      label: Text('${emailAddress.emailAddress}', maxLines: 1, overflow: TextOverflow.ellipsis),
+                      labelStyle: TextStyle(color: AppColor.colorNameEmail, fontSize: 15, fontWeight: FontWeight.normal),
+                      backgroundColor: AppColor.colorEmailAddressTag,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(width: 0, color: AppColor.colorEmailAddressTag),
+                      ),
+                      avatar: (AvatarBuilder()
+                          ..text('${emailAddress.emailAddress.characters.first.toUpperCase()}')
+                          ..addTextStyle(TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600))
+                          ..avatarColor(emailAddress.avatarColors))
+                        .build(),
+                    )
+                );
+              }).toList(),
+              if (prefixEmailAddress == PrefixEmailAddress.to
+                && presentationEmail.numberOfAllEmailAddress() > 1
+                && !isDisplayFull)
+                _buildEmailAddressCounter(context, presentationEmail),
+            ]
+        ));
+  }
+
+  Widget _buildEmailAddressDetailButton(BuildContext context) {
+    return Material(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.transparent,
+        child: Padding(
+            padding: EdgeInsets.only(top: 4, left: 16),
+            child: TextButton(
+              onPressed: () => emailController.toggleDisplayEmailAddressAction(),
+              child: Text(
+                emailController.isExpandEmailAddress
+                    ? AppLocalizations.of(context).hide
+                    : AppLocalizations.of(context).details,
+                style: TextStyle(fontSize: 15, color: AppColor.colorTextButton, fontWeight: FontWeight.normal),
+              ),
+            )
+        )
+    );
+  }
+
+  String _getRemainCountAddressReceiver(PresentationEmail email) {
+    if (email.numberOfAllEmailAddress() - LIMIT_ADDRESS_DISPLAY >= 999) {
+      return '999';
+    }
+    return '${email.numberOfAllEmailAddress() - LIMIT_ADDRESS_DISPLAY}';
+  }
+
+  Widget _buildEmailAddressCounter(BuildContext context, PresentationEmail email) {
+    return GestureDetector(
+      onTap: () => emailController.showFullEmailAddress(),
+      child: Padding(
+        padding: EdgeInsets.only(left: 8),
+        child: Chip(
+          labelPadding: EdgeInsets.symmetric(horizontal: 8),
+          label: Text('+${_getRemainCountAddressReceiver(email)}', maxLines: 1, overflow: TextOverflow.ellipsis),
+          labelStyle: TextStyle(color: AppColor.colorTextButton, fontSize: 15, fontWeight: FontWeight.normal),
+          backgroundColor: AppColor.colorEmailAddressTag,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(width: 0, color: AppColor.colorEmailAddressTag),
+          ),
+        ),
+      ),
     );
   }
 

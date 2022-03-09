@@ -50,6 +50,7 @@ class EmailController extends BaseController {
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
+  final isDisplayFullEmailAddress = false.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
   final emailContents = <EmailContent>[].obs;
   final attachments = <Attachment>[].obs;
@@ -76,8 +77,8 @@ class EmailController extends BaseController {
     super.onReady();
     mailboxDashBoardController.selectedEmail.listen((presentationEmail) {
       if (_currentEmailId != presentationEmail?.id) {
-        _currentEmailId = presentationEmail?.id;
         _clearEmailContent();
+        _currentEmailId = presentationEmail?.id;
         final accountId = mailboxDashBoardController.accountId.value;
         if (accountId != null && presentationEmail != null) {
           _getEmailContentAction(accountId, presentationEmail.id);
@@ -146,15 +147,27 @@ class EmailController extends BaseController {
   }
 
   void _clearEmailContent() {
-    toggleDisplayEmailAddressAction(expandMode: ExpandMode.COLLAPSE);
     attachmentsExpandMode.value = ExpandMode.COLLAPSE;
+    emailAddressExpandMode.value = ExpandMode.COLLAPSE;
+    isDisplayFullEmailAddress.value = false;
     emailContents.clear();
     attachments.clear();
   }
 
-  void toggleDisplayEmailAddressAction({required ExpandMode expandMode}) {
-    emailAddressExpandMode.value = expandMode;
+  void toggleDisplayEmailAddressAction({ExpandMode? expandMode}) {
+    if (expandMode != null) {
+      emailAddressExpandMode.value = expandMode;
+    } else {
+      final newExpandMode = emailAddressExpandMode.value == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
+      emailAddressExpandMode.value = newExpandMode;
+    }
+
+    if (emailAddressExpandMode.value == ExpandMode.COLLAPSE) {
+      isDisplayFullEmailAddress.value = false;
+    }
   }
+
+  bool get isExpandEmailAddress => emailAddressExpandMode.value == ExpandMode.EXPAND;
 
   void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions) async {
     final accountId = mailboxDashBoardController.accountId.value;
@@ -423,6 +436,10 @@ class EmailController extends BaseController {
         items: popupMenuItems);
   }
 
+  void showFullEmailAddress() {
+    isDisplayFullEmailAddress.value = true;
+  }
+
   void closeMoreMenu() {
     popBack();
   }
@@ -433,6 +450,9 @@ class EmailController extends BaseController {
       && mailboxDashBoardController.selectedEmail.value != null;
 
   void backToThreadView() {
+    attachmentsExpandMode.value = ExpandMode.COLLAPSE;
+    emailAddressExpandMode.value = ExpandMode.COLLAPSE;
+    isDisplayFullEmailAddress.value = false;
     popBack();
   }
 
