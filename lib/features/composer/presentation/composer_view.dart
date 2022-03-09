@@ -134,7 +134,7 @@ class ComposerView extends GetWidget<ComposerController> {
   Widget _buildDivider(){
     return Padding(
       padding: EdgeInsets.only(left: 16),
-      child: Divider(color: AppColor.coloDividerComposer, height: 1));
+      child: Divider(color: AppColor.colorDividerComposer, height: 1));
   }
   
   Widget _buildEmailAddress(BuildContext context) {
@@ -171,7 +171,7 @@ class ComposerView extends GetWidget<ComposerController> {
             ]
           )
         ),
-        Divider(color: AppColor.coloDividerComposer, height: 1),
+        Divider(color: AppColor.colorDividerComposer, height: 1),
         Obx(() => (EmailAddressInputBuilder(
                 context,
                 imagePaths,
@@ -187,7 +187,7 @@ class ComposerView extends GetWidget<ComposerController> {
           .build()
         ),
         Obx(() => controller.expandMode.value == ExpandMode.EXPAND
-          ? Divider(color: AppColor.coloDividerComposer, height: 1)
+          ? Divider(color: AppColor.colorDividerComposer, height: 1)
           : SizedBox.shrink()),
         Obx(() => controller.expandMode.value == ExpandMode.EXPAND
           ? (EmailAddressInputBuilder(
@@ -204,7 +204,7 @@ class ComposerView extends GetWidget<ComposerController> {
           : SizedBox.shrink()
         ),
         Obx(() => controller.expandMode.value == ExpandMode.EXPAND
-          ? Divider(color: AppColor.coloDividerComposer, height: 1)
+          ? Divider(color: AppColor.colorDividerComposer, height: 1)
           : SizedBox.shrink()),
         Obx(() => controller.expandMode.value == ExpandMode.EXPAND
           ? (EmailAddressInputBuilder(
