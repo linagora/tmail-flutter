@@ -6,24 +6,11 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
-import 'package:collection/collection.dart';
 
 extension PresentationEmailExtension on PresentationEmail {
 
   List<Color> get avatarColors {
-    return AppColor.mapGradientColor[_generateIndexFromSender()];
-  }
-
-  int _generateIndexFromSender() {
-    if (from != null && from?.isNotEmpty == true) {
-      final codeUnits = from?.first.email?.codeUnits ?? List.empty();
-      if (codeUnits.isNotEmpty) {
-        final sumCodeUnits = codeUnits.sum;
-        final index = sumCodeUnits % AppColor.mapGradientColor.length;
-        return index;
-      }
-    }
-    return 0;
+    return from?.first.avatarColors ?? AppColor.mapGradientColor.first;
   }
 
   int numberOfAllEmailAddress() => to.numberEmailAddress() + cc.numberEmailAddress() + bcc.numberEmailAddress();

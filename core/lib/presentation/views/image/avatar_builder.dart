@@ -12,6 +12,7 @@ class AvatarBuilder {
   OnTapAvatarActionClick? _onTapAvatarActionClick;
   List<Color>? _avatarColors;
   List<BoxShadow>? _boxShadows;
+  TextStyle? _textStyle;
 
   void key(Key key) {
     _key = key;
@@ -39,6 +40,10 @@ class AvatarBuilder {
 
   void addBoxShadows(List<BoxShadow>? boxShadows) {
     _boxShadows = boxShadows;
+  }
+
+  void addTextStyle(TextStyle? textStyle) {
+    _textStyle = textStyle;
   }
 
   void addOnTapActionClick(OnTapAvatarActionClick onTapAvatarActionClick) {
@@ -81,7 +86,7 @@ class AvatarBuilder {
               ),
               child: Text(
                 '${_text ?? ''}',
-                style: TextStyle(fontSize: 20, color: _textColor ?? AppColor.avatarTextColor, fontWeight: FontWeight.w500)
+                style: _textStyle ?? TextStyle(fontSize: 20, color: _textColor ?? AppColor.avatarTextColor, fontWeight: FontWeight.w500)
               )
             ),
           ],
