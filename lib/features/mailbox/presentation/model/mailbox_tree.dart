@@ -3,20 +3,24 @@ import 'dart:collection';
 
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/mailbox/expand_mode.dart';
+import 'package:model/mailbox/select_mode.dart';
 
 import 'mailbox_node.dart';
+
+typedef NodeQuery = bool Function(MailboxNode node);
 
 class MailboxTree with EquatableMixin {
   MailboxNode root;
   MailboxTree(this.root);
 
-  MailboxNode? findNode(MailboxId? mailboxId) {
+  MailboxNode? findNode(NodeQuery nodeQuery) {
     var result;
     final queue = ListQueue<MailboxNode>();
     queue.addLast(root);
-    while (queue.isNotEmpty && mailboxId != null) {
+    while (queue.isNotEmpty) {
       final currentNode = queue.removeFirst();
-      if (mailboxId == currentNode.item.id) {
+      if (nodeQuery(currentNode)) {
         result = currentNode;
         break;
       }
@@ -27,22 +31,72 @@ class MailboxTree with EquatableMixin {
     return result;
   }
 
-  List<MailboxNode> getAllNodes(MailboxNode node){
-    List<MailboxNode> listOfNodes = <MailboxNode>[];
-    _addAllNodes(node, listOfNodes);
-    return listOfNodes;
+  List<MailboxNode> findNodes(NodeQuery nodeQuery) {
+    final listResult = List<MailboxNode>.empty(growable: true);
+    final queue = ListQueue<MailboxNode>();
+    queue.addLast(root);
+    while (queue.isNotEmpty) {
+      final currentNode = queue.removeFirst();
+      if (nodeQuery(currentNode)) {
+        listResult.add(currentNode);
+      }
+      currentNode.childrenItems?.forEach((child) {
+        queue.addLast(child);
+      });
+    }
+    return listResult;
   }
 
-  void _addAllNodes(MailboxNode? node, List<MailboxNode> listOfNodes) {
-    if (node != null) {
-      listOfNodes.add(node);
-      List<MailboxNode>? childrenItems = node.childrenItems;
-      if (childrenItems != null) {
-        childrenItems.forEach((child) {
-          _addAllNodes(child, listOfNodes);
-        });
-      }
+  MailboxNode? updateExpandedNode(MailboxNode selectedNode, ExpandMode newExpandMode) {
+    var matchedNode = findNode((node) => node.item.id == selectedNode.item.id);
+    matchedNode?.expandMode = newExpandMode;
+    return matchedNode;
+  }
+
+  MailboxNode? updateSelectedNode(MailboxNode selectedNode, SelectMode newSelectMode) {
+    var matchedNode = findNode((node) => node.item.id == selectedNode.item.id);
+    matchedNode?.selectMode = newSelectMode;
+    return matchedNode;
+  }
+
+  void updateNodesUIMode(SelectMode? selectMode, ExpandMode? expandMode) {
+    if (selectMode == null && expandMode == null) {
+      return;
     }
+    final queue = ListQueue<MailboxNode>();
+    queue.addLast(root);
+    while (queue.isNotEmpty) {
+      final currentNode = queue.removeFirst();
+      if (expandMode != null) {
+        currentNode.expandMode = expandMode;
+      }
+      if (selectMode != null) {
+        currentNode.selectMode = selectMode;
+      }
+      currentNode.childrenItems?.forEach((child) {
+        queue.addLast(child);
+      });
+    }
+  }
+
+  String? getNodePath(MailboxId mailboxId) {
+    final matchedNode = findNode((node) => node.item.id == mailboxId);
+    if (matchedNode == null) {
+      return null;
+    }
+    String path = '${matchedNode.item.name?.name}';
+
+    var parentId = matchedNode.item.parentId;
+
+    while(parentId != null) {
+      var parentNode = findNode((node) => node.item.id == parentId);
+      if (parentNode == null) {
+        break;
+      }
+      path = '${parentNode.item.name?.name}/$path';
+      parentId = parentNode.item.parentId;
+    }
+    return path;
   }
 
   @override
