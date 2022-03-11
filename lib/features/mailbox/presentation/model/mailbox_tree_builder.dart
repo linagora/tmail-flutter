@@ -1,6 +1,7 @@
 import 'dart:collection';
-import 'package:collection/collection.dart';
 
+import 'package:collection/collection.dart';
+import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 
@@ -36,5 +37,41 @@ class TreeBuilder {
       }
     });
     return tree;
+  }
+
+  Future<Tuple2<MailboxTree, MailboxTree>> generateMailboxTreeInUI(List<PresentationMailbox> allMailboxes) async {
+    final Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
+
+    final defaultTree = MailboxTree(MailboxNode.root());
+    final folderTree = MailboxTree(MailboxNode.root());
+
+    allMailboxes.forEach((mailbox) {
+      mailboxDictionary[mailbox.id] = MailboxNode(mailbox);
+    });
+
+    allMailboxes.forEach((mailbox) {
+      final parentId = mailbox.parentId;
+      final parentNode = mailboxDictionary[parentId];
+      final node = mailboxDictionary[mailbox.id];
+      if (node != null) {
+        if (parentNode != null) {
+          parentNode.addChildNode(node);
+          parentNode.childrenItems?.sortByCompare<MailboxName?>(
+            (node) => node.item.name,
+            (name, other) => name?.compareAlphabetically(other) ?? -1
+          );
+        } else {
+          var tree = mailbox.hasRole() ? defaultTree : folderTree;
+
+          tree.root.addChildNode(node);
+          tree.root.childrenItems?.sortByCompare<MailboxName?>(
+            (node) => node.item.name,
+            (name, other) => name?.compareAlphabetically(other) ?? -1
+          );
+        }
+      }
+    });
+
+    return Tuple2(defaultTree, folderTree);
   }
 }
