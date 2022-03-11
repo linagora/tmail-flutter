@@ -4,7 +4,6 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 
 class MailboxNode with EquatableMixin{
   static PresentationMailbox _root = PresentationMailbox(MailboxId(Id('root')));
@@ -36,31 +35,6 @@ class MailboxNode with EquatableMixin{
     childrenItems?.add(node);
   }
 
-  String getPathMailboxNode(MailboxTree mailboxTree, List<PresentationMailbox> defaultMailboxList) {
-    String path = '${item.name?.name}';
-
-    var parentId = item.parentId;
-
-    while(parentId != null) {
-      var parent = mailboxTree.findNode(parentId);
-      if (parent == null) {
-        try {
-          final parentItem = defaultMailboxList.firstWhere((mailbox) => mailbox.id == parentId);
-          parent = MailboxNode(parentItem);
-        } catch(e) {}
-      }
-
-      if (parent != null) {
-        path = '${parent.item.name?.name}/$path';
-        parentId = parent.item.parentId;
-      } else {
-        break;
-      }
-    }
-
-    return path;
-  }
-
   List<MailboxNode>? updateNode(MailboxId mailboxId, MailboxNode newNode, {MailboxNode? parent}) {
     List<MailboxNode>? _children = parent == null ? this.childrenItems : parent.childrenItems;
     return _children?.map((MailboxNode child) {
@@ -69,7 +43,7 @@ class MailboxNode with EquatableMixin{
       } else {
         if (child.hasChildren()) {
           return child.copyWith(
-            mailboxNodes: updateNode(
+            children: updateNode(
               mailboxId,
               newNode,
               parent: child,
@@ -81,6 +55,24 @@ class MailboxNode with EquatableMixin{
     }).toList();
   }
 
+  List<MailboxNode> descendantsAsList(){
+    List<MailboxNode> listOfNodes = <MailboxNode>[];
+    _appendDescendants(this, listOfNodes);
+    return listOfNodes;
+  }
+
+  void _appendDescendants(MailboxNode? node, List<MailboxNode> listOfNodes) {
+    if (node != null) {
+      listOfNodes.add(node);
+      List<MailboxNode>? childrenItems = node.childrenItems;
+      if (childrenItems != null) {
+        childrenItems.forEach((child) {
+          _appendDescendants(child, listOfNodes);
+        });
+      }
+    }
+  }
+
   List<MailboxNode>? toggleSelectNode(MailboxNode selectedMailboxMode, {MailboxNode? parent}) {
     List<MailboxNode>? _children = parent == null ? this.childrenItems : parent.childrenItems;
     return _children?.map((MailboxNode child) {
@@ -88,7 +80,7 @@ class MailboxNode with EquatableMixin{
         return child.toggleSelectMailboxNode();
       } else {
         if (child.hasChildren()) {
-          return child.copyWith(mailboxNodes: toggleSelectNode(selectedMailboxMode, parent: child));
+          return child.copyWith(children: toggleSelectNode(selectedMailboxMode, parent: child));
         }
         return child;
       }
@@ -100,7 +92,7 @@ class MailboxNode with EquatableMixin{
     return _children?.map((MailboxNode child) {
       if (child.hasChildren()) {
         return child.copyWith(
-            mailboxNodes: toSelectedNode(selectMode: selectMode, newExpandMode: newExpandMode, parent: child),
+            children: toSelectedNode(selectMode: selectMode, newExpandMode: newExpandMode, parent: child),
             newSelectMode: selectMode,
             newExpandMode: newExpandMode);
       }
@@ -109,18 +101,18 @@ class MailboxNode with EquatableMixin{
   }
 
   @override
-  List<Object?> get props => [item, childrenItems];
+  List<Object?> get props => [item, childrenItems, expandMode, selectMode];
 }
 
 extension MailboxNodeExtension on MailboxNode {
   MailboxNode copyWith({
     SelectMode? newSelectMode,
     ExpandMode? newExpandMode,
-    List<MailboxNode>? mailboxNodes
+    List<MailboxNode>? children
   }) {
     return MailboxNode(
       item,
-      childrenItems: mailboxNodes ?? childrenItems,
+      childrenItems: children ?? childrenItems,
       expandMode: newExpandMode ?? expandMode,
       selectMode: newSelectMode ?? selectMode,
     );
