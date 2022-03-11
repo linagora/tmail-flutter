@@ -5,9 +5,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmapState;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
@@ -30,8 +31,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_in
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/special_character_validator.dart';
@@ -50,10 +49,9 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_status.d
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmapState;
 import 'package:uuid/uuid.dart';
 
-class MailboxController extends BaseController {
+class MailboxController extends BaseMailboxController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final GetAllMailboxInteractor _getAllMailboxInteractor;
@@ -64,21 +62,17 @@ class MailboxController extends BaseController {
   final DeleteMultipleMailboxInteractor _deleteMultipleMailboxInteractor;
   final VerifyNameInteractor _verifyNameInteractor;
   final RenameMailboxInteractor _renameMailboxInteractor;
-  final TreeBuilder _treeBuilder;
   final Uuid _uuid;
   final AppToast _appToast;
   final ImagePaths _imagePaths;
   final ResponsiveUtils responsiveUtils;
   final CachingManager _cachingManager;
 
-  final defaultMailboxList = <PresentationMailbox>[].obs;
-  final folderMailboxNodeList = <MailboxNode>[].obs;
   final listMailboxSearched = <PresentationMailbox>[].obs;
   final searchState = SearchState.initial().obs;
   final searchQuery = SearchQuery.initial().obs;
   final currentSelectMode = SelectMode.INACTIVE.obs;
 
-  MailboxTree folderMailboxTree = MailboxTree(MailboxNode.root());
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
   TextEditingController searchInputController = TextEditingController();
   FocusNode searchFocus = FocusNode();
@@ -94,13 +88,13 @@ class MailboxController extends BaseController {
     this._deleteMultipleMailboxInteractor,
     this._verifyNameInteractor,
     this._renameMailboxInteractor,
-    this._treeBuilder,
+    treeBuilder,
     this._uuid,
     this._appToast,
     this._imagePaths,
     this.responsiveUtils,
     this._cachingManager,
-  );
+  ) : super(treeBuilder);
 
   @override
   void onReady() {
@@ -144,11 +138,11 @@ class MailboxController extends BaseController {
     super.onData(newState);
     newState.map((success) {
       if (success is GetAllMailboxSuccess) {
-        allMailboxes = success.defaultMailboxList + success.folderMailboxList;
+        allMailboxes = success.mailboxList;
         currentMailboxState = success.currentMailboxState;
-        defaultMailboxList.value = success.defaultMailboxList;
-        _setUpMapMailboxIdDefault(success.defaultMailboxList, success.folderMailboxList);
-        _buildTree(success.folderMailboxList);
+        buildTree(allMailboxes);
+
+        _setUpMapMailboxIdDefault(allMailboxes, defaultMailboxTree.value, folderMailboxTree.value);
       }
     });
   }
@@ -208,34 +202,17 @@ class MailboxController extends BaseController {
     }
   }
 
-  void _buildTree(List<PresentationMailbox> folderMailboxList) async {
-    folderMailboxTree = await _treeBuilder.generateMailboxTree(folderMailboxList);
-    folderMailboxNodeList.value = folderMailboxTree.root.childrenItems ?? [];
-  }
-
-  void toggleMailboxFolder(MailboxNode mailboxNode) {
-    final newExpandMode = mailboxNode.expandMode == ExpandMode.COLLAPSE
-        ? ExpandMode.EXPAND
-        : ExpandMode.COLLAPSE;
-
-    final newMailboxNodeList = folderMailboxNodeList.updateNode(
-        mailboxNode.item.id,
-        mailboxNode.copyWith(newExpandMode: newExpandMode));
-    folderMailboxNodeList.value = newMailboxNodeList;
-  }
-
-  void _setUpMapMailboxIdDefault(List<PresentationMailbox> defaultMailboxList, List<PresentationMailbox> folderMailboxList) {
-    final allMailbox = defaultMailboxList + folderMailboxList;
+  void _setUpMapMailboxIdDefault(List<PresentationMailbox> allMailbox, MailboxTree defaultTree, MailboxTree folderTree) {
 
     final mapDefaultMailboxId = Map<Role, MailboxId>.fromIterable(
-      defaultMailboxList,
-      key: (presentationMailbox) => presentationMailbox.role!,
-      value: (presentationMailbox) => presentationMailbox.id);
+      defaultTree.root.childrenItems ?? List<MailboxNode>.empty(),
+      key: (mailboxNode) => mailboxNode.item.role!,
+      value: (mailboxNode) => mailboxNode.item.id);
 
     final mapDefaultMailbox = Map<Role, PresentationMailbox>.fromIterable(
-      defaultMailboxList,
-      key: (presentationMailbox) => presentationMailbox.role!,
-      value: (presentationMailbox) => presentationMailbox);
+      defaultTree.root.childrenItems ?? List<MailboxNode>.empty(),
+      key: (mailboxNode) => mailboxNode.item.role!,
+      value: (mailboxNode) => mailboxNode.item);
 
     final mapMailbox = Map<MailboxId, PresentationMailbox>.fromIterable(
       allMailbox,
@@ -381,13 +358,9 @@ class MailboxController extends BaseController {
       if (!presentationMailbox.hasParentId()) {
         return presentationMailbox;
       } else {
-        final mailboxNode = folderMailboxTree.findNode(presentationMailbox.id);
-        if (mailboxNode != null) {
-          String mailboxPath = mailboxNode.getPathMailboxNode(folderMailboxTree, defaultMailboxList);
-          if (mailboxPath.contains('/')) {
-            mailboxPath = mailboxPath.substring(0, mailboxPath.lastIndexOf('/')).replaceAll('/', ' / ');
-          }
-          return presentationMailbox.toPresentationMailboxWithMailboxPath(mailboxPath);
+        final mailboxNodePath = findNodePath(presentationMailbox.id);
+        if (mailboxNodePath != null) {
+          return presentationMailbox.toPresentationMailboxWithMailboxPath(mailboxNodePath);
         } else {
           return presentationMailbox;
         }
@@ -416,18 +389,7 @@ class MailboxController extends BaseController {
               ? mailbox.toggleSelectPresentationMailbox()
               : mailbox)
           .toList();
-    } else {
-      defaultMailboxList.value = defaultMailboxList
-          .map((mailbox) => mailbox.id == mailboxSelected.id
-              ? mailbox.toggleSelectPresentationMailbox()
-              : mailbox)
-          .toList();
     }
-  }
-
-  void selectMailboxNode(BuildContext context, MailboxNode mailboxNodeSelected) {
-    final newMailboxNodeList = folderMailboxNodeList.toggleSelectMailboxNode(mailboxNodeSelected);
-    folderMailboxNodeList.value = newMailboxNodeList;
   }
 
   void _cancelSelectMailbox() {
@@ -436,14 +398,8 @@ class MailboxController extends BaseController {
           .map((mailbox) => mailbox.toSelectedPresentationMailbox(selectMode: SelectMode.INACTIVE))
           .toList();
     } else {
-      defaultMailboxList.value = defaultMailboxList
-          .map((mailbox) => mailbox.toSelectedPresentationMailbox(selectMode: SelectMode.INACTIVE))
-          .toList();
-
-      final newMailboxNodeList = folderMailboxNodeList.toSelectMailboxNode(
-          selectMode: SelectMode.INACTIVE,
-          newExpandMode: ExpandMode.COLLAPSE);
-      folderMailboxNodeList.value = newMailboxNodeList;
+      defaultMailboxTree.value.updateNodesUIMode(SelectMode.INACTIVE, ExpandMode.COLLAPSE);
+      folderMailboxTree.value.updateNodesUIMode(SelectMode.INACTIVE, ExpandMode.COLLAPSE);
     }
     currentSelectMode.value = SelectMode.INACTIVE;
   }
@@ -451,26 +407,19 @@ class MailboxController extends BaseController {
   List<PresentationMailbox> get listMailboxSelected {
     if (isSearchActive()) {
       return listMailboxSearched
-          .where((mailbox) => mailbox.selectMode == SelectMode.ACTIVE)
-          .toList();
+        .where((mailbox) => mailbox.selectMode == SelectMode.ACTIVE)
+        .toList();
     } else {
-      final defaultMailboxSelected = defaultMailboxList
-          .where((mailbox) => mailbox.selectMode == SelectMode.ACTIVE)
-          .toList();
+      final defaultMailboxSelected = defaultMailboxTree.value
+        .findNodes((node) => node.selectMode == SelectMode.ACTIVE);
 
-      final newFolderMailboxTree = MailboxTree(MailboxNode(
-          MailboxNode.rootItem(),
-          childrenItems: folderMailboxNodeList));
-      final folderMailboxList = allMailboxes.where((mailbox) => !mailbox.hasRole()).toList();
+      final folderMailboxSelected = folderMailboxTree.value
+        .findNodes((node) => node.selectMode == SelectMode.ACTIVE);
 
-      final folderMailboxSelected = folderMailboxList
-          .where((mailbox) {
-            final node = newFolderMailboxTree.findNode(mailbox.id);
-            return node != null && node.selectMode == SelectMode.ACTIVE;
-          })
-          .toList();
-
-      return defaultMailboxSelected + folderMailboxSelected;
+      return [defaultMailboxSelected, folderMailboxSelected]
+        .expand((node) => node)
+        .map((node) => node.item)
+        .toList();
     }
   }
 
@@ -512,20 +461,17 @@ class MailboxController extends BaseController {
   }
 
   void _deleteMailboxAction(PresentationMailbox presentationMailbox) {
-    final newFolderMailboxTree = MailboxTree(MailboxNode(
-        MailboxNode.rootItem(),
-        childrenItems: folderMailboxNodeList));
-    final mailboxNode = newFolderMailboxTree.findNode(presentationMailbox.id);
+    final matchedNode = findMailboxNodeById(presentationMailbox.id);
 
     final accountId = mailboxDashBoardController.accountId.value;
 
-    if (mailboxNode != null && accountId != null) {
-      final allMailboxId = newFolderMailboxTree
-          .getAllNodes(mailboxNode)
-          .map((node) => node.item.id)
-          .toList();
-      final allMailboxIdReversed = allMailboxId.reversed.toList();
-      consumeState(_deleteMultipleMailboxInteractor.execute(accountId, allMailboxIdReversed));
+    if (matchedNode != null && accountId != null) {
+      final descendantIds = matchedNode.descendantsAsList()
+        .map((node) => node.item.id)
+        .toList();
+
+      final descendantIdsReversed = descendantIds.reversed.toList();
+      consumeState(_deleteMultipleMailboxInteractor.execute(accountId, descendantIdsReversed));
     } else {
       _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
     }

@@ -180,13 +180,13 @@ class MailboxView extends GetWidget<MailboxController> {
             : _buildLineSpaceUserInformation()),
         _buildSearchBarWidget(context),
         _buildLoadingView(),
-        Obx(() => controller.defaultMailboxList.isNotEmpty
+        Obx(() => controller.defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
           ? Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  color: Colors.white),
+                borderRadius: BorderRadius.circular(14),
+                color: Colors.white),
               margin: EdgeInsets.only(left: 16, right: 16, top: 4),
-              child: _buildDefaultMailbox(context, controller.defaultMailboxList))
+              child: _buildDefaultMailbox(context))
           : SizedBox.shrink()),
         Padding(
           padding: EdgeInsets.only(left: 25, top: 26, bottom: 12),
@@ -212,26 +212,23 @@ class MailboxView extends GetWidget<MailboxController> {
         child: Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2));
   }
 
-  Widget _buildDefaultMailbox(BuildContext context, List<PresentationMailbox> defaultMailbox) {
-    return ListView.builder(
-      padding: EdgeInsets.all(8),
-      key: PageStorageKey('default_mailbox_list'),
-      itemCount: defaultMailbox.length,
-      shrinkWrap: true,
-      primary: false,
-      itemBuilder: (context, index) =>
-        Obx(() => (MailboxTileBuilder(
-              imagePaths,
-              defaultMailbox[index],
-              allSelectMode: controller.currentSelectMode.value,
-              isLastElement: index == defaultMailbox.length - 1)
-          ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox))
-          ..addOnSelectMailboxActionClick((mailbox) => controller.selectMailbox(context, mailbox)))
-        .build()));
+  Widget _buildDefaultMailbox(BuildContext context) {
+    return Obx(() => controller.defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
+        ? Transform(
+            transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
+            child: Padding(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            child: TreeView(
+                startExpanded: false,
+                key: Key('default_mailbox_list'),
+                children: _buildListChildTileWidget(context, controller.defaultMailboxTree.value.root)))
+          )
+        : SizedBox.shrink()
+    );
   }
 
   Widget _buildFolderMailbox(BuildContext context) {
-    return Obx(() => controller.folderMailboxNodeList.isNotEmpty
+    return Obx(() => controller.folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
         ? Transform(
             transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
             child: Padding(
@@ -239,15 +236,15 @@ class MailboxView extends GetWidget<MailboxController> {
               child: TreeView(
                 startExpanded: false,
                 key: Key('folder_mailbox_list'),
-                children: _buildListChildTileWidget(context, controller.folderMailboxNodeList)))
+                children: _buildListChildTileWidget(context, controller.folderMailboxTree.value.root)))
           )
         : SizedBox.shrink()
     );
   }
 
-  List<Widget> _buildListChildTileWidget(BuildContext context, List<MailboxNode> listMailboxNode) {
-    return listMailboxNode
-      .map((mailboxNode) => mailboxNode.hasChildren()
+  List<Widget> _buildListChildTileWidget(BuildContext context, MailboxNode parentNode) {
+    return parentNode.childrenItems
+      ?.map((mailboxNode) => mailboxNode.hasChildren()
           ? Padding(
               padding: EdgeInsets.only(left: 16),
               child: TreeViewChild(
@@ -261,9 +258,9 @@ class MailboxView extends GetWidget<MailboxController> {
                           allSelectMode: controller.currentSelectMode.value)
                       ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
                       ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
-                      ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(context, mailboxNode)))
+                      ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
                     .build()),
-                  children: _buildListChildTileWidget(context, mailboxNode.childrenItems!)
+                  children: _buildListChildTileWidget(context, mailboxNode)
               ).build())
           : Padding(
               padding: EdgeInsets.only(left: 16),
@@ -273,10 +270,11 @@ class MailboxView extends GetWidget<MailboxController> {
                       mailboxNode,
                       allSelectMode: controller.currentSelectMode.value)
                   ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-                  ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(context, mailboxNode)))
+                  ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
                 .build(),
-              )))
-      .toList();
+              )
+            )
+      ).toList() ?? <Widget>[];
   }
 
   Widget _buildInputSearchFormWidget(BuildContext context) {
