@@ -6,12 +6,10 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/app_bar_destination_picker_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class DestinationPickerView extends GetWidget<DestinationPickerController> {
@@ -224,47 +222,37 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
   }
 
   Widget _buildDefaultMailbox(BuildContext context) {
-    return Obx(() => controller.viewState.value.fold(
-      (failure) => SizedBox.shrink(),
-      (success) {
-        if (success is GetAllMailboxSuccess) {
-          final defaultMailboxList = success.defaultMailboxList;
-          return ListView.builder(
-            padding: EdgeInsets.only(top: 8, left: 8, right: 10, bottom: 8),
-            key: Key('default_mailbox_list'),
-            itemCount: defaultMailboxList.length,
-            shrinkWrap: true,
-            primary: false,
-            itemBuilder: (context, index) => (MailboxTileBuilder(
-                    _imagePaths,
-                    defaultMailboxList[index],
-                    mailboxDisplayed: MailboxDisplayed.destinationPicker,
-                    isLastElement: index == defaultMailboxList.length - 1)
-                ..addOnOpenMailboxAction((mailbox) =>
-                    controller.selectMailboxAction(mailbox.toPresentationMailboxWithMailboxPath(mailbox.name?.name ?? ''))))
-              .build());
-        } else {
-          return SizedBox.shrink();
-        }
-      })
+    return Obx(() => controller.defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
+        ? Transform(
+            transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
+            child: Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 10),
+                child: TreeView(
+                  startExpanded: false,
+                  key: Key('default_mailbox_list'),
+                  children: _buildListChildTileWidget(context, controller.defaultMailboxTree.value.root)
+                )
+            )
+        )
+        : SizedBox.shrink()
     );
   }
 
   Widget _buildFolderMailbox(BuildContext context) {
-    return Obx(() => controller.folderMailboxNodeList.isNotEmpty
+    return Obx(() => controller.folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
       ? Padding(
           padding: EdgeInsets.only(top: 8, bottom: 8),
           child: TreeView(
               startExpanded: false,
               key: Key('folder_mailbox_list'),
-              children: _buildListChildTileWidget(context, controller.folderMailboxNodeList)))
+              children: _buildListChildTileWidget(context, controller.folderMailboxTree.value.root)))
       : SizedBox.shrink()
     );
   }
 
-  List<Widget> _buildListChildTileWidget(BuildContext context, List<MailboxNode> listMailboxNode) {
-    return listMailboxNode
-      .map((mailboxNode) => mailboxNode.hasChildren()
+  List<Widget> _buildListChildTileWidget(BuildContext context, MailboxNode parentNode) {
+    return parentNode.childrenItems
+        ?.map((mailboxNode) => mailboxNode.hasChildren()
           ? Padding(
               padding: EdgeInsets.only(left: 20),
               child:  TreeViewChild(
@@ -276,14 +264,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                             _imagePaths,
                             mailboxNode,
                             mailboxDisplayed: MailboxDisplayed.destinationPicker)
-                        ..addOnOpenMailboxFolderClick((mailboxNode) => controller.selectMailboxAction(mailboxNode.item.toPresentationMailboxWithMailboxPath(
-                            mailboxNode.getPathMailboxNode(
-                              controller.folderMailboxTree,
-                              controller.defaultMailboxList,
-                            ))))
+                        ..addOnOpenMailboxFolderClick(_handleOpenMailboxClick)
                         ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode)))
                       .build(),
-                  children: _buildListChildTileWidget(context, mailboxNode.childrenItems!)
+                  children: _buildListChildTileWidget(context, mailboxNode)
               ).build())
           : Padding(
               padding: EdgeInsets.only(left: 20),
@@ -292,14 +276,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                       _imagePaths,
                       mailboxNode,
                       mailboxDisplayed: MailboxDisplayed.destinationPicker)
-                  ..addOnOpenMailboxFolderClick((mailboxNode) => controller.selectMailboxAction(mailboxNode.item.toPresentationMailboxWithMailboxPath(
-                      mailboxNode.getPathMailboxNode(
-                        controller.folderMailboxTree,
-                        controller.defaultMailboxList,
-                      )))))
+                  ..addOnOpenMailboxFolderClick(_handleOpenMailboxClick))
                 .build(),
               ))
-      .toList();
+      .toList() ?? <Widget>[];
   }
 
   EdgeInsets _getMarginDestinationPicker(BuildContext context) {
@@ -374,5 +354,18 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
         ),
       )
     );
+  }
+
+  void _handleOpenMailboxClick(MailboxNode mailboxNode) {
+    var presentationMailbox;
+    final path = controller.findNodePath(mailboxNode.item.id)
+        ?? mailboxNode.item.name?.name;
+    if (path != null) {
+      presentationMailbox = mailboxNode.item
+          .toPresentationMailboxWithMailboxPath(path);
+    } else {
+      presentationMailbox = mailboxNode.item;
+    }
+    controller.selectMailboxAction(presentationMailbox);
   }
 }
