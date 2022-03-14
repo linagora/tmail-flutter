@@ -21,6 +21,7 @@ export 'presentation/utils/keyboard_utils.dart';
 export 'presentation/utils/style_utils.dart';
 export 'presentation/utils/app_toast.dart';
 export 'data/utils/device_manager.dart';
+export 'utils/app_logger.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
