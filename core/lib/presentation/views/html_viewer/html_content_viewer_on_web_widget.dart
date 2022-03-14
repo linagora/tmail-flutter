@@ -125,7 +125,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       ..height = actualHeight.toString()
       ..srcdoc = _htmlData ?? ''
       ..style.border = 'none'
-      ..style.overflowY = 'hidden'
+      ..style.overflow = 'hidden'
       ..onLoad.listen((event) async {
         var data = <String, Object>{'type': 'toIframe: getHeight'};
         data['view'] = createdViewId;
@@ -172,6 +172,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           }
         });
       });
+
+    iframe.setAttribute('scrolling', 'no');
+    iframe.setAttribute('seamless', 'seamless');
 
     ui.platformViewRegistry.registerViewFactory(createdViewId, (int viewId) => iframe);
 
