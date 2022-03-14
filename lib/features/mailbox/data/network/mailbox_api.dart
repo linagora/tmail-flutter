@@ -1,10 +1,14 @@
 import 'dart:async';
 
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
@@ -20,6 +24,7 @@ import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_respons
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 class MailboxAPI {
 
@@ -131,29 +136,46 @@ class MailboxAPI {
     });
   }
 
-  Future<bool> deleteMultipleMailbox(AccountId accountId, List<MailboxId> mailboxIds) async {
-    final setMailboxMethod = SetMailboxMethod(accountId)
-      ..addDestroy(mailboxIds.map((mailboxId) => mailboxId.id).toSet())
-      ..addOnDestroyRemoveEmails(true);
+  Future<bool> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {
+    requireCapability(session, [CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail]);
 
-    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final coreCapability = (session.capabilities[CapabilityIdentifier.jmapCore] as CoreCapability);
+    final maxMethodCount = coreCapability.maxCallsInRequest.value.toInt();
 
-    final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
+    var finalResult = true;
+    var start = 0;
+    var end = 0;
+    while (end < mailboxIds.length) {
+      start = end;
+      if (mailboxIds.length - start >= maxMethodCount) {
+        end = maxMethodCount;
+      } else {
+        end = mailboxIds.length;
+      }
+      log('MailboxAPI::deleteMultipleMailbox(): delete from $start to $end / ${mailboxIds.length}');
+      final currentExecuteList = mailboxIds.sublist(start, end);
 
-    final response = await (requestBuilder
-        ..usings(setMailboxMethod.requiredCapabilities))
-      .build()
-      .execute();
+      final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+      final currentSetMailboxInvocations = currentExecuteList.map((mailboxId) {
+          return SetMailboxMethod(accountId)
+            ..addDestroy(Set.of([mailboxId.id]))
+            ..addOnDestroyRemoveEmails(true);
+          })
+        .map(requestBuilder.invocation)
+        .toList();
 
-    final setMailboxResponse = response.parse<SetMailboxResponse>(
-        setMailboxInvocation.methodCallId,
-        SetMailboxResponse.deserialize);
+      final response = await (requestBuilder
+          ..usings(Set.of([CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail])))
+        .build()
+        .execute();
 
-    return Future.sync(() async {
-      return setMailboxResponse?.destroyed?.isNotEmpty == true;
-    }).catchError((error) {
-      throw error;
-    });
+      finalResult = currentSetMailboxInvocations
+        .map((currentInvocation) => response.parse(currentInvocation.methodCallId, SetMailboxResponse.deserialize))
+        .map((response) => response?.destroyed?.isNotEmpty ?? false)
+        .every((element) => element == true);
+    }
+
+    return finalResult;
   }
 
   Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) async {

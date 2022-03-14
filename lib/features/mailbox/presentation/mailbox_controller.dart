@@ -464,16 +464,19 @@ class MailboxController extends BaseMailboxController {
     final matchedNode = findMailboxNodeById(presentationMailbox.id);
 
     final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
 
-    if (matchedNode != null && accountId != null) {
-      final descendantIds = matchedNode.descendantsAsList()
-        .map((node) => node.item.id)
-        .toList();
+    if (session != null) {
+      if (matchedNode != null && accountId != null) {
+        final descendantIds = matchedNode.descendantsAsList()
+            .map((node) => node.item.id)
+            .toList();
 
-      final descendantIdsReversed = descendantIds.reversed.toList();
-      consumeState(_deleteMultipleMailboxInteractor.execute(accountId, descendantIdsReversed));
-    } else {
-      _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
+        final descendantIdsReversed = descendantIds.reversed.toList();
+        consumeState(_deleteMultipleMailboxInteractor.execute(session, accountId, descendantIdsReversed));
+      } else {
+        _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
+      }
     }
 
     _cancelSelectMailbox();

@@ -1,5 +1,6 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -13,7 +14,7 @@ abstract class MailboxRepository {
 
   Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest);
 
-  Future<bool> deleteMultipleMailbox(AccountId accountId, List<MailboxId> mailboxIds);
+  Future<bool> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds);
 
   Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request);
 }
