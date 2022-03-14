@@ -19,7 +19,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbo
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_logger.dart';
+import 'package:core/utils/app_logger.dart';
 
 class MailboxCreatorController extends BaseController {
 

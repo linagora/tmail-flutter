@@ -8,7 +8,7 @@ import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/main/utils/app_logger.dart';
+import 'package:core/utils/app_logger.dart';
 
 void main() async {
   initLogger(() async {
