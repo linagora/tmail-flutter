@@ -43,7 +43,7 @@ import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_sta
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_logger.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:uuid/uuid.dart';
 
 class ComposerController extends BaseController {

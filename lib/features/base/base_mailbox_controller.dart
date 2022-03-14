@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
-import 'package:tmail_ui_user/main/utils/app_logger.dart';
+import 'package:core/utils/app_logger.dart';
 
 abstract class BaseMailboxController extends BaseController {
   final TreeBuilder _treeBuilder;
