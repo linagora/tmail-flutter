@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
@@ -19,8 +20,8 @@ import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.da
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -33,15 +34,15 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
-import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_all_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
@@ -50,7 +51,6 @@ import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_mes
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
 class ThreadController extends BaseController {
 
@@ -77,6 +77,8 @@ class ThreadController extends BaseController {
 
   bool canLoadMore = true;
   bool canSearchMore = true;
+  bool _isLoadingMore = false;
+    get isLoadingMore => _isLoadingMore;
   MailboxId? _currentMailboxId;
   jmap.State? _currentEmailState;
 
@@ -159,8 +161,10 @@ class ThreadController extends BaseController {
     super.onData(newState);
     newState.fold(
       (failure) {
-         if (failure is SearchEmailFailure) {
+        if (failure is SearchEmailFailure) {
           emailListSearch.clear();
+        } else if (failure is SearchMoreEmailFailure || failure is LoadMoreEmailsFailure) {
+          _isLoadingMore = false;
         }
       },
       (success) {
@@ -172,6 +176,8 @@ class ThreadController extends BaseController {
           _searchEmailsSuccess(success);
         } else if (success is SearchMoreEmailSuccess) {
           _searchMoreEmailsSuccess(success);
+        } else if (success is SearchingMoreState || success is LoadingMoreState) {
+          _isLoadingMore = true;
         }
       }
     );
@@ -319,6 +325,7 @@ class ThreadController extends BaseController {
 
   void loadMoreEmails() {
     if (canLoadMore && _accountId != null) {
+      log('ThreadController::loadMoreEmails(): latest: ${emailList.last.receivedAt}');
       consumeState(_loadMoreEmailsInMailboxInteractor.execute(
         _accountId!,
         limit: ThreadConstants.defaultLimit,
@@ -336,6 +343,7 @@ class ThreadController extends BaseController {
     } else {
       canLoadMore = false;
     }
+    _isLoadingMore = false;
   }
 
   SelectMode getSelectMode(PresentationEmail presentationEmail, PresentationEmail? selectedEmail) {
@@ -673,6 +681,7 @@ class ThreadController extends BaseController {
     } else {
       canSearchMore = false;
     }
+    _isLoadingMore = false;
   }
 
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
