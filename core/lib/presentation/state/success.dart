@@ -4,6 +4,8 @@ abstract class Success with EquatableMixin {}
 
 abstract class ViewState extends Success {}
 
+abstract class ViewEvent extends Success {}
+
 class UIState extends ViewState {
   static final idle = UIState();
 

@@ -135,6 +135,8 @@ dependencies:
 
   pointer_interceptor: 0.9.1
 
+  rxdart: 0.27.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
