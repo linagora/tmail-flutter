@@ -48,6 +48,7 @@ class AppPages {
       page: () => EmailView()),
     GetPage(
       name: AppRoutes.COMPOSER,
+      opaque: false,
       page: () => ComposerView(),
       binding: ComposerBindings()),
     GetPage(

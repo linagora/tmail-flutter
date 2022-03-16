@@ -23,36 +23,76 @@ class ComposerView extends GetWidget<ComposerController> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        controller.saveEmailAsDrafts(context);
-        return true;
-      },
-      child: GestureDetector(
-        onTap: () {
-          controller.clearFocusEditor(context);
-        },
-        child: Scaffold(
-          backgroundColor: AppColor.primaryLightColor,
-          body: SafeArea(
-            right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-            left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-            child: Container(
-              color: Colors.white,
-              child: Column(children: [
-                  Obx(() => Padding(
-                      padding: EdgeInsets.only(left: 8, right: 8,
-                          top: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context) ? 16 : 0,
-                          bottom: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context) ? 8 : 0),
-                      child: _buildAppBar(context, controller.isEnableEmailSendButton.value, controller.expandModeMobile.value),)),
-                  Obx(() => controller.expandModeMobile == ExpandMode.COLLAPSE
-                      ? Divider(color: AppColor.colorDividerComposer, height: 1)
-                      : SizedBox.shrink()),
-                  Expanded(child: _buildEditorAndAttachments(context))
-              ])
-            )
-          ),
-        )
+    return ResponsiveWidget(
+      responsiveUtils: responsiveUtils,
+      mobile: WillPopScope(
+          onWillPop: () async {
+            controller.saveEmailAsDrafts(context);
+            return true;
+          },
+          child: GestureDetector(
+              onTap: () {
+                controller.clearFocusEditor(context);
+              },
+              child: Scaffold(
+                backgroundColor: AppColor.primaryLightColor,
+                body: SafeArea(
+                    right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+                    left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+                    child: Container(
+                        color: Colors.white,
+                        child: Column(children: [
+                          Obx(() => Padding(
+                            padding: EdgeInsets.only(left: 8, right: 8,
+                                top: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context) ? 16 : 0,
+                                bottom: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context) ? 8 : 0),
+                            child: _buildAppBar(context, controller.isEnableEmailSendButton.value, controller.expandModeMobile.value),)),
+                          Obx(() => controller.expandModeMobile == ExpandMode.COLLAPSE
+                              ? Divider(color: AppColor.colorDividerComposer, height: 1)
+                              : SizedBox.shrink()),
+                          Expanded(child: _buildEditorAndAttachments(context))
+                        ])
+                    )
+                ),
+              )
+          )
+      ),
+      tablet: WillPopScope(
+          onWillPop: () async {
+            controller.saveEmailAsDrafts(context);
+            return true;
+          },
+          child: GestureDetector(
+              onTap: () {
+                controller.clearFocusEditor(context);
+              },
+              child: Scaffold(
+                backgroundColor: Colors.black38,
+                body: Align(alignment: Alignment.center, child: Card(
+                    color: Colors.transparent,
+                    elevation: 20,
+                    child: Container(
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(10))),
+                        width: responsiveUtils.getSizeWidthScreen(context) * 0.85,
+                        height: responsiveUtils.getSizeHeightScreen(context) * 0.85,
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            child: SafeArea(
+                                child: Column(children: [
+                                  Obx(() => Padding(
+                                    padding: EdgeInsets.only(left: 8, right: 8),
+                                    child: _buildAppBar(context, controller.isEnableEmailSendButton.value, controller.expandModeMobile.value),)),
+                                  Obx(() => controller.expandModeMobile == ExpandMode.COLLAPSE
+                                      ? Divider(color: AppColor.colorDividerComposer, height: 1)
+                                      : SizedBox.shrink()),
+                                  Expanded(child: _buildEditorAndAttachments(context))
+                                ])
+                            )
+                        )
+                    )
+                ))
+              )
+          )
       )
     );
   }
@@ -249,7 +289,7 @@ class ComposerView extends GetWidget<ComposerController> {
                     child: _buildAttachmentsList(context, controller.attachments, controller.expandModeAttachments.value))
                 : SizedBox.shrink()),
             Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.only(left: 16, right: 16, bottom: 20),
                 child: _buildComposerEditor(context)),
           ])
         )
