@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -33,6 +34,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_action.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -480,27 +482,22 @@ class EmailController extends BaseController {
   void composeEmailFromEmailAddress(EmailAddress emailAddress) {
     popBack();
 
-    if (canComposeEmail()) {
-      push(
-          AppRoutes.COMPOSER,
-          arguments: ComposerArguments(
-              emailActionType: EmailActionType.composeFromEmailAddress,
-              emailAddress: emailAddress,
-              mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
-              session: mailboxDashBoardController.sessionCurrent!,
-              userProfile: mailboxDashBoardController.userProfile.value!,
-              mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
+    final arguments = ComposerArguments(
+        emailActionType: EmailActionType.composeFromEmailAddress,
+        emailAddress: emailAddress,
+        mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
+    if (kIsWeb) {
+      if (mailboxDashBoardController.dashBoardAction != DashBoardAction.compose) {
+        mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.compose, arguments: arguments);
+      }
+    } else {
+      push(AppRoutes.COMPOSER, arguments: arguments);
     }
   }
 
   void closeMoreMenu() {
     popBack();
   }
-
-  bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
-      && mailboxDashBoardController.userProfile.value != null
-      && mailboxDashBoardController.mapDefaultMailboxId.isNotEmpty
-      && mailboxDashBoardController.selectedEmail.value != null;
 
   void backToThreadView() {
     attachmentsExpandMode.value = ExpandMode.COLLAPSE;
@@ -513,30 +510,36 @@ class EmailController extends BaseController {
     if (emailActionType == EmailActionType.compose) {
       composeEmailAction();
     } else {
-      if (canComposeEmail()) {
-        push(
-            AppRoutes.COMPOSER,
-            arguments: ComposerArguments(
-                emailActionType: emailActionType,
-                presentationEmail: mailboxDashBoardController.selectedEmail.value!,
-                emailContents: emailContents,
-                attachments: attachments,
-                mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
-                session: mailboxDashBoardController.sessionCurrent!,
-                userProfile: mailboxDashBoardController.userProfile.value!,
-                mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
+      final arguments = ComposerArguments(
+          emailActionType: emailActionType,
+          presentationEmail: mailboxDashBoardController.selectedEmail.value!,
+          emailContents: emailContents,
+          attachments: attachments,
+          mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
+
+      if (kIsWeb) {
+        if (mailboxDashBoardController.dashBoardAction != DashBoardAction.compose) {
+          mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.compose, arguments: arguments);
+        }
+        if (Get.currentRoute == AppRoutes.EMAIL) {
+          popBack();
+        }
+      } else {
+        push(AppRoutes.COMPOSER, arguments: arguments);
       }
     }
   }
 
   void composeEmailAction() {
-    if (canComposeEmail()) {
-      push(
-          AppRoutes.COMPOSER,
-          arguments: ComposerArguments(
-              session: mailboxDashBoardController.sessionCurrent!,
-              userProfile: mailboxDashBoardController.userProfile.value!,
-              mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
+    if (kIsWeb) {
+      if (mailboxDashBoardController.dashBoardAction != DashBoardAction.compose) {
+        mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.compose, arguments: ComposerArguments());
+      }
+      if (Get.currentRoute == AppRoutes.EMAIL) {
+        popBack();
+      }
+    } else {
+      push(AppRoutes.COMPOSER, arguments: ComposerArguments());
     }
   }
 }

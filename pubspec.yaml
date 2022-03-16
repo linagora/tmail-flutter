@@ -125,10 +125,15 @@ dependencies:
       url: https://github.com/Enough-Software/enough_html_editor.git
 
   # html_editor_enhanced: Compose email for Web Browser
-  html_editor_enhanced: 2.4.0+1
+  html_editor_enhanced:
+    git:
+      url: https://github.com/dab246/html-editor-enhanced.git
+      ref: html_editor_for_web
 
   # fk_user_agent
   fk_user_agent: 2.1.0
+
+  pointer_interceptor: 0.9.1
 
 dev_dependencies:
   flutter_test:

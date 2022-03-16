@@ -15,7 +15,7 @@ class ResponsiveUtils {
   final double desktopVerticalMargin = 120.0;
   final double desktopHorizontalMargin = 200.0;
 
-  bool isMobileDevice(BuildContext context) => MediaQuery.of(context).size.shortestSide < 600;
+  bool isMobileDevice(BuildContext context) => MediaQuery.of(context).size.shortestSide < minTabletWidth;
 
   double getSizeWidthScreen(BuildContext context) => MediaQuery.of(context).size.width;
 

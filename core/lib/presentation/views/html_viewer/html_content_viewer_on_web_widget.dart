@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'dart:developer' as developer;
 import 'package:universal_html/html.dart' as html;
 import 'package:core/presentation/utils/shims/dart_ui.dart' as ui;
@@ -221,10 +222,10 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         future: webInit,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HtmlElementView(
+            return PointerInterceptor(child: HtmlElementView(
               key: ValueKey(htmlData),
               viewType: createdViewId,
-            );
+            ));
           } else {
             return Container();
           }

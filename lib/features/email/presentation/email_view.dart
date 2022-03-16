@@ -216,7 +216,7 @@ class EmailView extends GetView {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-              padding: EdgeInsets.only(top: 20),
+              padding: EdgeInsets.only(top: kIsWeb ? 10: 20),
               child: Text(
                   '${prefixEmailAddress.asName(context)}:',
                   style: TextStyle(fontSize: 14, color: AppColor.colorEmailAddressPrefix))),

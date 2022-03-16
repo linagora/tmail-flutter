@@ -19,8 +19,10 @@ import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/auto_complete_pattern.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
@@ -35,15 +37,16 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_inter
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_action.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:uuid/uuid.dart';
 
 class ComposerController extends BaseController {
@@ -51,11 +54,14 @@ class ComposerController extends BaseController {
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   
   final expandMode = ExpandMode.COLLAPSE.obs;
+  final expandModeAttachments = ExpandMode.EXPAND.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
   final isInitialRecipient = false.obs;
   final attachments = <Attachment>[].obs;
   final emailContents = <EmailContent>[].obs;
+  final subjectEmail = Rxn<String>();
+  final screenDisplayMode = ScreenDisplayMode.normal.obs;
 
   final SendEmailInteractor _sendEmailInteractor;
   final SaveEmailAddressesInteractor _saveEmailAddressInteractor;
@@ -63,6 +69,7 @@ class ComposerController extends BaseController {
   final GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
   final AppToast _appToast;
   final ImagePaths _imagePaths;
+  final ResponsiveUtils responsiveUtils;
   final Uuid _uuid;
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final UploadMultipleAttachmentInteractor _uploadMultipleAttachmentInteractor;
@@ -74,7 +81,6 @@ class ComposerController extends BaseController {
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
   List<EmailAddress> listBccEmailAddress = <EmailAddress>[];
-  String? _subjectEmail;
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.localContact;
   HtmlEditorApi? htmlEditorApi;
   final HtmlEditorBrowser.HtmlEditorController htmlControllerBrowser = HtmlEditorBrowser.HtmlEditorController();
@@ -85,8 +91,13 @@ class ComposerController extends BaseController {
   final bccEmailAddressController = TextEditingController();
 
   List<Attachment> initialAttachments = <Attachment>[];
+  String? _textEditor;
 
-  void setSubjectEmail(String subject) => _subjectEmail = subject;
+  void setTextEditor(String? text) => _textEditor = text;
+
+  String? get textEditor => _textEditor;
+
+  void setSubjectEmail(String subject) => subjectEmail.value = subject;
 
   Future<String> _getEmailBodyText({bool onlyText = false}) async {
     if (kIsWeb) {
@@ -107,6 +118,7 @@ class ComposerController extends BaseController {
     this._getAutoCompleteWithDeviceContactInteractor,
     this._appToast,
     this._imagePaths,
+    this.responsiveUtils,
     this._uuid,
     this._deviceInfoPlugin,
     this._localFilePickerInteractor,
@@ -178,7 +190,7 @@ class ComposerController extends BaseController {
   }
   
   void _initEmail() {
-    final arguments = Get.arguments;
+    final arguments = kIsWeb ? mailboxDashBoardController.routerArguments : Get.arguments;
     if (arguments is ComposerArguments) {
       composerArguments.value = arguments;
       if (arguments.emailActionType == EmailActionType.edit) {
@@ -211,6 +223,14 @@ class ComposerController extends BaseController {
     return '';
   }
 
+  String? get initTextEditorComposer {
+    if (composerArguments.value?.emailActionType == EmailActionType.compose) {
+      return textEditor;
+    } else {
+      return textEditor ?? getContentEmail();
+    }
+  }
+
   Tuple2<String, String>? _getHeaderEmailQuoted(String locale, ComposerArguments arguments) {
     if (arguments.presentationEmail != null) {
       final sentDate = arguments.presentationEmail?.sentAt;
@@ -226,8 +246,9 @@ class ComposerController extends BaseController {
   }
 
   void _initToEmailAddress(ComposerArguments arguments) {
-    if (arguments.presentationEmail != null) {
-      final userEmailAddress = EmailAddress(null, arguments.userProfile.email);
+    final userProfile =  mailboxDashBoardController.userProfile.value;
+    if (arguments.presentationEmail != null && userProfile != null) {
+      final userEmailAddress = EmailAddress(null, userProfile.email);
 
       final recipients = arguments.presentationEmail!.generateRecipientsEmailAddressForComposer(arguments.emailActionType, arguments.mailboxRole);
 
@@ -302,12 +323,12 @@ class ComposerController extends BaseController {
     return emailQuotedHtml;
   }
 
-  Future<Email> _generateEmail(ComposerArguments arguments, {bool asDrafts = false}) async {
+  Future<Email> _generateEmail(Map<Role, MailboxId> mapDefaultMailboxId, UserProfile userProfile, {bool asDrafts = false}) async {
     final generateEmailId = EmailId(Id(_uuid.v1()));
-    final outboxMailboxId = arguments.mapMailboxId[PresentationMailbox.roleOutbox];
-    final draftMailboxId = arguments.mapMailboxId[PresentationMailbox.roleDrafts];
+    final outboxMailboxId = mapDefaultMailboxId[PresentationMailbox.roleOutbox];
+    final draftMailboxId = mapDefaultMailboxId[PresentationMailbox.roleDrafts];
     final listFromEmailAddress = {
-      EmailAddress(null, arguments.userProfile.email)
+      EmailAddress(null, userProfile.email)
     };
     final generatePartId = PartId(_uuid.v1());
     final generateBlobId = Id(_uuid.v1());
@@ -323,7 +344,7 @@ class ComposerController extends BaseController {
       cc: listCcEmailAddress.toSet(),
       bcc: listBccEmailAddress.toSet(),
       keywords: asDrafts ? {KeyWordIdentifier.emailDraft : true} : null,
-      subject: _subjectEmail,
+      subject: subjectEmail.value,
       htmlBody: {
         EmailBodyPart(
           partId: generatePartId,
@@ -363,27 +384,41 @@ class ComposerController extends BaseController {
     clearFocusEditor(context);
 
     if (isEnableEmailSendButton.value) {
-      final arguments = composerArguments.value;
-      if (arguments != null) {
-        _saveEmailAddress();
-
-        final email = await _generateEmail(arguments);
-        final accountId = arguments.session.accounts.keys.first;
-        final sentMailboxId = arguments.mapMailboxId[PresentationMailbox.roleSent];
-        final submissionCreateId = Id(_uuid.v1());
-
-        mailboxDashBoardController.consumeState(_sendEmailInteractor.execute(
-            accountId,
-            EmailRequest(
-                email,
-                submissionCreateId,
-                mailboxIdSaved: sentMailboxId,
-                emailIdDestroyed: arguments.emailActionType == EmailActionType.edit ? arguments.presentationEmail?.id : null)));
+      if (subjectEmail.value?.isNotEmpty == true) {
+        _handleSendMessages(context);
+      } else {
+        _showConfirmDialogSendEmail(context);
       }
-
-      popBack();
     } else {
       _appToast.showErrorToast(AppLocalizations.of(context).your_email_should_have_at_least_one_recipient);
+    }
+  }
+
+  void _handleSendMessages(BuildContext context) async {
+    final arguments = composerArguments.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    final mapDefaultMailboxId = mailboxDashBoardController.mapDefaultMailboxId;
+    final userProfile = mailboxDashBoardController.userProfile.value;
+    if (arguments != null && session != null && mapDefaultMailboxId.isNotEmpty && userProfile != null) {
+      _saveEmailAddress();
+
+      final email = await _generateEmail(mapDefaultMailboxId, userProfile);
+      final accountId = session.accounts.keys.first;
+      final sentMailboxId = mapDefaultMailboxId[PresentationMailbox.roleSent];
+      final submissionCreateId = Id(_uuid.v1());
+
+      mailboxDashBoardController.consumeState(_sendEmailInteractor.execute(
+          accountId,
+          EmailRequest(email, submissionCreateId, mailboxIdSaved: sentMailboxId,
+              emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
+                  ? arguments.presentationEmail?.id
+                  : null)));
+    }
+
+    if (kIsWeb) {
+      closeComposerWeb();
+    } else {
+      popBack();
     }
   }
 
@@ -460,10 +495,10 @@ class ComposerController extends BaseController {
   }
 
   void _uploadAttachmentsAction(List<FileInfo> pickedFiles) async {
-    if (composerArguments.value != null) {
-      final accountId = composerArguments.value!.session.accounts.keys.first;
-      final uploadUrl = composerArguments.value!.session.getUploadUrl(accountId);
-
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (session != null) {
+      final accountId = session.accounts.keys.first;
+      final uploadUrl = session.getUploadUrl(accountId);
       consumeState(_uploadMultipleAttachmentInteractor.execute(pickedFiles, accountId, uploadUrl));
     }
   }
@@ -508,9 +543,9 @@ class ComposerController extends BaseController {
     final oldEmailBody = kIsWeb ? getContentEmail() : '\n${getContentEmail()}\n';
     final isEmailBodyChanged = !oldEmailBody.isSame(newEmailBody);
 
-    final newEmailSubject = _subjectEmail;
-    final subjectEmail = arguments.presentationEmail?.getEmailTitle().trim() ?? '';
-    final oldEmailSubject = arguments.emailActionType.getSubjectComposer(Get.context!, subjectEmail);
+    final newEmailSubject = subjectEmail.value;
+    final titleEmail = arguments.presentationEmail?.getEmailTitle().trim() ?? '';
+    final oldEmailSubject = arguments.emailActionType.getSubjectComposer(Get.context!, titleEmail);
     final isEmailSubjectChanged = !oldEmailSubject.isSame(newEmailSubject);
 
     final recipients = arguments.presentationEmail
@@ -544,13 +579,18 @@ class ComposerController extends BaseController {
     clearFocusEditor(context);
 
     final arguments = composerArguments.value;
-    if (arguments != null && Get.context != null) {
+    final mapDefaultMailboxId = mailboxDashBoardController.mapDefaultMailboxId;
+    final userProfile = mailboxDashBoardController.userProfile.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+
+    if (arguments != null && Get.context != null && mapDefaultMailboxId.isNotEmpty
+        && userProfile != null && session != null) {
       final isChanged = await _isEmailChanged(arguments);
       if (isChanged) {
         _saveEmailAddress();
 
-        final newEmail = await _generateEmail(arguments, asDrafts: true);
-        final accountId = arguments.session.accounts.keys.first;
+        final newEmail = await _generateEmail(mapDefaultMailboxId, userProfile, asDrafts: true);
+        final accountId = session.accounts.keys.first;
         final oldEmail = arguments.presentationEmail;
 
         if (arguments.emailActionType == EmailActionType.edit && oldEmail != null) {
@@ -563,10 +603,10 @@ class ComposerController extends BaseController {
   }
 
   void _getEmailContentAction(ComposerArguments arguments) async {
-    final baseDownloadUrl = arguments.session.getDownloadUrl();
-    final accountId = arguments.session.accounts.keys.first;
+    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
+    final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
     final emailId = arguments.presentationEmail?.id;
-    if (emailId != null) {
+    if (emailId != null && baseDownloadUrl != null && accountId != null) {
       consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
     }
   }
@@ -594,7 +634,7 @@ class ComposerController extends BaseController {
       if (arguments.emailActionType == EmailActionType.edit) {
         return arguments.presentationEmail?.from?.first.emailAddress ?? '';
       } else {
-        return arguments.userProfile.email;
+        return mailboxDashBoardController.userProfile.value?.email ?? '';
       }
     }
     return '';
@@ -603,6 +643,69 @@ class ComposerController extends BaseController {
   void clearFocusEditor(BuildContext context) {
     if (!kIsWeb) {
       htmlEditorApi?.unfocus(context);
+      htmlControllerBrowser.clearFocus();
+    }
+  }
+
+  void closeComposerWeb() {
+    mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.none);
+  }
+
+  void minimizeComposer() {
+    _updateTextForEditor();
+    final newDisplayMode = screenDisplayMode.value == ScreenDisplayMode.minimize ? ScreenDisplayMode.normal : ScreenDisplayMode.minimize;
+    screenDisplayMode.value = newDisplayMode;
+  }
+
+  void setFullScreenComposer() {
+    _updateTextForEditor();
+    final newDisplayMode = screenDisplayMode.value == ScreenDisplayMode.fullScreen ? ScreenDisplayMode.normal : ScreenDisplayMode.fullScreen;
+    screenDisplayMode.value = newDisplayMode;
+  }
+
+  void _updateTextForEditor() async {
+    final textCurrent = await htmlControllerBrowser.getText();
+    log('_updateTextForEditor() | textCurrent: $textCurrent');
+    htmlControllerBrowser.insertHtml(textCurrent);
+  }
+
+  void deleteComposer() {
+    mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.none);
+  }
+
+  void toggleDisplayAttachments() {
+    final newExpandMode = expandModeAttachments.value == ExpandMode.COLLAPSE ? ExpandMode.EXPAND : ExpandMode.COLLAPSE;
+    expandModeAttachments.value = newExpandMode;
+  }
+
+  void _showConfirmDialogSendEmail(BuildContext context) {
+    if (responsiveUtils.isMobileDevice(context)) {
+      (ConfirmationDialogActionSheetBuilder(context)
+        ..messageText(AppLocalizations.of(context).message_confirm_send_email)
+        ..styleConfirmButton(TextStyle(fontSize: 20, fontWeight: FontWeight.normal, color: Colors.black))
+        ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
+        ..onConfirmAction(AppLocalizations.of(context).send, () {
+          popBack();
+          _handleSendMessages(context);
+        })).show();
+    } else {
+      showDialog(
+          context: context,
+          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
+              ..key(Key('confirm_dialog_send_message'))
+              ..content(AppLocalizations.of(context).message_confirm_send_email)
+              ..colorConfirmButton(AppColor.colorTextButton)
+              ..colorCancelButton(AppColor.colorCancelButton)
+              ..styleContent(TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: AppColor.colorMessageDialog))
+              ..styleTextCancelButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
+              ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
+              ..onConfirmButtonAction(AppLocalizations.of(context).send, () {
+                popBack();
+                _handleSendMessages(context);
+              })
+              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
+            .build()));
     }
   }
 
