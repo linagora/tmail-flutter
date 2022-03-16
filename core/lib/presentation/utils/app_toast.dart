@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:get/get.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 class AppToast {
   final fToast = Get.find<FToast>();
@@ -46,7 +47,7 @@ class AppToast {
       toastPosition: GFToastPosition.BOTTOM,
       textStyle: TextStyle(fontSize: 16, color: Colors.white),
       backgroundColor: AppColor.toastWithActionBackgroundColor,
-      trailing: GFButton(
+      trailing: PointerInterceptor(child: GFButton(
         onPressed: () {
           ToastView.dismiss();
           onActionClick();
@@ -54,7 +55,7 @@ class AppToast {
         text: actionName,
         type: GFButtonType.transparent,
         color: AppColor.buttonActionToastWithActionColor,
-      ),
+      )),
       toastBorderRadius: 5.0,
       toastDuration: 3
     );
