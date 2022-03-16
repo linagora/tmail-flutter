@@ -54,6 +54,7 @@ class ComposerController extends BaseController {
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   
   final expandMode = ExpandMode.COLLAPSE.obs;
+  final expandModeMobile = ExpandMode.EXPAND.obs;
   final expandModeAttachments = ExpandMode.EXPAND.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
@@ -709,8 +710,11 @@ class ComposerController extends BaseController {
     }
   }
 
-  void backToEmailViewAction(BuildContext context) {
-    clearFocusEditor(context);
+  void collapseComposer(ExpandMode expandMode) {
+    expandModeMobile.value = expandMode;
+  }
+
+  void closeComposer(BuildContext context) {
     popBack();
   }
 }

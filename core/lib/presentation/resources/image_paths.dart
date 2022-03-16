@@ -73,6 +73,8 @@ class ImagePaths {
   String get icDeleteComposer => _getImagePath('ic_delete_composer.svg');
   String get icFileAttachment => _getImagePath('ic_file_attachment.svg');
   String get icDeleteAttachment => _getImagePath('ic_delete_attachment.svg');
+  String get icSendMobile => _getImagePath('ic_send_mobile.svg');
+  String get icSendMobileDisable => _getImagePath('ic_send_mobile_disable.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
