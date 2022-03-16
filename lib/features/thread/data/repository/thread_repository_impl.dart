@@ -1,6 +1,5 @@
 
 import 'package:core/core.dart';
-import 'package:model/model.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -9,13 +8,15 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
-import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
 
 class ThreadRepositoryImpl extends ThreadRepository {
 
@@ -35,6 +36,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       Properties? propertiesUpdated,
     }
   ) async* {
+    log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId}');
     final localEmailResponse = await Future.wait([
       mapDataSource[DataSourceType.local]!.getAllEmailCache(
           inMailboxId: emailFilter?.mailboxId,
@@ -47,7 +49,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
     EmailsResponse? networkEmailResponse;
 
-    if (!localEmailResponse.hasEmails()) {
+    if (!localEmailResponse.hasEmails()
+        || (localEmailResponse.emailList?.length ?? 0) < ThreadConstants.defaultLimit.value) {
       networkEmailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
         accountId,
         limit: limit,
@@ -60,7 +63,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
       yield localEmailResponse;
     }
 
-    if (localEmailResponse.hasState()) {
+    if (localEmailResponse.hasState() && networkEmailResponse == null) {
+      log('ThreadRepositoryImpl::getAllEmail(): local has state: ${localEmailResponse.state}');
       EmailChangeResponse? emailChangeResponse;
       bool hasMoreChanges = true;
       State? sinceState = localEmailResponse.state!;
@@ -120,6 +124,10 @@ class ThreadRepositoryImpl extends ThreadRepository {
       stateDataSource.getState(StateType.email)
     ]).then((List response) {
       return EmailsResponse(emailList: response.first, state: response.last);
+    });
+
+    newEmailResponse.emailList?.forEach((element) {
+      log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} [LOCAL] final yield: ${element.subject}:${element.id.id}');
     });
 
     yield newEmailResponse;
@@ -241,6 +249,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       EmailId? lastEmailId,
     }
   ) async* {
+    log('ThreadRepositoryImpl::loadMoreEmails()');
     final emailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
       accountId,
       limit: limit,
