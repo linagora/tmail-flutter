@@ -11,16 +11,20 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 
 class MailboxDashBoardController extends BaseController {
 
@@ -36,6 +40,7 @@ class MailboxDashBoardController extends BaseController {
   final userProfile = Rxn<UserProfile>();
   final searchState = SearchState.initial().obs;
   final suggestionSearch = <String>[].obs;
+  final dashBoardAction = DashBoardAction.none.obs;
 
   SearchQuery? searchQuery;
   Session? sessionCurrent;
@@ -43,6 +48,7 @@ class MailboxDashBoardController extends BaseController {
   Map<MailboxId, PresentationMailbox> mapMailbox = Map();
   TextEditingController searchInputController = TextEditingController();
   FocusNode searchFocus = FocusNode();
+  RouterArguments? routerArguments;
 
   MailboxDashBoardController(
       this._getUserProfileInteractor,
@@ -223,6 +229,20 @@ class MailboxDashBoardController extends BaseController {
     if (currentAccountId != null) {
       consumeState(_removeEmailDraftsInteractor.execute(currentAccountId, email.id));
     }
+  }
+
+  void dispatchDashBoardAction(DashBoardAction action, {RouterArguments? arguments}) {
+    switch(action) {
+      case DashBoardAction.none:
+        routerArguments = null;
+        Get.delete<ComposerController>();
+        break;
+      case DashBoardAction.compose:
+        routerArguments = arguments;
+        ComposerBindings().dependencies();
+        break;
+    }
+    dashBoardAction.value = action;
   }
 
   @override

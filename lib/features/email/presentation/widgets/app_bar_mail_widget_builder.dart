@@ -2,7 +2,9 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 typedef OnBackActionClick = void Function();
 typedef OnEmailActionClick = void Function(PresentationEmail, EmailActionType);
@@ -51,15 +53,25 @@ class AppBarMailWidgetBuilder {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if ((!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context)))
+            if (_conditionShowBackButton())
               _buildBackButton(),
-            if ((!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context)))
+            if (_conditionShowBackButton())
               Expanded(child: _buildMailboxName()),
             if (_presentationEmail != null) _buildListOptionButton(),
           ]
         )
       )
     );
+  }
+
+  bool _conditionShowBackButton() {
+    if (Get.currentRoute == AppRoutes.MAILBOX_DASHBOARD) {
+      return !_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context);
+    } else if (Get.currentRoute == AppRoutes.EMAIL) {
+      return _responsiveUtils.isMobileDevice(_context) || _responsiveUtils.isTablet(_context);
+    } else {
+      return false;
+    }
   }
 
   Widget _buildBackButton() {

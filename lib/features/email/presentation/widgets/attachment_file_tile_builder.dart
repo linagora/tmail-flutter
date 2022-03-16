@@ -78,7 +78,7 @@ class AttachmentFileTileBuilder {
                   }},
                 leading: Transform(
                   transform: Matrix4.translationValues(14.0, 2.0, 0.0),
-                  child: SvgPicture.asset(_imagePaths.icAttachmentFile, width: 24, height: 24, fit: BoxFit.fill)),
+                  child: SvgPicture.asset(_imagePaths.icFileAttachment, width: 24, height: 24, fit: BoxFit.fill)),
                 title: Transform(
                   transform: Matrix4.translationValues(-8.0, -8.0, 0.0),
                   child: Text(
