@@ -10,7 +10,6 @@ class ImagePaths {
   String get icBack => _getImagePath('ic_back.svg');
   String get icEyeDisable => _getImagePath('ic_eye_disable.svg');
   String get icShare => _getImagePath('ic_share.svg');
-  String get icAttachmentFile => _getImagePath('ic_attachment_file.svg');
   String get icMoreReceiver => _getImagePath('ic_more_receiver.svg');
   String get icComposerClose => _getImagePath('ic_composer_close.svg');
   String get icComposerSend => _getImagePath('ic_composer_send.svg');
@@ -66,6 +65,14 @@ class ImagePaths {
   String get icDeleteEmail => _getImagePath('ic_delete_email.svg');
   String get icNewMessage => _getImagePath('ic_new_message.svg');
   String get icUnreadStatus => _getImagePath('ic_unread_status.svg');
+  String get icAttachmentsComposer => _getImagePath('ic_attachments_composer.svg');
+  String get icCloseComposer => _getImagePath('ic_close_composer.svg');
+  String get icFullScreenComposer => _getImagePath('ic_fullscreen_composer.svg');
+  String get icMinimizeComposer => _getImagePath('ic_minimize_composer.svg');
+  String get icSendComposer => _getImagePath('ic_send_composer.svg');
+  String get icDeleteComposer => _getImagePath('ic_delete_composer.svg');
+  String get icFileAttachment => _getImagePath('ic_file_attachment.svg');
+  String get icDeleteAttachment => _getImagePath('ic_delete_attachment.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

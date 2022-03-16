@@ -453,6 +453,8 @@ class MailboxController extends BaseMailboxController {
               ..title(AppLocalizations.of(context).delete_mailboxes)
               ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
               ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog, fit: BoxFit.fill))
+              ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+              ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
               ..onCloseButtonAction(() => popBack())
               ..onConfirmButtonAction(AppLocalizations.of(context).delete, () => _deleteMailboxAction(presentationMailbox))
               ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))

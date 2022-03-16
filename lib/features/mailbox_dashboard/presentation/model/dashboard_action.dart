@@ -1,0 +1,5 @@
+
+enum DashBoardAction {
+  none,
+  compose
+}

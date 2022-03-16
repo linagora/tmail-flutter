@@ -1,9 +1,12 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
+    if (dart.library.html) 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_action.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 
 class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> {
@@ -30,35 +33,40 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> {
         desktop: SizedBox.shrink()
       ),
       drawerEnableOpenDragGesture: !responsiveUtils.isDesktop(context),
-      body: ResponsiveWidget(
-        responsiveUtils: responsiveUtils,
-        desktop: Container(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(flex: 1, child: MailboxView()),
-              Expanded(flex: 1, child: ThreadView()),
-              Expanded(flex: 2, child: EmailView()),
-            ],
-          ),
-        ),
-        tabletLarge: Container(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                width: responsiveUtils.getSizeWidthScreen(context) * 0.35,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: ThreadView()
+      body: Stack(children: [
+        ResponsiveWidget(
+            responsiveUtils: responsiveUtils,
+            desktop: Container(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(flex: 1, child: MailboxView()),
+                  Expanded(flex: 1, child: ThreadView()),
+                  Expanded(flex: 2, child: EmailView()),
+                ],
               ),
-              Expanded(child: EmailView()),
-            ],
-          ),
-        ),
-        tablet: ThreadView(),
-        mobile: ThreadView()),
+            ),
+            tabletLarge: Container(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                      width: responsiveUtils.getSizeWidthScreen(context) * 0.35,
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: ThreadView()
+                  ),
+                  Expanded(child: EmailView()),
+                ],
+              ),
+            ),
+            tablet: ThreadView(),
+            mobile: ThreadView()),
+        Obx(() => controller.dashBoardAction == DashBoardAction.compose
+          ? ComposerView()
+          : SizedBox.shrink()),
+      ]),
     );
   }
 }

@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -28,6 +27,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
@@ -675,10 +675,6 @@ class ThreadController extends BaseController {
     }
   }
 
-  bool canComposeEmail() => mailboxDashBoardController.sessionCurrent != null
-      && mailboxDashBoardController.userProfile.value != null
-      && mailboxDashBoardController.mapDefaultMailboxId.isNotEmpty;
-
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
   void pressEmailSelectionAction(BuildContext context, EmailActionType actionType, List<PresentationEmail> selectionEmail) {
@@ -709,27 +705,25 @@ class ThreadController extends BaseController {
   }
 
   void editEmail(PresentationEmail presentationEmail) {
-    if (canComposeEmail()) {
-      push(
-          AppRoutes.COMPOSER,
-          arguments: ComposerArguments(
-              emailActionType: EmailActionType.edit,
-              presentationEmail: presentationEmail,
-              mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role,
-              session: mailboxDashBoardController.sessionCurrent!,
-              userProfile: mailboxDashBoardController.userProfile.value!,
-              mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
+    final arguments = ComposerArguments(
+        emailActionType: EmailActionType.edit,
+        presentationEmail: presentationEmail,
+        mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
+
+    if (kIsWeb) {
+      mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.compose, arguments: arguments);
+    } else {
+      push(AppRoutes.COMPOSER, arguments: arguments);
     }
   }
 
   void composeEmailAction() {
-    if (canComposeEmail()) {
-      push(
-        AppRoutes.COMPOSER,
-        arguments: ComposerArguments(
-          session: mailboxDashBoardController.sessionCurrent!,
-          userProfile: mailboxDashBoardController.userProfile.value!,
-          mapMailboxId: mailboxDashBoardController.mapDefaultMailboxId));
+    if (kIsWeb) {
+      if (mailboxDashBoardController.dashBoardAction != DashBoardAction.compose) {
+        mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.compose, arguments: ComposerArguments());
+      }
+    } else {
+      push(AppRoutes.COMPOSER, arguments: ComposerArguments());
     }
   }
 }
