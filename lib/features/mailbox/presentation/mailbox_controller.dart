@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmapState;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
+import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
@@ -31,6 +34,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_in
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/special_character_validator.dart';
@@ -72,6 +76,8 @@ class MailboxController extends BaseMailboxController {
   final searchState = SearchState.initial().obs;
   final searchQuery = SearchQuery.initial().obs;
   final currentSelectMode = SelectMode.INACTIVE.obs;
+
+  final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
 
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
   TextEditingController searchInputController = TextEditingController();
@@ -122,6 +128,10 @@ class MailboxController extends BaseMailboxController {
           refreshMailboxChanges();
         }
       });
+    });
+
+    _openMailboxEventController.stream.throttleTime(Duration(milliseconds: 800)).listen((event) {
+      _handleOpenMailbox(event.buildContext, event.presentationMailbox);
     });
   }
 
@@ -246,9 +256,9 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
-  void openMailbox(
-      BuildContext context,
-      PresentationMailbox presentationMailboxSelected
+  void _handleOpenMailbox(
+    BuildContext context,
+    PresentationMailbox presentationMailboxSelected
   ) {
     FocusScope.of(context).unfocus();
 
@@ -258,6 +268,13 @@ class MailboxController extends BaseMailboxController {
     if (!responsiveUtils.isDesktop(context)) {
       mailboxDashBoardController.closeDrawer();
     }
+  }
+
+  void openMailbox(
+      BuildContext context,
+      PresentationMailbox presentationMailboxSelected
+  ) {
+    _openMailboxEventController.add(OpenMailboxViewEvent(context, presentationMailboxSelected));
   }
 
   void _deleteCredential() async {
@@ -593,5 +610,11 @@ class MailboxController extends BaseMailboxController {
     _deleteCredential();
     _clearAllCache();
     pushAndPopAll(AppRoutes.LOGIN);
+  }
+
+  @override
+  void dispose() {
+    _openMailboxEventController.close();
+    super.dispose();
   }
 }
