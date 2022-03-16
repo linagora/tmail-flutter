@@ -71,7 +71,7 @@ class EmailAddressInputBuilder {
         Expanded(child: _buildTagEditor()),
         if (_prefixEmailAddress == PrefixEmailAddress.to)
           Padding(
-            padding: EdgeInsets.only(top: 8),
+            padding: EdgeInsets.only(top: kIsWeb ? 8 : 0),
             child: _buildButtonExpandAddress())
       ]
     );
