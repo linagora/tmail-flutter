@@ -1,6 +1,7 @@
 
 import 'package:core/core.dart';
 import 'package:filesize/filesize.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
@@ -53,13 +54,13 @@ class AttachmentFileComposerBuilder {
           color: Colors.white),
         child: Stack(children: [
           ListTile(
-              contentPadding: EdgeInsets.only(right: 16),
+              contentPadding: EdgeInsets.only(right: kIsWeb ? 16 : 18),
               onTap: () {},
               leading: Transform(
-                  transform: Matrix4.translationValues(8.0, -3.0, 0.0),
+                  transform: Matrix4.translationValues(8.0, kIsWeb ? -3.0 : -5.0, 0.0),
                   child: SvgPicture.asset(imagePaths.icFileAttachment, fit: BoxFit.fill)),
               title: Transform(
-                  transform: Matrix4.translationValues(-4.0, -6.0, 0.0),
+                  transform: Matrix4.translationValues(kIsWeb ? -4.0 : -10.0, kIsWeb ? -6.0 : -9.0, 0.0),
                   child: Text(
                     attachment.name ?? '',
                     maxLines: 2,
@@ -68,7 +69,7 @@ class AttachmentFileComposerBuilder {
                   )),
               subtitle: attachment.size != null && attachment.size?.value != 0
                   ? Transform(
-                      transform: Matrix4.translationValues(-4.0, -5.0, 0.0),
+                      transform: Matrix4.translationValues(kIsWeb ? -4.0 : -10.0, kIsWeb ? -5.0 : -8.0, 0.0),
                       child: Text(
                           filesize(attachment.size?.value, 0),
                           maxLines: 1,
@@ -76,7 +77,7 @@ class AttachmentFileComposerBuilder {
                           style: TextStyle(fontSize: 10, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal)))
                   : null,
           ),
-          Positioned(right: -5, top: -5, child: buildIconWeb(
+          Positioned(right: kIsWeb ? -5 : -12, top: kIsWeb ? -5 : -12, child: buildIconWeb(
               icon: SvgPicture.asset(imagePaths.icDeleteAttachment, fit: BoxFit.fill),
               tooltip: AppLocalizations.of(context).delete,
               onTap: () => _onDeleteAttachmentAction?.call(attachment)))
