@@ -118,6 +118,7 @@ class ThreadController extends BaseController {
     super.onReady();
     mailboxDashBoardController.selectedMailbox.listen((selectedMailbox) {
       if (_currentMailboxId != selectedMailbox?.id) {
+        log('ThreadController::onReady(): selectMailbox: ${selectedMailbox?.name?.name}(${selectedMailbox?.id})');
         _currentMailboxId = selectedMailbox?.id;
         _resetToOriginalValue();
         _getAllEmail();
@@ -230,11 +231,13 @@ class ThreadController extends BaseController {
   }
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
+    log('ThreadController::_getAllEmailSuccess(): ${success.emailList.length}');
     _currentEmailState = success.currentEmailState;
     emailList.value = success.emailList;
   }
 
   void _getAllEmailAction(AccountId accountId, {MailboxId? mailboxId}) {
+    log('ThreadController::_getAllEmailAction(): mailboxId = $mailboxId');
     consumeState(_getEmailsInMailboxInteractor.execute(
       accountId,
       limit: ThreadConstants.defaultLimit,
@@ -338,8 +341,11 @@ class ThreadController extends BaseController {
   }
 
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
+    log('ThreadController::_loadMoreEmailsSuccess(): [BEFORE] totalEmailList = ${emailList.length}');
     if (success.emailList.isNotEmpty) {
+      log('ThreadController::_loadMoreEmailsSuccess(): add success: ${success.emailList.length}');
       emailList.addAll(success.emailList);
+      log('ThreadController::_loadMoreEmailsSuccess(): [AFTER] totalEmailList = ${emailList.length}');
     } else {
       canLoadMore = false;
     }
