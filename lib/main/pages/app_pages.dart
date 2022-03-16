@@ -1,6 +1,7 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
+    if (dart.library.html) 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';

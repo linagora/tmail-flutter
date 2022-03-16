@@ -773,4 +773,47 @@ class AppLocalizations {
         'Email address copied to clipboard',
         name: 'email_address_copied_to_clipboard');
   }
+
+  String get minimize {
+    return Intl.message(
+        'Minimize',
+        name: 'minimize');
+  }
+
+  String get fullscreen {
+    return Intl.message(
+        'Fullscreen',
+        name: 'fullscreen');
+  }
+
+  String get close {
+    return Intl.message(
+        'Close',
+        name: 'close');
+  }
+
+  String get send {
+    return Intl.message(
+        'Send',
+        name: 'send');
+  }
+
+  String get attachments {
+    return Intl.message(
+        'Attachments',
+        name: 'attachments');
+  }
+
+  String get show_all {
+    return Intl.message(
+        'Show all',
+        name: 'show_all');
+  }
+
+  String get message_confirm_send_email {
+    return Intl.message(
+        'Are you sure to send messages without a subject?',
+        name: 'message_confirm_send_email');
+  }
+
 }

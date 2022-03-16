@@ -16,6 +16,13 @@ class ConfirmDialogBuilder {
   String _confirmText = '';
   String _cancelText = '';
   Widget? _iconWidget;
+  Color? _colorCancelButton;
+  Color? _colorConfirmButton;
+  TextStyle? _styleTextCancelButton;
+  TextStyle? _styleTextConfirmButton;
+  TextStyle? _styleTitle;
+  TextStyle? _styleContent;
+  double? _radiusButton;
 
   OnConfirmButtonAction? _onConfirmButtonAction;
   OnCancelButtonAction? _onCancelButtonAction;
@@ -37,6 +44,34 @@ class ConfirmDialogBuilder {
 
   void addIcon(Widget? icon) {
     _iconWidget = icon;
+  }
+
+  void colorCancelButton(Color? color) {
+    _colorCancelButton = color;
+  }
+
+  void colorConfirmButton(Color? color) {
+    _colorConfirmButton = color;
+  }
+
+  void styleTextCancelButton(TextStyle? style) {
+    _styleTextCancelButton = style;
+  }
+
+  void styleTextConfirmButton(TextStyle? style) {
+    _styleTextConfirmButton = style;
+  }
+
+  void styleTitle(TextStyle? style) {
+    _styleTitle = style;
+  }
+
+  void styleContent(TextStyle? style) {
+    _styleContent = style;
+  }
+
+  void radiusButton(double? radius) {
+    _radiusButton = radius;
   }
 
   void onConfirmButtonAction(String confirmText, OnConfirmButtonAction? onConfirmButtonAction) {
@@ -66,52 +101,57 @@ class ConfirmDialogBuilder {
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(16))),
         child: Wrap(children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: IconButton(
-                padding: EdgeInsets.only(top: 16, right: 16),
-                onPressed: () => _onCloseButtonAction?.call(),
-                icon: SvgPicture.asset(_imagePath.icCloseMailbox, width: 30, height: 30, fit: BoxFit.fill))),
+          if (_onCloseButtonAction != null)
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                  padding: EdgeInsets.only(top: 16, right: 16),
+                  onPressed: () => _onCloseButtonAction?.call(),
+                  icon: SvgPicture.asset(_imagePath.icCloseMailbox, width: 30, height: 30, fit: BoxFit.fill))),
           if (_iconWidget != null)
             Container(
               margin: EdgeInsets.only(top: 24),
               alignment: Alignment.center,
               child: _iconWidget,
             ),
-          Padding(
-            padding: EdgeInsets.only(top: 12),
-            child: Center(
-              child: Text(
-                _title,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20.0, color: AppColor.colorActionDeleteConfirmDialog, fontWeight: FontWeight.w500)
+          if (_title.isNotEmpty)
+            Padding(
+              padding: EdgeInsets.only(top: 12),
+              child: Center(
+                child: Text(
+                  _title,
+                  textAlign: TextAlign.center,
+                  style: _styleTitle ?? TextStyle(fontSize: 20.0, color: AppColor.colorActionDeleteConfirmDialog, fontWeight: FontWeight.w500)
+                )
               )
-            )
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-            child: Center(
-              child: Text(_content,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
+            ),
+          if (_content.isNotEmpty)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              child: Center(
+                child: Text(_content,
+                  textAlign: TextAlign.center,
+                  style: _styleContent ?? TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
+                ),
               ),
             ),
-          ),
           Padding(
             padding: EdgeInsets.only(bottom: 16, left: 16, right: 16),
             child: Row(
               children: [
-                Expanded(
-                    child: _buildButton(name: _cancelText, action: _onCancelButtonAction)
-                ),
+                Expanded(child: _buildButton(
+                    name: _cancelText,
+                    bgColor: _colorCancelButton,
+                    radius: _radiusButton,
+                    textStyle: _styleTextCancelButton,
+                    action: _onCancelButtonAction)),
                 SizedBox(width: 16),
-                Expanded(
-                    child: _buildButton(
-                        name: _confirmText,
-                        bgColor: AppColor.colorConfirmActionDialog,
-                        nameColor: AppColor.colorActionDeleteConfirmDialog,
-                        action: _onConfirmButtonAction)
-                )
+                Expanded(child: _buildButton(
+                  name: _confirmText,
+                  bgColor: _colorConfirmButton,
+                  radius: _radiusButton,
+                  textStyle: _styleTextConfirmButton,
+                  action: _onConfirmButtonAction))
               ]
             ))
         ])
@@ -120,7 +160,7 @@ class ConfirmDialogBuilder {
   }
 
   Widget _buildButton({
-    String? name, Color? nameColor, Color? bgColor, Function? action
+    String? name, TextStyle? textStyle, Color? bgColor, double? radius, Function? action
   }) {
     return SizedBox(
       width: double.infinity,
@@ -133,7 +173,7 @@ class ConfirmDialogBuilder {
             backgroundColor: MaterialStateProperty.resolveWith<Color>(
                   (Set<MaterialState> states) => bgColor ?? AppColor.colorTextButton),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(radius ?? 8),
               side: BorderSide(width: 0, color: bgColor ?? AppColor.colorTextButton),
             )),
             padding: MaterialStateProperty.resolveWith<EdgeInsets>(
@@ -141,7 +181,7 @@ class ConfirmDialogBuilder {
             elevation: MaterialStateProperty.resolveWith<double>((Set<MaterialState> states) => 0)),
         child: Text(name ?? '',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: nameColor ?? Colors.white)),
+            style: textStyle ?? TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white)),
       )
     );
   }

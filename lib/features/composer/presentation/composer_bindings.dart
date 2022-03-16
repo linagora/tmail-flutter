@@ -127,6 +127,7 @@ class ComposerBindings extends BaseBindings {
         Get.find<GetAutoCompleteWithDeviceContactInteractor>(),
         Get.find<AppToast>(),
         Get.find<ImagePaths>(),
+        Get.find<ResponsiveUtils>(),
         Get.find<Uuid>(),
         Get.find<DeviceInfoPlugin>(),
         Get.find<LocalFilePickerInteractor>(),

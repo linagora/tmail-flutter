@@ -79,12 +79,12 @@ extension AppColor on Color {
   static const colorInputBorderCreateMailbox = Color(0x1F000000);
   static const colorInputBackgroundErrorVerifyName = Color(0xFFFAEBEB);
   static const colorInputBackgroundCreateMailbox = Color(0xFFF2F3F5);
-  static const colorHintInputCreateMailbox= Color(0xFFA9B4C2);
-  static const colorMessageConfirmDialog= Color(0xFF6D7885);
-  static const colorActionDeleteConfirmDialog= Color(0xFFE64646);
-  static const colorActionCancelDialog= Color(0xFF007AFF);
-  static const colorMessageDialog= Color(0xFF222222);
-  static const colorConfirmActionDialog= Color(0xFFF2F2F2);
+  static const colorHintInputCreateMailbox = Color(0xFFA9B4C2);
+  static const colorMessageConfirmDialog = Color(0xFF6D7885);
+  static const colorActionDeleteConfirmDialog = Color(0xFFE64646);
+  static const colorActionCancelDialog = Color(0xFF007AFF);
+  static const colorMessageDialog = Color(0xFF222222);
+  static const colorConfirmActionDialog = Color(0xFFF2F2F2);
   static const colorEmailAddress = Color(0xFF333333);
   static const colorHintEmailAddressInput = Color(0x993C3C43);
   static const colorDividerComposer = Color(0xFFC6C6C8);
@@ -94,6 +94,10 @@ extension AppColor on Color {
   static const colorEmailAddressPrefix = Color(0xFF9AA7B6);
   static const colorEmailAddressTag = Color(0x146D7885);
   static const colorLineLeftEmailView = Color(0x2999A2AD);
+  static const colorShadowComposer = Color(0x1F000000);
+  static const colorBottomBarComposer = Color(0x5CEBEDF0);
+  static const colorShadowComposerFullScreen = Color(0x33000000);
+  static const colorCancelButton = Color(0xFFF2F2F2);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

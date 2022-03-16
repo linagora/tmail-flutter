@@ -26,6 +26,7 @@ class EmailAddressInputBuilder {
   final List<EmailAddress> _listEmailAddress;
   final TextEditingController? controller;
   final bool? isInitial;
+  final bool hasAvatar;
 
   OnOpenExpandAddressActionClick? _onOpenExpandAddressActionClick;
   OnUpdateListEmailAddressAction? _onUpdateListEmailAddressAction;
@@ -51,6 +52,7 @@ class EmailAddressInputBuilder {
     this._listEmailAddress,
     {
       this.isInitial,
+      this.hasAvatar = false,
       this.controller,
       this.expandMode = ExpandMode.COLLAPSE,
     }
@@ -69,7 +71,7 @@ class EmailAddressInputBuilder {
         Expanded(child: _buildTagEditor()),
         if (_prefixEmailAddress == PrefixEmailAddress.to)
           Padding(
-            padding: EdgeInsets.only(top: 4),
+            padding: EdgeInsets.only(top: 8),
             child: _buildButtonExpandAddress())
       ]
     );
@@ -79,12 +81,10 @@ class EmailAddressInputBuilder {
     return Material(
         type: MaterialType.circle,
         color: Colors.transparent,
-        child: IconButton(
-            icon: SvgPicture.asset(
-                expandMode == ExpandMode.EXPAND ? _imagePaths.icExpandAddress : _imagePaths.icMoreReceiver,
-                width: 20,
-                height: 20,
-                fit: BoxFit.fill),
+        child: TextButton(
+            child: Text(
+                expandMode == ExpandMode.EXPAND ? AppLocalizations.of(_context).hide : AppLocalizations.of(_context).details,
+                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16, color: AppColor.colorTextButton)),
             onPressed: () => _onOpenExpandAddressActionClick?.call()
         )
     );
@@ -98,6 +98,7 @@ class EmailAddressInputBuilder {
         keyboardType: TextInputType.emailAddress,
         textInputAction: TextInputAction.done,
         hasAddButton: false,
+        tagSpacing: 8,
         resetTextOnSubmitted: true,
         textStyle: TextStyle(color: AppColor.colorEmailAddress, fontSize: 14, fontWeight: FontWeight.w500),
         onSubmitted: (value) {
@@ -117,16 +118,22 @@ class EmailAddressInputBuilder {
         tagBuilder: (context, index) => Padding(
             padding: EdgeInsets.only(top: kIsWeb ? 8 : 0),
             child: Chip(
-              labelPadding: EdgeInsets.only(left: 8, right: 8, bottom: 2),
+              labelPadding: EdgeInsets.only(left: 12, right: 12, bottom: 2),
               label: Text(_listEmail[index], maxLines: 1, overflow: TextOverflow.ellipsis),
               deleteIcon: SvgPicture.asset(_imagePaths.icDeleteEmailAddress, fit: BoxFit.fill),
               labelStyle: TextStyle(color: AppColor.colorEmailAddress, fontSize: 14, fontWeight: FontWeight.w500),
               backgroundColor: AppColor.emailAddressChipColor,
-              avatar: CircleAvatar(
-                  backgroundColor: AppColor.colorTextButton,
-                  child: Text(
-                      _listEmail[index].isNotEmpty ? _listEmail[index][0].toUpperCase() : '',
-                      style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(width: 0, color: AppColor.emailAddressChipColor),
+              ),
+              avatar: hasAvatar == true
+                  ? CircleAvatar(
+                    backgroundColor: AppColor.colorTextButton,
+                    child: Text(
+                        _listEmail[index].isNotEmpty ? _listEmail[index][0].toUpperCase() : '',
+                        style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)))
+                  : null,
               onDeleted: () {
                 setState(() => _listEmailAddress.removeAt(index));
                 _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, _listEmailAddress);
