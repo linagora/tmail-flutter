@@ -136,11 +136,11 @@ class MailboxController extends BaseMailboxController {
   @override
   void onData(Either<Failure, Success> newState) {
     super.onData(newState);
-    newState.map((success) {
+    newState.map((success) async {
       if (success is GetAllMailboxSuccess) {
         allMailboxes = success.mailboxList;
         currentMailboxState = success.currentMailboxState;
-        buildTree(allMailboxes);
+        await buildTree(allMailboxes);
 
         _setUpMapMailboxIdDefault(allMailboxes, defaultMailboxTree.value, folderMailboxTree.value);
       }
