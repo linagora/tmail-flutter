@@ -103,7 +103,10 @@ class ComposerView extends GetWidget<ComposerController> {
                               child: buildIconWeb(
                                   icon: SvgPicture.asset(imagePaths.icCloseComposer, color: Colors.white, fit: BoxFit.fill),
                                   tooltip: AppLocalizations.of(context).close,
-                                  onTap: () => controller.closeComposerWeb())),
+                                  onTap: () {
+                                    controller.saveEmailAsDrafts(context);
+                                    controller.closeComposerWeb();
+                                  })),
                         ]
                     ))
                 )
@@ -194,7 +197,10 @@ class ComposerView extends GetWidget<ComposerController> {
             buildIconWeb(
                 icon: SvgPicture.asset(imagePaths.icCloseComposer, fit: BoxFit.fill),
                 tooltip: AppLocalizations.of(context).close,
-                onTap: () => controller.closeComposerWeb()),
+                onTap: () {
+                  controller.saveEmailAsDrafts(context);
+                  controller.closeComposerWeb();
+                }),
           ]
       ),
     );
@@ -209,7 +215,10 @@ class ComposerView extends GetWidget<ComposerController> {
             buildIconWeb(
                 icon: SvgPicture.asset(imagePaths.icCloseComposer, fit: BoxFit.fill),
                 tooltip: AppLocalizations.of(context).close,
-                onTap: () => controller.closeComposerWeb()),
+                onTap: () {
+                  controller.saveEmailAsDrafts(context);
+                  controller.closeComposerWeb();
+                }),
             Spacer(),
             buildIconWeb(
                 icon: SvgPicture.asset(imagePaths.icAttachmentsComposer, fit: BoxFit.fill),
