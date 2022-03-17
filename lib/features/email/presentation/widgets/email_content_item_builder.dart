@@ -9,10 +9,12 @@ class EmailContentItemBuilder {
   final BuildContext _context;
   final EmailContent _emailContent;
   final Widget? loadingWidget;
+  final BoxConstraints _constraints;
 
   EmailContentItemBuilder(
     this._context,
     this._emailContent,
+    this._constraints,
     {
       this.loadingWidget
     }
@@ -31,13 +33,19 @@ class EmailContentItemBuilder {
   }
 
   Widget _buildItem() {
+    log('EmailContentItemBuilder() | maxWidth: ${_constraints.maxWidth}');
+    log('EmailContentItemBuilder() | heightScreen: ${MediaQuery.of(_context).size.height}');
     switch(_emailContent.type) {
       case EmailContentType.textHtml:
         if (kIsWeb) {
-          return HtmlContentViewerOnWeb(
-              widthContent: MediaQuery.of(_context).size.width,
-              contentHtml: _emailContent.content,
-              controller: HtmlViewerControllerForWeb());
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: HtmlContentViewerOnWeb(
+                widthContent: _constraints.maxWidth,
+                heightContent: MediaQuery.of(_context).size.height,
+                contentHtml: _emailContent.content,
+                controller: HtmlViewerControllerForWeb()),
+          );
         } else {
           return HtmlContentViewer(
               widthContent: MediaQuery.of(_context).size.width,
