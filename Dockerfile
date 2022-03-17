@@ -30,7 +30,7 @@ RUN cd core \
   && cd .. \
   && flutter pub get && flutter pub run intl_generator:extract_to_arb --output-dir=./lib/l10n lib/main/localizations/app_localizations.dart \
   && flutter pub get && flutter pub run intl_generator:generate_from_arb --output-dir=lib/l10n --no-use-deferred-loading lib/main/localizations/app_localizations.dart lib/l10n/intl*.arb \
-  && flutter build web
+  && flutter build web --profile
 
 # Stage 2 - Create the run-time image
 FROM nginx:stable
