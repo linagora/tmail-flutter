@@ -143,30 +143,33 @@ class EmailView extends GetView {
       padding: EdgeInsets.only(bottom: 16, left: 16, right: 16, top: 10),
       alignment: Alignment.center,
       color: Colors.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(child: _buildEmailSubject()),
-                _buildEmailTime(context),
-              ]),
-          _buildDivider(edgeInsets: EdgeInsets.only(top: 16)),
-          Obx(() => emailController.currentEmail != null
-            ? _buildEmailAddress(
-                context,
-                emailController.currentEmail!,
-                emailController.emailAddressExpandMode.value,
-                emailController.isDisplayFullEmailAddress.value)
-            : SizedBox.shrink()),
-          _buildDivider(edgeInsets: EdgeInsets.only(top: 4)),
-          _buildAttachments(context),
-          _buildListEmailContent(),
-        ],
-      )
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(child: _buildEmailSubject()),
+                    _buildEmailTime(context),
+                  ]),
+              _buildDivider(edgeInsets: EdgeInsets.only(top: 16)),
+              Obx(() => emailController.currentEmail != null
+                  ? _buildEmailAddress(
+                  context,
+                  emailController.currentEmail!,
+                  emailController.emailAddressExpandMode.value,
+                  emailController.isDisplayFullEmailAddress.value)
+                  : SizedBox.shrink()),
+              _buildDivider(edgeInsets: EdgeInsets.only(top: 4)),
+              _buildAttachments(context),
+              _buildListEmailContent(context, constraints),
+            ],
+          );
+        })
     );
   }
 
@@ -445,7 +448,7 @@ class EmailView extends GetView {
     );
   }
 
-  Widget _buildListEmailContent() {
+  Widget _buildListEmailContent(BuildContext context, BoxConstraints constraints) {
     return Obx(() => emailController.viewState.value.fold(
       (failure) => SizedBox.shrink(),
       (success) {
@@ -453,18 +456,14 @@ class EmailView extends GetView {
           return EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils);
         } else {
           if (emailController.emailContents.isNotEmpty) {
-            return ListView.builder(
-              primary: false,
-              shrinkWrap: true,
-              padding: EdgeInsets.only(top: 10),
-              key: Key('list_email_content'),
-              itemCount: emailController.emailContents.length,
-              itemBuilder: (context, index) =>
-                EmailContentItemBuilder(
+            return Column(children: [
+              ...emailController.emailContents.map((content) => EmailContentItemBuilder(
                   context,
-                  emailController.emailContents[index],
+                  content,
+                  constraints,
                   loadingWidget: EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils)
-                ).build());
+              ).build()).toList(),
+            ]);
           } else {
             return SizedBox.shrink();
           }
