@@ -209,4 +209,51 @@ void main() {
           contains(MailboxNode(PresentationMailbox(MailboxId(Id("e3_2_1")), parentId: MailboxId(Id('id42'))))));
     });
   });
+
+  group('generate default mailbox tree base on sortOrder: ', () {
+    final expectedTree = MailboxTree(
+        MailboxNode(
+            PresentationMailbox(MailboxId(Id('root'))),
+            childrenItems: [
+              MailboxNode(
+                PresentationMailbox(MailboxId(Id("1")), parentId: null, name: MailboxName('Inbox'), sortOrder: SortOrder(sortValue: 10), role: Role('inbox')),
+              ),
+              MailboxNode(
+                PresentationMailbox(MailboxId(Id("2")), parentId: null, name: MailboxName('Draft'), sortOrder: SortOrder(sortValue: 30), role: Role('draft')),
+              ),
+              MailboxNode(
+                PresentationMailbox(MailboxId(Id("3")), parentId: null, name: MailboxName('Outbox'), sortOrder: SortOrder(sortValue: 40), role: Role('outbox')),
+              ),
+              MailboxNode(
+                PresentationMailbox(MailboxId(Id("4")), parentId: null, name: MailboxName('Sent'), sortOrder: SortOrder(sortValue: 50), role: Role('sent')),
+              ),
+              MailboxNode(
+                PresentationMailbox(MailboxId(Id("5")), parentId: null, name: MailboxName('Trash'), sortOrder: SortOrder(sortValue: 60), role: Role('trash')),
+              ),
+              MailboxNode(
+                PresentationMailbox(MailboxId(Id("6")), parentId: null, name: MailboxName('Spam'), sortOrder: SortOrder(sortValue: 70), role: Role('spam')),
+              ),
+            ]
+        )
+    );
+
+
+    test('defaultMailboxTree should be in order after buildTree', () async {
+      final testCase = [
+        PresentationMailbox(MailboxId(Id("4")), parentId: null, name: MailboxName('Sent'), sortOrder: SortOrder(sortValue: 50), role: Role('sent')),
+        PresentationMailbox(MailboxId(Id("6")), parentId: null, name: MailboxName('Spam'), sortOrder: SortOrder(sortValue: 70), role: Role('spam')),
+        PresentationMailbox(MailboxId(Id("5")), parentId: null, name: MailboxName('Trash'), sortOrder: SortOrder(sortValue: 60), role: Role('trash')),
+        PresentationMailbox(MailboxId(Id("2")), parentId: null, name: MailboxName('Draft'), sortOrder: SortOrder(sortValue: 30), role: Role('draft')),
+        PresentationMailbox(MailboxId(Id("3")), parentId: null, name: MailboxName('Outbox'), sortOrder: SortOrder(sortValue: 40), role: Role('outbox')),
+        PresentationMailbox(MailboxId(Id("1")), parentId: null, name: MailboxName('Inbox'), sortOrder: SortOrder(sortValue: 10), role: Role('inbox')),
+      ];
+
+      final generatedTree = await TreeBuilder().generateMailboxTreeInUI(testCase);
+
+      expect(
+        generatedTree.head.root.childrenItems,
+        equals(expectedTree.root.childrenItems)
+      );
+    });
+  });
 }
