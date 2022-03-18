@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -7,7 +8,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
@@ -26,12 +27,12 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_status.d
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 
-class MailboxDashBoardController extends BaseController {
+class MailboxDashBoardController extends ReloadableController {
 
-  final GetUserProfileInteractor _getUserProfileInteractor;
-  final AppToast _appToast;
-  final ImagePaths _imagePaths;
-  final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor;
+  final GetUserProfileInteractor _getUserProfileInteractor = Get.find<GetUserProfileInteractor>();
+  final AppToast _appToast = Get.find<AppToast>();
+  final ImagePaths _imagePaths = Get.find<ImagePaths>();
+  final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -50,16 +51,12 @@ class MailboxDashBoardController extends BaseController {
   FocusNode searchFocus = FocusNode();
   RouterArguments? routerArguments;
 
-  MailboxDashBoardController(
-      this._getUserProfileInteractor,
-      this._appToast,
-      this._imagePaths,
-      this._removeEmailDraftsInteractor,
-  );
+  MailboxDashBoardController();
 
   @override
   void onReady() {
     super.onReady();
+    log('MailboxDashBoardController::onReady()');
     _setSessionCurrent();
     _getUserProfile();
   }
@@ -132,9 +129,14 @@ class MailboxDashBoardController extends BaseController {
   void _setSessionCurrent() {
     Future.delayed(const Duration(milliseconds: 100), () {
       final arguments = Get.arguments;
+      log('MailboxDashBoardController::_setSessionCurrent(): arguments = $arguments');
       if (arguments is Session) {
         sessionCurrent = Get.arguments as Session;
         accountId.value = sessionCurrent?.accounts.keys.first;
+      } else {
+        if (kIsWeb) {
+          reload();
+        }
       }
     });
   }
@@ -243,6 +245,12 @@ class MailboxDashBoardController extends BaseController {
         break;
     }
     dashBoardAction.value = action;
+  }
+
+  @override
+  void handleReloaded(Session session) {
+    sessionCurrent = session;
+    accountId.value = sessionCurrent?.accounts.keys.first;
   }
 
   @override
