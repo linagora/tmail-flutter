@@ -55,8 +55,8 @@ class ComposerView extends GetWidget<ComposerController> {
                 color: Colors.transparent,
                 child: Container(
                     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(20))),
-                    width: responsiveUtils.getSizeWidthScreen(context) * 0.5,
-                    height: responsiveUtils.getSizeHeightScreen(context) * 0.65,
+                    width: responsiveUtils.getSizeWidthScreen(context) * 0.55,
+                    height: responsiveUtils.getSizeHeightScreen(context) * 0.75,
                     child: PointerInterceptor(child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -119,8 +119,8 @@ class ComposerView extends GetWidget<ComposerController> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
                     child: Container(
                         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(20))),
-                        width: responsiveUtils.getSizeWidthScreen(context) * 0.8,
-                        height: responsiveUtils.getSizeHeightScreen(context) * 0.85,
+                        width: responsiveUtils.getSizeWidthScreen(context) * 0.85,
+                        height: responsiveUtils.getSizeHeightScreen(context) * 0.9,
                         child: ClipRRect(
                             borderRadius: BorderRadius.all(Radius.circular(20)),
                             child: PointerInterceptor(child: Column(
@@ -391,52 +391,55 @@ class ComposerView extends GetWidget<ComposerController> {
   }
 
   Widget _buildEditorAndAttachments(BuildContext context) {
-    return SingleChildScrollView(
-      physics: ClampingScrollPhysics(),
-      child: Column(
-        children: [
-          Obx(() => controller.attachments.isNotEmpty
-              ? Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                  child: _buildAttachmentsTitle(context, controller.attachments, controller.expandModeAttachments.value))
-              : SizedBox.shrink()),
-          Obx(() => controller.attachments.isEmpty
-              ? _buildAttachmentsLoadingView()
-              : SizedBox.shrink()),
-          Obx(() => controller.attachments.isNotEmpty
-              ? Padding(
-                  padding: EdgeInsets.only(bottom: 8, left: 10, right: 10),
-                  child: _buildAttachmentsList(context, controller.attachments, controller.expandModeAttachments.value))
-              : SizedBox.shrink()),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: _buildComposerEditor(context)),
-        ]
-      )
+    return Column(
+      children: [
+        Obx(() => controller.attachments.isNotEmpty
+            ? Padding(
+                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                child: _buildAttachmentsTitle(context, controller.attachments, controller.expandModeAttachments.value))
+            : SizedBox.shrink()),
+        Obx(() => controller.attachments.isEmpty
+            ? _buildAttachmentsLoadingView()
+            : SizedBox.shrink()),
+        Obx(() => controller.attachments.isNotEmpty && controller.expandModeAttachments.value == ExpandMode.COLLAPSE
+            ? Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Divider(color: AppColor.colorDividerComposer, height: 1))
+            : SizedBox.shrink()),
+        Obx(() => controller.attachments.isNotEmpty
+            ? Padding(
+                padding: EdgeInsets.only(bottom: 8, left: 10, right: 10),
+                child: _buildAttachmentsList(context, controller.attachments, controller.expandModeAttachments.value))
+            : SizedBox.shrink()),
+        Expanded(child: Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: _buildEditor(context))),
+      ]
     );
   }
 
-  Widget _buildComposerEditor(BuildContext context) {
-    return Obx(() => HtmlEditorBrowser.HtmlEditor(
+  Widget _buildEditor(BuildContext context) {
+    return HtmlEditorBrowser.HtmlEditor(
       key: Key('composer_editor_web'),
       controller: controller.htmlControllerBrowser,
       htmlEditorOptions: HtmlEditorBrowser.HtmlEditorOptions(
-        hint: '',
+        hint: '<p></p>',
         initialText: controller.initTextEditorComposer,
-        autoAdjustHeight: true,
         darkMode: false,
-        disableScrollbarEditor: true,
       ),
       htmlToolbarOptions: HtmlEditorBrowser.HtmlToolbarOptions(
         toolbarPosition: HtmlEditorBrowser.ToolbarPosition.custom
       ),
       otherOptions: HtmlEditorBrowser.OtherOptions(height: 550),
-      callbacks: HtmlEditorBrowser.Callbacks(onBeforeCommand: (String? currentHtml) {
-        controller.setTextEditor(currentHtml);
-      }, onChangeContent: (String? changed) {
-        controller.setTextEditor(changed);
-      }),
-    ));
+      callbacks: HtmlEditorBrowser.Callbacks(
+          onBeforeCommand: (String? currentHtml) {
+            log('ComposerView::_buildComposerEditor(): onBeforeCommand');
+            controller.setTextEditor(currentHtml);
+          }, onChangeContent: (String? changed) {
+            log('ComposerView::_buildComposerEditor(): onChangeContent');
+            controller.setTextEditor(changed);
+          }, onInit: () {
+            log('ComposerView::_buildComposerEditor(): onInit');
+            controller.setFullScreenEditor();
+          }
+      ),
+    );
   }
 
   Widget _buildAttachmentsLoadingView({EdgeInsets? padding, double? size}) {
@@ -477,24 +480,8 @@ class ComposerView extends GetWidget<ComposerController> {
   }
 
   Widget _buildAttachmentsList(BuildContext context, List<Attachment> attachments, ExpandMode expandMode) {
-    if (expandMode == ExpandMode.EXPAND) {
-      return LayoutBuilder(builder: (context, constraints) {
-        return GridView.builder(
-            key: Key('list_attachment_full'),
-            primary: false,
-            shrinkWrap: true,
-            itemCount: attachments.length,
-            gridDelegate: SliverGridDelegateFixedHeight(
-                height: 60,
-                crossAxisCount: _getMaxItemRowListAttachment(context, constraints),
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0),
-            itemBuilder: (context, index) =>
-                (AttachmentFileComposerBuilder(context, imagePaths, attachments[index])
-                  ..addOnDeleteAttachmentAction((attachment) => controller.removeAttachmentAction(attachment)))
-              .build()
-        );
-      });
+    if (expandMode == ExpandMode.COLLAPSE) {
+      return SizedBox.shrink();
     } else {
       return LayoutBuilder(builder: (context, constraints) {
         return Align(
