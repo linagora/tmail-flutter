@@ -409,18 +409,46 @@ class ComposerView extends GetWidget<ComposerController> {
                 padding: EdgeInsets.only(bottom: 8, left: 10, right: 10),
                 child: _buildAttachmentsList(context, controller.attachments, controller.expandModeAttachments.value))
             : SizedBox.shrink()),
-        Expanded(child: Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: _buildEditor(context))),
+        Obx(() {
+          if (controller.composerArguments.value != null) {
+            if (controller.composerArguments.value?.emailActionType == EmailActionType.compose) {
+              final initContent = controller.textEditorWeb ?? '';
+              log('ComposerView::_buildEditorAndAttachments(): initContent: $initContent');
+              return Expanded(child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: _buildEditor(context, initContent)));
+            } else if (controller.composerArguments.value?.emailActionType == EmailActionType.edit) {
+              final initContent = controller.getEmailContentDraftsAsHtml();
+              log('ComposerView::_buildEditorAndAttachments(): initContent: $initContent');
+              if (initContent != null) {
+                return Expanded(child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: _buildEditor(context, initContent)));
+              } else {
+                return SizedBox.shrink();
+              }
+            } else {
+              final initContent = controller.getEmailContentQuotedAsHtml(context, controller.composerArguments.value!);
+              log('ComposerView::_buildEditorAndAttachments(): initContent: $initContent');
+              return Expanded(child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: _buildEditor(context, initContent)));
+            }
+          } else {
+            return SizedBox.shrink();
+          }
+        }),
       ]
     );
   }
 
-  Widget _buildEditor(BuildContext context) {
+  Widget _buildEditor(BuildContext context, String initContent) {
     return HtmlEditorBrowser.HtmlEditor(
       key: Key('composer_editor_web'),
       controller: controller.htmlControllerBrowser,
       htmlEditorOptions: HtmlEditorBrowser.HtmlEditorOptions(
         hint: '<p></p>',
-        initialText: controller.initTextEditorComposer,
+        initialText: initContent,
         darkMode: false,
       ),
       htmlToolbarOptions: HtmlEditorBrowser.HtmlToolbarOptions(
@@ -430,10 +458,10 @@ class ComposerView extends GetWidget<ComposerController> {
       callbacks: HtmlEditorBrowser.Callbacks(
           onBeforeCommand: (String? currentHtml) {
             log('ComposerView::_buildComposerEditor(): onBeforeCommand');
-            controller.setTextEditor(currentHtml);
+            controller.setTextEditorWeb(currentHtml);
           }, onChangeContent: (String? changed) {
             log('ComposerView::_buildComposerEditor(): onChangeContent');
-            controller.setTextEditor(changed);
+            controller.setTextEditorWeb(changed);
           }, onInit: () {
             log('ComposerView::_buildComposerEditor(): onInit');
             controller.setFullScreenEditor();
