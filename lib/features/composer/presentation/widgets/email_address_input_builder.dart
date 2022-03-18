@@ -99,6 +99,7 @@ class EmailAddressInputBuilder {
         textInputAction: TextInputAction.done,
         hasAddButton: false,
         tagSpacing: 8,
+        delimiters: [' '],
         resetTextOnSubmitted: true,
         textStyle: TextStyle(color: AppColor.colorEmailAddress, fontSize: 14, fontWeight: FontWeight.w500),
         onSubmitted: (value) {
@@ -139,7 +140,14 @@ class EmailAddressInputBuilder {
                 _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, _listEmailAddress);
               },
             )),
-        onTagChanged: (String value) {},
+        onTagChanged: (String value) {
+          if (GetUtils.isEmail(value)) {
+            setState(() => _listEmailAddress.add(EmailAddress(value, value)));
+            _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, _listEmailAddress);
+          } else {
+            _appToast.showErrorToast(AppLocalizations.of(context).email_address_is_not_in_the_correct_format);
+          }
+        },
         findSuggestions: (String query) {
           if (query.isNotEmpty && _onSuggestionEmailAddress != null) {
             return _onSuggestionEmailAddress!(query);
