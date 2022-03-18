@@ -128,7 +128,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/dab246/html-editor-enhanced.git
-      ref: html_editor_for_web
+      ref: improvements
 
   # fk_user_agent
   fk_user_agent: 2.1.0

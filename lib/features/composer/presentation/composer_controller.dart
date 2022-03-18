@@ -232,6 +232,12 @@ class ComposerController extends BaseController {
     }
   }
 
+  void setFullScreenEditor() {
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      htmlControllerBrowser.setFullScreen();
+    });
+  }
+
   Tuple2<String, String>? _getHeaderEmailQuoted(String locale, ComposerArguments arguments) {
     if (arguments.presentationEmail != null) {
       final sentDate = arguments.presentationEmail?.sentAt;
@@ -261,12 +267,6 @@ class ComposerController extends BaseController {
         listToEmailAddress = recipients.value1.toSet().filterEmailAddress(userEmailAddress);
         listCcEmailAddress = recipients.value2.toSet().filterEmailAddress(userEmailAddress);
         listBccEmailAddress = recipients.value3.toSet().filterEmailAddress(userEmailAddress);
-      }
-
-      if (listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty) {
-        expandMode.value = ExpandMode.EXPAND;
-      } else {
-        expandMode.value = ExpandMode.COLLAPSE;
       }
 
       if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty) {
@@ -319,7 +319,7 @@ class ComposerController extends BaseController {
       .toList()
       .join('<br>') ?? '';
 
-    final emailQuotedHtml = '<br><br><br>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}<br>';
+    final emailQuotedHtml = '<br><br>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}<br>';
 
     return emailQuotedHtml;
   }
@@ -369,7 +369,6 @@ class ComposerController extends BaseController {
       } else {
         userAgent = FkUserAgent.userAgent ?? '';
       }
-      log('ComposerController - userAgentPlatform(): userAgent: $userAgent');
     } on Exception {
       userAgent = '';
     }
@@ -666,8 +665,7 @@ class ComposerController extends BaseController {
 
   void _updateTextForEditor() async {
     final textCurrent = await htmlControllerBrowser.getText();
-    log('_updateTextForEditor() | textCurrent: $textCurrent');
-    htmlControllerBrowser.insertHtml(textCurrent);
+    htmlControllerBrowser.insertText(textCurrent);
   }
 
   void deleteComposer() {
