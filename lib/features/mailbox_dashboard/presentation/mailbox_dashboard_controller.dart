@@ -108,6 +108,7 @@ class MailboxDashBoardController extends ReloadableController {
           }
           clearState();
         } else if (success is SaveEmailAsDraftsSuccess) {
+          log('MailboxDashBoardController::onDone(): SaveEmailAsDraftsSuccess');
           _saveEmailAsDraftsSuccess(success);
           clearState();
         } else if (success is RemoveEmailDraftsSuccess

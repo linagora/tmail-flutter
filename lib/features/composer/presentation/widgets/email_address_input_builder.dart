@@ -23,7 +23,7 @@ class EmailAddressInputBuilder {
   final AppToast _appToast;
   final ExpandMode expandMode;
   final PrefixEmailAddress _prefixEmailAddress;
-  final List<EmailAddress> _listEmailAddress;
+  List<EmailAddress> _listEmailAddress;
   final TextEditingController? controller;
   final bool? isInitial;
   final bool hasAvatar;
