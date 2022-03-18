@@ -465,6 +465,11 @@ class ComposerView extends GetWidget<ComposerController> {
           }, onInit: () {
             log('ComposerView::_buildComposerEditor(): onInit');
             controller.setFullScreenEditor();
+          }, onFocus: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+            Future.delayed(const Duration(milliseconds: 500), () {
+              controller.htmlControllerBrowser.setFocus();
+            });
           }
       ),
     );
