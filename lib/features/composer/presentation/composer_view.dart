@@ -304,8 +304,8 @@ class ComposerView extends GetWidget<ComposerController> {
           minHeight: 550,
           onCreated: (editorApi) => controller.htmlEditorApi = editorApi);
       } else {
-        final message = controller.getContentEmail();
-        return message.isNotEmpty
+        final message = controller.getContentEmail(context);
+        return message != null && message.isNotEmpty
             ? HtmlEditor(
                 key: Key('composer_editor'),
                 minHeight: 550,
