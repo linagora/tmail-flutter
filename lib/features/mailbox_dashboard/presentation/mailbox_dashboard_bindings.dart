@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
@@ -11,7 +10,6 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_bindings.dart';
-import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
@@ -31,12 +29,7 @@ class MailboxDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.put(MailboxDashBoardController(
-      Get.find<GetUserProfileInteractor>(),
-      Get.find<AppToast>(),
-      Get.find<ImagePaths>(),
-      Get.find<RemoveEmailDraftsInteractor>(),
-    ));
+    Get.put(MailboxDashBoardController());
   }
 
   @override
@@ -62,13 +55,11 @@ class MailboxDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsRepository() {
-    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
   }
 
   @override
   void bindingsRepositoryImpl() {
-    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
     Get.lazyPut(() => EmailRepositoryImpl(
         Get.find<EmailDataSource>(),
         Get.find<HtmlDataSource>()
