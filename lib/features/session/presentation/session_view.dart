@@ -8,7 +8,7 @@ class SessionView extends GetWidget<SessionController> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColor.primaryColor,
+      color: AppColor.primaryLightColor,
       child: SizedBox(
         width: 100,
         height: 100,
