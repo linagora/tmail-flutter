@@ -4,19 +4,19 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
     if (dart.library.html) 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart';
+import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view.dart';
-import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
-import 'package:tmail_ui_user/features/session/presentation/session_bindings.dart';
+import 'package:tmail_ui_user/features/session/presentation/session_page_bindings.dart';
 import 'package:tmail_ui_user/features/session/presentation/session_view.dart';
+import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class AppPages {
@@ -32,7 +32,7 @@ class AppPages {
     GetPage(
       name: AppRoutes.SESSION,
       page: () => SessionView(),
-      binding: SessionBindings()),
+      binding: SessionPageBindings()),
     GetPage(
       name: AppRoutes.MAILBOX,
       page: () => MailboxView()),
