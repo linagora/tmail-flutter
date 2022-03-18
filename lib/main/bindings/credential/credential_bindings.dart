@@ -1,4 +1,3 @@
-import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
@@ -8,7 +7,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_inte
 class CredentialBindings extends Bindings {
 
   void dependencies() {
-    log('CredentialBindings::dependencies(): dmm credential goi vao day di');
     bindingsRepositoryImpl();
     bindingsRepository();
     bindingsInteractor();
@@ -19,7 +17,6 @@ class CredentialBindings extends Bindings {
   }
 
   void bindingsRepository() {
-    log('CredentialBindings::bindingsRepository(): dmm Put CredentialRepo ');
     Get.put<CredentialRepository>(Get.find<CredentialRepositoryImpl>());
   }
 
