@@ -24,6 +24,7 @@ class ComposerArguments extends RouterArguments {
   @override
   List<Object?> get props => [
     emailActionType,
+    presentationEmail,
     emailContents,
     attachments,
     mailboxRole,
