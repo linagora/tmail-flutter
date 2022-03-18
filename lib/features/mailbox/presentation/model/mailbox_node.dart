@@ -135,4 +135,16 @@ extension MailboxNodeExtension on MailboxNode {
         selectMode: selectMode,
     );
   }
+
+  int compareTo(MailboxNode other) {
+    if (item.sortOrder == null) {
+      return -1;
+    }
+
+    if (other.item.sortOrder == null) {
+      return 1;
+    }
+
+    return item.sortOrder!.value.value.compareTo(other.item.sortOrder!.value.value);
+  }
 }
