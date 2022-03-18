@@ -126,10 +126,6 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
-    newEmailResponse.emailList?.forEach((element) {
-      log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} [LOCAL] final yield: ${element.subject}:${element.id.id}');
-    });
-
     yield newEmailResponse;
   }
 
