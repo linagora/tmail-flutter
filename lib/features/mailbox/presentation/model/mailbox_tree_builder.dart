@@ -72,6 +72,7 @@ class TreeBuilder {
       }
     });
 
+    defaultTree.root.childrenItems?.sort((thisMailbox, thatMailbox) => thisMailbox.compareTo(thatMailbox));
     return Tuple2(defaultTree, folderTree);
   }
 }
