@@ -12,9 +12,15 @@ Widget buildIconWeb({
   double? iconSize,
 }) {
   return Material(
-      type: MaterialType.circle,
       color: Colors.transparent,
-      child: IconButton(icon: icon, iconSize: iconSize, padding: iconPadding ?? EdgeInsets.all(8.0), tooltip: tooltip, onPressed: onTap)
+      shape: CircleBorder(),
+      child: IconButton(
+          icon: icon,
+          iconSize: iconSize,
+          padding: iconPadding ?? EdgeInsets.all(8.0),
+          splashRadius: 20,
+          tooltip: tooltip,
+          onPressed: onTap)
   );
 }
 

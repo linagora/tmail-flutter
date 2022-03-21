@@ -54,6 +54,7 @@ export 'presentation/views/bottom_popup/cupertino_action_sheet_action_builder.da
 export 'presentation/views/bottom_popup/cupertino_action_sheet_builder.dart';
 export 'presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 export 'presentation/views/modal_sheets/edit_text_modal_sheet_builder.dart';
+export 'presentation/views/search/search_bar_view.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';

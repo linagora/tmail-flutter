@@ -55,13 +55,13 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class ThreadController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+  final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _appToast = Get.find<AppToast>();
+
   final GetEmailsInMailboxInteractor _getEmailsInMailboxInteractor;
   final RefreshAllEmailsInMailboxInteractor _refreshAllEmailsInMailboxInteractor;
   final MarkAsMultipleEmailReadInteractor _markAsMultipleEmailReadInteractor;
-  final AppToast _appToast;
-  final ResponsiveUtils responsiveUtils;
-  final ImagePaths _imagePaths;
-  final ScrollController listEmailController;
   final MoveMultipleEmailToMailboxInteractor _moveMultipleEmailToMailboxInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
   final MarkAsStarMultipleEmailInteractor _markAsStarMultipleEmailInteractor;
@@ -81,6 +81,7 @@ class ThreadController extends BaseController {
     get isLoadingMore => _isLoadingMore;
   MailboxId? _currentMailboxId;
   jmap.State? _currentEmailState;
+  final ScrollController listEmailController = ScrollController();
 
   SearchQuery? get searchQuery => mailboxDashBoardController.searchQuery;
 
@@ -91,13 +92,9 @@ class ThreadController extends BaseController {
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
 
   ThreadController(
-    this.responsiveUtils,
     this._getEmailsInMailboxInteractor,
     this._refreshAllEmailsInMailboxInteractor,
-    this.listEmailController,
     this._markAsMultipleEmailReadInteractor,
-    this._appToast,
-    this._imagePaths,
     this._moveMultipleEmailToMailboxInteractor,
     this._markAsStarEmailInteractor,
     this._markAsStarMultipleEmailInteractor,
@@ -360,7 +357,7 @@ class ThreadController extends BaseController {
 
   void previewEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
     mailboxDashBoardController.setSelectedEmail(presentationEmailSelected);
-    if (responsiveUtils.isDesktop(context) || responsiveUtils.isTabletLarge(context)) {
+    if (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) {
       mailboxDashBoardController.dispatchRoute(AppRoutes.EMAIL);
     } else {
       goToEmail(context);

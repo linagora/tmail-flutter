@@ -57,40 +57,26 @@ class AvatarBuilder {
           _onTapAvatarActionClick!();
         }},
       child: Container(
-        key: _key,
-        width: _size ?? 40,
-        height: _size ?? 40,
-        padding: EdgeInsets.zero,
-        margin: EdgeInsets.zero,
-        alignment: Alignment.center,
-        child: Stack(
-          children: [
-            Container(
-              width: _size ?? 40,
-              height: _size ?? 40,
-              padding: EdgeInsets.zero,
-              margin: EdgeInsets.zero,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular((_size ?? 40) * 0.5),
-                border: Border.all(color: Colors.transparent),
-                boxShadow: _boxShadows ?? [],
-                gradient: _avatarColors?.isNotEmpty == true
-                  ? LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      tileMode: TileMode.decal,
-                      colors: _avatarColors ?? [])
+          key: _key,
+          width: _size ?? 40,
+          height: _size ?? 40,
+          padding: EdgeInsets.zero,
+          margin: EdgeInsets.zero,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular((_size ?? 40) * 0.5),
+              border: Border.all(color: Colors.transparent),
+              boxShadow: _boxShadows ?? [],
+              gradient: _avatarColors?.isNotEmpty == true
+                  ? LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.decal, colors: _avatarColors ?? [])
                   : null,
-                color: _bgColor ?? AppColor.avatarColor
-              ),
-              child: Text(
-                '${_text ?? ''}',
-                style: _textStyle ?? TextStyle(fontSize: 20, color: _textColor ?? AppColor.avatarTextColor, fontWeight: FontWeight.w500)
-              )
-            ),
-          ],
-        )),
+              color: _bgColor ?? AppColor.avatarColor
+          ),
+          child: Text(
+              '${_text ?? ''}',
+              style: _textStyle ?? TextStyle(fontSize: 20, color: _textColor ?? AppColor.avatarTextColor, fontWeight: FontWeight.w500)
+          )
+      ),
     );
   }
 }

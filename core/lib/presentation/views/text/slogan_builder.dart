@@ -3,67 +3,78 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 /// A builder which builds a reusable slogan widget.
 /// This contains the logo and the slogan text.
-/// The elements are arranged in a column.
+/// The elements are arranged in a column or row.
 class SloganBuilder {
+
+  final bool arrangedByHorizontal;
+
   Key? _key;
   String? _text;
   TextStyle? _textStyle;
   TextAlign? _textAlign;
   String? _logoSVG;
   String? _logo;
+  double? _sizeLogo;
 
-  SloganBuilder key(Key key) {
+  SloganBuilder({this.arrangedByHorizontal = false});
+
+  void key(Key key) {
     _key = key;
-    return this;
   }
 
-  SloganBuilder setSloganText(String text) {
+  void setSloganText(String text) {
     _text = text;
-    return this;
   }
 
-  SloganBuilder setSloganTextStyle(TextStyle textStyle) {
+  void setSloganTextStyle(TextStyle textStyle) {
     _textStyle = textStyle;
-    return this;
   }
 
-  SloganBuilder setSloganTextAlign(TextAlign textAlign) {
+  void setSloganTextAlign(TextAlign textAlign) {
     _textAlign = textAlign;
-    return this;
   }
 
-  SloganBuilder setLogo(String logo) {
+  void setLogo(String logo) {
     _logo = logo;
-    return this;
   }
 
-  SloganBuilder setLogoSVG(String logoSVG) {
+  void setLogoSVG(String logoSVG) {
     _logoSVG = logoSVG;
-    return this;
+  }
+
+  void setSizeLogo(double? size) {
+    _sizeLogo = size;
   }
 
   Widget build() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
+    if (!arrangedByHorizontal) {
+      return Column(children: [
         _logoApp(),
         Padding(
           padding: EdgeInsets.only(top: 16, left: 16, right: 16),
           child: Text(_text ?? '', key: _key, style: _textStyle, textAlign: _textAlign),
         ),
-      ],
-    );
+      ]);
+    } else {
+      return Row(children: [
+        _logoApp(),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: Text(_text ?? '', key: _key, style: _textStyle, textAlign: _textAlign),
+        ),
+      ]);
+    }
   }
 
   Widget _logoApp() {
     if (_logoSVG != null) {
-      return SvgPicture.asset(_logoSVG!, width: 150, height: 150);
+      return SvgPicture.asset(_logoSVG!, width: _sizeLogo ?? 150, height: _sizeLogo ?? 150);
     } else if (_logo != null) {
       return Image(
           image: AssetImage(_logo!),
           fit: BoxFit.fill,
-          width: 150,
-          height: 150,
+          width: _sizeLogo ?? 150,
+          height: _sizeLogo ?? 150,
           alignment: Alignment.center);
     }
     return SizedBox.shrink();
