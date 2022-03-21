@@ -75,11 +75,12 @@ class SearchBarView {
 
  Widget _buildSearchButton() {
    return Material(
-     borderRadius: BorderRadius.circular(12),
      color: Colors.transparent,
+     shape: CircleBorder(),
      child: Padding(
        padding: EdgeInsets.only(left: 2),
        child: IconButton(
+         splashRadius: 20,
          icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 18, height: 18, fit: BoxFit.fill),
          onPressed: () => _onOpenSearchViewAction?.call()
        )
