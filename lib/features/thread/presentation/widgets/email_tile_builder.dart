@@ -59,7 +59,16 @@ class EmailTileBuilder {
       child: ResponsiveWidget(
         responsiveUtils: _responsiveUtils,
         mobile: _buildListTile(),
-        desktop: _buildListTileForDesktop(),
+        desktop: Container(
+          margin: _selectModeAll == SelectMode.ACTIVE ? EdgeInsets.only(top: 3, left: 8, right: 8) : EdgeInsets.zero,
+          padding: _selectModeAll == SelectMode.ACTIVE ? EdgeInsets.symmetric(vertical: 10) : EdgeInsets.zero,
+          decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
+            ? BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                color: AppColor.colorItemEmailSelectedDesktop)
+            : null,
+          child: _buildListTileForDesktop(),
+        ),
       )
     );
   }
@@ -212,13 +221,12 @@ class EmailTileBuilder {
                   fit: BoxFit.fill),
               tooltip: _presentationEmail.isFlaggedEmail() ? AppLocalizations.of(_context).starred : AppLocalizations.of(_context).not_starred,
               onTap: () => _onMarkAsStarActionClick?.call(_presentationEmail)),
-          SizedBox(width: 8),
+          if (_selectModeAll == SelectMode.INACTIVE) SizedBox(width: 8),
           _buildAvatarIcon(
               iconSize: 32,
-              iconSizeSelect: 32,
               textStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
               paddingIconSelect: EdgeInsets.all(5)),
-          SizedBox(width: 10),
+          if (_selectModeAll == SelectMode.INACTIVE) SizedBox(width: 10),
           Container(width: 180, child: _isSearchEnabled
             ? RichTextBuilder(
                 _getInformationSender(),
@@ -277,18 +285,18 @@ class EmailTileBuilder {
             child: Text('${_presentationEmail.getReceivedAt(Localizations.localeOf(_context).toLanguageTag())}',
                 maxLines: 1,
                 overflow: kIsWeb ? null: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail))),
+                style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal))),
         ]),
-        Padding(
-            padding: EdgeInsets.only(top: 10, bottom: 10, left: 70),
-            child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
+        if (_selectModeAll == SelectMode.INACTIVE)
+          Padding(
+              padding: EdgeInsets.only(top: 10, bottom: 10, left: 70),
+              child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
       ]),
     );
   }
 
   Widget _buildAvatarIcon({
     double? iconSize,
-    double? iconSizeSelect,
     EdgeInsets? paddingIconSelect,
     TextStyle? textStyle
   }) {
@@ -296,14 +304,14 @@ class EmailTileBuilder {
       return AnimatedSwitcher(
         duration: Duration(milliseconds: 600),
         transitionBuilder: _transitionBuilder,
-        child: (IconBuilder(_presentationEmail.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected)
-            ..padding(paddingIconSelect ?? EdgeInsets.all(14))
-            ..size(iconSize ?? (GetPlatform.isWeb ? 48 : 56))
-            ..addOnTapActionClick(() {
+        child: buildIconWeb(
+            icon: SvgPicture.asset(_presentationEmail.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected, fit: BoxFit.fill),
+            iconPadding: paddingIconSelect ?? EdgeInsets.all(12),
+            tooltip: AppLocalizations.of(_context).select,
+            onTap: () {
               if (_selectModeAll == SelectMode.ACTIVE && _onSelectEmailActionClick != null) {
                 _onSelectEmailActionClick!(_presentationEmail);
-              }}))
-          .build()
+              }}),
       );
     } else {
       return (AvatarBuilder()

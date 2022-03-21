@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
@@ -74,7 +75,7 @@ class ThreadView extends GetWidget<ThreadController> {
                       ],
                     ))
                 ),
-                Obx(() => controller.isSelectionEnabled()
+                Obx(() => controller.isSelectionEnabled() && !_responsiveUtils.isDesktop(context)
                     ? Column(children: [
                         Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
                         _buildOptionSelectionBottomBar(context)
@@ -111,6 +112,37 @@ class ThreadView extends GetWidget<ThreadController> {
 
   Widget _buildHeader(BuildContext context) {
     return Row(children: [
+      Obx(() => !controller.isSelectionEnabled() && _responsiveUtils.isDesktop(context)
+          ? _buildOptionTopBar(context)
+          : SizedBox.shrink()),
+      Obx(() => controller.isSelectionEnabled() && _responsiveUtils.isDesktop(context)
+          ? _buildOptionSelectionTopBar(context)
+          : SizedBox.shrink()),
+      SizedBox(width: 16),
+      Spacer(),
+      Padding(
+          padding: EdgeInsets.only(right: 16),
+          child: (SearchBarView(_imagePaths)
+              ..hintTextSearch(AppLocalizations.of(context).search_emails)
+              ..maxSizeWidth(240)
+              ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
+            .build()),
+      Padding(
+          padding: EdgeInsets.only(right: 16),
+          child: (AvatarBuilder()
+              ..text(controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
+              ..backgroundColor(Colors.white)
+              ..textColor(Colors.black)
+              ..addBoxShadows([BoxShadow(
+                  color: AppColor.colorShadowBgContentEmail,
+                  spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
+              ..size(48))
+            .build()),
+    ]);
+  }
+
+  Widget _buildOptionTopBar(BuildContext context) {
+    return Row(children: [
       (ButtonBuilder(_imagePaths.icRefresh)
           ..key(Key('button_reload_thread'))
           ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
@@ -141,7 +173,15 @@ class ThreadView extends GetWidget<ThreadController> {
           ..padding(EdgeInsets.symmetric(horizontal: 12, vertical: 8))
           ..radiusSplash(10)
           ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
-          ..onPressActionClick(() => {})
+          ..onPressActionClick(() {
+            final listEmail = controller.isSearchActive()
+              ? controller.emailListSearch.allEmailUnread
+              : controller.emailList.allEmailUnread;
+
+            if (listEmail.isNotEmpty) {
+              controller.markAsSelectedEmailRead(listEmail);
+            }
+          })
           ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
         .build(),
       SizedBox(width: 16),
@@ -153,37 +193,53 @@ class ThreadView extends GetWidget<ThreadController> {
           ..size(16)
           ..padding(EdgeInsets.symmetric(horizontal: 12, vertical: 8))
           ..radiusSplash(10)
-          ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
+          ..textStyle(TextStyle(
+              fontSize: 12,
+              color: controller.filterMessageOption.value == FilterMessageOption.all ? AppColor.colorTextButtonHeaderThread : AppColor.colorNameEmail,
+              fontWeight: controller.filterMessageOption.value == FilterMessageOption.all ? FontWeight.normal : FontWeight.w500))
           ..addIconAction(Padding(
               padding: EdgeInsets.only(left: 8),
               child: SvgPicture.asset(_imagePaths.icArrowDown, fit: BoxFit.fill)))
           ..addOnPressActionWithPositionClick((position) =>
               controller.openFilterMessagesForTablet(
-                context,
-                position,
-                _popupMenuEmailActionTile(context, controller.filterMessageOption.value)))
-          ..text(AppLocalizations.of(context).filter_messages, isVertical: false))
+                  context,
+                  position,
+                  _popupMenuEmailActionTile(context, controller.filterMessageOption.value)))
+          ..text(controller.filterMessageOption.value == FilterMessageOption.all
+              ? AppLocalizations.of(context).filter_messages
+              : controller.filterMessageOption.value.getTitle(context), isVertical: false))
         .build(),
-      SizedBox(width: 16),
-      Spacer(),
-      Padding(
-          padding: EdgeInsets.only(right: 16),
-          child: (SearchBarView(_imagePaths)
-              ..hintTextSearch(AppLocalizations.of(context).search_emails)
-              ..maxSizeWidth(240)
-              ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
-            .build()),
-      Padding(
-          padding: EdgeInsets.only(right: 16),
-          child: (AvatarBuilder()
-              ..text(controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
-              ..backgroundColor(Colors.white)
-              ..textColor(Colors.black)
-              ..addBoxShadows([BoxShadow(
-                  color: AppColor.colorShadowBgContentEmail,
-                  spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
-              ..size(48))
-            .build()),
+    ]);
+  }
+
+  Widget _buildOptionSelectionTopBar(BuildContext context) {
+    return Row(children: [
+      buildIconWeb(
+          icon: SvgPicture.asset(_imagePaths.icCloseComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
+          tooltip: AppLocalizations.of(context).cancel,
+          onTap: () => controller.cancelSelectEmail()),
+      Text(
+        AppLocalizations.of(context).count_email_selected(controller.listEmailSelected.length),
+        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton),),
+      SizedBox(width: 30),
+      buildIconWeb(
+          icon: SvgPicture.asset(controller.listEmailSelected.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead, fit: BoxFit.fill),
+          tooltip: controller.listEmailSelected.isAllEmailRead ? AppLocalizations.of(context).unread : AppLocalizations.of(context).read,
+          onTap: () => controller.pressEmailSelectionAction(
+              context,
+              controller.listEmailSelected.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
+              controller.listEmailSelected)),
+      buildIconWeb(
+          icon: SvgPicture.asset(controller.listEmailSelected.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar, fit: BoxFit.fill),
+          tooltip: controller.listEmailSelected.isAllEmailStarred ? AppLocalizations.of(context).not_starred : AppLocalizations.of(context).starred,
+          onTap: () => controller.pressEmailSelectionAction(
+              context,
+              controller.listEmailSelected.isAllEmailStarred ? EmailActionType.markAsUnStar : EmailActionType.markAsStar,
+              controller.listEmailSelected)),
+      buildIconWeb(
+          icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
+          tooltip: AppLocalizations.of(context).move,
+          onTap: () => controller.pressEmailSelectionAction(context, EmailActionType.move, controller.listEmailSelected)),
     ]);
   }
 
@@ -194,7 +250,7 @@ class ThreadView extends GetWidget<ThreadController> {
                 context,
                 _imagePaths,
                 _responsiveUtils,
-                controller.getListEmailSelected())
+                controller.listEmailSelected)
             ..addOnPressEmailSelectionActionClick((actionType, selectionEmail) =>
                 controller.pressEmailSelectionAction(context, actionType, selectionEmail)))
           .build());
@@ -223,7 +279,7 @@ class ThreadView extends GetWidget<ThreadController> {
               _imagePaths,
               _responsiveUtils,
               controller.mailboxDashBoardController.selectedMailbox.value,
-              controller.getListEmailSelected(),
+              controller.listEmailSelected,
               controller.currentSelectMode.value,
               controller.filterMessageOption.value)
           ..addOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
