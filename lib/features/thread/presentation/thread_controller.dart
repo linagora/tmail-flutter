@@ -360,7 +360,9 @@ class ThreadController extends BaseController {
 
   void previewEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
     mailboxDashBoardController.setSelectedEmail(presentationEmailSelected);
-    if (!responsiveUtils.isDesktop(context) && !responsiveUtils.isTabletLarge(context)) {
+    if (responsiveUtils.isDesktop(context) || responsiveUtils.isTabletLarge(context)) {
+      mailboxDashBoardController.dispatchRoute(AppRoutes.EMAIL);
+    } else {
       goToEmail(context);
     }
   }
@@ -445,12 +447,12 @@ class ThreadController extends BaseController {
       readActions = success.readActions;
     }
 
-    if (Get.context != null && readActions != null && Get.overlayContext != null) {
+    if (currentContext != null && readActions != null && currentOverlayContext != null) {
       final message = readActions == ReadActions.markAsUnread
-        ? AppLocalizations.of(Get.context!).marked_message_toast(AppLocalizations.of(Get.context!).unread)
-        : AppLocalizations.of(Get.context!).marked_message_toast(AppLocalizations.of(Get.context!).read);
+        ? AppLocalizations.of(currentContext!).marked_message_toast(AppLocalizations.of(currentContext!).unread)
+        : AppLocalizations.of(currentContext!).marked_message_toast(AppLocalizations.of(currentContext!).read);
       _appToast.showToastWithIcon(
-          Get.overlayContext!,
+          currentOverlayContext!,
           message: message,
           icon: readActions == ReadActions.markAsUnread ? _imagePaths.icUnreadToast : _imagePaths.icReadToast);
     }
@@ -458,7 +460,7 @@ class ThreadController extends BaseController {
 
   void _markAsSelectedEmailReadFailure(Failure failure) {
     cancelSelectEmail();
-    _appToast.showErrorToast(AppLocalizations.of(Get.context!).an_error_occurred);
+    _appToast.showErrorToast(AppLocalizations.of(currentContext!).an_error_occurred);
   }
 
   void openFilterMessagesCupertinoActionSheet(BuildContext context, List<Widget> actionTiles, {Widget? cancelButton}) {
@@ -489,7 +491,7 @@ class ThreadController extends BaseController {
     filterMessageOption.value = newFilterOption;
 
     _appToast.showToastWithIcon(
-        Get.overlayContext!,
+        currentOverlayContext!,
         message: newFilterOption.getMessageToast(context),
         icon: newFilterOption.getIconToast(_imagePaths));
 
@@ -548,12 +550,12 @@ class ThreadController extends BaseController {
       moveAction = success.moveAction;
     }
 
-    if (Get.context != null && Get.overlayContext != null
+    if (currentContext != null && currentOverlayContext != null
         && destinationPath != null && moveAction == MoveAction.moveTo) {
       _appToast.showToastWithAction(
-          Get.overlayContext!,
-          AppLocalizations.of(Get.context!).moved_to_mailbox(destinationPath),
-          AppLocalizations.of(Get.context!).undo_action,
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).moved_to_mailbox(destinationPath),
+          AppLocalizations.of(currentContext!).undo_action,
           () {
             final newCurrentMailboxId = destinationMailboxId;
             final newDestinationMailboxId = currentMailboxId;
@@ -615,17 +617,17 @@ class ThreadController extends BaseController {
       countMarkStarSuccess = success.countMarkStarSuccess;
     }
 
-    if (Get.context != null && markStarAction != null) {
+    if (currentContext != null && markStarAction != null) {
       _appToast.showSuccessToast(markStarAction == MarkStarAction.unMarkStar
-          ? AppLocalizations.of(Get.context!).marked_unstar_multiple_item(countMarkStarSuccess)
-          : AppLocalizations.of(Get.context!).marked_star_multiple_item(countMarkStarSuccess));
+          ? AppLocalizations.of(currentContext!).marked_unstar_multiple_item(countMarkStarSuccess)
+          : AppLocalizations.of(currentContext!).marked_star_multiple_item(countMarkStarSuccess));
     }
   }
 
   void _markAsStarMultipleEmailFailure(Failure failure) {
     cancelSelectEmail();
-    if (Get.context != null) {
-      _appToast.showErrorToast(AppLocalizations.of(Get.context!).an_error_occurred);
+    if (currentContext != null) {
+      _appToast.showErrorToast(AppLocalizations.of(currentContext!).an_error_occurred);
     }
   }
 
