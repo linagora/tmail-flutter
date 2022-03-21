@@ -25,6 +25,8 @@ import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.da
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 
 class MailboxDashBoardController extends ReloadableController {
@@ -42,6 +44,7 @@ class MailboxDashBoardController extends ReloadableController {
   final searchState = SearchState.initial().obs;
   final suggestionSearch = <String>[].obs;
   final dashBoardAction = DashBoardAction.none.obs;
+  final routePath = AppRoutes.MAILBOX_DASHBOARD.obs;
 
   SearchQuery? searchQuery;
   Session? sessionCurrent;
@@ -66,10 +69,10 @@ class MailboxDashBoardController extends ReloadableController {
     super.onData(newState);
     viewState.value.map((success) {
       if (success is SendingEmailState) {
-        if (Get.overlayContext != null && Get.context != null) {
+        if (currentOverlayContext != null && currentContext != null) {
           _appToast.showToastWithIcon(
-              Get.overlayContext!,
-              message: AppLocalizations.of(Get.context!).your_email_being_sent,
+              currentOverlayContext!,
+              message: AppLocalizations.of(currentContext!).your_email_being_sent,
               icon: _imagePaths.icSendToast);
         }
       }
@@ -81,11 +84,11 @@ class MailboxDashBoardController extends ReloadableController {
     viewState.value.fold(
       (failure) {
         if (failure is SendEmailFailure) {
-          if (Get.overlayContext != null && Get.context != null) {
+          if (currentOverlayContext != null && currentContext != null) {
             _appToast.showToastWithIcon(
-                Get.overlayContext!,
+                currentOverlayContext!,
                 textColor: AppColor.toastErrorBackgroundColor,
-                message: AppLocalizations.of(Get.context!).message_has_been_sent_failure,
+                message: AppLocalizations.of(currentContext!).message_has_been_sent_failure,
                 icon: _imagePaths.icSendToast);
           }
           clearState();
@@ -99,11 +102,11 @@ class MailboxDashBoardController extends ReloadableController {
         if (success is GetUserProfileSuccess) {
           userProfile.value = success.userProfile;
         } else if (success is SendEmailSuccess) {
-          if (Get.overlayContext != null && Get.context != null) {
+          if (currentOverlayContext != null && currentContext != null) {
             _appToast.showToastWithIcon(
-                Get.overlayContext!,
+                currentOverlayContext!,
                 textColor: AppColor.toastSuccessBackgroundColor,
-                message: AppLocalizations.of(Get.context!).message_has_been_sent_successfully,
+                message: AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
                 icon: _imagePaths.icSendToast);
           }
           clearState();
@@ -152,11 +155,13 @@ class MailboxDashBoardController extends ReloadableController {
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
     selectedMailbox.value = newPresentationMailbox;
+    dispatchRoute(AppRoutes.THREAD);
   }
 
   void setNewFirstSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
     selectedMailbox.firstRebuild = true;
     selectedMailbox.value = newPresentationMailbox;
+    dispatchRoute(AppRoutes.THREAD);
   }
 
   void setSelectedEmail(PresentationEmail? newPresentationEmail) {
@@ -217,11 +222,11 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _saveEmailAsDraftsSuccess(SaveEmailAsDraftsSuccess success) {
-    if (Get.context != null && Get.overlayContext != null) {
+    if (currentContext != null && currentOverlayContext != null) {
       _appToast.showToastWithAction(
-          Get.overlayContext!,
-          AppLocalizations.of(Get.context!).drafts_saved,
-          AppLocalizations.of(Get.context!).discard,
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).drafts_saved,
+          AppLocalizations.of(currentContext!).discard,
           () => _discardEmail(success.emailAsDrafts)
       );
     }
@@ -246,6 +251,11 @@ class MailboxDashBoardController extends ReloadableController {
         break;
     }
     dashBoardAction.value = action;
+  }
+
+  void dispatchRoute(String route) {
+    routePath.value = route;
+    log('MailboxDashBoardController::dispatchRoute(): $route');
   }
 
   @override

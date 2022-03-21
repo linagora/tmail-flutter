@@ -75,7 +75,7 @@ class EmailView extends GetView {
               responsiveUtils,
               emailController.currentEmail,
               emailController.currentMailbox)
-          ..onBackActionClick(() => emailController.backToThreadView())
+          ..onBackActionClick(() => emailController.backToThreadView(context))
           ..addOnEmailActionClick((email, action) => emailController.handleEmailAction(context, email, action))
           ..addOnMoreActionClick((email, position) => responsiveUtils.isMobileDevice(context)
               ? emailController.openMoreMenuEmailAction(

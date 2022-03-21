@@ -192,20 +192,16 @@ class EmailController extends BaseController {
 
     if (success is MarkAsEmailReadSuccess
         && success.readActions == ReadActions.markAsUnread
-        && Get.context != null
-        && !responsiveUtils.isDesktop(Get.context!)
-        && !responsiveUtils.isTabletLarge(Get.context!)) {
-      backToThreadView();
+        && currentContext != null) {
+      backToThreadView(currentContext!);
     }
   }
 
   void _markAsEmailReadFailure(Failure failure) {
     if (failure is MarkAsEmailReadFailure
         && failure.readActions == ReadActions.markAsUnread
-        && Get.context != null
-        && !responsiveUtils.isDesktop(Get.context!)
-        && !responsiveUtils.isTabletLarge(Get.context!)) {
-      backToThreadView();
+        && currentContext != null) {
+      backToThreadView(currentContext!);
     }
   }
 
@@ -254,8 +250,8 @@ class EmailController extends BaseController {
   }
 
   void _downloadAttachmentsFailure(Failure failure) {
-    if (Get.context != null) {
-      _appToast.showErrorToast(AppLocalizations.of(Get.context!).attachment_download_failed);
+    if (currentContext != null) {
+      _appToast.showErrorToast(AppLocalizations.of(currentContext!).attachment_download_failed);
     }
   }
 
@@ -365,11 +361,11 @@ class EmailController extends BaseController {
 
     if (success is MoveToMailboxSuccess
         && success.moveAction == MoveAction.moveTo
-        && Get.context != null && Get.overlayContext != null) {
+        && currentContext != null && currentOverlayContext != null) {
       _appToast.showToastWithAction(
-          Get.overlayContext!,
-          AppLocalizations.of(Get.context!).moved_to_mailbox(success.destinationPath ?? ''),
-          AppLocalizations.of(Get.context!).undo_action,
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).moved_to_mailbox(success.destinationPath ?? ''),
+          AppLocalizations.of(currentContext!).undo_action,
           () {
             final newMoveRequest = MoveRequest(
                 [success.emailId],
@@ -499,11 +495,15 @@ class EmailController extends BaseController {
     popBack();
   }
 
-  void backToThreadView() {
+  void backToThreadView(BuildContext context) {
     attachmentsExpandMode.value = ExpandMode.COLLAPSE;
     emailAddressExpandMode.value = ExpandMode.COLLAPSE;
     isDisplayFullEmailAddress.value = false;
-    popBack();
+    if (responsiveUtils.isDesktop(context) || responsiveUtils.isTabletLarge(context)) {
+      mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
+    } else {
+      popBack();
+    }
   }
 
   void pressEmailAction(EmailActionType emailActionType) {
