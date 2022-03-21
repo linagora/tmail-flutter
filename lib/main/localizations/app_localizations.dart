@@ -855,4 +855,11 @@ class AppLocalizations {
         name: 'not_starred'
     );
   }
+
+  String get select {
+    return Intl.message(
+      'Select',
+      name: 'select',
+    );
+  }
 }

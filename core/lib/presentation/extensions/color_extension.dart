@@ -102,6 +102,7 @@ extension AppColor on Color {
   static const colorButtonHeaderThread = Color(0x99EBEDF0);
   static const colorBorderBodyThread = Color(0x5CB8C1CC);
   static const colorBgDesktop = Color(0xFFF6F6F6);
+  static const colorItemEmailSelectedDesktop = Color(0x0F007AFF);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
