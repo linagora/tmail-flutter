@@ -41,6 +41,7 @@ class IconBuilder {
           child: IconButton(
               padding: EdgeInsets.zero,
               iconSize: _size ?? 40,
+              splashRadius: 20,
               icon: SvgPicture.asset(_icon!, width: _size ?? 40, height: _size ?? 40, fit: BoxFit.fill),
               onPressed: () => {
                 if (_onPressIconActionClick != null) {
