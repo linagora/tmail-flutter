@@ -131,7 +131,6 @@ class ThreadController extends BaseController {
             || success is MarkAsStarEmailSuccess) {
           cancelSelectEmail();
           _refreshEmailChanges();
-          mailboxDashBoardController.clearState();
         } else if (success is SearchEmailNewQuery){
           _searchEmail();
           mailboxDashBoardController.clearState();
@@ -225,6 +224,7 @@ class ThreadController extends BaseController {
     canLoadMore = true;
     disableSearch();
     cancelSelectEmail();
+    mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
   }
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
@@ -388,7 +388,7 @@ class ThreadController extends BaseController {
     currentSelectMode.value = SelectMode.ACTIVE;
   }
 
-  List<PresentationEmail> getListEmailSelected() {
+  List<PresentationEmail> get listEmailSelected {
     if (isSearchActive()) {
       return emailListSearch.where((email) => email.selectMode == SelectMode.ACTIVE).toList();
     } else {
@@ -404,10 +404,6 @@ class ThreadController extends BaseController {
     }
   }
 
-  bool isAllEmailRead(List<PresentationEmail> listEmail) => listEmail.every((email) => email.isReadEmail());
-
-  bool isAllEmailMarkAsStar(List<PresentationEmail> listEmail) => listEmail.every((email) => email.isFlaggedEmail());
-
   void cancelSelectEmail() {
     if (isSearchActive()) {
       emailListSearch.value = emailListSearch.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
@@ -422,7 +418,7 @@ class ThreadController extends BaseController {
       popBack();
     }
 
-    final readAction = isAllEmailRead(listPresentationEmail) ? ReadActions.markAsUnread : ReadActions.markAsRead;
+    final readAction = listPresentationEmail.isAllEmailRead ? ReadActions.markAsUnread : ReadActions.markAsRead;
 
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (_accountId != null && mailboxCurrent != null) {
@@ -589,13 +585,20 @@ class ThreadController extends BaseController {
     _refreshEmailChanges();
   }
 
-  void markAsStarSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail, MarkStarAction markStarAction) {
-    popBack();
+  void markAsStarSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail,
+      {bool fromContextMenuAction = false, MarkStarAction? markStarAction}) {
+    if (fromContextMenuAction) {
+      popBack();
+    }
+
+    final starAction = markStarAction != null
+     ? markStarAction
+     : listPresentationEmail.isAllEmailStarred ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
 
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (_accountId != null && mailboxCurrent != null) {
       final listEmail = listPresentationEmail.map((presentationEmail) => presentationEmail.toEmail()).toList();
-      consumeState(_markAsStarMultipleEmailInteractor.execute(_accountId!, listEmail, markStarAction));
+      consumeState(_markAsStarMultipleEmailInteractor.execute(_accountId!, listEmail, starAction));
     }
   }
 
@@ -696,6 +699,10 @@ class ThreadController extends BaseController {
       case EmailActionType.markAsRead:
       case EmailActionType.markAsUnread:
         markAsSelectedEmailRead(selectionEmail);
+        break;
+      case EmailActionType.markAsStar:
+      case EmailActionType.markAsUnStar:
+        markAsStarSelectedMultipleEmail(selectionEmail);
         break;
       case EmailActionType.move:
         moveSelectedMultipleEmailToMailboxAction(selectionEmail);
