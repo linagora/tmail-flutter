@@ -108,11 +108,12 @@ class SearchAppBarWidget {
 
  Widget _buildBackButton() {
    return Material(
-     borderRadius: BorderRadius.circular(12),
+     shape: CircleBorder(),
      color: Colors.transparent,
      child: Padding(
        padding: EdgeInsets.only(left: 8),
        child: IconButton(
+         splashRadius: 20,
          color: AppColor.appColor,
          icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.appColor, fit: BoxFit.fill),
          onPressed: () {
@@ -126,9 +127,10 @@ class SearchAppBarWidget {
 
  Widget _buildClearTextSearchButton() {
    return Material(
-     borderRadius: BorderRadius.circular(12),
+       shape: CircleBorder(),
      color: Colors.transparent,
      child: IconButton(
+         splashRadius: 20,
          padding: EdgeInsets.zero,
          icon: _iconClearText ?? SvgPicture.asset(_imagePaths.icComposerClose, fit: BoxFit.fill),
          onPressed: () {
@@ -163,9 +165,10 @@ class SearchAppBarWidget {
 
  Widget _buildSearchButton() {
    return Material(
-       borderRadius: BorderRadius.circular(12),
+       shape: CircleBorder(),
        color: Colors.transparent,
        child: IconButton(
+           splashRadius: 20,
            icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 18, height: 18, fit: BoxFit.fill),
            onPressed: () => _onSearchTextAction?.call(_searchInputController?.text ?? '')
        )

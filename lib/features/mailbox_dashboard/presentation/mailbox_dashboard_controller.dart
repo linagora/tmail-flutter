@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
@@ -261,6 +262,16 @@ class MailboxDashBoardController extends ReloadableController {
   void handleReloaded(Session session) {
     sessionCurrent = session;
     accountId.value = sessionCurrent?.accounts.keys.first;
+  }
+
+  void composeEmailAction() {
+    if (kIsWeb) {
+      if (dashBoardAction != DashBoardAction.compose) {
+        dispatchDashBoardAction(DashBoardAction.compose, arguments: ComposerArguments());
+      }
+    } else {
+      push(AppRoutes.COMPOSER, arguments: ComposerArguments());
+    }
   }
 
   @override

@@ -143,6 +143,7 @@ class ThreadView extends GetWidget<ThreadController> {
 
   Widget _buildOptionTopBar(BuildContext context) {
     return Row(children: [
+      SizedBox(width: 16),
       (ButtonBuilder(_imagePaths.icRefresh)
           ..key(Key('button_reload_thread'))
           ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
