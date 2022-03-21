@@ -38,9 +38,7 @@ class UserInformationWidgetBuilder {
             ..textColor(Colors.black)
             ..addBoxShadows([BoxShadow(
                 color: AppColor.colorShadowBgContentEmail,
-                spreadRadius: 2,
-                blurRadius: 2,
-                offset: Offset(0, 1))])
+                spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
             ..size(GetPlatform.isWeb ? 48 : 56))
           .build(),
         Expanded(child: Column(

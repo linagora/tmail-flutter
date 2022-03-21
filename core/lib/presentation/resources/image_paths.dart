@@ -75,6 +75,11 @@ class ImagePaths {
   String get icDeleteAttachment => _getImagePath('ic_delete_attachment.svg');
   String get icSendMobile => _getImagePath('ic_send_mobile.svg');
   String get icSendMobileDisable => _getImagePath('ic_send_mobile_disable.svg');
+  String get icArrowDown => _getImagePath('ic_arrow_down.svg');
+  String get icFilterWeb => _getImagePath('ic_filter_web.svg');
+  String get icMarkAllAsRead => _getImagePath('ic_mark_all_as_read.svg');
+  String get icRefresh => _getImagePath('ic_refresh.svg');
+  String get icSelectAll => _getImagePath('ic_select_all.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
