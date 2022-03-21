@@ -1,9 +1,9 @@
-import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
 class ResponsiveWidget extends StatelessWidget {
   final Widget mobile;
-  final Widget tablet;
+  final Widget? tablet;
   final Widget? tabletLarge;
   final Widget? desktop;
 
@@ -11,27 +11,18 @@ class ResponsiveWidget extends StatelessWidget {
 
   const ResponsiveWidget({
     Key? key,
+    required this.responsiveUtils,
     required this.mobile,
-    required this.tablet,
+    this.tablet,
     this.desktop,
     this.tabletLarge,
-    required this.responsiveUtils,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      if (responsiveUtils.isMobileDevice(context)) {
-        return mobile;
-      } else if (responsiveUtils.isDesktop(context)) {
-        return desktop ?? tablet;
-      } else if (responsiveUtils.isTabletLarge(context)) {
-        return tabletLarge ?? tablet;
-      } else if (responsiveUtils.isTablet(context)) {
-        return tablet;
-      } else {
-        return mobile;
-      }
-    });
+    if (desktop != null && responsiveUtils.isDesktop(context)) return desktop!;
+    if (tabletLarge != null && responsiveUtils.isTabletLarge(context)) return tabletLarge!;
+    if (tablet != null && responsiveUtils.isTablet(context)) return tablet!;
+    return mobile;
   }
 }

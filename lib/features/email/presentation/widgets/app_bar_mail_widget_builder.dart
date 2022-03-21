@@ -2,9 +2,9 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/features/setting/presentation/model/app_setting.dart';
+import 'package:tmail_ui_user/features/setting/presentation/model/reading_pane.dart';
 
 typedef OnBackActionClick = void Function();
 typedef OnEmailActionClick = void Function(PresentationEmail, EmailActionType);
@@ -53,9 +53,9 @@ class AppBarMailWidgetBuilder {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (_conditionShowBackButton())
+            if (_conditionShow(_context))
               _buildBackButton(),
-            if (_conditionShowBackButton())
+            if (_conditionShow(_context))
               Expanded(child: _buildMailboxName()),
             if (_presentationEmail != null) _buildListOptionButton(),
           ]
@@ -64,13 +64,12 @@ class AppBarMailWidgetBuilder {
     );
   }
 
-  bool _conditionShowBackButton() {
-    if (Get.currentRoute == AppRoutes.MAILBOX_DASHBOARD) {
-      return !_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context);
-    } else if (Get.currentRoute == AppRoutes.EMAIL) {
-      return _responsiveUtils.isMobileDevice(_context) || _responsiveUtils.isTablet(_context);
-    } else {
+  bool _conditionShow(BuildContext context) {
+    if (AppSetting.readingPane == ReadingPane.rightOfInbox
+        && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context))) {
       return false;
+    } else {
+      return true;
     }
   }
 

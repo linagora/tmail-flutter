@@ -24,7 +24,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
               responsiveUtils: _responsiveUtils,
               mobile: Container(
                   child: _buildBody(context),
-                  width: _responsiveUtils.getSizeWidthScreen(context)),
+                  width: _responsiveUtils.getSizeScreenWidth(context)),
               tablet: Container(
                   child: Row(
                       children: [

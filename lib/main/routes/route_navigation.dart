@@ -1,4 +1,5 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 Future<dynamic> push(String routeName, {dynamic arguments}) async {
@@ -16,3 +17,7 @@ Future<dynamic> pushAndPopAll(String routeName, {dynamic arguments}) async {
 void popBack({dynamic result}) {
   Get.back(result: result);
 }
+
+BuildContext? get currentContext => Get.context;
+
+BuildContext? get currentOverlayContext => Get.overlayContext;

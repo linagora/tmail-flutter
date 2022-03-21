@@ -1,39 +1,47 @@
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 
 class ResponsiveUtils {
 
-  static const int minDesktopWidth = 1288;
-  static const int minTabletWidth = 600;
-  static const int minTabletLargeWidth = 900;
+  final int minDesktopWidth = 1200;
+  final int minTabletWidth = 600;
+  final int minTabletLargeWidth = 900;
 
-  static const double _loginTextFieldWidthSmallScreen = 280.0;
-  static const double _loginTextFieldWidthLargeScreen = 320.0;
-  static const double _loginButtonWidth = 240.0;
+  final double _loginTextFieldWidthSmallScreen = 280.0;
+  final double _loginTextFieldWidthLargeScreen = 320.0;
+  final double _loginButtonWidth = 240.0;
 
   final double tabletHorizontalMargin = 120.0;
   final double tabletVerticalMargin = 200.0;
   final double desktopVerticalMargin = 120.0;
   final double desktopHorizontalMargin = 200.0;
 
-  bool isMobileDevice(BuildContext context) => MediaQuery.of(context).size.shortestSide < minTabletWidth;
+  bool isMobileDevice(BuildContext context) => context.mediaQueryShortestSide < minTabletWidth;
 
-  double getSizeWidthScreen(BuildContext context) => MediaQuery.of(context).size.width;
+  double getSizeScreenWidth(BuildContext context) => context.width;
 
-  double getSizeHeightScreen(BuildContext context) => MediaQuery.of(context).size.height;
+  double getSizeScreenHeight(BuildContext context) => context.height;
 
-  double getMinSizeScreen(BuildContext context) => MediaQuery.of(context).size.shortestSide;
+  double getSizeScreenShortestSide(BuildContext context) => context.mediaQueryShortestSide;
 
-  bool isMobile(BuildContext context) => getSizeWidthScreen(context) < minTabletWidth;
+  double getDeviceWidth(BuildContext context) {
+    if (GetPlatform.isDesktop) {
+      return context.width;
+    }
+    return context.mediaQueryShortestSide;
+  }
 
-  bool isTablet(BuildContext context) => getSizeWidthScreen(context) >= minTabletWidth && getSizeWidthScreen(context) < minTabletLargeWidth;
+  bool isMobile(BuildContext context) => getDeviceWidth(context) < minTabletWidth;
 
-  bool isDesktop(BuildContext context) => getSizeWidthScreen(context) > minDesktopWidth;
+  bool isTablet(BuildContext context) => getDeviceWidth(context) >= minTabletWidth && getDeviceWidth(context) < minDesktopWidth;
 
-  bool isTabletLarge(BuildContext context) => getSizeWidthScreen(context) >= minTabletLargeWidth && getSizeWidthScreen(context) <= minDesktopWidth;
+  bool isDesktop(BuildContext context) => getDeviceWidth(context) >= minDesktopWidth;
 
-  bool isPortrait(BuildContext context) => MediaQuery.of(context).orientation == Orientation.portrait;
+  bool isTabletLarge(BuildContext context) => getDeviceWidth(context) >= minTabletLargeWidth && getDeviceWidth(context) < minDesktopWidth;
 
-  bool isLandscape(BuildContext context) => MediaQuery.of(context).orientation == Orientation.landscape;
+  bool isPortrait(BuildContext context) =>  context.orientation == Orientation.portrait;
+
+  bool isLandscape(BuildContext context) => context.orientation == Orientation.landscape;
 
   double getWidthLoginTextField(BuildContext context) => isMobile(context) ? _loginTextFieldWidthSmallScreen : _loginTextFieldWidthLargeScreen;
 

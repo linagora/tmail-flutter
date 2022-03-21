@@ -180,11 +180,11 @@ class ComposerController extends BaseController {
 
   @override
   void onError(error) {
-    if (Get.overlayContext != null && Get.context != null) {
+    if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastWithIcon(
-          Get.overlayContext!,
+          currentOverlayContext!,
           textColor: AppColor.toastErrorBackgroundColor,
-          message: AppLocalizations.of(Get.context!).message_has_been_sent_failure,
+          message: AppLocalizations.of(currentContext!).message_has_been_sent_failure,
           icon: _imagePaths.icSendToast);
     }
     popBack();
@@ -204,9 +204,9 @@ class ComposerController extends BaseController {
   }
 
   void _initSubjectEmail(ComposerArguments arguments) {
-    if (Get.context != null) {
+    if (currentContext != null) {
       final subjectEmail = arguments.presentationEmail?.getEmailTitle().trim() ?? '';
-      final newSubject = arguments.emailActionType.getSubjectComposer(Get.context!, subjectEmail);
+      final newSubject = arguments.emailActionType.getSubjectComposer(currentContext!, subjectEmail);
       setSubjectEmail(newSubject);
       subjectEmailInputController.text = newSubject;
     }
@@ -476,8 +476,8 @@ class ComposerController extends BaseController {
 
   void _pickFileFailure(Failure failure) {
     if (failure is LocalFilePickerFailure) {
-      if (Get.context != null) {
-        _appToast.showErrorToast(AppLocalizations.of(Get.context!).can_not_upload_this_file_as_attachments);
+      if (currentContext != null) {
+        _appToast.showErrorToast(AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments);
       }
     }
   }
@@ -498,8 +498,8 @@ class ComposerController extends BaseController {
   }
 
   void _uploadAttachmentsFailure(Failure failure) {
-    if (Get.context != null) {
-      _appToast.showErrorToast(AppLocalizations.of(Get.context!).can_not_upload_this_file_as_attachments);
+    if (currentContext != null) {
+      _appToast.showErrorToast(AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments);
     }
   }
 
@@ -523,8 +523,8 @@ class ComposerController extends BaseController {
 
       attachments.addAll(listAttachment);
     }
-    if (Get.context != null) {
-      _appToast.showSuccessToast(AppLocalizations.of(Get.context!).attachments_uploaded_successfully);
+    if (currentContext != null) {
+      _appToast.showSuccessToast(AppLocalizations.of(currentContext!).attachments_uploaded_successfully);
     }
   }
 
@@ -546,7 +546,7 @@ class ComposerController extends BaseController {
 
     final newEmailSubject = subjectEmail.value;
     final titleEmail = arguments.presentationEmail?.getEmailTitle().trim() ?? '';
-    final oldEmailSubject = arguments.emailActionType.getSubjectComposer(Get.context!, titleEmail);
+    final oldEmailSubject = arguments.emailActionType.getSubjectComposer(currentContext!, titleEmail);
     final isEmailSubjectChanged = !oldEmailSubject.isSame(newEmailSubject);
 
     final recipients = arguments.presentationEmail
