@@ -60,6 +60,7 @@ class MailboxDashBoardController extends ReloadableController {
   void onReady() {
     super.onReady();
     log('MailboxDashBoardController::onReady()');
+    dispatchRoute(AppRoutes.THREAD);
     _setSessionCurrent();
     _getUserProfile();
   }
@@ -155,13 +156,11 @@ class MailboxDashBoardController extends ReloadableController {
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
     selectedMailbox.value = newPresentationMailbox;
-    dispatchRoute(AppRoutes.THREAD);
   }
 
   void setNewFirstSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
     selectedMailbox.firstRebuild = true;
     selectedMailbox.value = newPresentationMailbox;
-    dispatchRoute(AppRoutes.THREAD);
   }
 
   void setSelectedEmail(PresentationEmail? newPresentationEmail) {

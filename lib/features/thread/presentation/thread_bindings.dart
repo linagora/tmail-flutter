@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
@@ -43,15 +42,10 @@ class ThreadBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.lazyPut(() => ScrollController());
     Get.put(ThreadController(
-      Get.find<ResponsiveUtils>(),
       Get.find<GetEmailsInMailboxInteractor>(),
       Get.find<RefreshAllEmailsInMailboxInteractor>(),
-      Get.find<ScrollController>(),
       Get.find<MarkAsMultipleEmailReadInteractor>(),
-      Get.find<AppToast>(),
-      Get.find<ImagePaths>(),
       Get.find<MoveMultipleEmailToMailboxInteractor>(),
       Get.find<MarkAsStarEmailInteractor>(),
       Get.find<MarkAsStarMultipleEmailInteractor>(),

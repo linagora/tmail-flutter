@@ -12,14 +12,13 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_th
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/search_bar_thread_view_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/suggestion_box_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ThreadView extends GetWidget<ThreadController> {
 
-  final responsiveUtils = Get.find<ResponsiveUtils>();
-  final imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _imagePaths = Get.find<ImagePaths>();
 
   @override
   Widget build(BuildContext context) {
@@ -27,63 +26,72 @@ class ThreadView extends GetWidget<ThreadController> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
+        backgroundColor: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
         body: SafeArea(
-          right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-          left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-          child: Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.zero,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+          right: _responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context),
+          left: _responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context),
+          child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildAppBarThread(context),
-                Obx(() => !controller.isSearchActive()
-                  ? (SearchBarThreadViewWidget(imagePaths)
-                      ..hintTextSearch(AppLocalizations.of(context).hint_search_emails)
-                      ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
-                    .build()
-                  : SizedBox.shrink()),
-                Expanded(child: Stack(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.zero,
+                if (_responsiveUtils.isDesktop(context))
+                  Container(
                       color: Colors.white,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildStatusResultSearch(context),
-                          _buildLoadingView(),
-                          Expanded(child: _buildListEmail(context)),
-                          _buildLoadingViewLoadMore()
-                        ]
-                      )
-                    ),
-                    _buildSuggestionBox(context)
-                  ],
-                )),
+                      padding: EdgeInsets.only(right: 10, top: 16, bottom: 10),
+                      child: _buildHeader(context)),
+                Obx(() => controller.isSearchActive()
+                    ? _buildSearchForm(context)
+                    : _responsiveUtils.isDesktop(context) ? SizedBox.shrink() : _buildAppBarNormal(context)),
+                Obx(() => !controller.isSearchActive() && !_responsiveUtils.isDesktop(context)
+                    ? Padding(
+                        padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                        child: (SearchBarView(_imagePaths)
+                            ..hintTextSearch(AppLocalizations.of(context).hint_search_emails)
+                            ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
+                          .build())
+                    : SizedBox.shrink()),
+                Expanded(child: Container(
+                    color: AppColor.colorBgDesktop,
+                    margin: _responsiveUtils.isDesktop(context) ? EdgeInsets.all(16) : EdgeInsets.zero,
+                    child: Stack(
+                      children: [
+                        Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                borderRadius: _responsiveUtils.isDesktop(context) ? BorderRadius.circular(20) : null,
+                                border: _responsiveUtils.isDesktop(context) ? Border.all(color: AppColor.colorBorderBodyThread, width: 1) : null,
+                                color: Colors.white),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildStatusResultSearch(context),
+                                  _buildLoadingView(),
+                                  Expanded(child: _buildListEmail(context)),
+                                  _buildLoadingViewLoadMore(),
+                                ]
+                            )
+                        ),
+                        _buildSuggestionBox(context)
+                      ],
+                    ))
+                ),
                 Obx(() => controller.isSelectionEnabled()
-                  ? Column(children: [
-                      Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
-                      _buildOptionSelectionBottomBar(context)
-                    ])
-                  : SizedBox.shrink()),
+                    ? Column(children: [
+                        Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
+                        _buildOptionSelectionBottomBar(context)
+                      ])
+                    : SizedBox.shrink()),
               ]
-            )
           )
         ),
         floatingActionButton: Obx(() => !controller.isSearchActive() && !controller.isSelectionEnabled()
           ? Container(
               padding: EdgeInsets.only(bottom: controller.isSelectionEnabled()
                   ? 80
-                  : responsiveUtils.isMobileDevice(context) ? 0 : 16),
+                  : _responsiveUtils.isMobileDevice(context) ? 0 : 16),
               child: Align(
                   alignment: Alignment.bottomRight,
                   child: ScrollingFloatingButtonAnimated(
-                      icon: SvgPicture.asset(imagePaths.icCompose, width: 20, height: 20, fit: BoxFit.fill),
+                      icon: SvgPicture.asset(_imagePaths.icCompose, width: 20, height: 20, fit: BoxFit.fill),
                       text: Padding(
                           padding: EdgeInsets.only(right: 10),
                           child: Text(
@@ -101,15 +109,82 @@ class ThreadView extends GetWidget<ThreadController> {
     );
   }
 
-  Widget _buildAppBarThread(BuildContext context) {
-    return Obx(() {
-      return Stack(
-        children: [
-          if (!controller.isSearchActive()) _buildAppBarNormal(context),
-          if (controller.isSearchActive()) _buildSearchForm(context),
-        ],
-      );
-    });
+  Widget _buildHeader(BuildContext context) {
+    return Row(children: [
+      (ButtonBuilder(_imagePaths.icRefresh)
+          ..key(Key('button_reload_thread'))
+          ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
+          ..paddingIcon(EdgeInsets.zero)
+          ..size(16)
+          ..radiusSplash(10)
+          ..padding(EdgeInsets.symmetric(horizontal: 8, vertical: 8))
+          ..onPressActionClick(() => controller.refreshAllEmail()))
+        .build(),
+      SizedBox(width: 16),
+      (ButtonBuilder(_imagePaths.icSelectAll)
+          ..key(Key('button_select_all'))
+          ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
+          ..paddingIcon(EdgeInsets.only(right: 8))
+          ..size(16)
+          ..radiusSplash(10)
+          ..padding(EdgeInsets.symmetric(horizontal: 12, vertical: 8))
+          ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
+          ..onPressActionClick(() => controller.enableSelectionEmail())
+          ..text(AppLocalizations.of(context).select_all, isVertical: false))
+        .build(),
+      SizedBox(width: 16),
+      (ButtonBuilder(_imagePaths.icMarkAllAsRead)
+          ..key(Key('button_mark_all_as_read'))
+          ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
+          ..paddingIcon(EdgeInsets.only(right: 8))
+          ..size(16)
+          ..padding(EdgeInsets.symmetric(horizontal: 12, vertical: 8))
+          ..radiusSplash(10)
+          ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
+          ..onPressActionClick(() => {})
+          ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
+        .build(),
+      SizedBox(width: 16),
+      (ButtonBuilder(_imagePaths.icFilterWeb)
+          ..key(Key('button_filter_messages'))
+          ..context(context)
+          ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
+          ..paddingIcon(EdgeInsets.only(right: 8))
+          ..size(16)
+          ..padding(EdgeInsets.symmetric(horizontal: 12, vertical: 8))
+          ..radiusSplash(10)
+          ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
+          ..addIconAction(Padding(
+              padding: EdgeInsets.only(left: 8),
+              child: SvgPicture.asset(_imagePaths.icArrowDown, fit: BoxFit.fill)))
+          ..addOnPressActionWithPositionClick((position) =>
+              controller.openFilterMessagesForTablet(
+                context,
+                position,
+                _popupMenuEmailActionTile(context, controller.filterMessageOption.value)))
+          ..text(AppLocalizations.of(context).filter_messages, isVertical: false))
+        .build(),
+      SizedBox(width: 16),
+      Spacer(),
+      Padding(
+          padding: EdgeInsets.only(right: 16),
+          child: (SearchBarView(_imagePaths)
+              ..hintTextSearch(AppLocalizations.of(context).search_emails)
+              ..maxSizeWidth(240)
+              ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
+            .build()),
+      Padding(
+          padding: EdgeInsets.only(right: 16),
+          child: (AvatarBuilder()
+              ..text(controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
+              ..backgroundColor(Colors.white)
+              ..textColor(Colors.black)
+              ..addBoxShadows([BoxShadow(
+                  color: AppColor.colorShadowBgContentEmail,
+                  spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
+              ..size(48))
+            .build()),
+    ]);
   }
 
   Widget _buildOptionSelectionBottomBar(BuildContext context) {
@@ -117,8 +192,8 @@ class ThreadView extends GetWidget<ThreadController> {
         padding: EdgeInsets.all(10),
         child: (BottomBarThreadSelectionWidget(
                 context,
-                imagePaths,
-                responsiveUtils,
+                _imagePaths,
+                _responsiveUtils,
                 controller.getListEmailSelected())
             ..addOnPressEmailSelectionActionClick((actionType, selectionEmail) =>
                 controller.pressEmailSelectionAction(context, actionType, selectionEmail)))
@@ -127,7 +202,7 @@ class ThreadView extends GetWidget<ThreadController> {
 
   Widget _buildSearchForm(BuildContext context) {
     return (SearchAppBarWidget(
-          imagePaths,
+          _imagePaths,
           controller.searchQuery,
           controller.mailboxDashBoardController.searchFocus,
           controller.mailboxDashBoardController.searchInputController,
@@ -145,8 +220,8 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget _buildAppBarNormal(BuildContext context) {
     return (AppBarThreadWidgetBuilder(
               context,
-              imagePaths,
-              responsiveUtils,
+              _imagePaths,
+              _responsiveUtils,
               controller.mailboxDashBoardController.selectedMailbox.value,
               controller.getListEmailSelected(),
               controller.currentSelectMode.value,
@@ -154,7 +229,7 @@ class ThreadView extends GetWidget<ThreadController> {
           ..addOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
           ..addOnEditThreadAction(() => controller.enableSelectionEmail())
           ..addOnFilterEmailAction((filterMessageOption, position) =>
-              responsiveUtils.isMobileDevice(context)
+              _responsiveUtils.isMobileDevice(context)
                 ? controller.openFilterMessagesCupertinoActionSheet(
                     context,
                     _filterMessagesCupertinoActionTile(context, filterMessageOption),
@@ -187,17 +262,17 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget _filterMessageWithAttachmentsAction(BuildContext context, FilterMessageOption optionCurrent) {
     return (FilterMessageCupertinoActionSheetActionBuilder(
           Key('filter_attachment_action'),
-          SvgPicture.asset(imagePaths.icAttachment, width: 28, height: 28, fit: BoxFit.fill, color: AppColor.colorTextButton),
+          SvgPicture.asset(_imagePaths.icAttachment, width: 28, height: 28, fit: BoxFit.fill, color: AppColor.colorTextButton),
           AppLocalizations.of(context).with_attachments,
           FilterMessageOption.attachments,
           optionCurrent: optionCurrent,
-          iconLeftPadding: responsiveUtils.isMobile(context)
+          iconLeftPadding: _responsiveUtils.isMobile(context)
               ? EdgeInsets.only(left: 12, right: 16)
               : EdgeInsets.only(right: 12),
-          iconRightPadding: responsiveUtils.isMobile(context)
+          iconRightPadding: _responsiveUtils.isMobile(context)
               ? EdgeInsets.only(right: 12)
               : EdgeInsets.zero,
-          actionSelected: SvgPicture.asset(imagePaths.icFilterSelected, fit: BoxFit.fill))
+          actionSelected: SvgPicture.asset(_imagePaths.icFilterSelected, fit: BoxFit.fill))
       ..onActionClick((option) => controller.filterMessagesAction(context, option)))
     .build();
   }
@@ -205,17 +280,17 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget _filterMessagesUnreadAction(BuildContext context, FilterMessageOption optionCurrent) {
     return (FilterMessageCupertinoActionSheetActionBuilder(
           Key('filter_unread_action'),
-          SvgPicture.asset(imagePaths.icUnread, width: 28, height: 28, fit: BoxFit.fill),
+          SvgPicture.asset(_imagePaths.icUnread, width: 28, height: 28, fit: BoxFit.fill),
           AppLocalizations.of(context).unread,
           FilterMessageOption.unread,
           optionCurrent: optionCurrent,
-          iconLeftPadding: responsiveUtils.isMobile(context)
+          iconLeftPadding: _responsiveUtils.isMobile(context)
             ? EdgeInsets.only(left: 12, right: 16)
             : EdgeInsets.only(right: 12),
-          iconRightPadding: responsiveUtils.isMobile(context)
+          iconRightPadding: _responsiveUtils.isMobile(context)
             ? EdgeInsets.only(right: 12)
             : EdgeInsets.zero,
-          actionSelected: SvgPicture.asset(imagePaths.icFilterSelected, fit: BoxFit.fill))
+          actionSelected: SvgPicture.asset(_imagePaths.icFilterSelected, fit: BoxFit.fill))
       ..onActionClick((option) => controller.filterMessagesAction(context, option)))
     .build();
   }
@@ -223,17 +298,17 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget _filterMessageStarredAction(BuildContext context, FilterMessageOption optionCurrent) {
     return (FilterMessageCupertinoActionSheetActionBuilder(
           Key('filter_starred_action'),
-          SvgPicture.asset(imagePaths.icStar, width: 28, height: 28, fit: BoxFit.fill),
+          SvgPicture.asset(_imagePaths.icStar, width: 28, height: 28, fit: BoxFit.fill),
           AppLocalizations.of(context).starred,
           FilterMessageOption.starred,
           optionCurrent: optionCurrent,
-          iconLeftPadding: responsiveUtils.isMobile(context)
+          iconLeftPadding: _responsiveUtils.isMobile(context)
               ? EdgeInsets.only(left: 12, right: 16)
               : EdgeInsets.only(right: 12),
-          iconRightPadding: responsiveUtils.isMobile(context)
+          iconRightPadding: _responsiveUtils.isMobile(context)
               ? EdgeInsets.only(right: 12)
               : EdgeInsets.zero,
-          actionSelected: SvgPicture.asset(imagePaths.icFilterSelected, fit: BoxFit.fill))
+          actionSelected: SvgPicture.asset(_imagePaths.icFilterSelected, fit: BoxFit.fill))
       ..onActionClick((option) => controller.filterMessagesAction(context, option)))
     .build();
   }
@@ -254,24 +329,23 @@ class ThreadView extends GetWidget<ThreadController> {
       (success) {
         if (controller.isSearchActive()) {
           return success is SearchingState
-              ? Center(child: Padding(
-                  padding: EdgeInsets.only(top: 16, bottom: 16),
-                  child: SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(color: AppColor.primaryColor))))
+              ? Padding(padding: EdgeInsets.only(top: 16), child: _loadingWidget)
               : SizedBox.shrink();
         } else {
           return success is LoadingState
-            ? Center(child: Padding(
-                padding: EdgeInsets.only(top: 16, bottom: 16),
-                child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(color: AppColor.primaryColor))))
-            : SizedBox.shrink();
+              ? Padding(padding: EdgeInsets.only(top: 16), child: _loadingWidget)
+              : SizedBox.shrink();
         }
       }));
+  }
+
+  Widget get _loadingWidget {
+    return Center(child: Padding(
+        padding: EdgeInsets.zero,
+        child: SizedBox(
+            width: 24,
+            height: 24,
+            child: CupertinoActivityIndicator(color: AppColor.colorTextButton))));
   }
 
   Widget _buildLoadingViewLoadMore() {
@@ -280,29 +354,21 @@ class ThreadView extends GetWidget<ThreadController> {
       (success) {
         if (controller.isSearchActive()) {
           return success is SearchingMoreState
-            ? Center(child: Padding(
-                padding: EdgeInsets.only(top: 16, bottom: 16),
-                child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(color: AppColor.primaryColor))))
-            : SizedBox.shrink();
+              ? Padding(padding: EdgeInsets.only(bottom: 16), child: _loadingWidget)
+              : SizedBox.shrink();
         } else {
           return success is LoadingMoreState
-            ? Center(child: Padding(
-                padding: EdgeInsets.only(top: 16, bottom: 16),
-                child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(color: AppColor.primaryColor))))
-            : SizedBox.shrink();
+              ? Padding(padding: EdgeInsets.only(bottom: 16), child: _loadingWidget)
+              : SizedBox.shrink();
         }
       }));
   }
 
   Widget _buildListEmail(BuildContext context) {
     return Container(
-      margin: EdgeInsets.zero,
+      margin: _responsiveUtils.isDesktop(context)
+          ? EdgeInsets.only(top: 16, bottom: 16)
+          : EdgeInsets.zero,
       width: double.infinity,
       height: double.infinity,
       alignment: Alignment.center,
@@ -364,12 +430,10 @@ class ThreadView extends GetWidget<ThreadController> {
       child: ListView.builder(
         controller: controller.listEmailController,
         physics: AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.only(top: 16),
         key: Key('presentation_email_list'),
         itemCount: listPresentationEmail.length,
         itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
                 context,
-                imagePaths,
                 listPresentationEmail[index],
                 controller.mailboxDashBoardController.selectedMailbox.value?.role,
                 controller.currentSelectMode.value,
@@ -382,7 +446,8 @@ class ThreadView extends GetWidget<ThreadController> {
                 controller.previewEmail(context, selectedEmail);
               }
             })
-            ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail)))
+            ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail))
+            ..addOnMarkAsStarActionClick((selectedEmail) => controller.markAsStarEmail(selectedEmail)))
           .build()),
       )
     );
@@ -394,7 +459,7 @@ class ThreadView extends GetWidget<ThreadController> {
       (success) => !(success is LoadingState) && !(success is SearchingState)
         ? (BackgroundWidgetBuilder(context)
             ..key(Key('empty_email_background'))
-            ..image(SvgPicture.asset(imagePaths.icEmptyImageDefault, width: 120, height: 120, fit: BoxFit.fill))
+            ..image(SvgPicture.asset(_imagePaths.icEmptyImageDefault, width: 120, height: 120, fit: BoxFit.fill))
             ..text(controller.isSearchActive()
                 ? AppLocalizations.of(context).no_emails_matching_your_search
                 : AppLocalizations.of(context).no_emails))
@@ -407,7 +472,7 @@ class ThreadView extends GetWidget<ThreadController> {
     return Obx(() => controller.mailboxDashBoardController.suggestionSearch.isNotEmpty
       ? (SuggestionBoxWidget(
               context,
-              imagePaths,
+              _imagePaths,
               controller.mailboxDashBoardController.suggestionSearch)
           ..addOnSelectedSuggestion((suggestion) =>
               controller.mailboxDashBoardController.searchEmail(context, suggestion)))
@@ -423,8 +488,12 @@ class ThreadView extends GetWidget<ThreadController> {
           ? Container(
               width: double.infinity,
               margin: EdgeInsets.zero,
-              color: AppColor.bgStatusResultSearch,
               padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              decoration: BoxDecoration(
+                  borderRadius: _responsiveUtils.isDesktop(context)
+                      ? BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
+                      : null,
+                  color: AppColor.bgStatusResultSearch),
               child: Text(
                 AppLocalizations.of(context).results,
                 style: TextStyle(color: AppColor.baseTextColor, fontSize: 14, fontWeight: FontWeight.w500),

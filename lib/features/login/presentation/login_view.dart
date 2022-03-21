@@ -55,11 +55,11 @@ class LoginView extends GetWidget<LoginController> {
   }
 
   Widget _buildSlogan(BuildContext context) {
-    return SloganBuilder()
-      .setSloganText(AppLocalizations.of(context).login_text_slogan)
-      .setSloganTextAlign(TextAlign.center)
-      .setSloganTextStyle(TextStyle(color: AppColor.primaryColor, fontSize: 16, fontWeight: FontWeight.w700))
-      .setLogo(imagePaths.icLogoTMail)
+    return (SloganBuilder()
+        ..setSloganText(AppLocalizations.of(context).login_text_slogan)
+        ..setSloganTextAlign(TextAlign.center)
+        ..setSloganTextStyle(TextStyle(color: AppColor.primaryColor, fontSize: 16, fontWeight: FontWeight.w700))
+        ..setLogo(imagePaths.icLogoTMail))
       .build();
   }
 

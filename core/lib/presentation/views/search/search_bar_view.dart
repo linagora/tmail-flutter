@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnOpenSearchViewAction = Function();
 
-class SearchBarThreadViewWidget {
+class SearchBarView {
  OnOpenSearchViewAction? _onOpenSearchViewAction;
 
  final ImagePaths _imagePaths;
@@ -14,8 +14,9 @@ class SearchBarThreadViewWidget {
   EdgeInsets? _padding;
   EdgeInsets? _margin;
   String? _hintTextSearch;
+  double? _maxSizeWidth;
 
- SearchBarThreadViewWidget(this._imagePaths);
+ SearchBarView(this._imagePaths);
 
   void addOnOpenSearchViewAction(OnOpenSearchViewAction onOpenSearchViewAction) {
     _onOpenSearchViewAction = onOpenSearchViewAction;
@@ -37,18 +38,24 @@ class SearchBarThreadViewWidget {
     _hintTextSearch = text;
   }
 
+  void maxSizeWidth(double? size) {
+    _maxSizeWidth = size;
+  }
+
   Widget build() {
-    return GestureDetector(
+    return InkWell(
       onTap: () => _onOpenSearchViewAction?.call(),
+      borderRadius: BorderRadius.all(Radius.circular(10)),
       child: Container(
           key: Key('search_bar_widget'),
           alignment: Alignment.topCenter,
           height: _heightSearchBar ?? 40,
+          width: _maxSizeWidth ?? double.infinity,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: AppColor.colorBgSearchBar),
           padding: _padding ?? EdgeInsets.zero,
-          margin: _margin ?? EdgeInsets.only(left: 16, right: 16, bottom: 10),
+          margin: _margin ?? EdgeInsets.zero,
           child: MediaQuery(
               data: MediaQueryData(padding: EdgeInsets.zero),
               child: Row(

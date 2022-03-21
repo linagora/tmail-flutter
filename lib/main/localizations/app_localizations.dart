@@ -816,4 +816,43 @@ class AppLocalizations {
         name: 'message_confirm_send_email');
   }
 
+  String get app_name {
+    return Intl.message(
+        'Tmail',
+        name: 'app_name');
+  }
+
+  String get search_emails {
+    return Intl.message(
+        'Search emails',
+        name: 'search_emails');
+  }
+
+  String get select_all {
+    return Intl.message(
+      'Select all',
+      name: 'select_all',
+    );
+  }
+
+  String get mark_all_as_read {
+    return Intl.message(
+      'Mark all as read',
+      name: 'mark_all_as_read',
+    );
+  }
+
+  String get filter_messages {
+    return Intl.message(
+      'Filter messages',
+      name: 'filter_messages',
+    );
+  }
+
+  String get not_starred {
+    return Intl.message(
+        'Not starred',
+        name: 'not_starred'
+    );
+  }
 }
