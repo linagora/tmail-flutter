@@ -739,12 +739,6 @@ class ThreadController extends BaseController {
   }
 
   void composeEmailAction() {
-    if (kIsWeb) {
-      if (mailboxDashBoardController.dashBoardAction != DashBoardAction.compose) {
-        mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.compose, arguments: ComposerArguments());
-      }
-    } else {
-      push(AppRoutes.COMPOSER, arguments: ComposerArguments());
-    }
+    mailboxDashBoardController.composeEmailAction();
   }
 }

@@ -527,7 +527,7 @@ class AppLocalizations {
 
   String get hint_search_mailboxes {
     return Intl.message(
-        'Search for mailboxes',
+        'Search mailboxes',
         name: 'hint_search_mailboxes');
   }
 
