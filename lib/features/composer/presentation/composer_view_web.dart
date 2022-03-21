@@ -55,8 +55,8 @@ class ComposerView extends GetWidget<ComposerController> {
                 color: Colors.transparent,
                 child: Container(
                     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(20))),
-                    width: responsiveUtils.getSizeWidthScreen(context) * 0.55,
-                    height: responsiveUtils.getSizeHeightScreen(context) * 0.75,
+                    width: responsiveUtils.getSizeScreenWidth(context) * 0.55,
+                    height: responsiveUtils.getSizeScreenHeight(context) * 0.75,
                     child: PointerInterceptor(child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -119,8 +119,8 @@ class ComposerView extends GetWidget<ComposerController> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
                     child: Container(
                         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(20))),
-                        width: responsiveUtils.getSizeWidthScreen(context) * 0.85,
-                        height: responsiveUtils.getSizeHeightScreen(context) * 0.9,
+                        width: responsiveUtils.getSizeScreenWidth(context) * 0.85,
+                        height: responsiveUtils.getSizeScreenHeight(context) * 0.9,
                         child: ClipRRect(
                             borderRadius: BorderRadius.all(Radius.circular(20)),
                             child: PointerInterceptor(child: Column(
@@ -542,9 +542,9 @@ class ComposerView extends GetWidget<ComposerController> {
   }
 
   int _getMaxItemRowListAttachment(BuildContext context, BoxConstraints constraints) {
-    if (constraints.maxWidth < ResponsiveUtils.minTabletWidth) {
+    if (constraints.maxWidth < responsiveUtils.minTabletWidth) {
       return 2;
-    } else if (constraints.maxWidth < ResponsiveUtils.minTabletLargeWidth) {
+    } else if (constraints.maxWidth < responsiveUtils.minTabletLargeWidth) {
       return 3;
     } else {
       return 4;

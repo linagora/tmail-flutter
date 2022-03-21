@@ -37,7 +37,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                 mobile: _responsiveUtils.isPortrait(context)
                   ? Container(
                       child: _buildBodyMailboxLocation(context, actions),
-                      width: _responsiveUtils.getSizeWidthScreen(context))
+                      width: _responsiveUtils.getSizeScreenWidth(context))
                   : _buildBodyMailboxDestination(context, actions),
                 tablet: Container(
                     child: Row(
@@ -289,7 +289,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
           right: _responsiveUtils.tabletHorizontalMargin,
           top: 50.0);
     } else if (_responsiveUtils.isTablet(context)) {
-      return _responsiveUtils.getSizeHeightScreen(context) <= _responsiveUtils.tabletVerticalMargin * 2
+      return _responsiveUtils.getSizeScreenHeight(context) <= _responsiveUtils.tabletVerticalMargin * 2
           ? EdgeInsets.symmetric(
               horizontal: _responsiveUtils.tabletHorizontalMargin,
               vertical: 0.0)
@@ -297,7 +297,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
               horizontal: _responsiveUtils.tabletHorizontalMargin,
               vertical: _responsiveUtils.tabletVerticalMargin);
     } else if (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) {
-      return _responsiveUtils.getSizeHeightScreen(context) <= _responsiveUtils.desktopVerticalMargin * 2
+      return _responsiveUtils.getSizeScreenHeight(context) <= _responsiveUtils.desktopVerticalMargin * 2
           ? EdgeInsets.symmetric(
               horizontal: _responsiveUtils.desktopHorizontalMargin,
               vertical: 0.0)
@@ -313,11 +313,11 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
     if (_responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context)) {
       return BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius));
     } else if (_responsiveUtils.isTablet(context)) {
-      return _responsiveUtils.getSizeHeightScreen(context) <= _responsiveUtils.tabletVerticalMargin * 2
+      return _responsiveUtils.getSizeScreenHeight(context) <= _responsiveUtils.tabletVerticalMargin * 2
           ? BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius))
           : BorderRadius.circular(radius);
     } else if (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) {
-      return _responsiveUtils.getSizeHeightScreen(context) <= _responsiveUtils.desktopVerticalMargin * 2
+      return _responsiveUtils.getSizeScreenHeight(context) <= _responsiveUtils.desktopVerticalMargin * 2
           ? BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius))
           : BorderRadius.circular(radius);
     } else {

@@ -73,8 +73,8 @@ class ComposerView extends GetWidget<ComposerController> {
                     elevation: 20,
                     child: Container(
                         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(10))),
-                        width: responsiveUtils.getSizeWidthScreen(context) * 0.85,
-                        height: responsiveUtils.getSizeHeightScreen(context) * 0.85,
+                        width: responsiveUtils.getSizeScreenWidth(context) * 0.85,
+                        height: responsiveUtils.getSizeScreenHeight(context) * 0.85,
                         child: ClipRRect(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             child: SafeArea(
@@ -399,9 +399,9 @@ class ComposerView extends GetWidget<ComposerController> {
   }
 
   int _getMaxItemRowListAttachment(BuildContext context, BoxConstraints constraints) {
-    if (constraints.maxWidth < ResponsiveUtils.minTabletWidth) {
+    if (constraints.maxWidth < responsiveUtils.minTabletWidth) {
       return 2;
-    } else if (constraints.maxWidth < ResponsiveUtils.minTabletLargeWidth) {
+    } else if (constraints.maxWidth < responsiveUtils.minTabletLargeWidth) {
       return 3;
     } else {
       return 4;

@@ -308,11 +308,11 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _createNewMailboxSuccess(CreateNewMailboxSuccess success) {
-    if (Get.overlayContext != null && Get.context != null) {
+    if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastWithIcon(
-          Get.overlayContext!,
+          currentOverlayContext!,
           textColor: AppColor.toastSuccessBackgroundColor,
-          message: AppLocalizations.of(Get.context!).new_mailbox_is_created(success.newMailbox.name?.name ?? ''),
+          message: AppLocalizations.of(currentContext!).new_mailbox_is_created(success.newMailbox.name?.name ?? ''),
           icon: _imagePaths.icFolderMailbox);
     }
 
@@ -320,11 +320,11 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _createNewMailboxFailure(CreateNewMailboxFailure failure) {
-    if (Get.overlayContext != null && Get.context != null) {
+    if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastWithIcon(
-          Get.overlayContext!,
+          currentOverlayContext!,
           textColor: AppColor.toastErrorBackgroundColor,
-          message: AppLocalizations.of(Get.context!).create_new_mailbox_failure,
+          message: AppLocalizations.of(currentContext!).create_new_mailbox_failure,
           icon: _imagePaths.icFolderMailbox);
     }
   }
@@ -503,20 +503,20 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _deleteMailboxSuccess(DeleteMultipleMailboxSuccess success) {
-    if (Get.overlayContext != null && Get.context != null) {
+    if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastWithIcon(
-          Get.overlayContext!,
-          message: AppLocalizations.of(Get.context!).delete_mailboxes_successfully,
+          currentOverlayContext!,
+          message: AppLocalizations.of(currentContext!).delete_mailboxes_successfully,
           icon: _imagePaths.icSelected);
     }
     refreshMailboxChanges();
   }
 
   void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
-    if (Get.overlayContext != null && Get.context != null) {
+    if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastWithIcon(
-          Get.overlayContext!,
-          message: AppLocalizations.of(Get.context!).delete_mailboxes_failure,
+          currentOverlayContext!,
+          message: AppLocalizations.of(currentContext!).delete_mailboxes_failure,
           icon: _imagePaths.icDeleteToast);
     }
   }
