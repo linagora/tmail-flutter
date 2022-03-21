@@ -23,6 +23,7 @@ class ButtonBuilder {
   BoxDecoration? _decoration;
   Widget? _iconAction;
   double? _radiusSplash;
+  double? _maxWidth;
   EdgeInsets? _padding;
 
   void key(Key key) {
@@ -35,6 +36,10 @@ class ButtonBuilder {
 
   void size(double size) {
     _size = size;
+  }
+
+  void maxWidth(double? size) {
+    _maxWidth = size;
   }
 
   void iconColor(Color color) {
@@ -106,6 +111,7 @@ class ButtonBuilder {
         alignment: Alignment.center,
         color: _decoration == null ? _colorButton ?? Colors.white : null,
         decoration: _decoration,
+        width: _maxWidth,
         padding: _padding ?? EdgeInsets.zero,
         child: _buildBody()
       )
