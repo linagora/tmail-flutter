@@ -342,7 +342,9 @@ class MailboxView extends GetWidget<MailboxController> {
           children: [
             _buildBackSearchButton(context),
             Expanded(child: (SearchAppBarWidget(
+                  context,
                   _imagePaths,
+                  _responsiveUtils,
                   controller.searchQuery.value,
                   controller.searchFocus,
                   controller.searchInputController,
