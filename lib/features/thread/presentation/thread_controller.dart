@@ -50,6 +50,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -149,12 +150,19 @@ class ThreadController extends BaseController {
         }
       });
     });
+
+    mailboxDashBoardController.searchState.listen((state) {
+      if (state.searchStatus == SearchStatus.INACTIVE) {
+        emailListSearch.clear();
+      }
+    });
   }
 
   @override
   void onClose() {
     mailboxDashBoardController.selectedMailbox.close();
     mailboxDashBoardController.viewState.close();
+    mailboxDashBoardController.searchState.close();
     listEmailController.dispose();
     super.onClose();
   }

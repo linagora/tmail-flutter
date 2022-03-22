@@ -267,7 +267,11 @@ class MailboxController extends BaseMailboxController {
     mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
     mailboxDashBoardController.clearSelectedEmail();
 
-    if (!responsiveUtils.isDesktop(context)) {
+    if (mailboxDashBoardController.isSearchActive()) {
+      mailboxDashBoardController.disableSearch();
+    }
+
+    if (!responsiveUtils.isDesktop(context) && !responsiveUtils.isTabletLarge(context)) {
       mailboxDashBoardController.closeDrawer();
     }
   }
