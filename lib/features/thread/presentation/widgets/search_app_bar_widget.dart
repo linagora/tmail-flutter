@@ -15,7 +15,9 @@ class SearchAppBarWidget {
  OnClearTextSearchAction? _onClearTextSearchAction;
  OnSearchTextAction? _onSearchTextAction;
 
+  final BuildContext _context;
   final ImagePaths _imagePaths;
+  final ResponsiveUtils _responsiveUtils;
   final SearchQuery? _searchQuery;
   final TextEditingController? _searchInputController;
   final FocusNode? _searchFocusNode;
@@ -31,7 +33,9 @@ class SearchAppBarWidget {
   Widget? _iconClearText;
 
   SearchAppBarWidget(
+    this._context,
     this._imagePaths,
+    this._responsiveUtils,
     this._searchQuery,
     this._searchFocusNode,
     this._searchInputController,
@@ -85,19 +89,20 @@ class SearchAppBarWidget {
   Widget build() {
     return Container(
       key: Key('search_app_bar_widget'),
-      alignment: Alignment.topCenter,
       height: _heightSearchBar,
       decoration: _decoration,
-      padding: _padding ?? EdgeInsets.symmetric(vertical: 8),
+      padding: _padding ?? EdgeInsets.zero,
       margin: _margin,
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (hasBackButton) _buildBackButton(),
             if (hasSearchButton) _buildSearchButton(),
-            Expanded(child: _buildSearchInputForm()),
+            Expanded(child: Transform(
+              transform: Matrix4.translationValues(0.0, _responsiveUtils.isDesktop(_context) ? -2.0 : 0.0, 0.0),
+              child: _buildSearchInputForm(),
+            )),
             if (suggestionSearch?.isNotEmpty == true || (_searchQuery != null && _searchQuery!.value.isNotEmpty))
               _buildClearTextSearchButton(),
           ]
@@ -111,11 +116,10 @@ class SearchAppBarWidget {
      shape: CircleBorder(),
      color: Colors.transparent,
      child: Padding(
-       padding: EdgeInsets.only(left: 8),
+       padding: EdgeInsets.only(left: _responsiveUtils.isDesktop(_context) ? 0 : 8),
        child: IconButton(
          splashRadius: 20,
-         color: AppColor.appColor,
-         icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.appColor, fit: BoxFit.fill),
+         icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
          onPressed: () {
            _searchInputController?.clear();
            if (_onCancelSearchPressed != null) {
@@ -155,7 +159,7 @@ class SearchAppBarWidget {
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
             enabledBorder: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(vertical: 7),
+            contentPadding: EdgeInsets.zero,
             hintText: _hintText,
             hintStyle: TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0),
             labelStyle: TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0)))

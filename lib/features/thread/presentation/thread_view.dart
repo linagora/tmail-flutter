@@ -40,73 +40,35 @@ class ThreadView extends GetWidget<ThreadController> {
                       color: Colors.white,
                       padding: EdgeInsets.only(right: 10, top: 16, bottom: 10),
                       child: _buildHeader(context)),
-                Obx(() => controller.isSearchActive()
-                    ? _buildSearchForm(context)
-                    : _responsiveUtils.isDesktop(context) ? SizedBox.shrink() : _buildAppBarNormal(context)),
-                Obx(() => !controller.isSearchActive() && !_responsiveUtils.isDesktop(context)
-                    ? Padding(
-                        padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
-                        child: (SearchBarView(_imagePaths)
-                            ..hintTextSearch(AppLocalizations.of(context).hint_search_emails)
-                            ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
-                          .build())
-                    : SizedBox.shrink()),
+                _buildSearchInputFormForMobile(context),
+                _buildSearchButtonViewForMobile(context),
                 Expanded(child: Container(
                     color: AppColor.colorBgDesktop,
                     margin: _responsiveUtils.isDesktop(context) ? EdgeInsets.all(16) : EdgeInsets.zero,
-                    child: Stack(
-                      children: [
+                    child: Stack(children: [
                         Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                borderRadius: _responsiveUtils.isDesktop(context) ? BorderRadius.circular(20) : null,
-                                border: _responsiveUtils.isDesktop(context) ? Border.all(color: AppColor.colorBorderBodyThread, width: 1) : null,
-                                color: Colors.white),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildStatusResultSearch(context),
-                                  _buildLoadingView(),
-                                  Expanded(child: _buildListEmail(context)),
-                                  _buildLoadingViewLoadMore(),
-                                ]
-                            )
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: _responsiveUtils.isDesktop(context) ? BorderRadius.circular(20) : null,
+                            border: _responsiveUtils.isDesktop(context) ? Border.all(color: AppColor.colorBorderBodyThread, width: 1) : null,
+                            color: Colors.white),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildStatusResultSearch(context),
+                              _buildLoadingView(),
+                              Expanded(child: _buildListEmail(context)),
+                              _buildLoadingViewLoadMore(),
+                            ]
+                          )
                         ),
                         _buildSuggestionBox(context)
-                      ],
-                    ))
-                ),
-                Obx(() => controller.isSelectionEnabled() && !_responsiveUtils.isDesktop(context)
-                    ? Column(children: [
-                        Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
-                        _buildOptionSelectionBottomBar(context)
-                      ])
-                    : SizedBox.shrink()),
+                    ]))),
+                _buildListButtonSelectionForMobile(context),
               ]
           )
         ),
-        floatingActionButton: Obx(() => !controller.isSearchActive() && !controller.isSelectionEnabled()
-          ? Container(
-              padding: EdgeInsets.only(bottom: controller.isSelectionEnabled()
-                  ? 80
-                  : _responsiveUtils.isMobileDevice(context) ? 0 : 16),
-              child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: ScrollingFloatingButtonAnimated(
-                      icon: SvgPicture.asset(_imagePaths.icCompose, width: 20, height: 20, fit: BoxFit.fill),
-                      text: Padding(
-                          padding: EdgeInsets.only(right: 10),
-                          child: Text(
-                              AppLocalizations.of(context).compose,
-                              style: TextStyle(color: AppColor.colorTextButton, fontSize: 15.0, fontWeight: FontWeight.w500))
-                      ),
-                      onPress: () => controller.composeEmailAction(),
-                      scrollController: controller.listEmailController,
-                      color: Colors.white,
-                      elevation: 4.0,
-                      width: 140,
-                      animateIcon: false)))
-          : SizedBox.shrink()),
+        floatingActionButton: _buildFloatingButtonCompose(context),
       ),
     );
   }
@@ -114,20 +76,15 @@ class ThreadView extends GetWidget<ThreadController> {
   Widget _buildHeader(BuildContext context) {
     return Row(children: [
       Obx(() => !controller.isSelectionEnabled() && _responsiveUtils.isDesktop(context)
-          ? _buildOptionTopBar(context)
+          ? _buildListButtonTopBar(context)
           : SizedBox.shrink()),
       Obx(() => controller.isSelectionEnabled() && _responsiveUtils.isDesktop(context)
-          ? _buildOptionSelectionTopBar(context)
+          ? _buildListButtonSelectionForDesktop(context)
           : SizedBox.shrink()),
       SizedBox(width: 16),
-      Spacer(),
-      Padding(
-          padding: EdgeInsets.only(right: 16),
-          child: (SearchBarView(_imagePaths)
-              ..hintTextSearch(AppLocalizations.of(context).search_emails)
-              ..maxSizeWidth(240)
-              ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
-            .build()),
+      Obx(() => !controller.isSearchActive() && _responsiveUtils.isDesktop(context) ? Spacer() : SizedBox.shrink()),
+      Expanded(child: _buildSearchInputFormForDesktop(context)),
+      _buildSearchButtonViewForDesktop(context),
       Padding(
           padding: EdgeInsets.only(right: 16),
           child: (AvatarBuilder()
@@ -136,10 +93,7 @@ class ThreadView extends GetWidget<ThreadController> {
               ..textColor(Colors.black)
               ..context(context)
               ..addOnTapAvatarActionWithPositionClick((position) =>
-                  controller.openUserSettingAction(
-                      context,
-                      position,
-                      [PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _logoutAction(context))]))
+                  controller.openUserSettingAction(context, position, _popupMenuUserSettingActionTile(context)))
               ..addBoxShadows([BoxShadow(
                   color: AppColor.colorShadowBgContentEmail,
                   spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
@@ -148,18 +102,19 @@ class ThreadView extends GetWidget<ThreadController> {
     ]);
   }
 
-  Widget _buildOptionTopBar(BuildContext context) {
+  Widget _buildListButtonTopBar(BuildContext context) {
     return Row(children: [
-      SizedBox(width: 16),
-      (ButtonBuilder(_imagePaths.icRefresh)
-          ..key(Key('button_reload_thread'))
-          ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
-          ..paddingIcon(EdgeInsets.zero)
-          ..size(16)
-          ..radiusSplash(10)
-          ..padding(EdgeInsets.symmetric(horizontal: 8, vertical: 8))
-          ..onPressActionClick(() => controller.refreshAllEmail()))
-        .build(),
+      if (!controller.isSearchActive()) SizedBox(width: 16),
+      if (!controller.isSearchActive())
+        (ButtonBuilder(_imagePaths.icRefresh)
+            ..key(Key('button_reload_thread'))
+            ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
+            ..paddingIcon(EdgeInsets.zero)
+            ..size(16)
+            ..radiusSplash(10)
+            ..padding(EdgeInsets.symmetric(horizontal: 8, vertical: 8))
+            ..onPressActionClick(() => controller.refreshAllEmail()))
+          .build(),
       SizedBox(width: 16),
       (ButtonBuilder(_imagePaths.icSelectAll)
           ..key(Key('button_select_all'))
@@ -192,36 +147,38 @@ class ThreadView extends GetWidget<ThreadController> {
           })
           ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
         .build(),
-      SizedBox(width: 16),
-      (ButtonBuilder(_imagePaths.icFilterWeb)
-          ..key(Key('button_filter_messages'))
-          ..context(context)
-          ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
-          ..paddingIcon(EdgeInsets.only(right: 8))
-          ..size(16)
-          ..padding(EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-          ..radiusSplash(10)
-          ..textStyle(TextStyle(
-              fontSize: 12,
-              color: controller.filterMessageOption.value == FilterMessageOption.all ? AppColor.colorTextButtonHeaderThread : AppColor.colorNameEmail,
-              fontWeight: controller.filterMessageOption.value == FilterMessageOption.all ? FontWeight.normal : FontWeight.w500))
-          ..addIconAction(Padding(
-              padding: EdgeInsets.only(left: 8),
-              child: SvgPicture.asset(_imagePaths.icArrowDown, fit: BoxFit.fill)))
-          ..addOnPressActionWithPositionClick((position) =>
-              controller.openFilterMessagesForTablet(
-                  context,
-                  position,
-                  _popupMenuEmailActionTile(context, controller.filterMessageOption.value)))
-          ..text(controller.filterMessageOption.value == FilterMessageOption.all
-              ? AppLocalizations.of(context).filter_messages
-              : controller.filterMessageOption.value.getTitle(context), isVertical: false))
-        .build(),
+      if (!controller.isSearchActive()) SizedBox(width: 16),
+      if (!controller.isSearchActive())
+        (ButtonBuilder(_imagePaths.icFilterWeb)
+            ..key(Key('button_filter_messages'))
+            ..context(context)
+            ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
+            ..paddingIcon(EdgeInsets.only(right: 8))
+            ..size(16)
+            ..padding(EdgeInsets.symmetric(horizontal: 12, vertical: 8))
+            ..radiusSplash(10)
+            ..textStyle(TextStyle(
+                fontSize: 12,
+                color: controller.filterMessageOption.value == FilterMessageOption.all ? AppColor.colorTextButtonHeaderThread : AppColor.colorNameEmail,
+                fontWeight: controller.filterMessageOption.value == FilterMessageOption.all ? FontWeight.normal : FontWeight.w500))
+            ..addIconAction(Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: SvgPicture.asset(_imagePaths.icArrowDown, fit: BoxFit.fill)))
+            ..addOnPressActionWithPositionClick((position) =>
+                controller.openFilterMessagesForTablet(
+                    context,
+                    position,
+                    _popupMenuEmailActionTile(context, controller.filterMessageOption.value)))
+            ..text(controller.filterMessageOption.value == FilterMessageOption.all
+                ? AppLocalizations.of(context).filter_messages
+                : controller.filterMessageOption.value.getTitle(context), isVertical: false))
+          .build(),
     ]);
   }
 
-  Widget _buildOptionSelectionTopBar(BuildContext context) {
+  Widget _buildListButtonSelectionForDesktop(BuildContext context) {
     return Row(children: [
+      SizedBox(width: 16),
       buildIconWeb(
           icon: SvgPicture.asset(_imagePaths.icCloseComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
           tooltip: AppLocalizations.of(context).cancel,
@@ -251,22 +208,101 @@ class ThreadView extends GetWidget<ThreadController> {
     ]);
   }
 
-  Widget _buildOptionSelectionBottomBar(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.all(10),
-        child: (BottomBarThreadSelectionWidget(
-                context,
-                _imagePaths,
-                _responsiveUtils,
-                controller.listEmailSelected)
-            ..addOnPressEmailSelectionActionClick((actionType, selectionEmail) =>
-                controller.pressEmailSelectionAction(context, actionType, selectionEmail)))
-          .build());
+  Widget _buildListButtonSelectionForMobile(BuildContext context) {
+    return Obx(() {
+      if (controller.isSelectionEnabled() && !_responsiveUtils.isDesktop(context)) {
+        return Column(children: [
+          Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: (BottomBarThreadSelectionWidget(context, _imagePaths, _responsiveUtils, controller.listEmailSelected)
+                ..addOnPressEmailSelectionActionClick((actionType, selectionEmail) => controller.pressEmailSelectionAction(context, actionType, selectionEmail)))
+              .build()),
+        ]);
+      } else {
+        return SizedBox.shrink();
+      }
+    });
+  }
+
+  Widget _buildSearchButtonViewForMobile(BuildContext context) {
+    return Obx(() {
+      if (!controller.isSearchActive() && !_responsiveUtils.isDesktop(context)) {
+        return Padding(
+          padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
+          child: (SearchBarView(_imagePaths)
+              ..hintTextSearch(AppLocalizations.of(context).hint_search_emails)
+              ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
+            .build());
+      } else {
+        return SizedBox.shrink();
+      }
+    });
+  }
+
+  Widget _buildSearchInputFormForMobile(BuildContext context) {
+    return Obx(() {
+      if (controller.isSearchActive() && !_responsiveUtils.isDesktop(context)) {
+        return _buildSearchForm(context);
+      } else {
+        return _responsiveUtils.isDesktop(context) ? SizedBox.shrink() : _buildAppBarNormal(context);
+      }
+    });
+  }
+
+  Widget _buildSearchButtonViewForDesktop(BuildContext context) {
+    return Obx(() {
+      if (!controller.isSearchActive() && _responsiveUtils.isDesktop(context)) {
+        return Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: (SearchBarView(_imagePaths)
+                ..hintTextSearch(AppLocalizations.of(context).search_emails)
+                ..maxSizeWidth(240)
+                ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
+              .build());
+      } else {
+        return SizedBox.shrink();
+      }
+    });
+  }
+
+  Widget _buildSearchInputFormForDesktop(BuildContext context) {
+    return Obx(() {
+      if (controller.isSearchActive() && _responsiveUtils.isDesktop(context)) {
+        return _buildSearchFormForDesktop(context);
+      } else {
+        return SizedBox.shrink();
+      }
+    });
+  }
+
+  Widget _buildSearchFormForDesktop(BuildContext context) {
+    return (SearchAppBarWidget(
+          context,
+          _imagePaths,
+          _responsiveUtils,
+          controller.searchQuery,
+          controller.mailboxDashBoardController.searchFocus,
+          controller.mailboxDashBoardController.searchInputController,
+          suggestionSearch: controller.mailboxDashBoardController.suggestionSearch,)
+      ..addDecoration(BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: AppColor.colorBgSearchBar))
+      ..setMargin(EdgeInsets.only(right: 10))
+      ..setHeightSearchBar(45)
+      ..setHintText(AppLocalizations.of(context).search_mail)
+      ..addOnCancelSearchPressed(() => controller.disableSearch())
+      ..addOnClearTextSearchAction(() => controller.mailboxDashBoardController.clearSearchText())
+      ..addOnTextChangeSearchAction((query) => controller.mailboxDashBoardController.addSuggestionSearch(query))
+      ..addOnSearchTextAction((query) => controller.mailboxDashBoardController.searchEmail(context, query)))
+    .build();
   }
 
   Widget _buildSearchForm(BuildContext context) {
     return (SearchAppBarWidget(
+          context,
           _imagePaths,
+          _responsiveUtils,
           controller.searchQuery,
           controller.mailboxDashBoardController.searchFocus,
           controller.mailboxDashBoardController.searchInputController,
@@ -304,6 +340,33 @@ class ThreadView extends GetWidget<ThreadController> {
                     _popupMenuEmailActionTile(context, filterMessageOption)))
           ..addOnCancelEditThread(() => controller.cancelSelectEmail()))
         .build();
+  }
+
+  Widget _buildFloatingButtonCompose(BuildContext context) {
+    return Obx(() {
+      if (!controller.isSearchActive() && !controller.isSelectionEnabled() && !_responsiveUtils.isDesktop(context)) {
+        return Container(
+          padding: EdgeInsets.only(bottom: controller.isSelectionEnabled() ? 80 : _responsiveUtils.isMobileDevice(context) ? 0 : 16),
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: ScrollingFloatingButtonAnimated(
+              icon: SvgPicture.asset(_imagePaths.icCompose, width: 20, height: 20, fit: BoxFit.fill),
+              text: Padding(padding: EdgeInsets.only(right: 10),
+                child: Text(AppLocalizations.of(context).compose,
+                  style: TextStyle(color: AppColor.colorTextButton, fontSize: 15.0, fontWeight: FontWeight.w500))),
+              onPress: () => controller.composeEmailAction(),
+              scrollController: controller.listEmailController,
+              color: Colors.white,
+              elevation: 4.0,
+              width: 140,
+              animateIcon: false
+            )
+          )
+        );
+      } else {
+        return SizedBox.shrink();
+      }
+    });
   }
 
   List<Widget> _filterMessagesCupertinoActionTile(BuildContext context, FilterMessageOption optionCurrent) {
@@ -462,11 +525,11 @@ class ThreadView extends GetWidget<ThreadController> {
     if (controller.currentSelectMode.value == SelectMode.INACTIVE) {
       return listPresentationEmail.isNotEmpty
         ? RefreshIndicator(
-            color: AppColor.primaryColor,
+            color: AppColor.colorTextButton,
             onRefresh: () async => controller.refreshAllEmail(),
             child: _buildListEmailBody(context, listPresentationEmail))
         : RefreshIndicator(
-            color: AppColor.primaryColor,
+            color: AppColor.colorTextButton,
             onRefresh: () async => controller.refreshAllEmail(),
             child: _buildEmptyEmail(context));
     } else {
@@ -567,6 +630,12 @@ class ThreadView extends GetWidget<ThreadController> {
         return SizedBox.shrink();
       }
     });
+  }
+
+  List<PopupMenuEntry> _popupMenuUserSettingActionTile(BuildContext context) {
+    return [
+      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _logoutAction(context)),
+    ];
   }
 
   Widget _logoutAction(BuildContext context) {
