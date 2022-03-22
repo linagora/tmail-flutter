@@ -862,4 +862,30 @@ class AppLocalizations {
       name: 'select',
     );
   }
+
+  String get more {
+    return Intl.message(
+      'More',
+      name: 'more',
+    );
+  }
+
+  String get back {
+    return Intl.message(
+      'Back',
+      name: 'back',
+    );
+  }
+
+  String get expand {
+    return Intl.message(
+        'Expand',
+        name: 'expand');
+  }
+
+  String get collapse {
+    return Intl.message(
+        'Collapse',
+        name: 'collapse');
+  }
 }

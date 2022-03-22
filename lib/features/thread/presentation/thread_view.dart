@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/app_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
@@ -17,7 +17,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_ba
 import 'package:tmail_ui_user/features/thread/presentation/widgets/suggestion_box_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class ThreadView extends GetWidget<ThreadController> {
+class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -92,8 +92,10 @@ class ThreadView extends GetWidget<ThreadController> {
               ..backgroundColor(Colors.white)
               ..textColor(Colors.black)
               ..context(context)
-              ..addOnTapAvatarActionWithPositionClick((position) =>
-                  controller.openUserSettingAction(context, position, _popupMenuUserSettingActionTile(context)))
+              ..addOnTapAvatarActionWithPositionClick((position) => openUserSettingAction(
+                  context,
+                  position,
+                  popupMenuUserSettingActionTile(context, () => controller.mailboxDashBoardController.logoutAction())))
               ..addBoxShadows([BoxShadow(
                   color: AppColor.colorShadowBgContentEmail,
                   spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
@@ -630,21 +632,5 @@ class ThreadView extends GetWidget<ThreadController> {
         return SizedBox.shrink();
       }
     });
-  }
-
-  List<PopupMenuEntry> _popupMenuUserSettingActionTile(BuildContext context) {
-    return [
-      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _logoutAction(context)),
-    ];
-  }
-
-  Widget _logoutAction(BuildContext context) {
-    return (AppActionSheetActionBuilder(
-            Key('logout_action'),
-            SvgPicture.asset(_imagePaths.icCloseMailbox, color: AppColor.colorTextButton, fit: BoxFit.fill),
-            AppLocalizations.of(context).logout,
-            iconLeftPadding:EdgeInsets.only(right: 12))
-        ..onActionClick((option) => controller.logoutAction()))
-      .build();
   }
 }
