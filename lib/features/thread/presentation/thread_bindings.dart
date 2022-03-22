@@ -1,6 +1,8 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
@@ -13,6 +15,9 @@ import 'package:tmail_ui_user/features/email/domain/repository/email_repository.
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
@@ -53,6 +58,8 @@ class ThreadBindings extends BaseBindings {
       Get.find<LoadMoreEmailsInMailboxInteractor>(),
       Get.find<SearchEmailInteractor>(),
       Get.find<SearchMoreEmailInteractor>(),
+      Get.find<DeleteCredentialInteractor>(),
+      Get.find<CachingManager>(),
     ));
   }
 
@@ -90,16 +97,19 @@ class ThreadBindings extends BaseBindings {
     Get.lazyPut(() => LoadMoreEmailsInMailboxInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => SearchEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => SearchMoreEmailInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => DeleteCredentialInteractor(Get.find<CredentialRepository>()));
   }
 
   @override
   void bindingsRepository() {
+    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
     Get.lazyPut<ThreadRepository>(() => Get.find<ThreadRepositoryImpl>());
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
   }
 
   @override
   void bindingsRepositoryImpl() {
+    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
     Get.lazyPut(() => ThreadRepositoryImpl(
         {
           DataSourceType.network: Get.find<ThreadDataSource>(),
