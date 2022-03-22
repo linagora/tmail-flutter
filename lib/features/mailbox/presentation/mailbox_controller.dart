@@ -106,6 +106,7 @@ class MailboxController extends BaseMailboxController {
   void onReady() {
     super.onReady();
     mailboxDashBoardController.accountId.listen((accountId) {
+      log('MailboxController::onReady(): accountId: $accountId');
       if (accountId != null) {
         getAllMailboxAction(accountId);
       }
@@ -148,6 +149,7 @@ class MailboxController extends BaseMailboxController {
     super.onData(newState);
     newState.map((success) async {
       if (success is GetAllMailboxSuccess) {
+        log('MailboxController::onData(): ${allMailboxes.length}');
         allMailboxes = success.mailboxList;
         currentMailboxState = success.currentMailboxState;
         await buildTree(allMailboxes);

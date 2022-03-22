@@ -2,20 +2,28 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
 typedef OnTapAvatarActionClick = void Function();
+typedef OnTapAvatarActionWithPositionClick = void Function(RelativeRect? position);
 
 class AvatarBuilder {
+
+  BuildContext? _context;
   Key? _key;
   String? _text;
   double? _size;
   Color? _bgColor;
   Color? _textColor;
   OnTapAvatarActionClick? _onTapAvatarActionClick;
+  OnTapAvatarActionWithPositionClick? _onTapAvatarActionWithPositionClick;
   List<Color>? _avatarColors;
   List<BoxShadow>? _boxShadows;
   TextStyle? _textStyle;
 
   void key(Key key) {
     _key = key;
+  }
+
+  void context(BuildContext context) {
+    _context = context;
   }
 
   void size(double size) {
@@ -50,12 +58,26 @@ class AvatarBuilder {
     _onTapAvatarActionClick = onTapAvatarActionClick;
   }
 
+  void addOnTapAvatarActionWithPositionClick(OnTapAvatarActionWithPositionClick onTapAvatarActionWithPositionClick) {
+    _onTapAvatarActionWithPositionClick = onTapAvatarActionWithPositionClick;
+  }
+
   Widget build() {
-    return GestureDetector(
-      onTap: () {
-        if (_onTapAvatarActionClick != null) {
-          _onTapAvatarActionClick!();
-        }},
+    return InkWell(
+      onTap: () => _onTapAvatarActionClick != null ? _onTapAvatarActionClick?.call() : null,
+      onTapDown: (detail) {
+        if (_onTapAvatarActionWithPositionClick != null && _context != null) {
+          final screenSize = MediaQuery.of(_context!).size;
+          final offset = detail.globalPosition;
+          final position = RelativeRect.fromLTRB(
+            offset.dx,
+            offset.dy,
+            screenSize.width - offset.dx,
+            screenSize.height - offset.dy,
+          );
+          _onTapAvatarActionWithPositionClick?.call(position);
+        }
+      },
       child: Container(
           key: _key,
           width: _size ?? 40,

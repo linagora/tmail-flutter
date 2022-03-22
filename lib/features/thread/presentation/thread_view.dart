@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.da
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/app_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
@@ -133,6 +134,12 @@ class ThreadView extends GetWidget<ThreadController> {
               ..text(controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
               ..backgroundColor(Colors.white)
               ..textColor(Colors.black)
+              ..context(context)
+              ..addOnTapAvatarActionWithPositionClick((position) =>
+                  controller.openUserSettingAction(
+                      context,
+                      position,
+                      [PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _logoutAction(context))]))
               ..addBoxShadows([BoxShadow(
                   color: AppColor.colorShadowBgContentEmail,
                   spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
@@ -560,5 +567,15 @@ class ThreadView extends GetWidget<ThreadController> {
         return SizedBox.shrink();
       }
     });
+  }
+
+  Widget _logoutAction(BuildContext context) {
+    return (AppActionSheetActionBuilder(
+            Key('logout_action'),
+            SvgPicture.asset(_imagePaths.icCloseMailbox, color: AppColor.colorTextButton, fit: BoxFit.fill),
+            AppLocalizations.of(context).logout,
+            iconLeftPadding:EdgeInsets.only(right: 12))
+        ..onActionClick((option) => controller.logoutAction()))
+      .build();
   }
 }
