@@ -12,12 +12,10 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
-import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
@@ -59,7 +57,6 @@ class MailboxController extends BaseMailboxController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final GetAllMailboxInteractor _getAllMailboxInteractor;
-  final DeleteCredentialInteractor _deleteCredentialInteractor;
   final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
   final SearchMailboxInteractor _searchMailboxInteractor;
@@ -70,7 +67,6 @@ class MailboxController extends BaseMailboxController {
   final AppToast _appToast;
   final ImagePaths _imagePaths;
   final ResponsiveUtils responsiveUtils;
-  final CachingManager _cachingManager;
 
   final listMailboxSearched = <PresentationMailbox>[].obs;
   final searchState = SearchState.initial().obs;
@@ -87,7 +83,6 @@ class MailboxController extends BaseMailboxController {
 
   MailboxController(
     this._getAllMailboxInteractor,
-    this._deleteCredentialInteractor,
     this._refreshAllMailboxInteractor,
     this._createNewMailboxInteractor,
     this._searchMailboxInteractor,
@@ -99,7 +94,6 @@ class MailboxController extends BaseMailboxController {
     this._appToast,
     this._imagePaths,
     this.responsiveUtils,
-    this._cachingManager,
   ) : super(treeBuilder);
 
   @override
@@ -281,14 +275,6 @@ class MailboxController extends BaseMailboxController {
       PresentationMailbox presentationMailboxSelected
   ) {
     _openMailboxEventController.add(OpenMailboxViewEvent(context, presentationMailboxSelected));
-  }
-
-  void _deleteCredential() async {
-    await _deleteCredentialInteractor.execute();
-  }
-
-  void _clearAllCache() async {
-    await _cachingManager.clearAll();
   }
 
   void goToCreateNewMailboxView() async {
@@ -610,12 +596,6 @@ class MailboxController extends BaseMailboxController {
   void closeMailboxScreen(BuildContext context) {
     _cancelSelectMailbox();
     mailboxDashBoardController.closeDrawer();
-  }
-
-  void logoutAction() {
-    _deleteCredential();
-    _clearAllCache();
-    pushAndPopAll(AppRoutes.LOGIN);
   }
 
   @override

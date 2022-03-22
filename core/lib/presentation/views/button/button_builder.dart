@@ -105,7 +105,7 @@ class ButtonBuilder {
           _onPressActionWithPositionClick?.call(position);
         }
       },
-      borderRadius: BorderRadius.all(Radius.circular(_radiusSplash ?? 0)),
+      borderRadius: BorderRadius.all(Radius.circular(_radiusSplash ?? 20)),
       child: Container(
         key: _key,
         alignment: Alignment.center,

@@ -178,9 +178,9 @@ class AppBarThreadWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: () => !_responsiveUtils.isDesktop(_context) ? _onOpenListMailboxActionClick?.call() : null,
+          onTap: () => !_responsiveUtils.isTabletLarge(_context) ? _onOpenListMailboxActionClick?.call() : null,
           child: Padding(
-            padding: !_responsiveUtils.isDesktop(_context) ? EdgeInsets.zero : EdgeInsets.only(bottom: 8, top: 8),
+            padding: !_responsiveUtils.isTabletLarge(_context) ? EdgeInsets.zero : EdgeInsets.only(bottom: 8, top: 8),
             child: Container(
               padding: EdgeInsets.zero,
               margin: EdgeInsets.zero,
@@ -191,14 +191,14 @@ class AppBarThreadWidgetBuilder {
                 overflow: GetPlatform.isWeb ? TextOverflow.clip : TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 21, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700))
             ))),
-        if (!_responsiveUtils.isDesktop(_context))
+        if (!_responsiveUtils.isTabletLarge(_context))
           Transform(
             transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
             child: IconButton(
               padding: EdgeInsets.zero,
               color: AppColor.baseTextColor,
               icon: SvgPicture.asset(_imagePaths.icChevronDown, width: 20, height: 16, fit: BoxFit.fill),
-              onPressed: () => !_responsiveUtils.isDesktop(_context) ? _onOpenListMailboxActionClick?.call() : null))
+              onPressed: () => !_responsiveUtils.isTabletLarge(_context) ? _onOpenListMailboxActionClick?.call() : null))
       ]
     );
   }
@@ -208,9 +208,9 @@ class AppBarThreadWidgetBuilder {
     var widthSiblingsWidget = 220;
     if (_responsiveUtils.isTablet(_context)) {
       width = width * 0.7;
-      widthSiblingsWidget = 300;
+      widthSiblingsWidget = 250;
     } else if (_responsiveUtils.isTabletLarge(_context)) {
-      width = width * 0.35;
+      width = width * 0.6;
       widthSiblingsWidget = 250;
     } else if (_responsiveUtils.isDesktop(_context)) {
       width = width * 0.25;

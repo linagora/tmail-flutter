@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/setting/presentation/model/app_setting.dart';
 import 'package:tmail_ui_user/features/setting/presentation/model/reading_pane.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnBackActionClick = void Function();
 typedef OnEmailActionClick = void Function(PresentationEmail, EmailActionType);
@@ -50,7 +51,6 @@ class AppBarMailWidgetBuilder {
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             if (_conditionShow(_context))
@@ -74,9 +74,10 @@ class AppBarMailWidgetBuilder {
   }
 
   Widget _buildBackButton() {
-    return IconButton(
-      icon: SvgPicture.asset(_imagePaths.icBack, width: 20, height: 20, color: AppColor.colorTextButton, fit: BoxFit.fill),
-      onPressed: () => _onBackActionClick?.call()
+    return buildIconWeb(
+        icon: SvgPicture.asset(_imagePaths.icBack, width: 18, height: 18, color: AppColor.colorTextButton, fit: BoxFit.fill),
+        tooltip: AppLocalizations.of(_context).back,
+        onTap: () => _onBackActionClick?.call()
     );
   }
 
@@ -93,71 +94,42 @@ class AppBarMailWidgetBuilder {
 
   Widget _buildListOptionButton() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        IconButton(
-            key: Key('button_move_to_mailbox_email'),
-            icon: SvgPicture.asset(_imagePaths.icMoveEmail, color: AppColor.colorButton, fit: BoxFit.fill),
-            onPressed: () {
+        buildIconWeb(
+            icon: SvgPicture.asset(_imagePaths.icMoveEmail, fit: BoxFit.fill),
+            tooltip: AppLocalizations.of(_context).move_to_mailbox,
+            onTap: () {
               if (_presentationEmail != null) {
                 _onEmailActionClick?.call(_presentationEmail!, EmailActionType.move);
               }
             }),
-        IconButton(
-          key: Key('button_mark_as_star_email'),
-          icon: SvgPicture.asset(
-              (_presentationEmail != null && _presentationEmail!.isFlaggedEmail())
-                  ? _imagePaths.icStar
-                  : _imagePaths.icUnStar,
-              fit: BoxFit.fill),
-          onPressed: ()  {
+        buildIconWeb(
+          icon: SvgPicture.asset((_presentationEmail != null && _presentationEmail!.isFlaggedEmail()) ? _imagePaths.icStar : _imagePaths.icUnStar, fit: BoxFit.fill),
+          tooltip: (_presentationEmail != null && _presentationEmail!.isFlaggedEmail())
+            ? AppLocalizations.of(_context).mark_as_unstar
+            : AppLocalizations.of(_context).mark_as_star,
+          onTap: () {
             if (_presentationEmail != null) {
-              _onEmailActionClick?.call(_presentationEmail!,
-                  _presentationEmail!.isFlaggedEmail() ? EmailActionType.markAsUnStar : EmailActionType.markAsStar);
+              _onEmailActionClick?.call(_presentationEmail!, _presentationEmail!.isFlaggedEmail() ? EmailActionType.markAsUnStar : EmailActionType.markAsStar);
             }
           }),
-        IconButton(
-          key: Key('button_delete_email'),
-          icon: SvgPicture.asset(_imagePaths.icDeleteEmail, color: AppColor.colorButton, fit: BoxFit.fill),
-          onPressed: () {
-            if (_presentationEmail != null) {
-              _onEmailActionClick?.call(_presentationEmail!, EmailActionType.delete);
-            }
-          }),
-        _buildMoreButton(),
+        Padding(
+          padding: EdgeInsets.only(left: 10, right: 16),
+          child: buildIconWebHasPosition(
+              _context,
+              tooltip: AppLocalizations.of(_context).more,
+              icon: SvgPicture.asset(_imagePaths.icMore, fit: BoxFit.fill),
+              onTap: () {
+                if (_presentationEmail != null && _responsiveUtils.isMobile(_context)) {
+                  _onMoreActionClick?.call(_presentationEmail!, null);
+                }
+              },
+              onTapDown: (position) {
+                if (_presentationEmail != null && !_responsiveUtils.isMobile(_context)) {
+                  _onMoreActionClick?.call(_presentationEmail!, position);
+                }
+              })),
       ]
-    );
-  }
-
-  Widget _buildMoreButton() {
-    return Material(
-        key: Key('button_more_email'),
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.transparent,
-        child: Padding(
-            padding: EdgeInsets.only(left: 10, right: 16),
-            child: GestureDetector(
-                onTap: () {
-                  if (_presentationEmail != null && _responsiveUtils.isMobileDevice(_context)) {
-                    _onMoreActionClick?.call(_presentationEmail!, null);
-                  }
-                },
-                child: SvgPicture.asset(_imagePaths.icMore, color: AppColor.colorButton, fit: BoxFit.fill),
-                onTapDown: (detail) {
-                  if (_presentationEmail != null && !_responsiveUtils.isMobileDevice(_context)) {
-                    final screenSize = MediaQuery.of(_context).size;
-                    final offset = detail.globalPosition;
-                    final position = RelativeRect.fromLTRB(
-                      offset.dx,
-                      offset.dy,
-                      screenSize.width - offset.dx,
-                      screenSize.height - offset.dy,
-                    );
-                    _onMoreActionClick?.call(_presentationEmail!, position);
-                  }
-                })
-        )
     );
   }
 }

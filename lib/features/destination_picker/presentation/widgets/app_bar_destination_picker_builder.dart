@@ -36,7 +36,6 @@ class AppBarDestinationPickerBuilder {
         child: MediaQuery(
             data: MediaQueryData(padding: EdgeInsets.zero),
             child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   _buildBackButton(),
@@ -48,16 +47,27 @@ class AppBarDestinationPickerBuilder {
   }
 
   Widget _buildBackButton() {
-    return Material(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.transparent,
-        child: _responsiveUtils.isMobile(_context)
-          ? IconButton(
-              color: _mailboxAction == MailboxActions.create ? AppColor.colorTextButton : AppColor.baseTextColor,
-              icon: _getBackIcon(),
-              onPressed: () => _onCloseActionClick?.call())
-          : SizedBox(width: 40, height: 40)
-    );
+    if (_mailboxAction == MailboxActions.create) {
+      if (_responsiveUtils.isMobile(_context)) {
+        return Material(
+            color: Colors.transparent,
+            shape: CircleBorder(),
+            child: IconButton(
+                splashRadius: 20,
+                icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                onPressed: () => _onCloseActionClick?.call()));
+      } else {
+        return SizedBox(width: 40, height: 40);
+      }
+    } else {
+      return Material(
+          color: Colors.transparent,
+          shape: CircleBorder(),
+          child: IconButton(
+              splashRadius: 20,
+              icon: SvgPicture.asset(_imagePaths.icComposerClose, color: AppColor.baseTextColor, fit: BoxFit.fill),
+              onPressed: () => _onCloseActionClick?.call()));
+    }
   }
 
   Widget _buildTitle() {
@@ -78,14 +88,6 @@ class AppBarDestinationPickerBuilder {
       return TextAlign.center;
     } else {
       return _responsiveUtils.isMobile(_context) ? TextAlign.start : TextAlign.center;
-    }
-  }
-
-  Widget _getBackIcon() {
-    if (_mailboxAction == MailboxActions.create) {
-      return SvgPicture.asset(_imagePaths.icBack, fit: BoxFit.fill);
-    } else {
-      return SvgPicture.asset(_imagePaths.icComposerClose, fit: BoxFit.fill);
     }
   }
 }

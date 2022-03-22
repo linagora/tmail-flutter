@@ -15,7 +15,6 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
@@ -26,7 +25,6 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_sta
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
@@ -72,8 +70,6 @@ class ThreadController extends BaseController {
   final LoadMoreEmailsInMailboxInteractor _loadMoreEmailsInMailboxInteractor;
   final SearchEmailInteractor _searchEmailInteractor;
   final SearchMoreEmailInteractor _searchMoreEmailInteractor;
-  final DeleteCredentialInteractor _deleteCredentialInteractor;
-  final CachingManager _cachingManager;
 
   final emailList = <PresentationEmail>[].obs;
   final emailListSearch = <PresentationEmail>[].obs;
@@ -107,8 +103,6 @@ class ThreadController extends BaseController {
     this._loadMoreEmailsInMailboxInteractor,
     this._searchEmailInteractor,
     this._searchMoreEmailInteractor,
-    this._deleteCredentialInteractor,
-    this._cachingManager,
   );
 
   @override
@@ -750,30 +744,6 @@ class ThreadController extends BaseController {
     } else {
       push(AppRoutes.COMPOSER, arguments: arguments);
     }
-  }
-
-  void openUserSettingAction(BuildContext context, RelativeRect? position, List<PopupMenuEntry> popupMenuItems) async {
-    await showMenu(
-        context: context,
-        position: position ?? RelativeRect.fromLTRB(16, 40, 16, 16),
-        color: Colors.white,
-        elevation: 5,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        items: popupMenuItems);
-  }
-
-  void _deleteCredential() async {
-    await _deleteCredentialInteractor.execute();
-  }
-
-  void _clearAllCache() async {
-    await _cachingManager.clearAll();
-  }
-
-  void logoutAction() {
-    _deleteCredential();
-    _clearAllCache();
-    pushAndPopAll(AppRoutes.LOGIN);
   }
 
   void composeEmailAction() {

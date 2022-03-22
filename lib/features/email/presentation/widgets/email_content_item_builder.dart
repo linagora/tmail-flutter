@@ -54,10 +54,10 @@ class EmailContentItemBuilder {
         }
       case EmailContentType.textPlain:
         return Padding(
-          padding: EdgeInsets.zero,
+          padding: EdgeInsets.only(top: 20),
           child: Text(
             _emailContent.content,
-            style: TextStyle(fontSize: 14, color: AppColor.colorNameEmail)));
+            style: TextStyle(fontSize: 14, color: AppColor.colorNameEmail, fontWeight: FontWeight.normal)));
       case EmailContentType.other:
         return SizedBox.shrink();
     }
