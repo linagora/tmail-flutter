@@ -2,11 +2,9 @@ import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -44,7 +42,6 @@ class MailboxBindings extends BaseBindings {
   void bindingsController() {
     Get.put(MailboxController(
         Get.find<GetAllMailboxInteractor>(),
-        Get.find<DeleteCredentialInteractor>(),
         Get.find<RefreshAllMailboxInteractor>(),
         Get.find<CreateNewMailboxInteractor>(),
         Get.find<SearchMailboxInteractor>(),
@@ -56,7 +53,6 @@ class MailboxBindings extends BaseBindings {
         Get.find<AppToast>(),
         Get.find<ImagePaths>(),
         Get.find<ResponsiveUtils>(),
-        Get.find<CachingManager>(),
     ));
   }
 
@@ -75,7 +71,6 @@ class MailboxBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => DeleteCredentialInteractor(Get.find<CredentialRepository>()));
     Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => RefreshAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));

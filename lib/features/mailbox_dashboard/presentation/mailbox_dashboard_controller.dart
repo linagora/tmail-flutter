@@ -9,12 +9,14 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
@@ -35,6 +37,8 @@ class MailboxDashBoardController extends ReloadableController {
   final AppToast _appToast = Get.find<AppToast>();
   final ImagePaths _imagePaths = Get.find<ImagePaths>();
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
+  final DeleteCredentialInteractor _deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
+  final CachingManager _cachingManager = Get.find<CachingManager>();
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -179,6 +183,8 @@ class MailboxDashBoardController extends ReloadableController {
     scaffoldKey.currentState?.openEndDrawer();
   }
 
+  bool get isDrawerOpen => scaffoldKey.currentState?.isDrawerOpen == true;
+
   bool isSearchActive() {
     return searchState.value.searchStatus == SearchStatus.ACTIVE;
   }
@@ -271,6 +277,20 @@ class MailboxDashBoardController extends ReloadableController {
     } else {
       push(AppRoutes.COMPOSER, arguments: ComposerArguments());
     }
+  }
+
+  void _deleteCredential() async {
+    await _deleteCredentialInteractor.execute();
+  }
+
+  void _clearAllCache() async {
+    await _cachingManager.clearAll();
+  }
+
+  void logoutAction() {
+    _deleteCredential();
+    if (!kIsWeb) _clearAllCache();
+    pushAndPopAll(AppRoutes.LOGIN);
   }
 
   @override
