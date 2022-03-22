@@ -71,15 +71,14 @@ class MailBoxFolderTileBuilder {
               trailing: _mailboxNode.hasChildren()
                   ? Padding(
                       padding: EdgeInsets.only(right: 0, left: 16),
-                      child: IconButton(
-                          padding: EdgeInsets.zero,
-                          color: AppColor.primaryColor,
+                      child: buildIconWeb(
                           icon: SvgPicture.asset(
                               _mailboxNode.expandMode == ExpandMode.EXPAND ? _imagePaths.icExpandFolder : _imagePaths.icFolderArrow,
                               color: AppColor.colorArrowUserMailbox,
                               fit: BoxFit.fill),
-                          onPressed: () => _onExpandFolderActionClick?.call(_mailboxNode)
-                      ))
+                          splashRadius: 15,
+                          tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND ? AppLocalizations.of(_context).collapse : AppLocalizations.of(_context).expand,
+                          onTap: () => _onExpandFolderActionClick?.call(_mailboxNode)))
                   : null
             ),
             Padding(

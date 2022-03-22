@@ -17,10 +17,11 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mai
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_item_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_place_holder_loading_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:filesize/filesize.dart';
 
-class EmailView extends GetView {
+class EmailView extends GetView with UserSettingPopupMenuMixin {
 
   final emailController = Get.find<EmailController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
@@ -31,11 +32,11 @@ class EmailView extends GetView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
       body: Container(
         padding: EdgeInsets.zero,
         margin: EdgeInsets.zero,
-        decoration: !(responsiveUtils.isMobile(context) && responsiveUtils.isMobileDevice(context))
+        decoration: responsiveUtils.isTabletLarge(context)
           ? BoxDecoration(border: Border(left: BorderSide(color: AppColor.colorLineLeftEmailView, width: 1.0)))
           : null,
         child: SafeArea(
@@ -44,19 +45,62 @@ class EmailView extends GetView {
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildAppBar(context),
-                  Obx(() => emailController.currentEmail != null
-                      ? _buildDivider()
-                      : SizedBox.shrink()),
-                  Expanded(child: _buildEmailBody(context)),
-                  Obx(() => emailController.currentEmail != null
-                      ? Divider(color: AppColor.colorDividerEmailView, height: 1)
-                      : SizedBox.shrink()),
-                  _buildBottomBar(context),
+                  if (responsiveUtils.isDesktop(context))
+                    Container(
+                      color: Colors.white,
+                      padding: EdgeInsets.only(right: 10, top: 16, bottom: 10),
+                      child: _buildHeader(context)),
+                  Expanded(child: _buildBody(context)),
                 ]
             )
         ),
       )
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Row(children: [
+      Spacer(),
+      Padding(
+        padding: EdgeInsets.only(right: 16),
+        child: (AvatarBuilder()
+            ..text(emailController.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
+            ..backgroundColor(Colors.white)
+            ..textColor(Colors.black)
+            ..context(context)
+            ..addOnTapAvatarActionWithPositionClick((position) => openUserSettingAction(
+                context,
+                position,
+                popupMenuUserSettingActionTile(context, () => emailController.mailboxDashBoardController.logoutAction())))
+            ..addBoxShadows([BoxShadow(
+                color: AppColor.colorShadowBgContentEmail,
+                spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
+            ..size(48))
+          .build()),
+    ]);
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return Container(
+        decoration: responsiveUtils.isDesktop(context)
+          ? BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
+              color: Colors.white)
+          : null,
+        margin: responsiveUtils.isDesktop(context) ? EdgeInsets.all(16) : EdgeInsets.zero,
+        padding: responsiveUtils.isDesktop(context) ? EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 3) : EdgeInsets.zero,
+        child: Column(children: [
+          _buildAppBar(context),
+          if (responsiveUtils.isDesktop(context)) SizedBox(height: 5),
+          Obx(() => emailController.currentEmail != null && !responsiveUtils.isDesktop(context)
+              ? _buildDivider() : SizedBox.shrink()),
+          Expanded(child: _buildEmailBody(context)),
+          Obx(() => emailController.currentEmail != null
+              ? Divider(color: AppColor.colorDividerEmailView, height: 1)
+              : SizedBox.shrink()),
+          _buildBottomBar(context),
+        ])
     );
   }
 
@@ -129,12 +173,15 @@ class EmailView extends GetView {
       style: TextStyle(fontSize: 25, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold));
   }
 
-  Widget _buildEmailSubject() {
+  Widget _buildEmailSubject(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(right: 16),
       child: Text(
           '${emailController.mailboxDashBoardController.selectedEmail.value?.getEmailTitle()}',
-          style: TextStyle(fontSize: 20, color: AppColor.colorNameEmail)
+          style: TextStyle(
+              fontSize: 20,
+              color: AppColor.colorNameEmail,
+              fontWeight: responsiveUtils.isDesktop(context) ? FontWeight.w500 : FontWeight.normal)
       ));
   }
 
@@ -153,18 +200,19 @@ class EmailView extends GetView {
               Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Expanded(child: _buildEmailSubject()),
+                    Expanded(child: _buildEmailSubject(context)),
                     _buildEmailTime(context),
                   ]),
-              _buildDivider(edgeInsets: EdgeInsets.only(top: 16)),
+              if (responsiveUtils.isDesktop(context)) SizedBox(height: 20),
+              if (!responsiveUtils.isDesktop(context)) _buildDivider(edgeInsets: EdgeInsets.only(top: 16)),
               Obx(() => emailController.currentEmail != null
                   ? _buildEmailAddress(
-                  context,
-                  emailController.currentEmail!,
-                  emailController.emailAddressExpandMode.value,
-                  emailController.isDisplayFullEmailAddress.value)
+                      context,
+                      emailController.currentEmail!,
+                      emailController.emailAddressExpandMode.value,
+                      emailController.isDisplayFullEmailAddress.value)
                   : SizedBox.shrink()),
-              _buildDivider(edgeInsets: EdgeInsets.only(top: 4)),
+              _buildDivider(edgeInsets: EdgeInsets.only(top: 8)),
               _buildAttachments(context),
               _buildListEmailContent(context, constraints),
             ],
@@ -193,15 +241,15 @@ class EmailView extends GetView {
         if (email.from.numberEmailAddress() > 0)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.from, isDisplayFull),
         if (email.to.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND)
-          _buildDivider(edgeInsets: EdgeInsets.only(top: 4)),
+          _buildDivider(edgeInsets: EdgeInsets.only(top: 8, bottom: 4)),
         if (email.to.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.to, isDisplayFull),
         if (email.cc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
-          _buildDivider(edgeInsets: EdgeInsets.only(top: 4)),
+          _buildDivider(edgeInsets: EdgeInsets.only(top: 8, bottom: 4)),
         if (email.cc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.cc, isDisplayFull),
         if (email.bcc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
-          _buildDivider(edgeInsets: EdgeInsets.only(top: 4)),
+          _buildDivider(edgeInsets: EdgeInsets.only(top: 8, bottom: 4)),
         if (email.bcc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.bcc, isDisplayFull),
       ],

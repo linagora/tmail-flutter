@@ -33,7 +33,7 @@ class ResponsiveUtils {
 
   bool isMobile(BuildContext context) => getDeviceWidth(context) < minTabletWidth;
 
-  bool isTablet(BuildContext context) => getDeviceWidth(context) >= minTabletWidth && getDeviceWidth(context) < minDesktopWidth;
+  bool isTablet(BuildContext context) => getDeviceWidth(context) >= minTabletWidth && getDeviceWidth(context) < minTabletLargeWidth;
 
   bool isDesktop(BuildContext context) => getDeviceWidth(context) >= minDesktopWidth;
 

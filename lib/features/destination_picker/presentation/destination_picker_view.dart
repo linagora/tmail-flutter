@@ -200,25 +200,16 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
             color: Colors.white),
-          margin: EdgeInsets.only(left: 16, right: 16, top: _getTopPaddingListMailbox(context, actions)),
+          margin: EdgeInsets.only(left: 16, right: 16, top: 10),
           child: _buildDefaultMailbox(context)),
-        SizedBox(height: 20),
         Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
                 color: Colors.white),
-            margin: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 30),
+            margin: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 20),
             child: _buildFolderMailbox(context)),
       ]
     );
-  }
-
-  double _getTopPaddingListMailbox(BuildContext context, MailboxActions? actions) {
-    if (actions == MailboxActions.create) {
-      return (_responsiveUtils.isMobile(context) || _responsiveUtils.isMobileDevice(context)) ? 20.0 : 5.0;
-    } else {
-      return (_responsiveUtils.isMobile(context) || _responsiveUtils.isMobileDevice(context)) ? 16.0 : 10.0;
-    }
   }
 
   Widget _buildDefaultMailbox(BuildContext context) {

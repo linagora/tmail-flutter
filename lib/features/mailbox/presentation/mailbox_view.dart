@@ -198,7 +198,7 @@ class MailboxView extends GetWidget<MailboxController> {
           _imagePaths,
           context,
           controller.mailboxDashBoardController.userProfile.value)
-        ..addOnLogoutAction(() => controller.logoutAction()))
+        ..addOnLogoutAction(() => controller.mailboxDashBoardController.logoutAction()))
       .build()));
   }
 
