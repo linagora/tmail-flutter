@@ -263,7 +263,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cancel": "Annulla",
+  "cancel": "Cancella",
   "@cancel": {
     "type": "text",
     "placeholders_order": [],
