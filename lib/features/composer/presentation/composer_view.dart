@@ -207,19 +207,19 @@ class ComposerView extends GetWidget<ComposerController> {
       children: [
         Obx(() => Padding(
             padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-            child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
+            child: (EmailAddressInputBuilder(context, imagePaths,
                     PrefixEmailAddress.to,
                     controller.listToEmailAddress,
                     controller.listEmailAddressType,
                     expandMode: controller.toAddressExpandMode.value,
                     controller: controller.toEmailAddressController,
-                    focusNode: controller.toEmailAddressFocusNode,
                     isInitial: controller.isInitialRecipient.value)
                 ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                 ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                 ..addOnAddEmailAddressTypeAction((prefixEmailAddress) => controller.addEmailAddressType(prefixEmailAddress))
                 ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(isAll: true))
+                ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word: word)))
               .build()
         )),
         Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
@@ -228,7 +228,7 @@ class ComposerView extends GetWidget<ComposerController> {
         Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
             ? Padding(
                 padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
+                child: (EmailAddressInputBuilder(context, imagePaths,
                         PrefixEmailAddress.cc,
                         controller.listCcEmailAddress,
                         controller.listEmailAddressType,
@@ -239,7 +239,8 @@ class ComposerView extends GetWidget<ComposerController> {
                     ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                     ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
                     ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                    ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                    ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(isAll: true))
+                    ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word: word)))
                   .build())
             : SizedBox.shrink()
         ),
@@ -249,7 +250,7 @@ class ComposerView extends GetWidget<ComposerController> {
         Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
             ? Padding(
                 padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
+                child: (EmailAddressInputBuilder(context, imagePaths,
                         PrefixEmailAddress.bcc,
                         controller.listBccEmailAddress,
                         controller.listEmailAddressType,
@@ -260,7 +261,8 @@ class ComposerView extends GetWidget<ComposerController> {
                     ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                     ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
                     ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                    ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                    ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(isAll: true))
+                    ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word: word)))
                   .build())
             : SizedBox.shrink()
         ),

@@ -241,15 +241,15 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
         if (email.from.numberEmailAddress() > 0)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.from, isDisplayFull),
         if (email.to.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND)
-          _buildDivider(edgeInsets: EdgeInsets.only(top: 8, bottom: 4)),
+          _buildDivider(edgeInsets: EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
         if (email.to.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.to, isDisplayFull),
         if (email.cc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
-          _buildDivider(edgeInsets: EdgeInsets.only(top: 8, bottom: 4)),
+          _buildDivider(edgeInsets: EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
         if (email.cc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.cc, isDisplayFull),
         if (email.bcc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
-          _buildDivider(edgeInsets: EdgeInsets.only(top: 8, bottom: 4)),
+          _buildDivider(edgeInsets: EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
         if (email.bcc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.bcc, isDisplayFull),
       ],

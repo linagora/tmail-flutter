@@ -902,13 +902,6 @@ class AppLocalizations {
         name: 'hint_compose_email');
   }
 
-  String get email_address_suggestion {
-    return Intl.message(
-      'Email address suggestion',
-      name: 'email_address_suggestion',
-    );
-  }
-
   String get attach_file {
     return Intl.message(
         'Attach file',
