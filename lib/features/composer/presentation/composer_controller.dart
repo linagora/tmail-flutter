@@ -9,6 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as HtmlEditorBrowser;
 import 'package:http_parser/http_parser.dart';
@@ -52,7 +53,10 @@ import 'package:uuid/uuid.dart';
 class ComposerController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-  
+  final _appToast = Get.find<AppToast>();
+  final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
   final expandMode = ExpandMode.COLLAPSE.obs;
   final expandModeMobile = ExpandMode.EXPAND.obs;
   final expandModeAttachments = ExpandMode.EXPAND.obs;
@@ -61,16 +65,17 @@ class ComposerController extends BaseController {
   final isInitialRecipient = false.obs;
   final attachments = <Attachment>[].obs;
   final emailContents = Rxn<List<EmailContent>>();
+  final listEmailAddressType = <PrefixEmailAddress>[].obs;
   final subjectEmail = Rxn<String>();
   final screenDisplayMode = ScreenDisplayMode.normal.obs;
+  final toAddressExpandMode = ExpandMode.EXPAND.obs;
+  final ccAddressExpandMode = ExpandMode.EXPAND.obs;
+  final bccAddressExpandMode = ExpandMode.EXPAND.obs;
 
   final SendEmailInteractor _sendEmailInteractor;
   final SaveEmailAddressesInteractor _saveEmailAddressInteractor;
   final GetAutoCompleteInteractor _getAutoCompleteInteractor;
   final GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
-  final AppToast _appToast;
-  final ImagePaths _imagePaths;
-  final ResponsiveUtils responsiveUtils;
   final Uuid _uuid;
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final UploadMultipleAttachmentInteractor _uploadMultipleAttachmentInteractor;
@@ -90,6 +95,7 @@ class ComposerController extends BaseController {
   final toEmailAddressController = TextEditingController();
   final ccEmailAddressController = TextEditingController();
   final bccEmailAddressController = TextEditingController();
+  final toEmailAddressFocusNode = FocusNode();
 
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
@@ -117,9 +123,6 @@ class ComposerController extends BaseController {
     this._saveEmailAddressInteractor,
     this._getAutoCompleteInteractor,
     this._getAutoCompleteWithDeviceContactInteractor,
-    this._appToast,
-    this._imagePaths,
-    this.responsiveUtils,
     this._uuid,
     this._deviceInfoPlugin,
     this._localFilePickerInteractor,
@@ -151,6 +154,7 @@ class ComposerController extends BaseController {
     toEmailAddressController.dispose();
     ccEmailAddressController.dispose();
     bccEmailAddressController.dispose();
+    toEmailAddressFocusNode.dispose();
     super.onClose();
   }
 
@@ -241,11 +245,6 @@ class ComposerController extends BaseController {
     return null;
   }
 
-  void expandEmailAddressAction() {
-    final newExpandMode = expandMode.value == ExpandMode.COLLAPSE ? ExpandMode.EXPAND : ExpandMode.COLLAPSE;
-    expandMode.value = newExpandMode;
-  }
-
   void _initToEmailAddress(ComposerArguments arguments) {
     final userProfile =  mailboxDashBoardController.userProfile.value;
     if (arguments.presentationEmail != null && userProfile != null) {
@@ -265,6 +264,14 @@ class ComposerController extends BaseController {
 
       if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty) {
         isInitialRecipient.value = true;
+      }
+
+      if (listCcEmailAddress.isNotEmpty) {
+        listEmailAddressType.add(PrefixEmailAddress.cc);
+      }
+
+      if (listBccEmailAddress.isNotEmpty) {
+        listEmailAddressType.add(PrefixEmailAddress.bcc);
       }
     } else if (arguments.emailAddress != null) {
       listToEmailAddress.add(arguments.emailAddress!);
@@ -377,15 +384,45 @@ class ComposerController extends BaseController {
   void sendEmailAction(BuildContext context) async {
     clearFocusEditor(context);
 
-    if (isEnableEmailSendButton.value) {
-      if (subjectEmail.value?.isNotEmpty == true) {
-        _handleSendMessages(context);
-      } else {
-        _showConfirmDialogSendEmail(context);
-      }
-    } else {
-      _appToast.showErrorToast(AppLocalizations.of(context).your_email_should_have_at_least_one_recipient);
+    if (!isEnableEmailSendButton.value) {
+      _showConfirmDialogSendEmailFailed(
+          context,
+          AppLocalizations.of(context).message_dialog_send_email_without_recipient,
+          AppLocalizations.of(context).add_recipients,
+          () => toEmailAddressFocusNode.requestFocus(),
+          hasCancelButton: false);
+      return;
     }
+
+    final allListEmailAddress = listToEmailAddress + listCcEmailAddress + listBccEmailAddress;
+    final listEmailAddressInvalid = allListEmailAddress
+        .where((emailAddress) => !GetUtils.isEmail(emailAddress.emailAddress))
+        .toList();
+
+    if (listEmailAddressInvalid.isNotEmpty) {
+      _showConfirmDialogSendEmailFailed(
+          context,
+          AppLocalizations.of(context).message_dialog_send_email_with_email_address_invalid,
+          AppLocalizations.of(context).fix_email_addresses,
+          () {
+            toAddressExpandMode.value = ExpandMode.EXPAND;
+            ccAddressExpandMode.value = ExpandMode.EXPAND;
+            bccAddressExpandMode.value = ExpandMode.EXPAND;
+          },
+          hasCancelButton: false);
+      return;
+    }
+
+    if (subjectEmail.value == null || subjectEmail.isEmpty == true) {
+      _showConfirmDialogSendEmailFailed(
+          context,
+          AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
+          AppLocalizations.of(context).send_anyway,
+          () => _handleSendMessages(context));
+      return;
+    }
+
+    _handleSendMessages(context);
   }
 
   void _handleSendMessages(BuildContext context) async {
@@ -646,23 +683,20 @@ class ComposerController extends BaseController {
     if (!kIsWeb) {
       htmlEditorApi?.unfocus(context);
       htmlControllerBrowser.clearFocus();
+    } else {
+      FocusManager.instance.primaryFocus?.unfocus();
     }
   }
 
   void closeComposerWeb() {
+    FocusManager.instance.primaryFocus?.unfocus();
     mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.none);
   }
 
-  void minimizeComposer() {
+  void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) {
+    FocusManager.instance.primaryFocus?.unfocus();
     _updateTextForEditor();
-    final newDisplayMode = screenDisplayMode.value == ScreenDisplayMode.minimize ? ScreenDisplayMode.normal : ScreenDisplayMode.minimize;
-    screenDisplayMode.value = newDisplayMode;
-  }
-
-  void setFullScreenComposer() {
-    _updateTextForEditor();
-    final newDisplayMode = screenDisplayMode.value == ScreenDisplayMode.fullScreen ? ScreenDisplayMode.normal : ScreenDisplayMode.fullScreen;
-    screenDisplayMode.value = newDisplayMode;
+    screenDisplayMode.value = displayMode;
   }
 
   void _updateTextForEditor() async {
@@ -671,6 +705,7 @@ class ComposerController extends BaseController {
   }
 
   void deleteComposer() {
+    FocusManager.instance.primaryFocus?.unfocus();
     mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.none);
   }
 
@@ -679,15 +714,16 @@ class ComposerController extends BaseController {
     expandModeAttachments.value = newExpandMode;
   }
 
-  void _showConfirmDialogSendEmail(BuildContext context) {
-    if (responsiveUtils.isMobileDevice(context)) {
+  void _showConfirmDialogSendEmailFailed(BuildContext context, String message,
+      String actionName, Function? onConfirmAction, {bool hasCancelButton = true}) {
+    if (_responsiveUtils.isMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(AppLocalizations.of(context).message_confirm_send_email)
+        ..messageText(message)
         ..styleConfirmButton(TextStyle(fontSize: 20, fontWeight: FontWeight.normal, color: Colors.black))
         ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
-        ..onConfirmAction(AppLocalizations.of(context).send, () {
+        ..onConfirmAction(actionName, () {
           popBack();
-          _handleSendMessages(context);
+          onConfirmAction?.call();
         })).show();
     } else {
       showDialog(
@@ -695,23 +731,98 @@ class ComposerController extends BaseController {
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
               ..key(Key('confirm_dialog_send_message'))
-              ..content(AppLocalizations.of(context).message_confirm_send_email)
+              ..title(AppLocalizations.of(context).sending_failed)
+              ..content(message)
+              ..addIcon(SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill))
               ..colorConfirmButton(AppColor.colorTextButton)
               ..colorCancelButton(AppColor.colorCancelButton)
-              ..styleContent(TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: AppColor.colorMessageDialog))
+              ..paddingTitle(EdgeInsets.only(top: 34))
+              ..marginIcon(EdgeInsets.zero)
+              ..paddingContent(EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 8))
+              ..paddingButton(hasCancelButton ? null : EdgeInsets.only(bottom: 16, left: 44, right: 44))
+              ..styleTitle(TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
+              ..styleContent(TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
               ..styleTextCancelButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
               ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
-              ..onConfirmButtonAction(AppLocalizations.of(context).send, () {
+              ..onConfirmButtonAction(actionName, () {
                 popBack();
-                _handleSendMessages(context);
+                onConfirmAction?.call();
               })
-              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
+              ..onCancelButtonAction(hasCancelButton ? AppLocalizations.of(context).cancel : '', () => popBack())
+              ..onCloseButtonAction(() => popBack()))
             .build()));
     }
   }
 
   void collapseComposer(ExpandMode expandMode) {
     expandModeMobile.value = expandMode;
+  }
+
+  void addEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
+    listEmailAddressType.add(prefixEmailAddress);
+  }
+
+  void deleteEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
+    listEmailAddressType.remove(prefixEmailAddress);
+    updateListEmailAddress(prefixEmailAddress, List.empty());
+  }
+
+  void onSubjectEmailFocusChange(bool isFocus) {
+    log('ComposerController::onSubjectEmailFocusChange(): Focus: $isFocus');
+    if (isFocus) {
+      toAddressExpandMode.value = ExpandMode.COLLAPSE;
+      ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+      bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+    }
+  }
+
+  void onEditorFocusChange(bool isFocus) {
+    log('ComposerController::onEditorFocusChange(): Focus: $isFocus');
+    if (isFocus) {
+      toAddressExpandMode.value = ExpandMode.COLLAPSE;
+      ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+      bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+    }
+  }
+
+  void showFullEmailAddress(PrefixEmailAddress prefixEmailAddress) {
+    switch(prefixEmailAddress) {
+      case PrefixEmailAddress.to:
+        toAddressExpandMode.value = ExpandMode.EXPAND;
+        break;
+      case PrefixEmailAddress.cc:
+        ccAddressExpandMode.value = ExpandMode.EXPAND;
+        break;
+      case PrefixEmailAddress.bcc:
+        bccAddressExpandMode.value = ExpandMode.EXPAND;
+        break;
+      default:
+        break;
+    }
+  }
+
+  void onEmailAddressFocusChange(PrefixEmailAddress prefixEmailAddress, bool isFocus) {
+    if (isFocus) {
+      switch(prefixEmailAddress) {
+        case PrefixEmailAddress.to:
+          toAddressExpandMode.value = ExpandMode.EXPAND;
+          ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+          bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+          break;
+        case PrefixEmailAddress.cc:
+          ccAddressExpandMode.value = ExpandMode.EXPAND;
+          toAddressExpandMode.value = ExpandMode.COLLAPSE;
+          bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+          break;
+        case PrefixEmailAddress.bcc:
+          bccAddressExpandMode.value = ExpandMode.EXPAND;
+          toAddressExpandMode.value = ExpandMode.COLLAPSE;
+          ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   void closeComposer(BuildContext context) {
