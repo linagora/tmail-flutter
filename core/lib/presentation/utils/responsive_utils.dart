@@ -1,3 +1,5 @@
+import 'package:core/utils/app_logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
@@ -25,10 +27,9 @@ class ResponsiveUtils {
   double getSizeScreenShortestSide(BuildContext context) => context.mediaQueryShortestSide;
 
   double getDeviceWidth(BuildContext context) {
-    if (GetPlatform.isDesktop) {
-      return context.width;
-    }
-    return context.mediaQueryShortestSide;
+    final widthScreen = kIsWeb ? context.width : context.mediaQueryShortestSide;
+    log('ResponsiveUtils::getDeviceWidth(): widthScreen: $widthScreen');
+    return widthScreen;
   }
 
   bool isMobile(BuildContext context) => getDeviceWidth(context) < minTabletWidth;
