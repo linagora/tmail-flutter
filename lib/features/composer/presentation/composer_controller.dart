@@ -93,7 +93,6 @@ class ComposerController extends BaseController {
   final toEmailAddressController = TextEditingController();
   final ccEmailAddressController = TextEditingController();
   final bccEmailAddressController = TextEditingController();
-  final toEmailAddressFocusNode = FocusNode();
 
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
@@ -386,7 +385,7 @@ class ComposerController extends BaseController {
           context,
           AppLocalizations.of(context).message_dialog_send_email_without_recipient,
           AppLocalizations.of(context).add_recipients,
-          () => toEmailAddressFocusNode.requestFocus(),
+          () => {},
           hasCancelButton: false);
       return;
     }
@@ -468,14 +467,14 @@ class ComposerController extends BaseController {
     }
   }
 
-  Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
+  Future<List<EmailAddress>> getAutoCompleteSuggestion({String? word, bool? isAll}) async {
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      return await _getAutoCompleteWithDeviceContactInteractor.execute(AutoCompletePattern(word: word))
+      return await _getAutoCompleteWithDeviceContactInteractor.execute(AutoCompletePattern(word: word, isAll: isAll))
         .then((value) => value.fold(
           (failure) => <EmailAddress>[],
           (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
     }
-    return await _getAutoCompleteInteractor.execute(AutoCompletePattern(word: word))
+    return await _getAutoCompleteInteractor.execute(AutoCompletePattern(word: word, isAll: isAll))
       .then((value) => value.fold(
         (failure) => <EmailAddress>[],
         (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
@@ -695,7 +694,7 @@ class ComposerController extends BaseController {
 
   void _updateTextForEditor() async {
     final textCurrent = await htmlControllerBrowser.getText();
-    htmlControllerBrowser.insertText(textCurrent);
+    htmlControllerBrowser.setText(textCurrent);
   }
 
   void deleteComposer() {

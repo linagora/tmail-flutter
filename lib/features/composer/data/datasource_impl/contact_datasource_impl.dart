@@ -9,9 +9,16 @@ class ContactDataSourceImpl extends ContactDataSource {
 
   @override
   Future<List<Contact>> getContactSuggestions(AutoCompletePattern autoCompletePattern) async {
-    final suggestedList = await contact_service.ContactsService
-        .getContactsByEmailOrName(autoCompletePattern.word ?? '');
-    return suggestedList.expand((contact) => _toDeviceContact(contact)).toList();
+    if (autoCompletePattern.isAll == true) {
+      return <DeviceContact>[];
+    } else {
+      final suggestedList = await contact_service.ContactsService
+          .getContactsByEmailOrName(autoCompletePattern.word ?? '');
+      if (suggestedList.isNotEmpty) {
+        return suggestedList.expand((contact) => _toDeviceContact(contact)).toList();
+      }
+      return <DeviceContact>[];
+    }
   }
 
   List<DeviceContact> _toDeviceContact(contact_service.Contact contact) {

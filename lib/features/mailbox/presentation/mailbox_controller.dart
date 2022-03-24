@@ -268,6 +268,8 @@ class MailboxController extends BaseMailboxController {
 
     if (!responsiveUtils.isDesktop(context) && !responsiveUtils.isTabletLarge(context)) {
       mailboxDashBoardController.closeDrawer();
+    } else {
+      mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
     }
   }
 
