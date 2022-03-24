@@ -310,7 +310,7 @@ class ComposerView extends GetWidget<ComposerController> {
             children: [
               Obx(() => Padding(
                   padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                  child: (EmailAddressInputBuilder(context, imagePaths,
+                  child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
                           PrefixEmailAddress.to,
                           controller.listToEmailAddress,
                           controller.listEmailAddressType,
@@ -331,7 +331,7 @@ class ComposerView extends GetWidget<ComposerController> {
               Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
                   ? Padding(
                   padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                  child: (EmailAddressInputBuilder(context, imagePaths,
+                  child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
                             PrefixEmailAddress.cc,
                             controller.listCcEmailAddress,
                             controller.listEmailAddressType,
@@ -352,7 +352,7 @@ class ComposerView extends GetWidget<ComposerController> {
               Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
                   ? Padding(
                       padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                      child: (EmailAddressInputBuilder(context, imagePaths,
+                      child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
                             PrefixEmailAddress.bcc,
                             controller.listBccEmailAddress,
                             controller.listEmailAddressType,

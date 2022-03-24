@@ -23,6 +23,7 @@ class EmailAddressInputBuilder {
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
+  final ResponsiveUtils _responsiveUtils;
   final ExpandMode expandMode;
   final PrefixEmailAddress _prefixEmailAddress;
   final List<PrefixEmailAddress> _listEmailAddressType;
@@ -30,7 +31,7 @@ class EmailAddressInputBuilder {
   final FocusNode? focusNode;
   final bool? isInitial;
 
-  List<EmailAddress> _listEmailAddress;
+  List<EmailAddress> _listEmailAddress = <EmailAddress>[];
 
   OnUpdateListEmailAddressAction? _onUpdateListEmailAddressAction;
   OnSuggestionEmailAddress? _onSuggestionEmailAddress;
@@ -66,6 +67,7 @@ class EmailAddressInputBuilder {
   EmailAddressInputBuilder(
     this._context,
     this._imagePaths,
+    this._responsiveUtils,
     this._prefixEmailAddress,
     this._listEmailAddress,
     this._listEmailAddressType,
@@ -94,7 +96,7 @@ class EmailAddressInputBuilder {
             if (!_listEmailAddressType.contains(PrefixEmailAddress.cc))
               Transform(
                 transform: Matrix4.translationValues(
-                    _listEmailAddressType.contains(PrefixEmailAddress.bcc) ? 0.0 : 16.0,
+                    _listEmailAddressType.contains(PrefixEmailAddress.bcc) ? 0.0 : _responsiveUtils.isMobile(_context) ? 24 : 16.0,
                     0.0, 0.0),
                 child: buildTextCircleButton(AppLocalizations.of(_context).cc_email_address_prefix,
                   textStyle: TextStyle(
@@ -217,32 +219,35 @@ class EmailAddressInputBuilder {
   }
 
   Widget _buildSuggestionItem(StateSetter setState, BuildContext context, TagsEditorState<EmailAddress> tagEditorState, EmailAddress emailAddress) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white),
-          color: Colors.white),
-      child: ListTile(
-        key: ObjectKey(emailAddress),
-        leading: CircleAvatar(
-            backgroundColor: AppColor.avatarColor,
-            child: Text(
-                emailAddress.asString().isNotEmpty ? emailAddress.asString()[0].toUpperCase() : '',
-                style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600))),
-        title: Text(
-            emailAddress.asString(),
-            style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal)),
-        subtitle: emailAddress.displayName.isNotEmpty && emailAddress.emailAddress.isNotEmpty
-            ? Text(
-                emailAddress.emailAddress,
-                style: TextStyle(color: AppColor.colorHintSearchBar, fontSize: 13, fontWeight: FontWeight.normal))
-            : null,
-        onTap: () {
-          setState(() => _listEmailAddress.add(emailAddress));
-          tagEditorState.selectSuggestion(emailAddress);
-          _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, _listEmailAddress);
-        },
-      ),
+    return ListTile(
+      leading: Container(
+        width: 40,
+        height: 40,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColor.avatarColor,
+          border: Border.all(color: AppColor.colorShadowBgContentEmail, width: 1.0)),
+        child: Text(
+            emailAddress.asString().isNotEmpty ? emailAddress.asString()[0].toUpperCase() : '',
+            style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600))),
+      title: Text(
+          emailAddress.asString(),
+          maxLines: 1,
+          overflow: kIsWeb ? null : TextOverflow.ellipsis,
+          style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal)),
+      subtitle: emailAddress.displayName.isNotEmpty && emailAddress.emailAddress.isNotEmpty
+          ? Text(
+              emailAddress.emailAddress,
+              maxLines: 1,
+              overflow: kIsWeb ? null : TextOverflow.ellipsis,
+              style: TextStyle(color: AppColor.colorHintSearchBar, fontSize: 13, fontWeight: FontWeight.normal))
+          : null,
+      onTap: () {
+        setState(() => _listEmailAddress.add(emailAddress));
+        _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, _listEmailAddress);
+        tagEditorState.selectSuggestion(emailAddress);
+      },
     );
   }
 
