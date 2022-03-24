@@ -67,9 +67,26 @@ Widget buildTextCircleButton(String text, {
           style: ButtonStyle(
               overlayColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.colorFocusButton),
               shape: MaterialStateProperty.all(CircleBorder()),
-              padding: MaterialStateProperty.resolveWith<EdgeInsets>((Set<MaterialState> states) => EdgeInsets.all(5)),
+              padding: MaterialStateProperty.resolveWith<EdgeInsets>((Set<MaterialState> states) => EdgeInsets.zero),
               elevation: MaterialStateProperty.resolveWith<double>((Set<MaterialState> states) => 0)),
           onPressed: () => onTap?.call()
+      )
+  );
+}
+
+Widget buildTextIcon(String text, {
+  TextStyle? textStyle,
+  EdgeInsets? padding,
+  IconWebCallback? onTap,
+}) {
+  return Material(
+      shape: CircleBorder(),
+      color: Colors.transparent,
+      child: InkWell(
+          child: Padding(
+              padding: padding ?? EdgeInsets.all(10),
+              child: Text(text, style: textStyle ?? TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.lineItemListColor))),
+          onTap: () => onTap?.call()
       )
   );
 }

@@ -56,8 +56,8 @@ class ComposerView extends GetWidget<ComposerController> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24))),
                 child: Container(
                     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(24))),
-                    width: responsiveUtils.getSizeScreenWidth(context) * 0.55,
-                    height: responsiveUtils.getSizeScreenHeight(context) * 0.7,
+                    width: responsiveUtils.getSizeScreenWidth(context) * 0.5,
+                    height: responsiveUtils.getSizeScreenHeight(context) * 0.75,
                     child: ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(24)),
                         child: LayoutBuilder(builder: (context, constraints) =>
@@ -310,19 +310,19 @@ class ComposerView extends GetWidget<ComposerController> {
             children: [
               Obx(() => Padding(
                   padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                  child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
+                  child: (EmailAddressInputBuilder(context, imagePaths,
                           PrefixEmailAddress.to,
                           controller.listToEmailAddress,
                           controller.listEmailAddressType,
                           expandMode: controller.toAddressExpandMode.value,
                           controller: controller.toEmailAddressController,
-                          focusNode: controller.toEmailAddressFocusNode,
                           isInitial: controller.isInitialRecipient.value)
                       ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                       ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                       ..addOnAddEmailAddressTypeAction((prefixEmailAddress) => controller.addEmailAddressType(prefixEmailAddress))
                       ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                      ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                      ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(isAll: true))
+                      ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word: word)))
                     .build()
               )),
               Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
@@ -331,7 +331,7 @@ class ComposerView extends GetWidget<ComposerController> {
               Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
                   ? Padding(
                   padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                  child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
+                  child: (EmailAddressInputBuilder(context, imagePaths,
                             PrefixEmailAddress.cc,
                             controller.listCcEmailAddress,
                             controller.listEmailAddressType,
@@ -342,7 +342,8 @@ class ComposerView extends GetWidget<ComposerController> {
                         ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                         ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
                         ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                        ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                        ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(isAll: true))
+                        ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word: word)))
                       .build())
                   : SizedBox.shrink()
               ),
@@ -352,7 +353,7 @@ class ComposerView extends GetWidget<ComposerController> {
               Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
                   ? Padding(
                       padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                      child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
+                      child: (EmailAddressInputBuilder(context, imagePaths,
                             PrefixEmailAddress.bcc,
                             controller.listBccEmailAddress,
                             controller.listEmailAddressType,
@@ -363,7 +364,8 @@ class ComposerView extends GetWidget<ComposerController> {
                         ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                         ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
                         ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                        ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                        ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(isAll: true))
+                        ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word: word)))
                       .build())
                   : SizedBox.shrink()
               ),
@@ -477,7 +479,7 @@ class ComposerView extends GetWidget<ComposerController> {
       otherOptions: HtmlEditorBrowser.OtherOptions(height: 550),
       callbacks: HtmlEditorBrowser.Callbacks(
           onBeforeCommand: (String? currentHtml) {
-            log('ComposerView::_buildComposerEditor(): onBeforeCommand');
+            log('ComposerView::_buildComposerEditor(): onBeforeCommand : $currentHtml');
             controller.setTextEditorWeb(currentHtml);
           }, onChangeContent: (String? changed) {
             log('ComposerView::_buildComposerEditor(): onChangeContent : $changed');
@@ -582,11 +584,7 @@ class ComposerView extends GetWidget<ComposerController> {
 
   double _getMaxHeightEmailAddressWidget(BuildContext context, BoxConstraints constraints) {
     if (responsiveUtils.isDesktop(context)) {
-      if (controller.screenDisplayMode == ScreenDisplayMode.normal) {
-        return constraints.maxHeight > 0 ? constraints.maxHeight * 0.25 : 150.0;
-      } else {
-        return constraints.maxHeight > 0 ? constraints.maxHeight * 0.3 : 150.0;
-      }
+      return constraints.maxHeight > 0 ? constraints.maxHeight * 0.3 : 150.0;
     } else {
       return constraints.maxHeight > 0 ? constraints.maxHeight * 0.4 : 150.0;
     }

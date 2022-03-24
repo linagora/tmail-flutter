@@ -13,7 +13,7 @@ class LocalAutoCompleteDataSourceImpl extends AutoCompleteDataSource {
   @override
   Future<List<EmailAddress>> getAutoComplete(AutoCompletePattern autoCompletePattern) {
     return Future.sync(() async {
-      if (autoCompletePattern.word == null || autoCompletePattern.word!.isEmpty) {
+      if (autoCompletePattern.isAll == true) {
         return await emailAddressDatabaseManager.getListData(
             word: autoCompletePattern.word,
             limit: autoCompletePattern.limit,

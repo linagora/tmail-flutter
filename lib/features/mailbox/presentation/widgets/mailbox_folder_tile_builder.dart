@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -138,7 +139,7 @@ class MailBoxFolderTileBuilder {
             left: allSelectMode == SelectMode.ACTIVE ? 0 : 8,
             right: allSelectMode == SelectMode.ACTIVE ? 8 : 0),
         child: SvgPicture.asset(
-            _imagePaths.icFolderMailbox,
+            '${_mailboxNode.item.getMailboxIcon(_imagePaths)}',
             width: 28,
             height: 28,
             fit: BoxFit.fill
