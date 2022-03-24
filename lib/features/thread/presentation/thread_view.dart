@@ -126,7 +126,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
           ..radiusSplash(10)
           ..padding(EdgeInsets.symmetric(horizontal: 12, vertical: 8))
           ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
-          ..onPressActionClick(() => controller.enableSelectionEmail())
+          ..onPressActionClick(() => controller.setSelectAllEmailAction())
           ..text(AppLocalizations.of(context).select_all, isVertical: false))
         .build(),
       SizedBox(width: 16),
@@ -346,7 +346,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
 
   Widget _buildFloatingButtonCompose(BuildContext context) {
     return Obx(() {
-      if (!controller.isSearchActive() && !controller.isSelectionEnabled() && !_responsiveUtils.isDesktop(context)) {
+      if (!controller.isSearchActive() && !_responsiveUtils.isDesktop(context)) {
         return Container(
           padding: EdgeInsets.only(bottom: controller.isSelectionEnabled() ? 80 : _responsiveUtils.isMobileDevice(context) ? 0 : 16),
           child: Align(

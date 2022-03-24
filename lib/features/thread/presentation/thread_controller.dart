@@ -396,6 +396,15 @@ class ThreadController extends BaseController {
     currentSelectMode.value = SelectMode.ACTIVE;
   }
 
+  void setSelectAllEmailAction() {
+    if (isSearchActive()) {
+      emailListSearch.value = emailListSearch.map((email) => email.toSelectedEmail(selectMode: SelectMode.ACTIVE)).toList();
+    } else {
+      emailList.value = emailList.map((email) => email.toSelectedEmail(selectMode: SelectMode.ACTIVE)).toList();
+    }
+    currentSelectMode.value = SelectMode.ACTIVE;
+  }
+
   List<PresentationEmail> get listEmailSelected {
     if (isSearchActive()) {
       return emailListSearch.where((email) => email.selectMode == SelectMode.ACTIVE).toList();

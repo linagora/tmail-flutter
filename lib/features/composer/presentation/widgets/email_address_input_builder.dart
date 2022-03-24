@@ -18,17 +18,16 @@ typedef OnAddEmailAddressTypeAction = void Function(PrefixEmailAddress);
 typedef OnDeleteEmailAddressTypeAction = void Function(PrefixEmailAddress);
 typedef OnShowFullListEmailAddressAction = void Function(PrefixEmailAddress);
 typedef OnFocusEmailAddressChangeAction = void Function(PrefixEmailAddress, bool);
+typedef OnOpenSuggestionBoxEmailAddress = Future<List<EmailAddress>> Function();
 
 class EmailAddressInputBuilder {
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
-  final ResponsiveUtils _responsiveUtils;
   final ExpandMode expandMode;
   final PrefixEmailAddress _prefixEmailAddress;
   final List<PrefixEmailAddress> _listEmailAddressType;
   final TextEditingController? controller;
-  final FocusNode? focusNode;
   final bool? isInitial;
 
   List<EmailAddress> _listEmailAddress = <EmailAddress>[];
@@ -39,6 +38,7 @@ class EmailAddressInputBuilder {
   OnDeleteEmailAddressTypeAction? _onDeleteEmailAddressTypeAction;
   OnShowFullListEmailAddressAction? _onShowFullListEmailAddressAction;
   OnFocusEmailAddressChangeAction? _onFocusEmailAddressChangeAction;
+  OnOpenSuggestionBoxEmailAddress? _onOpenSuggestionBoxEmailAddress;
 
   void addOnUpdateListEmailAddressAction(OnUpdateListEmailAddressAction onUpdateListEmailAddressAction) {
     _onUpdateListEmailAddressAction = onUpdateListEmailAddressAction;
@@ -64,17 +64,19 @@ class EmailAddressInputBuilder {
     _onFocusEmailAddressChangeAction = onFocusEmailAddressChangeAction;
   }
 
+  void addOnOpenSuggestionBoxEmailAddress(OnOpenSuggestionBoxEmailAddress onOpenSuggestionBoxEmailAddress) {
+    _onOpenSuggestionBoxEmailAddress = onOpenSuggestionBoxEmailAddress;
+  }
+
   EmailAddressInputBuilder(
     this._context,
     this._imagePaths,
-    this._responsiveUtils,
     this._prefixEmailAddress,
     this._listEmailAddress,
     this._listEmailAddressType,
     {
       this.isInitial,
       this.controller,
-      this.focusNode,
       this.expandMode = ExpandMode.EXPAND,
     }
   );
@@ -84,35 +86,30 @@ class EmailAddressInputBuilder {
       children: [
         Text('${_prefixEmailAddress.asName(_context)}:',
           style: TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput)),
-        buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icAddEmailAddress, fit: BoxFit.fill),
-          tooltip: AppLocalizations.of(_context).email_address_suggestion,
-          onTap: () => {}),
         Expanded(child: Padding(
-            padding: EdgeInsets.only(right: _listEmailAddressType.isNotEmpty ? 16 : 0),
+            padding: EdgeInsets.only(right: _listEmailAddressType.length == 2 ? 8 : 8),
             child: _buildTagEditor())),
         if (_prefixEmailAddress == PrefixEmailAddress.to)
           Row(children: [
             if (!_listEmailAddressType.contains(PrefixEmailAddress.cc))
-              Transform(
-                transform: Matrix4.translationValues(
-                    _listEmailAddressType.contains(PrefixEmailAddress.bcc) ? 0.0 : _responsiveUtils.isMobile(_context) ? 24 : 16.0,
-                    0.0, 0.0),
-                child: buildTextCircleButton(AppLocalizations.of(_context).cc_email_address_prefix,
-                  textStyle: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.normal,
-                  decoration: TextDecoration.underline,
-                  color: AppColor.lineItemListColor),
-                  onTap: () => _onAddEmailAddressTypeAction?.call(PrefixEmailAddress.cc))),
+              buildTextIcon(AppLocalizations.of(_context).cc_email_address_prefix,
+                padding: EdgeInsets.all(5),
+                textStyle: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.normal,
+                decoration: TextDecoration.underline,
+                color: AppColor.lineItemListColor),
+                onTap: () => _onAddEmailAddressTypeAction?.call(PrefixEmailAddress.cc)),
             if (!_listEmailAddressType.contains(PrefixEmailAddress.bcc))
-              buildTextCircleButton(AppLocalizations.of(_context).bcc_email_address_prefix,
+              buildTextIcon(AppLocalizations.of(_context).bcc_email_address_prefix,
+                  padding: EdgeInsets.all(5),
                   textStyle: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.normal,
                       decoration: TextDecoration.underline,
                       color: AppColor.lineItemListColor),
                   onTap: () => _onAddEmailAddressTypeAction?.call(PrefixEmailAddress.bcc)),
+            SizedBox(width: 10),
           ]),
         if (_prefixEmailAddress != PrefixEmailAddress.to)
           buildIconWeb(
@@ -130,7 +127,6 @@ class EmailAddressInputBuilder {
           child: TagEditor<EmailAddress>(
             length: newListEmailAddress.length,
             controller: controller,
-            focusNode: focusNode,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
             hasAddButton: false,
@@ -138,6 +134,10 @@ class EmailAddressInputBuilder {
             delimiters: [' '],
             minTextFieldWidth: 20,
             resetTextOnSubmitted: true,
+            suggestionsBoxElevation: 20,
+            suggestionsBoxBackgroundColor: Colors.white,
+            suggestionsBoxRadius: 20,
+            iconSuggestionBox: SvgPicture.asset(_imagePaths.icAddEmailAddress, fit: BoxFit.fill),
             textStyle: TextStyle(color: AppColor.colorEmailAddress, fontSize: 14, fontWeight: FontWeight.w500),
             onSubmitted: (value) {
               setState(() => _listEmailAddress.add(EmailAddress(null, value)));
@@ -182,8 +182,14 @@ class EmailAddressInputBuilder {
               _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, _listEmailAddress);
             },
             findSuggestions: (String query) {
-              if (query.isNotEmpty && _onSuggestionEmailAddress != null) {
-                return _onSuggestionEmailAddress!(query);
+              if (query.trim().isNotEmpty && _onSuggestionEmailAddress != null) {
+                return _onSuggestionEmailAddress!(query.trim());
+              }
+              return [];
+            },
+            searchAllSuggestions: () {
+              if (_onOpenSuggestionBoxEmailAddress != null) {
+                return _onOpenSuggestionBoxEmailAddress!();
               }
               return [];
             },
