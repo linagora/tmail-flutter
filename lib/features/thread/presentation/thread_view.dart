@@ -559,7 +559,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
       child: ListView.builder(
         controller: controller.listEmailController,
         physics: AlwaysScrollableScrollPhysics(),
-        key: Key('presentation_email_list'),
+        key: PageStorageKey('list_presentation_email_in_threads'),
         itemCount: listPresentationEmail.length,
         itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
                 context,

@@ -232,6 +232,7 @@ class ThreadController extends BaseController {
     canLoadMore = true;
     disableSearch();
     cancelSelectEmail();
+    listEmailController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
     mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
   }
 
