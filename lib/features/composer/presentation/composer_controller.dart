@@ -57,8 +57,6 @@ class ComposerController extends BaseController {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  final expandMode = ExpandMode.COLLAPSE.obs;
-  final expandModeMobile = ExpandMode.EXPAND.obs;
   final expandModeAttachments = ExpandMode.EXPAND.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
@@ -154,7 +152,6 @@ class ComposerController extends BaseController {
     toEmailAddressController.dispose();
     ccEmailAddressController.dispose();
     bccEmailAddressController.dispose();
-    toEmailAddressFocusNode.dispose();
     super.onClose();
   }
 
@@ -626,8 +623,6 @@ class ComposerController extends BaseController {
       final isChanged = await _isEmailChanged(context, arguments);
       if (isChanged) {
         log('ComposerController::saveEmailAsDrafts(): saveEmailAsDrafts isChanged: $isChanged');
-        _saveEmailAddress();
-
         final newEmail = await _generateEmail(mapDefaultMailboxId, userProfile, asDrafts: true);
         final accountId = session.accounts.keys.first;
         final oldEmail = arguments.presentationEmail;
@@ -683,9 +678,8 @@ class ComposerController extends BaseController {
     if (!kIsWeb) {
       htmlEditorApi?.unfocus(context);
       htmlControllerBrowser.clearFocus();
-    } else {
-      FocusManager.instance.primaryFocus?.unfocus();
     }
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 
   void closeComposerWeb() {
@@ -754,17 +748,23 @@ class ComposerController extends BaseController {
     }
   }
 
-  void collapseComposer(ExpandMode expandMode) {
-    expandModeMobile.value = expandMode;
-  }
-
   void addEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
     listEmailAddressType.add(prefixEmailAddress);
   }
 
   void deleteEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
     listEmailAddressType.remove(prefixEmailAddress);
-    updateListEmailAddress(prefixEmailAddress, List.empty());
+    updateListEmailAddress(prefixEmailAddress, <EmailAddress>[]);
+    switch(prefixEmailAddress) {
+      case PrefixEmailAddress.cc:
+        ccEmailAddressController.clear();
+        break;
+      case PrefixEmailAddress.bcc:
+        bccEmailAddressController.clear();
+        break;
+      default:
+        break;
+    }
   }
 
   void onSubjectEmailFocusChange(bool isFocus) {
@@ -825,7 +825,8 @@ class ComposerController extends BaseController {
     }
   }
 
-  void closeComposer(BuildContext context) {
+  void closeComposer() {
+    FocusManager.instance.primaryFocus?.unfocus();
     popBack();
   }
 }
