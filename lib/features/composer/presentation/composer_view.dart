@@ -24,130 +24,156 @@ class ComposerView extends GetWidget<ComposerController> {
   Widget build(BuildContext context) {
     return ResponsiveWidget(
       responsiveUtils: responsiveUtils,
-      mobile: WillPopScope(
-          onWillPop: () async {
-            controller.saveEmailAsDrafts(context);
-            return true;
-          },
-          child: GestureDetector(
-              onTap: () {
-                controller.clearFocusEditor(context);
-              },
-              child: Scaffold(
-                backgroundColor: AppColor.primaryLightColor,
-                body: SafeArea(
-                    right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-                    left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-                    child: Container(
-                        color: Colors.white,
-                        child: Column(children: [
-                          Obx(() => Padding(
-                            padding: EdgeInsets.only(left: 8, right: 8,
-                                top: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context) ? 16 : 0,
-                                bottom: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context) ? 8 : 0),
-                            child: _buildAppBar(context, controller.isEnableEmailSendButton.value, controller.expandModeMobile.value),)),
-                          Obx(() => controller.expandModeMobile == ExpandMode.COLLAPSE
-                              ? Divider(color: AppColor.colorDividerComposer, height: 1)
-                              : SizedBox.shrink()),
-                          Expanded(child: _buildEditorAndAttachments(context))
-                        ])
-                    )
-                ),
-              )
-          )
-      ),
-      tablet: WillPopScope(
-          onWillPop: () async {
-            controller.saveEmailAsDrafts(context);
-            return true;
-          },
-          child: GestureDetector(
-              onTap: () {
-                controller.clearFocusEditor(context);
-              },
-              child: Scaffold(
+      mobile: _buildComposerViewForMobile(context),
+      tablet: _buildComposerViewForTablet(context),
+      tabletLarge: _buildComposerViewForTablet(context),
+      desktop: _buildComposerViewForTablet(context),
+    );
+  }
+
+  Widget _buildComposerViewForMobile(BuildContext context) {
+    return WillPopScope(
+        onWillPop: () async {
+          controller.saveEmailAsDrafts(context);
+          return true;
+        },
+        child: GestureDetector(
+            onTap: () {
+              controller.clearFocusEditor(context);
+            },
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              body: SafeArea(
+                  right: responsiveUtils.isMobile(context) && responsiveUtils.isLandscape(context),
+                  left: responsiveUtils.isMobile(context) && responsiveUtils.isLandscape(context),
+                  child: Container(
+                      color: Colors.white,
+                      child: Column(children: [
+                        Obx(() => _buildAppBar(context, controller.isEnableEmailSendButton.value)),
+                        Divider(color: AppColor.colorDividerComposer, height: 1),
+                        Expanded(child: _buildBodyMobile(context))
+                      ])
+                  )
+              ),
+            )
+        )
+    );
+  }
+
+  Widget _buildComposerViewForTablet(BuildContext context) {
+    return WillPopScope(
+        onWillPop: () async {
+          controller.saveEmailAsDrafts(context);
+          return true;
+        },
+        child: GestureDetector(
+            onTap: () {
+              controller.clearFocusEditor(context);
+            },
+            child: Scaffold(
                 backgroundColor: Colors.black38,
                 body: Align(alignment: Alignment.center, child: Card(
                     color: Colors.transparent,
                     elevation: 20,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24))),
+                    shadowColor: Colors.transparent,
                     child: Container(
-                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(10))),
-                        width: responsiveUtils.getSizeScreenWidth(context) * 0.85,
-                        height: responsiveUtils.getSizeScreenHeight(context) * 0.85,
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(24))),
+                        width: responsiveUtils.getSizeScreenWidth(context) * 0.9,
+                        height: responsiveUtils.getSizeScreenHeight(context) * 0.9,
                         child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            borderRadius: BorderRadius.all(Radius.circular(24)),
                             child: SafeArea(
                                 child: Column(children: [
-                                  Obx(() => Padding(
-                                    padding: EdgeInsets.only(left: 8, right: 8),
-                                    child: _buildAppBar(context, controller.isEnableEmailSendButton.value, controller.expandModeMobile.value),)),
-                                  Obx(() => controller.expandModeMobile == ExpandMode.COLLAPSE
-                                      ? Divider(color: AppColor.colorDividerComposer, height: 1)
-                                      : SizedBox.shrink()),
-                                  Expanded(child: _buildEditorAndAttachments(context))
-                                ])
+                                    Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: _buildAppBar(context, controller.isEnableEmailSendButton.value)),
+                                    Padding(padding: EdgeInsets.only(top: 8), child: Divider(color: AppColor.colorDividerComposer, height: 1)),
+                                    Expanded(child: _buildBodyTablet(context)),
+                                    Divider(color: AppColor.colorDividerComposer, height: 1),
+                                    Obx(() => _buildBottomBar(context, controller.isEnableEmailSendButton.value)),
+                                ]),
                             )
                         )
                     )
                 ))
-              )
-          )
-      )
+            )
+        )
     );
   }
 
-  Widget _buildAppBar(BuildContext context, bool isEnableSendButton, ExpandMode expandModeMobile) {
-    return Row(children: [
-        Material(
-            type: MaterialType.circle,
-            color: Colors.transparent,
-            child: TextButton(
-                child: Text(
-                    AppLocalizations.of(context).cancel,
-                    style: TextStyle(fontWeight: FontWeight.normal, fontSize: 17, color: AppColor.colorTextButton)),
-                onPressed: () {
+  Widget _buildAppBar(BuildContext context, bool isEnableSendButton) {
+    return Container(
+      padding: responsiveUtils.isMobile(context) ? EdgeInsets.all(8) : EdgeInsets.zero,
+      color: Colors.white,
+      child: Row(
+          children: [
+            buildIconWeb(
+                icon: SvgPicture.asset(imagePaths.icClose, width: 30, height: 30, fit: BoxFit.fill),
+                tooltip: AppLocalizations.of(context).close,
+                iconPadding: EdgeInsets.zero,
+                onTap: () {
                   controller.saveEmailAsDrafts(context);
-                  controller.closeComposer(context);
-                }
-            )
-        ),
-        if (expandModeMobile == ExpandMode.EXPAND)
-          Spacer(),
-        if (expandModeMobile == ExpandMode.COLLAPSE)
-          Expanded(child: Text(
-            AppLocalizations.of(context).new_message.capitalizeFirstEach,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.black),
-          )),
-        buildIconWeb(
-            icon: SvgPicture.asset(imagePaths.icAttachmentsComposer, fit: BoxFit.fill),
-            tooltip: AppLocalizations.of(context).pick_attachments,
-            onTap: () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context))),
-        if (expandModeMobile == ExpandMode.COLLAPSE)
-          buildIconWeb(
-            icon: SvgPicture.asset(isEnableSendButton ? imagePaths.icSendMobile : imagePaths.icSendDisable, fit: BoxFit.fill),
-            tooltip: AppLocalizations.of(context).send,
-            onTap: () => controller.sendEmailAction(context)),
-    ]);
+                  controller.closeComposer();
+                }),
+            Expanded(child: _buildTitleComposer(context)),
+            buildIconWeb(
+                icon: SvgPicture.asset(
+                    isEnableSendButton ? imagePaths.icSendMobile : imagePaths.icSendDisable,
+                    fit: BoxFit.fill),
+                tooltip: AppLocalizations.of(context).send,
+                onTap: () => controller.sendEmailAction(context)),
+          ]
+      ),
+    );
   }
 
-  Widget _buildTitleComposer(BuildContext context, bool isEnableSendButton) {
-    return Row(children: [
-      Expanded(child: Text(
-        AppLocalizations.of(context).new_message.capitalizeFirstEach,
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
-        style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, color: Colors.black),
-      )),
-      buildIconWeb(
-        iconSize: 36,
-        iconPadding: EdgeInsets.zero,
-        icon: SvgPicture.asset(isEnableSendButton ? imagePaths.icSendMobile : imagePaths.icSendDisable, width: 36, height: 36, fit: BoxFit.fill),
-        tooltip: AppLocalizations.of(context).send,
-        onTap: () => controller.sendEmailAction(context)),
-    ]);
+  Widget _buildBottomBar(BuildContext context, bool isEnableSendButton) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16),
+      color: Colors.white,
+      child: Row(mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildTextButton(
+                AppLocalizations.of(context).cancel,
+                textStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.lineItemListColor),
+                backgroundColor: AppColor.emailAddressChipColor,
+                width: 150,
+                height: 44,
+                radius: 10,
+                onTap: () => controller.closeComposer()),
+            SizedBox(width: 12),
+            buildTextButton(
+                AppLocalizations.of(context).save_to_drafts,
+                textStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.colorTextButton),
+                backgroundColor: AppColor.emailAddressChipColor,
+                width: 150,
+                height: 44,
+                radius: 10,
+                onTap: () {
+                  controller.saveEmailAsDrafts(context);
+                  controller.closeComposer();
+                }),
+            SizedBox(width: 12),
+            buildTextButton(
+                AppLocalizations.of(context).send,
+                width: 150,
+                height: 44,
+                radius: 10,
+                onTap: () => controller.sendEmailAction(context)),
+          ]
+      ),
+    );
+  }
+
+  Widget _buildTitleComposer(BuildContext context) {
+    return Obx(() => Text(
+      controller.subjectEmail.isNotEmpty == true
+          ? controller.subjectEmail.value ?? ''
+          : AppLocalizations.of(context).new_message.capitalizeFirstEach,
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+      textAlign: TextAlign.center,
+      style: TextStyle(fontSize: responsiveUtils.isMobile(context) ? 17 : 24, fontWeight: FontWeight.bold, color: Colors.black),
+    ));
   }
 
   List<Widget> _pickAttachmentsActionTiles(BuildContext context) {
@@ -177,119 +203,190 @@ class ComposerView extends GetWidget<ComposerController> {
   }
 
   Widget _buildEmailAddress(BuildContext context) {
-    return Column(children: [
-      Obx(() => (EmailAddressInputBuilder(
-              context,
-              imagePaths,
-              PrefixEmailAddress.to,
-              controller.listToEmailAddress,
-              controller.listEmailAddressType,
-              controller: controller.toEmailAddressController,
-              isInitial: controller.isInitialRecipient.value)
-          ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-          ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
-        .build()
-      ),
-      Obx(() => controller.expandMode.value == ExpandMode.EXPAND
-        ? Divider(color: AppColor.colorDividerComposer, height: 1)
-        : SizedBox.shrink()),
-      Obx(() => controller.expandMode.value == ExpandMode.EXPAND
-        ? (EmailAddressInputBuilder(
-                context,
-                imagePaths,
-                PrefixEmailAddress.cc,
-                controller.listCcEmailAddress,
-                controller.listEmailAddressType,
-                controller: controller.ccEmailAddressController,
-                isInitial: controller.isInitialRecipient.value,)
-            ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-            ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
-          .build()
-        : SizedBox.shrink()
-      ),
-      Obx(() => controller.expandMode.value == ExpandMode.EXPAND
-        ? Divider(color: AppColor.colorDividerComposer, height: 1)
-        : SizedBox.shrink()),
-      Obx(() => controller.expandMode.value == ExpandMode.EXPAND
-        ? (EmailAddressInputBuilder(
-              context,
-              imagePaths,
-              PrefixEmailAddress.bcc,
-              controller.listBccEmailAddress,
-              controller.listEmailAddressType,
-              controller: controller.bccEmailAddressController,
-              isInitial: controller.isInitialRecipient.value,)
-            ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-            ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
-          .build()
-        : SizedBox.shrink()
-      ),
-    ]);
+    return Column(
+      children: [
+        Obx(() => Padding(
+            padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+            child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
+                    PrefixEmailAddress.to,
+                    controller.listToEmailAddress,
+                    controller.listEmailAddressType,
+                    expandMode: controller.toAddressExpandMode.value,
+                    controller: controller.toEmailAddressController,
+                    focusNode: controller.toEmailAddressFocusNode,
+                    isInitial: controller.isInitialRecipient.value)
+                ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
+                ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
+                ..addOnAddEmailAddressTypeAction((prefixEmailAddress) => controller.addEmailAddressType(prefixEmailAddress))
+                ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+                ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+              .build()
+        )),
+        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
+            ? Divider(color: AppColor.colorDividerComposer, height: 1)
+            : SizedBox.shrink()),
+        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
+            ? Padding(
+                padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+                child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
+                        PrefixEmailAddress.cc,
+                        controller.listCcEmailAddress,
+                        controller.listEmailAddressType,
+                        expandMode: controller.ccAddressExpandMode.value,
+                        controller: controller.ccEmailAddressController,
+                        isInitial: controller.isInitialRecipient.value,)
+                    ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
+                    ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
+                    ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
+                    ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+                    ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                  .build())
+            : SizedBox.shrink()
+        ),
+        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
+            ? Divider(color: AppColor.colorDividerComposer, height: 1)
+            : SizedBox.shrink()),
+        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
+            ? Padding(
+                padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+                child: (EmailAddressInputBuilder(context, imagePaths, responsiveUtils,
+                        PrefixEmailAddress.bcc,
+                        controller.listBccEmailAddress,
+                        controller.listEmailAddressType,
+                        expandMode: controller.bccAddressExpandMode.value,
+                        controller: controller.bccEmailAddressController,
+                        isInitial: controller.isInitialRecipient.value,)
+                    ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
+                    ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
+                    ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
+                    ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+                    ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                  .build())
+            : SizedBox.shrink()
+        ),
+      ],
+    );
   }
 
   Widget _buildSubjectEmail(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(right: 8, top: 16),
-          child: Text(
-            '${AppLocalizations.of(context).subject_email}:',
-            style: TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput))),
-        Expanded(
-          child: (TextFieldBuilder()
-              ..key(Key('subject_email_input'))
-              ..cursorColor(AppColor.colorTextButton)
-              ..onChange((value) => controller.setSubjectEmail(value))
-              ..textStyle(TextStyle(color: AppColor.colorEmailAddress, fontSize: 15))
-              ..textDecoration(InputDecoration(contentPadding: EdgeInsets.zero, border: InputBorder.none))
-              ..addController(controller.subjectEmailInputController))
-            .build()
-        )
-      ]
+        children: [
+          Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: Text(
+                  '${AppLocalizations.of(context).subject_email}:',
+                  style: TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput))),
+          Expanded(
+              child: FocusScope(child: Focus(
+                onFocusChange: (focus) => controller.onSubjectEmailFocusChange(focus),
+                child: (TextFieldBuilder()
+                    ..key(Key('subject_email_input'))
+                    ..cursorColor(AppColor.colorTextButton)
+                    ..maxLines(responsiveUtils.isMobile(context) ? null : 1)
+                    ..onChange((value) => controller.setSubjectEmail(value))
+                    ..textStyle(TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.normal))
+                    ..textDecoration(InputDecoration(contentPadding: EdgeInsets.zero, border: InputBorder.none))
+                    ..addController(controller.subjectEmailInputController))
+                  .build(),
+              ))
+          )
+        ]
     );
   }
 
-  Widget _buildEditorAndAttachments(BuildContext context) {
-    return NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollInfo) {
-          if (scrollInfo is ScrollEndNotification) {
-            if (scrollInfo.metrics.pixels >= 30) {
-              controller.collapseComposer(ExpandMode.COLLAPSE);
-            } else if (scrollInfo.metrics.pixels <= scrollInfo.metrics.minScrollExtent) {
-              controller.collapseComposer(ExpandMode.EXPAND);
-            }
-          }
-          return false;
-        },
-        child: SingleChildScrollView(
-          physics: ClampingScrollPhysics(),
-          child: Column(children: [
-            Obx(() => Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                child: _buildTitleComposer(context, controller.isEnableEmailSendButton.value))),
-            Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: _buildEmailAddress(context)),
-            Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Divider(color: AppColor.colorDividerComposer, height: 1)),
-            Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: _buildSubjectEmail(context)),
-            Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Divider(color: AppColor.colorDividerComposer, height: 1)),
-            Obx(() => controller.attachments.isNotEmpty
-                ? Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: _buildAttachmentsTitle(context, controller.attachments, controller.expandModeAttachments.value))
-                : SizedBox.shrink()),
-            Obx(() => controller.attachments.isEmpty
-                ? _buildAttachmentsLoadingView()
-                : SizedBox.shrink()),
-            Obx(() => controller.attachments.isNotEmpty
-                ? Padding(
-                    padding: EdgeInsets.only(bottom: 8, left: 16, right: 16),
-                    child: _buildAttachmentsList(context, controller.attachments, controller.expandModeAttachments.value))
-                : SizedBox.shrink()),
-            Padding(
-                padding: EdgeInsets.only(left: 16, right: 16, bottom: 20),
-                child: _buildComposerEditor(context)),
-          ])
+  Widget _buildListButton(BuildContext context) {
+    return  Transform(
+        transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+        child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            child: Row(children: [
+              buildIconWeb(
+                  icon: SvgPicture.asset(imagePaths.icAttachmentsComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                  tooltip: AppLocalizations.of(context).attach_file,
+                  onTap: () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context))),
+            ])
         )
+    );
+  }
+
+  Widget _buildBodyMobile(BuildContext context) {
+    return SingleChildScrollView(
+      physics: ClampingScrollPhysics(),
+      child: Column(children: [
+        _buildEmailAddress(context),
+        Divider(color: AppColor.colorDividerComposer, height: 1),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8), child: _buildSubjectEmail(context)),
+        Divider(color: AppColor.colorDividerComposer, height: 1),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 16),  child: _buildListButton(context)),
+        Divider(color: AppColor.colorDividerComposer, height: 1),
+        Obx(() => controller.attachments.isNotEmpty
+            ? Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: _buildAttachmentsTitle(context, controller.attachments, controller.expandModeAttachments.value))
+            : SizedBox.shrink()),
+        Obx(() => controller.attachments.isEmpty
+            ? _buildAttachmentsLoadingView()
+            : SizedBox.shrink()),
+        Obx(() => controller.attachments.isNotEmpty
+            ? Padding(
+                padding: EdgeInsets.only(bottom: 8, left: 16, right: 16),
+                child: _buildAttachmentsList(context, controller.attachments, controller.expandModeAttachments.value))
+            : SizedBox.shrink()),
+        Padding(
+            padding: EdgeInsets.only(left: 16, right: 16, bottom: 20),
+            child: _buildComposerEditor(context)),
+      ])
+    );
+  }
+
+  Widget _buildBodyTablet(BuildContext context) {
+    return SingleChildScrollView(
+      physics: ClampingScrollPhysics(),
+      child: Column(children: [
+        Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Padding(padding: EdgeInsets.only(top: 20),
+                  child: (AvatarBuilder()
+                      ..text('${controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? ''}')
+                      ..size(56)
+                      ..addTextStyle(TextStyle(fontWeight: FontWeight.w600, fontSize: 28, color: Colors.white))
+                      ..backgroundColor(AppColor.colorAvatar))
+                    .build()),
+              Expanded(child: Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Column(children: [
+                  _buildEmailAddress(context),
+                  Divider(color: AppColor.colorDividerComposer, height: 1),
+                  Padding(padding: EdgeInsets.only(right: 16), child: _buildSubjectEmail(context)),
+                  Divider(color: AppColor.colorDividerComposer, height: 1),
+                  _buildListButton(context),
+                ]),
+              ))
+            ])),
+        Divider(color: AppColor.colorDividerComposer, height: 1),
+        Padding(
+            padding: EdgeInsets.only(left: 60, right: 25),
+            child: Column(children: [
+              Obx(() => controller.attachments.isNotEmpty
+                  ? Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: _buildAttachmentsTitle(context, controller.attachments, controller.expandModeAttachments.value))
+                  : SizedBox.shrink()),
+              Obx(() => controller.attachments.isEmpty
+                  ? _buildAttachmentsLoadingView()
+                  : SizedBox.shrink()),
+              Obx(() => controller.attachments.isNotEmpty
+                  ? Padding(
+                      padding: EdgeInsets.only(bottom: 8, left: 16, right: 16),
+                      child: _buildAttachmentsList(context, controller.attachments, controller.expandModeAttachments.value))
+                  : SizedBox.shrink()),
+              Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, bottom: 20, top: 10),
+                  child: _buildComposerEditor(context)),
+            ])
+        )
+      ])
     );
   }
 
