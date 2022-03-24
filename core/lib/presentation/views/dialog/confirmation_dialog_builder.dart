@@ -23,6 +23,10 @@ class ConfirmDialogBuilder {
   TextStyle? _styleTitle;
   TextStyle? _styleContent;
   double? _radiusButton;
+  EdgeInsets? _paddingTitle;
+  EdgeInsets? _paddingContent;
+  EdgeInsets? _paddingButton;
+  EdgeInsets? _marginIcon;
 
   OnConfirmButtonAction? _onConfirmButtonAction;
   OnCancelButtonAction? _onCancelButtonAction;
@@ -74,6 +78,22 @@ class ConfirmDialogBuilder {
     _radiusButton = radius;
   }
 
+  void paddingTitle(EdgeInsets? value) {
+    _paddingTitle = value;
+  }
+
+  void paddingContent(EdgeInsets? value) {
+    _paddingContent = value;
+  }
+
+  void paddingButton(EdgeInsets? value) {
+    _paddingButton = value;
+  }
+
+  void marginIcon(EdgeInsets? value) {
+    _marginIcon = value;
+  }
+
   void onConfirmButtonAction(String confirmText, OnConfirmButtonAction? onConfirmButtonAction) {
     _confirmText = confirmText;
     _onConfirmButtonAction = onConfirmButtonAction;
@@ -104,19 +124,21 @@ class ConfirmDialogBuilder {
           if (_onCloseButtonAction != null)
             Align(
               alignment: Alignment.centerRight,
-              child: IconButton(
-                  padding: EdgeInsets.only(top: 16, right: 16),
-                  onPressed: () => _onCloseButtonAction?.call(),
-                  icon: SvgPicture.asset(_imagePath.icCloseMailbox, width: 30, height: 30, fit: BoxFit.fill))),
+              child: Padding(
+                padding: EdgeInsets.only(top: 8, right: 8),
+                child: buildIconWeb(
+                    icon: SvgPicture.asset(_imagePath.icCloseMailbox, fit: BoxFit.fill),
+                    onTap: () => _onCloseButtonAction?.call())
+              )),
           if (_iconWidget != null)
             Container(
-              margin: EdgeInsets.only(top: 24),
+              margin: _marginIcon ?? EdgeInsets.only(top: 24),
               alignment: Alignment.center,
               child: _iconWidget,
             ),
           if (_title.isNotEmpty)
             Padding(
-              padding: EdgeInsets.only(top: 12),
+              padding: _paddingTitle ?? EdgeInsets.only(top: 12),
               child: Center(
                 child: Text(
                   _title,
@@ -127,7 +149,7 @@ class ConfirmDialogBuilder {
             ),
           if (_content.isNotEmpty)
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              padding: _paddingContent ?? EdgeInsets.symmetric(horizontal: 16, vertical: 24),
               child: Center(
                 child: Text(_content,
                   textAlign: TextAlign.center,
@@ -136,22 +158,24 @@ class ConfirmDialogBuilder {
               ),
             ),
           Padding(
-            padding: EdgeInsets.only(bottom: 16, left: 16, right: 16),
+            padding: _paddingButton ?? EdgeInsets.only(bottom: 16, left: 16, right: 16),
             child: Row(
               children: [
-                Expanded(child: _buildButton(
+                if (_cancelText.isNotEmpty)
+                  Expanded(child: _buildButton(
                     name: _cancelText,
                     bgColor: _colorCancelButton,
                     radius: _radiusButton,
                     textStyle: _styleTextCancelButton,
                     action: _onCancelButtonAction)),
-                SizedBox(width: 16),
-                Expanded(child: _buildButton(
-                  name: _confirmText,
-                  bgColor: _colorConfirmButton,
-                  radius: _radiusButton,
-                  textStyle: _styleTextConfirmButton,
-                  action: _onConfirmButtonAction))
+                if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) SizedBox(width: 16),
+                if (_confirmText.isNotEmpty)
+                  Expanded(child: _buildButton(
+                    name: _confirmText,
+                    bgColor: _colorConfirmButton,
+                    radius: _radiusButton,
+                    textStyle: _styleTextConfirmButton,
+                    action: _onConfirmButtonAction))
               ]
             ))
         ])
