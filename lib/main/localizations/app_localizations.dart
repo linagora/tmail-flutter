@@ -207,10 +207,10 @@ class AppLocalizations {
     );
   }
 
-  String get your_email_should_have_at_least_one_recipient {
+  String get message_dialog_send_email_without_recipient {
     return Intl.message(
       'Your email should have at least one recipient',
-      name: 'your_email_should_have_at_least_one_recipient',
+      name: 'message_dialog_send_email_without_recipient',
     );
   }
 
@@ -810,10 +810,10 @@ class AppLocalizations {
         name: 'show_all');
   }
 
-  String get message_confirm_send_email {
+  String get message_dialog_send_email_without_a_subject {
     return Intl.message(
         'Are you sure to send messages without a subject?',
-        name: 'message_confirm_send_email');
+        name: 'message_dialog_send_email_without_a_subject');
   }
 
   String get app_name {
@@ -887,5 +887,73 @@ class AppLocalizations {
     return Intl.message(
         'Collapse',
         name: 'collapse');
+  }
+
+  String get save_to_drafts {
+    return Intl.message(
+      'Save to drafts',
+      name: 'save_to_drafts',
+    );
+  }
+
+  String get hint_compose_email {
+    return Intl.message(
+        'Start composing a letter...',
+        name: 'hint_compose_email');
+  }
+
+  String get email_address_suggestion {
+    return Intl.message(
+      'Email address suggestion',
+      name: 'email_address_suggestion',
+    );
+  }
+
+  String get attach_file {
+    return Intl.message(
+        'Attach file',
+        name: 'attach_file');
+  }
+
+  String get show {
+    return Intl.message(
+        'Show',
+        name: 'show');
+  }
+
+  String get add_recipients {
+    return Intl.message(
+        'Add recipients',
+        name: 'add_recipients');
+  }
+
+  String get sending_failed {
+    return Intl.message(
+        'Sending failed',
+        name: 'sending_failed');
+  }
+
+  String get send_anyway {
+    return Intl.message(
+        'Send anyway',
+        name: 'send_anyway');
+  }
+
+  String get empty_subject {
+    return Intl.message(
+        'Empty subject',
+        name: 'empty_subject');
+  }
+
+  String get message_dialog_send_email_with_email_address_invalid {
+    return Intl.message(
+        'Check the correctness of email addresses and try again',
+        name: 'message_dialog_send_email_with_email_address_invalid');
+  }
+
+  String get fix_email_addresses {
+    return Intl.message(
+        'Fix email addresses',
+        name: 'fix_email_addresses');
   }
 }

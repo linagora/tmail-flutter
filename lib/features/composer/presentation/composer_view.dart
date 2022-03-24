@@ -18,7 +18,6 @@ class ComposerView extends GetWidget<ComposerController> {
 
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
-  final _appToast = Get.find<AppToast>();
   final keyboardUtils = Get.find<KeyboardUtils>();
 
   @override
@@ -128,7 +127,7 @@ class ComposerView extends GetWidget<ComposerController> {
             onTap: () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context))),
         if (expandModeMobile == ExpandMode.COLLAPSE)
           buildIconWeb(
-            icon: SvgPicture.asset(isEnableSendButton ? imagePaths.icSendMobile : imagePaths.icSendMobileDisable, fit: BoxFit.fill),
+            icon: SvgPicture.asset(isEnableSendButton ? imagePaths.icSendMobile : imagePaths.icSendDisable, fit: BoxFit.fill),
             tooltip: AppLocalizations.of(context).send,
             onTap: () => controller.sendEmailAction(context)),
     ]);
@@ -145,7 +144,7 @@ class ComposerView extends GetWidget<ComposerController> {
       buildIconWeb(
         iconSize: 36,
         iconPadding: EdgeInsets.zero,
-        icon: SvgPicture.asset(isEnableSendButton ? imagePaths.icSendMobile : imagePaths.icSendMobileDisable, width: 36, height: 36, fit: BoxFit.fill),
+        icon: SvgPicture.asset(isEnableSendButton ? imagePaths.icSendMobile : imagePaths.icSendDisable, width: 36, height: 36, fit: BoxFit.fill),
         tooltip: AppLocalizations.of(context).send,
         onTap: () => controller.sendEmailAction(context)),
     ]);
@@ -182,13 +181,11 @@ class ComposerView extends GetWidget<ComposerController> {
       Obx(() => (EmailAddressInputBuilder(
               context,
               imagePaths,
-              _appToast,
               PrefixEmailAddress.to,
               controller.listToEmailAddress,
+              controller.listEmailAddressType,
               controller: controller.toEmailAddressController,
-              isInitial: controller.isInitialRecipient.value,
-              expandMode: controller.expandMode.value)
-          ..addExpandAddressActionClick(() => controller.expandEmailAddressAction())
+              isInitial: controller.isInitialRecipient.value)
           ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
           ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
         .build()
@@ -200,9 +197,9 @@ class ComposerView extends GetWidget<ComposerController> {
         ? (EmailAddressInputBuilder(
                 context,
                 imagePaths,
-                _appToast,
                 PrefixEmailAddress.cc,
                 controller.listCcEmailAddress,
+                controller.listEmailAddressType,
                 controller: controller.ccEmailAddressController,
                 isInitial: controller.isInitialRecipient.value,)
             ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
@@ -217,9 +214,9 @@ class ComposerView extends GetWidget<ComposerController> {
         ? (EmailAddressInputBuilder(
               context,
               imagePaths,
-              _appToast,
               PrefixEmailAddress.bcc,
               controller.listBccEmailAddress,
+              controller.listEmailAddressType,
               controller: controller.bccEmailAddressController,
               isInitial: controller.isInitialRecipient.value,)
             ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))

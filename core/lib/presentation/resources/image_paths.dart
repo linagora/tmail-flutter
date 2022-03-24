@@ -68,18 +68,24 @@ class ImagePaths {
   String get icAttachmentsComposer => _getImagePath('ic_attachments_composer.svg');
   String get icCloseComposer => _getImagePath('ic_close_composer.svg');
   String get icFullScreenComposer => _getImagePath('ic_fullscreen_composer.svg');
-  String get icMinimizeComposer => _getImagePath('ic_minimize_composer.svg');
+  String get icMinimize => _getImagePath('ic_minimize.svg');
   String get icSendComposer => _getImagePath('ic_send_composer.svg');
   String get icDeleteComposer => _getImagePath('ic_delete_composer.svg');
   String get icFileAttachment => _getImagePath('ic_file_attachment.svg');
   String get icDeleteAttachment => _getImagePath('ic_delete_attachment.svg');
   String get icSendMobile => _getImagePath('ic_send_mobile.svg');
-  String get icSendMobileDisable => _getImagePath('ic_send_mobile_disable.svg');
+  String get icSendDisable => _getImagePath('ic_send_disable.svg');
   String get icArrowDown => _getImagePath('ic_arrow_down.svg');
   String get icFilterWeb => _getImagePath('ic_filter_web.svg');
   String get icMarkAllAsRead => _getImagePath('ic_mark_all_as_read.svg');
   String get icRefresh => _getImagePath('ic_refresh.svg');
   String get icSelectAll => _getImagePath('ic_select_all.svg');
+  String get icFullScreenExit => _getImagePath('ic_fullscreen_exit.svg');
+  String get icChevronUp => _getImagePath('ic_chevron_up.svg');
+  String get icAddEmailAddress => _getImagePath('ic_add_email_address.svg');
+  String get icClose => _getImagePath('ic_close.svg');
+  String get icSendToastError => _getImagePath('ic_send_toast_error.svg');
+  String get icEmpty => _getImagePath('ic_empty.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
