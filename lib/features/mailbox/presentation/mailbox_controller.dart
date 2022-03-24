@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmapState;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
@@ -457,7 +458,7 @@ class MailboxController extends BaseMailboxController {
       showDialog(
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => (ConfirmDialogBuilder(_imagePaths)
+          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
               ..key(Key('confirm_dialog_delete_mailbox'))
               ..title(AppLocalizations.of(context).delete_mailboxes)
               ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
@@ -467,7 +468,7 @@ class MailboxController extends BaseMailboxController {
               ..onCloseButtonAction(() => popBack())
               ..onConfirmButtonAction(AppLocalizations.of(context).delete, () => _deleteMailboxAction(presentationMailbox))
               ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
-            .build());
+            .build()));
     }
   }
 
