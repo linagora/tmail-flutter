@@ -144,7 +144,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
               : controller.emailList.allEmailUnread;
 
             if (listEmail.isNotEmpty) {
-              controller.markAsSelectedEmailRead(listEmail);
+              controller.markAsReadSelectedMultipleEmail(listEmail);
             }
           })
           ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))

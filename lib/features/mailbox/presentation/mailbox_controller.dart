@@ -17,11 +17,13 @@ import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_draft
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
@@ -109,18 +111,22 @@ class MailboxController extends BaseMailboxController {
 
     mailboxDashBoardController.viewState.listen((state) {
       state.map((success) {
-        if (success is MarkAsEmailReadSuccess ||
-            success is MarkAsMultipleEmailReadAllSuccess ||
-            success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+        log('MailboxController::onReady(): ${success.runtimeType}');
+
+        if (success is MarkAsMultipleEmailReadAllSuccess
+            || success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+          mailboxDashBoardController.clearState();
           refreshMailboxChanges();
         } else if (success is MoveMultipleEmailToMailboxAllSuccess
             || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
           mailboxDashBoardController.clearState();
           refreshMailboxChanges();
-        } else if (success is SaveEmailAsDraftsSuccess
-          || success is RemoveEmailDraftsSuccess
-          || success is SendEmailSuccess
-          || success is UpdateEmailDraftsSuccess) {
+        } else if (success is MarkAsEmailReadSuccess
+            || success is MoveToMailboxSuccess
+            || success is SaveEmailAsDraftsSuccess
+            || success is RemoveEmailDraftsSuccess
+            || success is SendEmailSuccess
+            || success is UpdateEmailDraftsSuccess) {
           refreshMailboxChanges();
         }
       });
@@ -150,6 +156,13 @@ class MailboxController extends BaseMailboxController {
         await buildTree(allMailboxes);
 
         _setUpMapMailboxIdDefault(allMailboxes, defaultMailboxTree.value, folderMailboxTree.value);
+      } else if (success is RefreshChangesAllMailboxSuccess) {
+        log('MailboxController::onData(): ${allMailboxes.length}');
+        allMailboxes = success.mailboxList;
+        currentMailboxState = success.currentMailboxState;
+        await refreshTree(allMailboxes);
+
+        _setUpMapMailboxIdDefault(allMailboxes, defaultMailboxTree.value, folderMailboxTree.value);
       }
     });
   }
@@ -173,10 +186,8 @@ class MailboxController extends BaseMailboxController {
             _searchMailboxSuccess(success);
           } else if (success is DeleteMultipleMailboxSuccess) {
             _deleteMailboxSuccess(success);
-          } else if (success is GetAllMailboxSuccess) {
-            if (isSearchActive()) {
-              _searchMailboxAction(allMailboxes, searchQuery.value);
-            }
+          } else if ((success is GetAllMailboxSuccess || success is RefreshChangesAllMailboxSuccess) && isSearchActive()) {
+            _searchMailboxAction(allMailboxes, searchQuery.value);
           } else if (success is RenameMailboxSuccess) {
             refreshMailboxChanges();
           }

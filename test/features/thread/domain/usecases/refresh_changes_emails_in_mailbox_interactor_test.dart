@@ -12,7 +12,7 @@ import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
@@ -66,7 +66,7 @@ void main() {
       expect(states.length, equals(2));
       expect(states, containsAllInOrder({
         Right(RefreshingState()),
-        Right(GetAllEmailSuccess(
+        Right(RefreshChangesAllEmailSuccess(
           emailList: {
             EmailFixtures.email1.toPresentationEmail(),
             EmailFixtures.email2.toPresentationEmail(),
