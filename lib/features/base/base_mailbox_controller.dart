@@ -71,4 +71,9 @@ abstract class BaseMailboxController extends BaseController {
     }
     return mailboxNodePath;
   }
+
+  MailboxNode? findMailboxNodeByRole(Role role) {
+    final mailboxNode = defaultMailboxTree.value.findNode((node) => node.item.role == role);
+    return mailboxNode;
+  }
 }

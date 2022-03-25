@@ -57,6 +57,10 @@ import 'package:uuid/uuid.dart';
 class MailboxController extends BaseMailboxController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+  final _appToast = Get.find<AppToast>();
+  final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
   final GetAllMailboxInteractor _getAllMailboxInteractor;
   final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
@@ -65,9 +69,6 @@ class MailboxController extends BaseMailboxController {
   final VerifyNameInteractor _verifyNameInteractor;
   final RenameMailboxInteractor _renameMailboxInteractor;
   final Uuid _uuid;
-  final AppToast _appToast;
-  final ImagePaths _imagePaths;
-  final ResponsiveUtils responsiveUtils;
 
   final listMailboxSearched = <PresentationMailbox>[].obs;
   final searchState = SearchState.initial().obs;
@@ -75,11 +76,11 @@ class MailboxController extends BaseMailboxController {
   final currentSelectMode = SelectMode.INACTIVE.obs;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
+  final searchInputController = TextEditingController();
+  final searchFocus = FocusNode();
+  final mailboxListScrollController = ScrollController();
 
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
-  TextEditingController searchInputController = TextEditingController();
-  FocusNode searchFocus = FocusNode();
-
   jmapState.State? currentMailboxState;
 
   MailboxController(
@@ -90,11 +91,8 @@ class MailboxController extends BaseMailboxController {
     this._deleteMultipleMailboxInteractor,
     this._verifyNameInteractor,
     this._renameMailboxInteractor,
-    treeBuilder,
     this._uuid,
-    this._appToast,
-    this._imagePaths,
-    this.responsiveUtils,
+    treeBuilder,
   ) : super(treeBuilder);
 
   @override
@@ -266,7 +264,7 @@ class MailboxController extends BaseMailboxController {
       mailboxDashBoardController.disableSearch();
     }
 
-    if (!responsiveUtils.isDesktop(context) && !responsiveUtils.isTabletLarge(context)) {
+    if (!_responsiveUtils.isDesktop(context) && !_responsiveUtils.isTabletLarge(context)) {
       mailboxDashBoardController.closeDrawer();
     } else {
       mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
@@ -450,7 +448,7 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _openConfirmationDialogDeleteMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
-    if (responsiveUtils.isMobile(context) || responsiveUtils.isMobileDevice(context)) {
+    if (_responsiveUtils.isMobile(context) || _responsiveUtils.isMobileDevice(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
           ..messageText(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
           ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
@@ -487,7 +485,8 @@ class MailboxController extends BaseMailboxController {
             .toList();
 
         final descendantIdsReversed = descendantIds.reversed.toList();
-        consumeState(_deleteMultipleMailboxInteractor.execute(session, accountId, descendantIdsReversed));
+        consumeState(_deleteMultipleMailboxInteractor.execute(
+            session, accountId, descendantIdsReversed, presentationMailbox.id));
       } else {
         _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
       }
@@ -504,7 +503,16 @@ class MailboxController extends BaseMailboxController {
           message: AppLocalizations.of(currentContext!).delete_mailboxes_successfully,
           icon: _imagePaths.icSelected);
     }
+    if (success.mailboxIdDeleted == mailboxDashBoardController.selectedMailbox.value?.id) {
+      _switchBackToMailboxDefault();
+    }
     refreshMailboxChanges();
+  }
+
+  void _switchBackToMailboxDefault() {
+    final inboxMailbox = findMailboxNodeByRole(PresentationMailbox.roleInbox);
+    mailboxDashBoardController.setSelectedMailbox(inboxMailbox?.item);
+    mailboxListScrollController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
   }
 
   void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
@@ -517,12 +525,12 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _openDialogRenameMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
-    if (responsiveUtils.isMobile(context) || responsiveUtils.isMobileDevice(context)) {
+    if (_responsiveUtils.isMobile(context) || _responsiveUtils.isMobileDevice(context)) {
       (EditTextModalSheetBuilder()
           ..key(Key('rename_mailbox_modal_sheet'))
           ..title(AppLocalizations.of(context).rename_mailbox)
           ..cancelText(AppLocalizations.of(context).cancel)
-          ..boxConstraints(responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context)
+          ..boxConstraints(_responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context)
               ? BoxConstraints(maxWidth: 400)
               : null)
           ..onConfirmAction(AppLocalizations.of(context).rename,

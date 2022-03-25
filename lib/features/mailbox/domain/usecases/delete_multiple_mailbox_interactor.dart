@@ -11,11 +11,11 @@ class DeleteMultipleMailboxInteractor {
 
   DeleteMultipleMailboxInteractor(this.mailboxRepository);
 
-  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, List<MailboxId> mailboxIds) async* {
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, List<MailboxId> mailboxIds, MailboxId mailboxIdDeleted) async* {
     try {
       final result = await mailboxRepository.deleteMultipleMailbox(session, accountId, mailboxIds);
       if (result) {
-        yield Right<Failure, Success>(DeleteMultipleMailboxSuccess());
+        yield Right<Failure, Success>(DeleteMultipleMailboxSuccess(mailboxIdDeleted));
       } else {
         yield Left<Failure, Success>(DeleteMultipleMailboxFailure(null));
       }
