@@ -75,4 +75,54 @@ class TreeBuilder {
     defaultTree.root.childrenItems?.sort((thisMailbox, thatMailbox) => thisMailbox.compareTo(thatMailbox));
     return Tuple2(defaultTree, folderTree);
   }
+
+  Future<Tuple2<MailboxTree, MailboxTree>> generateMailboxTreeInUIAfterRefreshChanges(
+      List<PresentationMailbox> allMailboxes,
+      MailboxTree defaultTreeBeforeChanges,
+      MailboxTree folderTreeBeforeChanges,
+  ) async {
+    final Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
+
+    final newDefaultTree = MailboxTree(MailboxNode.root());
+    final newFolderTree = MailboxTree(MailboxNode.root());
+
+    allMailboxes.forEach((mailbox) {
+      final mailboxNodeBeforeChanges = defaultTreeBeforeChanges.findNode((node) => node.item.id == mailbox.id) ??
+          folderTreeBeforeChanges.findNode((node) => node.item.id == mailbox.id);
+      if (mailboxNodeBeforeChanges != null) {
+        mailboxDictionary[mailbox.id] = MailboxNode(
+            mailbox,
+            expandMode: mailboxNodeBeforeChanges.expandMode,
+            selectMode: mailboxNodeBeforeChanges.selectMode);
+      } else {
+        mailboxDictionary[mailbox.id] = MailboxNode(mailbox);
+      }
+    });
+
+    allMailboxes.forEach((mailbox) {
+      final parentId = mailbox.parentId;
+      final parentNode = mailboxDictionary[parentId];
+      final node = mailboxDictionary[mailbox.id];
+      if (node != null) {
+        if (parentNode != null) {
+          parentNode.addChildNode(node);
+          parentNode.childrenItems?.sortByCompare<MailboxName?>(
+            (node) => node.item.name,
+            (name, other) => name?.compareAlphabetically(other) ?? -1
+          );
+        } else {
+          var tree = mailbox.hasRole() ? newDefaultTree : newFolderTree;
+
+          tree.root.addChildNode(node);
+          tree.root.childrenItems?.sortByCompare<MailboxName?>(
+            (node) => node.item.name,
+            (name, other) => name?.compareAlphabetically(other) ?? -1
+          );
+        }
+      }
+    });
+
+    newDefaultTree.root.childrenItems?.sort((thisMailbox, thatMailbox) => thisMailbox.compareTo(thatMailbox));
+    return Tuple2(newDefaultTree, newFolderTree);
+  }
 }

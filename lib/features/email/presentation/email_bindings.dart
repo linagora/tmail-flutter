@@ -35,7 +35,6 @@ class EmailBindings extends BaseBindings {
         Get.find<MarkAsEmailReadInteractor>(),
         Get.find<DownloadAttachmentsInteractor>(),
         Get.find<DeviceManager>(),
-        Get.find<AppToast>(),
         Get.find<ExportAttachmentInteractor>(),
         Get.find<MoveToMailboxInteractor>(),
         Get.find<MarkAsStarEmailInteractor>(),
