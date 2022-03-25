@@ -245,7 +245,11 @@ class ThreadController extends BaseController {
   void _refreshChangesAllEmailSuccess(RefreshChangesAllEmailSuccess success) {
     log('ThreadController::_refreshChangesAllEmailSuccess(): ${success.emailList.length}');
     _currentEmailState = success.currentEmailState;
-    emailList.value = success.emailList;
+
+    final emailsBeforeChanges = emailList;
+    final emailsAfterChanges = success.emailList;
+    final newListEmail = emailsAfterChanges.combine(emailsBeforeChanges);
+    emailList.value = newListEmail;
   }
 
   void _getAllEmailAction(AccountId accountId, {MailboxId? mailboxId}) {
@@ -675,7 +679,10 @@ class ThreadController extends BaseController {
         .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox))
         .toList();
 
-    emailListSearch.value = resultEmailSearchList;
+    final emailsSearchBeforeChanges = emailListSearch;
+    final emailsSearchAfterChanges = resultEmailSearchList;
+    final newListEmailSearch = emailsSearchAfterChanges.combine(emailsSearchBeforeChanges);
+    emailListSearch.value = newListEmailSearch;
   }
 
   void searchMoreEmails() {
