@@ -6,9 +6,9 @@ import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:model/model.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 
 class RefreshChangesEmailsInMailboxInteractor {
   final ThreadRepository threadRepository;
@@ -40,7 +40,7 @@ class RefreshChangesEmailsInMailboxInteractor {
           filterOption: filterOption)
         .map(_toGetEmailState);
     } catch (e) {
-      yield Left(GetAllEmailFailure(e));
+      yield Left(RefreshChangesAllEmailFailure(e));
     }
   }
 
@@ -48,7 +48,7 @@ class RefreshChangesEmailsInMailboxInteractor {
     final presentationEmailList = emailResponse.emailList
       ?.map((email) => email.toPresentationEmail()).toList() ?? List.empty();
 
-    return Right<Failure, Success>(GetAllEmailSuccess(
+    return Right<Failure, Success>(RefreshChangesAllEmailSuccess(
       emailList: presentationEmailList,
       currentEmailState: emailResponse.state));
   }

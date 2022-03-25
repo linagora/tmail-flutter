@@ -111,9 +111,9 @@ class EmailTileBuilder {
                       Padding(
                           padding: EdgeInsets.only(left: 8),
                           child: (ButtonBuilder(_imagePaths.icAttachment)
-                            ..paddingIcon(EdgeInsets.zero)
-                            ..size(16))
-                              .build()),
+                              ..paddingIcon(EdgeInsets.zero)
+                              ..size(16))
+                            .build()),
                     Padding(
                         padding: EdgeInsets.only(right: 4, left: 8),
                         child: Text(
@@ -122,9 +122,9 @@ class EmailTileBuilder {
                             overflow:TextOverflow.ellipsis,
                             style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail))),
                     (ButtonBuilder(_imagePaths.icChevron)
-                      ..paddingIcon(EdgeInsets.zero)
-                      ..size(16))
-                        .build(),
+                        ..paddingIcon(EdgeInsets.zero)
+                        ..size(16))
+                      .build(),
                   ],
                 )
             ),
@@ -169,9 +169,9 @@ class EmailTileBuilder {
                               ),
                             if (_presentationEmail.isFlaggedEmail() )
                               (ButtonBuilder(_imagePaths.icStar)
-                                ..paddingIcon(EdgeInsets.zero)
-                                ..size(15))
-                                  .build(),
+                                  ..paddingIcon(EdgeInsets.zero)
+                                  ..size(15))
+                                .build(),
                           ],
                         )),
                     Padding(

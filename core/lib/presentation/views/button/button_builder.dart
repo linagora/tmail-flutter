@@ -109,7 +109,7 @@ class ButtonBuilder {
       child: Container(
         key: _key,
         alignment: Alignment.center,
-        color: _decoration == null ? _colorButton ?? Colors.white : null,
+        color: _decoration == null ? _colorButton : null,
         decoration: _decoration,
         width: _maxWidth,
         padding: _padding ?? EdgeInsets.zero,

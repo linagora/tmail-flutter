@@ -6,6 +6,7 @@ abstract class BaseController extends GetxController {
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   void consumeState(Stream<Either<Failure, Success>> newStateStream) async {
+    log('BaseController::consumeState():');
     newStateStream.listen(
       (state) => onData(state),
       onError: (error) => onError(error),
