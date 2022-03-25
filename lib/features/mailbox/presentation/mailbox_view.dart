@@ -226,6 +226,7 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildListMailbox(BuildContext context) {
     return ListView(
+      controller: controller.mailboxListScrollController,
       key: PageStorageKey('mailbox_list'),
       primary: false,
       shrinkWrap: true,

@@ -48,11 +48,8 @@ class MailboxBindings extends BaseBindings {
         Get.find<DeleteMultipleMailboxInteractor>(),
         Get.find<VerifyNameInteractor>(),
         Get.find<RenameMailboxInteractor>(),
-        Get.find<TreeBuilder>(),
         Get.find<Uuid>(),
-        Get.find<AppToast>(),
-        Get.find<ImagePaths>(),
-        Get.find<ResponsiveUtils>(),
+        Get.find<TreeBuilder>(),
     ));
   }
 
