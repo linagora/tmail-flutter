@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_stat
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
@@ -125,21 +126,18 @@ class ThreadController extends BaseController {
 
     mailboxDashBoardController.viewState.listen((state) {
       state.map((success) {
-        if (success is MarkAsEmailReadSuccess
-            || success is MarkAsMultipleEmailReadAllSuccess
-            || success is MarkAsMultipleEmailReadHasSomeEmailFailure
-            || success is MoveToMailboxSuccess
-            || success is MarkAsStarEmailSuccess) {
-          cancelSelectEmail();
-          _refreshEmailChanges();
-        } else if (success is SearchEmailNewQuery){
-          _searchEmail();
+        log('ThreadController::onReady(): ${success.runtimeType}');
+
+        if (success is SearchEmailNewQuery){
           mailboxDashBoardController.clearState();
-        } else if (success is SaveEmailAsDraftsSuccess
+          _searchEmail();
+        } else if (success is MarkAsEmailReadSuccess
+            || success is MoveToMailboxSuccess
+            || success is MarkAsStarEmailSuccess
+            || success is SaveEmailAsDraftsSuccess
             || success is RemoveEmailDraftsSuccess
             || success is SendEmailSuccess
             || success is UpdateEmailDraftsSuccess) {
-          cancelSelectEmail();
           _refreshEmailChanges();
         }
       });
@@ -175,6 +173,8 @@ class ThreadController extends BaseController {
       (success) {
         if (success is GetAllEmailSuccess) {
           _getAllEmailSuccess(success);
+        } else if (success is RefreshChangesAllEmailSuccess) {
+          _refreshChangesAllEmailSuccess(success);
         } else if (success is LoadMoreEmailsSuccess) {
           _loadMoreEmailsSuccess(success);
         } else if (success is SearchEmailSuccess) {
@@ -194,7 +194,7 @@ class ThreadController extends BaseController {
       (failure) {
         if (failure is MarkAsMultipleEmailReadAllFailure
             || failure is MarkAsMultipleEmailReadFailure) {
-          _markAsSelectedEmailReadFailure(failure);
+          _markAsReadSelectedMultipleEmailFailure(failure);
         } else if (failure is MarkAsStarMultipleEmailAllFailure
             || failure is MarkAsStarMultipleEmailFailure) {
           _markAsStarMultipleEmailFailure(failure);
@@ -203,7 +203,7 @@ class ThreadController extends BaseController {
       (success) {
         if (success is MarkAsMultipleEmailReadAllSuccess
             || success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-          _markAsSelectedEmailReadSuccess(success);
+          _markAsReadSelectedMultipleEmailSuccess(success);
         } else if (success is MoveMultipleEmailToMailboxAllSuccess
             || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
           _moveSelectedMultipleEmailToMailboxSuccess(success);
@@ -238,6 +238,12 @@ class ThreadController extends BaseController {
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
     log('ThreadController::_getAllEmailSuccess(): ${success.emailList.length}');
+    _currentEmailState = success.currentEmailState;
+    emailList.value = success.emailList;
+  }
+
+  void _refreshChangesAllEmailSuccess(RefreshChangesAllEmailSuccess success) {
+    log('ThreadController::_refreshChangesAllEmailSuccess(): ${success.emailList.length}');
     _currentEmailState = success.currentEmailState;
     emailList.value = success.emailList;
   }
@@ -431,13 +437,10 @@ class ThreadController extends BaseController {
     currentSelectMode.value = SelectMode.INACTIVE;
   }
 
-  void markAsSelectedEmailRead(List<PresentationEmail> listPresentationEmail, {bool fromContextMenuAction = false}) {
-    if (fromContextMenuAction) {
-      popBack();
-    }
+  void markAsReadSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail) {
+    cancelSelectEmail();
 
     final readAction = listPresentationEmail.isAllEmailRead ? ReadActions.markAsUnread : ReadActions.markAsRead;
-
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (_accountId != null && mailboxCurrent != null) {
       final listEmail = listPresentationEmail.map((presentationEmail) => presentationEmail.toEmail()).toList();
@@ -445,9 +448,7 @@ class ThreadController extends BaseController {
     }
   }
 
-  void _markAsSelectedEmailReadSuccess(Success success) {
-    cancelSelectEmail();
-
+  void _markAsReadSelectedMultipleEmailSuccess(Success success) {
     mailboxDashBoardController.dispatchState(Right(success));
 
     ReadActions? readActions;
@@ -467,11 +468,14 @@ class ThreadController extends BaseController {
           message: message,
           icon: readActions == ReadActions.markAsUnread ? _imagePaths.icUnreadToast : _imagePaths.icReadToast);
     }
+
+    _refreshEmailChanges();
   }
 
-  void _markAsSelectedEmailReadFailure(Failure failure) {
-    cancelSelectEmail();
-    _appToast.showErrorToast(AppLocalizations.of(currentContext!).an_error_occurred);
+  void _markAsReadSelectedMultipleEmailFailure(Failure failure) {
+    if (currentContext != null) {
+      _appToast.showErrorToast(AppLocalizations.of(currentContext!).an_error_occurred);
+    }
   }
 
   void openFilterMessagesCupertinoActionSheet(BuildContext context, List<Widget> actionTiles, {Widget? cancelButton}) {
@@ -514,6 +518,8 @@ class ThreadController extends BaseController {
     if (currentMailbox != null && _accountId != null) {
       popBack();
 
+      cancelSelectEmail();
+
       final listEmailIds = listEmail.map((email) => email.id).toList();
       final destinationMailbox = await push(
           AppRoutes.DESTINATION_PICKER,
@@ -538,7 +544,6 @@ class ThreadController extends BaseController {
   }
 
   void _moveSelectedMultipleEmailToMailboxSuccess(Success success) {
-    cancelSelectEmail();
     mailboxDashBoardController.dispatchState(Right(success));
 
     String? destinationPath;
@@ -603,16 +608,10 @@ class ThreadController extends BaseController {
     _refreshEmailChanges();
   }
 
-  void markAsStarSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail,
-      {bool fromContextMenuAction = false, MarkStarAction? markStarAction}) {
-    if (fromContextMenuAction) {
-      popBack();
-    }
+  void markAsStarSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail) {
+    cancelSelectEmail();
 
-    final starAction = markStarAction != null
-     ? markStarAction
-     : listPresentationEmail.isAllEmailStarred ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
-
+    final starAction = listPresentationEmail.isAllEmailStarred ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (_accountId != null && mailboxCurrent != null) {
       final listEmail = listPresentationEmail.map((presentationEmail) => presentationEmail.toEmail()).toList();
@@ -621,9 +620,6 @@ class ThreadController extends BaseController {
   }
 
   void _markAsStarMultipleEmailSuccess(Success success) {
-    cancelSelectEmail();
-    _refreshEmailChanges();
-
     MarkStarAction? markStarAction;
     int countMarkStarSuccess = 0;
 
@@ -640,10 +636,11 @@ class ThreadController extends BaseController {
           ? AppLocalizations.of(currentContext!).marked_unstar_multiple_item(countMarkStarSuccess)
           : AppLocalizations.of(currentContext!).marked_star_multiple_item(countMarkStarSuccess));
     }
+
+    _refreshEmailChanges();
   }
 
   void _markAsStarMultipleEmailFailure(Failure failure) {
-    cancelSelectEmail();
     if (currentContext != null) {
       _appToast.showErrorToast(AppLocalizations.of(currentContext!).an_error_occurred);
     }
@@ -716,7 +713,7 @@ class ThreadController extends BaseController {
     switch(actionType) {
       case EmailActionType.markAsRead:
       case EmailActionType.markAsUnread:
-        markAsSelectedEmailRead(selectionEmail);
+        markAsReadSelectedMultipleEmail(selectionEmail);
         break;
       case EmailActionType.markAsStar:
       case EmailActionType.markAsUnStar:

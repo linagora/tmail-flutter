@@ -31,29 +31,35 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
-      body: Container(
-        padding: EdgeInsets.zero,
-        margin: EdgeInsets.zero,
-        decoration: responsiveUtils.isTabletLarge(context)
-          ? BoxDecoration(border: Border(left: BorderSide(color: AppColor.colorLineLeftEmailView, width: 1.0)))
-          : null,
-        child: SafeArea(
-            right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-            left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (responsiveUtils.isDesktop(context))
-                    Container(
-                      color: Colors.white,
-                      padding: EdgeInsets.only(right: 10, top: 16, bottom: 10),
-                      child: _buildHeader(context)),
-                  Expanded(child: _buildBody(context)),
-                ]
-            )
-        ),
+    return WillPopScope(
+      onWillPop: () async {
+        emailController.backToThreadView(context);
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
+        body: Container(
+          padding: EdgeInsets.zero,
+          margin: EdgeInsets.zero,
+          decoration: responsiveUtils.isTabletLarge(context)
+            ? BoxDecoration(border: Border(left: BorderSide(color: AppColor.colorLineLeftEmailView, width: 1.0)))
+            : null,
+          child: SafeArea(
+              right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+              left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (responsiveUtils.isDesktop(context))
+                      Container(
+                        color: Colors.white,
+                        padding: EdgeInsets.only(right: 10, top: 16, bottom: 10),
+                        child: _buildHeader(context)),
+                    Expanded(child: _buildBody(context)),
+                  ]
+              )
+          ),
+        )
       )
     );
   }

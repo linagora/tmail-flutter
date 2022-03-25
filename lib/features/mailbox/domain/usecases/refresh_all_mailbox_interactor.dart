@@ -5,7 +5,7 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmapState;
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 
 class RefreshAllMailboxInteractor {
   final MailboxRepository _mailboxRepository;
@@ -20,7 +20,7 @@ class RefreshAllMailboxInteractor {
         .refresh(accountId, currentState)
         .map(_toGetMailboxState);
     } catch (e) {
-      yield Left<Failure, Success>(GetAllMailboxFailure(e));
+      yield Left<Failure, Success>(RefreshChangesAllMailboxFailure(e));
     }
   }
 
@@ -29,7 +29,7 @@ class RefreshAllMailboxInteractor {
         ?.map((mailbox) => mailbox.toPresentationMailbox()).toList()
         ?? List<PresentationMailbox>.empty();
 
-    return Right<Failure, Success>(GetAllMailboxSuccess(
+    return Right<Failure, Success>(RefreshChangesAllMailboxSuccess(
         mailboxList: mailboxList,
         currentMailboxState: mailboxResponse.state)
     );

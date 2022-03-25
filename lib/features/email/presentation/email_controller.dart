@@ -45,12 +45,12 @@ class EmailController extends BaseController {
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
+  final _appToast = Get.find<AppToast>();
 
   final GetEmailContentInteractor _getEmailContentInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
   final DownloadAttachmentsInteractor _downloadAttachmentsInteractor;
   final DeviceManager _deviceManager;
-  final AppToast _appToast;
   final ExportAttachmentInteractor _exportAttachmentInteractor;
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
@@ -72,7 +72,6 @@ class EmailController extends BaseController {
     this._markAsEmailReadInteractor,
     this._downloadAttachmentsInteractor,
     this._deviceManager,
-    this._appToast,
     this._exportAttachmentInteractor,
     this._moveToMailboxInteractor,
     this._markAsStarEmailInteractor,
@@ -83,12 +82,12 @@ class EmailController extends BaseController {
   void onReady() {
     super.onReady();
     mailboxDashBoardController.selectedEmail.listen((presentationEmail) {
+      log('EmailController::onReady(): ${presentationEmail.toString()}');
       if (_currentEmailId != presentationEmail?.id) {
-        _clearEmailContent();
         _currentEmailId = presentationEmail?.id;
-        final accountId = mailboxDashBoardController.accountId.value;
-        if (accountId != null && presentationEmail != null) {
-          _getEmailContentAction(accountId, presentationEmail.id);
+        _resetToOriginalValue();
+        if (presentationEmail != null) {
+          _getEmailContentAction(presentationEmail.id);
           if (presentationEmail.isUnReadEmail()) {
             markAsEmailRead(presentationEmail, ReadActions.markAsRead);
           }
@@ -103,9 +102,12 @@ class EmailController extends BaseController {
     super.onClose();
   }
 
-  void _getEmailContentAction(AccountId accountId, EmailId emailId) async {
+  void _getEmailContentAction(EmailId emailId) async {
+    final accountId = mailboxDashBoardController.accountId.value;
     final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
-    consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
+    if (accountId != null && baseDownloadUrl != null) {
+      consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
+    }
   }
 
   @override
@@ -153,7 +155,7 @@ class EmailController extends BaseController {
     attachments.value = success.attachments;
   }
 
-  void _clearEmailContent() {
+  void _resetToOriginalValue() {
     attachmentsExpandMode.value = ExpandMode.COLLAPSE;
     emailAddressExpandMode.value = ExpandMode.COLLAPSE;
     isDisplayFullEmailAddress.value = false;
@@ -185,9 +187,6 @@ class EmailController extends BaseController {
   }
 
   void _markAsEmailReadSuccess(Success success) {
-    if (success is MarkAsEmailReadSuccess) {
-      mailboxDashBoardController.setSelectedEmail(success.updatedEmail.toPresentationEmail(selectMode: SelectMode.ACTIVE));
-    }
     mailboxDashBoardController.dispatchState(Right(success));
 
     if (success is MarkAsEmailReadSuccess
@@ -496,9 +495,7 @@ class EmailController extends BaseController {
   }
 
   void backToThreadView(BuildContext context) {
-    attachmentsExpandMode.value = ExpandMode.COLLAPSE;
-    emailAddressExpandMode.value = ExpandMode.COLLAPSE;
-    isDisplayFullEmailAddress.value = false;
+    mailboxDashBoardController.clearSelectedEmail();
     if (responsiveUtils.isDesktop(context) || responsiveUtils.isTabletLarge(context)) {
       mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
     } else {
