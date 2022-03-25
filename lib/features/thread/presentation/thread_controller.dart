@@ -323,18 +323,17 @@ class ThreadController extends BaseController {
           properties: ThreadConstants.propertiesDefault,
         ));
       }
-    } else {
-      if (_accountId != null && _currentEmailState != null) {
-        consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
-          _accountId!,
-          _currentEmailState!,
-          sort: _sortOrder,
-          propertiesCreated: ThreadConstants.propertiesDefault,
-          propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-          inMailboxId: _currentMailboxId,
-          filterOption: filterMessageOption.value
-        ));
-      }
+    }
+    if (_accountId != null && _currentEmailState != null) {
+      consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
+        _accountId!,
+        _currentEmailState!,
+        sort: _sortOrder,
+        propertiesCreated: ThreadConstants.propertiesDefault,
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        inMailboxId: _currentMailboxId,
+        filterOption: filterMessageOption.value
+      ));
     }
   }
 
