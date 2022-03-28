@@ -459,7 +459,7 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _openConfirmationDialogDeleteMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
-    if (_responsiveUtils.isMobile(context) || _responsiveUtils.isMobileDevice(context)) {
+    if (_responsiveUtils.isMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
           ..messageText(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
           ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
@@ -536,7 +536,7 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _openDialogRenameMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
-    if (_responsiveUtils.isMobile(context) || _responsiveUtils.isMobileDevice(context)) {
+    if (_responsiveUtils.isMobile(context)) {
       (EditTextModalSheetBuilder()
           ..key(Key('rename_mailbox_modal_sheet'))
           ..title(AppLocalizations.of(context).rename_mailbox)
@@ -560,22 +560,23 @@ class MailboxController extends BaseMailboxController {
       showDialog(
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => (EditTextDialogBuilder()
-              ..key(Key('rename_mailbox_dialog'))
-              ..title(AppLocalizations.of(context).rename_mailbox)
-              ..cancelText(AppLocalizations.of(context).cancel)
-              ..setErrorString((value) => getErrorInputNameStringRenameMailbox(context, value))
-              ..setTextController(TextEditingController.fromValue(
-                TextEditingValue(
-                    text: presentationMailbox.name?.name ?? '',
-                    selection: TextSelection(
-                        baseOffset: 0,
-                        extentOffset: presentationMailbox.name?.name.length ?? 0
-                    )
-                )))
-              ..onConfirmButtonAction(AppLocalizations.of(context).rename,
-                    (value) => _renameMailboxAction(presentationMailbox, value)))
-            .build());
+          builder: (BuildContext context) =>
+              PointerInterceptor(child: (EditTextDialogBuilder()
+                  ..key(Key('rename_mailbox_dialog'))
+                  ..title(AppLocalizations.of(context).rename_mailbox)
+                  ..cancelText(AppLocalizations.of(context).cancel)
+                  ..setErrorString((value) => getErrorInputNameStringRenameMailbox(context, value))
+                  ..setTextController(TextEditingController.fromValue(
+                      TextEditingValue(
+                          text: presentationMailbox.name?.name ?? '',
+                          selection: TextSelection(
+                              baseOffset: 0,
+                              extentOffset: presentationMailbox.name?.name.length ?? 0
+                          )
+                      )))
+                  ..onConfirmButtonAction(AppLocalizations.of(context).rename,
+                      (value) => _renameMailboxAction(presentationMailbox, value)))
+                .build()));
     }
   }
 
