@@ -12,12 +12,13 @@ extension ListAttachmentExtension on List<Attachment> {
     return totalSize;
   }
 
-  List<Attachment> get attachmentsWithDispositionAttachment {
-    return where((attachment) => attachment.disposition == ContentDisposition.attachment).toList();
+  List<Attachment> get listAttachmentsDisplayedOutSide {
+    return where((attachment) => attachment.disposition == ContentDisposition.attachment || attachment.noCid())
+        .toList();
   }
 
-  List<Attachment> get attachmentWithDispositionInlines {
-    return where((attachment) => attachment.disposition == ContentDisposition.inline && attachment.cidNotEmpty())
+  List<Attachment> get listAttachmentsDisplayedInContent {
+    return where((attachment) => attachment.hasCid())
       .toList();
   }
 }

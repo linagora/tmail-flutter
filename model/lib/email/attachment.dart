@@ -27,7 +27,9 @@ class Attachment with EquatableMixin {
     this.disposition,
   });
 
-  bool cidNotEmpty() => cid != null && cid!.isNotEmpty;
+  bool noCid() => cid == null || cid?.isEmpty == true;
+
+  bool hasCid() => cid != null && cid?.isNotEmpty == true;
 
   String getDownloadUrl(String baseDownloadUrl, AccountId accountId) {
     final downloadUriTemplate = UriTemplate('$baseDownloadUrl');
