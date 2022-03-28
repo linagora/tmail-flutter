@@ -182,7 +182,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
   Widget _buildEmailSubject(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(right: 16),
-      child: Text(
+      child: SelectableText(
           '${emailController.mailboxDashBoardController.selectedEmail.value?.getEmailTitle()}',
           style: TextStyle(
               fontSize: 20,
