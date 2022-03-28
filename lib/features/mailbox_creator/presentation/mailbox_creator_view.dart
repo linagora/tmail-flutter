@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/app_bar_mailbox_creator_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
@@ -14,7 +15,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return PointerInterceptor(child: Card(
         margin: EdgeInsets.zero,
         borderOnForeground: false,
         color: Colors.transparent,
@@ -51,7 +52,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
               )
           ),
         )
-    );
+    ));
   }
 
   Widget _buildBody(BuildContext context) {

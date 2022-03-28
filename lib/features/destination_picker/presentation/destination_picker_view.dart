@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/app_bar_destination_picker_builder.dart';
@@ -26,7 +27,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
     }
 
     if (actions == MailboxActions.create) {
-      return Card(
+      return PointerInterceptor(child: Card(
           margin: EdgeInsets.zero,
           borderOnForeground: false,
           color: Colors.transparent,
@@ -35,10 +36,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
             child: ResponsiveWidget(
                 responsiveUtils: _responsiveUtils,
                 mobile: _responsiveUtils.isPortrait(context)
-                  ? Container(
-                      child: _buildBodyMailboxLocation(context, actions),
-                      width: _responsiveUtils.getSizeScreenWidth(context))
-                  : _buildBodyMailboxDestination(context, actions),
+                    ? Container(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.getSizeScreenWidth(context))
+                    : _buildBodyMailboxDestination(context, actions),
                 tablet: Container(
                     child: Row(
                         children: [
@@ -65,9 +64,9 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                 )
             ),
           )
-      );
+      ));
     } else {
-      return _buildBodyMailboxDestination(context, actions);
+      return PointerInterceptor(child: _buildBodyMailboxDestination(context, actions));
     }
   }
 
