@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:core/presentation/utils/shims/dart_ui.dart' as ui;
-import 'package:core/utils/app_logger.dart' as logger;
 
 class HtmlContentViewerOnWeb extends StatefulWidget {
 
@@ -55,7 +54,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   }
 
   String _getRandString(int len) {
-    var random = Random.secure();
+    var random = math.Random.secure();
     var values = List<int>.generate(len, (i) => random.nextInt(255));
     return base64UrlEncode(values);
   }
@@ -64,6 +63,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     final htmlScripts = '''
       <script type="text/javascript">
         window.parent.addEventListener('message', handleMessage, false);
+        window.addEventListener('click', handleOnClickLink, true);
       
         function handleMessage(e) {
           if (e && e.data && e.data.includes("toIframe:")) {
@@ -87,6 +87,27 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
             }
           }
         }
+        
+        function handleOnClickLink(e) {
+           var link = e.target;
+           console.log("handleOnClickLink: " + link);
+           if (link && isValidHttpUrl(link)) {
+              window.parent.postMessage(JSON.stringify({"view": "$createdViewId", "type": "toDart: OpenLink", "url": "" + link}), "*");
+              e.preventDefault();
+           }
+        }
+        
+        function isValidHttpUrl(string) {
+          let url;
+          
+          try {
+            url = new URL(string);
+          } catch (_) {
+            return false;  
+          }
+        
+          return url.protocol === "http:" || url.protocol === "https:";
+        }
       </script>
     ''';
 
@@ -102,7 +123,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           min-height: ${minHeight}px;
           min-width: ${minWidth}px;
           color: #000000;
-          font-family: verdana;
+          font-family: Inter;
+          font-size: 16px;
+          font-style: normal;
         }
         table {
           width: 100%;
@@ -137,6 +160,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       ..srcdoc = _htmlData ?? ''
       ..style.border = 'none'
       ..style.overflow = 'hidden'
+      ..style.width = '100%'
+      ..style.height = '100%'
       ..onLoad.listen((event) async {
         final dataGetHeight = <String, Object>{'type': 'toIframe: getHeight', 'view' : createdViewId};
         final dataGetWidth = <String, Object>{'type': 'toIframe: getWidth', 'view' : createdViewId};
@@ -145,9 +170,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         final jsonGetHeight = jsonEncoder.convert(dataGetHeight);
         final jsonGetWidth = jsonEncoder.convert(dataGetWidth);
 
-        logger.log('HtmlContentViewerOnWeb() | onLoad | jsonGetHeight: $jsonGetHeight');
-        logger.log('HtmlContentViewerOnWeb() | onLoad | jsonGetWidth: $jsonGetWidth');
-
         html.window.postMessage(jsonGetHeight, '*');
         html.window.postMessage(jsonGetWidth, '*');
 
@@ -155,7 +177,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           var data = json.decode(event.data);
           if (data['type'] != null && data['type'].contains('toDart: htmlHeight') && data['view'] == createdViewId) {
             final docHeight = data['height'] ?? actualHeight;
-            logger.log('HtmlContentViewerOnWeb() | onMessage | docHeight: $docHeight');
             if (docHeight != null && mounted) {
               final scrollHeightWithBuffer = docHeight + 30.0;
               if (scrollHeightWithBuffer > minHeight) {
@@ -174,7 +195,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
           if (data['type'] != null && data['type'].contains('toDart: htmlWidth') && data['view'] == createdViewId) {
             final docWidth = data['width'] ?? actualWidth;
-            logger.log('HtmlContentViewerOnWeb() | onMessage | docWidth: $docWidth');
             if (docWidth != null && mounted) {
               if (docWidth > minWidth) {
                 setState(() {
@@ -190,6 +210,14 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
                   context.findRenderObject()!,
                   duration: const Duration(milliseconds: 100),
                   curve: Curves.easeIn);
+            }
+          }
+
+          if (data['type'] != null && data['type'].contains('toDart: OpenLink') && data['view'] == createdViewId) {
+            final link = data['url'];
+            if (link != null && mounted) {
+              log('_HtmlContentViewerOnWebState::_setUpWeb(): OpenLink: $link');
+              html.window.open('$link', '_blank');
             }
           }
         });
@@ -214,10 +242,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           width: actualWidth,
           child: _buildWebView(),
         ),
-        PointerInterceptor(child: SizedBox(
-          height: actualHeight,
-          width: actualWidth,
-        )),
         if (_isLoading) _buildLoadingView()
       ],
     );
