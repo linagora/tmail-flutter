@@ -384,7 +384,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
       if (success is LoadingState) {
         return AttachmentsPlaceHolderLoading(responsiveUtils: responsiveUtils);
       } else {
-        final attachments = emailController.attachments.attachmentsWithDispositionAttachment;
+        final attachments = emailController.attachments.listAttachmentsDisplayedOutSide;
         return attachments.isNotEmpty
           ? _buildAttachmentsBody(context, attachments)
           : SizedBox.shrink();
