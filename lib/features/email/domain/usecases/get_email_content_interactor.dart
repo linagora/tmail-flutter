@@ -19,7 +19,7 @@ class GetEmailContentInteractor {
       if (email.emailContentList.isNotEmpty) {
         final newEmailContents = await emailRepository.transformEmailContent(
             email.emailContentList,
-            email.allAttachments.attachmentWithDispositionInlines,
+            email.allAttachments.listAttachmentsDisplayedInContent,
             baseDownloadUrl,
             accountId);
         yield Right<Failure, Success>(GetEmailContentSuccess(newEmailContents, email.allAttachments));
