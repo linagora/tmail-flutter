@@ -33,19 +33,14 @@ class EmailContentItemBuilder {
   }
 
   Widget _buildItem() {
-    log('EmailContentItemBuilder() | maxWidth: ${_constraints.maxWidth}');
-    log('EmailContentItemBuilder() | heightScreen: ${MediaQuery.of(_context).size.height}');
     switch(_emailContent.type) {
       case EmailContentType.textHtml:
         if (kIsWeb) {
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: HtmlContentViewerOnWeb(
+          return HtmlContentViewerOnWeb(
                 widthContent: _constraints.maxWidth,
                 heightContent: MediaQuery.of(_context).size.height,
                 contentHtml: _emailContent.content,
-                controller: HtmlViewerControllerForWeb()),
-          );
+                controller: HtmlViewerControllerForWeb());
         } else {
           return HtmlContentViewer(
               widthContent: MediaQuery.of(_context).size.width,

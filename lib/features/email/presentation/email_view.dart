@@ -15,7 +15,6 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_fil
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_place_holder_loading_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_item_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_place_holder_loading_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -156,19 +155,27 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
       color: Colors.white,
       margin: EdgeInsets.zero,
       alignment: Alignment.topCenter,
-      child: Obx(() => emailController.currentEmail != null
-        ? SingleChildScrollView(
-            physics : ClampingScrollPhysics(),
-            child: Container(
-              margin: EdgeInsets.zero,
-              width: double.infinity,
-              alignment: Alignment.center,
-              padding: EdgeInsets.zero,
-              color: Colors.white,
-              child:  _buildEmailMessage(context)
-            ))
-        : Center(child: _buildEmailEmpty(context))
-      )
+      child: Obx(() {
+        if (emailController.currentEmail != null) {
+          if (kIsWeb) {
+            return _buildEmailMessage(context);
+          } else {
+            return SingleChildScrollView(
+                physics : ClampingScrollPhysics(),
+                child: Container(
+                    margin: EdgeInsets.zero,
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.zero,
+                    color: Colors.white,
+                    child: _buildEmailMessage(context)
+                )
+            );
+          }
+        } else {
+          return Center(child: _buildEmailEmpty(context));
+        }
+      })
     );
   }
 
@@ -184,6 +191,9 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
       padding: EdgeInsets.only(right: 16),
       child: SelectableText(
           '${emailController.mailboxDashBoardController.selectedEmail.value?.getEmailTitle()}',
+          maxLines: 3,
+          minLines: 1,
+          cursorColor: AppColor.colorTextButton,
           style: TextStyle(
               fontSize: 20,
               color: AppColor.colorNameEmail,
@@ -193,15 +203,12 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
 
   Widget _buildEmailMessage(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(bottom: 16, left: 16, right: 16, top: 10),
+      padding: EdgeInsets.only(left: 16, right: 16, top: 10),
       alignment: Alignment.center,
       color: Colors.white,
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
             children: [
               Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -220,7 +227,10 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
                   : SizedBox.shrink()),
               _buildDivider(edgeInsets: EdgeInsets.only(top: 8)),
               _buildAttachments(context),
-              _buildListEmailContent(context, constraints),
+              if (kIsWeb)
+                Expanded(child: _buildEmailContent(context, constraints))
+              else
+                _buildEmailContent(context, constraints),
             ],
           );
         })
@@ -502,7 +512,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
     );
   }
 
-  Widget _buildListEmailContent(BuildContext context, BoxConstraints constraints) {
+  Widget _buildEmailContent(BuildContext context, BoxConstraints constraints) {
     return Obx(() => emailController.viewState.value.fold(
       (failure) => SizedBox.shrink(),
       (success) {
@@ -510,14 +520,23 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
           return EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils);
         } else {
           if (emailController.emailContents.isNotEmpty) {
-            return Column(children: [
-              ...emailController.emailContents.map((content) => EmailContentItemBuilder(
-                  context,
-                  content,
-                  constraints,
-                  loadingWidget: EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils)
-              ).build()).toList(),
-            ]);
+            final allEmailContents = emailController.emailContents
+                .map((emailContent) => emailContent.asHtml)
+                .toList()
+                .join('<br>');
+
+            if (kIsWeb) {
+              return HtmlContentViewerOnWeb(
+                  widthContent: constraints.maxWidth,
+                  heightContent: MediaQuery.of(context).size.height,
+                  contentHtml: allEmailContents,
+                  controller: HtmlViewerControllerForWeb());
+            } else {
+              return HtmlContentViewer(
+                  widthContent: MediaQuery.of(context).size.width,
+                  contentHtml: allEmailContents,
+                  loadingWidget: EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils));
+            }
           } else {
             return SizedBox.shrink();
           }
