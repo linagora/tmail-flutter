@@ -55,7 +55,7 @@ class EmailContentItemBuilder {
       case EmailContentType.textPlain:
         return Padding(
           padding: EdgeInsets.only(top: 20),
-          child: Text(
+          child: SelectableText(
             _emailContent.content,
             style: TextStyle(fontSize: 14, color: AppColor.colorNameEmail, fontWeight: FontWeight.normal)));
       case EmailContentType.other:
