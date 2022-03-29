@@ -9,6 +9,8 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/special_character_validator.dart';
@@ -27,8 +29,10 @@ class MailboxCreatorController extends BaseController {
   final selectedMailbox = Rxn<PresentationMailbox>();
   final newNameMailbox = Rxn<String>();
 
-  List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
   AccountId? accountId;
+  MailboxTree? folderMailboxTree;
+  MailboxTree? defaultMailboxTree;
+  List<String> listMailboxNameAsStringExist = <String>[];
 
   MailboxCreatorController(
       this._verifyNameInteractor,
@@ -41,9 +45,12 @@ class MailboxCreatorController extends BaseController {
     super.onReady();
     final arguments = Get.arguments;
     if (arguments is MailboxCreatorArguments) {
-      allMailboxes = arguments.allMailboxes;
+      folderMailboxTree = arguments.folderMailboxTree;
+      defaultMailboxTree = arguments.defaultMailboxTree;
       accountId = arguments.accountId;
-      log('allMailboxes: $allMailboxes | accountId: $accountId');
+      log('MailboxCreatorController::onReady(): defaultMailboxTree: $defaultMailboxTree');
+      log('MailboxCreatorController::onReady(): folderMailboxTree: $folderMailboxTree');
+      _createListMailboxNameAsStringInMailboxLocation();
     }
   }
 
@@ -67,17 +74,38 @@ class MailboxCreatorController extends BaseController {
     return true;
   }
 
+  void _createListMailboxNameAsStringInMailboxLocation() {
+    if (selectedMailbox.value == null) {
+      final allChildrenAtMailboxLocation = (defaultMailboxTree?.root.childrenItems ?? <MailboxNode>[]) + (folderMailboxTree?.root.childrenItems ?? <MailboxNode>[]);
+      if (allChildrenAtMailboxLocation.isNotEmpty) {
+        listMailboxNameAsStringExist = allChildrenAtMailboxLocation
+            .where((mailboxNode) => mailboxNode.item.name != null && mailboxNode.item.name?.name.isNotEmpty == true)
+            .map((mailboxNode) => mailboxNode.item.name!.name)
+            .toList();
+      }
+    } else {
+      final mailboxNodeLocation = defaultMailboxTree?.findNode((node) => node.item.id == selectedMailbox.value!.id)
+          ?? folderMailboxTree?.findNode((node) => node.item.id == selectedMailbox.value!.id);
+      if (mailboxNodeLocation != null && mailboxNodeLocation.childrenItems?.isNotEmpty == true) {
+        final allChildrenAtMailboxLocation =  mailboxNodeLocation.childrenItems!;
+        listMailboxNameAsStringExist = allChildrenAtMailboxLocation
+            .where((mailboxNode) => mailboxNode.item.name != null && mailboxNode.item.name?.name.isNotEmpty == true)
+            .map((mailboxNode) => mailboxNode.item.name!.name)
+            .toList();
+      }
+    }
+
+    log('MailboxCreatorController::_createListMailboxNameAsStringInMailboxLocation(): ${listMailboxNameAsStringExist.toString()}');
+  }
+
   String? getErrorInputNameString(BuildContext context) {
     final nameMailbox = newNameMailbox.value;
-    final listName = allMailboxes
-        .where((mailbox) => !(mailbox.name.isBlank == true))
-        .map((mailbox) => mailbox.name!.name).toList();
 
     return _verifyNameInteractor.execute(
         nameMailbox,
         [
           EmptyNameValidator(),
-          DuplicateNameValidator(listName),
+          DuplicateNameValidator(listMailboxNameAsStringExist),
           SpecialCharacterValidator(),
         ]
     ).fold(
@@ -102,6 +130,7 @@ class MailboxCreatorController extends BaseController {
       );
 
       selectedMailbox.value = destinationMailbox;
+      _createListMailboxNameAsStringInMailboxLocation();
     }
   }
 
