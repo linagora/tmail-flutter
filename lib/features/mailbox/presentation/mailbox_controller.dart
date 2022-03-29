@@ -294,7 +294,7 @@ class MailboxController extends BaseMailboxController {
     if (accountId != null) {
       final newMailboxArguments = await push(
           AppRoutes.MAILBOX_CREATOR,
-          arguments: MailboxCreatorArguments(accountId, allMailboxes)
+          arguments: MailboxCreatorArguments(accountId, defaultMailboxTree.value, folderMailboxTree.value)
       );
 
       if (newMailboxArguments != null && newMailboxArguments is NewMailboxArguments) {
