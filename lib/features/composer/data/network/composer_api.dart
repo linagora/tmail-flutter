@@ -22,6 +22,8 @@ class ComposerAPI {
         options: Options(headers: headerParam),
         data: uploadRequest.fileInfo.readStream);
 
-    return UploadResponse.fromJson(jsonDecode(resultJson));
+    final decodeJson = resultJson is Map ? resultJson : jsonDecode(resultJson);
+
+    return UploadResponse.fromJson(decodeJson);
   }
 }
