@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-03-29T13:00:02.017403",
+  "@@last_modified": "2022-03-29T16:34:59.741046",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -896,6 +896,12 @@
   },
   "the_total_size_of_attachments_in_an_email_exceeds_the_limit": "The total size of attachments in an email exceeds the limit.",
   "@the_total_size_of_attachments_in_an_email_exceeds_the_limit": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "your_download_has_started": "Your download has started",
+  "@your_download_has_started": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
