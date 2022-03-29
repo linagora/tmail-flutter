@@ -956,4 +956,11 @@ class AppLocalizations {
         name: 'the_total_size_of_attachments_in_an_email_exceeds_the_limit'
     );
   }
+
+  String get your_download_has_started {
+    return Intl.message(
+        'Your download has started',
+        name: 'your_download_has_started'
+    );
+  }
 }

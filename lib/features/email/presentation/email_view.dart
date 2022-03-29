@@ -450,7 +450,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
                 ..onExpandAttachmentActionClick(() => emailController.toggleDisplayAttachmentsAction())
                 ..onDownloadAttachmentFileActionClick((attachment) {
                   if (kIsWeb) {
-                    emailController.downloadAttachmentForWeb(attachment);
+                    emailController.downloadAttachmentForWeb(context, attachment);
                   } else {
                     if (Platform.isAndroid) {
                       emailController.downloadAttachments(context, [attachment]);
