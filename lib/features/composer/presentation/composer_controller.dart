@@ -517,7 +517,38 @@ class ComposerController extends BaseController {
 
   void _pickFileSuccess(Success success) {
     if (success is LocalFilePickerSuccess) {
-      _uploadAttachmentsAction(success.pickedFiles);
+      if (_validateAttachmentsSize(success.pickedFiles)) {
+        _uploadAttachmentsAction(success.pickedFiles);
+      } else {
+        if (currentContext != null) {
+          _appToast.showErrorToast(AppLocalizations.of(currentContext!).the_total_size_of_attachments_in_an_email_exceeds_the_limit);
+        }
+      }
+    }
+  }
+
+  bool _validateAttachmentsSize(List<FileInfo> listFiles) {
+    num currentTotalSize = 0;
+    if (attachments.isNotEmpty) {
+      final currentListSize = attachments
+          .map((attachment) => attachment.size?.value ?? 0)
+          .toList();
+      currentTotalSize = currentListSize.reduce((sum, size) => sum + size);
+      log('ComposerController::checkingAttachmentsLimit(): currentTotalSize: $currentTotalSize');
+    }
+
+    final uploadedListSize = listFiles.map((file) => file.fileSize).toList();
+    final uploadedTotalSize = uploadedListSize.reduce((sum, size) => sum + size);
+    log('ComposerController::checkingAttachmentsLimit(): uploadedTotalSize: $uploadedTotalSize');
+
+    final totalSizeReadyToUpload = currentTotalSize + uploadedTotalSize;
+    log('ComposerController::checkingAttachmentsLimit(): totalSizeReadyToUpload: $totalSizeReadyToUpload');
+
+    final maxSizeAttachmentsPerEmail = mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value;
+    if (maxSizeAttachmentsPerEmail != null) {
+      return totalSizeReadyToUpload <= maxSizeAttachmentsPerEmail;
+    } else {
+      return false;
     }
   }
 

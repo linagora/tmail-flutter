@@ -949,4 +949,11 @@ class AppLocalizations {
         'Fix email addresses',
         name: 'fix_email_addresses');
   }
+
+  String get the_total_size_of_attachments_in_an_email_exceeds_the_limit {
+    return Intl.message(
+        'The total size of attachments in an email exceeds the limit.',
+        name: 'the_total_size_of_attachments_in_an_email_exceeds_the_limit'
+    );
+  }
 }
