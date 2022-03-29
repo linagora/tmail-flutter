@@ -140,8 +140,6 @@ class EmailController extends BaseController {
           _moveToMailboxSuccess(success);
         } else if (success is MarkAsStarEmailSuccess) {
           _markAsEmailStarSuccess(success);
-        } else if (success is DownloadAttachmentForWebSuccess) {
-          _downloadAttachmentForWebSuccessAction(success);
         }
       });
   }
@@ -308,26 +306,23 @@ class EmailController extends BaseController {
     }
   }
 
-  void downloadAttachmentForWeb(Attachment attachment) {
-    _downloadAttachmentForWebAction(attachment);
+  void downloadAttachmentForWeb(BuildContext context, Attachment attachment) {
+    _downloadAttachmentForWebAction(context, attachment);
   }
 
-  void _downloadAttachmentForWebAction(Attachment attachment) async {
+  void _downloadAttachmentForWebAction(BuildContext context, Attachment attachment) async {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl();
+      _appToast.showToast(AppLocalizations.of(context).your_download_has_started);
       consumeState(_downloadAttachmentForWebInteractor.execute(attachment, accountId, baseDownloadUrl));
     }
   }
 
   void _downloadAttachmentForWebFailureAction(Failure failure) {
-    if (failure is DownloadAttachmentForWebFailure) {
-      popBack();
+    if (failure is DownloadAttachmentForWebFailure && currentContext != null) {
+      _appToast.showErrorToast(AppLocalizations.of(currentContext!).attachment_download_failed);
     }
-  }
-
-  void _downloadAttachmentForWebSuccessAction(Success success) async {
-    popBack();
   }
 
   void moveToMailboxAction(PresentationEmail email) async {
