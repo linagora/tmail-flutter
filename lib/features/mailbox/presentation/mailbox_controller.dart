@@ -84,6 +84,7 @@ class MailboxController extends BaseMailboxController {
 
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
   jmapState.State? currentMailboxState;
+  List<String> listMailboxNameAsStringExist = <String>[];
 
   MailboxController(
     this._getAllMailboxInteractor,
@@ -536,6 +537,8 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _openDialogRenameMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
+    _createListMailboxNameAsStringInMailboxParent(presentationMailbox);
+
     if (_responsiveUtils.isMobile(context)) {
       (EditTextModalSheetBuilder()
           ..key(Key('rename_mailbox_modal_sheet'))
@@ -581,15 +584,11 @@ class MailboxController extends BaseMailboxController {
   }
 
   String? getErrorInputNameStringRenameMailbox(BuildContext context, String newName) {
-    final listName = allMailboxes
-        .where((mailbox) => !(mailbox.name.isBlank == true))
-        .map((mailbox) => mailbox.name!.name).toList();
-
     return _verifyNameInteractor.execute(
         newName,
         [
           EmptyNameValidator(),
-          DuplicateNameValidator(listName),
+          DuplicateNameValidator(listMailboxNameAsStringExist),
           SpecialCharacterValidator(),
         ]
     ).fold(
@@ -614,6 +613,30 @@ class MailboxController extends BaseMailboxController {
     }
 
     _cancelSelectMailbox();
+  }
+
+  void _createListMailboxNameAsStringInMailboxParent(PresentationMailbox mailboxRenamed) {
+    if (mailboxRenamed.parentId == null) {
+      final allChildrenAtMailboxLocation = (defaultMailboxTree.value.root.childrenItems ?? <MailboxNode>[]) + (folderMailboxTree.value.root.childrenItems ?? <MailboxNode>[]);
+      if (allChildrenAtMailboxLocation.isNotEmpty) {
+        listMailboxNameAsStringExist = allChildrenAtMailboxLocation
+            .where((mailboxNode) => mailboxNode.item.name != null && mailboxNode.item.name?.name.isNotEmpty == true)
+            .map((mailboxNode) => mailboxNode.item.name!.name)
+            .toList();
+      }
+    } else {
+      final mailboxNodeLocation = defaultMailboxTree.value.findNode((node) => node.item.id == mailboxRenamed.parentId)
+          ?? folderMailboxTree.value.findNode((node) => node.item.id == mailboxRenamed.parentId);
+      if (mailboxNodeLocation != null && mailboxNodeLocation.childrenItems?.isNotEmpty == true) {
+        final allChildrenAtMailboxLocation =  mailboxNodeLocation.childrenItems!;
+        listMailboxNameAsStringExist = allChildrenAtMailboxLocation
+            .where((mailboxNode) => mailboxNode.item.name != null && mailboxNode.item.name?.name.isNotEmpty == true)
+            .map((mailboxNode) => mailboxNode.item.name!.name)
+            .toList();
+      }
+    }
+
+    log('MailboxController::_createListMailboxNameAsStringInMailboxLocation(): $listMailboxNameAsStringExist');
   }
 
   void closeMailboxScreen(BuildContext context) {
