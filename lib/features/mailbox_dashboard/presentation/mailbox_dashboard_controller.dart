@@ -4,7 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
@@ -267,6 +270,20 @@ class MailboxDashBoardController extends ReloadableController {
   void handleReloaded(Session session) {
     sessionCurrent = session;
     accountId.value = sessionCurrent?.accounts.keys.first;
+  }
+
+  UnsignedInt? get maxSizeAttachmentsPerEmail {
+    if (sessionCurrent != null && accountId.value != null) {
+      final mailCapability = sessionCurrent
+          ?.accounts[accountId.value]
+          ?.accountCapabilities[CapabilityIdentifier.jmapMail];
+      if (mailCapability is MailCapability) {
+        final maxSizeAttachmentsPerEmail = mailCapability.maxSizeAttachmentsPerEmail;
+        log('MailboxDashBoardController::maxSizeAttachmentsPerEmail(): $maxSizeAttachmentsPerEmail');
+        return maxSizeAttachmentsPerEmail;
+      }
+    }
+    return null;
   }
 
   void composeEmailAction() {
