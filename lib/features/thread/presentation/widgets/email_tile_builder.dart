@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -83,11 +81,18 @@ class EmailTileBuilder {
             contentPadding: EdgeInsets.zero,
             onTap: () => _onOpenEmailActionClick?.call(_presentationEmail),
             onLongPress: () => _onSelectEmailActionClick!.call(_presentationEmail),
-            leading: Transform(
-                transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
-                child: _buildAvatarIcon()),
+            leading: GestureDetector(
+              onTap: () {
+                if (_selectModeAll == SelectMode.ACTIVE) {
+                  _onSelectEmailActionClick?.call(_presentationEmail);
+                } else {
+                  _onOpenEmailActionClick?.call(_presentationEmail);
+                }
+              },
+              child: _buildAvatarIcon(),
+            ),
             title: Transform(
-                transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
+                transform: Matrix4.translationValues(0.0, 0.0, 0.0),
                 child: Row(
                   children: [
                     if (_presentationEmail.isUnReadEmail())
@@ -129,7 +134,7 @@ class EmailTileBuilder {
                 )
             ),
             subtitle: Transform(
-                transform: Matrix4.translationValues(-8.0, 8.0, 0.0),
+                transform: Matrix4.translationValues(0.0, 8.0, 0.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -222,10 +227,19 @@ class EmailTileBuilder {
               tooltip: _presentationEmail.isFlaggedEmail() ? AppLocalizations.of(_context).starred : AppLocalizations.of(_context).not_starred,
               onTap: () => _onMarkAsStarActionClick?.call(_presentationEmail)),
           if (_selectModeAll == SelectMode.INACTIVE) SizedBox(width: 8),
-          _buildAvatarIcon(
-              iconSize: 32,
-              textStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
-              paddingIconSelect: EdgeInsets.all(5)),
+          GestureDetector(
+            onTap: () {
+              if (_selectModeAll == SelectMode.ACTIVE) {
+                _onSelectEmailActionClick?.call(_presentationEmail);
+              } else {
+                _onOpenEmailActionClick?.call(_presentationEmail);
+              }
+            },
+            child: _buildAvatarIcon(
+                iconSize: 32,
+                textStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
+                paddingIconSelect: EdgeInsets.all(5)),
+          ),
           if (_selectModeAll == SelectMode.INACTIVE) SizedBox(width: 10),
           Container(width: 180, child: _isSearchEnabled
             ? RichTextBuilder(
@@ -301,18 +315,11 @@ class EmailTileBuilder {
     TextStyle? textStyle
   }) {
     if (_selectModeAll == SelectMode.ACTIVE) {
-      return AnimatedSwitcher(
-        duration: Duration(milliseconds: 600),
-        transitionBuilder: _transitionBuilder,
-        child: buildIconWeb(
-            icon: SvgPicture.asset(_presentationEmail.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected, fit: BoxFit.fill),
-            iconPadding: paddingIconSelect ?? EdgeInsets.all(12),
-            tooltip: AppLocalizations.of(_context).select,
-            onTap: () {
-              if (_selectModeAll == SelectMode.ACTIVE && _onSelectEmailActionClick != null) {
-                _onSelectEmailActionClick!(_presentationEmail);
-              }}),
-      );
+      return Tooltip(
+          child: Padding(
+              padding: EdgeInsets.all(12),
+              child: SvgPicture.asset(_presentationEmail.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected, fit: BoxFit.fill)),
+          message: AppLocalizations.of(_context).select);
     } else {
       return (AvatarBuilder()
           ..text('${_presentationEmail.getAvatarText()}')
@@ -322,23 +329,6 @@ class EmailTileBuilder {
           ..avatarColor(_presentationEmail.avatarColors))
         .build();
     }
-  }
-
-  Widget _transitionBuilder(Widget widget, Animation<double> animation) {
-    final rotateAnim = Tween(begin: pi, end: 0.0).animate(animation);
-    return AnimatedBuilder(
-      animation: rotateAnim,
-      child: widget,
-      builder: (context, widget) {
-        final isUnder = _presentationEmail.selectMode == SelectMode.ACTIVE;
-        final value = isUnder ? min(rotateAnim.value, pi / 2) : rotateAnim.value;
-        return Transform(
-          transform: Matrix4.rotationY(value),
-          child: widget,
-          alignment: Alignment.center,
-        );
-      },
-    );
   }
 
   String _getInformationSender() {
