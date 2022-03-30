@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_i
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_trash_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_all_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
@@ -53,6 +54,7 @@ class ThreadBindings extends BaseBindings {
       Get.find<LoadMoreEmailsInMailboxInteractor>(),
       Get.find<SearchEmailInteractor>(),
       Get.find<SearchMoreEmailInteractor>(),
+      Get.find<MoveMultipleEmailToTrashInteractor>(),
     ));
   }
 
@@ -90,6 +92,7 @@ class ThreadBindings extends BaseBindings {
     Get.lazyPut(() => LoadMoreEmailsInMailboxInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => SearchEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => SearchMoreEmailInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => MoveMultipleEmailToTrashInteractor(Get.find<EmailRepository>()));
   }
 
   @override
