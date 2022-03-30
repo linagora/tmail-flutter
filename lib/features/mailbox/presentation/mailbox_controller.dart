@@ -50,6 +50,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_da
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_trash_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -119,6 +120,10 @@ class MailboxController extends BaseMailboxController {
           refreshMailboxChanges();
         } else if (success is MoveMultipleEmailToMailboxAllSuccess
             || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
+          mailboxDashBoardController.clearState();
+          refreshMailboxChanges();
+        } else if (success is MoveMultipleEmailToTrashAllSuccess
+            || success is MoveMultipleEmailToTrashHasSomeEmailFailure) {
           mailboxDashBoardController.clearState();
           refreshMailboxChanges();
         } else if (success is MarkAsEmailReadSuccess

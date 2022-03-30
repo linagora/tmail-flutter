@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.da
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
@@ -37,6 +38,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_stat
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_trash_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
@@ -45,6 +47,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_i
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_trash_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_all_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
@@ -72,6 +75,7 @@ class ThreadController extends BaseController {
   final LoadMoreEmailsInMailboxInteractor _loadMoreEmailsInMailboxInteractor;
   final SearchEmailInteractor _searchEmailInteractor;
   final SearchMoreEmailInteractor _searchMoreEmailInteractor;
+  final MoveMultipleEmailToTrashInteractor _moveMultipleEmailToTrashInteractor;
 
   final emailList = <PresentationEmail>[].obs;
   final emailListSearch = <PresentationEmail>[].obs;
@@ -105,6 +109,7 @@ class ThreadController extends BaseController {
     this._loadMoreEmailsInMailboxInteractor,
     this._searchEmailInteractor,
     this._searchMoreEmailInteractor,
+    this._moveMultipleEmailToTrashInteractor,
   );
 
   @override
@@ -214,6 +219,9 @@ class ThreadController extends BaseController {
         } else if (success is MarkAsStarMultipleEmailAllSuccess
             || success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
           _markAsStarMultipleEmailSuccess(success);
+        } else if (success is MoveMultipleEmailToTrashAllSuccess
+            || success is MoveMultipleEmailToTrashHasSomeEmailFailure) {
+          _moveSelectedMultipleEmailToTrashSuccess(success);
         }
       }
     );
@@ -443,11 +451,10 @@ class ThreadController extends BaseController {
   }
 
   void markAsReadSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail) {
-    cancelSelectEmail();
-
     final readAction = listPresentationEmail.isAllEmailRead ? ReadActions.markAsUnread : ReadActions.markAsRead;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (_accountId != null && mailboxCurrent != null) {
+      cancelSelectEmail();
       final listEmail = listPresentationEmail.map((presentationEmail) => presentationEmail.toEmail()).toList();
       consumeState(_markAsMultipleEmailReadInteractor.execute(_accountId!, listEmail, readAction));
     }
@@ -521,10 +528,6 @@ class ThreadController extends BaseController {
   void moveSelectedMultipleEmailToMailboxAction(List<PresentationEmail> listEmail) async {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     if (currentMailbox != null && _accountId != null) {
-      popBack();
-
-      cancelSelectEmail();
-
       final listEmailIds = listEmail.map((email) => email.id).toList();
       final destinationMailbox = await push(
           AppRoutes.DESTINATION_PICKER,
@@ -532,19 +535,28 @@ class ThreadController extends BaseController {
       );
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
-        _moveSelectedEmailMultipleToMailbox(
-            _accountId!,
-            MoveRequest(
+        if (destinationMailbox.role == PresentationMailbox.roleTrash) {
+          _moveSelectedEmailMultipleToTrash(_accountId!, MoveToTrashRequest(
               listEmailIds,
               currentMailbox.id,
               destinationMailbox.id,
-              MoveAction.moveTo,
-              destinationPath: destinationMailbox.mailboxPath));
+              MoveAction.moveToTrash));
+        } else {
+          _moveSelectedEmailMultipleToMailbox(
+              _accountId!,
+              MoveRequest(
+                  listEmailIds,
+                  currentMailbox.id,
+                  destinationMailbox.id,
+                  MoveAction.moveTo,
+                  destinationPath: destinationMailbox.mailboxPath));
+        }
       }
     }
   }
 
   void _moveSelectedEmailMultipleToMailbox(AccountId accountId, MoveRequest moveRequest) {
+    cancelSelectEmail();
     consumeState(_moveMultipleEmailToMailboxInteractor.execute(accountId, moveRequest));
   }
 
@@ -601,6 +613,66 @@ class ThreadController extends BaseController {
     }
   }
 
+  void moveSelectedMultipleEmailToTrashAction(List<PresentationEmail> listEmail) async {
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxId[PresentationMailbox.roleTrash];
+
+    if (currentMailbox != null && _accountId != null && trashMailboxId != null) {
+      final listEmailIds = listEmail.map((email) => email.id).toList();
+      _moveSelectedEmailMultipleToTrash(
+          _accountId!,
+          MoveToTrashRequest(listEmailIds, currentMailbox.id, trashMailboxId, MoveAction.moveToTrash)
+      );
+    }
+  }
+
+  void _moveSelectedEmailMultipleToTrash(AccountId accountId, MoveToTrashRequest moveRequest) {
+    cancelSelectEmail();
+    consumeState(_moveMultipleEmailToTrashInteractor.execute(accountId, moveRequest));
+  }
+
+  void _moveSelectedMultipleEmailToTrashSuccess(Success success) {
+    mailboxDashBoardController.dispatchState(Right(success));
+
+    List<EmailId> movedEmailIds = [];
+    MailboxId? currentMailboxId;
+    MailboxId? trashMailboxId;
+    MoveAction? moveAction;
+
+    if (success is MoveMultipleEmailToTrashAllSuccess) {
+      movedEmailIds = success.movedListEmailId;
+      currentMailboxId = success.currentMailboxId;
+      trashMailboxId = success.trashMailboxId;
+      moveAction = success.moveAction;
+    } else if (success is MoveMultipleEmailToTrashHasSomeEmailFailure) {
+      movedEmailIds = success.movedListEmailId;
+      currentMailboxId = success.currentMailboxId;
+      trashMailboxId = success.trashMailboxId;
+      moveAction = success.moveAction;
+    }
+
+    if (currentContext != null && currentOverlayContext != null && moveAction == MoveAction.moveToTrash) {
+      _appToast.showToastWithAction(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).moved_to_trash,
+          AppLocalizations.of(currentContext!).undo_action,
+          () {
+            if (trashMailboxId != null && currentMailboxId != null) {
+              _revertedToOriginalMailbox(MoveRequest(movedEmailIds, trashMailboxId, currentMailboxId, MoveAction.undo));
+            }
+          }
+      );
+    }
+
+    _refreshEmailChanges();
+  }
+
+  void _revertedToOriginalMailbox(MoveRequest newMoveRequest) {
+    if (_accountId != null) {
+      consumeState(_moveMultipleEmailToMailboxInteractor.execute(_accountId!, newMoveRequest));
+    }
+  }
+
   void markAsStarEmail(PresentationEmail presentationEmail) {
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (_accountId != null && mailboxCurrent != null) {
@@ -614,11 +686,10 @@ class ThreadController extends BaseController {
   }
 
   void markAsStarSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail) {
-    cancelSelectEmail();
-
     final starAction = listPresentationEmail.isAllEmailStarred ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     if (_accountId != null && mailboxCurrent != null) {
+      cancelSelectEmail();
       final listEmail = listPresentationEmail.map((presentationEmail) => presentationEmail.toEmail()).toList();
       consumeState(_markAsStarMultipleEmailInteractor.execute(_accountId!, listEmail, starAction));
     }
@@ -730,10 +801,8 @@ class ThreadController extends BaseController {
       case EmailActionType.move:
         moveSelectedMultipleEmailToMailboxAction(selectionEmail);
         break;
-      case EmailActionType.markAsFlag:
-      case EmailActionType.markAsSpam:
-      case EmailActionType.delete:
-        _appToast.showToast(AppLocalizations.of(context).the_feature_is_under_development);
+      case EmailActionType.moveToTrash:
+        moveSelectedMultipleEmailToTrashAction(selectionEmail);
         break;
       default:
         break;

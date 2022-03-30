@@ -263,7 +263,7 @@ class MailboxDashBoardController extends ReloadableController {
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).moved_to_trash,
           AppLocalizations.of(currentContext!).undo_action,
-              () {
+          () {
             final newMoveRequest = MoveRequest(
                 [success.emailId],
                 success.trashMailboxId,
