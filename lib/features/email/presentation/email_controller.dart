@@ -396,10 +396,9 @@ class EmailController extends BaseController {
   }
 
   void handleEmailAction(BuildContext context, PresentationEmail presentationEmail, EmailActionType actionType) {
-    popBack();
-
     switch(actionType) {
       case EmailActionType.markAsUnread:
+        popBack();
         markAsEmailRead(presentationEmail, ReadActions.markAsUnread);
         break;
       case EmailActionType.markAsStar:
