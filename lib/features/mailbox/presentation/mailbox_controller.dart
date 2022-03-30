@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.da
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_trash_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
@@ -122,6 +123,7 @@ class MailboxController extends BaseMailboxController {
           refreshMailboxChanges();
         } else if (success is MarkAsEmailReadSuccess
             || success is MoveToMailboxSuccess
+            || success is MoveToTrashSuccess
             || success is SaveEmailAsDraftsSuccess
             || success is RemoveEmailDraftsSuccess
             || success is SendEmailSuccess
