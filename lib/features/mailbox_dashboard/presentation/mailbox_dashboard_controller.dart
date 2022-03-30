@@ -18,6 +18,11 @@ import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.da
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_trash_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/move_to_trash_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
@@ -43,6 +48,9 @@ class MailboxDashBoardController extends ReloadableController {
   final DeleteCredentialInteractor _deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
   final CachingManager _cachingManager = Get.find<CachingManager>();
 
+  final MoveToTrashInteractor _moveToTrashInteractor;
+  final MoveToMailboxInteractor _moveToMailboxInteractor;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
   final selectedEmail = Rxn<PresentationEmail>();
@@ -61,7 +69,10 @@ class MailboxDashBoardController extends ReloadableController {
   FocusNode searchFocus = FocusNode();
   RouterArguments? routerArguments;
 
-  MailboxDashBoardController();
+  MailboxDashBoardController(
+    this._moveToTrashInteractor,
+    this._moveToMailboxInteractor,
+  );
 
   @override
   void onReady() {
@@ -125,6 +136,8 @@ class MailboxDashBoardController extends ReloadableController {
         } else if (success is RemoveEmailDraftsSuccess
           || success is UpdateEmailDraftsSuccess) {
           clearState();
+        } else if (success is MoveToTrashSuccess) {
+          _moveToTrashSuccess(success);
         }
       }
     );
@@ -237,6 +250,35 @@ class MailboxDashBoardController extends ReloadableController {
           AppLocalizations.of(currentContext!).discard,
           () => _discardEmail(success.emailAsDrafts)
       );
+    }
+  }
+
+  void moveToTrash(AccountId accountId, MoveToTrashRequest moveRequest) {
+    consumeState(_moveToTrashInteractor.execute(accountId, moveRequest));
+  }
+
+  void _moveToTrashSuccess(MoveToTrashSuccess success) {
+    if (success.moveAction == MoveAction.moveToTrash && currentContext != null && currentOverlayContext != null) {
+      _appToast.showToastWithAction(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).moved_to_trash,
+          AppLocalizations.of(currentContext!).undo_action,
+              () {
+            final newMoveRequest = MoveRequest(
+                [success.emailId],
+                success.trashMailboxId,
+                success.currentMailboxId,
+                MoveAction.undo);
+            _revertedToOriginalMailbox(newMoveRequest);
+          }
+      );
+    }
+  }
+
+  void _revertedToOriginalMailbox(MoveRequest newMoveRequest) {
+    final currentAccountId = accountId.value;
+    if (currentAccountId != null) {
+      consumeState(_moveToMailboxInteractor.execute(currentAccountId, newMoveRequest));
     }
   }
 
