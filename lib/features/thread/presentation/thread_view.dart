@@ -207,17 +207,27 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
           icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
           tooltip: AppLocalizations.of(context).move,
           onTap: () => controller.pressEmailSelectionAction(context, EmailActionType.move, controller.listEmailSelected)),
+      if (controller.mailboxDashBoardController.selectedMailbox.value?.role != PresentationMailbox.roleTrash)
+        buildIconWeb(
+            icon: SvgPicture.asset(_imagePaths.icDelete, fit: BoxFit.fill),
+            tooltip: AppLocalizations.of(context).move_to_trash,
+            onTap: () => controller.pressEmailSelectionAction(context, EmailActionType.moveToTrash, controller.listEmailSelected)),
     ]);
   }
 
   Widget _buildListButtonSelectionForMobile(BuildContext context) {
     return Obx(() {
-      if (controller.isSelectionEnabled() && !_responsiveUtils.isDesktop(context)) {
+      if (controller.isSelectionEnabled() && !_responsiveUtils.isDesktop(context) && controller.listEmailSelected.isNotEmpty) {
         return Column(children: [
           Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
           Padding(
             padding: EdgeInsets.all(10),
-            child: (BottomBarThreadSelectionWidget(context, _imagePaths, _responsiveUtils, controller.listEmailSelected)
+            child: (BottomBarThreadSelectionWidget(
+                    context,
+                    _imagePaths,
+                    _responsiveUtils,
+                    controller.listEmailSelected,
+                    controller.mailboxDashBoardController.selectedMailbox.value)
                 ..addOnPressEmailSelectionActionClick((actionType, selectionEmail) => controller.pressEmailSelectionAction(context, actionType, selectionEmail)))
               .build()),
         ]);

@@ -11,6 +11,7 @@ class BottomBarThreadSelectionWidget {
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
   final List<PresentationEmail> _listSelectionEmail;
+  final PresentationMailbox? _currentMailbox;
 
   OnPressEmailSelectionActionClick? _onPressEmailSelectionActionClick;
 
@@ -19,6 +20,7 @@ class BottomBarThreadSelectionWidget {
     this._imagePaths,
     this._responsiveUtils,
     this._listSelectionEmail,
+    this._currentMailbox,
   );
 
   void addOnPressEmailSelectionActionClick(OnPressEmailSelectionActionClick onPressEmailSelectionActionClick) {
@@ -56,15 +58,18 @@ class BottomBarThreadSelectionWidget {
                 _listSelectionEmail.isAllEmailRead ? AppLocalizations.of(_context).unread : AppLocalizations.of(_context).read,
                 isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        (ButtonBuilder(_imagePaths.icFlag)
-            ..key(Key('button_flag_email'))
+        (ButtonBuilder(_listSelectionEmail.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar)
+            ..key(Key('button_mark_as_star_email'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailSelectionActionClick != null) {
-                _onPressEmailSelectionActionClick!(EmailActionType.markAsFlag, _listSelectionEmail);
+                _onPressEmailSelectionActionClick!(
+                    _listSelectionEmail.isAllEmailStarred ? EmailActionType.markAsUnStar : EmailActionType.markAsStar,
+                    _listSelectionEmail);
               }})
-            ..text(AppLocalizations.of(_context).flag, isVertical: _responsiveUtils.isMobile(_context)))
+            ..text(_listSelectionEmail.isAllEmailStarred ? AppLocalizations.of(_context).mark_as_unstar : AppLocalizations.of(_context).mark_as_star,
+                isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
         (ButtonBuilder(_imagePaths.icMove)
             ..key(Key('button_move_email'))
@@ -76,25 +81,14 @@ class BottomBarThreadSelectionWidget {
               }})
             ..text(AppLocalizations.of(_context).move, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        if (!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context))
-          (ButtonBuilder(_imagePaths.icSpam)
-            ..key(Key('button_spam_email'))
-            ..paddingIcon(EdgeInsets.all(8))
-            ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
-            ..onPressActionClick(() {
-              if (_onPressEmailSelectionActionClick != null) {
-                _onPressEmailSelectionActionClick!(EmailActionType.markAsSpam, _listSelectionEmail);
-              }})
-            ..text(AppLocalizations.of(_context).spam, isVertical: _responsiveUtils.isMobile(_context)))
-          .build(),
-        if (!_responsiveUtils.isDesktop(_context) && !_responsiveUtils.isTabletLarge(_context))
+        if (!_responsiveUtils.isDesktop(_context) && _currentMailbox?.role != PresentationMailbox.roleTrash)
           (ButtonBuilder(_imagePaths.icDelete)
             ..key(Key('button_delete_email'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailSelectionActionClick != null) {
-                _onPressEmailSelectionActionClick!(EmailActionType.delete, _listSelectionEmail);
+                _onPressEmailSelectionActionClick!(EmailActionType.moveToTrash, _listSelectionEmail);
               }})
             ..text(AppLocalizations.of(_context).delete, isVertical: _responsiveUtils.isMobile(_context)))
           .build()

@@ -326,7 +326,7 @@ class EmailController extends BaseController {
     }
   }
 
-  void moveToMailboxAction(PresentationEmail email) async {
+  void moveToMailboxAction(BuildContext context, PresentationEmail email) async {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     final accountId = mailboxDashBoardController.accountId.value;
 
@@ -337,12 +337,20 @@ class EmailController extends BaseController {
       );
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
-        _moveToMailbox(accountId, MoveRequest(
-            [email.id],
-            currentMailbox.id,
-            destinationMailbox.id,
-            MoveAction.moveTo,
-            destinationPath: destinationMailbox.mailboxPath));
+        if (destinationMailbox.role == PresentationMailbox.roleTrash) {
+          _moveToTrash(context, accountId, MoveToTrashRequest(
+              [email.id],
+              currentMailbox.id,
+              destinationMailbox.id,
+              MoveAction.moveToTrash));
+        } else {
+          _moveToMailbox(accountId, MoveRequest(
+              [email.id],
+              currentMailbox.id,
+              destinationMailbox.id,
+              MoveAction.moveTo,
+              destinationPath: destinationMailbox.mailboxPath));
+        }
       }
     }
   }
@@ -429,7 +437,7 @@ class EmailController extends BaseController {
         markAsStarEmail(presentationEmail, MarkStarAction.unMarkStar);
         break;
       case EmailActionType.move:
-        moveToMailboxAction(presentationEmail);
+        moveToMailboxAction(context, presentationEmail);
         break;
       case EmailActionType.moveToTrash:
         moveToTrashAction(context, presentationEmail);
