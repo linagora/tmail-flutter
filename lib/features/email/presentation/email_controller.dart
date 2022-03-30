@@ -15,6 +15,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
@@ -380,6 +381,26 @@ class EmailController extends BaseController {
     }
   }
 
+  void moveToTrashAction(BuildContext context, PresentationEmail email) async {
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    final accountId = mailboxDashBoardController.accountId.value;
+    final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxId[PresentationMailbox.roleTrash];
+
+    if (currentMailbox != null && accountId != null && trashMailboxId != null) {
+      _moveToTrash(context, accountId, MoveToTrashRequest(
+        [email.id],
+        currentMailbox.id,
+        trashMailboxId,
+        MoveAction.moveToTrash)
+      );
+    }
+  }
+
+  void _moveToTrash(BuildContext context, AccountId accountId, MoveToTrashRequest moveRequest) {
+    backToThreadView(context);
+    mailboxDashBoardController.moveToTrash(accountId, moveRequest);
+  }
+
   void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction markStarAction) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
@@ -410,8 +431,8 @@ class EmailController extends BaseController {
       case EmailActionType.move:
         moveToMailboxAction(presentationEmail);
         break;
-      case EmailActionType.delete:
-        _appToast.showToast(AppLocalizations.of(context).the_feature_is_under_development);
+      case EmailActionType.moveToTrash:
+        moveToTrashAction(context, presentationEmail);
         break;
       default:
         break;
