@@ -341,6 +341,7 @@ class ComposerController extends BaseController {
       to: listToEmailAddress.toSet(),
       cc: listCcEmailAddress.toSet(),
       bcc: listBccEmailAddress.toSet(),
+      replyTo: listFromEmailAddress,
       keywords: asDrafts ? {KeyWordIdentifier.emailDraft : true} : null,
       subject: subjectEmail.value,
       htmlBody: {
