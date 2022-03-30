@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_trash_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -133,6 +134,7 @@ class ThreadController extends BaseController {
           _searchEmail();
         } else if (success is MarkAsEmailReadSuccess
             || success is MoveToMailboxSuccess
+            || success is MoveToTrashSuccess
             || success is MarkAsStarEmailSuccess
             || success is SaveEmailAsDraftsSuccess
             || success is RemoveEmailDraftsSuccess

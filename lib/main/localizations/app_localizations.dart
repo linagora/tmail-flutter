@@ -963,4 +963,11 @@ class AppLocalizations {
         name: 'your_download_has_started'
     );
   }
+
+  String get moved_to_trash {
+    return Intl.message(
+        'Moved to Trash',
+        name: 'moved_to_trash'
+    );
+  }
 }

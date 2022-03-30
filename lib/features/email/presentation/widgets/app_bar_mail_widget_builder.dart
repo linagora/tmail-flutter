@@ -113,6 +113,15 @@ class AppBarMailWidgetBuilder {
               _onEmailActionClick?.call(_presentationEmail!, _presentationEmail!.isFlaggedEmail() ? EmailActionType.markAsUnStar : EmailActionType.markAsStar);
             }
           }),
+        if (_currentMailbox?.role != PresentationMailbox.roleTrash)
+          buildIconWeb(
+              icon: SvgPicture.asset(_imagePaths.icDeleteEmail, fit: BoxFit.fill),
+              tooltip: AppLocalizations.of(_context).move_to_trash,
+              onTap: () {
+                if (_presentationEmail != null) {
+                  _onEmailActionClick?.call(_presentationEmail!, EmailActionType.moveToTrash);
+                }
+              }),
         Padding(
           padding: EdgeInsets.only(left: 10, right: 16),
           child: buildIconWebHasPosition(

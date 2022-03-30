@@ -27,6 +27,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
 
 class EmailAPI {
 
@@ -348,6 +349,34 @@ class EmailAPI {
         return emailUpdated;
       }
       return null;
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  Future<List<EmailId>> moveToTrash(AccountId accountId, MoveToTrashRequest moveRequest) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates(moveRequest.emailIds
+          .generateMapUpdateObjectMoveToMailbox(moveRequest.currentMailboxId, moveRequest.trashMailboxId));
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final response = await (requestBuilder
+        ..usings(setEmailMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+        setEmailInvocation.methodCallId,
+        SetEmailResponse.deserialize);
+
+    return Future.sync(() async {
+      final mapUpdated = setEmailResponse!.updated!;
+      return moveRequest.emailIds
+          .where((emailId) => mapUpdated.containsKey(emailId.id))
+          .toList();
     }).catchError((error) {
       throw error;
     });
