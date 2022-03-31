@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-03-29T16:34:59.741046",
+  "@@last_modified": "2022-03-31T09:03:00.853808",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -902,6 +902,12 @@
   },
   "your_download_has_started": "Your download has started",
   "@your_download_has_started": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moved_to_trash": "Moved to Trash",
+  "@moved_to_trash": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
