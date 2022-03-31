@@ -137,6 +137,8 @@ dependencies:
 
   rxdart: 0.27.3
 
+  connectivity_plus: 2.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

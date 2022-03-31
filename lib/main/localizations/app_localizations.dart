@@ -970,4 +970,11 @@ class AppLocalizations {
         name: 'moved_to_trash'
     );
   }
+
+  String get no_internet_connection {
+    return Intl.message(
+        'No internet connection',
+        name: 'no_internet_connection'
+    );
+  }
 }
