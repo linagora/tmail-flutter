@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -45,6 +46,8 @@ class TMailApp extends StatelessWidget {
         }
         return supportedLocales.first;
       },
+      locale: Get.locale ?? Locale('en'),
+      onGenerateTitle: (context) => AppLocalizations.of(context).page_name,
       defaultTransition: Transition.fade,
       initialRoute: AppRoutes.HOME,
       getPages: AppPages.pages);
