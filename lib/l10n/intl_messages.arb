@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-03-31T12:07:59.313834",
+  "@@last_modified": "2022-03-31T18:18:59.491193",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -914,6 +914,12 @@
   },
   "no_internet_connection": "No internet connection",
   "@no_internet_connection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "page_name": "Team - Mail",
+  "@page_name": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

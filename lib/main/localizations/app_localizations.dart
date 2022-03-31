@@ -977,4 +977,10 @@ class AppLocalizations {
         name: 'no_internet_connection'
     );
   }
+
+  String get page_name {
+    return Intl.message(
+        'Team - Mail',
+        name: 'page_name');
+  }
 }
