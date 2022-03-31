@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-03-31T09:03:00.853808",
+  "@@last_modified": "2022-03-31T12:07:59.313834",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -908,6 +908,12 @@
   },
   "moved_to_trash": "Moved to Trash",
   "@moved_to_trash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_internet_connection": "No internet connection",
+  "@no_internet_connection": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
