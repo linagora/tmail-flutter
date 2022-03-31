@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/mixin/network_connection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
@@ -20,7 +21,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/user_setti
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:filesize/filesize.dart';
 
-class EmailView extends GetView with UserSettingPopupMenuMixin {
+class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectionMixin {
 
   final emailController = Get.find<EmailController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
@@ -37,28 +38,33 @@ class EmailView extends GetView with UserSettingPopupMenuMixin {
       },
       child: Scaffold(
         backgroundColor: responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
-        body: Container(
-          padding: EdgeInsets.zero,
-          margin: EdgeInsets.zero,
-          decoration: responsiveUtils.isTabletLarge(context)
-            ? BoxDecoration(border: Border(left: BorderSide(color: AppColor.colorLineLeftEmailView, width: 1.0)))
-            : null,
-          child: SafeArea(
-              right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-              left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (responsiveUtils.isDesktop(context))
-                      Container(
-                        color: Colors.white,
-                        padding: EdgeInsets.only(right: 10, top: 16, bottom: 10),
-                        child: _buildHeader(context)),
-                    Expanded(child: _buildBody(context)),
-                  ]
-              )
+        body: Stack(children: [
+          Container(
+            padding: EdgeInsets.zero,
+            margin: EdgeInsets.zero,
+            decoration: responsiveUtils.isTabletLarge(context)
+                ? BoxDecoration(border: Border(left: BorderSide(color: AppColor.colorLineLeftEmailView, width: 1.0)))
+                : null,
+            child: SafeArea(
+                right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+                left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (responsiveUtils.isDesktop(context))
+                        Container(
+                            color: Colors.white,
+                            padding: EdgeInsets.only(right: 10, top: 16, bottom: 10),
+                            child: _buildHeader(context)),
+                      Expanded(child: _buildBody(context)),
+                    ]
+                )
+            ),
           ),
-        )
+          Obx(() => !emailController.mailboxDashBoardController.isNetworkConnectionAvailable() && (responsiveUtils.isMobile(context) || responsiveUtils.isTablet(context))
+              ? Align(alignment: Alignment.bottomCenter, child: buildNetworkConnectionWidget(context))
+              : SizedBox.shrink()),
+        ])
       )
     );
   }

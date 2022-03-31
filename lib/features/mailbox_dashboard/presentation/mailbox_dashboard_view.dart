@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/mixin/network_connection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
     if (dart.library.html) 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -12,7 +13,7 @@ import 'package:tmail_ui_user/features/setting/presentation/model/reading_pane.d
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
-class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> {
+class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with NetworkConnectionMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
@@ -40,6 +41,9 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> {
         Obx(() => controller.dashBoardAction == DashBoardAction.compose
           ? ComposerView()
           : SizedBox.shrink()),
+        Obx(() => controller.isNetworkConnectionAvailable()
+          ? SizedBox.shrink()
+          : Align(alignment: Alignment.bottomCenter, child: buildNetworkConnectionWidget(context))),
       ]),
     );
   }

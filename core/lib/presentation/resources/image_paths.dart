@@ -86,6 +86,7 @@ class ImagePaths {
   String get icClose => _getImagePath('ic_close.svg');
   String get icSendToastError => _getImagePath('ic_send_toast_error.svg');
   String get icEmpty => _getImagePath('ic_empty.svg');
+  String get icNotConnection => _getImagePath('ic_not_connection.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
