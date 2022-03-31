@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -17,6 +18,7 @@ class NetworkBindings extends Bindings {
   void dependencies() {
     _bindingDio();
     _bindingApi();
+    _bindingConnection();
   }
 
   void _bindingBaseOption() {
@@ -55,5 +57,9 @@ class NetworkBindings extends Bindings {
       Get.find<JmapHttpClient.HttpClient>(),
       Get.find<DownloadManager>()));
     Get.put(ComposerAPI(Get.find<DioClient>()));
+  }
+
+  void _bindingConnection() {
+    Get.put(Connectivity());
   }
 }

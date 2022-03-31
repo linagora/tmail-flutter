@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
@@ -47,6 +50,7 @@ class MailboxDashBoardController extends ReloadableController {
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final DeleteCredentialInteractor _deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
   final CachingManager _cachingManager = Get.find<CachingManager>();
+  final Connectivity _connectivity = Get.find<Connectivity>();
 
   final MoveToTrashInteractor _moveToTrashInteractor;
   final MoveToMailboxInteractor _moveToMailboxInteractor;
@@ -68,11 +72,18 @@ class MailboxDashBoardController extends ReloadableController {
   TextEditingController searchInputController = TextEditingController();
   FocusNode searchFocus = FocusNode();
   RouterArguments? routerArguments;
+  late StreamSubscription _connectivityStreamSubscription;
 
   MailboxDashBoardController(
     this._moveToTrashInteractor,
     this._moveToMailboxInteractor,
   );
+
+  @override
+  void onInit() {
+    super.onInit();
+    _registerNetworkConnectivityState();
+  }
 
   @override
   void onReady() {
@@ -144,7 +155,17 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   @override
-  void onError(error) {
+  void onError(error) {}
+
+  void _registerNetworkConnectivityState() async {
+    setNetworkConnectivityState(await _connectivity.checkConnectivity());
+    _connectivityStreamSubscription = _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      log('MailboxDashBoardController::_registerNetworkConnectivityState(): ConnectivityResult: ${result.name}');
+      setNetworkConnectivityState(result);
+      if (userProfile.value == null && result != ConnectivityResult.none) {
+        _getUserProfile();
+      }
+    });
   }
 
   void _getUserProfile() async {
@@ -354,6 +375,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   @override
   void onClose() {
+    _connectivityStreamSubscription.cancel();
     searchInputController.dispose();
     searchFocus.dispose();
     super.onClose();
