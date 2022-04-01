@@ -1,22 +1,21 @@
+import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
-    if (dart.library.html) 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart' deferred as composer;
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
-import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart';
-import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart' deferred as destination_picker;
+import 'package:tmail_ui_user/features/email/presentation/email_view.dart' deferred as email;
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
+import 'package:tmail_ui_user/features/login/presentation/login_view.dart' deferred as login;
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_bindings.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_view.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_view.dart' deferred as mailbox_creator;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_bindings.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view.dart' deferred as mailbox_dashBoard;
 import 'package:tmail_ui_user/features/session/presentation/session_page_bindings.dart';
-import 'package:tmail_ui_user/features/session/presentation/session_view.dart';
-import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
+import 'package:tmail_ui_user/features/session/presentation/session_view.dart' deferred as session;
+import 'package:tmail_ui_user/main/pages/deferred_widget.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class AppPages {
@@ -27,39 +26,33 @@ class AppPages {
       binding: HomeBindings()),
     GetPage(
       name: AppRoutes.LOGIN,
-      page: () => LoginView(),
+      page: () => DeferredWidget(login.loadLibrary, () => login.LoginView()),
       binding: LoginBindings()),
     GetPage(
       name: AppRoutes.SESSION,
-      page: () => SessionView(),
+      page: () => DeferredWidget(session.loadLibrary, () => session.SessionView()),
       binding: SessionPageBindings()),
     GetPage(
-      name: AppRoutes.MAILBOX,
-      page: () => MailboxView()),
-    GetPage(
       name: AppRoutes.MAILBOX_DASHBOARD,
-      page: () => MailboxDashBoardView(),
+      page: () => DeferredWidget(mailbox_dashBoard.loadLibrary, () => mailbox_dashBoard.MailboxDashBoardView()),
       binding: MailboxDashBoardBindings()),
     GetPage(
-      name: AppRoutes.THREAD,
-      page: () => ThreadView()),
-    GetPage(
       name: AppRoutes.EMAIL,
-      page: () => EmailView()),
+      page: () => DeferredWidget(email.loadLibrary, () => email.EmailView())),
     GetPage(
       name: AppRoutes.COMPOSER,
       opaque: false,
-      page: () => ComposerView(),
+      page: () => DeferredWidget(composer.loadLibrary, () => composer.ComposerView()),
       binding: ComposerBindings()),
     GetPage(
       name: AppRoutes.DESTINATION_PICKER,
       opaque: false,
-      page: () => DestinationPickerView(),
+      page: () => DeferredWidget(destination_picker.loadLibrary, () => destination_picker.DestinationPickerView()),
       binding: DestinationPickerBindings()),
     GetPage(
       name: AppRoutes.MAILBOX_CREATOR,
       opaque: false,
-      page: () => MailboxCreatorView(),
+      page: () => DeferredWidget(mailbox_creator.loadLibrary, () => mailbox_creator.MailboxCreatorView()),
       binding: MailboxCreatorBindings()),
   ];
 }
