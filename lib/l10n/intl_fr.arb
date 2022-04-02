@@ -42,7 +42,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unknown_error_login_message": "Une erreur inconnue s'est produite. Veuillez réessayer.",
+  "unknown_error_login_message": "Une erreur inconnue s'est produite. Veuillez réessayer",
   "@unknown_error_login_message": {
     "type": "text",
     "placeholders_order": [],
@@ -524,6 +524,350 @@
   },
   "starred": "Favoris",
   "@starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_has_been_sent_successfully": "Le message a bien été envoyé",
+  "@message_has_been_sent_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "done": "Terminé",
+  "@done": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_mailbox": "Nouvelle boîte de réception",
+  "@new_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailbox_location": "Emplacement de la boîte de réception",
+  "@mailbox_location": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "default_mailbox": "Boîte de réception par défaut",
+  "@default_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "name_of_mailbox_is_required": "Le nom de la boîte de réception est requis",
+  "@name_of_mailbox_is_required": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailbox_name_cannot_contain_special_characters": "Le nom de la boîte de réception ne peut pas comporter de caractères spéciaux",
+  "@mailbox_name_cannot_contain_special_characters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "this_folder_name_is_already_taken": "Ce nom de dossier est déjà pris",
+  "@this_folder_name_is_already_taken": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "filter_message_toast": "Vous avez filtré les messages par « {filterOption} »",
+  "@filter_message_toast": {
+    "type": "text",
+    "placeholders_order": [
+      "filterOption"
+    ],
+    "placeholders": {
+      "filterOption": {}
+    }
+  },
+  "disable_filter_message_toast": "Vous avez désactivé les messages filtrés",
+  "@disable_filter_message_toast": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_unread": "Comme non lus",
+  "@with_unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_starred": "En favoris",
+  "@with_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rename": "Renommer",
+  "@rename": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_mailbox_is_created": "{nameMailbox} est créé",
+  "@new_mailbox_is_created": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "drafts_saved": "Brouillon enregistré",
+  "@drafts_saved": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discard": "Rejeter",
+  "@discard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_input_create_new_mailbox": "Entrez le nom de la boîte de réception",
+  "@hint_input_create_new_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_mailboxes": "Supprimer des boîtes de réception",
+  "@delete_mailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rename_mailbox": "Renommer la boîte de réception",
+  "@rename_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "this_field_cannot_be_blank": "Ce champ ne peut pas être vide",
+  "@this_field_cannot_be_blank": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email_address_is_not_in_the_correct_format": "L’adresse électronique n’est pas dans le bon format",
+  "@email_address_is_not_in_the_correct_format": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "compose_email": "Rédiger un courriel",
+  "@compose_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preparing_to_save": "Préparation à l’enregistrement",
+  "@preparing_to_save": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_message": "Nouveau message",
+  "@new_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "details": "Détails",
+  "@details": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hide": "Masquer",
+  "@hide": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy_email_address": "Copier l’adresse électronique",
+  "@copy_email_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email_address_copied_to_clipboard": "Adresse électronique copiée dans le presse-papiers",
+  "@email_address_copied_to_clipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "minimize": "Minimiser",
+  "@minimize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fullscreen": "Plein écran",
+  "@fullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "close": "Fermer",
+  "@close": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "send": "Envoyer",
+  "@send": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachments": "Pièces jointes",
+  "@attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "show_all": "Tout afficher",
+  "@show_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_without_a_subject": "Voulez-vous vraiment envoyer des messages sans objet ?",
+  "@message_dialog_send_email_without_a_subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "app_name": "Tmail",
+  "@app_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search_emails": "Chercher des courriels",
+  "@search_emails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select_all": "Tout sélectionner",
+  "@select_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_all_as_read": "Tout marquer comme lu",
+  "@mark_all_as_read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "filter_messages": "Filtrer les messages",
+  "@filter_messages": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select": "Sélectionner",
+  "@select": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "more": "Plus",
+  "@more": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "back": "Retour",
+  "@back": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "expand": "Développer",
+  "@expand": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "collapse": "Réduire",
+  "@collapse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "save_to_drafts": "Enregistrer dans les brouillons",
+  "@save_to_drafts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_compose_email": "Commencez à rédiger une lettre…",
+  "@hint_compose_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attach_file": "Joindre un fichier",
+  "@attach_file": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "show": "Afficher",
+  "@show": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "add_recipients": "Ajouter des destinataires",
+  "@add_recipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sending_failed": "Échec de l'envoi",
+  "@sending_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "send_anyway": "Envoyer quand même",
+  "@send_anyway": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_with_email_address_invalid": "Vérifiez les adresses électroniques et réessayez",
+  "@message_dialog_send_email_with_email_address_invalid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fix_email_addresses": "Corriger les adresses électroniques",
+  "@fix_email_addresses": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "the_total_size_of_attachments_in_an_email_exceeds_the_limit": "La taille totale des pièces jointes dans un courriel dépasse la limite.",
+  "@the_total_size_of_attachments_in_an_email_exceeds_the_limit": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty_subject": "Objet vide",
+  "@empty_subject": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
