@@ -16,7 +16,8 @@ import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_trash_state.dart';
@@ -134,6 +135,7 @@ class MailboxController extends BaseMailboxController {
         } else if (success is MarkAsEmailReadSuccess
             || success is MoveToMailboxSuccess
             || success is MoveToTrashSuccess
+            || success is DeleteEmailPermanentlySuccess
             || success is SaveEmailAsDraftsSuccess
             || success is RemoveEmailDraftsSuccess
             || success is SendEmailSuccess

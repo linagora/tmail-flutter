@@ -23,7 +23,9 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.d
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_trash_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_trash_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -51,9 +53,11 @@ class MailboxDashBoardController extends ReloadableController {
   final DeleteCredentialInteractor _deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
   final CachingManager _cachingManager = Get.find<CachingManager>();
   final Connectivity _connectivity = Get.find<Connectivity>();
+  final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final MoveToTrashInteractor _moveToTrashInteractor;
   final MoveToMailboxInteractor _moveToMailboxInteractor;
+  final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -77,6 +81,7 @@ class MailboxDashBoardController extends ReloadableController {
   MailboxDashBoardController(
     this._moveToTrashInteractor,
     this._moveToMailboxInteractor,
+    this._deleteEmailPermanentlyInteractor,
   );
 
   @override
@@ -149,6 +154,8 @@ class MailboxDashBoardController extends ReloadableController {
           clearState();
         } else if (success is MoveToTrashSuccess) {
           _moveToTrashSuccess(success);
+        } else if (success is DeleteEmailPermanentlySuccess) {
+          _deleteEmailPermanentlySuccess(success);
         }
       }
     );
@@ -307,6 +314,23 @@ class MailboxDashBoardController extends ReloadableController {
     final currentAccountId = accountId.value;
     if (currentAccountId != null) {
       consumeState(_removeEmailDraftsInteractor.execute(currentAccountId, email.id));
+    }
+  }
+
+  void deleteEmailPermanently(PresentationEmail email) {
+    final currentAccountId = accountId.value;
+    if (currentAccountId != null) {
+      consumeState(_deleteEmailPermanentlyInteractor.execute(currentAccountId, email.id));
+    }
+  }
+
+  void _deleteEmailPermanentlySuccess(DeleteEmailPermanentlySuccess success) {
+    if (currentContext != null && currentOverlayContext != null) {
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
+          message: AppLocalizations.of(currentContext!).toast_message_delete_a_email_permanently_success,
+          icon: _imagePaths.icDeleteToast);
     }
   }
 
