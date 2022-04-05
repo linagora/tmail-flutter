@@ -1063,4 +1063,10 @@ class AppLocalizations {
         'All messages has been deleted forever',
         name: 'toast_message_empty_trash_folder_success');
   }
+
+  String get version {
+    return Intl.message(
+        'Version',
+        name: 'version');
+  }
 }
