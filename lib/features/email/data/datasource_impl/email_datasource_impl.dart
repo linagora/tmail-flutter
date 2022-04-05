@@ -135,9 +135,18 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<EmailId>> deleteMultipleEmailPermanently(Session session, AccountId accountId, List<EmailId> emailIds) {
+  Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds) {
     return Future.sync(() async {
-      return await emailAPI.deleteMultipleEmailPermanently(session, accountId, emailIds);
+      return await emailAPI.deleteMultipleEmailsPermanently(session, accountId, emailIds);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<bool> deleteEmailPermanently(AccountId accountId, EmailId emailId) {
+    return Future.sync(() async {
+      return await emailAPI.deleteEmailPermanently(accountId, emailId);
     }).catchError((error) {
       throw error;
     });

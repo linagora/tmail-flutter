@@ -386,7 +386,7 @@ class EmailAPI {
     });
   }
 
-  Future<List<EmailId>> deleteMultipleEmailPermanently(Session session, AccountId accountId, List<EmailId> emailIds) async {
+  Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds) async {
     requireCapability(session, [CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail]);
 
     final coreCapability = (session.capabilities[CapabilityIdentifier.jmapCore] as CoreCapability);
@@ -429,5 +429,24 @@ class EmailAPI {
     }
 
     return listEmailResult;
+  }
+
+  Future<bool> deleteEmailPermanently(AccountId accountId, EmailId emailId) async {
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final setEmailMethod =  SetEmailMethod(accountId)
+      ..addDestroy(Set.of([emailId.id]));
+
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final response = await (requestBuilder
+        ..usings(setEmailMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+        setEmailInvocation.methodCallId,
+        SetEmailResponse.deserialize);
+
+    return setEmailResponse?.destroyed?.contains(emailId.id) == true;
   }
 }

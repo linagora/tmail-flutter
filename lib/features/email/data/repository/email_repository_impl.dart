@@ -117,7 +117,12 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<List<EmailId>> deleteMultipleEmailPermanently(Session session, AccountId accountId, List<EmailId> emailIds) {
-    return emailDataSource.deleteMultipleEmailPermanently(session, accountId, emailIds);
+  Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds) {
+    return emailDataSource.deleteMultipleEmailsPermanently(session, accountId, emailIds);
+  }
+
+  @override
+  Future<bool> deleteEmailPermanently(AccountId accountId, EmailId emailId) {
+    return emailDataSource.deleteEmailPermanently(accountId, emailId);
   }
 }

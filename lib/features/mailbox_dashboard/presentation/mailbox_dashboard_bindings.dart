@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_trash_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_bindings.dart';
@@ -34,6 +35,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.put(MailboxDashBoardController(
       Get.find<MoveToTrashInteractor>(),
       Get.find<MoveToMailboxInteractor>(),
+      Get.find<DeleteEmailPermanentlyInteractor>(),
     ));
   }
 
@@ -58,6 +60,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => RemoveEmailDraftsInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveToTrashInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => DeleteEmailPermanentlyInteractor(Get.find<EmailRepository>()));
   }
 
   @override
