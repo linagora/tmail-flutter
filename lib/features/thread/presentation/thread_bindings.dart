@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
@@ -55,6 +56,7 @@ class ThreadBindings extends BaseBindings {
       Get.find<SearchEmailInteractor>(),
       Get.find<SearchMoreEmailInteractor>(),
       Get.find<MoveMultipleEmailToTrashInteractor>(),
+      Get.find<DeleteMultipleEmailsPermanentlyInteractor>(),
     ));
   }
 
@@ -93,6 +95,7 @@ class ThreadBindings extends BaseBindings {
     Get.lazyPut(() => SearchEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => SearchMoreEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => MoveMultipleEmailToTrashInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => DeleteMultipleEmailsPermanentlyInteractor(Get.find<EmailRepository>()));
   }
 
   @override

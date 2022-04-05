@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -14,6 +15,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
@@ -21,10 +23,12 @@ import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_trash_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -53,6 +57,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -76,6 +81,7 @@ class ThreadController extends BaseController {
   final SearchEmailInteractor _searchEmailInteractor;
   final SearchMoreEmailInteractor _searchMoreEmailInteractor;
   final MoveMultipleEmailToTrashInteractor _moveMultipleEmailToTrashInteractor;
+  final DeleteMultipleEmailsPermanentlyInteractor _deleteMultipleEmailsPermanentlyInteractor;
 
   final emailList = <PresentationEmail>[].obs;
   final emailListSearch = <PresentationEmail>[].obs;
@@ -110,6 +116,7 @@ class ThreadController extends BaseController {
     this._searchEmailInteractor,
     this._searchMoreEmailInteractor,
     this._moveMultipleEmailToTrashInteractor,
+    this._deleteMultipleEmailsPermanentlyInteractor,
   );
 
   @override
@@ -222,6 +229,9 @@ class ThreadController extends BaseController {
         } else if (success is MoveMultipleEmailToTrashAllSuccess
             || success is MoveMultipleEmailToTrashHasSomeEmailFailure) {
           _moveSelectedMultipleEmailToTrashSuccess(success);
+        } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess
+            || success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+          _deleteMultipleEmailsPermanentlySuccess(success);
         }
       }
     );
@@ -804,9 +814,84 @@ class ThreadController extends BaseController {
       case EmailActionType.moveToTrash:
         moveSelectedMultipleEmailToTrashAction(selectionEmail);
         break;
+      case EmailActionType.deletePermanently:
+        deleteEmailsPermanently(context, DeleteActionType.multiple, selectedEmails: selectionEmail);
+        break;
       default:
         break;
     }
+  }
+
+  bool get isMailboxTrash => mailboxDashBoardController.selectedMailbox.value?.role == PresentationMailbox.roleTrash;
+
+  void deleteEmailsPermanently(BuildContext context, DeleteActionType actionType, {List<PresentationEmail>? selectedEmails}) {
+    if (_responsiveUtils.isMobile(context)) {
+      (ConfirmationDialogActionSheetBuilder(context)
+          ..messageText(actionType.getContentDialog(context, count: selectedEmails?.length))
+          ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
+          ..onConfirmAction(actionType.getConfirmActionName(context), () => _deleteEmailsPermanentlyAction(actionType)))
+        .show();
+    } else {
+      showDialog(
+          context: context,
+          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
+              ..key(Key('confirm_dialog_delete_emails_permanently'))
+              ..title(actionType.getTitleDialog(context))
+              ..content(actionType.getContentDialog(context, count: selectedEmails?.length))
+              ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog, fit: BoxFit.fill))
+              ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+              ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
+              ..onCloseButtonAction(() => popBack())
+              ..onConfirmButtonAction(actionType.getConfirmActionName(context), () => _deleteEmailsPermanentlyAction(actionType))
+              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
+            .build()));
+    }
+  }
+
+  void _deleteEmailsPermanentlyAction(DeleteActionType actionType) {
+    popBack();
+
+    switch(actionType) {
+      case DeleteActionType.all:
+        break;
+      case DeleteActionType.multiple:
+        _deleteMultipleEmailsPermanently(listEmailSelected);
+        break;
+      case DeleteActionType.single:
+        break;
+    }
+  }
+
+  void _deleteMultipleEmailsPermanently(List<PresentationEmail> emailList) {
+    cancelSelectEmail();
+
+    final session = mailboxDashBoardController.sessionCurrent;
+    final listEmailIds = emailList.map((email) => email.id).toList();
+    if (session != null && _accountId != null && listEmailIds.isNotEmpty) {
+      consumeState(_deleteMultipleEmailsPermanentlyInteractor.execute(session, _accountId!, listEmailIds));
+    }
+  }
+
+  void _deleteMultipleEmailsPermanentlySuccess(Success success) {
+    mailboxDashBoardController.dispatchState(Right(success));
+
+    List<EmailId> listEmailIdResult = <EmailId>[];
+    if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
+      listEmailIdResult = success.emailIds;
+    } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+      listEmailIdResult = success.emailIds;
+    }
+
+    if (currentContext != null && currentOverlayContext != null && listEmailIdResult.isNotEmpty) {
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
+          message: AppLocalizations.of(currentContext!).toast_message_delete_multiple_email_permanently_success(listEmailIdResult.length),
+          icon: _imagePaths.icDeleteToast);
+    }
+
+    _refreshEmailChanges();
   }
 
   void openMailboxLeftMenu() {
