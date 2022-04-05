@@ -23,7 +23,7 @@ class HtmlContentViewer extends StatefulWidget {
   /// Handler for any non-media URLs that the user taps on the website.
   ///
   /// Returns `true` when the given `url` was handled.
-  final Future<bool> Function(String url)? urlLauncherDelegate;
+  final Future<bool> Function(Uri url)? urlLauncherDelegate;
 
   const HtmlContentViewer({
     Key? key,
@@ -180,12 +180,12 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     final url = navigation.url;
     final urlDelegate = widget.urlLauncherDelegate;
     if (urlDelegate != null) {
-      final handled = await urlDelegate(url);
-      if (handled) {
-        return NavigationDecision.prevent;
-      }
+      await urlDelegate(Uri.parse(url));
+      return NavigationDecision.prevent;
     }
-    await launcher.launch(url);
+    if (await launcher.canLaunch(url)) {
+      await launcher.launch(url);
+    }
     return NavigationDecision.prevent;
   }
 }
