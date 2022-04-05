@@ -7,8 +7,12 @@ import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
@@ -22,8 +26,9 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   final Map<DataSourceType, ThreadDataSource> mapDataSource;
   final StateDataSource stateDataSource;
+  final EmailDataSource emailDataSource;
 
-  ThreadRepositoryImpl(this.mapDataSource, this.stateDataSource);
+  ThreadRepositoryImpl(this.mapDataSource, this.stateDataSource, this.emailDataSource);
 
   @override
   Stream<EmailsResponse> getAllEmail(
@@ -44,6 +49,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
           filterOption: emailFilter?.filterOption),
       stateDataSource.getState(StateType.email)
     ]).then((List response) {
+      log('ThreadRepositoryImpl::getAllEmail(): localEmail: ${response.first}');
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
@@ -318,5 +324,53 @@ class ThreadRepositoryImpl extends ThreadRepository {
     });
 
     yield newEmailResponse;
+  }
+
+  @override
+  Future<bool> emptyTrashFolder(AccountId accountId, MailboxId trashMailboxId) async {
+    var finalResult = true;
+    var hasEmails = true;
+
+    while (hasEmails) {
+      Email? lastEmail;
+
+      final emailsResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
+          accountId,
+          sort: Set()
+            ..add(EmailComparator(EmailComparatorProperty.receivedAt)
+              ..setIsAscending(false)),
+          filter: EmailFilterCondition(inMailbox: trashMailboxId, before: lastEmail?.receivedAt),
+          properties: Properties({EmailProperty.id}));
+
+      if (emailsResponse.state != null) {
+        await _updateState(emailsResponse.state!);
+      }
+
+      var newEmailList =  emailsResponse.emailList ?? <Email>[];
+      if (lastEmail != null) {
+        newEmailList = newEmailList.where((email) => email.id != lastEmail!.id).toList();
+      }
+
+      log('ThreadRepositoryImpl::emptyTrashFolder(): ${newEmailList.length}');
+
+      if (newEmailList.isNotEmpty == true) {
+        lastEmail = newEmailList.last;
+        hasEmails = true;
+        final emailIds = newEmailList.map((email) => email.id).toList();
+
+        final listEmailIdDeleted = await emailDataSource.deleteMultipleEmailsPermanently(accountId, emailIds);
+
+        if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == emailIds.length) {
+          await _updateEmailCache(newDestroyed: listEmailIdDeleted);
+          finalResult = true;
+        } else {
+          finalResult = false;
+        }
+      } else {
+        hasEmails = false;
+      }
+    }
+
+    return finalResult;
   }
 }

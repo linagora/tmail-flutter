@@ -1017,7 +1017,8 @@ class AppLocalizations {
   String toast_message_delete_multiple_email_permanently_success(int count) {
     return Intl.message(
         '$count Messages has been deleted forever',
-        name: 'toast_message_delete_multiple_email_permanently_success');
+        name: 'toast_message_delete_multiple_email_permanently_success',
+        args: [count]);
   }
 
   String get toast_message_delete_a_email_permanently_success {
@@ -1047,12 +1048,19 @@ class AppLocalizations {
   String delete_multiple_messages_dialog(int count) {
     return Intl.message(
         'You are about to permanently delete $count items in Trash . Do you want to continue?',
-        name: 'delete_multiple_messages_dialog');
+        name: 'delete_multiple_messages_dialog',
+        args: [count]);
   }
 
   String get delete_single_message_dialog {
     return Intl.message(
         'You are about to permanently delete this message. Do you want to continue?',
         name: 'delete_single_message_dialog');
+  }
+
+  String get toast_message_empty_trash_folder_success {
+    return Intl.message(
+        'All messages has been deleted forever',
+        name: 'toast_message_empty_trash_folder_success');
   }
 }

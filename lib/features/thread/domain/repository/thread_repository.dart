@@ -64,4 +64,6 @@ abstract class ThreadRepository {
       Properties? properties,
     }
   );
+
+  Future<bool> emptyTrashFolder(AccountId accountId, MailboxId trashMailboxId);
 }
