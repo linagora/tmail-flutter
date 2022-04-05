@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -36,6 +37,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_action.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -442,6 +444,9 @@ class EmailController extends BaseController {
       case EmailActionType.moveToTrash:
         moveToTrashAction(context, presentationEmail);
         break;
+      case EmailActionType.deletePermanently:
+        deleteEmailPermanently(context, presentationEmail);
+        break;
       default:
         break;
     }
@@ -511,6 +516,37 @@ class EmailController extends BaseController {
     } else {
       push(AppRoutes.COMPOSER, arguments: arguments);
     }
+  }
+
+  void deleteEmailPermanently(BuildContext context, PresentationEmail email) {
+    if (responsiveUtils.isMobile(context)) {
+      (ConfirmationDialogActionSheetBuilder(context)
+          ..messageText(DeleteActionType.single.getContentDialog(context))
+          ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
+          ..onConfirmAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email)))
+        .show();
+    } else {
+      showDialog(
+          context: context,
+          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+              ..key(Key('confirm_dialog_delete_email_permanently'))
+              ..title(DeleteActionType.single.getTitleDialog(context))
+              ..content(DeleteActionType.single.getContentDialog(context))
+              ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
+              ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+              ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
+              ..onCloseButtonAction(() => popBack())
+              ..onConfirmButtonAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email))
+              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
+            .build()));
+    }
+  }
+
+  void _deleteEmailPermanentlyAction(BuildContext context, PresentationEmail email) {
+    popBack();
+    backToThreadView(context);
+    mailboxDashBoardController.deleteEmailPermanently(email);
   }
 
   void closeMoreMenu() {

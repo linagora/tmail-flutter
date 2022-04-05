@@ -23,7 +23,8 @@ import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
@@ -148,6 +149,7 @@ class ThreadController extends BaseController {
             || success is MoveToMailboxSuccess
             || success is MoveToTrashSuccess
             || success is MarkAsStarEmailSuccess
+            || success is DeleteEmailPermanentlySuccess
             || success is SaveEmailAsDraftsSuccess
             || success is RemoveEmailDraftsSuccess
             || success is SendEmailSuccess
