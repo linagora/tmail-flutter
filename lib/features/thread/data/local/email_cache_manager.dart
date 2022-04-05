@@ -1,4 +1,5 @@
 
+import 'package:core/core.dart';
 import 'package:model/model.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -38,6 +39,7 @@ class EmailCacheManager {
 
   Future<void> update({List<Email>? updated, List<Email>? created, List<EmailId>? destroyed}) async {
     final emailCacheExist = await _emailCacheClient.isExistTable();
+    log('EmailCacheManager::update(): emailCacheExist: $emailCacheExist');
     if (emailCacheExist) {
       final updatedCacheEmails = updated
         ?.map((email) => email.toEmailCache()).toList() ?? <EmailCache>[];
@@ -45,6 +47,9 @@ class EmailCacheManager {
         ?.map((email) => email.toEmailCache()).toList() ?? <EmailCache>[];
       final destroyedCacheEmails = destroyed
         ?.map((emailId) => emailId.id.value).toList() ?? <String>[];
+
+      log('EmailCacheManager::update(): destroyedCacheEmails: ${destroyedCacheEmails.length}');
+
       await Future.wait([
         _emailCacheClient.updateMultipleItem(updatedCacheEmails.toMap()),
         _emailCacheClient.insertMultipleItem(createdCacheEmails.toMap()),
