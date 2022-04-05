@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_da
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
@@ -47,6 +48,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_t
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
@@ -83,6 +85,7 @@ class ThreadController extends BaseController {
   final SearchMoreEmailInteractor _searchMoreEmailInteractor;
   final MoveMultipleEmailToTrashInteractor _moveMultipleEmailToTrashInteractor;
   final DeleteMultipleEmailsPermanentlyInteractor _deleteMultipleEmailsPermanentlyInteractor;
+  final EmptyTrashFolderInteractor _emptyTrashFolderInteractor;
 
   final emailList = <PresentationEmail>[].obs;
   final emailListSearch = <PresentationEmail>[].obs;
@@ -118,6 +121,7 @@ class ThreadController extends BaseController {
     this._searchMoreEmailInteractor,
     this._moveMultipleEmailToTrashInteractor,
     this._deleteMultipleEmailsPermanentlyInteractor,
+    this._emptyTrashFolderInteractor,
   );
 
   @override
@@ -214,6 +218,8 @@ class ThreadController extends BaseController {
         } else if (failure is MarkAsStarMultipleEmailAllFailure
             || failure is MarkAsStarMultipleEmailFailure) {
           _markAsStarMultipleEmailFailure(failure);
+        }  else if (failure is EmptyTrashFolderFailure) {
+          _emptyTrashFolderFailure(failure);
         }
       },
       (success) {
@@ -234,6 +240,8 @@ class ThreadController extends BaseController {
         } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess
             || success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
           _deleteMultipleEmailsPermanentlySuccess(success);
+        } else if (success is EmptyTrashFolderSuccess) {
+          _emptyTrashFolderSuccess(success);
         }
       }
     );
@@ -272,6 +280,10 @@ class ThreadController extends BaseController {
     final emailsAfterChanges = success.emailList;
     final newListEmail = emailsAfterChanges.combine(emailsBeforeChanges);
     emailList.value = newListEmail;
+
+    if (emailList.isEmpty) {
+      refreshAllEmail();
+    }
   }
 
   void _getAllEmailAction(AccountId accountId, {MailboxId? mailboxId}) {
@@ -856,6 +868,7 @@ class ThreadController extends BaseController {
 
     switch(actionType) {
       case DeleteActionType.all:
+        _emptyTrashFolderAction();
         break;
       case DeleteActionType.multiple:
         _deleteMultipleEmailsPermanently(listEmailSelected);
@@ -868,10 +881,9 @@ class ThreadController extends BaseController {
   void _deleteMultipleEmailsPermanently(List<PresentationEmail> emailList) {
     cancelSelectEmail();
 
-    final session = mailboxDashBoardController.sessionCurrent;
     final listEmailIds = emailList.map((email) => email.id).toList();
-    if (session != null && _accountId != null && listEmailIds.isNotEmpty) {
-      consumeState(_deleteMultipleEmailsPermanentlyInteractor.execute(session, _accountId!, listEmailIds));
+    if ( _accountId != null && listEmailIds.isNotEmpty) {
+      consumeState(_deleteMultipleEmailsPermanentlyInteractor.execute(_accountId!, listEmailIds));
     }
   }
 
@@ -894,6 +906,35 @@ class ThreadController extends BaseController {
     }
 
     _refreshEmailChanges();
+  }
+
+  void _emptyTrashFolderAction() {
+    cancelSelectEmail();
+
+    final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxId[PresentationMailbox.roleTrash];
+    log('ThreadController::_emptyTrashFolderAction(): trashMailboxId: $trashMailboxId');
+    if (_accountId != null && trashMailboxId != null) {
+      consumeState(_emptyTrashFolderInteractor.execute(_accountId!, trashMailboxId));
+    }
+  }
+
+  void _emptyTrashFolderSuccess(EmptyTrashFolderSuccess success) {
+    mailboxDashBoardController.dispatchState(Right(success));
+
+    if (currentContext != null && currentOverlayContext != null) {
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
+          message: AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success,
+          icon: _imagePaths.icDeleteToast);
+    }
+
+    refreshAllEmail();
+  }
+
+  void _emptyTrashFolderFailure(EmptyTrashFolderFailure failure) {
+    mailboxDashBoardController.dispatchState(Left(failure));
+    refreshAllEmail();
   }
 
   void openMailboxLeftMenu() {
