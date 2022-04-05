@@ -81,17 +81,19 @@ class BottomBarThreadSelectionWidget {
               }})
             ..text(AppLocalizations.of(_context).move, isVertical: _responsiveUtils.isMobile(_context)))
           .build(),
-        if (!_responsiveUtils.isDesktop(_context) && _currentMailbox?.role != PresentationMailbox.roleTrash)
-          (ButtonBuilder(_imagePaths.icDelete)
-            ..key(Key('button_delete_email'))
-            ..paddingIcon(EdgeInsets.all(8))
-            ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
-            ..onPressActionClick(() {
-              if (_onPressEmailSelectionActionClick != null) {
-                _onPressEmailSelectionActionClick!(EmailActionType.moveToTrash, _listSelectionEmail);
-              }})
-            ..text(AppLocalizations.of(_context).delete, isVertical: _responsiveUtils.isMobile(_context)))
-          .build()
+        (ButtonBuilder(_imagePaths.icDelete)
+          ..key(Key('button_delete_email'))
+          ..paddingIcon(EdgeInsets.all(8))
+          ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
+          ..onPressActionClick(() {
+            if (_currentMailbox?.role != PresentationMailbox.roleTrash) {
+              _onPressEmailSelectionActionClick?.call(EmailActionType.moveToTrash, _listSelectionEmail);
+            } else {
+              _onPressEmailSelectionActionClick?.call(EmailActionType.deletePermanently, _listSelectionEmail);
+            }
+            })
+          ..text(AppLocalizations.of(_context).delete, isVertical: _responsiveUtils.isMobile(_context)))
+        .build()
       ]
     );
   }
