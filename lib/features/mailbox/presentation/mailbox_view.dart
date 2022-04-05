@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
@@ -261,6 +262,13 @@ class MailboxView extends GetWidget<MailboxController> {
           margin: EdgeInsets.only(left: 16, right: 16, bottom: 30),
           child: _buildFolderMailbox(context),
         ),
+        Obx(() {
+          if (controller.mailboxDashBoardController.appInformation.value != null) {
+            return _buildVersionInformation(context, controller.mailboxDashBoardController.appInformation.value!);
+          } else {
+            return SizedBox.shrink();
+          }
+        }),
       ]
     );
   }
@@ -430,5 +438,17 @@ class MailboxView extends GetWidget<MailboxController> {
         )
       ]);
     }
+  }
+
+  Widget _buildVersionInformation(BuildContext context, PackageInfo packageInfo) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      margin: EdgeInsets.only(bottom: 30),
+      child: Text(
+        '${AppLocalizations.of(context).version} ${packageInfo.version}',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 16, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
+      ),
+    );
   }
 }

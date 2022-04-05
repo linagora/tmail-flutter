@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
@@ -68,6 +69,7 @@ class MailboxDashBoardController extends ReloadableController {
   final suggestionSearch = <String>[].obs;
   final dashBoardAction = DashBoardAction.none.obs;
   final routePath = AppRoutes.MAILBOX_DASHBOARD.obs;
+  final appInformation = Rxn<PackageInfo>();
 
   SearchQuery? searchQuery;
   Session? sessionCurrent;
@@ -97,6 +99,7 @@ class MailboxDashBoardController extends ReloadableController {
     dispatchRoute(AppRoutes.THREAD);
     _setSessionCurrent();
     _getUserProfile();
+    _initPackageInfo();
   }
 
   @override
@@ -193,6 +196,13 @@ class MailboxDashBoardController extends ReloadableController {
       }
     });
   }
+
+  Future<void> _initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    log('MailboxDashBoardController::_initPackageInfo(): ${info.version}');
+    appInformation.value = info;
+  }
+
 
   void setMapDefaultMailboxId(Map<Role, MailboxId> newMapMailboxId) {
     mapDefaultMailboxId = newMapMailboxId;
