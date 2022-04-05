@@ -43,6 +43,9 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
                       child: _buildHeader(context)),
                 _buildSearchInputFormForMobile(context),
                 _buildSearchButtonViewForMobile(context),
+                Obx(() => controller.isMailboxTrash && controller.emailList.isNotEmpty && !controller.isSearchActive()
+                    ? _buildEmptyTrashButton(context)
+                    : SizedBox.shrink()),
                 Expanded(child: Container(
                     color: AppColor.colorBgDesktop,
                     margin: _responsiveUtils.isDesktop(context) ? EdgeInsets.all(16) : EdgeInsets.zero,
@@ -472,11 +475,11 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
       (success) {
         if (controller.isSearchActive()) {
           return success is SearchingState
-              ? Padding(padding: EdgeInsets.only(top: 16), child: _loadingWidget)
+              ? Padding(padding: EdgeInsets.symmetric(vertical: 16), child: _loadingWidget)
               : SizedBox.shrink();
         } else {
           return success is LoadingState
-              ? Padding(padding: EdgeInsets.only(top: 16), child: _loadingWidget)
+              ? Padding(padding: EdgeInsets.symmetric(vertical: 16), child: _loadingWidget)
               : SizedBox.shrink();
         }
       }));
@@ -630,7 +633,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
         return controller.emailListSearch.length > 0
           ? Container(
               width: double.infinity,
-              margin: EdgeInsets.zero,
+              margin: EdgeInsets.only(bottom: 16),
               padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
               decoration: BoxDecoration(
                   borderRadius: _responsiveUtils.isDesktop(context)
@@ -646,5 +649,42 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
         return SizedBox.shrink();
       }
     });
+  }
+
+  Widget _buildEmptyTrashButton(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+          border: Border.all(color: AppColor.colorLineLeftEmailView),
+          color: Colors.white),
+      margin: EdgeInsets.only(left: 16, right: 16,
+          bottom: _responsiveUtils.isDesktop(context) ? 0 : 16,
+          top: _responsiveUtils.isDesktop(context) ? 16 : 0),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(children: [
+        Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: SvgPicture.asset(_imagePaths.icDeleteTrash, fit: BoxFit.fill)),
+        Expanded(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                      padding: EdgeInsets.only(left: 8),
+                      child: Text(
+                          AppLocalizations.of(context).message_delete_all_email_in_trash_button,
+                          style: TextStyle(color: AppColor.colorContentEmail, fontSize: 13, fontWeight: FontWeight.w500))),
+                  TextButton(
+                      onPressed: () => controller.deleteEmailsPermanently(context, DeleteActionType.all),
+                      child: Text(
+                          AppLocalizations.of(context).empty_trash_now,
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton)
+                      )
+                  )
+                ]
+            )
+        )
+      ]),
+    );
   }
 }

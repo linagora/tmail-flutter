@@ -7,13 +7,10 @@ import 'package:external_path/external_path.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
-import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/reference_id.dart';
 import 'package:jmap_dart_client/jmap/core/reference_prefix.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
@@ -31,7 +28,6 @@ import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart'
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
-import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 class EmailAPI {
 
@@ -386,54 +382,34 @@ class EmailAPI {
     });
   }
 
-  Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds) async {
-    requireCapability(session, [CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail]);
+  Future<List<EmailId>> deleteMultipleEmailsPermanently(AccountId accountId, List<EmailId> emailIds) async {
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addDestroy(emailIds.map((emailId) => emailId.id).toSet());
 
-    final coreCapability = (session.capabilities[CapabilityIdentifier.jmapCore] as CoreCapability);
-    final maxMethodCount = coreCapability.maxCallsInRequest.value.toInt();
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
-    List<EmailId> listEmailResult = [];
-    var start = 0;
-    var end = 0;
-    while (end < emailIds.length) {
-      start = end;
-      if (emailIds.length - start >= maxMethodCount) {
-        end = maxMethodCount;
-      } else {
-        end = emailIds.length;
-      }
-      log('EmailAPI::deleteMultipleEmailPermanently(): delete from $start to $end / ${emailIds.length}');
-      final currentExecuteList = emailIds.sublist(start, end);
+    final response = await (requestBuilder
+        ..usings(setEmailMethod.requiredCapabilities))
+      .build()
+      .execute();
 
-      final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-      final currentSetEmailInvocations = currentExecuteList
-          .map((emailId) {
-            return SetEmailMethod(accountId)
-              ..addDestroy(Set.of([emailId.id]));
-          })
-          .map(requestBuilder.invocation)
-          .toList();
+    final setEmailResponse = response.parse<SetEmailResponse>(
+        setEmailInvocation.methodCallId,
+        SetEmailResponse.deserialize);
 
-      final response = await (requestBuilder
-          ..usings(Set.of([CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail])))
-        .build()
-        .execute();
+    final listIdResult = setEmailResponse?.destroyed;
 
-      currentSetEmailInvocations
-        .map((currentInvocation) => response.parse(currentInvocation.methodCallId, SetEmailResponse.deserialize))
-        .map((response) => response?.destroyed?.map((id) => EmailId(id)))
-        .where((listId) => listId != null && listId.isNotEmpty)
-        .forEach((listId) {
-          listEmailResult.addAll(listId!);
-        });
+    if (listIdResult != null) {
+      return listIdResult.map((id) => EmailId(id)).toList();
     }
 
-    return listEmailResult;
+    return List.empty();
   }
 
   Future<bool> deleteEmailPermanently(AccountId accountId, EmailId emailId) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-    final setEmailMethod =  SetEmailMethod(accountId)
+    final setEmailMethod = SetEmailMethod(accountId)
       ..addDestroy(Set.of([emailId.id]));
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);

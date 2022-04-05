@@ -1,4 +1,3 @@
-import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -28,7 +27,6 @@ class ResponsiveUtils {
 
   double getDeviceWidth(BuildContext context) {
     final widthScreen = kIsWeb ? context.width : context.mediaQueryShortestSide;
-    log('ResponsiveUtils::getDeviceWidth(): widthScreen: $widthScreen');
     return widthScreen;
   }
 

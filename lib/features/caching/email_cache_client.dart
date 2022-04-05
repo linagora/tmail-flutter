@@ -1,4 +1,5 @@
 
+import 'package:core/core.dart';
 import 'package:hive/hive.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_client.dart';
@@ -103,9 +104,11 @@ class EmailCacheClient extends HiveCacheClient<EmailCache> {
   @override
   Future<void> deleteMultipleItem(List<String> listKey) {
     return Future.sync(() async {
+      log('EmailCacheClient::deleteMultipleItem(): listKey: ${listKey.length}');
       final boxEmail = await openBox();
       return boxEmail.deleteAll(listKey);
     }).catchError((error) {
+      log('EmailCacheClient::deleteMultipleItem(): error: $error');
       throw error;
     });
   }

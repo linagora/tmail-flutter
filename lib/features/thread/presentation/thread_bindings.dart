@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dar
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/repository/thread_repository_impl.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
@@ -57,6 +58,7 @@ class ThreadBindings extends BaseBindings {
       Get.find<SearchMoreEmailInteractor>(),
       Get.find<MoveMultipleEmailToTrashInteractor>(),
       Get.find<DeleteMultipleEmailsPermanentlyInteractor>(),
+      Get.find<EmptyTrashFolderInteractor>(),
     ));
   }
 
@@ -96,6 +98,7 @@ class ThreadBindings extends BaseBindings {
     Get.lazyPut(() => SearchMoreEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => MoveMultipleEmailToTrashInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => DeleteMultipleEmailsPermanentlyInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => EmptyTrashFolderInteractor(Get.find<ThreadRepository>()));
   }
 
   @override
@@ -111,7 +114,8 @@ class ThreadBindings extends BaseBindings {
           DataSourceType.network: Get.find<ThreadDataSource>(),
           DataSourceType.local: Get.find<LocalThreadDataSourceImpl>()
         },
-        Get.find<StateDataSource>()
+        Get.find<StateDataSource>(),
+        Get.find<EmailDataSource>(),
     ));
     Get.lazyPut(() => EmailRepositoryImpl(
         Get.find<EmailDataSource>(),
