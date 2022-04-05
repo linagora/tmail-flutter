@@ -1,6 +1,7 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 class CupertinoActionSheetBuilder {
 
@@ -33,12 +34,12 @@ class CupertinoActionSheetBuilder {
     showCupertinoModalPopup(
       context: _context,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-      builder: (context) => CupertinoActionSheet(
+      builder: (context) => PointerInterceptor(child: CupertinoActionSheet(
         title: _titleWidget,
         message: _messageWidget,
         actions: _actionTiles,
         cancelButton: _cancelWidget,
-      )
+      ))
     );
   }
 }
