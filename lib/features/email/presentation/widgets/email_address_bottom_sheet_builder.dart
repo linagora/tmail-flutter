@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnCloseBottomSheetAction = void Function();
@@ -56,7 +57,7 @@ class EmailAddressBottomSheetBuilder {
 
   void show() {
     Get.bottomSheet(
-      GestureDetector(
+      PointerInterceptor(child: GestureDetector(
         onTap: () => _onCloseBottomSheetAction?.call(),
         child: SingleChildScrollView(
           child: Container(
@@ -73,11 +74,11 @@ class EmailAddressBottomSheetBuilder {
                           onPressed: () => _onCloseBottomSheetAction?.call(),
                           icon: SvgPicture.asset(_imagePaths.icCloseMailbox, width: 24, height: 24, fit: BoxFit.fill))),
                   (AvatarBuilder()
-                    ..text('${_emailAddress.asString().characters.first.toUpperCase()}')
-                    ..size(64)
-                    ..addTextStyle(TextStyle(fontWeight: FontWeight.w600, fontSize: 23, color: Colors.white))
-                    ..avatarColor(_emailAddress.avatarColors))
-                      .build(),
+                      ..text('${_emailAddress.asString().characters.first.toUpperCase()}')
+                      ..size(64)
+                      ..addTextStyle(TextStyle(fontWeight: FontWeight.w600, fontSize: 23, color: Colors.white))
+                      ..avatarColor(_emailAddress.avatarColors))
+                    .build(),
                   if (_emailAddress.displayName.isNotEmpty)
                     Padding(
                         padding: EdgeInsets.only(left: 16, right: 16, top: 16),
@@ -125,7 +126,7 @@ class EmailAddressBottomSheetBuilder {
             )),
           ),
         ),
-      ),
+      )),
       useRootNavigator: true,
       shape: _shape(),
       isScrollControlled: true,

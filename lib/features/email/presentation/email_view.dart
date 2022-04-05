@@ -536,12 +536,14 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
                   widthContent: constraints.maxWidth,
                   heightContent: MediaQuery.of(context).size.height,
                   contentHtml: allEmailContents,
-                  controller: HtmlViewerControllerForWeb());
+                  controller: HtmlViewerControllerForWeb(),
+                  mailtoDelegate: (uri) => emailController.openMailToLink(uri));
             } else {
               return HtmlContentViewer(
                   widthContent: MediaQuery.of(context).size.width,
                   contentHtml: allEmailContents,
-                  loadingWidget: EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils));
+                  loadingWidget: EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils),
+                  mailtoDelegate: (uri) async => emailController.openMailToLink(uri));
             }
           } else {
             return SizedBox.shrink();
