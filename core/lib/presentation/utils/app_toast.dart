@@ -61,9 +61,11 @@ class AppToast {
     );
   }
 
-  void showToastWithIcon(BuildContext context,
-      {String? message, String? icon, Color? bgColor,
-      Color? textColor, double? radius, EdgeInsets? padding, TextStyle? textStyle}) {
+  void showToastWithIcon(BuildContext context, {
+      String? message, String? icon, Color? bgColor,
+      Color? textColor, double? radius, EdgeInsets? padding,
+      TextStyle? textStyle, double? widthToast}) {
+    double sizeWidth = context.width > 360 ? 360 : context.width - 40;
     final toast = Material(
       color: bgColor ?? Colors.white,
       elevation: 10,
@@ -75,7 +77,7 @@ class AppToast {
           borderRadius: BorderRadius.circular(radius ?? 10.0),
           color: bgColor ?? Colors.white,
         ),
-        width: 320,
+        width: widthToast ?? sizeWidth,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

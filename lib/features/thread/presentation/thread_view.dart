@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/user_setti
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
@@ -207,11 +208,14 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
           icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
           tooltip: AppLocalizations.of(context).move,
           onTap: () => controller.pressEmailSelectionAction(context, EmailActionType.move, controller.listEmailSelected)),
-      if (controller.mailboxDashBoardController.selectedMailbox.value?.role != PresentationMailbox.roleTrash)
-        buildIconWeb(
-            icon: SvgPicture.asset(_imagePaths.icDelete, fit: BoxFit.fill),
-            tooltip: AppLocalizations.of(context).move_to_trash,
-            onTap: () => controller.pressEmailSelectionAction(context, EmailActionType.moveToTrash, controller.listEmailSelected)),
+      buildIconWeb(
+          icon: SvgPicture.asset(_imagePaths.icDelete, fit: BoxFit.fill),
+          tooltip: controller.mailboxDashBoardController.selectedMailbox.value?.role != PresentationMailbox.roleTrash
+              ? AppLocalizations.of(context).move_to_trash
+              : AppLocalizations.of(context).delete_permanently,
+          onTap: () => controller.mailboxDashBoardController.selectedMailbox.value?.role != PresentationMailbox.roleTrash
+              ? controller.pressEmailSelectionAction(context, EmailActionType.moveToTrash, controller.listEmailSelected)
+              : controller.deleteEmailsPermanently(context, DeleteActionType.multiple, selectedEmails: controller.listEmailSelected)),
     ]);
   }
 
