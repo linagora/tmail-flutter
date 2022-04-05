@@ -260,18 +260,22 @@ class ComposerController extends BaseController {
 
       if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty) {
         isInitialRecipient.value = true;
+        toAddressExpandMode.value = ExpandMode.COLLAPSE;
       }
 
       if (listCcEmailAddress.isNotEmpty) {
         listEmailAddressType.add(PrefixEmailAddress.cc);
+        ccAddressExpandMode.value = ExpandMode.COLLAPSE;
       }
 
       if (listBccEmailAddress.isNotEmpty) {
         listEmailAddressType.add(PrefixEmailAddress.bcc);
+        bccAddressExpandMode.value = ExpandMode.COLLAPSE;
       }
     } else if (arguments.emailAddress != null) {
       listToEmailAddress.add(arguments.emailAddress!);
       isInitialRecipient.value = true;
+      toAddressExpandMode.value = ExpandMode.COLLAPSE;
     }
     _updateStatusEmailSendButton();
   }

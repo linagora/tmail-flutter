@@ -16,12 +16,16 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final double heightContent;
   final HtmlViewerControllerForWeb controller;
 
+  /// Handler for mailto: links
+  final Function(Uri?)? mailtoDelegate;
+
   const HtmlContentViewerOnWeb({
     Key? key,
     required this.contentHtml,
     required this.widthContent,
     required this.heightContent,
     required this.controller,
+    this.mailtoDelegate,
   }) : super(key: key);
 
   @override
@@ -106,7 +110,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
             return false;  
           }
         
-          return url.protocol === "http:" || url.protocol === "https:";
+          return url.protocol === "http:" || url.protocol === "https:" || url.protocol === "mailto:";
         }
       </script>
     ''';
@@ -217,7 +221,12 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
             final link = data['url'];
             if (link != null && mounted) {
               log('_HtmlContentViewerOnWebState::_setUpWeb(): OpenLink: $link');
-              html.window.open('$link', '_blank');
+              final urlString = link as String;
+              if (urlString.startsWith('mailto:')) {
+                widget.mailtoDelegate?.call(Uri.parse(urlString));
+              } else {
+                html.window.open('$urlString', '_blank');
+              }
             }
           }
         });

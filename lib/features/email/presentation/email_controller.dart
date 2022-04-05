@@ -484,11 +484,11 @@ class EmailController extends BaseController {
       showDialog(
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => (EmailAddressDialogBuilder(context, imagePaths, emailAddress)
+          builder: (BuildContext context) => PointerInterceptor(child: (EmailAddressDialogBuilder(context, imagePaths, emailAddress)
               ..addOnCloseContextMenuAction(() => popBack())
               ..addOnCopyEmailAddressAction((emailAddress) => copyEmailAddress(context, emailAddress))
               ..addOnComposeEmailAction((emailAddress) => composeEmailFromEmailAddress(emailAddress)))
-            .build());
+            .build()));
     }
   }
 
@@ -515,6 +515,29 @@ class EmailController extends BaseController {
       }
     } else {
       push(AppRoutes.COMPOSER, arguments: arguments);
+    }
+  }
+
+  void openMailToLink(Uri? uri) {
+    log('EmailController::openMailToLink(): ${uri.toString()}');
+    String address = uri?.path ?? '';
+    log('EmailController::openMailToLink(): address: $address');
+    if (address.isNotEmpty) {
+      final emailAddress = EmailAddress(null, address);
+      final arguments = ComposerArguments(
+          emailActionType: EmailActionType.composeFromEmailAddress,
+          emailAddress: emailAddress,
+          mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
+      if (kIsWeb) {
+        if (mailboxDashBoardController.dashBoardAction != DashBoardAction.compose) {
+          mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.compose, arguments: arguments);
+        }
+        if (Get.currentRoute == AppRoutes.EMAIL) {
+          popBack();
+        }
+      } else {
+        push(AppRoutes.COMPOSER, arguments: arguments);
+      }
     }
   }
 

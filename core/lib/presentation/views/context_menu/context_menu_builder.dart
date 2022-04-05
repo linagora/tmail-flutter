@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 typedef OnCloseContextMenuAction = void Function();
 
@@ -54,7 +55,7 @@ class ContextMenuBuilder {
 
   void build() {
     Get.bottomSheet(
-      GestureDetector(
+      PointerInterceptor(child: GestureDetector(
         onTap: () {
           if (_onCloseContextMenuAction != null) {
             _onCloseContextMenuAction!();
@@ -88,7 +89,7 @@ class ContextMenuBuilder {
             ),
           ),
         ),
-      ),
+      )),
       useRootNavigator: true,
       shape: _shape(),
       isScrollControlled: true,
