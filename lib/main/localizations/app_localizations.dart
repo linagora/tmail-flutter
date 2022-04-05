@@ -983,4 +983,76 @@ class AppLocalizations {
         'Team - Mail',
         name: 'page_name');
   }
+
+  String get message_delete_all_email_in_trash_button {
+    return Intl.message(
+        'All messages in Trash will be deleted if you reach limited storage.',
+        name: 'message_delete_all_email_in_trash_button');
+  }
+
+  String get empty_trash_now {
+    return Intl.message(
+        'Empty trash now',
+        name: 'empty_trash_now');
+  }
+
+  String get empty_trash_folder {
+    return Intl.message(
+        'Empty trash folder',
+        name: 'empty_trash_folder');
+  }
+
+  String get empty_trash_dialog_message {
+    return Intl.message(
+        'You are about to permanently delete all items in Trash . Do you want to continue?',
+        name: 'empty_trash_dialog_message');
+  }
+
+  String get delete_all {
+    return Intl.message(
+        'Delete all',
+        name: 'delete_all');
+  }
+
+  String toast_message_delete_multiple_email_permanently_success(int count) {
+    return Intl.message(
+        '$count Messages has been deleted forever',
+        name: 'toast_message_delete_multiple_email_permanently_success');
+  }
+
+  String get toast_message_delete_a_email_permanently_success {
+    return Intl.message(
+        'Message has been deleted forever',
+        name: 'toast_message_delete_a_email_permanently_success');
+  }
+
+  String get delete_permanently {
+    return Intl.message(
+        'Delete permanently',
+        name: 'delete_permanently');
+  }
+
+  String get delete_messages_forever {
+    return Intl.message(
+        'Delete messages forever',
+        name: 'delete_messages_forever');
+  }
+
+  String get delete_message_forever {
+    return Intl.message(
+        'Delete message forever',
+        name: 'delete_message_forever');
+  }
+
+  String delete_multiple_messages_dialog(int count) {
+    return Intl.message(
+        'You are about to permanently delete $count items in Trash . Do you want to continue?',
+        name: 'delete_multiple_messages_dialog');
+  }
+
+  String get delete_single_message_dialog {
+    return Intl.message(
+        'You are about to permanently delete this message. Do you want to continue?',
+        name: 'delete_single_message_dialog');
+  }
 }
