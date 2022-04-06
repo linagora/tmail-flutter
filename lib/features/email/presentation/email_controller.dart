@@ -82,8 +82,7 @@ class EmailController extends BaseController {
   );
 
   @override
-  void onReady() {
-    super.onReady();
+  void onInit() {
     mailboxDashBoardController.selectedEmail.listen((presentationEmail) {
       log('EmailController::onReady(): ${presentationEmail.toString()}');
       if (_currentEmailId != presentationEmail?.id) {
@@ -97,6 +96,7 @@ class EmailController extends BaseController {
         }
       }
     });
+    super.onInit();
   }
 
   @override

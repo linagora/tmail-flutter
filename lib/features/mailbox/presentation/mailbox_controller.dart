@@ -104,15 +104,19 @@ class MailboxController extends BaseMailboxController {
   ) : super(treeBuilder);
 
   @override
-  void onReady() {
-    super.onReady();
+  void onInit() {
     mailboxDashBoardController.accountId.listen((accountId) {
       log('MailboxController::onReady(): accountId: $accountId');
       if (accountId != null) {
         getAllMailboxAction(accountId);
       }
     });
+    super.onInit();
+  }
 
+  @override
+  void onReady() {
+    super.onReady();
     mailboxDashBoardController.viewState.listen((state) {
       state.fold(
         (failure) {

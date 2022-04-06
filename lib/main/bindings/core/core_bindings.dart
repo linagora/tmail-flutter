@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
+import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
 class CoreBindings extends Bindings {
 
@@ -16,6 +17,7 @@ class CoreBindings extends Bindings {
     _bindingTransformer();
     _bindingToast();
     _bindingDeviceManager();
+    _bindingReceivingSharingStream();
   }
 
   void _bindingAppImagePaths() {
@@ -46,5 +48,9 @@ class CoreBindings extends Bindings {
   void _bindingDeviceManager() {
     Get.put(DeviceInfoPlugin());
     Get.put(DeviceManager(Get.find<DeviceInfoPlugin>()));
+  }
+
+  void _bindingReceivingSharingStream() {
+    Get.put(EmailReceiveManager());
   }
 }

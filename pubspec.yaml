@@ -141,6 +141,8 @@ dependencies:
 
   package_info_plus: 1.4.1
 
+  receive_sharing_intent: 1.4.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
