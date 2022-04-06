@@ -42,7 +42,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unknown_error_login_message": "Произошла неизвестная ошибка. Пожалуйста, попробуйте еще раз.",
+  "unknown_error_login_message": "Произошла неизвестная ошибка. Пожалуйста, попробуйте еще раз",
   "@unknown_error_login_message": {
     "type": "text",
     "placeholders_order": [],
@@ -418,6 +418,502 @@
   },
   "results": "Результаты",
   "@results": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_without_recipient": "У вашего электронного письма должен быть хотя бы один получатель",
+  "@message_dialog_send_email_without_recipient": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "edit": "Редактировать",
+  "@edit": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_search_emails": "Поиск электронных писем и файлов",
+  "@hint_search_emails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "compose": "Создать",
+  "@compose": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete": "Удалить",
+  "@delete": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move": "Переместить",
+  "@move": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spam": "Спам",
+  "@spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "flag": "Отметить",
+  "@flag": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "read": "Прочитано",
+  "@read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unread": "Не прочитано",
+  "@unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "the_feature_is_under_development": "Эта функция находится в разработке.",
+  "@the_feature_is_under_development": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_message_toast": "Вы пометили сообщения как \"{action}\"",
+  "@marked_message_toast": {
+    "type": "text",
+    "placeholders_order": [
+      "action"
+    ],
+    "placeholders": {
+      "action": {}
+    }
+  },
+  "with_attachments": "С вложениями",
+  "@with_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folders": "Папки",
+  "@folders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "logout": "Выйти",
+  "@logout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_search_mailboxes": "Поиск по почтовым ящикам",
+  "@hint_search_mailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "starred": "Избранное",
+  "@starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "filter_message_toast": "Вы установили фильтр \"{filterOption}\"",
+  "@filter_message_toast": {
+    "type": "text",
+    "placeholders_order": [
+      "filterOption"
+    ],
+    "placeholders": {
+      "filterOption": {}
+    }
+  },
+  "disable_filter_message_toast": "Вы отключили фильтр сообщений",
+  "@disable_filter_message_toast": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_unread": "Включить непрочитанные",
+  "@with_unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_starred": "Включить избранные",
+  "@with_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_has_been_sent_successfully": "Сообщение успешно отправлено",
+  "@message_has_been_sent_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_has_been_sent_failure": "Не удалось отправить сообщение",
+  "@message_has_been_sent_failure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "done": "Готово",
+  "@done": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_mailbox": "Новый почтовый ящик",
+  "@new_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailbox_location": "Расположение почтового ящика",
+  "@mailbox_location": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "default_mailbox": "Почтовый ящик по умолчанию",
+  "@default_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "name_of_mailbox_is_required": "Введите название почтового ящика",
+  "@name_of_mailbox_is_required": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailbox_name_cannot_contain_special_characters": "Название почтового ящика не может содержать специальные символы",
+  "@mailbox_name_cannot_contain_special_characters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "this_folder_name_is_already_taken": "Это название папки уже используется",
+  "@this_folder_name_is_already_taken": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_mailbox_is_created": "{nameMailbox} создан",
+  "@new_mailbox_is_created": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "create_new_mailbox_failure": "Не удалось создать новый почтовый ящик",
+  "@create_new_mailbox_failure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "drafts_saved": "Черновик сохранен",
+  "@drafts_saved": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discard": "Отменить",
+  "@discard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_input_create_new_mailbox": "Введите название почтового ящика",
+  "@hint_input_create_new_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rename": "Переименовать",
+  "@rename": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rename_mailbox": "Переименовать почтовый ящик",
+  "@rename_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_mailboxes_successfully": "Почтовые ящики успешно удалены",
+  "@delete_mailboxes_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_mailboxes_failure": "Не удалось удалить почтовые ящики",
+  "@delete_mailboxes_failure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_mailboxes": "Удалить почтовые ящики",
+  "@delete_mailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_delete_mailbox": "Почтовый ящик \"{nameMailbox}\" и все содержащиеся в нем подпапки и сообщения будут удалены без возможности восстановления. Вы хотите продолжить удаление?",
+  "@message_confirmation_dialog_delete_mailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "this_field_cannot_be_blank": "Заполните это поле",
+  "@this_field_cannot_be_blank": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "there_is_already_folder_with_the_same_name": "Папка с таким названием уже есть",
+  "@there_is_already_folder_with_the_same_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email_address_is_not_in_the_correct_format": "Неверный формат адреса электронной почты",
+  "@email_address_is_not_in_the_correct_format": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preparing_to_save": "Подготовка к сохранению",
+  "@preparing_to_save": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_message": "Новое сообщение",
+  "@new_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "details": "Данные",
+  "@details": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hide": "Скрыть",
+  "@hide": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy_email_address": "Скопировать адрес электронной почты",
+  "@copy_email_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "compose_email": "Написать письмо",
+  "@compose_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email_address_copied_to_clipboard": "Адрес электронной почты скопирован в буфер обмена",
+  "@email_address_copied_to_clipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "minimize": "Уменьшить",
+  "@minimize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fullscreen": "Полноэкранный режим",
+  "@fullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "close": "Закрыть",
+  "@close": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "send": "Отправить",
+  "@send": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachments": "Вложения",
+  "@attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "show_all": "Показать все",
+  "@show_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_without_a_subject": "Вы уверены, что хотите отправить сообщения без указания темы?",
+  "@message_dialog_send_email_without_a_subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "app_name": "Tmail",
+  "@app_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search_emails": "Поиск по письмам",
+  "@search_emails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select_all": "Выбрать все",
+  "@select_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_all_as_read": "Отметить все как прочитанные",
+  "@mark_all_as_read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "filter_messages": "Фильтр сообщений",
+  "@filter_messages": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "not_starred": "Не в избранном",
+  "@not_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select": "Выбрать",
+  "@select": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "more": "Больше",
+  "@more": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "back": "Назад",
+  "@back": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "collapse": "Сжать",
+  "@collapse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "save_to_drafts": "Сохранить в черновики",
+  "@save_to_drafts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "expand": "Увеличить",
+  "@expand": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_compose_email": "Начать писать письмо...",
+  "@hint_compose_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attach_file": "Прикрепить файл",
+  "@attach_file": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "show": "Показать",
+  "@show": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "add_recipients": "Добавить получателей",
+  "@add_recipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sending_failed": "Во время отправки произошла ошибка",
+  "@sending_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "send_anyway": "Все равно отправить",
+  "@send_anyway": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty_subject": "Тема не указана",
+  "@empty_subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_with_email_address_invalid": "Проверьте, верно ли введены адреса электронной почты, и повторите попытку",
+  "@message_dialog_send_email_with_email_address_invalid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fix_email_addresses": "Исправить адреса электронной почты",
+  "@fix_email_addresses": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "the_total_size_of_attachments_in_an_email_exceeds_the_limit": "Общий размер вложений в электронном письме превышает лимит.",
+  "@the_total_size_of_attachments_in_an_email_exceeds_the_limit": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
