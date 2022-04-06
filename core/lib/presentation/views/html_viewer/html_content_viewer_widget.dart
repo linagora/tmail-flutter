@@ -51,6 +51,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   @override
   void initState() {
     super.initState();
+    _webViewWidth = widget.widthContent;
     _htmlData = _generateHtmlDocument(widget.contentHtml);
   }
 
@@ -101,16 +102,14 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   @override
   Widget build(BuildContext context) {
-    _webViewWidth = widget.widthContent;
     return Stack(
-      alignment: AlignmentDirectional.center,
       children: [
         SizedBox(
           height: _webViewHeight,
           width: _webViewWidth,
           child: _buildWebView(),
         ),
-        if (_isLoading) _buildLoadingView()
+        if (_isLoading) Align(alignment: Alignment.center, child: _buildLoadingView())
       ],
     );
   }
