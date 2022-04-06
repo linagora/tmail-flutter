@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cac
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
+import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
 class HomeBindings extends BaseBindings {
 
@@ -25,6 +26,7 @@ class HomeBindings extends BaseBindings {
         Get.find<DynamicUrlInterceptors>(),
         Get.find<AuthorizationInterceptors>(),
         Get.find<CleanupEmailCacheInteractor>(),
+        Get.find<EmailReceiveManager>(),
     ));
   }
 
