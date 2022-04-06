@@ -127,12 +127,6 @@ class ThreadController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    dispatchState(Right(LoadingState()));
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
     mailboxDashBoardController.selectedMailbox.listen((selectedMailbox) {
       if (_currentMailboxId != selectedMailbox?.id) {
         log('ThreadController::onReady(): selectMailbox: ${selectedMailbox?.name?.name}(${selectedMailbox?.id})');
@@ -141,7 +135,13 @@ class ThreadController extends BaseController {
         _getAllEmail();
       }
     });
+    super.onInit();
+    dispatchState(Right(LoadingState()));
+  }
 
+  @override
+  void onReady() {
+    super.onReady();
     mailboxDashBoardController.viewState.listen((state) {
       state.map((success) {
         log('ThreadController::onReady(): ${success.runtimeType}');
@@ -262,7 +262,6 @@ class ThreadController extends BaseController {
     canLoadMore = true;
     disableSearch();
     cancelSelectEmail();
-    listEmailController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
     mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
   }
 
@@ -270,6 +269,9 @@ class ThreadController extends BaseController {
     log('ThreadController::_getAllEmailSuccess(): ${success.emailList.length}');
     _currentEmailState = success.currentEmailState;
     emailList.value = success.emailList;
+    if (listEmailController.hasClients) {
+      listEmailController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
+    }
   }
 
   void _refreshChangesAllEmailSuccess(RefreshChangesAllEmailSuccess success) {

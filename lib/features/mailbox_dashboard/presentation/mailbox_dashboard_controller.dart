@@ -44,6 +44,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
+import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
 class MailboxDashBoardController extends ReloadableController {
 
@@ -55,6 +56,7 @@ class MailboxDashBoardController extends ReloadableController {
   final CachingManager _cachingManager = Get.find<CachingManager>();
   final Connectivity _connectivity = Get.find<Connectivity>();
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
+  final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
 
   final MoveToTrashInteractor _moveToTrashInteractor;
   final MoveToMailboxInteractor _moveToMailboxInteractor;
@@ -79,6 +81,7 @@ class MailboxDashBoardController extends ReloadableController {
   FocusNode searchFocus = FocusNode();
   RouterArguments? routerArguments;
   late StreamSubscription _connectivityStreamSubscription;
+  late StreamSubscription _emailReceiveManagerStreamSubscription;
 
   MailboxDashBoardController(
     this._moveToTrashInteractor,
@@ -88,8 +91,9 @@ class MailboxDashBoardController extends ReloadableController {
 
   @override
   void onInit() {
-    super.onInit();
     _registerNetworkConnectivityState();
+    _registerPendingEmailAddress();
+    super.onInit();
   }
 
   @override
@@ -178,23 +182,36 @@ class MailboxDashBoardController extends ReloadableController {
     });
   }
 
+  void _registerPendingEmailAddress() {
+    _emailReceiveManagerStreamSubscription =
+        _emailReceiveManager.pendingEmailAddressInfo.stream.listen((emailAddress) {
+          log('MailboxDashBoardController::_registerPendingEmailAddress(): ${emailAddress?.email}');
+          if (emailAddress != null && emailAddress.email?.isNotEmpty == true) {
+            _emailReceiveManager.clearPendingEmailAddress();
+            final arguments = ComposerArguments(
+                emailActionType: EmailActionType.composeFromEmailAddress,
+                emailAddress: emailAddress,
+                mailboxRole: selectedMailbox.value?.role);
+            goToComposer(arguments);
+          }
+        });
+  }
+
   void _getUserProfile() async {
     consumeState(_getUserProfileInteractor.execute());
   }
 
   void _setSessionCurrent() {
-    Future.delayed(const Duration(milliseconds: 100), () {
-      final arguments = Get.arguments;
-      log('MailboxDashBoardController::_setSessionCurrent(): arguments = $arguments');
-      if (arguments is Session) {
-        sessionCurrent = Get.arguments as Session;
-        accountId.value = sessionCurrent?.accounts.keys.first;
-      } else {
-        if (kIsWeb) {
-          reload();
-        }
+    final arguments = Get.arguments;
+    log('MailboxDashBoardController::_setSessionCurrent(): arguments = $arguments');
+    if (arguments is Session) {
+      sessionCurrent = arguments;
+      accountId.value = sessionCurrent?.accounts.keys.first;
+    } else {
+      if (kIsWeb) {
+        reload();
       }
-    });
+    }
   }
 
   Future<void> _initPackageInfo() async {
@@ -393,6 +410,16 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
+  void goToComposer(ComposerArguments arguments) {
+    if (kIsWeb) {
+      if (dashBoardAction != DashBoardAction.compose) {
+        dispatchDashBoardAction(DashBoardAction.compose, arguments: arguments);
+      }
+    } else {
+      push(AppRoutes.COMPOSER, arguments: arguments);
+    }
+  }
+
   void _deleteCredential() async {
     await _deleteCredentialInteractor.execute();
   }
@@ -409,6 +436,8 @@ class MailboxDashBoardController extends ReloadableController {
 
   @override
   void onClose() {
+    _emailReceiveManager.closeEmailReceiveManagerStream();
+    _emailReceiveManagerStreamSubscription.cancel();
     _connectivityStreamSubscription.cancel();
     searchInputController.dispose();
     searchFocus.dispose();
