@@ -235,14 +235,13 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: AlignmentDirectional.center,
       children: [
         SizedBox(
           height: actualHeight,
           width: actualWidth,
           child: _buildWebView(),
         ),
-        if (_isLoading) _buildLoadingView()
+        if (_isLoading) Align(alignment: Alignment.center, child: _buildLoadingView())
       ],
     );
   }
