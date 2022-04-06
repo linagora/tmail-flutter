@@ -871,5 +871,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "create_new_mailbox_failure": "Échec de création de boîte de réception",
+  "@create_new_mailbox_failure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
