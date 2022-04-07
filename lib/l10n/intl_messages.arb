@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-04-05T16:47:07.723009",
+  "@@last_modified": "2022-04-07T14:40:38.896425",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -894,12 +894,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "the_total_size_of_attachments_in_an_email_exceeds_the_limit": "The total size of attachments in an email exceeds the limit.",
-  "@the_total_size_of_attachments_in_an_email_exceeds_the_limit": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "your_download_has_started": "Your download has started",
   "@your_download_has_started": {
     "type": "text",
@@ -1012,6 +1006,32 @@
   },
   "version": "Version",
   "@version": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_exceeds_maximum_size": "Your message could not be sent because it exceeds the maximum size of {maxSize}",
+  "@message_dialog_send_email_exceeds_maximum_size": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "message_dialog_upload_attachments_exceeds_maximum_size": "You have reached the maximum file size. Please upload files that total size is less than {maxSize}",
+  "@message_dialog_upload_attachments_exceeds_maximum_size": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "got_it": "Got it",
+  "@got_it": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
