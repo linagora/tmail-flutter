@@ -410,7 +410,7 @@ class ComposerView extends GetWidget<ComposerController> {
               buildIconWeb(
                   icon: SvgPicture.asset(imagePaths.icAttachmentsComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).attach_file,
-                  onTap: () => controller.openFilePickerByType(context, FileType.any)),
+                  onTap: () => controller.openFilePickerByTypeOnWeb(context, FileType.any)),
             ])
         )
     );

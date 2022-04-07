@@ -2,13 +2,13 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 
-abstract class BaseController extends GetxController {
+abstract class BaseController extends GetxController with MessageDialogActionMixin {
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final connectivityResult = Rxn<ConnectivityResult>();
 
   void consumeState(Stream<Either<Failure, Success>> newStateStream) async {
-    log('BaseController::consumeState():');
     newStateStream.listen(
       (state) => onData(state),
       onError: (error) => onError(error),
