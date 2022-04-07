@@ -16,7 +16,7 @@ mixin MessageDialogActionMixin {
       String message,
       String actionName,
       Function onConfirmAction,
-      {bool hasCancelButton = true, Widget? icon}
+      {String? title, bool hasCancelButton = true, Widget? icon}
   ) {
     if (_responsiveUtils.isMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
@@ -33,12 +33,12 @@ mixin MessageDialogActionMixin {
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
               ..key(Key('confirm_dialog_action'))
-              ..title(AppLocalizations.of(context).sending_failed)
+              ..title(title ?? '')
               ..content(message)
               ..addIcon(icon)
               ..colorConfirmButton(AppColor.colorTextButton)
               ..colorCancelButton(AppColor.colorCancelButton)
-              ..paddingTitle(icon != null ? EdgeInsets.only(top: 34) : EdgeInsets.only(top: 10))
+              ..paddingTitle(icon != null ? EdgeInsets.only(top: 34) : EdgeInsets.zero)
               ..marginIcon(EdgeInsets.zero)
               ..paddingContent(EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 8))
               ..paddingButton(hasCancelButton ? null : EdgeInsets.only(bottom: 16, left: 44, right: 44))

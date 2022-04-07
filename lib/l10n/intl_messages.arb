@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-04-07T14:40:38.896425",
+  "@@last_modified": "2022-04-07T15:43:45.603676",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1032,6 +1032,12 @@
   },
   "got_it": "Got it",
   "@got_it": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maximum_files_size": "Maximum files size",
+  "@maximum_files_size": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
