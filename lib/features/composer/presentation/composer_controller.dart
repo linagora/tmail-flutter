@@ -389,6 +389,7 @@ class ComposerController extends BaseController {
           AppLocalizations.of(context).message_dialog_send_email_without_recipient,
           AppLocalizations.of(context).add_recipients,
           () => {},
+          title: AppLocalizations.of(context).sending_failed,
           icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
       return;
@@ -407,6 +408,7 @@ class ComposerController extends BaseController {
             ccAddressExpandMode.value = ExpandMode.EXPAND;
             bccAddressExpandMode.value = ExpandMode.EXPAND;
           },
+          title: AppLocalizations.of(context).sending_failed,
           icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
       return;
@@ -417,6 +419,7 @@ class ComposerController extends BaseController {
           AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
           AppLocalizations.of(context).send_anyway,
           () => _handleSendMessages(context),
+          title: AppLocalizations.of(context).empty_subject,
           icon: SvgPicture.asset(_imagePaths.icEmpty, fit: BoxFit.fill),
       );
       return;
@@ -429,6 +432,7 @@ class ComposerController extends BaseController {
               filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)}'),
           AppLocalizations.of(context).got_it,
           () => {},
+          title: AppLocalizations.of(context).sending_failed,
           icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
       return;
@@ -508,22 +512,10 @@ class ComposerController extends BaseController {
       .build();
   }
 
-  void openPickAttachmentsForWeb(BuildContext context, RelativeRect? position, List<PopupMenuEntry> popupMenuItems) async {
-    await showMenu(
-        context: context,
-        position: position ?? RelativeRect.fromLTRB(16, 40, 16, 16),
-        color: Colors.white,
-        elevation: 5,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        items: popupMenuItems);
-  }
-
   void openFilePickerByType(BuildContext context, FileType fileType) async {
-    popBack();
-    consumeState(_localFilePickerInteractor.execute(fileType: fileType));
-  }
-
-  void openFilePickerByTypeOnWeb(BuildContext context, FileType fileType) async {
+    if (!kIsWeb) {
+      popBack();
+    }
     consumeState(_localFilePickerInteractor.execute(fileType: fileType));
   }
 
@@ -547,6 +539,7 @@ class ComposerController extends BaseController {
                   filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)}'),
               AppLocalizations.of(currentContext!).got_it,
               () => {},
+              title: AppLocalizations.of(currentContext!).maximum_files_size,
               hasCancelButton: false);
         }
       }

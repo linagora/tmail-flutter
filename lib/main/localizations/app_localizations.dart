@@ -1084,4 +1084,10 @@ class AppLocalizations {
         'Got it',
         name: 'got_it');
   }
+
+  String get maximum_files_size {
+    return Intl.message(
+        'Maximum files size',
+        name: 'maximum_files_size');
+  }
 }
