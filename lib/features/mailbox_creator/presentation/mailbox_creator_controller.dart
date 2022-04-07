@@ -29,6 +29,8 @@ class MailboxCreatorController extends BaseController {
   final selectedMailbox = Rxn<PresentationMailbox>();
   final newNameMailbox = Rxn<String>();
 
+  final nameInputFocusNode = FocusNode();
+
   AccountId? accountId;
   MailboxTree? folderMailboxTree;
   MailboxTree? defaultMailboxTree;
@@ -66,8 +68,19 @@ class MailboxCreatorController extends BaseController {
   @override
   void onError(error) {}
 
+  @override
+  void onClose() {
+    nameInputFocusNode.dispose();
+    super.onClose();
+  }
+
   bool isCreateMailboxValidated(BuildContext context) {
     final nameValidated = getErrorInputNameString(context);
+
+    if (!nameInputFocusNode.hasFocus && newNameMailbox.value == null) {
+      return false;
+    }
+
     if (nameValidated?.isNotEmpty == true) {
       return false;
     }
@@ -100,6 +113,10 @@ class MailboxCreatorController extends BaseController {
 
   String? getErrorInputNameString(BuildContext context) {
     final nameMailbox = newNameMailbox.value;
+
+    if (!nameInputFocusNode.hasFocus && nameMailbox == null) {
+      return null;
+    }
 
     return _verifyNameInteractor.execute(
         nameMailbox,
