@@ -950,13 +950,6 @@ class AppLocalizations {
         name: 'fix_email_addresses');
   }
 
-  String get the_total_size_of_attachments_in_an_email_exceeds_the_limit {
-    return Intl.message(
-        'The total size of attachments in an email exceeds the limit.',
-        name: 'the_total_size_of_attachments_in_an_email_exceeds_the_limit'
-    );
-  }
-
   String get your_download_has_started {
     return Intl.message(
         'Your download has started',
@@ -1068,5 +1061,27 @@ class AppLocalizations {
     return Intl.message(
         'Version',
         name: 'version');
+  }
+
+  String message_dialog_send_email_exceeds_maximum_size(String maxSize) {
+    return Intl.message(
+        'Your message could not be sent because it exceeds the maximum size of $maxSize',
+        name: 'message_dialog_send_email_exceeds_maximum_size',
+        args: [maxSize]
+    );
+  }
+
+  String message_dialog_upload_attachments_exceeds_maximum_size(String maxSize) {
+    return Intl.message(
+        'You have reached the maximum file size. Please upload files that total size is less than $maxSize',
+        name: 'message_dialog_upload_attachments_exceeds_maximum_size',
+        args: [maxSize]
+    );
+  }
+
+  String get got_it {
+    return Intl.message(
+        'Got it',
+        name: 'got_it');
   }
 }

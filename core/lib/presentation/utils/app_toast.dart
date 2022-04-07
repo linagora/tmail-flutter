@@ -20,23 +20,23 @@ class AppToast {
         gravity: ToastGravity.BOTTOM);
   }
 
-  void showSuccessToast(String message) {
+  void showSuccessToast(String message, {bool isToastLengthLong = false}) {
     Fluttertoast.showToast(
         msg: message,
         fontSize: 16,
         textColor: Colors.white,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
-        toastLength: Toast.LENGTH_SHORT,
+        toastLength: isToastLengthLong ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM);
   }
 
-  void showErrorToast(String message) {
+  void showErrorToast(String message, {bool isToastLengthLong = false}) {
     Fluttertoast.showToast(
         msg: message,
         fontSize: 16,
         textColor: Colors.white,
         backgroundColor: AppColor.toastErrorBackgroundColor,
-        toastLength: Toast.LENGTH_SHORT,
+        toastLength: isToastLengthLong ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM);
   }
 
@@ -64,7 +64,7 @@ class AppToast {
   void showToastWithIcon(BuildContext context, {
       String? message, String? icon, Color? bgColor,
       Color? textColor, double? radius, EdgeInsets? padding,
-      TextStyle? textStyle, double? widthToast}) {
+      TextStyle? textStyle, double? widthToast, Duration? toastLength}) {
     double sizeWidth = context.width > 360 ? 360 : context.width - 40;
     final toast = Material(
       color: bgColor ?? Colors.white,
@@ -82,7 +82,7 @@ class AppToast {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) SvgPicture.asset(icon, width: 24, height: 24, fit: BoxFit.fill),
-            SizedBox(width: 10.0),
+            if (icon != null) SizedBox(width: 10.0),
             Expanded(child: Text(
                 message ?? '',
                 style: textStyle ?? TextStyle(fontSize: 15, color: textColor ?? Colors.black))),
@@ -94,7 +94,7 @@ class AppToast {
     fToast.showToast(
       child: toast,
       gravity: ToastGravity.BOTTOM,
-      toastDuration: Duration(seconds: 2),
+      toastDuration: toastLength ?? Duration(seconds: 2),
     );
   }
 }

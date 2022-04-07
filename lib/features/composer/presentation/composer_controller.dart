@@ -6,6 +6,7 @@ import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:filesize/filesize.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,6 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/auto_complete_pattern.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
@@ -55,7 +55,6 @@ class ComposerController extends BaseController {
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final expandModeAttachments = ExpandMode.EXPAND.obs;
   final composerArguments = Rxn<ComposerArguments>();
@@ -386,11 +385,11 @@ class ComposerController extends BaseController {
     clearFocusEditor(context);
 
     if (!isEnableEmailSendButton.value) {
-      _showConfirmDialogSendEmailFailed(
-          context,
+      showConfirmDialogAction(context,
           AppLocalizations.of(context).message_dialog_send_email_without_recipient,
           AppLocalizations.of(context).add_recipients,
           () => {},
+          icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
       return;
     }
@@ -399,10 +398,8 @@ class ComposerController extends BaseController {
     final listEmailAddressInvalid = allListEmailAddress
         .where((emailAddress) => !GetUtils.isEmail(emailAddress.emailAddress))
         .toList();
-
     if (listEmailAddressInvalid.isNotEmpty) {
-      _showConfirmDialogSendEmailFailed(
-          context,
+      showConfirmDialogAction(context,
           AppLocalizations.of(context).message_dialog_send_email_with_email_address_invalid,
           AppLocalizations.of(context).fix_email_addresses,
           () {
@@ -410,16 +407,30 @@ class ComposerController extends BaseController {
             ccAddressExpandMode.value = ExpandMode.EXPAND;
             bccAddressExpandMode.value = ExpandMode.EXPAND;
           },
+          icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
       return;
     }
 
     if (subjectEmail.value == null || subjectEmail.isEmpty == true) {
-      _showConfirmDialogSendEmailFailed(
-          context,
+      showConfirmDialogAction(context,
           AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
           AppLocalizations.of(context).send_anyway,
-          () => _handleSendMessages(context));
+          () => _handleSendMessages(context),
+          icon: SvgPicture.asset(_imagePaths.icEmpty, fit: BoxFit.fill),
+      );
+      return;
+    }
+
+    if (!_validateAttachmentsSize()) {
+      showConfirmDialogAction(
+          context,
+          AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size('${
+              filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)}'),
+          AppLocalizations.of(context).got_it,
+          () => {},
+          icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
+          hasCancelButton: false);
       return;
     }
 
@@ -512,6 +523,10 @@ class ComposerController extends BaseController {
     consumeState(_localFilePickerInteractor.execute(fileType: fileType));
   }
 
+  void openFilePickerByTypeOnWeb(BuildContext context, FileType fileType) async {
+    consumeState(_localFilePickerInteractor.execute(fileType: fileType));
+  }
+
   void _pickFileFailure(Failure failure) {
     if (failure is LocalFilePickerFailure) {
       if (currentContext != null) {
@@ -522,32 +537,34 @@ class ComposerController extends BaseController {
 
   void _pickFileSuccess(Success success) {
     if (success is LocalFilePickerSuccess) {
-      if (_validateAttachmentsSize(success.pickedFiles)) {
+      if (_validateAttachmentsSize(listFiles: success.pickedFiles)) {
         _uploadAttachmentsAction(success.pickedFiles);
       } else {
         if (currentContext != null) {
-          _appToast.showErrorToast(AppLocalizations.of(currentContext!).the_total_size_of_attachments_in_an_email_exceeds_the_limit);
+          showConfirmDialogAction(
+              currentContext!,
+              AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size('${
+                  filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)}'),
+              AppLocalizations.of(currentContext!).got_it,
+              () => {},
+              hasCancelButton: false);
         }
       }
     }
   }
 
-  bool _validateAttachmentsSize(List<FileInfo> listFiles) {
-    num currentTotalSize = 0;
-    if (attachments.isNotEmpty) {
-      final currentListSize = attachments
-          .map((attachment) => attachment.size?.value ?? 0)
-          .toList();
-      currentTotalSize = currentListSize.reduce((sum, size) => sum + size);
-      log('ComposerController::checkingAttachmentsLimit(): currentTotalSize: $currentTotalSize');
+  bool _validateAttachmentsSize({List<FileInfo>? listFiles}) {
+    final currentTotalAttachmentsSize = attachments.totalSize();
+    log('ComposerController::_validateAttachmentsSize(): $currentTotalAttachmentsSize');
+    num uploadedTotalSize = 0;
+    if (listFiles != null && listFiles.isNotEmpty) {
+      final uploadedListSize = listFiles.map((file) => file.fileSize).toList();
+      uploadedTotalSize = uploadedListSize.reduce((sum, size) => sum + size);
+      log('ComposerController::_validateAttachmentsSize(): uploadedTotalSize: $uploadedTotalSize');
     }
 
-    final uploadedListSize = listFiles.map((file) => file.fileSize).toList();
-    final uploadedTotalSize = uploadedListSize.reduce((sum, size) => sum + size);
-    log('ComposerController::checkingAttachmentsLimit(): uploadedTotalSize: $uploadedTotalSize');
-
-    final totalSizeReadyToUpload = currentTotalSize + uploadedTotalSize;
-    log('ComposerController::checkingAttachmentsLimit(): totalSizeReadyToUpload: $totalSizeReadyToUpload');
+    final totalSizeReadyToUpload = currentTotalAttachmentsSize + uploadedTotalSize;
+    log('ComposerController::_validateAttachmentsSize(): totalSizeReadyToUpload: $totalSizeReadyToUpload');
 
     final maxSizeAttachmentsPerEmail = mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value;
     if (maxSizeAttachmentsPerEmail != null) {
@@ -741,46 +758,6 @@ class ComposerController extends BaseController {
   void toggleDisplayAttachments() {
     final newExpandMode = expandModeAttachments.value == ExpandMode.COLLAPSE ? ExpandMode.EXPAND : ExpandMode.COLLAPSE;
     expandModeAttachments.value = newExpandMode;
-  }
-
-  void _showConfirmDialogSendEmailFailed(BuildContext context, String message,
-      String actionName, Function? onConfirmAction, {bool hasCancelButton = true}) {
-    if (_responsiveUtils.isMobile(context)) {
-      (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(message)
-        ..styleConfirmButton(TextStyle(fontSize: 20, fontWeight: FontWeight.normal, color: Colors.black))
-        ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
-        ..onConfirmAction(actionName, () {
-          popBack();
-          onConfirmAction?.call();
-        })).show();
-    } else {
-      showDialog(
-          context: context,
-          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
-              ..key(Key('confirm_dialog_send_message'))
-              ..title(AppLocalizations.of(context).sending_failed)
-              ..content(message)
-              ..addIcon(SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill))
-              ..colorConfirmButton(AppColor.colorTextButton)
-              ..colorCancelButton(AppColor.colorCancelButton)
-              ..paddingTitle(EdgeInsets.only(top: 34))
-              ..marginIcon(EdgeInsets.zero)
-              ..paddingContent(EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 8))
-              ..paddingButton(hasCancelButton ? null : EdgeInsets.only(bottom: 16, left: 44, right: 44))
-              ..styleTitle(TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
-              ..styleContent(TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
-              ..styleTextCancelButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
-              ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
-              ..onConfirmButtonAction(actionName, () {
-                popBack();
-                onConfirmAction?.call();
-              })
-              ..onCancelButtonAction(hasCancelButton ? AppLocalizations.of(context).cancel : '', () => popBack())
-              ..onCloseButtonAction(() => popBack()))
-            .build()));
-    }
   }
 
   void addEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
