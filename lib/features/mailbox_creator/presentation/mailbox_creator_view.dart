@@ -168,7 +168,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                     transform: Matrix4.translationValues(4.0, 0.0, 0.0),
                     child: IconButton(
                         color: AppColor.primaryColor,
-                        icon: SvgPicture.asset(_imagePaths.icFolderArrow, color: AppColor.colorArrowUserMailbox, fit: BoxFit.fill),
+                        icon: SvgPicture.asset(_imagePaths.icCollapseFolder, color: AppColor.colorCollapseMailbox, fit: BoxFit.fill),
                         onPressed: () => controller.selectMailboxLocation(context)
                     ))
             ),

@@ -3,7 +3,7 @@ import 'dart:ui' show Color;
 import 'package:flutter/material.dart';
 
 extension AppColor on Color {
-  static const primaryColor = Color(0xFF837DFF);
+  static const primaryColor = Color(0xFF007AFF);
   static const primaryDarkColor = Color(0xFF1C1C1C);
   static const primaryLightColor = Color(0xFFFFFFFF);
   static const baseTextColor = Color(0xFF7E869B);
@@ -69,7 +69,8 @@ extension AppColor on Color {
   static const colorBgSearchBar = Color(0xFFEBEDF0);
   static const colorShadowBgContentEmail = Color(0x14000000);
   static const colorDividerMailbox = Color(0xFF99A2AD);
-  static const colorArrowUserMailbox = Color(0xFFB8C1CC);
+  static const colorCollapseMailbox = Color(0xFFB8C1CC);
+  static const colorExpandMailbox = Color(0xFF007AFF);
   static const colorBgMailbox = Color(0xFFF7F7F7);
   static const colorFilterMessageDisabled = Color(0xFF99A2AD);
   static const colorFilterMessageEnabled = Color(0xFF007AFF);

@@ -18,6 +18,7 @@ class MailBoxFolderTileBuilder {
   final ImagePaths _imagePaths;
   final SelectMode allSelectMode;
   final MailboxDisplayed mailboxDisplayed;
+  final MailboxNode? lastNode;
 
   OnExpandFolderActionClick? _onExpandFolderActionClick;
   OnOpenMailboxFolderClick? _onOpenMailboxFolderClick;
@@ -30,6 +31,7 @@ class MailBoxFolderTileBuilder {
     {
       this.allSelectMode = SelectMode.INACTIVE,
       this.mailboxDisplayed = MailboxDisplayed.mailbox,
+      this.lastNode,
     }
   );
 
@@ -52,7 +54,6 @@ class MailBoxFolderTileBuilder {
         highlightColor: Colors.transparent),
       child: Container(
         key: Key('mailbox_folder_tile'),
-        alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(0),
           color: Colors.white
@@ -70,21 +71,26 @@ class MailBoxFolderTileBuilder {
                   : _buildMailboxIcon(),
               title: _buildTitleFolderItem(),
               trailing: _mailboxNode.hasChildren()
-                  ? Padding(
-                      padding: EdgeInsets.only(right: 0, left: 16),
+                  ? Transform(
+                      transform: Matrix4.translationValues(8.0, 0.0, 0.0),
                       child: buildIconWeb(
                           icon: SvgPicture.asset(
-                              _mailboxNode.expandMode == ExpandMode.EXPAND ? _imagePaths.icExpandFolder : _imagePaths.icFolderArrow,
-                              color: AppColor.colorArrowUserMailbox,
+                              _mailboxNode.expandMode == ExpandMode.EXPAND ? _imagePaths.icExpandFolder : _imagePaths.icCollapseFolder,
+                              color: _mailboxNode.expandMode == ExpandMode.EXPAND ? AppColor.colorExpandMailbox : AppColor.colorCollapseMailbox,
                               fit: BoxFit.fill),
                           splashRadius: 15,
                           tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND ? AppLocalizations.of(_context).collapse : AppLocalizations.of(_context).expand,
                           onTap: () => _onExpandFolderActionClick?.call(_mailboxNode)))
-                  : null
+                  : _mailboxNode.item.getCountUnReadEmails().isNotEmpty
+                        && mailboxDisplayed == MailboxDisplayed.mailbox
+                        && !_mailboxNode.hasChildren()
+                    ? Padding(padding: EdgeInsets.only(right: 12), child: _buildCounter())
+                    : SizedBox.shrink()
             ),
-            Padding(
-                padding: EdgeInsets.only(left: allSelectMode == SelectMode.ACTIVE ? 50 : 45),
-                child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
+            if (lastNode?.item.id != _mailboxNode.item.id)
+              Padding(
+                  padding: EdgeInsets.only(left: allSelectMode == SelectMode.ACTIVE ? 50 : 35),
+                  child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
           ])
         )
       )
@@ -96,70 +102,48 @@ class MailBoxFolderTileBuilder {
       children: [
         if (allSelectMode == SelectMode.ACTIVE)
           Transform(
-              transform: Matrix4.translationValues(-16.0, 0.0, 0.0),
+              transform: Matrix4.translationValues(-24.0, 0.0, 0.0),
               child: _buildMailboxIcon()),
         Expanded(child: Transform(
-          transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+          transform: Matrix4.translationValues(allSelectMode == SelectMode.ACTIVE ? -16.0 : -20.0, 0.0, 0.0),
           child: Text(
             '${_mailboxNode.item.name?.name ?? ''}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 15,
-              color: AppColor.colorNameEmail),
+            style: TextStyle(fontSize: 15, color: AppColor.colorNameEmail, fontWeight: FontWeight.normal),
           ))),
-        if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty && mailboxDisplayed == MailboxDisplayed.mailbox)
-          !_mailboxNode.hasChildren()
-             ? _buildCounter()
-             : Transform(
-                  transform: Matrix4.translationValues(40.0, 0.0, 0.0),
-                  child: _buildCounter())
+        if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty && mailboxDisplayed == MailboxDisplayed.mailbox && _mailboxNode.hasChildren())
+          Transform(transform: Matrix4.translationValues(30.0, 0.0, 0.0), child: _buildCounter())
       ],
     );
   }
 
   Widget _buildCounter() {
-    return Container(
-      margin: EdgeInsets.only(left: 8, right: _mailboxNode.hasChildren() ? 0 : 16),
-      padding: EdgeInsets.only(left: 8, right: 8, top: 2.5, bottom: 2.5),
-      decoration:BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: AppColor.backgroundCounterMailboxColor),
-      child: Text(
-        '${_mailboxNode.item.getCountUnReadEmails()} ${AppLocalizations.of(_context).unread_email_notification}',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontSize: 12, color: AppColor.colorNameEmail),
-      ));
+    return Text(
+      '${_mailboxNode.item.getCountUnReadEmails()}',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.normal),
+    );
   }
 
   Widget _buildMailboxIcon() {
-    return Padding(
-        padding: EdgeInsets.only(
-            left: allSelectMode == SelectMode.ACTIVE ? 0 : 8,
-            right: allSelectMode == SelectMode.ACTIVE ? 8 : 0),
-        child: SvgPicture.asset(
-            '${_mailboxNode.item.getMailboxIcon(_imagePaths)}',
-            width: 28,
-            height: 28,
-            fit: BoxFit.fill
-        )
+    return SvgPicture.asset(
+        '${_mailboxNode.item.getMailboxIcon(_imagePaths)}',
+        width: 28,
+        height: 28,
+        fit: BoxFit.fill
     );
   }
 
   Widget _buildSelectModeIcon() {
-    return Material(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.transparent,
-        child: IconButton(
-            padding: EdgeInsets.zero,
+    return Transform(
+        transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+        child: buildIconWeb(
             icon: SvgPicture.asset(
                 _mailboxNode.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected,
-                width: 20,
-                height: 20,
                 fit: BoxFit.fill),
-            onPressed: () => _onSelectMailboxFolderClick?.call(_mailboxNode)
-        )
-    );
+            splashRadius: 15,
+            onTap: () => _onSelectMailboxFolderClick?.call(_mailboxNode)));
   }
 }
