@@ -86,6 +86,6 @@ class AppBarMailboxCreatorBuilder {
       child: Text(
         title ?? '',
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 17, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700)));
+        style: TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.bold)));
   }
 }

@@ -90,7 +90,6 @@ class MailboxController extends BaseMailboxController {
   final searchFocus = FocusNode();
   final mailboxListScrollController = ScrollController();
 
-  List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
   jmapState.State? currentMailboxState;
   List<String> listMailboxNameAsStringExist = <String>[];
 
@@ -184,19 +183,13 @@ class MailboxController extends BaseMailboxController {
     super.onData(newState);
     newState.map((success) async {
       if (success is GetAllMailboxSuccess) {
-        log('MailboxController::onData(): ${allMailboxes.length}');
-        allMailboxes = success.mailboxList;
         currentMailboxState = success.currentMailboxState;
-        await buildTree(allMailboxes);
-
-        _setUpMapMailboxIdDefault(allMailboxes, defaultMailboxTree.value, folderMailboxTree.value);
+        await buildTree(success.mailboxList);
+        _setUpMapMailboxIdDefault(success.mailboxList, defaultMailboxTree.value, folderMailboxTree.value);
       } else if (success is RefreshChangesAllMailboxSuccess) {
-        log('MailboxController::onData(): ${allMailboxes.length}');
-        allMailboxes = success.mailboxList;
         currentMailboxState = success.currentMailboxState;
-        await refreshTree(allMailboxes);
-
-        _setUpMapMailboxIdDefault(allMailboxes, defaultMailboxTree.value, folderMailboxTree.value);
+        await refreshTree(success.mailboxList);
+        _setUpMapMailboxIdDefault(success.mailboxList, defaultMailboxTree.value, folderMailboxTree.value);
       }
     });
   }
@@ -407,23 +400,8 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _searchMailboxSuccess(SearchMailboxSuccess success) {
-    final mailboxesSearchedWithPath = _findMailboxPath(success.mailboxesSearched);
+    final mailboxesSearchedWithPath = findMailboxPath(success.mailboxesSearched);
     listMailboxSearched.value = mailboxesSearchedWithPath;
-  }
-
-  List<PresentationMailbox> _findMailboxPath(List<PresentationMailbox> mailboxes) {
-    return mailboxes.map((presentationMailbox) {
-      if (!presentationMailbox.hasParentId()) {
-        return presentationMailbox;
-      } else {
-        final mailboxNodePath = findNodePath(presentationMailbox.id);
-        if (mailboxNodePath != null) {
-          return presentationMailbox.toPresentationMailboxWithMailboxPath(mailboxNodePath);
-        } else {
-          return presentationMailbox;
-        }
-      }
-    }).toList();
   }
 
   void _searchMailboxFailure(SearchMailboxFailure failure) {

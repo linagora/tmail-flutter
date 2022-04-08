@@ -23,33 +23,19 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
           onTap: () => controller.closeMailboxCreator(context),
           child: ResponsiveWidget(
               responsiveUtils: _responsiveUtils,
-              mobile: Container(
-                  child: _buildBody(context),
-                  width: _responsiveUtils.getSizeScreenWidth(context)),
-              tablet: Container(
-                  child: Row(
-                      children: [
-                        Expanded(flex: 1, child: _buildBody(context)),
-                        Expanded(flex: 1, child: Container(color: Colors.transparent)),
-                      ]
-                  )
-              ),
-              tabletLarge: Container(
-                  child: Row(
-                      children: [
-                        Expanded(flex: 7, child: _buildBody(context)),
-                        Expanded(flex: 13, child: Container(color: Colors.transparent)),
-                      ]
-                  )
-              ),
-              desktop: Container(
-                  child: Row(
-                      children: [
-                        Expanded(flex: 1, child: _buildBody(context)),
-                        Expanded(flex: 3, child: Container(color: Colors.transparent)),
-                      ]
-                  )
-              )
+              mobile: SizedBox(child: _buildBody(context), width: double.infinity),
+              tablet: Row(children: [
+                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                Expanded(child: Container(color: Colors.transparent)),
+              ]),
+              tabletLarge: Row(children: [
+                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                Expanded(child: Container(color: Colors.transparent)),
+              ]),
+              desktop: Row(children: [
+                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                Expanded(child: Container(color: Colors.transparent)),
+              ])
           ),
         )
     ));
@@ -57,7 +43,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
 
   Widget _buildBody(BuildContext context) {
     return SafeArea(
-        top: _responsiveUtils.isMobile(context) ? true : false,
+        top: _responsiveUtils.isMobile(context),
         bottom: false,
         left: false,
         right: false,
@@ -67,23 +53,20 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
               borderRadius: BorderRadius.only(
                   topRight: Radius.circular(_responsiveUtils.isMobile(context) ? 14 : 0),
                   topLeft: Radius.circular(_responsiveUtils.isMobile(context) ? 14 : 0)),
-              child: Drawer(
-                  child: Container(
-                      color: AppColor.colorBgMailbox,
-                      width: double.infinity,
-                      child: SafeArea(
-                        top: false,
-                        bottom: false,
-                        left: _responsiveUtils.isMobileDevice(context) ? true : false,
-                        right: _responsiveUtils.isMobileDevice(context) ? true : false,
-                        child: Column(
-                            children: [
-                              _buildAppBar(context),
-                              _buildCreateMailboxNameInput(context),
-                              _buildMailboxLocation(context),
-                            ]
-                        ),
-                      )
+              child: Container(
+                  color: AppColor.colorBgMailbox,
+                  child: SafeArea(
+                    top: false,
+                    bottom: false,
+                    left: _responsiveUtils.isLandscapeMobile(context) ? true : false,
+                    right: _responsiveUtils.isLandscapeMobile(context) ? true : false,
+                    child: Column(
+                        children: [
+                          SafeArea(left: false, right: false, bottom: false, child: _buildAppBar(context)),
+                          _buildCreateMailboxNameInput(context),
+                          _buildMailboxLocation(context),
+                        ]
+                    ),
                   )
               )
           ),
@@ -125,7 +108,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
   Widget _buildMailboxLocation(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 4),
+        padding: EdgeInsets.only(left: 24, right: 16, top: 16),
         child: Text(
           AppLocalizations.of(context).mailbox_location.toUpperCase(),
           textAlign: TextAlign.left,

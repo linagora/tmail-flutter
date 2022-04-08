@@ -29,7 +29,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
         tabletLarge: SizedBox.shrink(),
         desktop: SizedBox.shrink()
       ),
-      drawerEnableOpenDragGesture: !_responsiveUtils.isDesktop(context),
+      drawerEnableOpenDragGesture: _responsiveUtils.isMobile(context) || _responsiveUtils.isTablet(context),
       body: Stack(children: [
         ResponsiveWidget(
           responsiveUtils: _responsiveUtils,
