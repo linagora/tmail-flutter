@@ -45,6 +45,10 @@ class ResponsiveUtils {
 
   bool isLandscape(BuildContext context) => context.orientation == Orientation.landscape;
 
+  bool isLandscapeMobile(BuildContext context) => isMobile(context) && isLandscape(context);
+
+  bool isPortraitMobile(BuildContext context) => isMobile(context) && isPortrait(context);
+
   double getWidthLoginTextField(BuildContext context) => isMobile(context) ? _loginTextFieldWidthSmallScreen : _loginTextFieldWidthLargeScreen;
 
   double getWidthLoginButton() => _loginButtonWidth;
