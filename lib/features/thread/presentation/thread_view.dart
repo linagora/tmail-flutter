@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -30,48 +31,61 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
-        body: SafeArea(
-          right: _responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context),
-          left: _responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (_responsiveUtils.isDesktop(context))
-                  Container(
-                      color: Colors.white,
-                      padding: EdgeInsets.only(right: 10, top: 16, bottom: 10),
-                      child: _buildHeader(context)),
-                _buildSearchInputFormForMobile(context),
-                _buildSearchButtonViewForMobile(context),
-                Obx(() => controller.isMailboxTrash && controller.emailList.isNotEmpty && !controller.isSearchActive()
-                    ? _buildEmptyTrashButton(context)
-                    : SizedBox.shrink()),
-                Expanded(child: Container(
-                    color: AppColor.colorBgDesktop,
-                    margin: _responsiveUtils.isDesktop(context) ? EdgeInsets.all(16) : EdgeInsets.zero,
-                    child: Stack(children: [
-                        Container(
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            borderRadius: _responsiveUtils.isDesktop(context) ? BorderRadius.circular(20) : null,
-                            border: _responsiveUtils.isDesktop(context) ? Border.all(color: AppColor.colorBorderBodyThread, width: 1) : null,
-                            color: Colors.white),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildStatusResultSearch(context),
-                              _buildLoadingView(),
-                              Expanded(child: _buildListEmail(context)),
-                              _buildLoadingViewLoadMore(),
-                            ]
-                          )
-                        ),
-                        _buildSuggestionBox(context)
-                    ]))),
-                _buildListButtonSelectionForMobile(context),
-              ]
-          )
-        ),
+        body: Row(children: [
+          if (!kIsWeb && !_responsiveUtils.isMobile(context))
+            VerticalDivider(color: AppColor.lineItemListColor, width: 1, thickness: 0.2),
+          Expanded(child: SafeArea(
+              right: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context),
+              left: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_responsiveUtils.isDesktop(context))
+                      Container(
+                          color: Colors.white,
+                          padding: EdgeInsets.only(right: 10, top: 16, bottom: 10, left: 32),
+                          child: _buildHeader(context)),
+                    Padding(
+                        padding: EdgeInsets.only(
+                            left: kIsWeb && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) ? 32 : 0),
+                        child: _buildSearchInputFormForMobile(context)),
+                    Container(
+                        color: kIsWeb ? AppColor.colorBgDesktop : Colors.white,
+                        padding: EdgeInsets.only(
+                            left: kIsWeb && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) ? 32 : 0),
+                        child: _buildSearchButtonViewForMobile(context)),
+                    Obx(() => controller.isMailboxTrash && controller.emailList.isNotEmpty && !controller.isSearchActive()
+                        ? _buildEmptyTrashButton(context)
+                        : SizedBox.shrink()),
+                    Expanded(child: Container(
+                        padding: EdgeInsets.only(
+                            left: kIsWeb && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) ? 32 : 0),
+                        color: kIsWeb ? AppColor.colorBgDesktop : Colors.white,
+                        margin: _responsiveUtils.isDesktop(context) ? EdgeInsets.all(16) : EdgeInsets.zero,
+                        child: Stack(children: [
+                          Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  borderRadius: _responsiveUtils.isDesktop(context) ? BorderRadius.circular(20) : null,
+                                  border: _responsiveUtils.isDesktop(context) ? Border.all(color: AppColor.colorBorderBodyThread, width: 1) : null,
+                                  color: Colors.white),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildStatusResultSearch(context),
+                                    _buildLoadingView(),
+                                    Expanded(child: _buildListEmail(context)),
+                                    _buildLoadingViewLoadMore(),
+                                  ]
+                              )
+                          ),
+                          _buildSuggestionBox(context)
+                        ]))),
+                    _buildListButtonSelectionForMobile(context),
+                  ]
+              )
+          ))
+        ]),
         floatingActionButton: _buildFloatingButtonCompose(context),
       ),
     );
@@ -247,7 +261,8 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
   Widget _buildSearchButtonViewForMobile(BuildContext context) {
     return Obx(() {
       if (!controller.isSearchActive() && !_responsiveUtils.isDesktop(context)) {
-        return Padding(
+        return Container(
+          color: Colors.white,
           padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
           child: (SearchBarView(_imagePaths)
               ..hintTextSearch(AppLocalizations.of(context).hint_search_emails)
@@ -327,7 +342,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
           controller.mailboxDashBoardController.searchInputController,
           suggestionSearch: controller.mailboxDashBoardController.suggestionSearch,)
       ..addDecoration(BoxDecoration(color: Colors.white))
-      ..setMargin(EdgeInsets.only(right: 10))
+      ..setMargin(EdgeInsets.only(right: 10, top: _responsiveUtils.isTabletLarge(context) ? 32 : 0))
       ..setHintText(AppLocalizations.of(context).search_mail)
       ..addOnCancelSearchPressed(() => controller.disableSearch())
       ..addOnClearTextSearchAction(() => controller.mailboxDashBoardController.clearSearchText())
@@ -515,8 +530,6 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
       margin: _responsiveUtils.isDesktop(context)
           ? EdgeInsets.only(top: 16, bottom: 16)
           : EdgeInsets.zero,
-      width: double.infinity,
-      height: double.infinity,
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
       color: Colors.white,
