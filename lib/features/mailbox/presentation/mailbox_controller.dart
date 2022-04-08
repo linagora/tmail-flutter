@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -168,6 +169,8 @@ class MailboxController extends BaseMailboxController {
     _openMailboxEventController.stream.throttleTime(Duration(milliseconds: 800)).listen((event) {
       _handleOpenMailbox(event.buildContext, event.presentationMailbox);
     });
+
+    _initCollapseMailboxCategories();
   }
 
   @override
@@ -224,6 +227,16 @@ class MailboxController extends BaseMailboxController {
 
   @override
   void onError(error) {}
+
+  void _initCollapseMailboxCategories() {
+    if (currentContext != null) {
+      if (kIsWeb && (_responsiveUtils.isMobile(currentContext!)) || _responsiveUtils.isTablet(currentContext!)) {
+        mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode(
+            defaultMailbox: ExpandMode.COLLAPSE,
+            folderMailbox: ExpandMode.COLLAPSE);
+      }
+    }
+  }
 
   void getAllMailboxAction(AccountId accountId) async {
     consumeState(_getAllMailboxInteractor.execute(accountId));
@@ -367,12 +380,13 @@ class MailboxController extends BaseMailboxController {
 
   void enableSearch() {
     _cancelSelectMailbox();
+    listMailboxNodeSelected.clear();
     searchState.value = searchState.value.enableSearchState();
   }
 
   void disableSearch(BuildContext context) {
     _cancelSelectMailbox();
-
+    listPresentationMailboxSelected.clear();
     listMailboxSearched.clear();
     searchState.value = searchState.value.disableSearchState();
     searchQuery.value = SearchQuery.initial();
@@ -384,10 +398,12 @@ class MailboxController extends BaseMailboxController {
     searchQuery.value = SearchQuery.initial();
     searchFocus.requestFocus();
     listMailboxSearched.clear();
+    listPresentationMailboxSelected.clear();
   }
 
   void searchMailbox(String value) {
     searchQuery.value = SearchQuery(value);
+    listPresentationMailboxSelected.clear();
     _searchMailboxAction(allMailboxes, searchQuery.value);
   }
 
@@ -418,13 +434,17 @@ class MailboxController extends BaseMailboxController {
 
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
-  void selectMailbox(BuildContext context, PresentationMailbox mailboxSelected) {
-    if (isSearchActive()) {
-      listMailboxSearched.value = listMailboxSearched
-          .map((mailbox) => mailbox.id == mailboxSelected.id
-              ? mailbox.toggleSelectPresentationMailbox()
-              : mailbox)
-          .toList();
+  void selectMailboxSearched(BuildContext context, PresentationMailbox mailboxSelected) {
+    listMailboxSearched.value = listMailboxSearched
+        .map((mailbox) => mailbox.id == mailboxSelected.id ? mailbox.toggleSelectPresentationMailbox() : mailbox)
+        .toList();
+
+    if (kIsWeb) {
+      if (mailboxSelected.selectMode == SelectMode.ACTIVE) {
+        listPresentationMailboxSelected.removeWhere((mailbox) => mailbox.id == mailboxSelected.id);
+      } else {
+        listPresentationMailboxSelected.add(mailboxSelected);
+      }
     }
   }
 
@@ -438,6 +458,10 @@ class MailboxController extends BaseMailboxController {
       folderMailboxTree.value.updateNodesUIMode(SelectMode.INACTIVE, ExpandMode.COLLAPSE);
     }
     currentSelectMode.value = SelectMode.INACTIVE;
+    if (kIsWeb) {
+      listPresentationMailboxSelected.clear();
+      listMailboxNodeSelected.clear();
+    }
   }
 
   List<PresentationMailbox> get listMailboxSelected {
