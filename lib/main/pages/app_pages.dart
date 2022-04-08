@@ -12,7 +12,8 @@ import 'package:tmail_ui_user/features/login/presentation/login_view.dart' defer
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_view.dart' deferred as mailbox_creator;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_bindings.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view.dart' deferred as mailbox_dashBoard;
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view.dart'
+  if (dart.library.html) 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view_web.dart' deferred as mailbox_dashBoard;
 import 'package:tmail_ui_user/features/session/presentation/session_page_bindings.dart';
 import 'package:tmail_ui_user/features/session/presentation/session_view.dart' deferred as session;
 import 'package:tmail_ui_user/main/pages/deferred_widget.dart';

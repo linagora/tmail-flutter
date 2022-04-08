@@ -1090,4 +1090,11 @@ class AppLocalizations {
         'Maximum files size',
         name: 'maximum_files_size');
   }
+
+  String get exchange {
+    return Intl.message(
+        'Exchange',
+        name: 'exchange'
+    );
+  }
 }

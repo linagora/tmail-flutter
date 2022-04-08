@@ -36,6 +36,8 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailb
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
@@ -81,6 +83,7 @@ class MailboxController extends BaseMailboxController {
   final searchState = SearchState.initial().obs;
   final searchQuery = SearchQuery.initial().obs;
   final currentSelectMode = SelectMode.INACTIVE.obs;
+  final mailboxCategoriesExpandMode = MailboxCategoriesExpandMode.initial().obs;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   final searchInputController = TextEditingController();
@@ -670,6 +673,21 @@ class MailboxController extends BaseMailboxController {
     }
 
     log('MailboxController::_createListMailboxNameAsStringInMailboxLocation(): $listMailboxNameAsStringExist');
+  }
+
+  void toggleMailboxCategories(MailboxCategories categories) {
+    switch(categories) {
+      case MailboxCategories.exchange:
+        final newExpandMode = mailboxCategoriesExpandMode.value.defaultMailbox == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
+        mailboxCategoriesExpandMode.value.defaultMailbox = newExpandMode;
+        mailboxCategoriesExpandMode.refresh();
+        break;
+      case MailboxCategories.folders:
+        final newExpandMode = mailboxCategoriesExpandMode.value.folderMailbox == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
+        mailboxCategoriesExpandMode.value.folderMailbox = newExpandMode;
+        mailboxCategoriesExpandMode.refresh();
+        break;
+    }
   }
 
   void closeMailboxScreen(BuildContext context) {

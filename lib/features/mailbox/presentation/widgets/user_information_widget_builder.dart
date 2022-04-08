@@ -75,7 +75,7 @@ class UserInformationWidgetBuilder {
         Transform(
           transform: Matrix4.translationValues(14.0, 0.0, 0.0),
           child: IconButton(
-            icon: SvgPicture.asset(_imagePaths.icNextArrow, width: 7, height: 12, fit: BoxFit.fill, color: AppColor.colorArrowUserMailbox),
+            icon: SvgPicture.asset(_imagePaths.icCollapseFolder, fit: BoxFit.fill, color: AppColor.colorCollapseMailbox),
             onPressed: () => {}))
       ]),
     );

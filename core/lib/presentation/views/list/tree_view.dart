@@ -83,7 +83,9 @@ class TreeViewChild {
         AnimatedContainer(
           duration: Duration(milliseconds: 400),
           child: isExpanded!
-            ? Column(mainAxisSize: MainAxisSize.min, children: children)
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: children.map((child) => Padding(padding: EdgeInsets.only(left: 20), child: child)).toList())
             : Offstage(),
         ),
       ],
