@@ -1,6 +1,8 @@
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnOpenSearchViewAction = Function();
@@ -61,30 +63,20 @@ class SearchBarView {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _buildSearchButton(),
-                  Expanded(child: Text(
-                    _hintTextSearch ?? '',
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 17, color: AppColor.colorHintSearchBar)))
+                  buildIconWeb(
+                      splashRadius: 12,
+                      icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
+                      onTap: () => _onOpenSearchViewAction?.call()),
+                  Expanded(child:
+                    Transform(transform: Matrix4.translationValues(-5, 0.0, 0.0),
+                    child: Text(
+                        _hintTextSearch ?? '',
+                        maxLines: 1,
+                        style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar))))
                 ]
               )
           )
       ),
     );
   }
-
- Widget _buildSearchButton() {
-   return Material(
-     color: Colors.transparent,
-     shape: CircleBorder(),
-     child: Padding(
-       padding: EdgeInsets.only(left: 2),
-       child: IconButton(
-         splashRadius: 20,
-         icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 18, height: 18, fit: BoxFit.fill),
-         onPressed: () => _onOpenSearchViewAction?.call()
-       )
-     )
-   );
- }
 }

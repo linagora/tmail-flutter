@@ -130,19 +130,12 @@ class SearchAppBarWidget {
  }
 
  Widget _buildClearTextSearchButton() {
-   return Material(
-       shape: CircleBorder(),
-     color: Colors.transparent,
-     child: IconButton(
-         splashRadius: 20,
-         padding: EdgeInsets.zero,
-         icon: _iconClearText ?? SvgPicture.asset(_imagePaths.icComposerClose, fit: BoxFit.fill),
-         onPressed: () {
-           _searchInputController?.clear();
-           _onClearTextSearchAction?.call();
-         }
-      )
-   );
+    return buildIconWeb(
+        icon: _iconClearText ?? SvgPicture.asset(_imagePaths.icComposerClose, width: 12, height: 12, fit: BoxFit.fill),
+        onTap: () {
+          _searchInputController?.clear();
+          _onClearTextSearchAction?.call();
+        });
  }
 
   Widget _buildSearchInputForm() {
@@ -168,14 +161,8 @@ class SearchAppBarWidget {
   }
 
  Widget _buildSearchButton() {
-   return Material(
-       shape: CircleBorder(),
-       color: Colors.transparent,
-       child: IconButton(
-           splashRadius: 20,
-           icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 18, height: 18, fit: BoxFit.fill),
-           onPressed: () => _onSearchTextAction?.call(_searchInputController?.text ?? '')
-       )
-   );
+    return buildIconWeb(
+        icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
+        onTap: () => _onSearchTextAction?.call(_searchInputController?.text ?? ''));
  }
 }

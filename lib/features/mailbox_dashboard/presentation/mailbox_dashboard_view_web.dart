@@ -22,18 +22,19 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       key: controller.scaffoldKey,
       drawer: ResponsiveWidget(
           responsiveUtils: _responsiveUtils,
-          mobile: Container(child: MailboxView(),
-              width: _responsiveUtils.isPortrait(context) ? _responsiveUtils.getSizeScreenWidth(context) : _responsiveUtils.getSizeScreenWidth(context) / 2),
-          tablet: Container(child: MailboxView(), width: _responsiveUtils.getSizeScreenWidth(context) / 2),
+          mobile: _responsiveUtils.isPortrait(context)
+              ? SizedBox(child: MailboxView(), width: double.infinity)
+              : SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
+          tablet: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
           tabletLarge: SizedBox.shrink(),
           desktop: SizedBox.shrink()
       ),
-      drawerEnableOpenDragGesture: !_responsiveUtils.isDesktop(context),
+      drawerEnableOpenDragGesture: _responsiveUtils.isMobile(context) || _responsiveUtils.isTablet(context),
       body: Stack(children: [
         ResponsiveWidget(
             responsiveUtils: _responsiveUtils,
-            desktop: _buildDesktopView(context),
-            tabletLarge: _buildTabletLargeView(context),
+            desktop: _buildLargeScreenView(context),
+            tabletLarge: _buildLargeScreenView(context),
             tablet: ThreadView(),
             mobile: ThreadView()
         ),
@@ -83,8 +84,8 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
     }
   }
 
-  Widget _buildDesktopView(BuildContext context) {
-    if (controller.isDrawerOpen && _responsiveUtils.isDesktop(context)) {
+  Widget _buildLargeScreenView(BuildContext context) {
+    if (controller.isDrawerOpen && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context))) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         controller.closeDrawer();
       });
@@ -94,26 +95,8 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(flex: 1, child: MailboxView()),
-          Expanded(flex: 3, child: _buildThreadAndEmailContainer(context)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabletLargeView(BuildContext context) {
-    if (controller.isDrawerOpen && _responsiveUtils.isTabletLarge(context)) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        controller.closeDrawer();
-      });
-    }
-
-    return Container(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(flex: 2, child: MailboxView()),
-          Expanded(flex: 4, child: _buildThreadAndEmailContainer(context)),
+          SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
+          Expanded(child: _buildThreadAndEmailContainer(context))
         ],
       ),
     );

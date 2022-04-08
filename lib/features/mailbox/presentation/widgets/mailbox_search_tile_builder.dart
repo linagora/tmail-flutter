@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
@@ -13,6 +14,8 @@ class MailboxSearchTileBuilder {
   final PresentationMailbox? lastMailbox;
   final SelectMode allSelectMode;
   final ImagePaths _imagePaths;
+
+  bool isHoverIcon = false;
 
   OnOpenMailboxActionClick? _onOpenMailboxActionClick;
   OnSelectMailboxActionClick? _onSelectMailboxActionClick;
@@ -42,10 +45,6 @@ class MailboxSearchTileBuilder {
       child: Container(
         key: Key('mailbox_list_tile'),
         alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(0),
-          color: Colors.white
-        ),
         child: MediaQuery(
           data: MediaQueryData(padding: EdgeInsets.zero),
           child: Column(children: [
@@ -54,9 +53,7 @@ class MailboxSearchTileBuilder {
                 onTap: () => allSelectMode == SelectMode.ACTIVE
                     ? _onSelectMailboxActionClick?.call(_presentationMailbox)
                     : _onOpenMailboxActionClick?.call(_presentationMailbox),
-                leading: allSelectMode == SelectMode.ACTIVE
-                    ? _buildSelectModeIcon()
-                    : _buildMailboxIcon(),
+                leading: _buildLeadingIcon(),
                 title: Row(children: [
                       if (allSelectMode == SelectMode.ACTIVE)
                         Transform(
@@ -83,7 +80,7 @@ class MailboxSearchTileBuilder {
                       )
                     : null,
             ),
-            if (lastMailbox?.id != _presentationMailbox.id)
+            if (lastMailbox?.id != _presentationMailbox.id && !kIsWeb)
               Padding(
                 padding: EdgeInsets.only(left: allSelectMode == SelectMode.ACTIVE ? 50 : 35),
                 child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
@@ -93,23 +90,40 @@ class MailboxSearchTileBuilder {
     );
   }
 
+  Widget _buildLeadingIcon() {
+    if (kIsWeb) {
+      return _presentationMailbox.selectMode == SelectMode.ACTIVE ? _buildSelectModeIcon() : _buildMailboxIcon();
+    } else {
+      return allSelectMode == SelectMode.ACTIVE ? _buildSelectModeIcon() : _buildMailboxIcon();
+    }
+  }
+
   Widget _buildMailboxIcon() {
-    return SvgPicture.asset(
-        '${_presentationMailbox.getMailboxIcon(_imagePaths)}',
-        width: 28,
-        height: 28,
-        fit: BoxFit.fill
-    );
+    if (kIsWeb) {
+      return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return InkWell(
+                onTap: () {},
+                onHover: (value) => setState(() => isHoverIcon = value),
+                child: isHoverIcon
+                    ? _buildSelectModeIcon()
+                    : SvgPicture.asset('${_presentationMailbox.getMailboxIcon(_imagePaths)}', width: 28, height: 28, fit: BoxFit.fill)
+            );
+          });
+    } else {
+      return SvgPicture.asset('${_presentationMailbox.getMailboxIcon(_imagePaths)}', width: 28, height: 28, fit: BoxFit.fill);
+    }
   }
 
   Widget _buildSelectModeIcon() {
     return Transform(
-        transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+        transform: Matrix4.translationValues(kIsWeb ? -8.0 : -10.0, 0.0, 0.0),
         child: buildIconWeb(
             icon: SvgPicture.asset(
                 _presentationMailbox.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected,
+                width: kIsWeb ? 20 : 24,
+                height: kIsWeb ? 20 : 24,
                 fit: BoxFit.fill),
-            splashRadius: 15,
             onTap: () => _onSelectMailboxActionClick?.call(_presentationMailbox)));
   }
 }
