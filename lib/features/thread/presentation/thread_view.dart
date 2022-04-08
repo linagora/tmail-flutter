@@ -32,11 +32,11 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
         resizeToAvoidBottomInset: false,
         backgroundColor: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
         body: Row(children: [
-          if (!kIsWeb && !_responsiveUtils.isMobile(context))
+          if ((!kIsWeb && !_responsiveUtils.isMobile(context)) || (kIsWeb && _responsiveUtils.isTabletLarge(context)))
             VerticalDivider(color: AppColor.lineItemListColor, width: 1, thickness: 0.2),
           Expanded(child: SafeArea(
-              right: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context),
-              left: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context),
+              right: _responsiveUtils.isLandscapeMobile(context),
+              left: _responsiveUtils.isLandscapeMobile(context),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -45,23 +45,20 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
                           color: Colors.white,
                           padding: EdgeInsets.only(right: 10, top: 16, bottom: 10, left: 32),
                           child: _buildHeader(context)),
-                    Padding(
-                        padding: EdgeInsets.only(
-                            left: kIsWeb && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) ? 32 : 0),
-                        child: _buildSearchInputFormForMobile(context)),
+                    Obx(() => !controller.isSearchActive() && !_responsiveUtils.isDesktop(context)
+                      ? _buildAppBarNormal(context)
+                      : SizedBox.shrink()),
+                    _buildSearchInputFormForMobile(context),
                     Container(
                         color: kIsWeb ? AppColor.colorBgDesktop : Colors.white,
-                        padding: EdgeInsets.only(
-                            left: kIsWeb && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) ? 32 : 0),
+                        padding: EdgeInsets.zero,
                         child: _buildSearchButtonViewForMobile(context)),
                     Obx(() => controller.isMailboxTrash && controller.emailList.isNotEmpty && !controller.isSearchActive()
                         ? _buildEmptyTrashButton(context)
                         : SizedBox.shrink()),
                     Expanded(child: Container(
-                        padding: EdgeInsets.only(
-                            left: kIsWeb && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) ? 32 : 0),
                         color: kIsWeb ? AppColor.colorBgDesktop : Colors.white,
-                        margin: _responsiveUtils.isDesktop(context) ? EdgeInsets.all(16) : EdgeInsets.zero,
+                        padding: _responsiveUtils.isDesktop(context) ? EdgeInsets.only(left: 32, right: 24, top: 16, bottom: 24) : EdgeInsets.zero,
                         child: Stack(children: [
                           Container(
                               alignment: Alignment.center,
@@ -81,7 +78,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
                           ),
                           _buildSuggestionBox(context)
                         ]))),
-                    _buildListButtonSelectionForMobile(context),
+                    if (!kIsWeb) _buildListButtonSelectionForMobile(context),
                   ]
               )
           ))
@@ -93,14 +90,10 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
 
   Widget _buildHeader(BuildContext context) {
     return Row(children: [
-      Obx(() => !controller.isSelectionEnabled() && _responsiveUtils.isDesktop(context)
-          ? _buildListButtonTopBar(context)
-          : SizedBox.shrink()),
-      Obx(() => controller.isSelectionEnabled() && _responsiveUtils.isDesktop(context)
-          ? _buildListButtonSelectionForDesktop(context)
-          : SizedBox.shrink()),
+      Obx(() => !controller.isSelectionEnabled() ? _buildListButtonTopBar(context) : SizedBox.shrink()),
+      Obx(() => controller.isSelectionEnabled() ? _buildListButtonSelectionForDesktop(context) : SizedBox.shrink()),
       SizedBox(width: 16),
-      Obx(() => !controller.isSearchActive() && _responsiveUtils.isDesktop(context) ? Spacer() : SizedBox.shrink()),
+      Obx(() => !controller.isSearchActive() ? Spacer() : SizedBox.shrink()),
       Expanded(child: _buildSearchInputFormForDesktop(context)),
       _buildSearchButtonViewForDesktop(context),
       Padding(
@@ -124,7 +117,6 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
 
   Widget _buildListButtonTopBar(BuildContext context) {
     return Row(children: [
-      if (!controller.isSearchActive()) SizedBox(width: 16),
       if (!controller.isSearchActive())
         (ButtonBuilder(_imagePaths.icRefresh)
             ..key(Key('button_reload_thread'))
@@ -135,7 +127,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
             ..padding(EdgeInsets.symmetric(horizontal: 8, vertical: 8))
             ..onPressActionClick(() => controller.refreshAllEmail()))
           .build(),
-      SizedBox(width: 16),
+      if (!controller.isSearchActive()) SizedBox(width: 16),
       (ButtonBuilder(_imagePaths.icSelectAll)
           ..key(Key('button_select_all'))
           ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
@@ -198,7 +190,6 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
 
   Widget _buildListButtonSelectionForDesktop(BuildContext context) {
     return Row(children: [
-      SizedBox(width: 16),
       buildIconWeb(
           icon: SvgPicture.asset(_imagePaths.icCloseComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
           tooltip: AppLocalizations.of(context).cancel,
@@ -265,7 +256,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
           color: Colors.white,
           padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
           child: (SearchBarView(_imagePaths)
-              ..hintTextSearch(AppLocalizations.of(context).hint_search_emails)
+              ..hintTextSearch(kIsWeb ? AppLocalizations.of(context).search_emails : AppLocalizations.of(context).hint_search_emails)
               ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
             .build());
       } else {
@@ -277,9 +268,12 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
   Widget _buildSearchInputFormForMobile(BuildContext context) {
     return Obx(() {
       if (controller.isSearchActive() && !_responsiveUtils.isDesktop(context)) {
-        return _buildSearchForm(context);
+        return Column(children: [
+          _buildSearchForm(context),
+          Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
+        ]);
       } else {
-        return _responsiveUtils.isDesktop(context) ? SizedBox.shrink() : _buildAppBarNormal(context);
+        return SizedBox.shrink();
       }
     });
   }
@@ -342,7 +336,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
           controller.mailboxDashBoardController.searchInputController,
           suggestionSearch: controller.mailboxDashBoardController.suggestionSearch,)
       ..addDecoration(BoxDecoration(color: Colors.white))
-      ..setMargin(EdgeInsets.only(right: 10, top: _responsiveUtils.isTabletLarge(context) ? 32 : 0))
+      ..setMargin(EdgeInsets.only(right: 10))
       ..setHintText(AppLocalizations.of(context).search_mail)
       ..addOnCancelSearchPressed(() => controller.disableSearch())
       ..addOnClearTextSearchAction(() => controller.mailboxDashBoardController.clearSearchText())
@@ -360,8 +354,10 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
               controller.listEmailSelected,
               controller.currentSelectMode.value,
               controller.filterMessageOption.value)
-          ..addOpenListMailboxActionClick(() => controller.openMailboxLeftMenu())
+          ..addOpenMailboxMenuActionClick(() => controller.openMailboxLeftMenu())
           ..addOnEditThreadAction(() => controller.enableSelectionEmail())
+          ..addOnEmailSelectionAction((actionType, selectionEmail) =>
+              controller.pressEmailSelectionAction(context, actionType, selectionEmail))
           ..addOnFilterEmailAction((filterMessageOption, position) =>
               _responsiveUtils.isMobileDevice(context)
                 ? controller.openFilterMessagesCupertinoActionSheet(
@@ -380,7 +376,9 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
     return Obx(() {
       if (!controller.isSearchActive() && !_responsiveUtils.isDesktop(context)) {
         return Container(
-          padding: EdgeInsets.only(bottom: controller.isSelectionEnabled() ? 80 : _responsiveUtils.isMobileDevice(context) ? 0 : 16),
+          padding: EdgeInsets.only(bottom: controller.isSelectionEnabled() && controller.listEmailSelected.isNotEmpty
+              ? 80
+              : _responsiveUtils.isMobileDevice(context) ? 0 : 16),
           child: Align(
             alignment: Alignment.bottomRight,
             child: ScrollingFloatingButtonAnimated(
@@ -528,8 +526,8 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
   Widget _buildListEmail(BuildContext context) {
     return Container(
       margin: _responsiveUtils.isDesktop(context)
-          ? EdgeInsets.only(top: 16, bottom: 16)
-          : EdgeInsets.zero,
+          ? EdgeInsets.symmetric(vertical: controller.isSelectionEnabled() ? 4 : 12, horizontal: 4)
+          : EdgeInsets.only(top: controller.isSearchActive() ? 8 : 0),
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
       color: Colors.white,
@@ -591,6 +589,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
         physics: AlwaysScrollableScrollPhysics(),
         key: PageStorageKey('list_presentation_email_in_threads'),
         itemCount: listPresentationEmail.length,
+        padding: EdgeInsets.zero,
         itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
                 context,
                 listPresentationEmail[index],
@@ -646,7 +645,6 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
         return controller.emailListSearch.length > 0
           ? Container(
               width: double.infinity,
-              margin: EdgeInsets.only(bottom: 16),
               padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
               decoration: BoxDecoration(
                   borderRadius: _responsiveUtils.isDesktop(context)
@@ -670,7 +668,9 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
           borderRadius: BorderRadius.all(Radius.circular(14)),
           border: Border.all(color: AppColor.colorLineLeftEmailView),
           color: Colors.white),
-      margin: EdgeInsets.only(left: 16, right: 16,
+      margin: EdgeInsets.only(
+          left: _responsiveUtils.isDesktop(context) ? 32 : 16,
+          right: _responsiveUtils.isDesktop(context) ? 20 : 16,
           bottom: _responsiveUtils.isDesktop(context) ? 0 : 16,
           top: _responsiveUtils.isDesktop(context) ? 16 : 0),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),

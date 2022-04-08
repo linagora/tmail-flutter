@@ -22,9 +22,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       key: controller.scaffoldKey,
       drawer: ResponsiveWidget(
           responsiveUtils: _responsiveUtils,
-          mobile: _responsiveUtils.isPortrait(context)
-              ? SizedBox(child: MailboxView(), width: double.infinity)
-              : SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
+          mobile: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
           tablet: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
           tabletLarge: SizedBox.shrink(),
           desktop: SizedBox.shrink()
@@ -95,7 +93,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
+          SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeMenuWidthWeb),
           Expanded(child: _buildThreadAndEmailContainer(context))
         ],
       ),
