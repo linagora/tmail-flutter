@@ -9,7 +9,7 @@ ENV FLUTTER_HOME="/opt/flutter"
 ENV PATH "$PATH:$FLUTTER_HOME/bin"
 
 # Prerequisites
-RUN apt update && apt install -y curl git unzip xz-utils zip libglu1-mesa \
+RUN apt update && apt install -y curl git unzip xz-utils zip gzip libglu1-mesa \
  && mkdir -p $FLUTTER_HOME \
  && curl -o flutter.tar.xz $FLUTTER_URL \
  && tar xf flutter.tar.xz -C /opt \
@@ -30,12 +30,13 @@ RUN cd core \
   && cd .. \
   && flutter pub get && flutter pub run intl_generator:extract_to_arb --output-dir=./lib/l10n lib/main/localizations/app_localizations.dart \
   && flutter pub get && flutter pub run intl_generator:generate_from_arb --output-dir=lib/l10n --no-use-deferred-loading lib/main/localizations/app_localizations.dart lib/l10n/intl*.arb \
-  && flutter build web --profile
+  && flutter build web --profile \
+  && gzip -r -k /app/build/web
 
 # Stage 2 - Create the run-time image
 FROM nginx:stable
 RUN chmod -R 755 /usr/share/nginx/html
-COPY --from=build-env /app/server/nginx.conf /usr/share/nginx/html
+COPY --from=build-env /app/server/nginx.conf /etc/nginx
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 
 # Record the exposed port
