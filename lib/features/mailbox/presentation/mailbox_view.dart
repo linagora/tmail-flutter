@@ -371,7 +371,7 @@ class MailboxView extends GetWidget<MailboxController> {
               ..addPadding(EdgeInsets.zero)
               ..setMargin(EdgeInsets.only(right: 16))
               ..addDecoration(BoxDecoration(borderRadius: BorderRadius.circular(12), color: AppColor.colorBgSearchBar))
-              ..addIconClearText(SvgPicture.asset(_imagePaths.icClearTextSearch, width: 20, height: 20, fit: BoxFit.fill))
+              ..addIconClearText(SvgPicture.asset(_imagePaths.icClearTextSearch, width: 18, height: 18, fit: BoxFit.fill))
               ..setHintText(AppLocalizations.of(context).hint_search_mailboxes)
               ..addOnClearTextSearchAction(() => controller.clearSearchText())
               ..addOnTextChangeSearchAction((query) => controller.searchMailbox(query))

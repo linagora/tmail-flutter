@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -135,7 +136,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
   Widget _buildSearchBarWidget(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(
-            top: _responsiveUtils.isMobile(context) ? 12 : 0,
+            top: _responsiveUtils.isMobile(context) || kIsWeb ? 12 : 0,
             left: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context) ? 0 : 16,
             right: 16),
         child: (SearchBarView(_imagePaths)
@@ -179,7 +180,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
             ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultMailboxTree.value.root, actions)
             : SizedBox.shrink()),
         if (actions == MailboxActions.create) SizedBox(height: 12),
-        if (actions != MailboxActions.create)
+        if (actions != MailboxActions.create && !kIsWeb)
           Padding(
             padding: EdgeInsets.only(left: 60),
             child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
@@ -289,6 +290,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
       alignment: Alignment.center,
       margin: EdgeInsets.only(
           left: !_responsiveUtils.isLandscapeMobile(context) ? 16 : 0,
+          top: kIsWeb ? 16 : 0,
           right: 16),
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white),
       child: MediaQuery(
@@ -347,7 +349,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                   ..addPadding(EdgeInsets.zero)
                   ..setMargin(EdgeInsets.only(right: 16))
                   ..addDecoration(BoxDecoration(borderRadius: BorderRadius.circular(12), color: AppColor.colorBgSearchBar))
-                  ..addIconClearText(SvgPicture.asset(_imagePaths.icClearTextSearch, width: 20, height: 20, fit: BoxFit.fill))
+                  ..addIconClearText(SvgPicture.asset(_imagePaths.icClearTextSearch, width: 18, height: 18, fit: BoxFit.fill))
                   ..setHintText(AppLocalizations.of(context).hint_search_mailboxes)
                   ..addOnClearTextSearchAction(() => controller.clearSearchText())
                   ..addOnTextChangeSearchAction((query) => controller.searchMailbox(query))

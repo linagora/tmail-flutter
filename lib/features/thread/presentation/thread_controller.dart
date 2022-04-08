@@ -733,10 +733,14 @@ class ThreadController extends BaseController {
       countMarkStarSuccess = success.countMarkStarSuccess;
     }
 
-    if (currentContext != null && markStarAction != null) {
-      _appToast.showSuccessToast(markStarAction == MarkStarAction.unMarkStar
+    if (currentContext != null && markStarAction != null && currentOverlayContext != null) {
+      final message = markStarAction == MarkStarAction.unMarkStar
           ? AppLocalizations.of(currentContext!).marked_unstar_multiple_item(countMarkStarSuccess)
-          : AppLocalizations.of(currentContext!).marked_star_multiple_item(countMarkStarSuccess));
+          : AppLocalizations.of(currentContext!).marked_star_multiple_item(countMarkStarSuccess);
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          message: message,
+          icon: markStarAction == MarkStarAction.unMarkStar ? _imagePaths.icUnStar : _imagePaths.icStar);
     }
 
     _refreshEmailChanges();

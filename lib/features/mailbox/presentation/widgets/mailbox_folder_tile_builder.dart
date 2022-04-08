@@ -173,13 +173,17 @@ class MailBoxFolderTileBuilder {
   }
 
   Color get backgroundColorItem {
-    if (kIsWeb) {
-      if (mailboxNodeSelected?.id == _mailboxNode.item.id) {
-        return AppColor.colorBgMailboxSelected;
-      }
-      return _responsiveUtils.isDesktop(_context) ? AppColor.colorBgDesktop : Colors.white;
-    } else {
+    if (mailboxDisplayed == MailboxDisplayed.destinationPicker) {
       return Colors.white;
+    } else {
+      if (kIsWeb) {
+        if (mailboxNodeSelected?.id == _mailboxNode.item.id) {
+          return AppColor.colorBgMailboxSelected;
+        }
+        return _responsiveUtils.isDesktop(_context) ? AppColor.colorBgDesktop : Colors.white;
+      } else {
+        return Colors.white;
+      }
     }
   }
 }

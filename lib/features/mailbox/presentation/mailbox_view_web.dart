@@ -34,11 +34,11 @@ class MailboxView extends GetWidget<MailboxController> {
                   color: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
                   child: Column(children: [
                     if (_responsiveUtils.isDesktop(context)) _buildComposerButton(context),
-                    SizedBox(height: 16),
                     Obx(() => controller.isSearchActive() ? _buildInputSearchFormWidget(context) : SizedBox.shrink()),
                     Expanded(child: Obx(() => Container(
                       color: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
                       padding: EdgeInsets.zero,
+                      margin: EdgeInsets.only(top: _responsiveUtils.isDesktop(context) ? 16 : 0),
                       child: RefreshIndicator(
                           color: AppColor.primaryColor,
                           onRefresh: () async => controller.refreshAllMailbox(),
@@ -122,14 +122,14 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
-            (failure) => SizedBox.shrink(),
-            (success) => success is LoadingState
+        (failure) => SizedBox.shrink(),
+        (success) => success is LoadingState
             ? Center(child: Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CupertinoActivityIndicator(color: AppColor.colorTextButton))))
+                  padding: EdgeInsets.only(top: 16),
+                  child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CupertinoActivityIndicator(color: AppColor.colorTextButton))))
             : SizedBox.shrink()));
   }
 
@@ -166,17 +166,17 @@ class MailboxView extends GetWidget<MailboxController> {
           Obx(() => controller.folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
               ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderMailboxTree.value.root)
               : SizedBox.shrink()),
-          Obx(() => !controller.isSearchActive()
-              ? Row(children: [
-                  Expanded(child: _buildSearchBarWidget(context)),
-                  Padding(
-                    padding: EdgeInsets.only(right: 8),
-                    child: buildIconWeb(
-                        icon: SvgPicture.asset(_imagePaths.icAddNewFolder, color: AppColor.colorTextButton, fit: BoxFit.fill),
-                        tooltip: AppLocalizations.of(context).new_mailbox,
-                        onTap: () => controller.goToCreateNewMailboxView())),
-                ])
-              : SizedBox.shrink()),
+          SizedBox(height: 8),
+          Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+          Row(children: [
+            Expanded(child: _buildSearchBarWidget(context)),
+            Padding(
+                padding: EdgeInsets.only(right: 8),
+                child: buildIconWeb(
+                    icon: SvgPicture.asset(_imagePaths.icAddNewFolder, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                    tooltip: AppLocalizations.of(context).new_mailbox,
+                    onTap: () => controller.goToCreateNewMailboxView())),
+          ]),
         ]
     );
   }
@@ -262,7 +262,7 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildInputSearchFormWidget(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.only(left: 8),
+        padding: EdgeInsets.only(left: 8, top: 16),
         child: Row(
             children: [
               buildIconWeb(
@@ -273,7 +273,7 @@ class MailboxView extends GetWidget<MailboxController> {
                   ..addPadding(EdgeInsets.zero)
                   ..setMargin(EdgeInsets.only(right: 16))
                   ..addDecoration(BoxDecoration(borderRadius: BorderRadius.circular(12), color: AppColor.colorBgSearchBar))
-                  ..addIconClearText(SvgPicture.asset(_imagePaths.icClearTextSearch, width: 20, height: 20, fit: BoxFit.fill))
+                  ..addIconClearText(SvgPicture.asset(_imagePaths.icClearTextSearch, width: 16, height: 16, fit: BoxFit.fill))
                   ..setHintText(AppLocalizations.of(context).hint_search_mailboxes)
                   ..addOnClearTextSearchAction(() => controller.clearSearchText())
                   ..addOnTextChangeSearchAction((query) => controller.searchMailbox(query))

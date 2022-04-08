@@ -59,7 +59,7 @@ class EmailTileBuilder {
         mobile: _buildListTile(),
         desktop: Container(
           margin: _selectModeAll == SelectMode.ACTIVE ? EdgeInsets.only(top: 3, left: 8, right: 8) : EdgeInsets.zero,
-          padding: _selectModeAll == SelectMode.ACTIVE ? EdgeInsets.symmetric(vertical: 10) : EdgeInsets.zero,
+          padding: _selectModeAll == SelectMode.ACTIVE ? EdgeInsets.symmetric(vertical: 8) : EdgeInsets.zero,
           decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
             ? BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
@@ -73,8 +73,15 @@ class EmailTileBuilder {
 
   Widget _buildListTile() {
     return Container(
-        color: Colors.white,
-        padding: EdgeInsets.only(bottom: 10, left: 20, right: 6),
+        margin: kIsWeb && _selectModeAll == SelectMode.ACTIVE
+            ? EdgeInsets.only(top: 3, left: 16, right: 16)
+            : EdgeInsets.zero,
+        padding: kIsWeb && _selectModeAll == SelectMode.ACTIVE
+            ? EdgeInsets.only(top: 8, bottom: 16, right: 8)
+            : EdgeInsets.only(bottom: 10, left: 16, right: 16),
+        decoration: kIsWeb && _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
+            ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: AppColor.colorItemEmailSelectedDesktop)
+            : BoxDecoration(borderRadius: BorderRadius.circular(0), color: Colors.white),
         alignment: Alignment.center,
         child: Column(children: [
           ListTile(
@@ -194,14 +201,19 @@ class EmailTileBuilder {
                                   overflow:TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail))
                           ),
-                        ]))
+                        ])),
+                    if (kIsWeb && _selectModeAll == SelectMode.INACTIVE)
+                      Padding(
+                          padding: EdgeInsets.only(top: 12),
+                          child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
                   ],
                 )
             ),
           ),
-          Padding(
-              padding: EdgeInsets.only(top: 12, right: 12),
-              child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
+          if (!kIsWeb)
+            Padding(
+                padding: EdgeInsets.only(top: 12, right: 12),
+                child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
         ]),
     );
   }
