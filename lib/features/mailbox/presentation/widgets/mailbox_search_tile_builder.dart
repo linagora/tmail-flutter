@@ -3,31 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 
 typedef OnOpenMailboxActionClick = void Function(PresentationMailbox);
 typedef OnSelectMailboxActionClick = void Function(PresentationMailbox);
 
-class MailboxTileBuilder {
+class MailboxSearchTileBuilder {
 
   final PresentationMailbox _presentationMailbox;
+  final PresentationMailbox? lastMailbox;
   final SelectMode allSelectMode;
   final ImagePaths _imagePaths;
-  final MailboxDisplayed mailboxDisplayed;
-  final bool isLastElement;
-  final bool isSearchActive;
 
   OnOpenMailboxActionClick? _onOpenMailboxActionClick;
   OnSelectMailboxActionClick? _onSelectMailboxActionClick;
 
-  MailboxTileBuilder(
+  MailboxSearchTileBuilder(
     this._imagePaths,
     this._presentationMailbox,
     {
       this.allSelectMode = SelectMode.INACTIVE,
-      this.mailboxDisplayed = MailboxDisplayed.mailbox,
-      this.isLastElement = false,
-      this.isSearchActive = false,
+      this.lastMailbox,
     }
   );
 
@@ -62,30 +57,23 @@ class MailboxTileBuilder {
                 leading: allSelectMode == SelectMode.ACTIVE
                     ? _buildSelectModeIcon()
                     : _buildMailboxIcon(),
-                title: Transform(
-                    transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
-                    child: Row(children: [
+                title: Row(children: [
                       if (allSelectMode == SelectMode.ACTIVE)
                         Transform(
-                            transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+                            transform: Matrix4.translationValues(-24.0, 0.0, 0.0),
                             child: _buildMailboxIcon()),
-                      Expanded(child: Text(
-                        '${_presentationMailbox.name?.name ?? ''}',
-                        maxLines: 1,
-                        overflow:TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: isSearchActive ? 17 : 15, color: AppColor.colorNameEmail),
-                      )),
-                      if (mailboxDisplayed == MailboxDisplayed.mailbox && !isSearchActive)
-                        Transform(
-                            transform: Matrix4.translationValues(40.0, 0.0, 0.0),
-                            child: Text(
-                                '${_presentationMailbox.getCountUnReadEmails()}',
-                                maxLines: 1,
-                                style: TextStyle(fontSize: 13, color: AppColor.colorNameEmail)))
-                    ])),
-                subtitle: isSearchActive && _presentationMailbox.mailboxPath?.isNotEmpty == true
+                      Expanded(child: Transform(
+                          transform: Matrix4.translationValues(allSelectMode == SelectMode.ACTIVE ? -16.0 : -20.0, 0.0, 0.0),
+                          child: Text(
+                            '${_presentationMailbox.name?.name ?? ''}',
+                            maxLines: 1,
+                            overflow:TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 17, color: AppColor.colorNameEmail, fontWeight: FontWeight.normal),
+                          ))),
+                    ]),
+                subtitle: _presentationMailbox.mailboxPath?.isNotEmpty == true
                     ? Transform(
-                        transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+                        transform: Matrix4.translationValues(allSelectMode == SelectMode.ACTIVE ? 12.0 : -20.0, 0.0, 0.0),
                         child: Text(
                           _presentationMailbox.mailboxPath ?? '',
                           maxLines: 1,
@@ -94,18 +82,8 @@ class MailboxTileBuilder {
                         ),
                       )
                     : null,
-                trailing: (mailboxDisplayed == MailboxDisplayed.mailbox && !isSearchActive)
-                  ? Transform(
-                      transform: Matrix4.translationValues(8.0, 0.0, 0.0),
-                      child: IconButton(
-                          color: AppColor.primaryColor,
-                          icon: SvgPicture.asset(_imagePaths.icFolderArrow, color: AppColor.colorArrowUserMailbox, fit: BoxFit.fill),
-                          onPressed: () => _onOpenMailboxActionClick?.call(_presentationMailbox)
-                      )
-                    )
-                  : null
             ),
-            if (!isLastElement)
+            if (lastMailbox?.id != _presentationMailbox.id)
               Padding(
                 padding: EdgeInsets.only(left: allSelectMode == SelectMode.ACTIVE ? 50 : 45),
                 child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
@@ -116,32 +94,22 @@ class MailboxTileBuilder {
   }
 
   Widget _buildMailboxIcon() {
-    return Padding(
-        padding: EdgeInsets.only(
-            left: allSelectMode == SelectMode.ACTIVE ? 4 : 8,
-            right: allSelectMode == SelectMode.ACTIVE ? 4 : 0),
-        child: SvgPicture.asset(
-          '${_presentationMailbox.getMailboxIcon(_imagePaths)}',
-          width: 28,
-          height: 28,
-          fit: BoxFit.fill
-        )
+    return SvgPicture.asset(
+        '${_presentationMailbox.getMailboxIcon(_imagePaths)}',
+        width: 28,
+        height: 28,
+        fit: BoxFit.fill
     );
   }
 
   Widget _buildSelectModeIcon() {
-    return Material(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.transparent,
-        child: IconButton(
-            padding: EdgeInsets.zero,
+    return Transform(
+        transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+        child: buildIconWeb(
             icon: SvgPicture.asset(
                 _presentationMailbox.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected,
-                width: 20,
-                height: 20,
                 fit: BoxFit.fill),
-            onPressed: () => _onSelectMailboxActionClick?.call(_presentationMailbox)
-        )
-    );
+            splashRadius: 15,
+            onTap: () => _onSelectMailboxActionClick?.call(_presentationMailbox)));
   }
 }
