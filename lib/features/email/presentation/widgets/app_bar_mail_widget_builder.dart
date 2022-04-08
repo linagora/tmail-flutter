@@ -97,7 +97,7 @@ class AppBarMailWidgetBuilder {
       children: [
         buildIconWeb(
             icon: SvgPicture.asset(_imagePaths.icMoveEmail, fit: BoxFit.fill),
-            tooltip: AppLocalizations.of(_context).move_to_mailbox,
+            tooltip: AppLocalizations.of(_context).move_message,
             onTap: () {
               if (_presentationEmail != null) {
                 _onEmailActionClick?.call(_presentationEmail!, EmailActionType.move);

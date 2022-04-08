@@ -1,8 +1,6 @@
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/mailbox/expand_mode.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:model/mailbox/select_mode.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
@@ -17,13 +15,17 @@ abstract class BaseMailboxController extends BaseController {
   final folderMailboxTree = MailboxTree(MailboxNode.root()).obs;
   final defaultMailboxTree = MailboxTree(MailboxNode.root()).obs;
 
+  List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
+
   Future buildTree(List<PresentationMailbox> allMailbox) async {
+    this.allMailboxes = allMailbox;
     final tupleTree = await _treeBuilder.generateMailboxTreeInUI(allMailbox);
     defaultMailboxTree.value = tupleTree.value1;
     folderMailboxTree.value = tupleTree.value2;
   }
 
   Future refreshTree(List<PresentationMailbox> allMailbox) async {
+    this.allMailboxes = allMailbox;
     final tupleTree = await _treeBuilder.generateMailboxTreeInUIAfterRefreshChanges(
       allMailbox, defaultMailboxTree.value, folderMailboxTree.value);
     defaultMailboxTree.firstRebuild = true;
@@ -83,5 +85,20 @@ abstract class BaseMailboxController extends BaseController {
   MailboxNode? findMailboxNodeByRole(Role role) {
     final mailboxNode = defaultMailboxTree.value.findNode((node) => node.item.role == role);
     return mailboxNode;
+  }
+
+  List<PresentationMailbox> findMailboxPath(List<PresentationMailbox> mailboxes) {
+    return mailboxes.map((presentationMailbox) {
+      if (!presentationMailbox.hasParentId()) {
+        return presentationMailbox;
+      } else {
+        final mailboxNodePath = findNodePath(presentationMailbox.id);
+        if (mailboxNodePath != null) {
+          return presentationMailbox.toPresentationMailboxWithMailboxPath(mailboxNodePath);
+        } else {
+          return presentationMailbox;
+        }
+      }
+    }).toList();
   }
 }

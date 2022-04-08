@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 
 class DestinationPickerBindings extends BaseBindings {
@@ -31,6 +32,7 @@ class DestinationPickerBindings extends BaseBindings {
   void bindingsController() {
     Get.lazyPut(() => DestinationPickerController(
         Get.find<GetAllMailboxInteractor>(),
+        Get.find<SearchMailboxInteractor>(),
         Get.find<TreeBuilder>(),
     ));
   }
@@ -51,6 +53,7 @@ class DestinationPickerBindings extends BaseBindings {
   @override
   void bindingsInteractor() {
     Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => SearchMailboxInteractor());
   }
 
   @override

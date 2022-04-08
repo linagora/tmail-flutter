@@ -55,7 +55,7 @@ class MailboxView extends GetWidget<MailboxController> {
                         child: RefreshIndicator(
                             color: AppColor.primaryColor,
                             onRefresh: () async => controller.refreshAllMailbox(),
-                            child:controller.isSearchActive()
+                            child: controller.isSearchActive()
                                 ? SafeArea(
                                     bottom: !controller.isSelectionEnabled(),
                                     top: false,
@@ -337,11 +337,7 @@ class MailboxView extends GetWidget<MailboxController> {
                   context,
                   key: Key('children_tree_mailbox_child'),
                   isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-                  parent: Obx(() => (MailBoxFolderTileBuilder(
-                          context,
-                          _imagePaths,
-                          mailboxNode,
-                          lastNode: lastNode,
+                  parent: Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
                           allSelectMode: controller.currentSelectMode.value)
                       ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
                       ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
@@ -349,15 +345,11 @@ class MailboxView extends GetWidget<MailboxController> {
                     .build()),
                   children: _buildListChildTileWidget(context, mailboxNode)
               ).build()
-          : Obx(() => (MailBoxFolderTileBuilder(
-                      context,
-                      _imagePaths,
-                      mailboxNode,
-                      lastNode: lastNode,
-                      allSelectMode: controller.currentSelectMode.value)
-                  ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-                  ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
-                .build())
+          : Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
+                  allSelectMode: controller.currentSelectMode.value)
+              ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
+              ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
+            .build())
       ).toList() ?? <Widget>[];
   }
 

@@ -16,7 +16,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.create:
         return AppLocalizations.of(context).mailbox_location;
       case MailboxActions.moveEmail:
-        return AppLocalizations.of(context).move_to_mailbox;
+        return AppLocalizations.of(context).move_message;
       default:
         return '';
     }

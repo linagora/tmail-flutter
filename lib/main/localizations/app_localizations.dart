@@ -243,13 +243,6 @@ class AppLocalizations {
     );
   }
 
-  String get move_to_mailbox {
-    return Intl.message(
-      'Move to mailbox',
-      name: 'move_to_mailbox',
-    );
-  }
-
   String get mark_as_star {
     return Intl.message(
       'Star',
@@ -1095,6 +1088,13 @@ class AppLocalizations {
     return Intl.message(
         'Exchange',
         name: 'exchange'
+    );
+  }
+
+  String get move_message {
+    return Intl.message(
+      'Move message',
+      name: 'move_message',
     );
   }
 }
