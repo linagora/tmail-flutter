@@ -85,7 +85,7 @@ class MailboxSearchTileBuilder {
             ),
             if (lastMailbox?.id != _presentationMailbox.id)
               Padding(
-                padding: EdgeInsets.only(left: allSelectMode == SelectMode.ACTIVE ? 50 : 45),
+                padding: EdgeInsets.only(left: allSelectMode == SelectMode.ACTIVE ? 50 : 35),
                 child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
           ]),
         )

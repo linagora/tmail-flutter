@@ -8,9 +8,12 @@ import 'package:tmail_ui_user/features/destination_picker/presentation/destinati
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/app_bar_destination_picker_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_search_tile_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class DestinationPickerView extends GetWidget<DestinationPickerController> {
@@ -35,153 +38,126 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
             onTap: () => controller.closeDestinationPicker(),
             child: ResponsiveWidget(
                 responsiveUtils: _responsiveUtils,
-                mobile: _responsiveUtils.isPortrait(context)
-                    ? Container(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.getSizeScreenWidth(context))
-                    : _buildBodyMailboxDestination(context, actions),
-                tablet: Container(
-                    child: Row(
-                        children: [
-                          Expanded(flex: 1, child: Container(color: Colors.transparent)),
-                          Expanded(flex: 1, child: _buildBodyMailboxLocation(context, actions)),
-                        ]
-                    )
-                ),
-                tabletLarge: Container(
-                    child: Row(
-                        children: [
-                          Expanded(flex: 7, child: Container(color: Colors.transparent)),
-                          Expanded(flex: 13, child: _buildBodyMailboxLocation(context, actions)),
-                        ]
-                    )
-                ),
-                desktop: Container(
-                    child: Row(
-                        children: [
-                          Expanded(flex: 1, child: Container(color: Colors.transparent)),
-                          Expanded(flex: 3, child: _buildBodyMailboxLocation(context, actions)),
-                        ]
-                    )
-                )
+                mobile: _responsiveUtils.isLandscapeMobile(context)
+                  ? Row(children: [
+                      SizedBox(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                      Expanded(child: Container(color: Colors.transparent)),
+                    ])
+                  : SizedBox(child: _buildBodyMailboxLocation(context, actions), width: double.infinity),
+                tablet: Row(children: [
+                  Expanded(child: Container(color: Colors.transparent)),
+                  SizedBox(
+                      child: _buildBodyMailboxLocation(context, actions),
+                      width: _responsiveUtils.getSizeScreenWidth(context) - _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                ]),
+                tabletLarge: Row(children: [
+                  Expanded(child: Container(color: Colors.transparent)),
+                  SizedBox(
+                      child: _buildBodyMailboxLocation(context, actions),
+                      width: _responsiveUtils.getSizeScreenWidth(context) - _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                ]),
+                desktop: Row(children: [
+                  Expanded(child: Container(color: Colors.transparent)),
+                  SizedBox(
+                      child: _buildBodyMailboxLocation(context, actions),
+                      width: _responsiveUtils.getSizeScreenWidth(context) - _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                ]),
             ),
           )
       ));
     } else {
-      return PointerInterceptor(child: _buildBodyMailboxDestination(context, actions));
+      return PointerInterceptor(child: Card(
+          margin: EdgeInsets.zero,
+          borderOnForeground: false,
+          color: Colors.transparent,
+          child: GestureDetector(
+            onTap: () => controller.closeDestinationPicker(),
+            child: ResponsiveWidget(
+                responsiveUtils: _responsiveUtils,
+                mobile: _responsiveUtils.isLandscapeMobile(context)
+                    ? Row(children: [
+                        SizedBox(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                        Expanded(child: Container(color: Colors.transparent)),
+                      ])
+                    : SizedBox(child: _buildBodyMailboxLocation(context, actions), width: double.infinity),
+                tablet: Row(children: [
+                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                  Expanded(child: Container(color: Colors.transparent)),
+                ]),
+                tabletLarge: Row(children: [
+                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                  Expanded(child: Container(color: Colors.transparent)),
+                ]),
+                desktop: Row(children: [
+                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                  Expanded(child: Container(color: Colors.transparent)),
+                ]),
+            ),
+          )
+      ));
     }
   }
 
-  Widget _buildBodyMailboxDestination(BuildContext context, MailboxActions? actions) {
-    return GestureDetector(
-        onTap: () => controller.closeDestinationPicker(),
-        child: Card(
-            margin: EdgeInsets.zero,
-            borderOnForeground: false,
-            color: Colors.transparent,
-            child: Container(
-                margin: _getMarginDestinationPicker(context),
-                child: ClipRRect(
-                    borderRadius: _radiusDestinationPicker(context, 14),
-                    child: GestureDetector(
-                        onTap: () => {},
-                        child: SafeArea(
-                            top: _responsiveUtils.isMobile(context) ? true : false,
-                            bottom: false,
-                            right: false,
-                            left: false,
-                            child: Column(
-                              children: [
-                                _buildAppBar(context),
-                                Expanded(child:
-                                Container(
-                                    color: AppColor.colorBgMailbox,
-                                    child: _buildBodyDestinationPicker(context, actions)))
-                              ],
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    );
-  }
-
   Widget _buildBodyMailboxLocation(BuildContext context, MailboxActions? actions) {
-    return SafeArea(
-        top: _responsiveUtils.isMobile(context) ? true : false,
-        bottom: false,
-        left: false,
-        right: false,
+    return SafeArea(top: _responsiveUtils.isPortraitMobile(context), bottom: false, left: false, right: false,
         child: ClipRRect(
             borderRadius: BorderRadius.only(
-                topRight: Radius.circular(_responsiveUtils.isMobile(context) ? 14 : 0),
-                topLeft: Radius.circular(_responsiveUtils.isMobile(context) ? 14 : 0)),
-            child: Drawer(
-                child: Container(
-                    color: AppColor.colorBgMailbox,
-                    width: double.infinity,
-                    child: SafeArea(
-                      top: false,
-                      bottom: false,
-                      left: _responsiveUtils.isMobileDevice(context) ? true : false,
-                      right: _responsiveUtils.isMobileDevice(context) ? true : false,
-                      child: Column(
-                          children: [
-                            _buildAppBar(context),
-                            Expanded(
-                              child: Container(
-                                color: AppColor.colorBgMailbox,
-                                child: _buildBodyDestinationPicker(context, actions)
-                              )
-                            )
-                          ]
-                      ),
-                    )
-                )
+                topRight: Radius.circular(_responsiveUtils.isPortraitMobile(context) ? 14 : 0),
+                topLeft: Radius.circular(_responsiveUtils.isPortraitMobile(context) ? 14 : 0)),
+            child: Container(
+                color: Colors.white,
+                child: Column(children: [
+                    SafeArea(left: false, right: false, bottom: false, child: _buildAppBar(context)),
+                    Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+                    Obx(() => controller.isSearchActive()
+                        ? SafeArea(bottom: false, top: false, right: false, child: _buildInputSearchFormWidget(context))
+                        : SizedBox.shrink()),
+                    Expanded(child: Container(
+                        color: actions == MailboxActions.create ? AppColor.colorBgMailbox : Colors.white,
+                        child: SafeArea(
+                            top: false,
+                            bottom: false,
+                            left: _responsiveUtils.isLandscapeMobile(context) ? true : false,
+                            right: false,
+                            child: _buildBodyDestinationPicker(context, actions))))
+                ])
             )
         )
     );
   }
 
   Widget _buildAppBar(BuildContext context) {
-    return Obx(() => (AppBarDestinationPickerBuilder(
-            context,
-            _imagePaths,
-            _responsiveUtils,
-            controller.mailboxAction.value)
+    return Obx(() => (AppBarDestinationPickerBuilder(context, _imagePaths, controller.mailboxAction.value)
         ..addCloseActionClick(() => controller.closeDestinationPicker()))
       .build());
+  }
+
+  Widget _buildSearchBarWidget(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.only(
+            top: _responsiveUtils.isMobile(context) ? 12 : 0,
+            left: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context) ? 0 : 16,
+            right: 16),
+        child: (SearchBarView(_imagePaths)
+            ..hintTextSearch(AppLocalizations.of(context).hint_search_mailboxes)
+            ..addOnOpenSearchViewAction(() => controller.enableSearch()))
+          .build());
   }
 
   Widget _buildBodyDestinationPicker(BuildContext context, MailboxActions? actions) {
     return RefreshIndicator(
       color: AppColor.primaryColor,
       onRefresh: () async => controller.getAllMailboxAction(),
-      child: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
-        child: Container(
-          alignment: Alignment.center,
-          color: AppColor.colorBgMailbox,
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildLoadingView(),
-              if (actions == MailboxActions.create) _buildUnifiedMailbox(context),
-              _buildListMailbox(context, actions)
-            ]
-          )
-        )
-      )
-    );
+      child: Obx(() => controller.isSearchActive()
+        ? _buildListMailboxSearched(context)
+        : _buildListMailbox(context, actions)));
   }
 
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => SizedBox.shrink(),
       (success) => success is LoadingState
-        ? Center(
-          child: Padding(
+        ? Center(child: Padding(
             padding: EdgeInsets.only(top: 16),
             child: SizedBox(
               width: 24,
@@ -195,130 +171,125 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
       primary: false,
       shrinkWrap: true,
       children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            color: Colors.white),
-          margin: EdgeInsets.only(left: 16, right: 16, top: 10),
-          child: _buildDefaultMailbox(context)),
-        Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                color: Colors.white),
-            margin: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 20),
-            child: _buildFolderMailbox(context)),
+        if (actions == MailboxActions.moveEmail) _buildSearchBarWidget(context),
+        _buildLoadingView(),
+        if (actions == MailboxActions.create) _buildUnifiedMailbox(context),
+        SizedBox(height: 12),
+        Obx(() => controller.defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
+            ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultMailboxTree.value.root, actions)
+            : SizedBox.shrink()),
+        if (actions == MailboxActions.create) SizedBox(height: 12),
+        if (actions != MailboxActions.create)
+          Padding(
+            padding: EdgeInsets.only(left: 60),
+            child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
+        Obx(() => controller.folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
+            ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderMailboxTree.value.root, actions)
+            : SizedBox.shrink()),
       ]
     );
   }
 
-  Widget _buildDefaultMailbox(BuildContext context) {
-    return Obx(() => controller.defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
-        ? Transform(
-            transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
-            child: Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 10),
-                child: TreeView(
-                  startExpanded: false,
-                  key: Key('default_mailbox_list'),
-                  children: _buildListChildTileWidget(context, controller.defaultMailboxTree.value.root)
-                )
-            )
-        )
-        : SizedBox.shrink()
-    );
+  Widget _buildMailboxCategory(BuildContext context, MailboxCategories categories, MailboxNode mailboxNode, MailboxActions? actions) {
+    if (actions == MailboxActions.moveEmail) {
+      return _buildBodyMailboxCategory(context, categories, mailboxNode, actions);
+    }
+    return Column(children: [
+      _buildHeaderMailboxCategory(context, categories),
+      AnimatedContainer(
+          duration: Duration(milliseconds: 400),
+          child: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
+              ? _buildBodyMailboxCategory(context, categories, mailboxNode, actions)
+              : Offstage())
+    ]);
   }
 
-  Widget _buildFolderMailbox(BuildContext context) {
-    return Obx(() => controller.folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
-      ? Padding(
-          padding: EdgeInsets.only(top: 8, bottom: 8),
-          child: TreeView(
-              startExpanded: false,
-              key: Key('folder_mailbox_list'),
-              children: _buildListChildTileWidget(context, controller.folderMailboxTree.value.root)))
-      : SizedBox.shrink()
-    );
+  Widget _buildHeaderMailboxCategory(BuildContext context, MailboxCategories categories) {
+    return Padding(
+        padding: EdgeInsets.only(
+            left: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context) ? 8 : 28,
+            right: 16),
+        child: Row(children: [
+          Expanded(child: Text(categories.getTitle(context),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold))),
+          buildIconWeb(
+              icon: SvgPicture.asset(
+                  categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
+                      ? _imagePaths.icExpandFolder
+                      : _imagePaths.icCollapseFolder,
+                  color: AppColor.primaryColor, fit: BoxFit.fill),
+              tooltip: AppLocalizations.of(context).collapse,
+              onTap: () => controller.toggleMailboxCategories(categories))
+        ]));
   }
 
-  List<Widget> _buildListChildTileWidget(BuildContext context, MailboxNode parentNode) {
+  Widget _buildBodyMailboxCategory(BuildContext context, MailboxCategories categories, MailboxNode mailboxNode, MailboxActions? actions) {
+    final lastNode = mailboxNode.childrenItems?.last;
+
+    return Container(
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white),
+        margin: EdgeInsets.only(left: actions == MailboxActions.moveEmail ? 8 : 16, right: actions == MailboxActions.moveEmail ? 0 : 16),
+        padding: EdgeInsets.only(left: 12, right: 8),
+        child: TreeView(
+            key: Key('${categories.keyValue}_mailbox_list'),
+            children: _buildListChildTileWidget(context, mailboxNode, lastNode: lastNode)));
+  }
+
+  List<Widget> _buildListChildTileWidget(BuildContext context, MailboxNode parentNode, {MailboxNode? lastNode}) {
     return parentNode.childrenItems
         ?.map((mailboxNode) => mailboxNode.hasChildren()
-          ? Padding(
-              padding: EdgeInsets.only(left: 20),
-              child:  TreeViewChild(
+          ? TreeViewChild(
                   context,
                   key: Key('children_tree_mailbox_child'),
                   isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-                  parent: (MailBoxFolderTileBuilder(
-                            context,
-                            _imagePaths,
-                            mailboxNode,
+                  parent: (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode,
+                            lastNode: lastNode,
                             mailboxDisplayed: MailboxDisplayed.destinationPicker)
                         ..addOnOpenMailboxFolderClick(_handleOpenMailboxClick)
                         ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode)))
                       .build(),
                   children: _buildListChildTileWidget(context, mailboxNode)
-              ).build())
-          : Padding(
-              padding: EdgeInsets.only(left: 20),
-              child: (MailBoxFolderTileBuilder(
-                      context,
-                      _imagePaths,
-                      mailboxNode,
-                      mailboxDisplayed: MailboxDisplayed.destinationPicker)
-                  ..addOnOpenMailboxFolderClick(_handleOpenMailboxClick))
-                .build(),
-              ))
+              ).build()
+          : (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
+                  mailboxDisplayed: MailboxDisplayed.destinationPicker)
+              ..addOnOpenMailboxFolderClick(_handleOpenMailboxClick))
+            .build())
       .toList() ?? <Widget>[];
   }
 
-  EdgeInsets _getMarginDestinationPicker(BuildContext context) {
-    if (_responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context)) {
-      return EdgeInsets.only(
-          left: _responsiveUtils.tabletHorizontalMargin,
-          right: _responsiveUtils.tabletHorizontalMargin,
-          top: 50.0);
-    } else if (_responsiveUtils.isTablet(context)) {
-      return _responsiveUtils.getSizeScreenHeight(context) <= _responsiveUtils.tabletVerticalMargin * 2
-          ? EdgeInsets.symmetric(
-              horizontal: _responsiveUtils.tabletHorizontalMargin,
-              vertical: 0.0)
-          : EdgeInsets.symmetric(
-              horizontal: _responsiveUtils.tabletHorizontalMargin,
-              vertical: _responsiveUtils.tabletVerticalMargin);
-    } else if (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) {
-      return _responsiveUtils.getSizeScreenHeight(context) <= _responsiveUtils.desktopVerticalMargin * 2
-          ? EdgeInsets.symmetric(
-              horizontal: _responsiveUtils.desktopHorizontalMargin,
-              vertical: 0.0)
-          : EdgeInsets.symmetric(
-              horizontal: _responsiveUtils.desktopHorizontalMargin,
-              vertical: _responsiveUtils.desktopVerticalMargin);
-    } else {
-      return EdgeInsets.zero;
-    }
-  }
-
-  BorderRadius _radiusDestinationPicker(BuildContext context, double radius) {
-    if (_responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context)) {
-      return BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius));
-    } else if (_responsiveUtils.isTablet(context)) {
-      return _responsiveUtils.getSizeScreenHeight(context) <= _responsiveUtils.tabletVerticalMargin * 2
-          ? BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius))
-          : BorderRadius.circular(radius);
-    } else if (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) {
-      return _responsiveUtils.getSizeScreenHeight(context) <= _responsiveUtils.desktopVerticalMargin * 2
-          ? BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius))
-          : BorderRadius.circular(radius);
-    } else {
-      return BorderRadius.only(topLeft: Radius.circular(radius), topRight: Radius.circular(radius));
-    }
+  Widget _buildListMailboxSearched(BuildContext context) {
+    return Obx(() => Container(
+        margin: _responsiveUtils.isDesktop(context)
+            ? EdgeInsets.only(left: 16, right: 16)
+            : EdgeInsets.zero,
+        decoration: _responsiveUtils.isDesktop(context)
+            ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white)
+            : null,
+        child: ListView.builder(
+            padding: EdgeInsets.only(left: 16, right: 8),
+            key: Key('list_mailbox_searched'),
+            itemCount: controller.listMailboxSearched.length,
+            shrinkWrap: true,
+            primary: false,
+            itemBuilder: (context, index) =>
+                Obx(() => (MailboxSearchTileBuilder(
+                        _imagePaths,
+                        controller.listMailboxSearched[index],
+                        lastMailbox: controller.listMailboxSearched.last)
+                    ..addOnOpenMailboxAction((mailbox) => controller.selectMailboxAction(mailbox)))
+                  .build())
+        )
+    ));
   }
 
   Widget _buildUnifiedMailbox(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      margin: EdgeInsets.only(left: 16, right: 16, top: 16),
+      margin: EdgeInsets.only(
+          left: !_responsiveUtils.isLandscapeMobile(context) ? 16 : 0,
+          right: 16),
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white),
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
@@ -357,5 +328,33 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
       presentationMailbox = mailboxNode.item;
     }
     controller.selectMailboxAction(presentationMailbox);
+  }
+
+  Widget _buildInputSearchFormWidget(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.only(top: 16, bottom: 16),
+        child: Row(
+            children: [
+              Padding(padding: EdgeInsets.only(left: 5), child: buildIconWeb(
+                  icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                  onTap: () => controller.disableSearch(context))),
+              Expanded(child: (SearchAppBarWidget(context, _imagePaths, _responsiveUtils,
+                      controller.searchQuery.value,
+                      controller.searchFocus,
+                      controller.searchInputController,
+                      hasBackButton: false,
+                      hasSearchButton: true)
+                  ..addPadding(EdgeInsets.zero)
+                  ..setMargin(EdgeInsets.only(right: 16))
+                  ..addDecoration(BoxDecoration(borderRadius: BorderRadius.circular(12), color: AppColor.colorBgSearchBar))
+                  ..addIconClearText(SvgPicture.asset(_imagePaths.icClearTextSearch, width: 20, height: 20, fit: BoxFit.fill))
+                  ..setHintText(AppLocalizations.of(context).hint_search_mailboxes)
+                  ..addOnClearTextSearchAction(() => controller.clearSearchText())
+                  ..addOnTextChangeSearchAction((query) => controller.searchMailbox(query))
+                  ..addOnSearchTextAction((query) => controller.searchMailbox(query)))
+                .build())
+            ]
+        )
+    );
   }
 }
