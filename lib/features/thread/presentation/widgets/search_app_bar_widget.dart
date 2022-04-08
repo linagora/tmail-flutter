@@ -112,26 +112,19 @@ class SearchAppBarWidget {
   }
 
  Widget _buildBackButton() {
-   return Material(
-     shape: CircleBorder(),
-     color: Colors.transparent,
-     child: Padding(
-       padding: EdgeInsets.only(left: _responsiveUtils.isDesktop(_context) ? 0 : 8),
-       child: IconButton(
-         splashRadius: 20,
-         icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
-         onPressed: () {
-           _searchInputController?.clear();
-           if (_onCancelSearchPressed != null) {
-             _onCancelSearchPressed!();
-           }
+   return buildIconWeb(
+       icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
+       onTap: () {
+         _searchInputController?.clear();
+         if (_onCancelSearchPressed != null) {
+           _onCancelSearchPressed!();
          }
-       )));
+       });
  }
 
  Widget _buildClearTextSearchButton() {
     return buildIconWeb(
-        icon: _iconClearText ?? SvgPicture.asset(_imagePaths.icComposerClose, width: 12, height: 12, fit: BoxFit.fill),
+        icon: _iconClearText ?? SvgPicture.asset(_imagePaths.icComposerClose, width: 18, height: 18, fit: BoxFit.fill),
         onTap: () {
           _searchInputController?.clear();
           _onClearTextSearchAction?.call();

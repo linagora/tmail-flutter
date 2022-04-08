@@ -234,6 +234,8 @@ class MailboxController extends BaseMailboxController {
         mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode(
             defaultMailbox: ExpandMode.COLLAPSE,
             folderMailbox: ExpandMode.COLLAPSE);
+      } else {
+        mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode.initial();
       }
     }
   }
