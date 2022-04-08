@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -9,14 +10,16 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnFilterEmailAction = void Function(FilterMessageOption, RelativeRect? position);
 typedef OnEditThreadAction = void Function();
-typedef OnOpenListMailboxActionClick = void Function();
+typedef OnOpenMailboxMenuActionClick = void Function();
 typedef OnCancelEditThread = void Function();
+typedef OnEmailSelectionAction = void Function(EmailActionType actionType, List<PresentationEmail>);
 
 class AppBarThreadWidgetBuilder {
   OnFilterEmailAction? _onFilterEmailAction;
-  OnOpenListMailboxActionClick? _onOpenListMailboxActionClick;
+  OnOpenMailboxMenuActionClick? _onOpenMailboxMenuActionClick;
   OnEditThreadAction? _onEditThreadAction;
   OnCancelEditThread? _onCancelEditThread;
+  OnEmailSelectionAction? _onEmailSelectionAction;
 
   final BuildContext _context;
   final ImagePaths _imagePaths;
@@ -40,8 +43,8 @@ class AppBarThreadWidgetBuilder {
     _onFilterEmailAction = onFilterEmailAction;
   }
 
-  void addOpenListMailboxActionClick(OnOpenListMailboxActionClick onOpenListMailboxActionClick) {
-    _onOpenListMailboxActionClick = onOpenListMailboxActionClick;
+  void addOpenMailboxMenuActionClick(OnOpenMailboxMenuActionClick actionClick) {
+    _onOpenMailboxMenuActionClick = actionClick;
   }
 
   void addOnEditThreadAction(OnEditThreadAction onEditThreadAction) {
@@ -50,6 +53,10 @@ class AppBarThreadWidgetBuilder {
 
   void addOnCancelEditThread(OnCancelEditThread onCancelEditThread) {
     _onCancelEditThread = onCancelEditThread;
+  }
+
+  void addOnEmailSelectionAction(OnEmailSelectionAction onEmailSelectionAction) {
+    _onEmailSelectionAction = onEmailSelectionAction;
   }
 
   Widget build() {
@@ -61,36 +68,113 @@ class AppBarThreadWidgetBuilder {
       padding: EdgeInsets.only(left: 8, top: 16, bottom: 8, right: 8),
       child: MediaQuery(
         data: MediaQueryData(padding: EdgeInsets.zero),
-        child: Row(children: [
-          Expanded(child: Stack(
-            alignment: Alignment.center,
-            children: [
-              if (_selectMode != SelectMode.ACTIVE)
-                Positioned(left: 0,child: _buildEditButton()),
-              if (_selectMode == SelectMode.ACTIVE)
-                Positioned(left: 0, child: _buildBackButton()),
-              if (_selectMode == SelectMode.ACTIVE)
-                Positioned(left: 40, child: _buildCountItemSelected()),
-              Positioned(right: 0, child: _buildFilterButton()),
-              _filterMessageOption.getTitle(_context).isNotEmpty
+        child: kIsWeb
+            ? _selectMode == SelectMode.INACTIVE ? _buildBodyAppBarForWeb() : _buildBodyAppBarForWebSelection()
+            : _selectMode == SelectMode.INACTIVE ? _buildBodyAppBarForMobile() : _buildBodyAppBarForMobileSelection()
+      )
+    );
+  }
+
+  Widget _buildBodyAppBarForWeb() {
+    return Row(children: [
+      if (!_responsiveUtils.isTabletLarge(_context)) _buildMenuButton(),
+      if (_responsiveUtils.isTabletLarge(_context)) SizedBox(width: 16),
+      Expanded(child: Text(
+          '${_presentationMailbox?.name?.name.capitalizeFirstEach ?? ''}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 21, color: Colors.black, fontWeight: FontWeight.bold))),
+      _buildFilterButton(),
+    ]);
+  }
+
+  Widget _buildBodyAppBarForWebSelection() {
+    return Row(children: [
+      buildIconWeb(
+          icon: SvgPicture.asset(_imagePaths.icCloseComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
+          tooltip: AppLocalizations.of(_context).cancel,
+          onTap: () => _onCancelEditThread?.call()),
+      Expanded(child: Text(
+        AppLocalizations.of(_context).count_email_selected(_listSelectionEmail.length),
+        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))),
+      buildIconWeb(
+          icon: SvgPicture.asset(_listSelectionEmail.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead, fit: BoxFit.fill),
+          tooltip: _listSelectionEmail.isAllEmailRead ? AppLocalizations.of(_context).unread : AppLocalizations.of(_context).read,
+          onTap: () => _onEmailSelectionAction?.call(
+              _listSelectionEmail.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
+              _listSelectionEmail)),
+      buildIconWeb(
+          icon: SvgPicture.asset(_listSelectionEmail.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar, fit: BoxFit.fill),
+          tooltip: _listSelectionEmail.isAllEmailStarred ? AppLocalizations.of(_context).not_starred : AppLocalizations.of(_context).starred,
+          onTap: () => _onEmailSelectionAction?.call(
+              _listSelectionEmail.isAllEmailStarred ? EmailActionType.markAsUnStar : EmailActionType.markAsStar,
+              _listSelectionEmail)),
+      buildIconWeb(
+          icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
+          tooltip: AppLocalizations.of(_context).move,
+          onTap: () => _onEmailSelectionAction?.call(EmailActionType.move, _listSelectionEmail)),
+      buildIconWeb(
+          icon: SvgPicture.asset(_imagePaths.icDelete, fit: BoxFit.fill),
+          tooltip: _presentationMailbox?.role != PresentationMailbox.roleTrash
+              ? AppLocalizations.of(_context).move_to_trash
+              : AppLocalizations.of(_context).delete_permanently,
+          onTap: () => _presentationMailbox?.role != PresentationMailbox.roleTrash
+              ? _onEmailSelectionAction?.call(EmailActionType.moveToTrash, _listSelectionEmail)
+              : _onEmailSelectionAction?.call(EmailActionType.deletePermanently, _listSelectionEmail)),
+    ]);
+  }
+
+  Widget _buildBodyAppBarForMobile() {
+    return Row(children: [
+      Expanded(child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(left: 0,child: _buildEditButton()),
+            Positioned(right: 0, child: _buildFilterButton()),
+            _filterMessageOption.getTitle(_context).isNotEmpty
                 ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Padding(
-                      padding: EdgeInsets.only(left: 40, right: 40),
-                      child: _buildContentCenterAppBar()),
+                        padding: EdgeInsets.only(left: 40, right: 40),
+                        child: _buildContentCenterAppBar()),
                     Transform(
-                      transform: Matrix4.translationValues(_responsiveUtils.isDesktop(_context) ? -2.0 : -16.0, -8.0, 0.0),
-                      child: Text(
-                          _filterMessageOption.getTitle(_context),
-                          style: TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
+                        transform: Matrix4.translationValues(_responsiveUtils.isDesktop(_context) ? -2.0 : -16.0, -8.0, 0.0),
+                        child: Text(
+                            _filterMessageOption.getTitle(_context),
+                            style: TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
                   ])
                 : Padding(
                     padding: EdgeInsets.only(left: 60, right: 40),
                     child: _buildContentCenterAppBar()),
-            ]
-          ))
-        ])
-      )
-    );
+          ]
+      ))
+    ]);
+  }
+
+  Widget _buildBodyAppBarForMobileSelection() {
+    return Row(children: [
+      Expanded(child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(left: 0, child: _buildBackButton()),
+            Positioned(left: 40, child: _buildCountItemSelected()),
+            Positioned(right: 0, child: _buildFilterButton()),
+            _filterMessageOption.getTitle(_context).isNotEmpty
+                ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Padding(
+                        padding: EdgeInsets.only(left: 40, right: 40),
+                        child: _buildContentCenterAppBar()),
+                    Transform(
+                        transform: Matrix4.translationValues(_responsiveUtils.isDesktop(_context) ? -2.0 : -16.0, -8.0, 0.0),
+                        child: Text(
+                            _filterMessageOption.getTitle(_context),
+                            style: TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
+                  ])
+                : Padding(
+                    padding: EdgeInsets.only(left: 60, right: 40),
+                    child: _buildContentCenterAppBar()),
+          ]
+      ))
+    ]);
   }
 
   Widget _buildEditButton() {
@@ -145,21 +229,16 @@ class AppBarThreadWidgetBuilder {
     );
   }
 
+  Widget _buildMenuButton() {
+    return buildIconWeb(
+        icon: SvgPicture.asset(_imagePaths.icMenuDrawer, fit: BoxFit.fill),
+        onTap:() => _onOpenMailboxMenuActionClick?.call());
+  }
+
   Widget _buildBackButton() {
-    return Material(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.transparent,
-        child: IconButton(
-            color: AppColor.baseTextColor,
-            icon: SvgPicture.asset(
-                _imagePaths.icBack,
-                width: 20,
-                height: 20,
-                color: AppColor.colorTextButton,
-                fit: BoxFit.fill),
-            onPressed: () => _onCancelEditThread?.call()
-        )
-    );
+    return buildIconWeb(
+        icon: SvgPicture.asset(_imagePaths.icBack, width: 20, height: 20, color: AppColor.colorTextButton, fit: BoxFit.fill),
+        onTap:() => _onCancelEditThread?.call());
   }
 
   Widget _buildCountItemSelected() {
@@ -177,8 +256,8 @@ class AppBarThreadWidgetBuilder {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        GestureDetector(
-          onTap: () => !_responsiveUtils.isTabletLarge(_context) ? _onOpenListMailboxActionClick?.call() : null,
+        InkWell(
+          onTap: () => !_responsiveUtils.isTabletLarge(_context) ? _onOpenMailboxMenuActionClick?.call() : null,
           child: Padding(
             padding: !_responsiveUtils.isTabletLarge(_context) ? EdgeInsets.zero : EdgeInsets.only(bottom: 8, top: 8),
             child: Container(
@@ -198,7 +277,7 @@ class AppBarThreadWidgetBuilder {
               padding: EdgeInsets.zero,
               color: AppColor.baseTextColor,
               icon: SvgPicture.asset(_imagePaths.icChevronDown, width: 20, height: 16, fit: BoxFit.fill),
-              onPressed: () => !_responsiveUtils.isTabletLarge(_context) ? _onOpenListMailboxActionClick?.call() : null))
+              onPressed: () => !_responsiveUtils.isTabletLarge(_context) ? _onOpenMailboxMenuActionClick?.call() : null))
       ]
     );
   }
