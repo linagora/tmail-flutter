@@ -20,7 +20,7 @@ Widget buildIconWeb({
           icon: icon,
           iconSize: iconSize,
           padding: iconPadding ?? EdgeInsets.all(8.0),
-          splashRadius: splashRadius ?? 20,
+          splashRadius: splashRadius ?? 15,
           tooltip: tooltip ?? '',
           onPressed: onTap)
   );

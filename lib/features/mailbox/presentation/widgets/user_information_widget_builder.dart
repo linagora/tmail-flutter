@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_utils/src/platform/platform.dart';
@@ -72,11 +73,12 @@ class UserInformationWidgetBuilder {
               )
             )
         ])),
-        Transform(
-          transform: Matrix4.translationValues(14.0, 0.0, 0.0),
-          child: IconButton(
-            icon: SvgPicture.asset(_imagePaths.icCollapseFolder, fit: BoxFit.fill, color: AppColor.colorCollapseMailbox),
-            onPressed: () => {}))
+        if (!kIsWeb)
+          Transform(
+            transform: Matrix4.translationValues(14.0, 0.0, 0.0),
+            child: IconButton(
+              icon: SvgPicture.asset(_imagePaths.icCollapseFolder, fit: BoxFit.fill, color: AppColor.colorCollapseMailbox),
+              onPressed: () => {}))
       ]),
     );
   }
