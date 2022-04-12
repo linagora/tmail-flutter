@@ -118,4 +118,14 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
       throw error;
     });
   }
+
+  @override
+  Future<void> clearAllData() {
+    return Future.sync(() async {
+      final boxMailbox = await openBox();
+      boxMailbox.clear();
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }

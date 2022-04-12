@@ -118,4 +118,14 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
       throw error;
     });
   }
+
+  @override
+  Future<void> clearAllData() {
+    return Future.sync(() async {
+      final boxState = await openBox();
+      boxState.clear();
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }
