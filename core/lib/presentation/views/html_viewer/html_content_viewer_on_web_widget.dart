@@ -93,15 +93,22 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         }
         
         function handleOnClickLink(e) {
-           var link = e.target;
+           let link = e.target;
+           let textContent = e.target.textContent;
            console.log("handleOnClickLink: " + link);
-           if (link && isValidHttpUrl(link)) {
+           console.log("handleOnClickLink: " + textContent);
+           if (link && isValidUrl(link)) {
               window.parent.postMessage(JSON.stringify({"view": "$createdViewId", "type": "toDart: OpenLink", "url": "" + link}), "*");
+              e.preventDefault();
+           } else if (textContent && isValidUrl(textContent)) {
+              window.parent.postMessage(JSON.stringify({"view": "$createdViewId", "type": "toDart: OpenLink", "url": "" + textContent}), "*");
+              e.preventDefault();
+           } else {
               e.preventDefault();
            }
         }
         
-        function isValidHttpUrl(string) {
+        function isValidUrl(string) {
           let url;
           
           try {
@@ -113,6 +120,30 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           return url.protocol === "http:" || url.protocol === "https:" || url.protocol === "mailto:";
         }
       </script>
+    ''';
+
+    final tooltipLinkCss = '''
+      .tooltip {
+        position: relative;
+        display: inline-block;
+      }
+      .tooltip .tooltiptext {
+        visibility: hidden;
+        max-width: 400px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 8px 5px 8px;
+        white-space: nowrap; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: absolute;
+        z-index: 1;
+      }
+      .tooltip:hover .tooltiptext {
+        visibility: visible;
+      }
     ''';
 
     final htmlTemplate = '''
@@ -143,6 +174,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           padding: 13px;
           margin: 0px;
         }
+        $tooltipLinkCss
       </style>
       $htmlScripts
       </head>
