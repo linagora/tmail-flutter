@@ -1,4 +1,5 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
@@ -16,10 +17,18 @@ class CachingManager {
   );
 
   Future<void> clearAll() async {
-    await Future.wait([
-      _stateCacheClient.deleteBox(),
-      _mailboxCacheClient.deleteBox(),
-      _emailCacheClient.deleteBox(),
-    ]);
+    if (kIsWeb) {
+      await Future.wait([
+        _stateCacheClient.clearAllData(),
+        _mailboxCacheClient.clearAllData(),
+        _emailCacheClient.clearAllData(),
+      ]);
+    } else {
+      await Future.wait([
+        _stateCacheClient.deleteBox(),
+        _mailboxCacheClient.deleteBox(),
+        _emailCacheClient.deleteBox(),
+      ]);
+    }
   }
 }

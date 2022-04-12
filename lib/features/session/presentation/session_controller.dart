@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -41,8 +40,8 @@ class SessionController extends GetxController {
 
   void _goToLogin() {
     _deleteCredential();
-    if (!kIsWeb) _clearAllCache();
-    pushAndPop(AppRoutes.LOGIN);
+    _clearAllCache();
+    pushAndPopAll(AppRoutes.LOGIN);
   }
 
   void _goToMailboxDashBoard(GetSessionSuccess getSessionSuccess) {

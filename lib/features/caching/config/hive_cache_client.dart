@@ -30,4 +30,6 @@ abstract class HiveCacheClient<T> {
   Future<void> deleteBox() {
     return Hive.deleteBoxFromDisk(tableName);
   }
+
+  Future<void> clearAllData();
 }
