@@ -261,33 +261,10 @@ class EmailTileBuilder {
                 TextStyle(fontSize: 15, color: AppColor.colorNameEmail, backgroundColor: AppColor.bgWordSearch, fontWeight: FontWeight.w600)).build()
             : Text('${_getInformationSender()}',
                 maxLines: 1,
-                overflow: kIsWeb ? null : TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 15, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600)),
           ),
-          SizedBox(width: 16),
-          Container(width: 150, child: _isSearchEnabled
-            ? RichTextBuilder(
-                '${_presentationEmail.getEmailTitle()}',
-                '${_searchQuery!.value}',
-                TextStyle(fontSize: 13, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600),
-                TextStyle(fontSize: 13, backgroundColor: AppColor.bgWordSearch, color: AppColor.colorNameEmail)).build()
-            : Text('${_presentationEmail.getEmailTitle()}',
-                maxLines: 1,
-                overflow: kIsWeb ? null : TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 13, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600))
-          ),
-          SizedBox(width: 12),
-          Expanded(flex: 3, child: _isSearchEnabled
-            ? RichTextBuilder(
-                '${_presentationEmail.getPartialContent()}',
-                '${_searchQuery!.value}',
-                TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal),
-                TextStyle(fontSize: 13, color: AppColor.colorContentEmail, backgroundColor: AppColor.bgWordSearch)).build()
-            : Text('${_presentationEmail.getPartialContent()}',
-                maxLines: 1,
-                overflow: kIsWeb ? null : TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal))
-          ),
+          SizedBox(width: 10),
+          Expanded(child: _buildSubjectAndContent()),
           SizedBox(width: 10),
           if (_searchStatus == SearchStatus.ACTIVE && _presentationEmail.mailboxName.isNotEmpty)
             Container(
@@ -297,7 +274,6 @@ class EmailTileBuilder {
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.backgroundCounterMailboxColor),
                 child: Text('${_presentationEmail.mailboxName}',
                   maxLines: 1,
-                  overflow: kIsWeb ? null: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 10, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
                 )
             ),
@@ -310,7 +286,6 @@ class EmailTileBuilder {
           Padding(padding: EdgeInsets.only(right: 20, left: 8),
             child: Text('${_presentationEmail.getReceivedAt(Localizations.localeOf(_context).toLanguageTag())}',
                 maxLines: 1,
-                overflow: kIsWeb ? null: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal))),
         ]),
         if (_selectModeAll == SelectMode.INACTIVE)
@@ -319,6 +294,40 @@ class EmailTileBuilder {
               child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
       ]),
     );
+  }
+
+  Widget _buildSubjectAndContent() {
+    return LayoutBuilder(builder: (context, constraints) {
+      log('EmailTileBuilder::_buildSubjectAndContent(): maxWidth(Subject+Content): ${constraints.maxWidth}');
+      return Row(
+        children: [
+          Flexible(
+            child: Container(
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
+              child: _isSearchEnabled
+                  ? RichTextBuilder(
+                      '${_presentationEmail.getEmailTitle()}',
+                      '${_searchQuery!.value}',
+                      TextStyle(fontSize: 13, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600),
+                      TextStyle(fontSize: 13, backgroundColor: AppColor.bgWordSearch, color: AppColor.colorNameEmail)).build()
+                  : Text('${_presentationEmail.getEmailTitle()}',
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 13, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600))
+            )
+          ),
+          if (_presentationEmail.getEmailTitle().isNotEmpty) SizedBox(width: 12),
+          Expanded(child: _isSearchEnabled
+              ? RichTextBuilder(
+                  '${_presentationEmail.getPartialContent()}',
+                  '${_searchQuery!.value}',
+                  TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal),
+                  TextStyle(fontSize: 13, color: AppColor.colorContentEmail, backgroundColor: AppColor.bgWordSearch)).build()
+              : Text('${_presentationEmail.getPartialContent()}',
+                  maxLines: 1,
+                  style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal))),
+        ]
+      );
+    });
   }
 
   Widget _buildAvatarIcon({
