@@ -430,8 +430,8 @@ class MailboxDashBoardController extends ReloadableController {
 
   void logoutAction() {
     _deleteCredential();
-    if (!kIsWeb) _clearAllCache();
-    pushAndPopAll(AppRoutes.LOGIN);
+    _clearAllCache();
+    goToLogin();
   }
 
   @override
