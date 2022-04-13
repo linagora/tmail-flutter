@@ -123,10 +123,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     ''';
 
     final tooltipLinkCss = '''
-      .tooltip {
-        position: relative;
-        display: inline-block;
-      }
       .tooltip .tooltiptext {
         visibility: hidden;
         max-width: 400px;
