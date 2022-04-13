@@ -3,14 +3,14 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:html/dom.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 
-class ViewPortTransformer extends DomTransformer {
+class MetaTransformer extends DomTransformer {
 
   static final Element _viewPortMetaElement = Element.html(
     '<meta name="viewport" content="width=device-width, initial-scale=1.0">');
   static final Element _contentTypeMetaElement = Element.html(
     '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">');
 
-  const ViewPortTransformer();
+  const MetaTransformer();
 
   @override
   Future<void> process(
