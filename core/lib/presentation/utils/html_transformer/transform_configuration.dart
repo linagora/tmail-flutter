@@ -58,10 +58,10 @@ class TransformConfiguration {
   static const int? standardMaxImageWidth = null;
 
   static const List<DomTransformer> standardDomTransformers = [
-    ViewPortTransformer(),
+    MetaTransformer(),
     RemoveScriptTransformer(),
     ImageTransformer(),
-    EnsureRelationNoReferrerTransformer(),
+    LinkTransformer(),
     BlockQuotedTransformer(),
   ];
 
