@@ -444,7 +444,12 @@ class ComposerView extends GetWidget<ComposerController> {
                     padding: EdgeInsets.symmetric(horizontal: responsiveUtils.isMobile(context) ? 8 : 10),
                     child: _buildEditor(context, initContent)));
               } else {
-                return SizedBox.shrink();
+                return Padding(
+                    padding: EdgeInsets.all(16),
+                    child: SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
               }
             } else {
               final initContent = controller.textEditorWeb ?? controller.getEmailContentQuotedAsHtml(context, controller.composerArguments.value!);

@@ -56,7 +56,7 @@ class ComposerController extends BaseController {
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
 
-  final expandModeAttachments = ExpandMode.EXPAND.obs;
+  final expandModeAttachments = ExpandMode.COLLAPSE.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
   final isInitialRecipient = false.obs;
@@ -198,6 +198,7 @@ class ComposerController extends BaseController {
       }
       _initToEmailAddress(arguments);
       _initSubjectEmail(arguments);
+      _initAttachments(arguments);
     }
   }
 
@@ -208,6 +209,11 @@ class ComposerController extends BaseController {
       setSubjectEmail(newSubject);
       subjectEmailInputController.text = newSubject;
     }
+  }
+
+  void _initAttachments(ComposerArguments arguments) {
+    attachments.value = arguments.attachments ?? [];
+    initialAttachments = arguments.attachments ?? [];
   }
 
   String? getContentEmail(BuildContext context) {
