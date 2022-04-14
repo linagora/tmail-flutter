@@ -253,44 +253,51 @@ class EmailTileBuilder {
                 paddingIconSelect: EdgeInsets.all(5)),
           ),
           if (_selectModeAll == SelectMode.INACTIVE) SizedBox(width: 10),
-          Container(width: 180, child: _isSearchEnabled
-            ? RichTextBuilder(
-                _getInformationSender(),
-                '${_searchQuery!.value}',
-                TextStyle(fontSize: 15, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600),
-                TextStyle(fontSize: 15, color: AppColor.colorNameEmail, backgroundColor: AppColor.bgWordSearch, fontWeight: FontWeight.w600)).build()
-            : Text('${_getInformationSender()}',
-                maxLines: 1,
-                style: TextStyle(fontSize: 15, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600)),
+          Container(
+            width: 160,
+            child: _isSearchEnabled
+              ? RichTextBuilder(
+                  _getInformationSender(),
+                  '${_searchQuery!.value}',
+                  TextStyle(fontSize: 15, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600),
+                  TextStyle(fontSize: 15, color: AppColor.colorNameEmail, backgroundColor: AppColor.bgWordSearch, fontWeight: FontWeight.w600)).build()
+              : Text('${_getInformationSender()}',
+                  maxLines: 1,
+                  overflow: kIsWeb ? null : TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 15, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600)),
           ),
-          SizedBox(width: 10),
+          SizedBox(width: 24),
           Expanded(child: _buildSubjectAndContent()),
-          SizedBox(width: 10),
+          SizedBox(width: 16),
           if (_searchStatus == SearchStatus.ACTIVE && _presentationEmail.mailboxName.isNotEmpty)
             Container(
                 margin: EdgeInsets.only(left: 8),
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                constraints: BoxConstraints(maxWidth: 100),
+                constraints: BoxConstraints(maxWidth: 80),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.backgroundCounterMailboxColor),
                 child: Text('${_presentationEmail.mailboxName}',
                   maxLines: 1,
+                  overflow: kIsWeb ? null : TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 10, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
                 )
             ),
           if (_presentationEmail.hasAttachment == true)
             Padding(padding: EdgeInsets.only(left: 8),
-              child: (ButtonBuilder(_imagePaths.icAttachment)
-                  ..paddingIcon(EdgeInsets.zero)
-                  ..size(16))
-                .build()),
-          Padding(padding: EdgeInsets.only(right: 20, left: 8),
-            child: Text('${_presentationEmail.getReceivedAt(Localizations.localeOf(_context).toLanguageTag())}',
-                maxLines: 1,
-                style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal))),
+                child: (ButtonBuilder(_imagePaths.icAttachment)
+                    ..paddingIcon(EdgeInsets.zero)
+                    ..size(16))
+                  .build()),
+          Padding(
+              padding: EdgeInsets.only(right: 20, left: 8),
+              child: Text('${_presentationEmail.getReceivedAt(Localizations.localeOf(_context).toLanguageTag())}',
+                  maxLines: 1,
+                  textAlign: TextAlign.right,
+                  overflow: kIsWeb ? null : TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal))),
         ]),
         if (_selectModeAll == SelectMode.INACTIVE)
           Padding(
-              padding: EdgeInsets.only(top: 10, bottom: 10, left: 70),
+              padding: EdgeInsets.only(top: 7.5, bottom: 7.5, left: 70),
               child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
       ]),
     );
@@ -299,24 +306,24 @@ class EmailTileBuilder {
   Widget _buildSubjectAndContent() {
     return LayoutBuilder(builder: (context, constraints) {
       log('EmailTileBuilder::_buildSubjectAndContent(): maxWidth(Subject+Content): ${constraints.maxWidth}');
-      return Row(
-        children: [
-          Flexible(
-            child: Container(
-              constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
-              child: _isSearchEnabled
-                  ? RichTextBuilder(
-                      '${_presentationEmail.getEmailTitle()}',
-                      '${_searchQuery!.value}',
-                      TextStyle(fontSize: 13, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600),
-                      TextStyle(fontSize: 13, backgroundColor: AppColor.bgWordSearch, color: AppColor.colorNameEmail)).build()
-                  : Text('${_presentationEmail.getEmailTitle()}',
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 13, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600))
-            )
-          ),
-          if (_presentationEmail.getEmailTitle().isNotEmpty) SizedBox(width: 12),
-          Expanded(child: _isSearchEnabled
+      return Row(children: [
+        Container(
+            constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
+            child: _isSearchEnabled
+                ? RichTextBuilder(
+                    '${_presentationEmail.getEmailTitle()}',
+                    '${_searchQuery!.value}',
+                    TextStyle(fontSize: 13, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600),
+                    TextStyle(fontSize: 13, backgroundColor: AppColor.bgWordSearch, color: AppColor.colorNameEmail)).build()
+                : Text('${_presentationEmail.getEmailTitle()}',
+                    maxLines: 1,
+                    overflow: kIsWeb ? null : TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 13, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600))
+        ),
+        if (_presentationEmail.getEmailTitle().isNotEmpty) SizedBox(width: 12),
+        Expanded(
+          child: Container(
+            child: _isSearchEnabled
               ? RichTextBuilder(
                   '${_presentationEmail.getPartialContent()}',
                   '${_searchQuery!.value}',
@@ -324,9 +331,11 @@ class EmailTileBuilder {
                   TextStyle(fontSize: 13, color: AppColor.colorContentEmail, backgroundColor: AppColor.bgWordSearch)).build()
               : Text('${_presentationEmail.getPartialContent()}',
                   maxLines: 1,
-                  style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal))),
-        ]
-      );
+                  overflow: kIsWeb ? null : TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal))
+          )
+        ),
+      ]);
     });
   }
 

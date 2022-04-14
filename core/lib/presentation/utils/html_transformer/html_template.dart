@@ -1,6 +1,8 @@
 
+final nameClassToolTip = 'tmail-tooltip';
+
 final tooltipLinkCss = '''
-  .tooltip .tooltiptext {
+  .$nameClassToolTip .tooltiptext {
     visibility: hidden;
     max-width: 400px;
     background-color: black;
@@ -14,7 +16,7 @@ final tooltipLinkCss = '''
     position: absolute;
     z-index: 1;
   }
-  .tooltip:hover .tooltiptext {
+  .$nameClassToolTip:hover .tooltiptext {
     visibility: visible;
   }
 ''';
