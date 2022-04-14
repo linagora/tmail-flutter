@@ -6,4 +6,6 @@ abstract class HtmlDataSource {
     EmailContent emailContent,
     Map<String, String> mapUrlDownloadCID
   );
+
+  Future<EmailContent> addTooltipWhenHoverOnLink(EmailContent emailContent);
 }

@@ -65,6 +65,7 @@ class EmailController extends BaseController {
   final emailContents = <EmailContent>[].obs;
   final attachments = <Attachment>[].obs;
   EmailId? _currentEmailId;
+  List<EmailContent>? initialEmailContents;
 
   PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
 
@@ -152,7 +153,8 @@ class EmailController extends BaseController {
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
-    emailContents.value = success.emailContents;
+    emailContents.value = success.emailContentsDisplayed;
+    initialEmailContents = success.emailContents;
     attachments.value = success.attachments;
   }
 
@@ -161,6 +163,7 @@ class EmailController extends BaseController {
     emailAddressExpandMode.value = ExpandMode.COLLAPSE;
     isDisplayFullEmailAddress.value = false;
     emailContents.clear();
+    initialEmailContents?.clear();
     attachments.clear();
   }
 
@@ -592,7 +595,7 @@ class EmailController extends BaseController {
       final arguments = ComposerArguments(
           emailActionType: emailActionType,
           presentationEmail: mailboxDashBoardController.selectedEmail.value!,
-          emailContents: emailContents,
+          emailContents: initialEmailContents,
           attachments: attachments,
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
 

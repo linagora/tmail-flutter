@@ -21,4 +21,13 @@ class HtmlDataSourceImpl extends HtmlDataSource {
       throw error;
     });
   }
+
+  @override
+  Future<EmailContent> addTooltipWhenHoverOnLink(EmailContent emailContent) {
+    return Future.sync(() async {
+      return await _htmlAnalyzer.addTooltipWhenHoverOnLink(emailContent);
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }

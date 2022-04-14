@@ -14,8 +14,10 @@ class ImageTransformer extends DomTransformer {
   Future<void> process(
       Document document,
       String message,
-      Map<String, String>? mapUrlDownloadCID,
-      DioClient dioClient
+      {
+        Map<String, String>? mapUrlDownloadCID,
+        DioClient? dioClient
+      }
   ) async {
     final imageElements = document.getElementsByTagName('img');
 
@@ -29,7 +31,7 @@ class ImageTransformer extends DomTransformer {
       ) {
         final cid = src.replaceFirst('cid:', '').trim();
         final cidUrlDownload = mapUrlDownloadCID[cid];
-        if (cidUrlDownload != null && cidUrlDownload.isNotEmpty) {
+        if (cidUrlDownload != null && cidUrlDownload.isNotEmpty && dioClient != null) {
           final imgBase64 = await loadAsyncNetworkImageToBase64(dioClient, cidUrlDownload);
           if (imgBase64 != null && imgBase64.isNotEmpty) {
             imageElement.attributes['src'] = 'data:image/jpeg;base64,$imgBase64';

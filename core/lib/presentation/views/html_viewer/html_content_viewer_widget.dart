@@ -43,7 +43,8 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   double? _webViewHeight = 1.0;
   double? _webViewWidth = 1.0;
-  int minHeight = 100;
+  double minHeight = 100;
+  double minWidth = 300;
   String? _htmlData;
   late WebViewController _webViewController;
   bool _isLoading = true;
@@ -56,47 +57,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   }
 
   String _generateHtmlDocument(String content) {
-    final htmlTemplate = '''
-      <!DOCTYPE html>
-      <html>
-      <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-      <style>
-        #editor {
-          outline: 0px solid transparent;
-          min-height: ${minHeight}px;
-          min-width: 300px;
-          color: #182952;
-          font-family: verdana;
-        }
-        table {
-          width: 100%;
-          max-width: 100%;
-        }
-        td {
-          padding: 13px;
-          margin: 0px;
-        }
-        th {
-          padding: 13px;
-          margin: 0px;
-        }
-      </style>
-      <script>
-        var documentHeight;
-
-        function onLoaded() {
-          documentHeight = document.body.scrollHeight;
-          document.execCommand("styleWithCSS", false, true);
-        }
-      </script>
-      </head>
-      <body onload="onLoaded();">
-      <div id="editor">$content</div>
-      </body>
-      </html> 
-    ''';
+    final htmlTemplate = generateHtml(content);
     return htmlTemplate;
   }
 
