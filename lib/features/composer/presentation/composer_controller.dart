@@ -192,7 +192,6 @@ class ComposerController extends BaseController {
   void _initEmail() {
     final arguments = kIsWeb ? mailboxDashBoardController.routerArguments : Get.arguments;
     if (arguments is ComposerArguments) {
-      log('ComposerController::_initEmail(): arguments: ${arguments.props}');
       composerArguments.value = arguments;
       if (arguments.emailActionType == EmailActionType.edit) {
         _getEmailContentAction(arguments);
@@ -310,16 +309,11 @@ class ComposerController extends BaseController {
     final headerEmailQuoted = _getHeaderEmailQuoted(Localizations.localeOf(context).toLanguageTag(), arguments);
 
     final headerEmailQuotedAsHtml = headerEmailQuoted != null
-      ? AppLocalizations.of(context).header_email_quoted(headerEmailQuoted.value1, headerEmailQuoted.value2)
-          .addBlockTag('p', attribute: 'style=\"font-size:14px;font-style:italic;color:#182952;\"')
+      ? AppLocalizations.of(context).header_email_quoted(headerEmailQuoted.value1, headerEmailQuoted.value2).addBlockTag('cite')
       : '';
 
-    final trustAsHtml = arguments.emailContents
-      ?.map((emailContent) => emailContent.asHtml)
-      .toList()
-      .join('<br>') ?? '';
-
-    final emailQuotedHtml = '<br><br>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}<br>';
+    final trustAsHtml = arguments.emailContents?.asHtmlString ?? '';
+    final emailQuotedHtml = '<p></br></p>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}';
 
     return emailQuotedHtml;
   }
@@ -699,9 +693,7 @@ class ComposerController extends BaseController {
   String? getEmailContentDraftsAsHtml() {
     final listContents = emailContents.value;
     if (listContents != null) {
-      return listContents.isNotEmpty
-          ? listContents.map((emailContent) => emailContent.content).toList().join('</br>')
-          : '';
+      return listContents.asHtmlString;
     } else {
       return null;
     }
