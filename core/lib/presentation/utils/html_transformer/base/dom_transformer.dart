@@ -13,8 +13,10 @@ abstract class DomTransformer {
   Future<void> process(
       Document document,
       String message,
-      Map<String, String>? mapUrlDownloadCID,
-      DioClient dioClient
+      {
+        Map<String, String>? mapUrlDownloadCID,
+        DioClient? dioClient,
+      }
   );
 
   /// Adds a HEAD element if necessary

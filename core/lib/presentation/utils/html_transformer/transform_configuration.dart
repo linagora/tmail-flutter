@@ -3,12 +3,7 @@ import 'package:core/presentation/utils/html_transformer/base/dom_transformer.da
 import 'package:core/presentation/utils/html_transformer/base/text_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/link_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/meta_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/text/convert_tags_text_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/text/linebreak_text_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/text/links_text_transformer.dart';
 
 /// Contains the configuration for all transformations.
 class TransformConfiguration {
@@ -37,37 +32,26 @@ class TransformConfiguration {
   ///
   /// Any specified [customDomTransformers] or [customTextTransformers] are being appended to the standard transformers.
   static TransformConfiguration create({
-    bool? blockExternalImages,
-    int? maxImageWidth,
     List<DomTransformer>? customDomTransformers,
     List<TextTransformer>? customTextTransformers
   }) {
-    final domTransformers = (customDomTransformers != null)
-        ? [...standardDomTransformers, ...customDomTransformers]
+    final domTransformers = (customDomTransformers != null && customDomTransformers.isNotEmpty)
+        ? [...customDomTransformers]
         : [...standardDomTransformers];
-    final textTransformers = (customTextTransformers != null)
-        ? [...standardTextTransformers, ...customTextTransformers]
+    final textTransformers = (customTextTransformers != null && customTextTransformers.isNotEmpty)
+        ? [...customTextTransformers]
         : standardTextTransformers;
-    maxImageWidth ??= standardMaxImageWidth;
     return TransformConfiguration(
       domTransformers,
       textTransformers
     );
   }
 
-  static const int? standardMaxImageWidth = null;
-
   static const List<DomTransformer> standardDomTransformers = [
-    MetaTransformer(),
     RemoveScriptTransformer(),
-    ImageTransformer(),
-    LinkTransformer(),
     BlockQuotedTransformer(),
+    ImageTransformer(),
   ];
 
-  static const List<TextTransformer> standardTextTransformers = [
-    ConvertTagsTextTransformer(),
-    LinksTextTransformer(),
-    LineBreakTextTransformer(),
-  ];
+  static const List<TextTransformer> standardTextTransformers = [];
 }
