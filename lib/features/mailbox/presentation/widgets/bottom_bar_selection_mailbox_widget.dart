@@ -38,18 +38,18 @@ class BottomBarSelectionMailboxWidget {
 
   Widget _buildListOptionButton() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        (ButtonBuilder(_imagePaths.icMove)
+        Expanded(child: (ButtonBuilder(_imagePaths.icMove)
             ..key(Key('button_move_all_mailbox'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton.withOpacity(0.3)))
             ..iconColor(AppColor.colorTextButton.withOpacity(0.3))
             ..onPressActionClick(() => {})
             ..text(AppLocalizations.of(_context).move, isVertical: true))
-          .build(),
-        (ButtonBuilder(_imagePaths.icRenameMailbox)
+          .build()),
+        Expanded(child: (ButtonBuilder(_imagePaths.icRenameMailbox)
             ..key(Key('button_rename_mailbox'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(
@@ -62,16 +62,16 @@ class BottomBarSelectionMailboxWidget {
               }
             })
             ..text(AppLocalizations.of(_context).rename, isVertical: true))
-          .build(),
-        (ButtonBuilder(_imagePaths.icRead)
+          .build()),
+        Expanded(child: (ButtonBuilder(_imagePaths.icRead)
             ..key(Key('button_mark_read_all_mailbox'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton.withOpacity(0.3)))
             ..iconColor(AppColor.colorTextButton.withOpacity(0.3))
             ..onPressActionClick(() => {})
             ..text(AppLocalizations.of(_context).mark_as_read, isVertical: true))
-          .build(),
-        (ButtonBuilder(_imagePaths.icDelete)
+          .build()),
+        Expanded(child: (ButtonBuilder(_imagePaths.icDelete)
             ..key(Key('button_delete_all_mailbox'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(
@@ -84,7 +84,7 @@ class BottomBarSelectionMailboxWidget {
               }
             })
             ..text(AppLocalizations.of(_context).delete, isVertical: true))
-          .build()
+          .build())
       ]
     );
   }
