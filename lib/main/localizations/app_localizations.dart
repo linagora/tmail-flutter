@@ -1097,4 +1097,18 @@ class AppLocalizations {
       name: 'move_message',
     );
   }
+
+  String get forwarded_message {
+    return Intl.message(
+      'Forwarded message',
+      name: 'forwarded_message',
+    );
+  }
+
+  String get date {
+    return Intl.message(
+      'Date',
+      name: 'date',
+    );
+  }
 }
