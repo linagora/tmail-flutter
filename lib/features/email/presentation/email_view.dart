@@ -13,10 +13,8 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_e
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_place_holder_loading_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_content_place_holder_loading_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:filesize/filesize.dart';
@@ -197,8 +195,8 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
       padding: EdgeInsets.only(right: 16),
       child: SelectableText(
           '${emailController.mailboxDashBoardController.selectedEmail.value?.getEmailTitle()}',
-          maxLines: 3,
-          minLines: 1,
+          maxLines: kIsWeb ? 3 : null,
+          minLines: kIsWeb ? 1 : null,
           cursorColor: AppColor.colorTextButton,
           style: TextStyle(
               fontSize: 20,
@@ -237,6 +235,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
                 Expanded(child: _buildEmailContent(context, constraints))
               else
                 _buildEmailContent(context, constraints),
+              SizedBox(height: 16),
             ],
           );
         })
@@ -398,7 +397,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
     (failure) => SizedBox.shrink(),
     (success) {
       if (success is LoadingState) {
-        return AttachmentsPlaceHolderLoading(responsiveUtils: responsiveUtils);
+        return SizedBox.shrink();
       } else {
         final attachments = emailController.attachments.listAttachmentsDisplayedOutSide;
         return attachments.isNotEmpty
@@ -412,9 +411,9 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
     if (responsiveUtils.isMobileDevice(context)) {
       return 2;
     } else if (responsiveUtils.isTablet(context)) {
-      return 4;
-    } else {
       return 3;
+    } else {
+      return 4;
     }
   }
 
@@ -439,7 +438,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
           key: Key('list_attachment'),
           primary: false,
           shrinkWrap: true,
-          padding: EdgeInsets.only(top: isExpand ? 0 : 16),
+          padding: EdgeInsets.only(top: isExpand ? 0 : 16, bottom: 16),
           itemCount: countAttachments,
           gridDelegate: SliverGridDelegateFixedHeight(
             height: 60,
@@ -523,26 +522,27 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
       (failure) => SizedBox.shrink(),
       (success) {
         if (success is LoadingState) {
-          return EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils);
+          return Padding(
+              padding: EdgeInsets.all(16),
+              child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
         } else {
           if (emailController.emailContents.isNotEmpty) {
-            final allEmailContents = emailController.emailContents
-                .map((emailContent) => emailContent.asHtml)
-                .toList()
-                .join('<br>');
+            final allEmailContents = emailController.emailContents.asHtmlString;
 
             if (kIsWeb) {
               return HtmlContentViewerOnWeb(
                   widthContent: constraints.maxWidth,
-                  heightContent: MediaQuery.of(context).size.height,
+                  heightContent: responsiveUtils.getSizeScreenHeight(context),
                   contentHtml: allEmailContents,
                   controller: HtmlViewerControllerForWeb(),
                   mailtoDelegate: (uri) => emailController.openMailToLink(uri));
             } else {
               return HtmlContentViewer(
-                  widthContent: MediaQuery.of(context).size.width,
+                  heightContent: responsiveUtils.getSizeScreenHeight(context),
                   contentHtml: allEmailContents,
-                  loadingWidget: EmailContentPlaceHolderLoading(responsiveUtils: responsiveUtils),
                   mailtoDelegate: (uri) async => emailController.openMailToLink(uri));
             }
           } else {
