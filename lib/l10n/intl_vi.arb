@@ -42,7 +42,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unknown_error_login_message": "Vui lòng thử lại.",
+  "unknown_error_login_message": "Vui lòng thử lại",
   "@unknown_error_login_message": {
     "type": "text",
     "placeholders_order": [],
@@ -418,6 +418,152 @@
   },
   "results": "Results",
   "@results": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_without_recipient": "Email của bạn nên có ít nhất một người nhận",
+  "@message_dialog_send_email_without_recipient": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "edit": "Sửa",
+  "@edit": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move": "Di chuyển",
+  "@move": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete": "Xoá",
+  "@delete": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "compose": "Soạn thư",
+  "@compose": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spam": "Spam",
+  "@spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "flag": "Cờ",
+  "@flag": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "read": "Đã đọc",
+  "@read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unread": "Chưa đọc",
+  "@unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_message_toast": "Bạn vừa đánh dấu email là \"{action}\"",
+  "@marked_message_toast": {
+    "type": "text",
+    "placeholders_order": [
+      "action"
+    ],
+    "placeholders": {
+      "action": {}
+    }
+  },
+  "folders": "Thư mục",
+  "@folders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "logout": "Đăng xuất",
+  "@logout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_search_mailboxes": "Tìm kiếm thư mục",
+  "@hint_search_mailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_attachments": "Các tệp đính kèm",
+  "@with_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rename": "Đổi tên",
+  "@rename": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "add_recipients": "Thêm người nhận",
+  "@add_recipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "back": "Quay lại",
+  "@back": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "version": "Phiên bản",
+  "@version": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maximum_files_size": "Làm rỗng thư mục rác",
+  "@maximum_files_size": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "close": "Đóng",
+  "@close": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "filter_message_toast": "Bạn vừa lọc các email \"{filterOption}\"",
+  "@filter_message_toast": {
+    "type": "text",
+    "placeholders_order": [
+      "filterOption"
+    ],
+    "placeholders": {
+      "filterOption": {}
+    }
+  },
+  "hint_search_emails": "Tìm kiếm email và tệp",
+  "@hint_search_emails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "starred": "Quan trọng",
+  "@starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
