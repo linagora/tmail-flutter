@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:model/model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -22,7 +23,10 @@ class GetEmailContentInteractor {
             email.allAttachments.listAttachmentsDisplayedInContent,
             baseDownloadUrl,
             accountId);
-        yield Right<Failure, Success>(GetEmailContentSuccess(newEmailContents, email.allAttachments));
+        final newEmailContentsDisplayed = kIsWeb
+            ? await emailRepository.addTooltipWhenHoverOnLink(newEmailContents)
+            : newEmailContents;
+        yield Right<Failure, Success>(GetEmailContentSuccess(newEmailContents, newEmailContentsDisplayed, email.allAttachments));
       } else {
         yield Left(GetEmailContentFailure(null));
       }

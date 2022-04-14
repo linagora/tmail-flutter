@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/html_transformer/html_template.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
@@ -36,16 +37,16 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
   /// The view ID for the IFrameElement. Must be unique.
   late String createdViewId;
-  /// The actual height of the editor, used to automatically set the height
+  /// The actual height of the content view, used to automatically set the height
   late double actualHeight;
-  /// The actual width of the editor, used to automatically set the width
+  /// The actual width of the content view, used to automatically set the width
   late double actualWidth;
 
   Future<bool>? webInit;
   String? _htmlData;
   bool _isLoading = true;
-  int minHeight = 100;
-  int minWidth = 300;
+  double minHeight = 100;
+  double minWidth = 300;
 
   @override
   void initState() {
@@ -64,7 +65,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   }
 
   String _generateHtmlDocument(String content) {
-    final htmlScripts = '''
+    final webViewActionScripts = '''
       <script type="text/javascript">
         window.parent.addEventListener('message', handleMessage, false);
         window.addEventListener('click', handleOnClickLink, true);
@@ -122,63 +123,11 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       </script>
     ''';
 
-    final tooltipLinkCss = '''
-      .tooltip .tooltiptext {
-        visibility: hidden;
-        max-width: 400px;
-        background-color: black;
-        color: #fff;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px 8px 5px 8px;
-        white-space: nowrap; 
-        overflow: hidden;
-        text-overflow: ellipsis;
-        position: absolute;
-        z-index: 1;
-      }
-      .tooltip:hover .tooltiptext {
-        visibility: visible;
-      }
-    ''';
-
-    final htmlTemplate = '''
-      <!DOCTYPE html>
-      <html>
-      <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-      <style>
-        #editor {
-          outline: 0px solid transparent;
-          min-height: ${minHeight}px;
-          min-width: ${minWidth}px;
-          color: #000000;
-          font-family: Inter;
-          font-size: 16px;
-          font-style: normal;
-        }
-        table {
-          width: 100%;
-          max-width: 100%;
-        }
-        td {
-          padding: 13px;
-          margin: 0px;
-        }
-        th {
-          padding: 13px;
-          margin: 0px;
-        }
-        $tooltipLinkCss
-      </style>
-      $htmlScripts
-      </head>
-      <body>
-      <div id="editor">$content</div>
-      </body>
-      </html> 
-    ''';
+    final htmlTemplate = generateHtml(content,
+      minHeight: minHeight,
+      minWidth: minWidth,
+      styleCSS: tooltipLinkCss,
+      javaScripts: webViewActionScripts);
 
     return htmlTemplate;
   }

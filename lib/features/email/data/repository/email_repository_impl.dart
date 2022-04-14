@@ -124,4 +124,11 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<bool> deleteEmailPermanently(AccountId accountId, EmailId emailId) {
     return emailDataSource.deleteEmailPermanently(accountId, emailId);
   }
+
+  @override
+  Future<List<EmailContent>> addTooltipWhenHoverOnLink(List<EmailContent> emailContents) {
+    return Future.wait(emailContents
+      .map((emailContent) => _htmlDataSource.addTooltipWhenHoverOnLink(emailContent))
+      .toList());
+  }
 }

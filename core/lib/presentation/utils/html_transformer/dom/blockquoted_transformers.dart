@@ -11,8 +11,10 @@ class BlockQuotedTransformer extends DomTransformer {
   Future<void> process(
       Document document,
       String message,
-      Map<String, String>? mapUrlDownloadCID,
-      DioClient dioClient
+      {
+        Map<String, String>? mapUrlDownloadCID,
+        DioClient? dioClient
+      }
   ) async {
     final quotedElements = document.getElementsByTagName('blockquote');
     await Future.wait(quotedElements.map((quotedElement) async {
