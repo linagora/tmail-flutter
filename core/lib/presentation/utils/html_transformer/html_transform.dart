@@ -7,17 +7,17 @@ class HtmlTransform {
 
   final String _contentHtml;
   Map<String, String>? mapUrlDownloadCID;
-  DioClient dioClient;
+  DioClient? dioClient;
 
   HtmlTransform(
     this._contentHtml,
-    this.dioClient,
-    this.mapUrlDownloadCID
+    {
+      this.mapUrlDownloadCID,
+      this.dioClient,
+    }
   );
 
   /// Transforms this message to HTML code.
-  /// Optionally specify the [transformConfiguration] to control all aspects of the transformation
-  /// - in that case other parameters are ignored.
   Future<String> transformToHtml({TransformConfiguration? transformConfiguration}) async {
     final document = await transformToDocument(transformConfiguration: transformConfiguration);
     return document.outerHtml;
@@ -26,7 +26,7 @@ class HtmlTransform {
   /// Transforms this message to Document.
   Future<Document> transformToDocument({TransformConfiguration? transformConfiguration}) async {
     transformConfiguration ??= TransformConfiguration.create();
-    final transformer = MessageContentTransformer(transformConfiguration, dioClient);
-    return await transformer.toDocument(_contentHtml, mapUrlDownloadCID);
+    final transformer = MessageContentTransformer(transformConfiguration);
+    return await transformer.toDocument(_contentHtml, mapUrlDownloadCID: mapUrlDownloadCID, dioClient: dioClient);
   }
 }
