@@ -108,6 +108,7 @@ extension AppColor on Color {
   static const colorFocusButton = Color(0x14818C99);
   static const colorBorderEmailAddressInvalid = Color(0xFFFF3347);
   static const colorBgMailboxSelected = Color(0xFF99E4E8EC);
+  static const colorLoading = Color(0x2999A2AD);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

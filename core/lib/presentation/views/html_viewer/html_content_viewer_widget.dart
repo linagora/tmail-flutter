@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +12,7 @@ import 'dart:developer' as developer;
 class HtmlContentViewer extends StatefulWidget {
 
   final String contentHtml;
-  final double widthContent;
-  final Widget? loadingWidget;
+  final double heightContent;
 
   /// Register this callback if you want a reference to the [WebViewController].
   final void Function(WebViewController controller)? onCreated;
@@ -28,8 +28,7 @@ class HtmlContentViewer extends StatefulWidget {
   const HtmlContentViewer({
     Key? key,
     required this.contentHtml,
-    required this.widthContent,
-    this.loadingWidget,
+    required this.heightContent,
     this.onCreated,
     this.urlLauncherDelegate,
     this.mailtoDelegate,
@@ -41,8 +40,7 @@ class HtmlContentViewer extends StatefulWidget {
 
 class _HtmlContentViewState extends State<HtmlContentViewer> {
 
-  double? _webViewHeight = 1.0;
-  double? _webViewWidth = 1.0;
+  late double actualHeight;
   double minHeight = 100;
   double minWidth = 300;
   String? _htmlData;
@@ -52,7 +50,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   @override
   void initState() {
     super.initState();
-    _webViewWidth = widget.widthContent;
+    actualHeight = widget.heightContent;
     _htmlData = _generateHtmlDocument(widget.contentHtml);
   }
 
@@ -63,29 +61,27 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        SizedBox(
-          height: _webViewHeight,
-          width: _webViewWidth,
-          child: _buildWebView(),
-        ),
-        if (_isLoading) Align(alignment: Alignment.center, child: _buildLoadingView())
-      ],
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      log('_HtmlContentViewState::build(): maxWidth: ${constraints.maxWidth}');
+      return Stack(
+        children: [
+          SizedBox(
+            height: actualHeight,
+            width: constraints.maxWidth,
+            child: _buildWebView()),
+          if (_isLoading) Align(alignment: Alignment.center, child: _buildLoadingView())
+        ],
+      );
+    });
   }
 
   Widget _buildLoadingView() {
-    if (widget.loadingWidget != null) {
-      return widget.loadingWidget!;
-    } else {
-      return Padding(
+    return Padding(
         padding: EdgeInsets.all(16),
         child: SizedBox(
           width: 30,
           height: 30,
-          child: CircularProgressIndicator(color: AppColor.primaryColor)));
-    }
+          child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
   }
 
   Widget _buildWebView() {
@@ -110,7 +106,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
           final scrollHeightWithBuffer = scrollHeight + 30.0;
           if (scrollHeightWithBuffer > minHeight) {
             setState(() {
-              _webViewHeight = scrollHeightWithBuffer;
+              actualHeight = scrollHeightWithBuffer;
               _isLoading = false;
             });
           }

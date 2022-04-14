@@ -6,7 +6,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/html_transformer/html_template.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:core/presentation/utils/shims/dart_ui.dart' as ui;
 
@@ -227,7 +227,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           width: actualWidth,
           child: _buildWebView(),
         ),
-        if (_isLoading) Align(alignment: Alignment.center, child: _buildLoadingView())
+        if (_isLoading) Align(alignment: Alignment.topCenter, child: _buildLoadingView())
       ],
     );
   }
@@ -238,7 +238,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         child: SizedBox(
             width: 30,
             height: 30,
-            child: CircularProgressIndicator(color: AppColor.colorTextButton)));
+            child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
   }
 
   Widget _buildWebView() {

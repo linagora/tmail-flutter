@@ -3,6 +3,8 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:html/dom.dart';
 
+import '../html_template.dart';
+
 class AddTooltipLinkTransformer extends DomTransformer {
 
   const AddTooltipLinkTransformer();
@@ -29,7 +31,7 @@ class AddTooltipLinkTransformer extends DomTransformer {
     if (children.isEmpty && text.isNotEmpty && url != null) {
       final innerHtml = element.innerHtml;
       final tagClass = element.attributes['class'];
-      element.attributes['class'] = '$tagClass tooltip';
+      element.attributes['class'] = '$tagClass $nameClassToolTip';
       element.innerHtml = innerHtml + textHasToolTip(url);
     }
   }
