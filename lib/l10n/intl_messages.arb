@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-04-07T15:43:45.603676",
+  "@@last_modified": "2022-04-14T15:13:36.565629",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -210,12 +210,6 @@
   },
   "move_to_trash": "Move to trash",
   "@move_to_trash": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "move_to_mailbox": "Move to mailbox",
-  "@move_to_mailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1038,6 +1032,30 @@
   },
   "maximum_files_size": "Maximum files size",
   "@maximum_files_size": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exchange": "Exchange",
+  "@exchange": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move_message": "Move message",
+  "@move_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwarded_message": "Forwarded message",
+  "@forwarded_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "date": "Date",
+  "@date": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

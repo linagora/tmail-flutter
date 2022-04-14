@@ -17,12 +17,14 @@ extension HtmlExtension on String {
 
   String addBlockTag(String tag, {String? attribute}) => attribute != null ? '<$tag $attribute>$this</$tag>' : '<$tag>$this</$tag>';
 
+  String append(String value) => this + value;
+
   String addNewLineTag({int count = 1}) {
-    if (count == 1) return '$this<br>';
+    if (count == 1) return '$this</br>';
 
     var htmlString = this;
     for (var i = 0; i < count; i++) {
-      htmlString = '$htmlString<br>';
+      htmlString = '$htmlString</br>';
     }
     return htmlString;
   }
