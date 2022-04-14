@@ -596,7 +596,7 @@ class EmailController extends BaseController {
           emailActionType: emailActionType,
           presentationEmail: mailboxDashBoardController.selectedEmail.value!,
           emailContents: initialEmailContents,
-          attachments: attachments,
+          attachments: emailActionType == EmailActionType.forward ? attachments : null,
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
 
       if (kIsWeb) {
