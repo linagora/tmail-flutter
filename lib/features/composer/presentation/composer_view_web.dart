@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -294,7 +293,6 @@ class ComposerView extends GetWidget<ComposerController> {
       controller.subjectEmail.isNotEmpty == true
           ? controller.subjectEmail.value ?? ''
           : AppLocalizations.of(context).new_message.capitalizeFirstEach,
-      overflow: kIsWeb ? null : TextOverflow.ellipsis,
       maxLines: 1,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
@@ -470,9 +468,9 @@ class ComposerView extends GetWidget<ComposerController> {
       controller: controller.htmlControllerBrowser,
       htmlEditorOptions: HtmlEditorBrowser.HtmlEditorOptions(
         hint: '${AppLocalizations.of(context).hint_compose_email}',
-        initialText: initContent,
         darkMode: false,
       ),
+      blockQuotedContent: initContent,
       htmlToolbarOptions: HtmlEditorBrowser.HtmlToolbarOptions(
         toolbarPosition: HtmlEditorBrowser.ToolbarPosition.custom
       ),
