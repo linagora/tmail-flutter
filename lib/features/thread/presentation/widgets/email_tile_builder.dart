@@ -290,7 +290,7 @@ class EmailTileBuilder {
         ]),
         if (_selectModeAll == SelectMode.INACTIVE)
           Padding(
-              padding: EdgeInsets.only(top: 10, bottom: 10, left: 70),
+              padding: EdgeInsets.only(top: 7.5, bottom: 7.5, left: 70),
               child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
       ]),
     );
