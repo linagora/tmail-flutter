@@ -35,22 +35,6 @@ String generateHtml(String content, {
       .tmail-content {
         min-height: ${minHeight ?? 0}px;
         min-width: ${minWidth ?? 0}px;
-        color: #000000;
-        font-family: Inter;
-        font-size: 16px;
-        font-style: normal;
-      }
-      table {
-        width: 100%;
-        max-width: 100%;
-      }
-      td {
-        padding: 13px;
-        margin: 0px;
-      }
-      th {
-        padding: 13px;
-        margin: 0px;
       }
       ${styleCSS ?? ''}
     </style>
