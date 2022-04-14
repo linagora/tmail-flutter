@@ -522,12 +522,12 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
       (failure) => SizedBox.shrink(),
       (success) {
         if (success is LoadingState) {
-          return Padding(
+          return Align(alignment: Alignment.topCenter, child: Padding(
               padding: EdgeInsets.all(16),
               child: SizedBox(
                   width: 30,
                   height: 30,
-                  child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
+                  child: CupertinoActivityIndicator(color: AppColor.colorLoading))));
         } else {
           if (emailController.emailContents.isNotEmpty) {
             final allEmailContents = emailController.emailContents.asHtmlString;

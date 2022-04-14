@@ -236,11 +236,70 @@ class ComposerController extends BaseController {
     htmlControllerBrowser.setFullScreen();
   }
 
-  Tuple2<String, String>? _getHeaderEmailQuoted(String locale, ComposerArguments arguments) {
-    if (arguments.presentationEmail != null) {
-      final sentDate = arguments.presentationEmail?.sentAt;
-      final emailAddress = arguments.presentationEmail?.from.listEmailAddressToString(isFullEmailAddress: true) ?? '';
-      return Tuple2(sentDate.formatDate(pattern: 'MMM d, y h:mm a', locale: locale), emailAddress);
+  String? _getHeaderEmailQuoted(BuildContext context, ComposerArguments arguments) {
+    final presentationEmail = arguments.presentationEmail;
+    if (presentationEmail != null) {
+      final locale = Localizations.localeOf(context).toLanguageTag();
+      log('ComposerController::_getHeaderEmailQuoted(): emailActionType: ${arguments.emailActionType}');
+      switch(arguments.emailActionType) {
+        case EmailActionType.reply:
+        case EmailActionType.replyAll:
+          final sentDate = presentationEmail.sentAt;
+          final emailAddress = presentationEmail.from.listEmailAddressToString(isFullEmailAddress: true);
+          return AppLocalizations.of(context).header_email_quoted(
+              sentDate.formatDate(pattern: 'MMM d, y h:mm a', locale: locale),
+              emailAddress);
+        case EmailActionType.forward:
+          var headerQuoted = '------- ${AppLocalizations.of(context).forwarded_message} -------'.addNewLineTag();
+
+          final subject = presentationEmail.subject ?? '';
+          final sentDate = presentationEmail.sentAt;
+          final fromEmailAddress = presentationEmail.from.listEmailAddressToString(isFullEmailAddress: true);
+          final toEmailAddress = presentationEmail.to.listEmailAddressToString(isFullEmailAddress: true);
+          final ccEmailAddress = presentationEmail.cc.listEmailAddressToString(isFullEmailAddress: true);
+          final bccEmailAddress = presentationEmail.bcc.listEmailAddressToString(isFullEmailAddress: true);
+
+          if (subject.isNotEmpty) {
+            headerQuoted = headerQuoted
+                .append('${AppLocalizations.of(context).subject_email}: ')
+                .append(subject)
+                .addNewLineTag();
+          }
+          if (sentDate != null) {
+            headerQuoted = headerQuoted
+                .append('${AppLocalizations.of(context).date}: ')
+                .append(sentDate.formatDate(pattern: 'MMM d, y h:mm a', locale: locale))
+                .addNewLineTag();
+          }
+          if (fromEmailAddress.isNotEmpty) {
+            headerQuoted = headerQuoted
+                .append('${AppLocalizations.of(context).from_email_address_prefix}: ')
+                .append(fromEmailAddress)
+                .addNewLineTag();
+          }
+          if (toEmailAddress.isNotEmpty) {
+            headerQuoted = headerQuoted
+                .append('${AppLocalizations.of(context).to_email_address_prefix}: ')
+                .append(toEmailAddress)
+                .addNewLineTag();
+          }
+          if (ccEmailAddress.isNotEmpty) {
+            headerQuoted = headerQuoted
+                .append('${AppLocalizations.of(context).cc_email_address_prefix}: ')
+                .append(ccEmailAddress)
+                .addNewLineTag();
+          }
+          if (bccEmailAddress.isNotEmpty) {
+            headerQuoted = headerQuoted
+                .append('${AppLocalizations.of(context).bcc_email_address_prefix}: ')
+                .append(bccEmailAddress)
+                .addNewLineTag();
+          }
+
+          return headerQuoted;
+        default:
+          return null;
+      }
     }
     return null;
   }
@@ -312,11 +371,9 @@ class ComposerController extends BaseController {
   }
 
   String getEmailContentQuotedAsHtml(BuildContext context, ComposerArguments arguments) {
-    final headerEmailQuoted = _getHeaderEmailQuoted(Localizations.localeOf(context).toLanguageTag(), arguments);
-
-    final headerEmailQuotedAsHtml = headerEmailQuoted != null
-      ? AppLocalizations.of(context).header_email_quoted(headerEmailQuoted.value1, headerEmailQuoted.value2).addBlockTag('cite')
-      : '';
+    final headerEmailQuoted = _getHeaderEmailQuoted(context, arguments);
+    log('ComposerController::getEmailContentQuotedAsHtml(): headerEmailQuoted: $headerEmailQuoted');
+    final headerEmailQuotedAsHtml = headerEmailQuoted != null ? headerEmailQuoted.addBlockTag('cite') : '';
 
     final trustAsHtml = arguments.emailContents?.asHtmlString ?? '';
     final emailQuotedHtml = '<p></br></p>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}';
