@@ -1104,4 +1104,26 @@ class AppLocalizations {
       name: 'date',
     );
   }
+
+  String get mark_as_spam {
+    return Intl.message(
+      'Mark as spam',
+      name: 'mark_as_spam',
+    );
+  }
+
+  String get remove_from_spam {
+    return Intl.message(
+      'Remove from spam',
+      name: 'remove_from_spam',
+    );
+  }
+
+  String get marked_as_spam {
+    return Intl.message(
+      'Marked as spam',
+      name: 'marked_as_spam',
+    );
+  }
+
 }

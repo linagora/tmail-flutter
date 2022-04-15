@@ -343,13 +343,20 @@ class EmailController extends BaseController {
       );
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
-        if (destinationMailbox.role == PresentationMailbox.roleTrash) {
+        if (destinationMailbox.isTrash) {
           _moveToTrashAction(context, accountId, MoveToMailboxRequest(
               [email.id],
               currentMailbox.id,
               destinationMailbox.id,
               MoveAction.moving,
               EmailActionType.moveToTrash));
+        } else if (destinationMailbox.isSpam) {
+          _moveToSpamAction(context, accountId, MoveToMailboxRequest(
+              [email.id],
+              currentMailbox.id,
+              destinationMailbox.id,
+              MoveAction.moving,
+              EmailActionType.moveToSpam));
         } else {
           _moveToMailbox(accountId, MoveToMailboxRequest(
               [email.id],
@@ -375,7 +382,7 @@ class EmailController extends BaseController {
           currentOverlayContext!,
           success.emailActionType.getToastMessageMoveToMailboxSuccess(currentContext!, destinationPath: success.destinationPath),
           AppLocalizations.of(currentContext!).undo_action, () {
-            _undoMoveToMailbox(MoveToMailboxRequest(
+        _revertedToOriginalMailbox(MoveToMailboxRequest(
               [success.emailId],
               success.destinationMailboxId,
               success.currentMailboxId,
@@ -386,7 +393,7 @@ class EmailController extends BaseController {
     }
   }
 
-  void _undoMoveToMailbox(MoveToMailboxRequest newMoveRequest) {
+  void _revertedToOriginalMailbox(MoveToMailboxRequest newMoveRequest) {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {
       _moveToMailbox(accountId, newMoveRequest);
@@ -409,6 +416,26 @@ class EmailController extends BaseController {
   }
 
   void _moveToTrashAction(BuildContext context, AccountId accountId, MoveToMailboxRequest moveRequest) {
+    backToThreadView(context);
+    mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
+  }
+
+  void moveToSpam(BuildContext context, PresentationEmail email) async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
+
+    if (accountId != null && currentMailbox != null && spamMailboxId != null) {
+      _moveToSpamAction(context, accountId, MoveToMailboxRequest(
+          [email.id],
+          currentMailbox!.id,
+          spamMailboxId,
+          MoveAction.moving,
+          EmailActionType.moveToSpam)
+      );
+    }
+  }
+
+  void _moveToSpamAction(BuildContext context, AccountId accountId, MoveToMailboxRequest moveRequest) {
     backToThreadView(context);
     mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
   }
@@ -448,6 +475,10 @@ class EmailController extends BaseController {
         break;
       case EmailActionType.deletePermanently:
         deleteEmailPermanently(context, presentationEmail);
+        break;
+      case EmailActionType.moveToSpam:
+        popBack();
+        moveToSpam(context, presentationEmail);
         break;
       default:
         break;
