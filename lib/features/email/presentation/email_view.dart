@@ -544,6 +544,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
   List<Widget> _emailActionMoreActionTile(BuildContext context, PresentationEmail email) {
     return <Widget>[
       _markAsEmailUnreadAction(context, email),
+      _markAsEmailSpamOrUnSpamAction(context, email),
     ];
   }
 
@@ -572,9 +573,31 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
       .build();
   }
 
+  Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
+    return (EmailActionCupertinoActionSheetActionBuilder(
+            Key('mark_as_spam_or_un_spam_action'),
+            SvgPicture.asset(
+                emailController.currentMailbox?.isSpam == true ? imagePaths.icNotSpam : imagePaths.icSpam,
+                width: 28, height: 28, fit: BoxFit.fill, color: AppColor.colorTextButton),
+            emailController.currentMailbox?.isSpam == true
+                ? AppLocalizations.of(context).remove_from_spam
+                : AppLocalizations.of(context).mark_as_spam,
+            email,
+            iconLeftPadding: responsiveUtils.isMobile(context)
+                ? EdgeInsets.only(left: 12, right: 16)
+                : EdgeInsets.only(right: 12),
+            iconRightPadding: responsiveUtils.isMobile(context)
+                ? EdgeInsets.only(right: 12)
+                : EdgeInsets.zero)
+        ..onActionClick((email) => emailController.handleEmailAction(context, email,
+            emailController.currentMailbox?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam)))
+      .build();
+  }
+
   List<PopupMenuEntry> _popupMenuEmailActionTile(BuildContext context, PresentationEmail email) {
     return [
       PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _markAsEmailUnreadAction(context, email)),
+      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _markAsEmailSpamOrUnSpamAction(context, email)),
     ];
   }
 }

@@ -59,6 +59,10 @@ class PresentationMailbox with EquatableMixin {
 
   bool get isSpam => role == roleSpam;
 
+  bool get isTrash => role == roleTrash;
+
+  bool get isDrafts => role == roleDrafts;
+
   @override
   List<Object?> get props => [
     id,
