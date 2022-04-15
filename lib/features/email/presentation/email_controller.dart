@@ -16,8 +16,8 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:share/share.dart' as share_library;
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
-import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
-import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_action.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -91,7 +92,7 @@ class EmailController extends BaseController {
         _resetToOriginalValue();
         if (presentationEmail != null) {
           _getEmailContentAction(presentationEmail.id);
-          if (presentationEmail.isUnReadEmail()) {
+          if (!presentationEmail.hasRead) {
             markAsEmailRead(presentationEmail, ReadActions.markAsRead);
           }
         }
@@ -331,7 +332,7 @@ class EmailController extends BaseController {
     }
   }
 
-  void moveToMailboxAction(BuildContext context, PresentationEmail email) async {
+  void moveToMailbox(BuildContext context, PresentationEmail email) async {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     final accountId = mailboxDashBoardController.accountId.value;
 
@@ -343,75 +344,73 @@ class EmailController extends BaseController {
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
         if (destinationMailbox.role == PresentationMailbox.roleTrash) {
-          _moveToTrash(context, accountId, MoveToTrashRequest(
+          _moveToTrashAction(context, accountId, MoveToMailboxRequest(
               [email.id],
               currentMailbox.id,
               destinationMailbox.id,
-              MoveAction.moveToTrash));
+              MoveAction.moving,
+              EmailActionType.moveToTrash));
         } else {
-          _moveToMailbox(accountId, MoveRequest(
+          _moveToMailbox(accountId, MoveToMailboxRequest(
               [email.id],
               currentMailbox.id,
               destinationMailbox.id,
-              MoveAction.moveTo,
+              MoveAction.moving,
+              EmailActionType.moveToMailbox,
               destinationPath: destinationMailbox.mailboxPath));
         }
       }
     }
   }
 
-  void _moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
+  void _moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) {
     consumeState(_moveToMailboxInteractor.execute(accountId, moveRequest));
   }
 
-  void _moveToMailboxSuccess(Success success) {
+  void _moveToMailboxSuccess(MoveToMailboxSuccess success) {
     mailboxDashBoardController.dispatchState(Right(success));
 
-    if (success is MoveToMailboxSuccess
-        && success.moveAction == MoveAction.moveTo
-        && currentContext != null && currentOverlayContext != null) {
+    if (success.moveAction == MoveAction.moving && currentContext != null && currentOverlayContext != null) {
       _appToast.showToastWithAction(
           currentOverlayContext!,
-          AppLocalizations.of(currentContext!).moved_to_mailbox(success.destinationPath ?? ''),
-          AppLocalizations.of(currentContext!).undo_action,
-          () {
-            final newMoveRequest = MoveRequest(
-                [success.emailId],
-                success.destinationMailboxId,
-                success.currentMailboxId,
-                MoveAction.undo);
-            _undoMoveToMailbox(newMoveRequest);
+          success.emailActionType.getToastMessageMoveToMailboxSuccess(currentContext!, destinationPath: success.destinationPath),
+          AppLocalizations.of(currentContext!).undo_action, () {
+            _undoMoveToMailbox(MoveToMailboxRequest(
+              [success.emailId],
+              success.destinationMailboxId,
+              success.currentMailboxId,
+              MoveAction.undo,
+              success.emailActionType));
           }
       );
     }
   }
 
-  void _undoMoveToMailbox(MoveRequest newMoveRequest) {
+  void _undoMoveToMailbox(MoveToMailboxRequest newMoveRequest) {
     final accountId = mailboxDashBoardController.accountId.value;
-
     if (accountId != null) {
       _moveToMailbox(accountId, newMoveRequest);
     }
   }
 
-  void moveToTrashAction(BuildContext context, PresentationEmail email) async {
-    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+  void moveToTrash(BuildContext context, PresentationEmail email) async {
     final accountId = mailboxDashBoardController.accountId.value;
-    final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxId[PresentationMailbox.roleTrash];
+    final trashMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleTrash);
 
-    if (currentMailbox != null && accountId != null && trashMailboxId != null) {
-      _moveToTrash(context, accountId, MoveToTrashRequest(
+    if (accountId != null && currentMailbox != null && trashMailboxId != null) {
+      _moveToTrashAction(context, accountId, MoveToMailboxRequest(
         [email.id],
-        currentMailbox.id,
+        currentMailbox!.id,
         trashMailboxId,
-        MoveAction.moveToTrash)
+        MoveAction.moving,
+        EmailActionType.moveToTrash)
       );
     }
   }
 
-  void _moveToTrash(BuildContext context, AccountId accountId, MoveToTrashRequest moveRequest) {
+  void _moveToTrashAction(BuildContext context, AccountId accountId, MoveToMailboxRequest moveRequest) {
     backToThreadView(context);
-    mailboxDashBoardController.moveToTrash(accountId, moveRequest);
+    mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
   }
 
   void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction markStarAction) async {
@@ -435,17 +434,17 @@ class EmailController extends BaseController {
         popBack();
         markAsEmailRead(presentationEmail, ReadActions.markAsUnread);
         break;
-      case EmailActionType.markAsStar:
+      case EmailActionType.markAsStarred:
         markAsStarEmail(presentationEmail, MarkStarAction.markStar);
         break;
-      case EmailActionType.markAsUnStar:
+      case EmailActionType.unMarkAsStarred:
         markAsStarEmail(presentationEmail, MarkStarAction.unMarkStar);
         break;
-      case EmailActionType.move:
-        moveToMailboxAction(context, presentationEmail);
+      case EmailActionType.moveToMailbox:
+        moveToMailbox(context, presentationEmail);
         break;
       case EmailActionType.moveToTrash:
-        moveToTrashAction(context, presentationEmail);
+        moveToTrash(context, presentationEmail);
         break;
       case EmailActionType.deletePermanently:
         deleteEmailPermanently(context, presentationEmail);

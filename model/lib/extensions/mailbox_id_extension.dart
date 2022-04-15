@@ -12,4 +12,10 @@ extension MailboxIdExtension on MailboxId {
       destinationMailboxId.generatePath(): true
     });
   }
+
+  PatchObject generateActionPath() {
+    return PatchObject({
+      generatePath():  true,
+    });
+  }
 }

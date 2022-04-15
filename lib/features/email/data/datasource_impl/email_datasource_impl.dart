@@ -5,8 +5,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
-import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
-import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 
 class EmailDataSourceImpl extends EmailDataSource {
 
@@ -71,7 +70,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
+  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) {
     return Future.sync(() async {
       return await emailAPI.moveToMailbox(accountId, moveRequest);
     }).catchError((error) {
@@ -119,15 +118,6 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<bool> downloadAttachmentForWeb(Attachment attachment, AccountId accountId, String baseDownloadUrl, AccountRequest accountRequest) {
     return Future.sync(() async {
       return await emailAPI.downloadAttachmentForWeb(attachment, accountId, baseDownloadUrl, accountRequest);
-    }).catchError((error) {
-      throw error;
-    });
-  }
-
-  @override
-  Future<List<EmailId>> moveToTrash(AccountId accountId, MoveToTrashRequest moveRequest) {
-    return Future.sync(() async {
-      return await emailAPI.moveToTrash(accountId, moveRequest);
     }).catchError((error) {
       throw error;
     });

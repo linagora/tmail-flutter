@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanent
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/move_to_trash_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
@@ -56,7 +55,6 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_trash_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -109,7 +107,6 @@ class MailboxController extends BaseMailboxController {
   @override
   void onInit() {
     mailboxDashBoardController.accountId.listen((accountId) {
-      log('MailboxController::onReady(): accountId: $accountId');
       if (accountId != null) {
         getAllMailboxAction(accountId);
       }
@@ -123,26 +120,18 @@ class MailboxController extends BaseMailboxController {
     mailboxDashBoardController.viewState.listen((state) {
       state.fold(
         (failure) {
-          log('MailboxController::onReady(): ${failure.runtimeType}');
-
           if (failure is EmptyTrashFolderFailure) {
             mailboxDashBoardController.clearState();
             refreshMailboxChanges();
           }
         },
         (success) {
-          log('MailboxController::onReady(): ${success.runtimeType}');
-
           if (success is MarkAsMultipleEmailReadAllSuccess
               || success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
             mailboxDashBoardController.clearState();
             refreshMailboxChanges();
           } else if (success is MoveMultipleEmailToMailboxAllSuccess
               || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
-            mailboxDashBoardController.clearState();
-            refreshMailboxChanges();
-          } else if (success is MoveMultipleEmailToTrashAllSuccess
-              || success is MoveMultipleEmailToTrashHasSomeEmailFailure) {
             mailboxDashBoardController.clearState();
             refreshMailboxChanges();
           } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess
@@ -154,7 +143,6 @@ class MailboxController extends BaseMailboxController {
             refreshMailboxChanges();
           } else if (success is MarkAsEmailReadSuccess
               || success is MoveToMailboxSuccess
-              || success is MoveToTrashSuccess
               || success is DeleteEmailPermanentlySuccess
               || success is SaveEmailAsDraftsSuccess
               || success is RemoveEmailDraftsSuccess

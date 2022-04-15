@@ -80,11 +80,9 @@ class PresentationEmail with EquatableMixin {
 
   String getPartialContent() => preview ?? '';
 
-  bool isUnReadEmail() => !(keywords?.containsKey(KeyWordIdentifier.emailSeen) == true);
+  bool get hasRead => keywords?.containsKey(KeyWordIdentifier.emailSeen) == true;
 
-  bool isReadEmail() => keywords?.containsKey(KeyWordIdentifier.emailSeen) == true;
-
-  bool isFlaggedEmail() => keywords?.containsKey(KeyWordIdentifier.emailFlagged) == true;
+  bool get hasStarred => keywords?.containsKey(KeyWordIdentifier.emailFlagged) == true;
 
   bool get withAttachments => hasAttachment == true;
 
