@@ -32,4 +32,12 @@ extension ListEmailIdExtension on List<EmailId> {
     });
     return maps;
   }
+
+  Map<Id, PatchObject> generateMapUpdateObjectMarkAsSpam(MailboxId spamMailboxId) {
+    final Map<Id, PatchObject> maps = {};
+    forEach((emailId) {
+      maps[emailId.id] = spamMailboxId.generateActionPath();
+    });
+    return maps;
+  }
 }

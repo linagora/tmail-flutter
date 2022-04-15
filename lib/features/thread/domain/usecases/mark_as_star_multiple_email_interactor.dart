@@ -18,7 +18,7 @@ class MarkAsStarMultipleEmailInteractor {
   ) async* {
     try {
       final listEmailNeedMarkStar = emails
-          .where((email) => markStarAction == MarkStarAction.unMarkStar ? email.isFlaggedEmail() : !email.isFlaggedEmail())
+          .where((email) => markStarAction == MarkStarAction.unMarkStar ? email.hasStarred : !email.hasStarred)
           .toList();
 
       final result = await _emailRepository.markAsStar(accountId, listEmailNeedMarkStar, markStarAction);

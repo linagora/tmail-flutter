@@ -53,10 +53,8 @@ class AppBarMailWidgetBuilder {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (_conditionShow(_context))
-              _buildBackButton(),
-            if (_conditionShow(_context))
-              Expanded(child: _buildMailboxName()),
+            if (_conditionShow(_context)) _buildBackButton(),
+            if (_conditionShow(_context)) Expanded(child: _buildMailboxName()),
             if (_presentationEmail != null) _buildListOptionButton(),
           ]
         )
@@ -98,21 +96,12 @@ class AppBarMailWidgetBuilder {
         buildIconWeb(
             icon: SvgPicture.asset(_imagePaths.icMoveEmail, fit: BoxFit.fill),
             tooltip: AppLocalizations.of(_context).move_message,
-            onTap: () {
-              if (_presentationEmail != null) {
-                _onEmailActionClick?.call(_presentationEmail!, EmailActionType.move);
-              }
-            }),
+            onTap: () => _onEmailActionClick?.call(_presentationEmail!, EmailActionType.moveToMailbox)),
         buildIconWeb(
-          icon: SvgPicture.asset((_presentationEmail != null && _presentationEmail!.isFlaggedEmail()) ? _imagePaths.icStar : _imagePaths.icUnStar, fit: BoxFit.fill),
-          tooltip: (_presentationEmail != null && _presentationEmail!.isFlaggedEmail())
-            ? AppLocalizations.of(_context).mark_as_unstar
-            : AppLocalizations.of(_context).mark_as_star,
-          onTap: () {
-            if (_presentationEmail != null) {
-              _onEmailActionClick?.call(_presentationEmail!, _presentationEmail!.isFlaggedEmail() ? EmailActionType.markAsUnStar : EmailActionType.markAsStar);
-            }
-          }),
+          icon: SvgPicture.asset(_presentationEmail!.hasStarred ? _imagePaths.icStar : _imagePaths.icUnStar, fit: BoxFit.fill),
+          tooltip: _presentationEmail!.hasStarred ? AppLocalizations.of(_context).not_starred : AppLocalizations.of(_context).mark_as_starred,
+          onTap: () => _onEmailActionClick?.call(_presentationEmail!,
+              _presentationEmail!.hasStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred)),
         buildIconWeb(
             icon: SvgPicture.asset(_imagePaths.icDeleteEmail, fit: BoxFit.fill),
             tooltip: _currentMailbox?.role != PresentationMailbox.roleTrash

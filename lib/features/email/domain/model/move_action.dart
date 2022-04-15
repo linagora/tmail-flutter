@@ -1,6 +1,5 @@
 
 enum MoveAction {
-  moveTo,
-  moveToTrash,
+  moving,
   undo
 }

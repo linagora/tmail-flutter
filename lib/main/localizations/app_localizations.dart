@@ -243,10 +243,10 @@ class AppLocalizations {
     );
   }
 
-  String get mark_as_star {
+  String get mark_as_starred {
     return Intl.message(
-      'Star',
-      name: 'mark_as_star',
+      'Mark as starred',
+      name: 'mark_as_starred',
     );
   }
 
@@ -385,13 +385,6 @@ class AppLocalizations {
     return Intl.message(
         'UNDO',
         name: 'undo_action'
-    );
-  }
-
-  String get mark_as_unstar {
-    return Intl.message(
-      'Unstar',
-      name: 'mark_as_unstar',
     );
   }
 

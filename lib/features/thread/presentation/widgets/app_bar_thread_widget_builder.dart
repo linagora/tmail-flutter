@@ -107,12 +107,12 @@ class AppBarThreadWidgetBuilder {
           icon: SvgPicture.asset(_listSelectionEmail.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar, fit: BoxFit.fill),
           tooltip: _listSelectionEmail.isAllEmailStarred ? AppLocalizations.of(_context).not_starred : AppLocalizations.of(_context).starred,
           onTap: () => _onEmailSelectionAction?.call(
-              _listSelectionEmail.isAllEmailStarred ? EmailActionType.markAsUnStar : EmailActionType.markAsStar,
+              _listSelectionEmail.isAllEmailStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred,
               _listSelectionEmail)),
       buildIconWeb(
           icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
           tooltip: AppLocalizations.of(_context).move,
-          onTap: () => _onEmailSelectionAction?.call(EmailActionType.move, _listSelectionEmail)),
+          onTap: () => _onEmailSelectionAction?.call(EmailActionType.moveToMailbox, _listSelectionEmail)),
       buildIconWeb(
           icon: SvgPicture.asset(_imagePaths.icDelete, fit: BoxFit.fill),
           tooltip: _presentationMailbox?.role != PresentationMailbox.roleTrash

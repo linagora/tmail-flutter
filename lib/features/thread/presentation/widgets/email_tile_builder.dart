@@ -80,7 +80,7 @@ class EmailTileBuilder {
             ),
             title: Row(
               children: [
-                if (_presentationEmail.isUnReadEmail())
+                if (!_presentationEmail.hasRead)
                   Padding(
                       padding: EdgeInsets.only(right: 5),
                       child: SvgPicture.asset(_imagePaths.icUnreadStatus, width: 9, height: 9, fit: BoxFit.fill)),
@@ -155,7 +155,7 @@ class EmailTileBuilder {
                                     style: TextStyle(fontSize: 10, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
                                   )
                               ),
-                            if (_presentationEmail.isFlaggedEmail() )
+                            if (_presentationEmail.hasStarred)
                               (ButtonBuilder(_imagePaths.icStar)
                                   ..paddingIcon(EdgeInsets.zero)
                                   ..size(15))
@@ -199,18 +199,18 @@ class EmailTileBuilder {
           Container(
               padding: EdgeInsets.only(left: 16, right: 16),
               alignment: Alignment.center,
-              child: _presentationEmail.isUnReadEmail()
+              child: !_presentationEmail.hasRead
                   ? SvgPicture.asset(_imagePaths.icUnreadStatus, width: 9, height: 9, fit: BoxFit.fill)
                   : SizedBox(width: 9)),
           buildIconWeb(
               icon: SvgPicture.asset(
-                  _presentationEmail.isFlaggedEmail() ? _imagePaths.icStar : _imagePaths.icUnStar,
+                  _presentationEmail.hasStarred ? _imagePaths.icStar : _imagePaths.icUnStar,
                   width: 20,
                   height: 20,
                   fit: BoxFit.fill),
-              tooltip: _presentationEmail.isFlaggedEmail() ? AppLocalizations.of(_context).starred : AppLocalizations.of(_context).not_starred,
+              tooltip: _presentationEmail.hasStarred ? AppLocalizations.of(_context).starred : AppLocalizations.of(_context).not_starred,
               onTap: () => _emailActionClick?.call(
-                  _presentationEmail.isFlaggedEmail() ?  EmailActionType.markAsUnStar :  EmailActionType.markAsStar,
+                  _presentationEmail.hasStarred ?  EmailActionType.unMarkAsStarred :  EmailActionType.markAsStarred,
                   _presentationEmail)),
           if (_selectModeAll == SelectMode.INACTIVE) SizedBox(width: 8),
           GestureDetector(
