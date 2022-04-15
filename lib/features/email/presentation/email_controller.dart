@@ -435,6 +435,22 @@ class EmailController extends BaseController {
     }
   }
 
+  void unSpam(BuildContext context, PresentationEmail email) async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
+    final inboxMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox);
+
+    if (accountId != null && spamMailboxId != null && inboxMailboxId != null) {
+      _moveToSpamAction(context, accountId, MoveToMailboxRequest(
+          [email.id],
+          spamMailboxId,
+          inboxMailboxId,
+          MoveAction.moving,
+          EmailActionType.unSpam)
+      );
+    }
+  }
+
   void _moveToSpamAction(BuildContext context, AccountId accountId, MoveToMailboxRequest moveRequest) {
     backToThreadView(context);
     mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
@@ -479,6 +495,10 @@ class EmailController extends BaseController {
       case EmailActionType.moveToSpam:
         popBack();
         moveToSpam(context, presentationEmail);
+        break;
+      case EmailActionType.unSpam:
+        popBack();
+        unSpam(context, presentationEmail);
         break;
       default:
         break;

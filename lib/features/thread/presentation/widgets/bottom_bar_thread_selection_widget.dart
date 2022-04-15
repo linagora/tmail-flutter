@@ -68,28 +68,46 @@ class BottomBarThreadSelectionWidget {
                     _listSelectionEmail.isAllEmailStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred,
                     _listSelectionEmail);
               }})
-            ..text(_listSelectionEmail.isAllEmailStarred ? AppLocalizations.of(_context).not_starred : AppLocalizations.of(_context).starred,
+            ..text(_listSelectionEmail.isAllEmailStarred ? AppLocalizations.of(_context).un_star : AppLocalizations.of(_context).star,
                 isVertical: _responsiveUtils.isMobile(_context)))
           .build()),
-        Expanded(child: (ButtonBuilder(_imagePaths.icMove)
-            ..key(Key('button_move_email'))
-            ..paddingIcon(EdgeInsets.all(8))
-            ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
-            ..onPressActionClick(() {
-              if (_onPressEmailSelectionActionClick != null) {
-                _onPressEmailSelectionActionClick!(EmailActionType.moveToMailbox, _listSelectionEmail);
-              }})
-            ..text(AppLocalizations.of(_context).move, isVertical: _responsiveUtils.isMobile(_context)))
-          .build()),
+        if (_currentMailbox?.isDrafts == false)
+          Expanded(child: (ButtonBuilder(_imagePaths.icMove)
+              ..key(Key('button_move_to_mailbox'))
+              ..paddingIcon(EdgeInsets.all(8))
+              ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
+              ..onPressActionClick(() {
+                if (_onPressEmailSelectionActionClick != null) {
+                  _onPressEmailSelectionActionClick!(EmailActionType.moveToMailbox, _listSelectionEmail);
+                }})
+              ..text(AppLocalizations.of(_context).move, isVertical: _responsiveUtils.isMobile(_context)))
+            .build()),
+        if (_currentMailbox?.isDrafts == false)
+          Expanded(child: (ButtonBuilder(_currentMailbox?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam)
+              ..key(Key('button_move_to_spam'))
+              ..paddingIcon(EdgeInsets.all(8))
+              ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
+              ..onPressActionClick(() {
+                if (_currentMailbox?.isSpam == true) {
+                  _onPressEmailSelectionActionClick?.call(EmailActionType.unSpam, _listSelectionEmail);
+                } else {
+                  _onPressEmailSelectionActionClick?.call(EmailActionType.moveToSpam, _listSelectionEmail);
+                }
+              })
+              ..text(_currentMailbox?.isSpam == true
+                    ? AppLocalizations.of(_context).un_spam
+                    : AppLocalizations.of(_context).spam,
+                  isVertical: _responsiveUtils.isMobile(_context)))
+            .build()),
         Expanded(child: (ButtonBuilder(_imagePaths.icDelete)
             ..key(Key('button_delete_email'))
             ..paddingIcon(EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
             ..onPressActionClick(() {
-              if (_currentMailbox?.role != PresentationMailbox.roleTrash) {
-                _onPressEmailSelectionActionClick?.call(EmailActionType.moveToTrash, _listSelectionEmail);
-              } else {
+              if (_currentMailbox?.isTrash == true) {
                 _onPressEmailSelectionActionClick?.call(EmailActionType.deletePermanently, _listSelectionEmail);
+              } else {
+                _onPressEmailSelectionActionClick?.call(EmailActionType.moveToTrash, _listSelectionEmail);
               }
             })
             ..text(AppLocalizations.of(_context).delete, isVertical: _responsiveUtils.isMobile(_context)))
