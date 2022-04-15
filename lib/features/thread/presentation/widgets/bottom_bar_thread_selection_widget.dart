@@ -65,10 +65,10 @@ class BottomBarThreadSelectionWidget {
             ..onPressActionClick(() {
               if (_onPressEmailSelectionActionClick != null) {
                 _onPressEmailSelectionActionClick!(
-                    _listSelectionEmail.isAllEmailStarred ? EmailActionType.markAsUnStar : EmailActionType.markAsStar,
+                    _listSelectionEmail.isAllEmailStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred,
                     _listSelectionEmail);
               }})
-            ..text(_listSelectionEmail.isAllEmailStarred ? AppLocalizations.of(_context).mark_as_unstar : AppLocalizations.of(_context).mark_as_star,
+            ..text(_listSelectionEmail.isAllEmailStarred ? AppLocalizations.of(_context).not_starred : AppLocalizations.of(_context).starred,
                 isVertical: _responsiveUtils.isMobile(_context)))
           .build()),
         Expanded(child: (ButtonBuilder(_imagePaths.icMove)
@@ -77,7 +77,7 @@ class BottomBarThreadSelectionWidget {
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailSelectionActionClick != null) {
-                _onPressEmailSelectionActionClick!(EmailActionType.move, _listSelectionEmail);
+                _onPressEmailSelectionActionClick!(EmailActionType.moveToMailbox, _listSelectionEmail);
               }})
             ..text(AppLocalizations.of(_context).move, isVertical: _responsiveUtils.isMobile(_context)))
           .build()),

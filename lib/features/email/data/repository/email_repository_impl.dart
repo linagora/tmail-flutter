@@ -6,8 +6,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
-import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
-import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 
 class EmailRepositoryImpl extends EmailRepository {
@@ -59,7 +58,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
+  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) {
     return emailDataSource.moveToMailbox(accountId, moveRequest);
   }
 
@@ -108,11 +107,6 @@ class EmailRepositoryImpl extends EmailRepository {
   @override
   Future<bool> downloadAttachmentForWeb(Attachment attachment, AccountId accountId, String baseDownloadUrl, AccountRequest accountRequest) {
     return emailDataSource.downloadAttachmentForWeb(attachment, accountId, baseDownloadUrl, accountRequest);
-  }
-
-  @override
-  Future<List<EmailId>> moveToTrash(AccountId accountId, MoveToTrashRequest moveRequest) {
-    return emailDataSource.moveToTrash(accountId, moveRequest);
   }
 
   @override

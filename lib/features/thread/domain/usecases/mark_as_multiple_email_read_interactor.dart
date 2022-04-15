@@ -18,7 +18,7 @@ class MarkAsMultipleEmailReadInteractor {
   ) async* {
     try {
       final listEmailNeedMarkAsRead = emails
-          .where((email) => readAction == ReadActions.markAsUnread ? email.isReadEmail() : email.isUnReadEmail())
+          .where((email) => readAction == ReadActions.markAsUnread ? email.hasRead : !email.hasRead)
           .toList();
 
       final result = await _emailRepository.markAsRead(accountId, listEmailNeedMarkAsRead, readAction);

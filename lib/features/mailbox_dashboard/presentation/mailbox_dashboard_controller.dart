@@ -22,13 +22,13 @@ import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.da
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
-import 'package:tmail_ui_user/features/email/domain/model/move_request.dart';
-import 'package:tmail_ui_user/features/email/domain/model/move_to_trash_request.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/move_to_trash_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/move_to_trash_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
@@ -58,7 +58,6 @@ class MailboxDashBoardController extends ReloadableController {
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
 
-  final MoveToTrashInteractor _moveToTrashInteractor;
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
 
@@ -84,7 +83,6 @@ class MailboxDashBoardController extends ReloadableController {
   late StreamSubscription _emailReceiveManagerStreamSubscription;
 
   MailboxDashBoardController(
-    this._moveToTrashInteractor,
     this._moveToMailboxInteractor,
     this._deleteEmailPermanentlyInteractor,
   );
@@ -159,8 +157,8 @@ class MailboxDashBoardController extends ReloadableController {
         } else if (success is RemoveEmailDraftsSuccess
           || success is UpdateEmailDraftsSuccess) {
           clearState();
-        } else if (success is MoveToTrashSuccess) {
-          _moveToTrashSuccess(success);
+        } else if (success is MoveToMailboxSuccess) {
+          _moveToMailboxSuccess(success);
         } else if (success is DeleteEmailPermanentlySuccess) {
           _deleteEmailPermanentlySuccess(success);
         }
@@ -220,6 +218,9 @@ class MailboxDashBoardController extends ReloadableController {
     appInformation.value = info;
   }
 
+  MailboxId? getMailboxIdByRole(Role role) {
+    return mapDefaultMailboxId[role];
+  }
 
   void setMapDefaultMailboxId(Map<Role, MailboxId> newMapMailboxId) {
     mapDefaultMailboxId = newMapMailboxId;
@@ -308,29 +309,28 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void moveToTrash(AccountId accountId, MoveToTrashRequest moveRequest) {
-    consumeState(_moveToTrashInteractor.execute(accountId, moveRequest));
+  void moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) {
+    consumeState(_moveToMailboxInteractor.execute(accountId, moveRequest));
   }
 
-  void _moveToTrashSuccess(MoveToTrashSuccess success) {
-    if (success.moveAction == MoveAction.moveToTrash && currentContext != null && currentOverlayContext != null) {
+  void _moveToMailboxSuccess(MoveToMailboxSuccess success) {
+    if (success.moveAction == MoveAction.moving && currentContext != null && currentOverlayContext != null) {
       _appToast.showToastWithAction(
           currentOverlayContext!,
-          AppLocalizations.of(currentContext!).moved_to_trash,
-          AppLocalizations.of(currentContext!).undo_action,
-          () {
-            final newMoveRequest = MoveRequest(
+          success.emailActionType.getToastMessageMoveToMailboxSuccess(currentContext!, destinationPath: success.destinationPath),
+          AppLocalizations.of(currentContext!).undo_action, () {
+            _revertedToOriginalMailbox(MoveToMailboxRequest(
                 [success.emailId],
-                success.trashMailboxId,
+                success.destinationMailboxId,
                 success.currentMailboxId,
-                MoveAction.undo);
-            _revertedToOriginalMailbox(newMoveRequest);
+                MoveAction.undo,
+                success.emailActionType));
           }
       );
     }
   }
 
-  void _revertedToOriginalMailbox(MoveRequest newMoveRequest) {
+  void _revertedToOriginalMailbox(MoveToMailboxRequest newMoveRequest) {
     final currentAccountId = accountId.value;
     if (currentAccountId != null) {
       consumeState(_moveToMailboxInteractor.execute(currentAccountId, newMoveRequest));

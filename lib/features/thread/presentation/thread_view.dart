@@ -211,12 +211,12 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
           tooltip: controller.listEmailSelected.isAllEmailStarred ? AppLocalizations.of(context).not_starred : AppLocalizations.of(context).starred,
           onTap: () => controller.pressEmailSelectionAction(
               context,
-              controller.listEmailSelected.isAllEmailStarred ? EmailActionType.markAsUnStar : EmailActionType.markAsStar,
+              controller.listEmailSelected.isAllEmailStarred ? EmailActionType.markAsStarred : EmailActionType.unMarkAsStarred,
               controller.listEmailSelected)),
       buildIconWeb(
           icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
           tooltip: AppLocalizations.of(context).move,
-          onTap: () => controller.pressEmailSelectionAction(context, EmailActionType.move, controller.listEmailSelected)),
+          onTap: () => controller.pressEmailSelectionAction(context, EmailActionType.moveToMailbox, controller.listEmailSelected)),
       buildIconWeb(
           icon: SvgPicture.asset(_imagePaths.icDelete, fit: BoxFit.fill),
           tooltip: controller.mailboxDashBoardController.selectedMailbox.value?.role != PresentationMailbox.roleTrash

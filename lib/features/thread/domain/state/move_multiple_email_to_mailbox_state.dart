@@ -1,13 +1,15 @@
 import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/model.dart';
+import 'package:model/email/email_action_type.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 
 class MoveMultipleEmailToMailboxAllSuccess extends UIState {
   final List<EmailId> movedListEmailId;
   final MailboxId currentMailboxId;
   final MailboxId destinationMailboxId;
   final MoveAction moveAction;
+  final EmailActionType emailActionType;
   final String? destinationPath;
 
   MoveMultipleEmailToMailboxAllSuccess(
@@ -15,7 +17,9 @@ class MoveMultipleEmailToMailboxAllSuccess extends UIState {
     this.currentMailboxId,
     this.destinationMailboxId,
     this.moveAction,
-    this.destinationPath);
+    this.emailActionType,
+    {this.destinationPath}
+  );
 
   @override
   List<Object?> get props => [
@@ -23,16 +27,19 @@ class MoveMultipleEmailToMailboxAllSuccess extends UIState {
     currentMailboxId,
     destinationMailboxId,
     moveAction,
-    destinationPath];
+    emailActionType,
+    destinationPath
+  ];
 }
 
 class MoveMultipleEmailToMailboxAllFailure extends FeatureFailure {
   final MoveAction moveAction;
+  final EmailActionType emailActionType;
 
-  MoveMultipleEmailToMailboxAllFailure(this.moveAction);
+  MoveMultipleEmailToMailboxAllFailure(this.moveAction, this.emailActionType);
 
   @override
-  List<Object> get props => [moveAction];
+  List<Object> get props => [moveAction, emailActionType];
 }
 
 class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
@@ -40,6 +47,7 @@ class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
   final MailboxId currentMailboxId;
   final MailboxId destinationMailboxId;
   final MoveAction moveAction;
+  final EmailActionType emailActionType;
   final String? destinationPath;
 
   MoveMultipleEmailToMailboxHasSomeEmailFailure(
@@ -47,7 +55,9 @@ class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
     this.currentMailboxId,
     this.destinationMailboxId,
     this.moveAction,
-    this.destinationPath);
+    this.emailActionType,
+    {this.destinationPath}
+  );
 
   @override
   List<Object?> get props => [
@@ -55,15 +65,18 @@ class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
     currentMailboxId,
     destinationMailboxId,
     moveAction,
-    destinationPath];
+    emailActionType,
+    destinationPath
+  ];
 }
 
 class MoveMultipleEmailToMailboxFailure extends FeatureFailure {
   final exception;
   final MoveAction moveAction;
+  final EmailActionType emailActionType;
 
-  MoveMultipleEmailToMailboxFailure(this.exception, this.moveAction);
+  MoveMultipleEmailToMailboxFailure(this.exception, this.emailActionType, this.moveAction);
 
   @override
-  List<Object> get props => [exception, moveAction];
+  List<Object> get props => [exception, emailActionType, moveAction];
 }

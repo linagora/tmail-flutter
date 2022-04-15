@@ -11,6 +11,7 @@ class PresentationMailbox with EquatableMixin {
   static final roleTemplates = Role('templates');
   static final roleOutbox = Role('outbox');
   static final roleDrafts = Role('drafts');
+  static final roleSpam = Role('spam');
 
   final MailboxId id;
   final MailboxName? name;
@@ -55,6 +56,8 @@ class PresentationMailbox with EquatableMixin {
 
     return unreadEmails!.value.value <= 999 ? '${unreadEmails!.value.value}' : '999+';
   }
+
+  bool get isSpam => role == roleSpam;
 
   @override
   List<Object?> get props => [
