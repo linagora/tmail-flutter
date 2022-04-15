@@ -201,30 +201,39 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
       SizedBox(width: 30),
       buildIconWeb(
           icon: SvgPicture.asset(controller.listEmailSelected.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead, fit: BoxFit.fill),
-          tooltip: controller.listEmailSelected.isAllEmailRead ? AppLocalizations.of(context).unread : AppLocalizations.of(context).read,
+          tooltip: controller.listEmailSelected.isAllEmailRead ? AppLocalizations.of(context).mark_as_unread : AppLocalizations.of(context).mark_as_read,
           onTap: () => controller.pressEmailSelectionAction(
               context,
               controller.listEmailSelected.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
               controller.listEmailSelected)),
       buildIconWeb(
           icon: SvgPicture.asset(controller.listEmailSelected.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar, fit: BoxFit.fill),
-          tooltip: controller.listEmailSelected.isAllEmailStarred ? AppLocalizations.of(context).not_starred : AppLocalizations.of(context).starred,
+          tooltip: controller.listEmailSelected.isAllEmailStarred ? AppLocalizations.of(context).un_star : AppLocalizations.of(context).star,
           onTap: () => controller.pressEmailSelectionAction(
               context,
               controller.listEmailSelected.isAllEmailStarred ? EmailActionType.markAsStarred : EmailActionType.unMarkAsStarred,
               controller.listEmailSelected)),
-      buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
-          tooltip: AppLocalizations.of(context).move,
-          onTap: () => controller.pressEmailSelectionAction(context, EmailActionType.moveToMailbox, controller.listEmailSelected)),
+      if (controller.currentMailbox?.isDrafts == false)
+        buildIconWeb(
+            icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
+            tooltip: AppLocalizations.of(context).move,
+            onTap: () => controller.pressEmailSelectionAction(context, EmailActionType.moveToMailbox, controller.listEmailSelected)),
+      if (controller.currentMailbox?.isDrafts == false)
+        buildIconWeb(
+            icon: SvgPicture.asset(controller.currentMailbox?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
+                fit: BoxFit.fill),
+            tooltip: controller.currentMailbox?.isSpam == true ? AppLocalizations.of(context).un_spam : AppLocalizations.of(context).mark_as_spam,
+            onTap: () => controller.currentMailbox?.isSpam == true
+                ? controller.pressEmailSelectionAction(context, EmailActionType.unSpam, controller.listEmailSelected)
+                : controller.pressEmailSelectionAction(context, EmailActionType.moveToSpam, controller.listEmailSelected)),
       buildIconWeb(
           icon: SvgPicture.asset(_imagePaths.icDelete, fit: BoxFit.fill),
-          tooltip: controller.mailboxDashBoardController.selectedMailbox.value?.role != PresentationMailbox.roleTrash
-              ? AppLocalizations.of(context).move_to_trash
-              : AppLocalizations.of(context).delete_permanently,
-          onTap: () => controller.mailboxDashBoardController.selectedMailbox.value?.role != PresentationMailbox.roleTrash
-              ? controller.pressEmailSelectionAction(context, EmailActionType.moveToTrash, controller.listEmailSelected)
-              : controller.deleteSelectionEmailsPermanently(context, DeleteActionType.multiple, selectedEmails: controller.listEmailSelected)),
+          tooltip: controller.currentMailbox?.isTrash == true
+              ? AppLocalizations.of(context).delete_permanently
+              : AppLocalizations.of(context).move_to_trash,
+          onTap: () => controller.currentMailbox?.isTrash == true
+              ? controller.deleteSelectionEmailsPermanently(context, DeleteActionType.multiple, selectedEmails: controller.listEmailSelected)
+              : controller.pressEmailSelectionAction(context, EmailActionType.moveToTrash, controller.listEmailSelected)),
     ]);
   }
 
@@ -241,7 +250,8 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
                     _responsiveUtils,
                     controller.listEmailSelected,
                     controller.mailboxDashBoardController.selectedMailbox.value)
-                ..addOnPressEmailSelectionActionClick((actionType, selectionEmail) => controller.pressEmailSelectionAction(context, actionType, selectionEmail)))
+                ..addOnPressEmailSelectionActionClick((actionType, selectionEmail) =>
+                    controller.pressEmailSelectionAction(context, actionType, selectionEmail)))
               .build()),
         ]);
       } else {
@@ -594,7 +604,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
         itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
                 context,
                 listPresentationEmail[index],
-                controller.mailboxDashBoardController.selectedMailbox.value?.role,
+                controller.currentMailbox?.role,
                 controller.currentSelectMode.value,
                 controller.mailboxDashBoardController.searchState.value.searchStatus,
                 controller.searchQuery)

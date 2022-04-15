@@ -34,6 +34,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return AppLocalizations.of(context).moved_to_trash;
       case EmailActionType.moveToSpam:
         return AppLocalizations.of(context).marked_as_spam;
+      case EmailActionType.unSpam:
+        return AppLocalizations.of(context).marked_as_not_spam;
       default:
         return '';
     }
