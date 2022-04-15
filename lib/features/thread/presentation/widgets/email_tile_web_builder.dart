@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_status.d
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnPressEmailActionClick = void Function(EmailActionType, PresentationEmail);
+typedef OnMoreActionClick = void Function(PresentationEmail, RelativeRect?);
 
 class EmailTileBuilder {
 
@@ -23,6 +24,7 @@ class EmailTileBuilder {
   final SearchQuery? _searchQuery;
 
   OnPressEmailActionClick? _emailActionClick;
+  OnMoreActionClick? _onMoreActionClick;
 
   bool isHoverItem = false;
 
@@ -37,6 +39,10 @@ class EmailTileBuilder {
 
   void addOnPressEmailActionClick(OnPressEmailActionClick actionClick) {
     _emailActionClick = actionClick;
+  }
+
+  void addOnMoreActionClick(OnMoreActionClick onMoreActionClick) {
+    _onMoreActionClick = onMoreActionClick;
   }
 
   Widget build() {
@@ -398,38 +404,56 @@ class EmailTileBuilder {
           icon: SvgPicture.asset(
               _presentationEmail.hasRead ? _imagePaths.icRead : _imagePaths.icUnread,
               color: AppColor.colorActionButtonHover,
-              width: _responsiveUtils.isDesktop(_context) ? 16 : 14,
-              height: _responsiveUtils.isDesktop(_context) ? 16 : 14,
+              width: 16,
+              height: 16,
               fit: BoxFit.fill),
-          splashRadius: _responsiveUtils.isDesktop(_context) ? 15 : 10,
           tooltip: _presentationEmail.hasRead ? AppLocalizations.of(_context).mark_as_unread : AppLocalizations.of(_context).mark_as_read,
           onTap: () => _emailActionClick?.call(
               _presentationEmail.hasRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
               _presentationEmail)),
-      buildIconWeb(
-          icon: SvgPicture.asset(
-              _imagePaths.icMove,
-              width: _responsiveUtils.isDesktop(_context) ? 16 : 14,
-              height: _responsiveUtils.isDesktop(_context) ? 16 : 14,
-              color: AppColor.colorActionButtonHover,
-              fit: BoxFit.fill),
-          splashRadius: _responsiveUtils.isDesktop(_context) ? 15 : 10,
-          tooltip: AppLocalizations.of(_context).move,
-          onTap: () => _emailActionClick?.call(EmailActionType.moveToMailbox, _presentationEmail)),
+      if (_mailboxRole != PresentationMailbox.roleDrafts)
+        buildIconWeb(
+            icon: SvgPicture.asset(
+                _imagePaths.icMove,
+                width: 16,
+                height: 16,
+                color: AppColor.colorActionButtonHover,
+                fit: BoxFit.fill),
+            tooltip: AppLocalizations.of(_context).move,
+            onTap: () => _emailActionClick?.call(EmailActionType.moveToMailbox, _presentationEmail)),
       buildIconWeb(
           icon: SvgPicture.asset(
               _imagePaths.icDelete,
-              width: _responsiveUtils.isDesktop(_context) ? 16 : 14,
-              height: _responsiveUtils.isDesktop(_context) ? 16 : 14,
+              width: 16,
+              height: 16,
               color: AppColor.colorActionButtonHover,
               fit: BoxFit.fill),
-          splashRadius: _responsiveUtils.isDesktop(_context) ? 15 : 10,
           tooltip: _mailboxRole != PresentationMailbox.roleTrash
               ? AppLocalizations.of(_context).move_to_trash
               : AppLocalizations.of(_context).delete_permanently,
           onTap: () => _emailActionClick?.call(
               _mailboxRole != PresentationMailbox.roleTrash ? EmailActionType.moveToTrash : EmailActionType.deletePermanently,
               _presentationEmail)),
+      if (_mailboxRole != PresentationMailbox.roleDrafts)
+        buildIconWebHasPosition(
+            _context,
+            icon: SvgPicture.asset(
+                _imagePaths.icMore,
+                width: 16,
+                height: 16,
+                color: AppColor.colorActionButtonHover,
+                fit: BoxFit.fill),
+            tooltip: AppLocalizations.of(_context).more,
+            onTap: () {
+              if (_responsiveUtils.isMobile(_context)) {
+                _onMoreActionClick?.call(_presentationEmail, null);
+              }
+            },
+            onTapDown: (position) {
+              if (!_responsiveUtils.isMobile(_context)) {
+                _onMoreActionClick?.call(_presentationEmail, position);
+              }
+            }),
       if (_responsiveUtils.isDesktop(_context)) SizedBox(width: 16),
     ]);
   }
