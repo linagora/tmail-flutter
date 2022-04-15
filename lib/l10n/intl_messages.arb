@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-04-14T15:13:36.565629",
+  "@@last_modified": "2022-04-15T15:46:44.683811",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -214,8 +214,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_star": "Star",
-  "@mark_as_star": {
+  "mark_as_starred": "Mark as starred",
+  "@mark_as_starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -350,12 +350,6 @@
   },
   "undo_action": "UNDO",
   "@undo_action": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mark_as_unstar": "Unstar",
-  "@mark_as_unstar": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

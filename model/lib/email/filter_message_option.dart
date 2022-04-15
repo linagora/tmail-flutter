@@ -17,11 +17,11 @@ extension FilterMessageOptionExtension on FilterMessageOption {
       case FilterMessageOption.all:
         return true;
       case FilterMessageOption.unread:
-        return email.isUnReadEmail();
+        return !email.hasRead;
       case FilterMessageOption.attachments:
         return email.withAttachments;
       case FilterMessageOption.starred:
-        return email.isFlaggedEmail();
+        return email.hasStarred;
     }
   }
 
@@ -30,11 +30,11 @@ extension FilterMessageOptionExtension on FilterMessageOption {
       case FilterMessageOption.all:
         return true;
       case FilterMessageOption.unread:
-        return email.isUnReadEmail();
+        return !email.hasRead;
       case FilterMessageOption.attachments:
         return email.withAttachments;
       case FilterMessageOption.starred:
-        return email.isFlaggedEmail();
+        return email.hasStarred;
     }
   }
 }
