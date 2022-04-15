@@ -13,4 +13,6 @@ enum EmailActionType {
   composeFromEmailAddress,
   moveToTrash,
   deletePermanently,
+  preview,
+  selection,
 }

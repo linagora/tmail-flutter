@@ -30,7 +30,9 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_sta
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_trash_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
@@ -86,6 +88,8 @@ class ThreadController extends BaseController {
   final MoveMultipleEmailToTrashInteractor _moveMultipleEmailToTrashInteractor;
   final DeleteMultipleEmailsPermanentlyInteractor _deleteMultipleEmailsPermanentlyInteractor;
   final EmptyTrashFolderInteractor _emptyTrashFolderInteractor;
+  final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
+  final MoveToMailboxInteractor _moveToMailboxInteractor;
 
   final emailList = <PresentationEmail>[].obs;
   final emailListSearch = <PresentationEmail>[].obs;
@@ -122,6 +126,8 @@ class ThreadController extends BaseController {
     this._moveMultipleEmailToTrashInteractor,
     this._deleteMultipleEmailsPermanentlyInteractor,
     this._emptyTrashFolderInteractor,
+    this._markAsEmailReadInteractor,
+    this._moveToMailboxInteractor,
   );
 
   @override
@@ -218,7 +224,7 @@ class ThreadController extends BaseController {
         } else if (failure is MarkAsStarMultipleEmailAllFailure
             || failure is MarkAsStarMultipleEmailFailure) {
           _markAsStarMultipleEmailFailure(failure);
-        }  else if (failure is EmptyTrashFolderFailure) {
+        } else if (failure is EmptyTrashFolderFailure) {
           _emptyTrashFolderFailure(failure);
         }
       },
@@ -242,6 +248,10 @@ class ThreadController extends BaseController {
           _deleteMultipleEmailsPermanentlySuccess(success);
         } else if (success is EmptyTrashFolderSuccess) {
           _emptyTrashFolderSuccess(success);
+        } else if (success is MarkAsEmailReadSuccess) {
+          _markAsEmailReadSuccess(success);
+        } else if (success is MoveToMailboxSuccess) {
+          _moveToMailboxSuccess(success);
         }
       }
     );
@@ -699,11 +709,19 @@ class ThreadController extends BaseController {
     }
   }
 
-  void markAsStarEmail(PresentationEmail presentationEmail) {
-    final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
-    if (_accountId != null && mailboxCurrent != null) {
-      final importantAction = presentationEmail.isFlaggedEmail() ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
-      consumeState(_markAsStarEmailInteractor.execute(_accountId!, presentationEmail.toEmail(), importantAction));
+  void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions) async {
+    if (_accountId != null) {
+      consumeState(_markAsEmailReadInteractor.execute(_accountId!, presentationEmail.toEmail(), readActions));
+    }
+  }
+
+  void _markAsEmailReadSuccess(Success success) {
+    mailboxDashBoardController.dispatchState(Right(success));
+  }
+
+  void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction action) {
+    if (_accountId != null) {
+      consumeState(_markAsStarEmailInteractor.execute(_accountId!, presentationEmail.toEmail(), action));
     }
   }
 
@@ -713,8 +731,7 @@ class ThreadController extends BaseController {
 
   void markAsStarSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail) {
     final starAction = listPresentationEmail.isAllEmailStarred ? MarkStarAction.unMarkStar : MarkStarAction.markStar;
-    final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
-    if (_accountId != null && mailboxCurrent != null) {
+    if (_accountId != null) {
       cancelSelectEmail();
       final listEmail = listPresentationEmail.map((presentationEmail) => presentationEmail.toEmail()).toList();
       consumeState(_markAsStarMultipleEmailInteractor.execute(_accountId!, listEmail, starAction));
@@ -835,21 +852,169 @@ class ThreadController extends BaseController {
         moveSelectedMultipleEmailToTrashAction(selectionEmail);
         break;
       case EmailActionType.deletePermanently:
-        deleteEmailsPermanently(context, DeleteActionType.multiple, selectedEmails: selectionEmail);
+        deleteSelectionEmailsPermanently(context, DeleteActionType.multiple, selectedEmails: selectionEmail);
         break;
       default:
         break;
     }
   }
 
+  void pressEmailAction(BuildContext context, EmailActionType actionType, PresentationEmail selectedEmail) {
+    switch(actionType) {
+      case EmailActionType.preview:
+        if (mailboxDashBoardController.selectedMailbox.value?.role == PresentationMailbox.roleDrafts) {
+          editEmail(selectedEmail);
+        } else {
+          previewEmail(context, selectedEmail);
+        }
+        break;
+      case EmailActionType.selection:
+        selectEmail(context, selectedEmail);
+        break;
+      case EmailActionType.markAsRead:
+        markAsEmailRead(selectedEmail, ReadActions.markAsRead);
+        break;
+      case EmailActionType.markAsUnread:
+        markAsEmailRead(selectedEmail, ReadActions.markAsUnread);
+        break;
+      case EmailActionType.markAsStar:
+        markAsStarEmail(selectedEmail, MarkStarAction.markStar);
+        break;
+      case EmailActionType.markAsUnStar:
+        markAsStarEmail(selectedEmail, MarkStarAction.unMarkStar);
+        break;
+      case EmailActionType.move:
+        moveToMailboxAction(context, selectedEmail);
+        break;
+      case EmailActionType.moveToTrash:
+        moveToTrashAction(selectedEmail);
+        break;
+      case EmailActionType.deletePermanently:
+        deleteEmailPermanently(context, selectedEmail);
+        break;
+      default:
+        break;
+    }
+  }
+
+  void moveToMailboxAction(BuildContext context, PresentationEmail email) async {
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (currentMailbox != null && accountId != null) {
+      final destinationMailbox = await push(
+          AppRoutes.DESTINATION_PICKER,
+          arguments: DestinationPickerArguments(accountId, MailboxActions.moveEmail)
+      );
+
+      if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
+        if (destinationMailbox.role == PresentationMailbox.roleTrash) {
+          _moveToTrash(accountId, MoveToTrashRequest(
+              [email.id],
+              currentMailbox.id,
+              destinationMailbox.id,
+              MoveAction.moveToTrash));
+        } else {
+          _moveToMailbox(accountId, MoveRequest(
+              [email.id],
+              currentMailbox.id,
+              destinationMailbox.id,
+              MoveAction.moveTo,
+              destinationPath: destinationMailbox.mailboxPath));
+        }
+      }
+    }
+  }
+
+  void _moveToMailbox(AccountId accountId, MoveRequest moveRequest) {
+    consumeState(_moveToMailboxInteractor.execute(accountId, moveRequest));
+  }
+
+  void _moveToMailboxSuccess(Success success) {
+    mailboxDashBoardController.dispatchState(Right(success));
+
+    if (success is MoveToMailboxSuccess
+        && success.moveAction == MoveAction.moveTo
+        && currentContext != null && currentOverlayContext != null) {
+      _appToast.showToastWithAction(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).moved_to_mailbox(success.destinationPath ?? ''),
+          AppLocalizations.of(currentContext!).undo_action,
+              () {
+            final newMoveRequest = MoveRequest(
+                [success.emailId],
+                success.destinationMailboxId,
+                success.currentMailboxId,
+                MoveAction.undo);
+            _undoMoveToMailbox(newMoveRequest);
+          }
+      );
+    }
+  }
+
+  void _undoMoveToMailbox(MoveRequest newMoveRequest) {
+    if (_accountId != null) {
+      _moveToMailbox(_accountId!, newMoveRequest);
+    }
+  }
+
+  void _moveToTrash(AccountId accountId, MoveToTrashRequest moveRequest) {
+    mailboxDashBoardController.moveToTrash(accountId, moveRequest);
+  }
+
+  void moveToTrashAction(PresentationEmail email) async {
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    final accountId = mailboxDashBoardController.accountId.value;
+    final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxId[PresentationMailbox.roleTrash];
+
+    if (currentMailbox != null && accountId != null && trashMailboxId != null) {
+      _moveToTrash(accountId, MoveToTrashRequest(
+          [email.id],
+          currentMailbox.id,
+          trashMailboxId,
+          MoveAction.moveToTrash)
+      );
+    }
+  }
+
+  void deleteEmailPermanently(BuildContext context, PresentationEmail email) {
+    if (_responsiveUtils.isMobile(context)) {
+      (ConfirmationDialogActionSheetBuilder(context)
+          ..messageText(DeleteActionType.single.getContentDialog(context))
+          ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
+          ..onConfirmAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email)))
+        .show();
+    } else {
+      showDialog(
+          context: context,
+          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
+              ..key(Key('confirm_dialog_delete_email_permanently'))
+              ..title(DeleteActionType.single.getTitleDialog(context))
+              ..content(DeleteActionType.single.getContentDialog(context))
+              ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog, fit: BoxFit.fill))
+              ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+              ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
+              ..onCloseButtonAction(() => popBack())
+              ..onConfirmButtonAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email))
+              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
+            .build()));
+    }
+  }
+
+  void _deleteEmailPermanentlyAction(BuildContext context, PresentationEmail email) {
+    popBack();
+    mailboxDashBoardController.deleteEmailPermanently(email);
+  }
+
   bool get isMailboxTrash => mailboxDashBoardController.selectedMailbox.value?.role == PresentationMailbox.roleTrash;
 
-  void deleteEmailsPermanently(BuildContext context, DeleteActionType actionType, {List<PresentationEmail>? selectedEmails}) {
+  void deleteSelectionEmailsPermanently(BuildContext context, DeleteActionType actionType, {List<PresentationEmail>? selectedEmails}) {
     if (_responsiveUtils.isMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
           ..messageText(actionType.getContentDialog(context, count: selectedEmails?.length))
           ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
-          ..onConfirmAction(actionType.getConfirmActionName(context), () => _deleteEmailsPermanentlyAction(actionType)))
+          ..onConfirmAction(actionType.getConfirmActionName(context), () => _deleteSelectionEmailsPermanentlyAction(actionType)))
         .show();
     } else {
       showDialog(
@@ -863,13 +1028,13 @@ class ThreadController extends BaseController {
               ..colorConfirmButton(AppColor.colorConfirmActionDialog)
               ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
               ..onCloseButtonAction(() => popBack())
-              ..onConfirmButtonAction(actionType.getConfirmActionName(context), () => _deleteEmailsPermanentlyAction(actionType))
+              ..onConfirmButtonAction(actionType.getConfirmActionName(context), () => _deleteSelectionEmailsPermanentlyAction(actionType))
               ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
             .build()));
     }
   }
 
-  void _deleteEmailsPermanentlyAction(DeleteActionType actionType) {
+  void _deleteSelectionEmailsPermanentlyAction(DeleteActionType actionType) {
     popBack();
 
     switch(actionType) {
