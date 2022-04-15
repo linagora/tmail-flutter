@@ -15,4 +15,6 @@ enum EmailActionType {
   deletePermanently,
   preview,
   selection,
+  moveToSpam,
+  unSpam,
 }

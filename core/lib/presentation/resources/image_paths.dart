@@ -88,6 +88,10 @@ class ImagePaths {
   String get icNotConnection => _getImagePath('ic_not_connection.svg');
   String get icDeleteTrash => _getImagePath('ic_delete_trash.svg');
   String get icMenuDrawer => _getImagePath('ic_menu_drawer.svg');
+  String get icToastSpam => _getImagePath('ic_toast_spam.svg');
+  String get icToastNotSpam => _getImagePath('ic_toast_not_spam.svg');
+  String get icNotSpam => _getImagePath('ic_not_spam.svg');
+  String get icAvatarSpam => _getImagePath('ic_avatar_spam.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
