@@ -111,7 +111,7 @@ workflows:
         - team_id: KUT463DS29
         - force_team_id: KUT463DS29
         - force_code_sign_identity: 'iPhone Developer: Tung Tran (B8V9X882MX)'
-        - force_provisioning_profile: 778f1930-5124-469e-a665-0d63ad5314a7
+        - force_provisioning_profile: 431f914f-5662-422a-8fc1-263b41e1bb4b
         - force_provisioning_profile_specifier: ''
         - export_method: development
     - deploy-to-bitrise-io@2: {}
