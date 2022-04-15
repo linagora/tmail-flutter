@@ -59,6 +59,8 @@ class ThreadBindings extends BaseBindings {
       Get.find<MoveMultipleEmailToTrashInteractor>(),
       Get.find<DeleteMultipleEmailsPermanentlyInteractor>(),
       Get.find<EmptyTrashFolderInteractor>(),
+      Get.find<MarkAsEmailReadInteractor>(),
+      Get.find<MoveToMailboxInteractor>(),
     ));
   }
 
@@ -99,6 +101,8 @@ class ThreadBindings extends BaseBindings {
     Get.lazyPut(() => MoveMultipleEmailToTrashInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => DeleteMultipleEmailsPermanentlyInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => EmptyTrashFolderInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
   }
 
   @override

@@ -13,7 +13,8 @@ import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_t
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
+  if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/suggestion_box_widget.dart';
@@ -223,7 +224,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
               : AppLocalizations.of(context).delete_permanently,
           onTap: () => controller.mailboxDashBoardController.selectedMailbox.value?.role != PresentationMailbox.roleTrash
               ? controller.pressEmailSelectionAction(context, EmailActionType.moveToTrash, controller.listEmailSelected)
-              : controller.deleteEmailsPermanently(context, DeleteActionType.multiple, selectedEmails: controller.listEmailSelected)),
+              : controller.deleteSelectionEmailsPermanently(context, DeleteActionType.multiple, selectedEmails: controller.listEmailSelected)),
     ]);
   }
 
@@ -597,15 +598,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
                 controller.currentSelectMode.value,
                 controller.mailboxDashBoardController.searchState.value.searchStatus,
                 controller.searchQuery)
-            ..onOpenEmailAction((selectedEmail) {
-              if (controller.mailboxDashBoardController.selectedMailbox.value?.role == PresentationMailbox.roleDrafts) {
-                controller.editEmail(selectedEmail);
-              } else {
-                controller.previewEmail(context, selectedEmail);
-              }
-            })
-            ..onSelectEmailAction((selectedEmail) => controller.selectEmail(context, selectedEmail))
-            ..addOnMarkAsStarActionClick((selectedEmail) => controller.markAsStarEmail(selectedEmail)))
+            ..addOnPressEmailActionClick((action, email) => controller.pressEmailAction(context, action, email)))
           .build()),
       )
     );
@@ -688,7 +681,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
                           AppLocalizations.of(context).message_delete_all_email_in_trash_button,
                           style: TextStyle(color: AppColor.colorContentEmail, fontSize: 13, fontWeight: FontWeight.w500))),
                   TextButton(
-                      onPressed: () => controller.deleteEmailsPermanently(context, DeleteActionType.all),
+                      onPressed: () => controller.deleteSelectionEmailsPermanently(context, DeleteActionType.all),
                       child: Text(
                           AppLocalizations.of(context).empty_trash_now,
                           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton)
