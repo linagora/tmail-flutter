@@ -11,7 +11,7 @@ import MobileCoreServices
 
 class ShareViewController: SLComposeServiceViewController {
     
-    let hostAppBundleIdentifier = "com.linagora.ios.teammail"
+    let hostAppBundleIdentifier = "com.linagora.teammail"
     let sharedKey = "ShareKey"
     var sharedText: [String] = []
     let textContentType = kUTTypeText as String
