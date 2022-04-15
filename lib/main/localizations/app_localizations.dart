@@ -1126,4 +1126,31 @@ class AppLocalizations {
     );
   }
 
+  String get marked_as_not_spam {
+    return Intl.message(
+      'Marked as not spam',
+      name: 'marked_as_not_spam',
+    );
+  }
+
+  String get star {
+    return Intl.message(
+      'Star',
+      name: 'star',
+    );
+  }
+
+  String get un_star {
+    return Intl.message(
+      'Unstar',
+      name: 'un_star',
+    );
+  }
+
+  String get un_spam {
+    return Intl.message(
+      'Unspam',
+      name: 'un_spam',
+    );
+  }
 }

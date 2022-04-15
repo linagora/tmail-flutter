@@ -109,6 +109,8 @@ class ThreadController extends BaseController {
 
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
 
+  PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
+
   ThreadController(
     this._getEmailsInMailboxInteractor,
     this._refreshAllEmailsInMailboxInteractor,
@@ -551,7 +553,7 @@ class ThreadController extends BaseController {
     refreshAllEmail();
   }
 
-  void moveSelectedMultipleEmailToMailboxAction(List<PresentationEmail> listEmail) async {
+  void moveSelectedMultipleEmailToMailbox(List<PresentationEmail> listEmail) async {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     if (currentMailbox != null && _accountId != null) {
       final listEmailIds = listEmail.map((email) => email.id).toList();
@@ -561,15 +563,22 @@ class ThreadController extends BaseController {
       );
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
-        if (destinationMailbox.role == PresentationMailbox.roleTrash) {
-          _moveSelectedEmailMultipleToTrash(_accountId!, MoveToMailboxRequest(
+        if (destinationMailbox.isTrash) {
+          _moveSelectedEmailMultipleToTrashAction(_accountId!, MoveToMailboxRequest(
               listEmailIds,
               currentMailbox.id,
               destinationMailbox.id,
               MoveAction.moving,
               EmailActionType.moveToTrash));
+        } else if (destinationMailbox.isSpam) {
+          _moveSelectedEmailMultipleToSpamAction(_accountId!, MoveToMailboxRequest(
+              listEmailIds,
+              currentMailbox.id,
+              destinationMailbox.id,
+              MoveAction.moving,
+              EmailActionType.moveToSpam));
         } else {
-          _moveSelectedEmailMultipleToMailbox(_accountId!, MoveToMailboxRequest(
+          _moveSelectedEmailMultipleToMailboxAction(_accountId!, MoveToMailboxRequest(
               listEmailIds,
               currentMailbox.id,
               destinationMailbox.id,
@@ -581,7 +590,7 @@ class ThreadController extends BaseController {
     }
   }
 
-  void _moveSelectedEmailMultipleToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) {
+  void _moveSelectedEmailMultipleToMailboxAction(AccountId accountId, MoveToMailboxRequest moveRequest) {
     cancelSelectEmail();
     consumeState(_moveMultipleEmailToMailboxInteractor.execute(accountId, moveRequest));
   }
@@ -636,13 +645,13 @@ class ThreadController extends BaseController {
     _refreshEmailChanges();
   }
 
-  void moveSelectedMultipleEmailToTrashAction(List<PresentationEmail> listEmail) async {
+  void moveSelectedMultipleEmailToTrash(List<PresentationEmail> listEmail) async {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     final trashMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleTrash);
 
     if (currentMailbox != null && _accountId != null && trashMailboxId != null) {
       final listEmailIds = listEmail.map((email) => email.id).toList();
-      _moveSelectedEmailMultipleToTrash(_accountId!, MoveToMailboxRequest(
+      _moveSelectedEmailMultipleToTrashAction(_accountId!, MoveToMailboxRequest(
           listEmailIds,
           currentMailbox.id,
           trashMailboxId,
@@ -652,9 +661,46 @@ class ThreadController extends BaseController {
     }
   }
 
-  void _moveSelectedEmailMultipleToTrash(AccountId accountId, MoveToMailboxRequest moveRequest) {
+  void _moveSelectedEmailMultipleToTrashAction(AccountId accountId, MoveToMailboxRequest moveRequest) {
     cancelSelectEmail();
     consumeState(_moveMultipleEmailToMailboxInteractor.execute(accountId, moveRequest));
+  }
+
+  void moveSelectedMultipleEmailToSpam(List<PresentationEmail> listEmail) async {
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
+
+    if (currentMailbox != null && _accountId != null && spamMailboxId != null) {
+      final listEmailIds = listEmail.map((email) => email.id).toList();
+      _moveSelectedEmailMultipleToSpamAction(_accountId!, MoveToMailboxRequest(
+          listEmailIds,
+          currentMailbox.id,
+          spamMailboxId,
+          MoveAction.moving,
+          EmailActionType.moveToSpam)
+      );
+    }
+  }
+
+  void _moveSelectedEmailMultipleToSpamAction(AccountId accountId, MoveToMailboxRequest moveRequest) {
+    cancelSelectEmail();
+    consumeState(_moveMultipleEmailToMailboxInteractor.execute(accountId, moveRequest));
+  }
+
+  void unSpamSelectedMultipleEmail(List<PresentationEmail> listEmail) async {
+    final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
+    final inboxMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox);
+
+    if (inboxMailboxId != null && _accountId != null && spamMailboxId != null) {
+      final listEmailIds = listEmail.map((email) => email.id).toList();
+      _moveSelectedEmailMultipleToMailboxAction(_accountId!, MoveToMailboxRequest(
+          listEmailIds,
+          spamMailboxId,
+          inboxMailboxId,
+          MoveAction.moving,
+          EmailActionType.unSpam)
+      );
+    }
   }
 
   void _revertedToOriginalMailbox(MoveToMailboxRequest newMoveRequest) {
@@ -800,13 +846,19 @@ class ThreadController extends BaseController {
         markAsStarSelectedMultipleEmail(selectionEmail);
         break;
       case EmailActionType.moveToMailbox:
-        moveSelectedMultipleEmailToMailboxAction(selectionEmail);
+        moveSelectedMultipleEmailToMailbox(selectionEmail);
         break;
       case EmailActionType.moveToTrash:
-        moveSelectedMultipleEmailToTrashAction(selectionEmail);
+        moveSelectedMultipleEmailToTrash(selectionEmail);
         break;
       case EmailActionType.deletePermanently:
         deleteSelectionEmailsPermanently(context, DeleteActionType.multiple, selectedEmails: selectionEmail);
+        break;
+      case EmailActionType.moveToSpam:
+        moveSelectedMultipleEmailToSpam(selectionEmail);
+        break;
+      case EmailActionType.unSpam:
+        unSpamSelectedMultipleEmail(selectionEmail);
         break;
       default:
         break;
