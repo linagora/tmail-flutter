@@ -3,8 +3,9 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 
-abstract class BaseController extends GetxController with MessageDialogActionMixin {
+abstract class BaseController extends GetxController with MessageDialogActionMixin, PopupContextMenuActionMixin {
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final connectivityResult = Rxn<ConnectivityResult>();
 

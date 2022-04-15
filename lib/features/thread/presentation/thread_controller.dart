@@ -630,7 +630,7 @@ class ThreadController extends BaseController {
             final newCurrentMailboxId = destinationMailboxId;
             final newDestinationMailboxId = currentMailboxId;
             if (newCurrentMailboxId != null && newDestinationMailboxId != null) {
-              _revertedToOriginalMailbox(MoveToMailboxRequest(
+              _revertedSelectionEmailToOriginalMailbox(MoveToMailboxRequest(
                   movedEmailIds,
                   newCurrentMailboxId,
                   newDestinationMailboxId,
@@ -703,7 +703,7 @@ class ThreadController extends BaseController {
     }
   }
 
-  void _revertedToOriginalMailbox(MoveToMailboxRequest newMoveRequest) {
+  void _revertedSelectionEmailToOriginalMailbox(MoveToMailboxRequest newMoveRequest) {
     if (_accountId != null) {
       consumeState(_moveMultipleEmailToMailboxInteractor.execute(_accountId!, newMoveRequest));
     }
@@ -890,20 +890,28 @@ class ThreadController extends BaseController {
         markAsStarEmail(selectedEmail, MarkStarAction.unMarkStar);
         break;
       case EmailActionType.moveToMailbox:
-        moveToMailboxAction(context, selectedEmail);
+        moveToMailbox(context, selectedEmail);
         break;
       case EmailActionType.moveToTrash:
-        moveToTrashAction(selectedEmail);
+        moveToTrash(selectedEmail);
         break;
       case EmailActionType.deletePermanently:
         deleteEmailPermanently(context, selectedEmail);
+        break;
+      case EmailActionType.moveToSpam:
+        popBack();
+        moveToSpam(selectedEmail);
+        break;
+      case EmailActionType.unSpam:
+        popBack();
+        unSpam(selectedEmail);
         break;
       default:
         break;
     }
   }
 
-  void moveToMailboxAction(BuildContext context, PresentationEmail email) async {
+  void moveToMailbox(BuildContext context, PresentationEmail email) async {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     final accountId = mailboxDashBoardController.accountId.value;
 
@@ -914,15 +922,22 @@ class ThreadController extends BaseController {
       );
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
-        if (destinationMailbox.role == PresentationMailbox.roleTrash) {
-          _moveToTrash(accountId, MoveToMailboxRequest(
+        if (destinationMailbox.isTrash) {
+          _moveToTrashAction(accountId, MoveToMailboxRequest(
               [email.id],
               currentMailbox.id,
               destinationMailbox.id,
               MoveAction.moving,
               EmailActionType.moveToTrash));
+        } else if (destinationMailbox.isSpam) {
+          _moveToSpamAction(accountId, MoveToMailboxRequest(
+              [email.id],
+              currentMailbox.id,
+              destinationMailbox.id,
+              MoveAction.moving,
+              EmailActionType.moveToSpam));
         } else {
-          _moveToMailbox(accountId, MoveToMailboxRequest(
+          _moveToMailboxAction(accountId, MoveToMailboxRequest(
               [email.id],
               currentMailbox.id,
               destinationMailbox.id,
@@ -934,7 +949,7 @@ class ThreadController extends BaseController {
     }
   }
 
-  void _moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) {
+  void _moveToMailboxAction(AccountId accountId, MoveToMailboxRequest moveRequest) {
     consumeState(_moveToMailboxInteractor.execute(accountId, moveRequest));
   }
 
@@ -945,37 +960,36 @@ class ThreadController extends BaseController {
       _appToast.showToastWithAction(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).moved_to_mailbox(success.destinationPath ?? ''),
-          AppLocalizations.of(currentContext!).undo_action,
-              () {
-            final newMoveRequest = MoveToMailboxRequest(
+          AppLocalizations.of(currentContext!).undo_action, () {
+            _revertedToOriginalMailbox(MoveToMailboxRequest(
                 [success.emailId],
                 success.destinationMailboxId,
                 success.currentMailboxId,
                 MoveAction.undo,
-                success.emailActionType);
-            _undoMoveToMailbox(newMoveRequest);
+                success.emailActionType));
           }
       );
     }
   }
 
-  void _undoMoveToMailbox(MoveToMailboxRequest newMoveRequest) {
-    if (_accountId != null) {
-      _moveToMailbox(_accountId!, newMoveRequest);
+  void _revertedToOriginalMailbox(MoveToMailboxRequest newMoveRequest) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null) {
+      _moveToMailboxAction(accountId, newMoveRequest);
     }
   }
 
-  void _moveToTrash(AccountId accountId, MoveToMailboxRequest moveRequest) {
+  void _moveToTrashAction(AccountId accountId, MoveToMailboxRequest moveRequest) {
     mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
   }
 
-  void moveToTrashAction(PresentationEmail email) async {
+  void moveToTrash(PresentationEmail email) async {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     final accountId = mailboxDashBoardController.accountId.value;
     final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxId[PresentationMailbox.roleTrash];
 
     if (currentMailbox != null && accountId != null && trashMailboxId != null) {
-      _moveToTrash(accountId, MoveToMailboxRequest(
+      _moveToTrashAction(accountId, MoveToMailboxRequest(
           [email.id],
           currentMailbox.id,
           trashMailboxId,
@@ -983,6 +997,42 @@ class ThreadController extends BaseController {
           EmailActionType.moveToTrash)
       );
     }
+  }
+
+  void moveToSpam(PresentationEmail email) async {
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    final accountId = mailboxDashBoardController.accountId.value;
+    final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
+
+    if (currentMailbox != null && accountId != null && spamMailboxId != null) {
+      _moveToSpamAction(accountId, MoveToMailboxRequest(
+          [email.id],
+          currentMailbox.id,
+          spamMailboxId,
+          MoveAction.moving,
+          EmailActionType.moveToSpam)
+      );
+    }
+  }
+
+  void unSpam(PresentationEmail email) async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
+    final inboxMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox);
+
+    if (inboxMailboxId != null && accountId != null && spamMailboxId != null) {
+      _moveToSpamAction(accountId, MoveToMailboxRequest(
+          [email.id],
+          spamMailboxId,
+          inboxMailboxId,
+          MoveAction.moving,
+          EmailActionType.unSpam)
+      );
+    }
+  }
+
+  void _moveToSpamAction(AccountId accountId, MoveToMailboxRequest moveRequest) {
+    mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
   }
 
   void deleteEmailPermanently(BuildContext context, PresentationEmail email) {

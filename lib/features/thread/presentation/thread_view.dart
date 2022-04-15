@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
@@ -600,7 +601,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
         physics: AlwaysScrollableScrollPhysics(),
         key: PageStorageKey('list_presentation_email_in_threads'),
         itemCount: listPresentationEmail.length,
-        padding: EdgeInsets.zero,
+        padding: EdgeInsets.only(top: kIsWeb && !_responsiveUtils.isDesktop(context) ? 10 : 0),
         itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
                 context,
                 listPresentationEmail[index],
@@ -608,7 +609,10 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
                 controller.currentSelectMode.value,
                 controller.mailboxDashBoardController.searchState.value.searchStatus,
                 controller.searchQuery)
-            ..addOnPressEmailActionClick((action, email) => controller.pressEmailAction(context, action, email)))
+            ..addOnPressEmailActionClick((action, email) => controller.pressEmailAction(context, action, email))
+            ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
+              ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
+              : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email))))
           .build()),
       )
     );
@@ -702,5 +706,41 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
         )
       ]),
     );
+  }
+
+  List<Widget> _contextMenuActionTile(BuildContext context, PresentationEmail email) {
+    return <Widget>[
+      _markAsEmailSpamOrUnSpamAction(context, email),
+    ];
+  }
+
+  Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
+    return (EmailActionCupertinoActionSheetActionBuilder(
+            Key('mark_as_spam_or_un_spam_action'),
+            SvgPicture.asset(
+                controller.currentMailbox?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
+                width: 28, height: 28, fit: BoxFit.fill, color: AppColor.colorTextButton),
+            controller.currentMailbox?.isSpam == true
+                ? AppLocalizations.of(context).remove_from_spam
+                : AppLocalizations.of(context).mark_as_spam,
+            email,
+            iconLeftPadding: _responsiveUtils.isMobile(context)
+                ? EdgeInsets.only(left: 12, right: 16)
+                : EdgeInsets.only(right: 12),
+            iconRightPadding: _responsiveUtils.isMobile(context)
+                ? EdgeInsets.only(right: 12)
+                : EdgeInsets.zero)
+        ..onActionClick((email) => controller.pressEmailAction(context,
+            controller.currentMailbox?.isSpam == true
+                ? EmailActionType.unSpam
+                : EmailActionType.moveToSpam,
+            email)))
+      .build();
+  }
+
+  List<PopupMenuEntry> _popupMenuActionTile(BuildContext context, PresentationEmail email) {
+    return [
+      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _markAsEmailSpamOrUnSpamAction(context, email)),
+    ];
   }
 }
