@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_status.d
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnPressEmailActionClick = void Function(EmailActionType, PresentationEmail);
+typedef OnMoreActionClick = void Function(PresentationEmail, RelativeRect?);
 
 class EmailTileBuilder {
 
@@ -23,6 +24,7 @@ class EmailTileBuilder {
   final SearchQuery? _searchQuery;
 
   OnPressEmailActionClick? _emailActionClick;
+  OnMoreActionClick? _onMoreActionClick;
 
   bool isHoverItem = false;
   bool isHoverItemSelected = false;
@@ -38,6 +40,10 @@ class EmailTileBuilder {
 
   void addOnPressEmailActionClick(OnPressEmailActionClick actionClick) {
     _emailActionClick = actionClick;
+  }
+
+  void addOnMoreActionClick(OnMoreActionClick onMoreActionClick) {
+    _onMoreActionClick = onMoreActionClick;
   }
 
   Widget build() {

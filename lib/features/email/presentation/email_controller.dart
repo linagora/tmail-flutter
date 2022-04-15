@@ -505,23 +505,6 @@ class EmailController extends BaseController {
     }
   }
 
-  void openMoreMenuEmailAction(BuildContext context, List<Widget> actionTiles, {Widget? cancelButton}) {
-    (CupertinoActionSheetBuilder(context)
-        ..addTiles(actionTiles)
-        ..addCancelButton(cancelButton))
-      .show();
-  }
-
-  void openMoreMenuEmailActionForTablet(BuildContext context, RelativeRect? position, List<PopupMenuEntry> popupMenuItems) async {
-    await showMenu(
-        context: context,
-        position: position ?? RelativeRect.fromLTRB(16, 40, 16, 16),
-        color: Colors.white,
-        elevation: 5,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        items: popupMenuItems);
-  }
-
   void showFullEmailAddress() {
     isDisplayFullEmailAddress.value = true;
   }
@@ -623,10 +606,6 @@ class EmailController extends BaseController {
     popBack();
     backToThreadView(context);
     mailboxDashBoardController.deleteEmailPermanently(email);
-  }
-
-  void closeMoreMenu() {
-    popBack();
   }
 
   void backToThreadView(BuildContext context) {

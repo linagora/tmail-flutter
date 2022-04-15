@@ -126,8 +126,8 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
           ..onBackActionClick(() => emailController.backToThreadView(context))
           ..addOnEmailActionClick((email, action) => emailController.handleEmailAction(context, email, action))
           ..addOnMoreActionClick((email, position) => responsiveUtils.isMobile(context)
-              ? emailController.openMoreMenuEmailAction(context, _emailActionMoreActionTile(context, email), cancelButton: _buildCancelButton(context))
-              : emailController.openMoreMenuEmailActionForTablet(context, position, _popupMenuEmailActionTile(context, email))))
+              ? emailController.openContextMenuAction(context, _emailActionMoreActionTile(context, email))
+              : emailController.openPopupMenuAction(context, position, _popupMenuEmailActionTile(context, email))))
         .build()));
   }
 
@@ -546,15 +546,6 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
       _markAsEmailUnreadAction(context, email),
       _markAsEmailSpamOrUnSpamAction(context, email),
     ];
-  }
-
-  Widget _buildCancelButton(BuildContext context) {
-    return CupertinoActionSheetAction(
-      child: Text(
-          AppLocalizations.of(context).cancel,
-          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorTextButton)),
-      onPressed: () => emailController.closeMoreMenu(),
-    );
   }
 
   Widget _markAsEmailUnreadAction(BuildContext context, PresentationEmail email) {
