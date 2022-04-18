@@ -97,7 +97,7 @@ workflows:
     - set-xcode-build-number@1:
         inputs:
         - build_version_offset: alpha$BITRISE_BUILD_NUMBER
-        - build_short_version_string: 0.2.2
+        - build_short_version_string: 0.3.0
         - plist_path: "$BITRISE_FLUTTER_PROJECT_LOCATION/ios/Runner/Info.plist"
     - flutter-build@0:
         inputs:
