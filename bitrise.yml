@@ -95,7 +95,7 @@ workflows:
         - team_id: KUT463DS29
         - force_team_id: KUT463DS29
         - force_code_sign_identity: 'iPhone Distribution: Linagora (KUT463DS29)'
-        - force_provisioning_profile: c9f2fd46-251f-4ba4-85c7-390b04fa83d1
+        - force_provisioning_profile: b133d019-5fff-4b7e-8126-25f7e248738a
         - force_provisioning_profile_specifier: ''
         - export_method: app-store
     - deploy-to-itunesconnect-application-loader@1:
