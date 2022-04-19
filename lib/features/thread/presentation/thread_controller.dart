@@ -222,6 +222,8 @@ class ThreadController extends BaseController {
           _markAsStarMultipleEmailFailure(failure);
         } else if (failure is EmptyTrashFolderFailure) {
           _emptyTrashFolderFailure(failure);
+        }  else if (failure is LoadMoreEmailsFailure) {
+          stopFpsMeter();
         }
       },
       (success) {
@@ -245,6 +247,8 @@ class ThreadController extends BaseController {
           _markAsEmailReadSuccess(success);
         } else if (success is MoveToMailboxSuccess) {
           _moveToMailboxSuccess(success);
+        } else if (success is LoadMoreEmailsSuccess) {
+          stopFpsMeter();
         }
       }
     );
@@ -383,7 +387,7 @@ class ThreadController extends BaseController {
   void loadMoreEmails() {
     if (canLoadMore && _accountId != null) {
       log('ThreadController::loadMoreEmails(): latest: ${emailList.last.receivedAt}');
-      bench.start('loadMoreEmails');
+      startFpsMeter();
       consumeState(_loadMoreEmailsInMailboxInteractor.execute(
         GetEmailRequest(
             _accountId!,
@@ -397,7 +401,6 @@ class ThreadController extends BaseController {
   }
 
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
-    bench.end('loadMoreEmails');
     log('ThreadController::_loadMoreEmailsSuccess(): [BEFORE] totalEmailList = ${emailList.length}');
     if (success.emailList.isNotEmpty) {
       log('ThreadController::_loadMoreEmailsSuccess(): add success: ${success.emailList.length}');

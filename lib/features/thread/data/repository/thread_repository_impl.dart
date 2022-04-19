@@ -243,7 +243,9 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   @override
   Stream<EmailsResponse> loadMoreEmails(GetEmailRequest getEmailRequest) async* {
+    bench.start('loadMoreEmails in computed');
     final response = await compute(_getAllEmailsWithoutLastEmailId, getEmailRequest);
+    bench.end('loadMoreEmails in computed');
     await _updateEmailCache(newCreated: response.emailList);
     yield response;
   }
