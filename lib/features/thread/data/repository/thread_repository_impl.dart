@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -20,6 +21,7 @@ import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
 
 class ThreadRepositoryImpl extends ThreadRepository {
@@ -240,34 +242,29 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Stream<EmailsResponse> loadMoreEmails(
-    AccountId accountId,
-    {
-      int? position,
-      UnsignedInt? limit,
-      Set<Comparator>? sort,
-      Filter? filter,
-      Properties? properties,
-      EmailId? lastEmailId,
-    }
-  ) async* {
-    log('ThreadRepositoryImpl::loadMoreEmails()');
-    final emailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
-      accountId,
-      limit: limit,
-      sort: sort,
-      filter: filter,
-      properties: properties);
+  Stream<EmailsResponse> loadMoreEmails(GetEmailRequest getEmailRequest) async* {
+    final response = await compute(_getAllEmailsWithoutLastEmailId, getEmailRequest);
+    await _updateEmailCache(newCreated: response.emailList);
+    yield response;
+  }
 
-    final newEmailList = emailResponse.emailList != null && emailResponse.emailList!.isNotEmpty
-      ? emailResponse.emailList!.where((email) => email.id != lastEmailId).toList()
-      : <Email>[];
+  Future<EmailsResponse> _getAllEmailsWithoutLastEmailId(GetEmailRequest emailRequest) async {
+    final emailResponse = await mapDataSource[DataSourceType.network]!
+        .getAllEmail(
+            emailRequest.accountId,
+            limit: emailRequest.limit,
+            sort: emailRequest.sort,
+            filter: emailRequest.filter,
+            properties: emailRequest.properties)
+        .then((response) {
+            var listEmails = response.emailList;
+            if (listEmails != null && listEmails.isNotEmpty) {
+              listEmails = listEmails.where((email) => email.id != emailRequest.lastEmailId).toList();
+            }
+            return EmailsResponse(emailList: listEmails, state: response.state);
+        });
 
-    if (newEmailList.isNotEmpty) {
-      await _updateEmailCache(newCreated: newEmailList);
-    }
-
-    yield EmailsResponse(emailList: newEmailList, state: emailResponse.state);
+    return emailResponse;
   }
 
   @override
