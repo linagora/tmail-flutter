@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_ema
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
@@ -382,18 +383,21 @@ class ThreadController extends BaseController {
   void loadMoreEmails() {
     if (canLoadMore && _accountId != null) {
       log('ThreadController::loadMoreEmails(): latest: ${emailList.last.receivedAt}');
+      bench.start('loadMoreEmails');
       consumeState(_loadMoreEmailsInMailboxInteractor.execute(
-        _accountId!,
-        limit: ThreadConstants.defaultLimit,
-        sort: _sortOrder,
-        filter: _getFilterCondition(isLoadMore: true),
-        properties: ThreadConstants.propertiesDefault,
-        lastEmailId: emailList.last.id
+        GetEmailRequest(
+            _accountId!,
+            limit: ThreadConstants.defaultLimit,
+            sort: _sortOrder,
+            filter: _getFilterCondition(isLoadMore: true),
+            properties: ThreadConstants.propertiesDefault,
+            lastEmailId: emailList.last.id)
       ));
     }
   }
 
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
+    bench.end('loadMoreEmails');
     log('ThreadController::_loadMoreEmailsSuccess(): [BEFORE] totalEmailList = ${emailList.length}');
     if (success.emailList.isNotEmpty) {
       log('ThreadController::_loadMoreEmailsSuccess(): add success: ${success.emailList.length}');

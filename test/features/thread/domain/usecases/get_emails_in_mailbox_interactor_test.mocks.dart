@@ -5,7 +5,7 @@
 import 'dart:async' as _i3;
 
 import 'package:jmap_dart_client/jmap/account_id.dart' as _i5;
-import 'package:jmap_dart_client/jmap/core/filter/filter.dart' as _i12;
+import 'package:jmap_dart_client/jmap/core/filter/filter.dart' as _i14;
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart' as _i9;
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart' as _i7;
 import 'package:jmap_dart_client/jmap/core/state.dart' as _i10;
@@ -16,6 +16,8 @@ import 'package:mockito/mockito.dart' as _i1;
 import 'package:model/model.dart' as _i8;
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart'
     as _i4;
+import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart'
+    as _i12;
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart'
     as _i2;
 
@@ -56,6 +58,25 @@ class MockThreadRepository extends _i1.Mock implements _i2.ThreadRepository {
               returnValue: Stream<_i4.EmailsResponse>.empty())
           as _i3.Stream<_i4.EmailsResponse>);
   @override
+  _i3.Stream<_i4.EmailsResponse> refreshAll(_i5.AccountId? accountId,
+          {_i6.UnsignedInt? limit,
+          Set<_i7.Comparator>? sort,
+          _i8.EmailFilter? emailFilter,
+          _i9.Properties? propertiesCreated,
+          _i9.Properties? propertiesUpdated}) =>
+      (super.noSuchMethod(
+              Invocation.method(#refreshAll, [
+                accountId
+              ], {
+                #limit: limit,
+                #sort: sort,
+                #emailFilter: emailFilter,
+                #propertiesCreated: propertiesCreated,
+                #propertiesUpdated: propertiesUpdated
+              }),
+              returnValue: Stream<_i4.EmailsResponse>.empty())
+          as _i3.Stream<_i4.EmailsResponse>);
+  @override
   _i3.Stream<_i4.EmailsResponse> refreshChanges(
           _i5.AccountId? accountId, _i10.State? currentState,
           {Set<_i7.Comparator>? sort,
@@ -77,29 +98,16 @@ class MockThreadRepository extends _i1.Mock implements _i2.ThreadRepository {
               returnValue: Stream<_i4.EmailsResponse>.empty())
           as _i3.Stream<_i4.EmailsResponse>);
   @override
-  _i3.Stream<_i4.EmailsResponse> loadMoreEmails(_i5.AccountId? accountId,
-          {_i6.UnsignedInt? limit,
-          Set<_i7.Comparator>? sort,
-          _i12.Filter? filter,
-          _i9.Properties? properties,
-          _i13.EmailId? lastEmailId}) =>
-      (super.noSuchMethod(
-              Invocation.method(#loadMoreEmails, [
-                accountId
-              ], {
-                #limit: limit,
-                #sort: sort,
-                #filter: filter,
-                #properties: properties,
-                #lastEmailId: lastEmailId
-              }),
+  _i3.Stream<_i4.EmailsResponse> loadMoreEmails(
+          _i12.GetEmailRequest? emailRequest) =>
+      (super.noSuchMethod(Invocation.method(#loadMoreEmails, [emailRequest]),
               returnValue: Stream<_i4.EmailsResponse>.empty())
           as _i3.Stream<_i4.EmailsResponse>);
   @override
   _i3.Future<List<_i13.Email>> searchEmails(_i5.AccountId? accountId,
           {_i6.UnsignedInt? limit,
           Set<_i7.Comparator>? sort,
-          _i12.Filter? filter,
+          _i14.Filter? filter,
           _i9.Properties? properties}) =>
       (super.noSuchMethod(
               Invocation.method(#searchEmails, [
@@ -112,4 +120,10 @@ class MockThreadRepository extends _i1.Mock implements _i2.ThreadRepository {
               }),
               returnValue: Future<List<_i13.Email>>.value(<_i13.Email>[]))
           as _i3.Future<List<_i13.Email>>);
+  @override
+  _i3.Future<bool> emptyTrashFolder(
+          _i5.AccountId? accountId, _i11.MailboxId? trashMailboxId) =>
+      (super.noSuchMethod(
+          Invocation.method(#emptyTrashFolder, [accountId, trashMailboxId]),
+          returnValue: Future<bool>.value(false)) as _i3.Future<bool>);
 }
