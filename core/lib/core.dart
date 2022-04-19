@@ -26,6 +26,7 @@ export 'presentation/utils/html_transformer/transform_configuration.dart';
 export 'presentation/utils/html_transformer/dom/add_tooltip_link_transformers.dart';
 export 'data/utils/device_manager.dart';
 export 'utils/app_logger.dart';
+export 'utils/benchmark.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
