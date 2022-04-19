@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixi
 abstract class BaseController extends GetxController with MessageDialogActionMixin, PopupContextMenuActionMixin {
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final connectivityResult = Rxn<ConnectivityResult>();
+  FpsCallback? fpsCallback;
 
   void consumeState(Stream<Either<Failure, Success>> newStateStream) async {
     newStateStream.listen(
@@ -48,4 +49,21 @@ abstract class BaseController extends GetxController with MessageDialogActionMix
   void onError(dynamic error);
 
   void onDone();
+
+  void startFpsMeter() {
+    FpsManager().start();
+    fpsCallback = (fpsInfo) {
+      log('BaseController::startFpsMeter(): $fpsInfo');
+    };
+    if (fpsCallback != null) {
+      FpsManager().addFpsCallback(fpsCallback!);
+    }
+  }
+
+  void stopFpsMeter() {
+    FpsManager().stop();
+    if (fpsCallback != null) {
+      FpsManager().removeFpsCallback(fpsCallback!);
+    }
+  }
 }
