@@ -916,5 +916,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "your_download_has_started": "Il tuo download è iniziato",
+  "@your_download_has_started": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moved_to_trash": "Spostato nel Cestino",
+  "@moved_to_trash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
