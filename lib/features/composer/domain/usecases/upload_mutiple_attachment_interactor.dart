@@ -25,7 +25,7 @@ class UploadMultipleAttachmentInteractor {
         final listResultSuccess = listResult.where((either) => either.isRight()).toList();
         if (listResultSuccess.length == listResult.length) {
           yield Right<Failure, Success>(UploadMultipleAttachmentAllSuccess(listResultSuccess));
-        } else if (listResultSuccess.length == 0) {
+        } else if (listResultSuccess.isEmpty) {
           yield Left<Failure, Success>(UploadMultipleAttachmentAllFailure(listResult));
         } else {
           yield Right<Failure, Success>(UploadMultipleAttachmentHasSomeFailure(listResultSuccess));

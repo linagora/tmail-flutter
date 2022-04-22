@@ -49,7 +49,7 @@ class ComposerBindings extends BaseBindings {
 
   void _bindingsUtils() {
     Get.lazyPut(() => EmailAddressDatabaseManager(Get.find<DatabaseClient>()));
-    Get.lazyPut(() => Uuid());
+    Get.lazyPut(() => const Uuid());
   }
 
   @override

@@ -12,7 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart' as HtmlEditorBrowser;
+import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -86,7 +86,7 @@ class ComposerController extends BaseController {
   List<EmailAddress> listBccEmailAddress = <EmailAddress>[];
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.localContact;
   HtmlEditorApi? htmlEditorApi;
-  final HtmlEditorBrowser.HtmlEditorController htmlControllerBrowser = HtmlEditorBrowser.HtmlEditorController(processNewLineAsBr: true);
+  final html_editor_browser.HtmlEditorController htmlControllerBrowser = html_editor_browser.HtmlEditorController(processNewLineAsBr: true);
 
   final subjectEmailInputController = TextEditingController();
   final toEmailAddressController = TextEditingController();
@@ -141,7 +141,7 @@ class ComposerController extends BaseController {
     super.onReady();
     _initEmail();
 
-    Future.delayed(Duration(milliseconds: 500), () => _checkContactPermission());
+    Future.delayed(const Duration(milliseconds: 500), () => _checkContactPermission());
   }
 
   @override
@@ -485,8 +485,7 @@ class ComposerController extends BaseController {
     if (!_validateAttachmentsSize()) {
       showConfirmDialogAction(
           context,
-          AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size('${
-              filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)}'),
+          AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
           AppLocalizations.of(context).got_it,
           () => {},
           title: AppLocalizations.of(context).sending_failed,
@@ -527,7 +526,7 @@ class ComposerController extends BaseController {
   }
 
   void _saveEmailAddress() async {
-    final listEmailAddressCanSave = Set<EmailAddress>();
+    final listEmailAddressCanSave = <EmailAddress>{};
     listEmailAddressCanSave.addAll(listToEmailAddress + listCcEmailAddress + listBccEmailAddress);
     await _saveEmailAddressInteractor.execute(listEmailAddressCanSave.toList());
   }
@@ -561,7 +560,7 @@ class ComposerController extends BaseController {
     clearFocusEditor(context);
 
     (ContextMenuBuilder(context)
-        ..addHeader((ContextMenuHeaderBuilder(Key('attachment_picker_context_menu_header_builder'))
+        ..addHeader((ContextMenuHeaderBuilder(const Key('attachment_picker_context_menu_header_builder'))
               ..addLabel(AppLocalizations.of(context).pick_attachments))
             .build())
         ..addTiles(actionTiles)
@@ -592,8 +591,7 @@ class ComposerController extends BaseController {
         if (currentContext != null) {
           showConfirmDialogAction(
               currentContext!,
-              AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size('${
-                  filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)}'),
+              AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
               AppLocalizations.of(currentContext!).got_it,
               () => {},
               title: AppLocalizations.of(currentContext!).maximum_files_size,
@@ -687,7 +685,7 @@ class ComposerController extends BaseController {
 
     final recipients = arguments.presentationEmail
         ?.generateRecipientsEmailAddressForComposer(arguments.emailActionType, arguments.mailboxRole)
-        ?? Tuple3(<EmailAddress>[], <EmailAddress>[], <EmailAddress>[]);
+        ?? const Tuple3(<EmailAddress>[], <EmailAddress>[], <EmailAddress>[]);
 
     final newToEmailAddress = listToEmailAddress;
     final oldToEmailAddress = recipients.value1;

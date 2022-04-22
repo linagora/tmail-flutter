@@ -12,7 +12,7 @@ class UpdateEmailDraftsSuccess extends UIState {
 }
 
 class UpdateEmailDraftsFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   UpdateEmailDraftsFailure(this.exception);
 
