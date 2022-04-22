@@ -29,11 +29,11 @@ class BottomBarThreadSelectionWidget {
 
   Widget build() {
     return Container(
-      key: Key('bottom_bar_thread_selection_widget'),
+      key: const Key('bottom_bar_thread_selection_widget'),
       alignment: Alignment.center,
       color: Colors.white,
       child: MediaQuery(
-        data: MediaQueryData(padding: EdgeInsets.zero),
+        data: const MediaQueryData(padding: EdgeInsets.zero),
         child: _buildListOptionButton()
       )
     );
@@ -45,9 +45,9 @@ class BottomBarThreadSelectionWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(child: (ButtonBuilder(_listSelectionEmail.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead)
-            ..key(Key('button_mark_read_email'))
-            ..paddingIcon(EdgeInsets.all(8))
-            ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
+            ..key(const Key('button_mark_read_email'))
+            ..paddingIcon(const EdgeInsets.all(8))
+            ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailSelectionActionClick != null) {
                 _onPressEmailSelectionActionClick!(
@@ -59,9 +59,9 @@ class BottomBarThreadSelectionWidget {
                 isVertical: _responsiveUtils.isMobile(_context)))
           .build()),
         Expanded(child: (ButtonBuilder(_listSelectionEmail.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar)
-            ..key(Key('button_mark_as_star_email'))
-            ..paddingIcon(EdgeInsets.all(8))
-            ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
+            ..key(const Key('button_mark_as_star_email'))
+            ..paddingIcon(const EdgeInsets.all(8))
+            ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailSelectionActionClick != null) {
                 _onPressEmailSelectionActionClick!(
@@ -73,9 +73,9 @@ class BottomBarThreadSelectionWidget {
           .build()),
         if (_currentMailbox?.isDrafts == false)
           Expanded(child: (ButtonBuilder(_imagePaths.icMove)
-              ..key(Key('button_move_to_mailbox'))
-              ..paddingIcon(EdgeInsets.all(8))
-              ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
+              ..key(const Key('button_move_to_mailbox'))
+              ..paddingIcon(const EdgeInsets.all(8))
+              ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
               ..onPressActionClick(() {
                 if (_onPressEmailSelectionActionClick != null) {
                   _onPressEmailSelectionActionClick!(EmailActionType.moveToMailbox, _listSelectionEmail);
@@ -84,9 +84,9 @@ class BottomBarThreadSelectionWidget {
             .build()),
         if (_currentMailbox?.isDrafts == false)
           Expanded(child: (ButtonBuilder(_currentMailbox?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam)
-              ..key(Key('button_move_to_spam'))
-              ..paddingIcon(EdgeInsets.all(8))
-              ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
+              ..key(const Key('button_move_to_spam'))
+              ..paddingIcon(const EdgeInsets.all(8))
+              ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
               ..onPressActionClick(() {
                 if (_currentMailbox?.isSpam == true) {
                   _onPressEmailSelectionActionClick?.call(EmailActionType.unSpam, _listSelectionEmail);
@@ -100,9 +100,9 @@ class BottomBarThreadSelectionWidget {
                   isVertical: _responsiveUtils.isMobile(_context)))
             .build()),
         Expanded(child: (ButtonBuilder(_imagePaths.icDelete)
-            ..key(Key('button_delete_email'))
-            ..paddingIcon(EdgeInsets.all(8))
-            ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton))
+            ..key(const Key('button_delete_email'))
+            ..paddingIcon(const EdgeInsets.all(8))
+            ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_currentMailbox?.isTrash == true) {
                 _onPressEmailSelectionActionClick?.call(EmailActionType.deletePermanently, _listSelectionEmail);

@@ -38,11 +38,6 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dar
 class ThreadBindings extends BaseBindings {
 
   @override
-  void dependencies() {
-    super.dependencies();
-  }
-
-  @override
   void bindingsController() {
     Get.put(ThreadController(
       Get.find<GetEmailsInMailboxInteractor>(),
