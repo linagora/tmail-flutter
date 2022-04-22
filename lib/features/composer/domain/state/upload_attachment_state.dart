@@ -19,7 +19,7 @@ class UploadAttachmentSuccess extends UIState {
 }
 
 class UploadAttachmentFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   UploadAttachmentFailure(this.exception);
 

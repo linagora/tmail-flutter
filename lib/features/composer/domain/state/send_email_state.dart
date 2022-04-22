@@ -16,7 +16,7 @@ class SendEmailSuccess extends UIState {
 }
 
 class SendEmailFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   SendEmailFailure(this.exception);
 
