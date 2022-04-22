@@ -19,7 +19,7 @@ class EmailContextMenuActionBuilder extends ContextMenuActionBuilder<List<Presen
     return ListTile(
       key: key,
       leading: Padding(
-        padding: EdgeInsets.only(left: 12),
+        padding: const EdgeInsets.only(left: 12),
         child: actionIcon),
       title: Text(actionName, style: actionTextStyle()),
       onTap: () {

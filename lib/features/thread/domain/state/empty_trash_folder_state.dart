@@ -9,7 +9,7 @@ class EmptyTrashFolderSuccess extends UIState {
 }
 
 class EmptyTrashFolderFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   EmptyTrashFolderFailure(this.exception);
 

@@ -13,7 +13,7 @@ class GetAllEmailSuccess extends UIState {
 }
 
 class GetAllEmailFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   GetAllEmailFailure(this.exception);
 

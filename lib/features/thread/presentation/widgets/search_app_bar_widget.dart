@@ -88,13 +88,13 @@ class SearchAppBarWidget {
 
   Widget build() {
     return Container(
-      key: Key('search_app_bar_widget'),
+      key: const Key('search_app_bar_widget'),
       height: _heightSearchBar,
       decoration: _decoration,
       padding: _padding ?? EdgeInsets.zero,
       margin: _margin,
       child: MediaQuery(
-        data: MediaQueryData(padding: EdgeInsets.zero),
+        data: const MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
           children: [
             if (hasBackButton) _buildBackButton(),
@@ -133,22 +133,22 @@ class SearchAppBarWidget {
 
   Widget _buildSearchInputForm() {
     return (TextFieldBuilder()
-        ..key(Key('search_input_form'))
+        ..key(const Key('search_input_form'))
         ..textInputAction(TextInputAction.done)
         ..onChange((value) => _onTextChangeSearchAction?.call(value))
         ..onSubmitted((value) => _onSearchTextAction?.call(value))
         ..cursorColor(AppColor.colorTextButton)
         ..autoFocus(true)
         ..addFocusNode(_searchFocusNode)
-        ..textStyle(TextStyle(color: AppColor.colorNameEmail, fontSize: 17))
+        ..textStyle(const TextStyle(color: AppColor.colorNameEmail, fontSize: 17))
         ..textDecoration(InputDecoration(
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
             enabledBorder: InputBorder.none,
             contentPadding: EdgeInsets.zero,
             hintText: _hintText,
-            hintStyle: TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0),
-            labelStyle: TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0)))
+            hintStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0),
+            labelStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0)))
         ..addController(_searchInputController))
       .build();
   }

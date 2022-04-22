@@ -21,7 +21,7 @@ class SearchMoreEmailSuccess extends UIState {
 }
 
 class SearchMoreEmailFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   SearchMoreEmailFailure(this.exception);
 

@@ -242,9 +242,9 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Stream<EmailsResponse> loadMoreEmails(GetEmailRequest getEmailRequest) async* {
+  Stream<EmailsResponse> loadMoreEmails(GetEmailRequest emailRequest) async* {
     bench.start('loadMoreEmails in computed');
-    final response = await compute(_getAllEmailsWithoutLastEmailId, getEmailRequest);
+    final response = await compute(_getAllEmailsWithoutLastEmailId, emailRequest);
     bench.end('loadMoreEmails in computed');
     await _updateEmailCache(newCreated: response.emailList);
     yield response;
@@ -335,7 +335,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
       final emailsResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
           accountId,
-          sort: Set()
+          sort: <Comparator>{}
             ..add(EmailComparator(EmailComparatorProperty.receivedAt)
               ..setIsAscending(false)),
           filter: EmailFilterCondition(inMailbox: trashMailboxId, before: lastEmail?.receivedAt),

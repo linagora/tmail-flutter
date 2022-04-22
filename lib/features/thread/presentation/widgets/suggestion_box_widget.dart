@@ -15,7 +15,7 @@ class SuggestionBoxWidget {
 
   double? _suggestionHeight;
   double? _elevation;
-  List<String> _listData;
+  final List<String> _listData;
 
   SuggestionBoxWidget(
     this._context,
@@ -48,7 +48,7 @@ class SuggestionBoxWidget {
           padding: EdgeInsets.zero,
           itemCount: _listData.length,
           itemBuilder: (BuildContext context, int index) => ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
             onTap: () {
               if (_onSelectedSuggestion != null) {
                 _onSelectedSuggestion!(_listData[index]);
@@ -69,13 +69,13 @@ class SuggestionBoxWidget {
                 children: [
                   Text(
                     '${AppLocalizations.of(_context).prefix_suggestion_search} ',
-                    style: TextStyle(fontSize: 15, color: AppColor.baseTextColor),
+                    style: const TextStyle(fontSize: 15, color: AppColor.baseTextColor),
                   ),
                   Expanded(child: Text(
                     '"${_listData[index]}"',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 15, color: AppColor.colorNameEmail),
+                    style: const TextStyle(fontSize: 15, color: AppColor.colorNameEmail),
                   ))
                 ],
               )
