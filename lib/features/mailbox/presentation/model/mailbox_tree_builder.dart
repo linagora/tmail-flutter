@@ -13,10 +13,10 @@ class TreeBuilder {
     final Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
 
     final tree = MailboxTree(MailboxNode.root());
-    mailboxesList.forEach((mailbox) {
+    for (var mailbox in mailboxesList) {
       mailboxDictionary[mailbox.id] = MailboxNode(mailbox);
-    });
-    mailboxesList.forEach((mailbox) {
+    }
+    for (var mailbox in mailboxesList) {
       final parentId = mailbox.parentId;
       final parentNode = mailboxDictionary[parentId];
       final node = mailboxDictionary[mailbox.id];
@@ -35,7 +35,7 @@ class TreeBuilder {
           );
         }
       }
-    });
+    }
     return tree;
   }
 
@@ -45,11 +45,11 @@ class TreeBuilder {
     final defaultTree = MailboxTree(MailboxNode.root());
     final folderTree = MailboxTree(MailboxNode.root());
 
-    allMailboxes.forEach((mailbox) {
+    for (var mailbox in allMailboxes) {
       mailboxDictionary[mailbox.id] = MailboxNode(mailbox);
-    });
+    }
 
-    allMailboxes.forEach((mailbox) {
+    for (var mailbox in allMailboxes) {
       final parentId = mailbox.parentId;
       final parentNode = mailboxDictionary[parentId];
       final node = mailboxDictionary[mailbox.id];
@@ -70,7 +70,7 @@ class TreeBuilder {
           );
         }
       }
-    });
+    }
 
     defaultTree.root.childrenItems?.sort((thisMailbox, thatMailbox) => thisMailbox.compareTo(thatMailbox));
     return Tuple2(defaultTree, folderTree);
@@ -86,7 +86,7 @@ class TreeBuilder {
     final newDefaultTree = MailboxTree(MailboxNode.root());
     final newFolderTree = MailboxTree(MailboxNode.root());
 
-    allMailboxes.forEach((mailbox) {
+    for (var mailbox in allMailboxes) {
       final mailboxNodeBeforeChanges = defaultTreeBeforeChanges.findNode((node) => node.item.id == mailbox.id) ??
           folderTreeBeforeChanges.findNode((node) => node.item.id == mailbox.id);
       if (mailboxNodeBeforeChanges != null) {
@@ -97,9 +97,9 @@ class TreeBuilder {
       } else {
         mailboxDictionary[mailbox.id] = MailboxNode(mailbox);
       }
-    });
+    }
 
-    allMailboxes.forEach((mailbox) {
+    for (var mailbox in allMailboxes) {
       final parentId = mailbox.parentId;
       final parentNode = mailboxDictionary[parentId];
       final node = mailboxDictionary[mailbox.id];
@@ -120,7 +120,7 @@ class TreeBuilder {
           );
         }
       }
-    });
+    }
 
     newDefaultTree.root.childrenItems?.sort((thisMailbox, thatMailbox) => thisMailbox.compareTo(thatMailbox));
     return Tuple2(newDefaultTree, newFolderTree);

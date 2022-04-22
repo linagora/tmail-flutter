@@ -16,7 +16,7 @@ class RefreshChangesAllMailboxSuccess extends UIState {
 }
 
 class RefreshChangesAllMailboxFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   RefreshChangesAllMailboxFailure(this.exception);
 

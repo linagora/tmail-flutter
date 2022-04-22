@@ -12,7 +12,7 @@ class SearchMailboxSuccess extends UIState {
 }
 
 class SearchMailboxFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   SearchMailboxFailure(this.exception);
 

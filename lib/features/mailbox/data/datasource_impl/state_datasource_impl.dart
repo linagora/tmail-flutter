@@ -16,7 +16,7 @@ class StateDataSourceImpl extends StateDataSource {
   Future<State?> getState(StateType stateType) {
     return Future.sync(() async {
       final stateCache = await _stateCacheClient.getItem(stateType.value);
-      return stateCache != null ? stateCache.toState() : null;
+      return stateCache?.toState();
     }).catchError((error) {
       throw error;
     });
