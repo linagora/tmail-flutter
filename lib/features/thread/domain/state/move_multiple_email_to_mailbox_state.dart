@@ -71,7 +71,7 @@ class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
 }
 
 class MoveMultipleEmailToMailboxFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
   final MoveAction moveAction;
   final EmailActionType emailActionType;
 

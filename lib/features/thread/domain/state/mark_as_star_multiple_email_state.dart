@@ -31,7 +31,7 @@ class MarkAsStarMultipleEmailHasSomeEmailFailure extends UIState {
 }
 
 class MarkAsStarMultipleEmailFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
   final MarkStarAction markStarAction;
 
   MarkAsStarMultipleEmailFailure(this.exception, this.markStarAction);

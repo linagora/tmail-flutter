@@ -39,19 +39,19 @@ class ThreadAPI {
 
     final queryEmailMethod = QueryEmailMethod(accountId);
 
-    if (limit != null) queryEmailMethod..addLimit(limit);
+    if (limit != null) queryEmailMethod.addLimit(limit);
 
-    if (sort != null) queryEmailMethod..addSorts(sort);
+    if (sort != null) queryEmailMethod.addSorts(sort);
 
-    if (filter != null) queryEmailMethod..addFilters(filter);
+    if (filter != null) queryEmailMethod.addFilters(filter);
 
     final queryEmailInvocation = jmapRequestBuilder.invocation(queryEmailMethod);
 
     final getEmailMethod = GetEmailMethod(accountId);
 
-    if (properties != null) getEmailMethod..addProperties(properties);
+    if (properties != null) getEmailMethod.addProperties(properties);
 
-    getEmailMethod..addReferenceIds(processingInvocation.createResultReference(
+    getEmailMethod.addReferenceIds(processingInvocation.createResultReference(
       queryEmailInvocation.methodCallId,
       ReferencePath.idsPath));
 
@@ -66,9 +66,9 @@ class ThreadAPI {
         getEmailInvocation.methodCallId, GetEmailResponse.deserialize);
 
     if (sort != null && resultList != null) {
-      sort.forEach((comparator) {
-        resultList..sortEmails(comparator);
-      });
+      for (var comparator in sort) {
+        resultList.sortEmails(comparator);
+      }
     }
 
     return EmailsResponse(emailList: resultList?.list, state: resultList?.state);
@@ -96,7 +96,7 @@ class ThreadAPI {
           ReferencePath.updatedPath));
 
     if (propertiesUpdated != null) {
-      getMailboxUpdated..addProperties(propertiesUpdated);
+      getMailboxUpdated.addProperties(propertiesUpdated);
     }
 
     final getEmailCreated = GetEmailMethod(accountId)
@@ -105,7 +105,7 @@ class ThreadAPI {
           ReferencePath.createdPath));
 
     if (propertiesCreated != null) {
-      getEmailCreated..addProperties(propertiesCreated);
+      getEmailCreated.addProperties(propertiesCreated);
     }
 
     final getEmailUpdatedInvocation = jmapRequestBuilder.invocation(getMailboxUpdated);
