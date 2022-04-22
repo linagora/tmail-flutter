@@ -13,7 +13,7 @@ class RefreshChangesAllEmailSuccess extends UIState {
 }
 
 class RefreshChangesAllEmailFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   RefreshChangesAllEmailFailure(this.exception);
 

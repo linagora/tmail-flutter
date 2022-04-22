@@ -104,7 +104,7 @@ class ThreadController extends BaseController {
 
   SearchQuery? get searchQuery => mailboxDashBoardController.searchQuery;
 
-  Set<Comparator>? get _sortOrder => Set()
+  Set<Comparator>? get _sortOrder => <Comparator>{}
     ..add(EmailComparator(EmailComparatorProperty.receivedAt)
       ..setIsAscending(false));
 
@@ -277,7 +277,7 @@ class ThreadController extends BaseController {
     _currentEmailState = success.currentEmailState;
     emailList.value = success.emailList;
     if (listEmailController.hasClients) {
-      listEmailController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
+      listEmailController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
     }
   }
 
@@ -361,7 +361,7 @@ class ThreadController extends BaseController {
   void _refreshEmailChanges() {
     if (isSearchActive()) {
       if (_accountId != null && searchQuery != null) {
-        final limit = emailListSearch.length > 0 ? UnsignedInt(emailListSearch.length) : ThreadConstants.defaultLimit;
+        final limit = emailListSearch.isNotEmpty ? UnsignedInt(emailListSearch.length) : ThreadConstants.defaultLimit;
         consumeState(_searchEmailInteractor.execute(
           _accountId!,
           limit: limit,
@@ -535,7 +535,7 @@ class ThreadController extends BaseController {
   void openFilterMessagesForTablet(BuildContext context, RelativeRect? position, List<PopupMenuEntry> popupMenuItems) async {
     await showMenu(
         context: context,
-        position: position ?? RelativeRect.fromLTRB(16, 40, 16, 16),
+        position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
         color: Colors.white,
         elevation: 5,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -1054,12 +1054,12 @@ class ThreadController extends BaseController {
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
-              ..key(Key('confirm_dialog_delete_email_permanently'))
+              ..key(const Key('confirm_dialog_delete_email_permanently'))
               ..title(DeleteActionType.single.getTitleDialog(context))
               ..content(DeleteActionType.single.getContentDialog(context))
               ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog, fit: BoxFit.fill))
               ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-              ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
+              ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
               ..onCloseButtonAction(() => popBack())
               ..onConfirmButtonAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email))
               ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
@@ -1086,12 +1086,12 @@ class ThreadController extends BaseController {
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
-              ..key(Key('confirm_dialog_delete_emails_permanently'))
+              ..key(const Key('confirm_dialog_delete_emails_permanently'))
               ..title(actionType.getTitleDialog(context))
               ..content(actionType.getContentDialog(context, count: selectedEmails?.length))
               ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog, fit: BoxFit.fill))
               ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-              ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
+              ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
               ..onCloseButtonAction(() => popBack())
               ..onConfirmButtonAction(actionType.getConfirmActionName(context), () => _deleteSelectionEmailsPermanentlyAction(actionType))
               ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))

@@ -30,9 +30,9 @@ class EmailCacheManager {
         .where((email) => filterOption.filterEmail(email))
         .toList();
     if (sort != null) {
-      sort.forEach((comparator) {
+      for (var comparator in sort) {
         emailList.sortBy(comparator);
-      });
+      }
     }
     return emailList;
   }

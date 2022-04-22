@@ -11,7 +11,7 @@ class LoadMoreEmailsSuccess extends UIState {
 }
 
 class LoadMoreEmailsFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   LoadMoreEmailsFailure(this.exception);
 

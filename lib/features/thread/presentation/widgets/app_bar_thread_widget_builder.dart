@@ -61,13 +61,13 @@ class AppBarThreadWidgetBuilder {
 
   Widget build() {
     return Container(
-      key: Key('app_bar_thread_widget'),
+      key: const Key('app_bar_thread_widget'),
       alignment: Alignment.topCenter,
       color: Colors.white,
       margin: EdgeInsets.zero,
-      padding: EdgeInsets.only(left: 8, top: 16, bottom: 8, right: 8),
+      padding: const EdgeInsets.only(left: 8, top: 16, bottom: 8, right: 8),
       child: MediaQuery(
-        data: MediaQueryData(padding: EdgeInsets.zero),
+        data: const MediaQueryData(padding: EdgeInsets.zero),
         child: kIsWeb
             ? _selectMode == SelectMode.INACTIVE ? _buildBodyAppBarForWeb() : _buildBodyAppBarForWebSelection()
             : _selectMode == SelectMode.INACTIVE ? _buildBodyAppBarForMobile() : _buildBodyAppBarForMobileSelection()
@@ -78,12 +78,12 @@ class AppBarThreadWidgetBuilder {
   Widget _buildBodyAppBarForWeb() {
     return Row(children: [
       if (!_responsiveUtils.isTabletLarge(_context)) _buildMenuButton(),
-      if (_responsiveUtils.isTabletLarge(_context)) SizedBox(width: 16),
+      if (_responsiveUtils.isTabletLarge(_context)) const SizedBox(width: 16),
       Expanded(child: Text(
-          '${_currentMailbox?.name?.name.capitalizeFirstEach ?? ''}',
+          _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 21, color: Colors.black, fontWeight: FontWeight.bold))),
+          style: const TextStyle(fontSize: 21, color: Colors.black, fontWeight: FontWeight.bold))),
       _buildFilterButton(),
     ]);
   }
@@ -96,7 +96,7 @@ class AppBarThreadWidgetBuilder {
           onTap: () => _onCancelEditThread?.call()),
       Expanded(child: Text(
         AppLocalizations.of(_context).count_email_selected(_listSelectionEmail.length),
-        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))),
+        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))),
       buildIconWeb(
           icon: SvgPicture.asset(_listSelectionEmail.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead, fit: BoxFit.fill),
           tooltip: _listSelectionEmail.isAllEmailRead ? AppLocalizations.of(_context).unread : AppLocalizations.of(_context).read,
@@ -144,16 +144,16 @@ class AppBarThreadWidgetBuilder {
             _filterMessageOption.getTitle(_context).isNotEmpty
                 ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Padding(
-                        padding: EdgeInsets.only(left: 40, right: 40),
+                        padding: const EdgeInsets.only(left: 40, right: 40),
                         child: _buildContentCenterAppBar()),
                     Transform(
                         transform: Matrix4.translationValues(_responsiveUtils.isDesktop(_context) ? -2.0 : -16.0, -8.0, 0.0),
                         child: Text(
                             _filterMessageOption.getTitle(_context),
-                            style: TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
+                            style: const TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
                   ])
                 : Padding(
-                    padding: EdgeInsets.only(left: 60, right: 40),
+                    padding: const EdgeInsets.only(left: 60, right: 40),
                     child: _buildContentCenterAppBar()),
           ]
       ))
@@ -171,16 +171,16 @@ class AppBarThreadWidgetBuilder {
             _filterMessageOption.getTitle(_context).isNotEmpty
                 ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Padding(
-                        padding: EdgeInsets.only(left: 40, right: 40),
+                        padding: const EdgeInsets.only(left: 40, right: 40),
                         child: _buildContentCenterAppBar()),
                     Transform(
                         transform: Matrix4.translationValues(_responsiveUtils.isDesktop(_context) ? -2.0 : -16.0, -8.0, 0.0),
                         child: Text(
                             _filterMessageOption.getTitle(_context),
-                            style: TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
+                            style: const TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
                   ])
                 : Padding(
-                    padding: EdgeInsets.only(left: 60, right: 40),
+                    padding: const EdgeInsets.only(left: 60, right: 40),
                     child: _buildContentCenterAppBar()),
           ]
       ))
@@ -192,12 +192,12 @@ class AppBarThreadWidgetBuilder {
         borderRadius: BorderRadius.circular(12),
         color: Colors.transparent,
         child: Padding(
-            padding: EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 16),
             child: TextButton(
               onPressed: () => _onEditThreadAction?.call(),
               child: Text(
                 AppLocalizations.of(_context).edit,
-                style: TextStyle(fontSize: 17, color: AppColor.colorTextButton),
+                style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton),
               ),
             )
         )
@@ -209,7 +209,7 @@ class AppBarThreadWidgetBuilder {
       borderRadius: BorderRadius.circular(12),
       color: Colors.transparent,
       child: Padding(
-        padding: EdgeInsets.only(left: 16, right: 16),
+        padding: const EdgeInsets.only(left: 16, right: 16),
         child: GestureDetector(
             onTap: () {
               if (_onFilterEmailAction != null && _responsiveUtils.isMobileDevice(_context)) {
@@ -258,7 +258,7 @@ class AppBarThreadWidgetBuilder {
             '${_listSelectionEmail.length}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 17, color: AppColor.colorTextButton)));
+            style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton)));
   }
 
   Widget _buildContentCenterAppBar() {
@@ -269,16 +269,16 @@ class AppBarThreadWidgetBuilder {
         InkWell(
           onTap: () => !_responsiveUtils.isTabletLarge(_context) ? _onOpenMailboxMenuActionClick?.call() : null,
           child: Padding(
-            padding: !_responsiveUtils.isTabletLarge(_context) ? EdgeInsets.zero : EdgeInsets.only(bottom: 8, top: 8),
+            padding: !_responsiveUtils.isTabletLarge(_context) ? EdgeInsets.zero : const EdgeInsets.only(bottom: 8, top: 8),
             child: Container(
               padding: EdgeInsets.zero,
               margin: EdgeInsets.zero,
               constraints: BoxConstraints(maxWidth: _getMaxWidthAppBarTitle()),
               child: Text(
-                '${_currentMailbox?.name?.name.capitalizeFirstEach ?? ''}',
+                _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
                 maxLines: 1,
                 overflow: GetPlatform.isWeb ? TextOverflow.clip : TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 21, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700))
+                style: const TextStyle(fontSize: 21, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700))
             ))),
         if (!_responsiveUtils.isTabletLarge(_context))
           Transform(

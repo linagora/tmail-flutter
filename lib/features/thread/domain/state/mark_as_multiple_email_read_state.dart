@@ -31,7 +31,7 @@ class MarkAsMultipleEmailReadHasSomeEmailFailure extends UIState {
 }
 
 class MarkAsMultipleEmailReadFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
   final ReadActions readActions;
 
   MarkAsMultipleEmailReadFailure(this.exception, this.readActions);
