@@ -12,8 +12,8 @@ class StorageWidgetBuilder {
 
   Widget build() {
     return Container(
-      key: Key('storage_widget'),
-      padding: EdgeInsets.only(left: 40, top: 16, bottom: 20, right: 40),
+      key: const Key('storage_widget'),
+      padding: const EdgeInsets.only(left: 40, top: 16, bottom: 20, right: 40),
       color: AppColor.storageBackgroundColor,
       alignment: Alignment.bottomLeft,
       height: 100,
@@ -24,11 +24,11 @@ class StorageWidgetBuilder {
           Text(
             AppLocalizations.of(_context).storage,
             maxLines: 1,
-            style: TextStyle(fontSize: 12, color: AppColor.storageTitleColor, fontWeight: FontWeight.w500)),
+            style: const TextStyle(fontSize: 12, color: AppColor.storageTitleColor, fontWeight: FontWeight.w500)),
           Padding(
-            padding: EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.only(top: 8.0),
             child: RichText(
-              text: TextSpan(
+              text: const TextSpan(
                 style: TextStyle(fontSize: 16, color: AppColor.storageMaxSizeColor, fontWeight: FontWeight.w700),
                 children: [
                   TextSpan(

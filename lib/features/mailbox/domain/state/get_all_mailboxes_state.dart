@@ -16,7 +16,7 @@ class GetAllMailboxSuccess extends UIState {
 }
 
 class GetAllMailboxFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   GetAllMailboxFailure(this.exception);
 

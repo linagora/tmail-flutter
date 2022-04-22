@@ -158,14 +158,14 @@ class MailboxAPI {
       final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
       final currentSetMailboxInvocations = currentExecuteList.map((mailboxId) {
           return SetMailboxMethod(accountId)
-            ..addDestroy(Set.of([mailboxId.id]))
+            ..addDestroy({mailboxId.id})
             ..addOnDestroyRemoveEmails(true);
           })
         .map(requestBuilder.invocation)
         .toList();
 
       final response = await (requestBuilder
-          ..usings(Set.of([CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail])))
+          ..usings({CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail}))
         .build()
         .execute();
 

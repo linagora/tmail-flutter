@@ -4,7 +4,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 
 extension ListMailboxExtensions on List<Mailbox> {
-  Tuple2<List<PresentationMailbox>, List<PresentationMailbox>> splitMailboxList(bool test(Mailbox element)) {
+  Tuple2<List<PresentationMailbox>, List<PresentationMailbox>> splitMailboxList(bool Function(Mailbox element) test) {
     final validBuilder = ListBuilder<PresentationMailbox>();
     final invalidBuilder = ListBuilder<PresentationMailbox>();
     forEach((element) {

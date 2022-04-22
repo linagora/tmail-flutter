@@ -28,7 +28,7 @@ class UserInformationWidgetBuilder {
 
   Widget build() {
     return Container(
-      key: Key('user_information_widget'),
+      key: const Key('user_information_widget'),
       color: Colors.transparent,
       padding: EdgeInsets.zero,
       margin: EdgeInsets.zero,
@@ -37,7 +37,7 @@ class UserInformationWidgetBuilder {
             ..text(_userProfile != null ? _userProfile!.getAvatarText() : '')
             ..backgroundColor(Colors.white)
             ..textColor(Colors.black)
-            ..addBoxShadows([BoxShadow(
+            ..addBoxShadows([const BoxShadow(
                 color: AppColor.colorShadowBgContentEmail,
                 spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
             ..size(GetPlatform.isWeb ? 48 : 56))
@@ -47,16 +47,16 @@ class UserInformationWidgetBuilder {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-                padding: EdgeInsets.only(left: 16, top: 10),
+                padding: const EdgeInsets.only(left: 16, top: 10),
                 child: Text(
                     _userProfile != null ? '${_userProfile?.email}' : '',
                     maxLines: 1,
                     overflow: GetPlatform.isWeb ? TextOverflow.clip : TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 17, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600)
+                    style: const TextStyle(fontSize: 17, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600)
                 )
             ),
             Padding(
-              padding: EdgeInsets.only(left: 10),
+              padding: const EdgeInsets.only(left: 10),
               child: Material(
                   borderRadius: BorderRadius.circular(20),
                   color: Colors.transparent,
@@ -66,7 +66,7 @@ class UserInformationWidgetBuilder {
                         onPressed: () => _onLogoutActionClick?.call(),
                         child: Text(
                           AppLocalizations.of(_context).logout,
-                          style: TextStyle(fontSize: 14, color: AppColor.colorTextButton),
+                          style: const TextStyle(fontSize: 14, color: AppColor.colorTextButton),
                         ),
                       )
                   )

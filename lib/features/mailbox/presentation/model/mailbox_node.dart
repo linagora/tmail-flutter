@@ -6,7 +6,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 
 class MailboxNode with EquatableMixin{
-  static PresentationMailbox _root = PresentationMailbox(MailboxId(Id('root')));
+  static final PresentationMailbox _root = PresentationMailbox(MailboxId(Id('root')));
 
   PresentationMailbox item;
   List<MailboxNode>? childrenItems;
@@ -29,14 +29,12 @@ class MailboxNode with EquatableMixin{
   );
 
   void addChildNode(MailboxNode node) {
-    if (childrenItems == null) {
-      childrenItems = [];
-    }
+    childrenItems ??= [];
     childrenItems?.add(node);
   }
 
   List<MailboxNode>? updateNode(MailboxId mailboxId, MailboxNode newNode, {MailboxNode? parent}) {
-    List<MailboxNode>? _children = parent == null ? this.childrenItems : parent.childrenItems;
+    List<MailboxNode>? _children = parent == null ? childrenItems : parent.childrenItems;
     return _children?.map((MailboxNode child) {
       if (child.item.id == mailboxId) {
         return newNode;
@@ -66,15 +64,15 @@ class MailboxNode with EquatableMixin{
       listOfNodes.add(node);
       List<MailboxNode>? childrenItems = node.childrenItems;
       if (childrenItems != null) {
-        childrenItems.forEach((child) {
+        for (var child in childrenItems) {
           _appendDescendants(child, listOfNodes);
-        });
+        }
       }
     }
   }
 
   List<MailboxNode>? toggleSelectNode(MailboxNode selectedMailboxMode, {MailboxNode? parent}) {
-    List<MailboxNode>? _children = parent == null ? this.childrenItems : parent.childrenItems;
+    List<MailboxNode>? _children = parent == null ? childrenItems : parent.childrenItems;
     return _children?.map((MailboxNode child) {
       if (child.item.id == selectedMailboxMode.item.id) {
         return child.toggleSelectMailboxNode();
@@ -88,7 +86,7 @@ class MailboxNode with EquatableMixin{
   }
 
   List<MailboxNode>? toSelectedNode({required SelectMode selectMode, ExpandMode? newExpandMode, MailboxNode? parent}) {
-    List<MailboxNode>? _children = parent == null ? this.childrenItems : parent.childrenItems;
+    List<MailboxNode>? _children = parent == null ? childrenItems : parent.childrenItems;
     return _children?.map((MailboxNode child) {
       if (child.hasChildren()) {
         return child.copyWith(
