@@ -16,6 +16,8 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
+  MailboxDashBoardView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,8 +26,8 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
           responsiveUtils: _responsiveUtils,
           mobile: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
           tablet: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
-          tabletLarge: SizedBox.shrink(),
-          desktop: SizedBox.shrink()
+          tabletLarge: const SizedBox.shrink(),
+          desktop: const SizedBox.shrink()
       ),
       drawerEnableOpenDragGesture: _responsiveUtils.isMobile(context) || _responsiveUtils.isTablet(context),
       body: Stack(children: [
@@ -36,11 +38,11 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
             tablet: ThreadView(),
             mobile: ThreadView()
         ),
-        Obx(() => controller.dashBoardAction == DashBoardAction.compose
+        Obx(() => controller.dashBoardAction.value == DashBoardAction.compose
             ? ComposerView()
-            : SizedBox.shrink()),
+            : const SizedBox.shrink()),
         Obx(() => controller.isNetworkConnectionAvailable()
-            ? SizedBox.shrink()
+            ? const SizedBox.shrink()
             : Align(alignment: Alignment.bottomCenter, child: buildNetworkConnectionWidget(context))),
       ]),
     );
@@ -56,7 +58,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
             case AppRoutes.EMAIL:
               return EmailView();
             default:
-              return SizedBox.shrink();
+              return const SizedBox.shrink();
           }
         });
       case ReadingPane.rightOfInbox:
@@ -78,7 +80,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
           );
         }
       default:
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
     }
   }
 
@@ -89,14 +91,12 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       });
     }
 
-    return Container(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeMenuWidthWeb),
-          Expanded(child: _buildThreadAndEmailContainer(context))
-        ],
-      ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeMenuWidthWeb),
+        Expanded(child: _buildThreadAndEmailContainer(context))
+      ],
     );
   }
 }
