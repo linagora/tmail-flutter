@@ -12,7 +12,7 @@ class DeleteMultipleMailboxSuccess extends UIState {
 }
 
 class DeleteMultipleMailboxFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   DeleteMultipleMailboxFailure(this.exception);
 

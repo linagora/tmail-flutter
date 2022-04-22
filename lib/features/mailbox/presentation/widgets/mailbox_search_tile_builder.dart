@@ -43,10 +43,10 @@ class MailboxSearchTileBuilder {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent),
       child: Container(
-        key: Key('mailbox_list_tile'),
+        key: const Key('mailbox_list_tile'),
         alignment: Alignment.center,
         child: MediaQuery(
-          data: MediaQueryData(padding: EdgeInsets.zero),
+          data: const MediaQueryData(padding: EdgeInsets.zero),
           child: Column(children: [
             ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -62,10 +62,10 @@ class MailboxSearchTileBuilder {
                       Expanded(child: Transform(
                           transform: Matrix4.translationValues(allSelectMode == SelectMode.ACTIVE ? -16.0 : -20.0, 0.0, 0.0),
                           child: Text(
-                            '${_presentationMailbox.name?.name ?? ''}',
+                            _presentationMailbox.name?.name ?? '',
                             maxLines: 1,
                             overflow:TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 17, color: AppColor.colorNameEmail, fontWeight: FontWeight.normal),
+                            style: const TextStyle(fontSize: 17, color: AppColor.colorNameEmail, fontWeight: FontWeight.normal),
                           ))),
                     ]),
                 subtitle: _presentationMailbox.mailboxPath?.isNotEmpty == true
@@ -75,7 +75,7 @@ class MailboxSearchTileBuilder {
                           _presentationMailbox.mailboxPath ?? '',
                           maxLines: 1,
                           overflow:TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 13, color: AppColor.colorContentEmail),
+                          style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail),
                         ),
                       )
                     : null,
@@ -83,7 +83,7 @@ class MailboxSearchTileBuilder {
             if (lastMailbox?.id != _presentationMailbox.id && !kIsWeb)
               Padding(
                 padding: EdgeInsets.only(left: allSelectMode == SelectMode.ACTIVE ? 50 : 35),
-                child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
+                child: const Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
           ]),
         )
       )
@@ -107,11 +107,11 @@ class MailboxSearchTileBuilder {
                 onHover: (value) => setState(() => isHoverIcon = value),
                 child: isHoverIcon
                     ? _buildSelectModeIcon()
-                    : SvgPicture.asset('${_presentationMailbox.getMailboxIcon(_imagePaths)}', width: 28, height: 28, fit: BoxFit.fill)
+                    : SvgPicture.asset(_presentationMailbox.getMailboxIcon(_imagePaths), width: 28, height: 28, fit: BoxFit.fill)
             );
           });
     } else {
-      return SvgPicture.asset('${_presentationMailbox.getMailboxIcon(_imagePaths)}', width: 28, height: 28, fit: BoxFit.fill);
+      return SvgPicture.asset(_presentationMailbox.getMailboxIcon(_imagePaths), width: 28, height: 28, fit: BoxFit.fill);
     }
   }
 

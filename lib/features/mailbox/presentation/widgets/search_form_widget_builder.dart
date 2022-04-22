@@ -24,7 +24,7 @@ class SearchFormWidgetBuilder {
 
   Widget build() {
     return Container(
-      key: Key('search_folder_form'),
+      key: const Key('search_folder_form'),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
@@ -38,23 +38,23 @@ class SearchFormWidgetBuilder {
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
             enabledBorder: InputBorder.none,
-            contentPadding: EdgeInsets.only(left: 0, top: 15, bottom: 15, right: 15),
+            contentPadding: const EdgeInsets.only(left: 0, top: 15, bottom: 15, right: 15),
             hintText: AppLocalizations.of(_context).search_folder,
-            hintStyle: TextStyle(color: AppColor.searchHintTextColor, fontSize: 15.0, fontWeight: FontWeight.w500),
+            hintStyle: const TextStyle(color: AppColor.searchHintTextColor, fontSize: 15.0, fontWeight: FontWeight.w500),
             icon: Padding(
-              padding: EdgeInsets.only(left: 20),
+              padding: const EdgeInsets.only(left: 20),
               child: SvgPicture.asset(_imagePaths.icSearch, width: 24, height: 24, fit: BoxFit.fill),
             ))),
-        debounceDuration: Duration(milliseconds: 300),
+        debounceDuration: const Duration(milliseconds: 300),
         suggestionsCallback: (pattern) async {
           if (_onNewSearchQuery != null) {
             _onNewSearchQuery!(pattern);
           }
           return [];
         },
-        itemBuilder: (BuildContext context, itemData) => SizedBox.shrink(),
+        itemBuilder: (BuildContext context, itemData) => const SizedBox.shrink(),
         onSuggestionSelected: (suggestion) {},
-        noItemsFoundBuilder: (context) => SizedBox(),
+        noItemsFoundBuilder: (context) => const SizedBox(),
         hideOnEmpty: true,
         hideOnError: true,
         hideOnLoading: true,

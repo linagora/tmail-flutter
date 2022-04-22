@@ -12,7 +12,7 @@ class CreateNewMailboxSuccess extends UIState {
 }
 
 class CreateNewMailboxFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   CreateNewMailboxFailure(this.exception);
 
