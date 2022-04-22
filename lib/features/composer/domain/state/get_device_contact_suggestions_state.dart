@@ -12,7 +12,7 @@ class GetDeviceContactSuggestionsSuccess extends UIState {
 }
 
 class GetDeviceContactSuggestionsFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   GetDeviceContactSuggestionsFailure(this.exception);
 

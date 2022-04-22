@@ -12,7 +12,7 @@ class GetAutoCompleteSuccess extends UIState {
 }
 
 class GetAutoCompleteFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   GetAutoCompleteFailure(this.exception);
 

@@ -9,7 +9,7 @@ class SaveEmailAddressSuccess extends UIState {
 }
 
 class SaveEmailAddressFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   SaveEmailAddressFailure(this.exception);
 

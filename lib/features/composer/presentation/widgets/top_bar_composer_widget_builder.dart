@@ -37,11 +37,11 @@ class TopBarComposerWidgetBuilder {
 
   Widget build() {
     return Container(
-      key: Key('top_bar_composer_widget'),
+      key: const Key('top_bar_composer_widget'),
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
       child: MediaQuery(
-        data: MediaQueryData(padding: EdgeInsets.zero),
+        data: const MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
@@ -83,7 +83,7 @@ class TopBarComposerWidgetBuilder {
               }
             },
             child: Padding(
-              padding: EdgeInsets.only(right: kIsWeb ? 16 : 0),
+              padding: const EdgeInsets.only(right: kIsWeb ? 16 : 0),
               child: SvgPicture.asset(_imagePaths.icShare, fit: BoxFit.fill),
             ),
             onTapDown: (detail) {
@@ -102,7 +102,7 @@ class TopBarComposerWidgetBuilder {
           ),
         ),
         IconButton(
-            key: Key('button_send_email'),
+            key: const Key('button_send_email'),
             color: _isEnableEmailSendButton ? AppColor.enableSendEmailButtonColor : AppColor.disableSendEmailButtonColor,
             icon: SvgPicture.asset(
                 _imagePaths.icComposerSend,
@@ -114,7 +114,7 @@ class TopBarComposerWidgetBuilder {
               }
             }
         ),
-        SizedBox(width: 8)
+        const SizedBox(width: 8)
       ]
     );
   }
