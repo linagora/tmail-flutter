@@ -9,7 +9,7 @@ class RemoveEmailDraftsSuccess extends UIState {
 }
 
 class RemoveEmailDraftsFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   RemoveEmailDraftsFailure(this.exception);
 

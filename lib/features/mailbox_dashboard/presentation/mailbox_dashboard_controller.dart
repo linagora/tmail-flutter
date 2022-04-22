@@ -74,8 +74,8 @@ class MailboxDashBoardController extends ReloadableController {
 
   SearchQuery? searchQuery;
   Session? sessionCurrent;
-  Map<Role, MailboxId> mapDefaultMailboxId = Map();
-  Map<MailboxId, PresentationMailbox> mapMailbox = Map();
+  Map<Role, MailboxId> mapDefaultMailboxId = {};
+  Map<MailboxId, PresentationMailbox> mapMailbox = {};
   TextEditingController searchInputController = TextEditingController();
   FocusNode searchFocus = FocusNode();
   RouterArguments? routerArguments;
@@ -402,7 +402,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void composeEmailAction() {
     if (kIsWeb) {
-      if (dashBoardAction != DashBoardAction.compose) {
+      if (dashBoardAction.value != DashBoardAction.compose) {
         dispatchDashBoardAction(DashBoardAction.compose, arguments: ComposerArguments());
       }
     } else {
@@ -412,7 +412,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void goToComposer(ComposerArguments arguments) {
     if (kIsWeb) {
-      if (dashBoardAction != DashBoardAction.compose) {
+      if (dashBoardAction.value != DashBoardAction.compose) {
         dispatchDashBoardAction(DashBoardAction.compose, arguments: arguments);
       }
     } else {

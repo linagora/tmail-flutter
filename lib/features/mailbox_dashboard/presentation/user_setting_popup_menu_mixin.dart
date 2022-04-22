@@ -12,7 +12,7 @@ mixin UserSettingPopupMenuMixin {
   void openUserSettingAction(BuildContext context, RelativeRect? position, List<PopupMenuEntry> popupMenuItems) async {
     await showMenu(
         context: context,
-        position: position ?? RelativeRect.fromLTRB(16, 40, 16, 16),
+        position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
         color: Colors.white,
         elevation: 5,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -21,16 +21,16 @@ mixin UserSettingPopupMenuMixin {
 
   List<PopupMenuEntry> popupMenuUserSettingActionTile(BuildContext context, Function? onCallBack) {
     return [
-      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: logoutAction(context, onCallBack)),
+      PopupMenuItem(padding: const EdgeInsets.symmetric(horizontal: 8), child: logoutAction(context, onCallBack)),
     ];
   }
 
   Widget logoutAction(BuildContext context, Function? onCallBack) {
     return (AppActionSheetActionBuilder(
-          Key('logout_action'),
+          const Key('logout_action'),
           SvgPicture.asset(_imagePaths.icCloseMailbox, color: AppColor.colorTextButton, fit: BoxFit.fill),
           AppLocalizations.of(context).logout,
-          iconLeftPadding:EdgeInsets.only(right: 12))
+          iconLeftPadding:const EdgeInsets.only(right: 12))
         ..onActionClick((option) => onCallBack?.call()))
       .build();
   }
