@@ -35,7 +35,7 @@ class MailboxBindings extends BaseBindings {
 
   void _bindingsUtils() {
     Get.lazyPut(() => TreeBuilder());
-    Get.lazyPut(() => Uuid());
+    Get.lazyPut(() => const Uuid());
   }
 
   @override

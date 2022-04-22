@@ -9,7 +9,7 @@ class RenameMailboxSuccess extends UIState {
 }
 
 class RenameMailboxFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   RenameMailboxFailure(this.exception);
 

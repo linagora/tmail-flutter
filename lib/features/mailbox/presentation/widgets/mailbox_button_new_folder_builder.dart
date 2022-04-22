@@ -32,13 +32,13 @@ class MailboxNewFolderTileBuilder {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent),
       child: Container(
-        key: Key('mailbox_new_folder_tile'),
+        key: const Key('mailbox_new_folder_tile'),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           color: AppColor.mailboxBackgroundColor),
         child: MediaQuery(
-          data: MediaQueryData(padding: EdgeInsets.zero),
+          data: const MediaQueryData(padding: EdgeInsets.zero),
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             onTap: () => {
@@ -47,16 +47,16 @@ class MailboxNewFolderTileBuilder {
               }
             },
             leading: Padding(
-              padding: EdgeInsets.only(left: 34),
+              padding: const EdgeInsets.only(left: 34),
               child: _icon != null
                 ? SvgPicture.asset(_icon!, width: 24, height: 24, color: AppColor.mailboxIconColor, fit: BoxFit.fill)
-                : SizedBox.shrink()),
+                : const SizedBox.shrink()),
             title: Padding(
-              padding: EdgeInsets.only(left: 8),
+              padding: const EdgeInsets.only(left: 8),
               child: Text(
                 _name ?? '',
                 maxLines: 1,
-                style: TextStyle(fontSize: 15, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 15, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
               )),
           )
         )

@@ -26,11 +26,11 @@ class BottomBarSelectionMailboxWidget {
 
   Widget build() {
     return Container(
-      key: Key('bottom_bar_selection_mailbox_widget'),
+      key: const Key('bottom_bar_selection_mailbox_widget'),
       alignment: Alignment.center,
       color: Colors.white,
       child: MediaQuery(
-        data: MediaQueryData(padding: EdgeInsets.zero),
+        data: const MediaQueryData(padding: EdgeInsets.zero),
         child: SafeArea(child: _buildListOptionButton())
       )
     );
@@ -42,16 +42,16 @@ class BottomBarSelectionMailboxWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(child: (ButtonBuilder(_imagePaths.icMove)
-            ..key(Key('button_move_all_mailbox'))
-            ..paddingIcon(EdgeInsets.all(8))
+            ..key(const Key('button_move_all_mailbox'))
+            ..paddingIcon(const EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton.withOpacity(0.3)))
             ..iconColor(AppColor.colorTextButton.withOpacity(0.3))
             ..onPressActionClick(() => {})
             ..text(AppLocalizations.of(_context).move, isVertical: true))
           .build()),
         Expanded(child: (ButtonBuilder(_imagePaths.icRenameMailbox)
-            ..key(Key('button_rename_mailbox'))
-            ..paddingIcon(EdgeInsets.all(8))
+            ..key(const Key('button_rename_mailbox'))
+            ..paddingIcon(const EdgeInsets.all(8))
             ..textStyle(TextStyle(
                 fontSize: 12,
                 color: _isRenameMailboxValid ? AppColor.colorTextButton : AppColor.colorTextButton.withOpacity(0.3)))
@@ -64,16 +64,16 @@ class BottomBarSelectionMailboxWidget {
             ..text(AppLocalizations.of(_context).rename, isVertical: true))
           .build()),
         Expanded(child: (ButtonBuilder(_imagePaths.icRead)
-            ..key(Key('button_mark_read_all_mailbox'))
-            ..paddingIcon(EdgeInsets.all(8))
+            ..key(const Key('button_mark_read_all_mailbox'))
+            ..paddingIcon(const EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton.withOpacity(0.3)))
             ..iconColor(AppColor.colorTextButton.withOpacity(0.3))
             ..onPressActionClick(() => {})
             ..text(AppLocalizations.of(_context).mark_as_read, isVertical: true))
           .build()),
         Expanded(child: (ButtonBuilder(_imagePaths.icDelete)
-            ..key(Key('button_delete_all_mailbox'))
-            ..paddingIcon(EdgeInsets.all(8))
+            ..key(const Key('button_delete_all_mailbox'))
+            ..paddingIcon(const EdgeInsets.all(8))
             ..textStyle(TextStyle(
                 fontSize: 12,
                 color: _isDeleteMailboxValid ? AppColor.colorTextButton : AppColor.colorTextButton.withOpacity(0.3)))

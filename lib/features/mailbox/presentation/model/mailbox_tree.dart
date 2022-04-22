@@ -15,7 +15,7 @@ class MailboxTree with EquatableMixin {
   MailboxTree(this.root);
 
   MailboxNode? findNode(NodeQuery nodeQuery) {
-    var result;
+    MailboxNode? result;
     final queue = ListQueue<MailboxNode>();
     queue.addLast(root);
     while (queue.isNotEmpty) {

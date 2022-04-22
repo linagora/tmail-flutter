@@ -44,15 +44,15 @@ class MailBoxFolderTileBuilder {
   );
 
   void addOnExpandFolderActionClick(OnExpandFolderActionClick onExpandFolderActionClick) {
-    this._onExpandFolderActionClick = onExpandFolderActionClick;
+    _onExpandFolderActionClick = onExpandFolderActionClick;
   }
 
   void addOnOpenMailboxFolderClick(OnOpenMailboxFolderClick onOpenMailboxFolderClick) {
-    this._onOpenMailboxFolderClick = onOpenMailboxFolderClick;
+    _onOpenMailboxFolderClick = onOpenMailboxFolderClick;
   }
 
   void addOnSelectMailboxFolderClick(OnSelectMailboxFolderClick onSelectMailboxFolderClick) {
-    this._onSelectMailboxFolderClick = onSelectMailboxFolderClick;
+    _onSelectMailboxFolderClick = onSelectMailboxFolderClick;
   }
 
   Widget build() {
@@ -61,14 +61,14 @@ class MailBoxFolderTileBuilder {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent),
       child: Container(
-        key: Key('mailbox_folder_tile'),
+        key: const Key('mailbox_folder_tile'),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(kIsWeb ? 10 : 0),
           color: backgroundColorItem
         ),
-        padding: kIsWeb ? EdgeInsets.only(left: 8, right: 4) : EdgeInsets.zero,
+        padding: kIsWeb ? const EdgeInsets.only(left: 8, right: 4) : EdgeInsets.zero,
         child: MediaQuery(
-          data: MediaQueryData(padding: EdgeInsets.zero),
+          data: const MediaQueryData(padding: EdgeInsets.zero),
           child: Column(children: [
             ListTile(
               hoverColor: Colors.transparent,
@@ -92,13 +92,13 @@ class MailBoxFolderTileBuilder {
                   : _mailboxNode.item.getCountUnReadEmails().isNotEmpty
                         && mailboxDisplayed == MailboxDisplayed.mailbox
                         && !_mailboxNode.hasChildren()
-                    ? SizedBox(width: 40)
-                    : SizedBox.shrink()
+                    ? const SizedBox(width: 40)
+                    : const SizedBox.shrink()
             ),
             if (lastNode?.item.id != _mailboxNode.item.id && !kIsWeb)
               Padding(
                   padding: EdgeInsets.only(left: allSelectMode == SelectMode.ACTIVE ? 50 : 35),
-                  child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
+                  child: const Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
           ])
         )
       )
@@ -123,10 +123,10 @@ class MailBoxFolderTileBuilder {
         Expanded(child: Transform(
           transform: Matrix4.translationValues(allSelectMode == SelectMode.ACTIVE ? -16.0 : -20.0, 0.0, 0.0),
           child: Text(
-            '${_mailboxNode.item.name?.name ?? ''}',
+            _mailboxNode.item.name?.name ?? '',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 15, color: AppColor.colorNameEmail, fontWeight: FontWeight.normal),
+            style: const TextStyle(fontSize: 15, color: AppColor.colorNameEmail, fontWeight: FontWeight.normal),
           ))),
         if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty && mailboxDisplayed == MailboxDisplayed.mailbox)
           Transform(transform: Matrix4.translationValues(25.0, 0.0, 0.0), child: _buildCounter())
@@ -136,10 +136,10 @@ class MailBoxFolderTileBuilder {
 
   Widget _buildCounter() {
     return Text(
-      '${_mailboxNode.item.getCountUnReadEmails()}',
+      _mailboxNode.item.getCountUnReadEmails(),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.normal),
+      style: const TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.normal),
     );
   }
 
@@ -152,11 +152,11 @@ class MailBoxFolderTileBuilder {
                 onHover: (value) => setState(() => isHoverIcon = value),
                 child: isHoverIcon
                   ? _buildSelectModeIcon()
-                  : SvgPicture.asset('${_mailboxNode.item.getMailboxIcon(_imagePaths)}', width: 28, height: 28, fit: BoxFit.fill)
+                  : SvgPicture.asset(_mailboxNode.item.getMailboxIcon(_imagePaths), width: 28, height: 28, fit: BoxFit.fill)
             );
           });
     } else {
-      return SvgPicture.asset('${_mailboxNode.item.getMailboxIcon(_imagePaths)}', width: 28, height: 28, fit: BoxFit.fill);
+      return SvgPicture.asset(_mailboxNode.item.getMailboxIcon(_imagePaths), width: 28, height: 28, fit: BoxFit.fill);
     }
   }
 

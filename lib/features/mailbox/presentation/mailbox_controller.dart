@@ -8,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmapState;
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap_state;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -89,7 +89,7 @@ class MailboxController extends BaseMailboxController {
   final searchFocus = FocusNode();
   final mailboxListScrollController = ScrollController();
 
-  jmapState.State? currentMailboxState;
+  jmap_state.State? currentMailboxState;
   List<String> listMailboxNameAsStringExist = <String>[];
 
   MailboxController(
@@ -154,7 +154,7 @@ class MailboxController extends BaseMailboxController {
       );
     });
 
-    _openMailboxEventController.stream.throttleTime(Duration(milliseconds: 800)).listen((event) {
+    _openMailboxEventController.stream.throttleTime(const Duration(milliseconds: 800)).listen((event) {
       _handleOpenMailbox(event.buildContext, event.presentationMailbox);
     });
 
@@ -253,20 +253,11 @@ class MailboxController extends BaseMailboxController {
 
   void _setUpMapMailboxIdDefault(List<PresentationMailbox> allMailbox, MailboxTree defaultTree, MailboxTree folderTree) {
 
-    final mapDefaultMailboxId = Map<Role, MailboxId>.fromIterable(
-      defaultTree.root.childrenItems ?? List<MailboxNode>.empty(),
-      key: (mailboxNode) => mailboxNode.item.role!,
-      value: (mailboxNode) => mailboxNode.item.id);
+    final mapDefaultMailboxId = { for (var mailboxNode in defaultTree.root.childrenItems ?? List<MailboxNode>.empty()) mailboxNode.item.role! : mailboxNode.item.id };
 
-    final mapDefaultMailbox = Map<Role, PresentationMailbox>.fromIterable(
-      defaultTree.root.childrenItems ?? List<MailboxNode>.empty(),
-      key: (mailboxNode) => mailboxNode.item.role!,
-      value: (mailboxNode) => mailboxNode.item);
+    final mapDefaultMailbox = { for (var mailboxNode in defaultTree.root.childrenItems ?? List<MailboxNode>.empty()) mailboxNode.item.role! : mailboxNode.item };
 
-    final mapMailbox = Map<MailboxId, PresentationMailbox>.fromIterable(
-      allMailbox,
-      key: (presentationMailbox) => presentationMailbox.id,
-      value: (presentationMailbox) => presentationMailbox);
+    final mapMailbox = { for (var presentationMailbox in allMailbox) presentationMailbox.id : presentationMailbox };
 
     mailboxDashBoardController.setMapDefaultMailboxId(mapDefaultMailboxId);
 
@@ -499,12 +490,12 @@ class MailboxController extends BaseMailboxController {
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
-              ..key(Key('confirm_dialog_delete_mailbox'))
+              ..key(const Key('confirm_dialog_delete_mailbox'))
               ..title(AppLocalizations.of(context).delete_mailboxes)
               ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
               ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog, fit: BoxFit.fill))
               ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-              ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
+              ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
               ..onCloseButtonAction(() => popBack())
               ..onConfirmButtonAction(AppLocalizations.of(context).delete, () => _deleteMailboxAction(presentationMailbox))
               ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
@@ -552,7 +543,7 @@ class MailboxController extends BaseMailboxController {
   void _switchBackToMailboxDefault() {
     final inboxMailbox = findMailboxNodeByRole(PresentationMailbox.roleInbox);
     mailboxDashBoardController.setSelectedMailbox(inboxMailbox?.item);
-    mailboxListScrollController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
+    mailboxListScrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
   }
 
   void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
@@ -569,11 +560,11 @@ class MailboxController extends BaseMailboxController {
 
     if (_responsiveUtils.isMobile(context)) {
       (EditTextModalSheetBuilder()
-          ..key(Key('rename_mailbox_modal_sheet'))
+          ..key(const Key('rename_mailbox_modal_sheet'))
           ..title(AppLocalizations.of(context).rename_mailbox)
           ..cancelText(AppLocalizations.of(context).cancel)
           ..boxConstraints(_responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context)
-              ? BoxConstraints(maxWidth: 400)
+              ? const BoxConstraints(maxWidth: 400)
               : null)
           ..onConfirmAction(AppLocalizations.of(context).rename,
               (value) => _renameMailboxAction(presentationMailbox, value))
@@ -593,7 +584,7 @@ class MailboxController extends BaseMailboxController {
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           builder: (BuildContext context) =>
               PointerInterceptor(child: (EditTextDialogBuilder()
-                  ..key(Key('rename_mailbox_dialog'))
+                  ..key(const Key('rename_mailbox_dialog'))
                   ..title(AppLocalizations.of(context).rename_mailbox)
                   ..cancelText(AppLocalizations.of(context).cancel)
                   ..setErrorString((value) => getErrorInputNameStringRenameMailbox(context, value))
