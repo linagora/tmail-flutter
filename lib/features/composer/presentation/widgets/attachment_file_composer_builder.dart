@@ -54,7 +54,7 @@ class AttachmentFileComposerBuilder {
           color: Colors.white),
         child: Stack(children: [
           ListTile(
-              contentPadding: EdgeInsets.only(right: kIsWeb ? 16 : 18),
+              contentPadding: const EdgeInsets.only(right: kIsWeb ? 16 : 18),
               onTap: () {},
               leading: Transform(
                   transform: Matrix4.translationValues(8.0, kIsWeb ? -3.0 : -5.0, 0.0),
@@ -65,7 +65,7 @@ class AttachmentFileComposerBuilder {
                     attachment.name ?? '',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12, color: AppColor.colorNameEmail, fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontSize: 12, color: AppColor.colorNameEmail, fontWeight: FontWeight.w500),
                   )),
               subtitle: attachment.size != null && attachment.size?.value != 0
                   ? Transform(
@@ -74,7 +74,7 @@ class AttachmentFileComposerBuilder {
                           filesize(attachment.size?.value, 0),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 10, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal)))
+                          style: const TextStyle(fontSize: 10, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal)))
                   : null,
           ),
           Positioned(right: kIsWeb ? -5 : -12, top: kIsWeb ? -5 : -12, child: buildIconWeb(
