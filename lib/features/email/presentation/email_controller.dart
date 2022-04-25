@@ -35,9 +35,9 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_action.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -86,7 +86,7 @@ class EmailController extends BaseController {
   @override
   void onInit() {
     mailboxDashBoardController.selectedEmail.listen((presentationEmail) {
-      log('EmailController::onReady(): ${presentationEmail.toString()}');
+      log('EmailController::onReady(): selectedEmail: ${presentationEmail.toString()}');
       if (_currentEmailId != presentationEmail?.id) {
         _currentEmailId = presentationEmail?.id;
         _resetToOriginalValue();
@@ -546,8 +546,8 @@ class EmailController extends BaseController {
         emailAddress: emailAddress,
         mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
     if (kIsWeb) {
-      if (mailboxDashBoardController.dashBoardAction != DashBoardAction.compose) {
-        mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.compose, arguments: arguments);
+      if (mailboxDashBoardController.dashBoardAction.value is! ComposeEmailAction) {
+        mailboxDashBoardController.dispatchAction(ComposeEmailAction(arguments: arguments));
       }
     } else {
       push(AppRoutes.COMPOSER, arguments: arguments);
@@ -565,8 +565,8 @@ class EmailController extends BaseController {
           emailAddress: emailAddress,
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
       if (kIsWeb) {
-        if (mailboxDashBoardController.dashBoardAction != DashBoardAction.compose) {
-          mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.compose, arguments: arguments);
+        if (mailboxDashBoardController.dashBoardAction.value is! ComposeEmailAction) {
+          mailboxDashBoardController.dispatchAction(ComposeEmailAction(arguments: arguments));
         }
         if (Get.currentRoute == AppRoutes.EMAIL) {
           popBack();
@@ -629,8 +629,8 @@ class EmailController extends BaseController {
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
 
       if (kIsWeb) {
-        if (mailboxDashBoardController.dashBoardAction != DashBoardAction.compose) {
-          mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.compose, arguments: arguments);
+        if (mailboxDashBoardController.dashBoardAction.value is! ComposeEmailAction) {
+          mailboxDashBoardController.dispatchAction(ComposeEmailAction(arguments: arguments));
         }
         if (Get.currentRoute == AppRoutes.EMAIL) {
           popBack();
@@ -643,8 +643,8 @@ class EmailController extends BaseController {
 
   void composeEmailAction() {
     if (kIsWeb) {
-      if (mailboxDashBoardController.dashBoardAction != DashBoardAction.compose) {
-        mailboxDashBoardController.dispatchDashBoardAction(DashBoardAction.compose, arguments: ComposerArguments());
+      if (mailboxDashBoardController.dashBoardAction.value is! ComposeEmailAction) {
+        mailboxDashBoardController.dispatchAction(ComposeEmailAction(arguments: ComposerArguments()));
       }
       if (Get.currentRoute == AppRoutes.EMAIL) {
         popBack();

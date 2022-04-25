@@ -65,7 +65,7 @@ class UserInformationWidgetBuilder {
                       child: TextButton(
                         onPressed: () => _onLogoutActionClick?.call(),
                         child: Text(
-                          AppLocalizations.of(_context).logout,
+                          AppLocalizations.of(_context).manage_account,
                           style: const TextStyle(fontSize: 14, color: AppColor.colorTextButton),
                         ),
                       )
