@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_inte
 
 class CredentialBindings extends Bindings {
 
+  @override
   void dependencies() {
     bindingsRepositoryImpl();
     bindingsRepository();
