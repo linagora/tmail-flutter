@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-04-15T16:53:02.138499",
+  "@@last_modified": "2022-04-25T09:26:28.013781",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -474,8 +474,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "logout": "Logout",
-  "@logout": {
+  "sign_out": "Sign out",
+  "@sign_out": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1092,6 +1092,18 @@
   },
   "un_spam": "Unspam",
   "@un_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "settings": "Settings",
+  "@settings": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manage_account": "Manage account",
+  "@manage_account": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

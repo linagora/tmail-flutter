@@ -98,7 +98,7 @@ class AppBarThreadWidgetBuilder {
         AppLocalizations.of(_context).count_email_selected(_listSelectionEmail.length),
         style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))),
       buildIconWeb(
-          icon: SvgPicture.asset(_listSelectionEmail.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead, fit: BoxFit.fill),
+          icon: SvgPicture.asset(_listSelectionEmail.isAllEmailRead ? _imagePaths.icRead : _imagePaths.icUnread, fit: BoxFit.fill),
           tooltip: _listSelectionEmail.isAllEmailRead ? AppLocalizations.of(_context).unread : AppLocalizations.of(_context).read,
           onTap: () => _onEmailSelectionAction?.call(
               _listSelectionEmail.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,

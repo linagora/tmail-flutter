@@ -19,8 +19,8 @@ mixin PopupContextMenuActionMixin {
         context: context,
         position: position ?? RelativeRect.fromLTRB(16, 40, 16, 16),
         color: Colors.white,
-        elevation: 5,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         items: popupMenuItems);
   }
 
