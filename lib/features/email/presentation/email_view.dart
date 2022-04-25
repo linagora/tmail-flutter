@@ -15,17 +15,18 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_w
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:filesize/filesize.dart';
 
-class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectionMixin {
+class EmailView extends GetView with NetworkConnectionMixin {
 
   final emailController = Get.find<EmailController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
   static const int LIMIT_ADDRESS_DISPLAY = 1;
+
+  EmailView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,56 +38,20 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
       child: Scaffold(
         backgroundColor: responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
         body: Stack(children: [
-          Container(
-            padding: EdgeInsets.zero,
-            margin: EdgeInsets.zero,
-            decoration: responsiveUtils.isTabletLarge(context)
-                ? BoxDecoration(border: Border(left: BorderSide(color: AppColor.colorLineLeftEmailView, width: 1.0)))
-                : null,
-            child: SafeArea(
-                right: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-                left: responsiveUtils.isMobileDevice(context) && responsiveUtils.isLandscape(context),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (responsiveUtils.isDesktop(context))
-                        Container(
-                            color: Colors.white,
-                            padding: EdgeInsets.only(right: 10, top: 16, bottom: 10),
-                            child: _buildHeader(context)),
-                      Expanded(child: _buildBody(context)),
-                    ]
-                )
-            ),
-          ),
+          Row(children: [
+            if ((!kIsWeb && !responsiveUtils.isMobile(context)) || (kIsWeb && responsiveUtils.isTabletLarge(context)))
+              const VerticalDivider(color: AppColor.lineItemListColor, width: 1, thickness: 0.2),
+            Expanded(child: SafeArea(
+                right: responsiveUtils.isLandscapeMobile(context),
+                left: responsiveUtils.isLandscapeMobile(context),
+                child: _buildBody(context)))
+          ]),
           Obx(() => !emailController.mailboxDashBoardController.isNetworkConnectionAvailable() && (responsiveUtils.isMobile(context) || responsiveUtils.isTablet(context))
               ? Align(alignment: Alignment.bottomCenter, child: buildNetworkConnectionWidget(context))
-              : SizedBox.shrink()),
+              : const SizedBox.shrink()),
         ])
       )
     );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return Row(children: [
-      Spacer(),
-      Padding(
-        padding: EdgeInsets.only(right: 16),
-        child: (AvatarBuilder()
-            ..text(emailController.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
-            ..backgroundColor(Colors.white)
-            ..textColor(Colors.black)
-            ..context(context)
-            ..addOnTapAvatarActionWithPositionClick((position) => openUserSettingAction(
-                context,
-                position,
-                popupMenuUserSettingActionTile(context, () => emailController.mailboxDashBoardController.logoutAction())))
-            ..addBoxShadows([BoxShadow(
-                color: AppColor.colorShadowBgContentEmail,
-                spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
-            ..size(48))
-          .build()),
-    ]);
   }
 
   Widget _buildBody(BuildContext context) {
@@ -97,17 +62,17 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
               border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
               color: Colors.white)
           : null,
-        margin: responsiveUtils.isDesktop(context) ? EdgeInsets.all(16) : EdgeInsets.zero,
-        padding: responsiveUtils.isDesktop(context) ? EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 3) : EdgeInsets.zero,
+        margin: responsiveUtils.isDesktop(context) ? const EdgeInsets.all(16) : EdgeInsets.zero,
+        padding: responsiveUtils.isDesktop(context) ? const EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 3) : EdgeInsets.zero,
         child: Column(children: [
           _buildAppBar(context),
-          if (responsiveUtils.isDesktop(context)) SizedBox(height: 5),
+          if (responsiveUtils.isDesktop(context)) const SizedBox(height: 5),
           Obx(() => emailController.currentEmail != null && !responsiveUtils.isDesktop(context)
-              ? _buildDivider() : SizedBox.shrink()),
+              ? _buildDivider() : const SizedBox.shrink()),
           Expanded(child: _buildEmailBody(context)),
           Obx(() => emailController.currentEmail != null
-              ? Divider(color: AppColor.colorDividerEmailView, height: 1)
-              : SizedBox.shrink()),
+              ? const Divider(color: AppColor.colorDividerEmailView, height: 1)
+              : const SizedBox.shrink()),
           _buildBottomBar(context),
         ])
     );
@@ -115,13 +80,13 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
 
   Widget _buildDivider({EdgeInsets? edgeInsets}){
     return Padding(
-      padding: edgeInsets ?? EdgeInsets.symmetric(horizontal: 16),
-      child: Divider(color: AppColor.colorDividerEmailView, height: 0.5));
+      padding: edgeInsets ?? const EdgeInsets.symmetric(horizontal: 16),
+      child: const Divider(color: AppColor.colorDividerEmailView, height: 0.5));
   }
 
   Widget _buildAppBar(BuildContext context) {
     return Obx(() => Padding(
-      padding: EdgeInsets.only(top: 6),
+      padding: const EdgeInsets.only(top: 6),
       child: (AppBarMailWidgetBuilder(context, imagePaths, responsiveUtils, emailController.currentEmail, emailController.currentMailbox)
           ..onBackActionClick(() => emailController.backToThreadView(context))
           ..addOnEmailActionClick((email, action) => emailController.handleEmailAction(context, email, action))
@@ -154,7 +119,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
             return _buildEmailMessage(context);
           } else {
             return SingleChildScrollView(
-                physics : ClampingScrollPhysics(),
+                physics : const ClampingScrollPhysics(),
                 child: Container(
                     margin: EdgeInsets.zero,
                     width: double.infinity,
@@ -176,12 +141,12 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
     return Text(
       AppLocalizations.of(context).no_mail_selected,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 25, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold));
+      style: const TextStyle(fontSize: 25, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold));
   }
 
   Widget _buildEmailSubject(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: 16),
+      padding: const EdgeInsets.only(right: 16),
       child: SelectableText(
           '${emailController.mailboxDashBoardController.selectedEmail.value?.getEmailTitle()}',
           maxLines: kIsWeb ? 3 : null,
@@ -196,7 +161,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
 
   Widget _buildEmailMessage(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 10),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 10),
       alignment: Alignment.center,
       color: Colors.white,
       child: LayoutBuilder(
@@ -209,22 +174,22 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
                     Expanded(child: _buildEmailSubject(context)),
                     _buildEmailTime(context),
                   ]),
-              if (responsiveUtils.isDesktop(context)) SizedBox(height: 20),
-              if (!responsiveUtils.isDesktop(context)) _buildDivider(edgeInsets: EdgeInsets.only(top: 16)),
+              if (responsiveUtils.isDesktop(context)) const SizedBox(height: 20),
+              if (!responsiveUtils.isDesktop(context)) _buildDivider(edgeInsets: const EdgeInsets.only(top: 16)),
               Obx(() => emailController.currentEmail != null
                   ? _buildEmailAddress(
                       context,
                       emailController.currentEmail!,
                       emailController.emailAddressExpandMode.value,
                       emailController.isDisplayFullEmailAddress.value)
-                  : SizedBox.shrink()),
-              _buildDivider(edgeInsets: EdgeInsets.only(top: 8)),
+                  : const SizedBox.shrink()),
+              _buildDivider(edgeInsets: const EdgeInsets.only(top: 8)),
               _buildAttachments(context),
               if (kIsWeb)
                 Expanded(child: _buildEmailContent(context, constraints))
               else
                 _buildEmailContent(context, constraints),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
             ],
           );
         })
@@ -240,7 +205,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
                 pattern: emailController.currentEmail?.receivedAt?.value.toLocal().toPatternForEmailView())}',
             maxLines: 1,
             overflow:TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 13, color: AppColor.colorTime)));
+            style: const TextStyle(fontSize: 13, color: AppColor.colorTime)));
   }
 
   Widget _buildEmailAddress(BuildContext context, PresentationEmail email, ExpandMode expandMode, bool isDisplayFull) {
@@ -251,15 +216,15 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
         if (email.from.numberEmailAddress() > 0)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.from, isDisplayFull),
         if (email.to.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND)
-          _buildDivider(edgeInsets: EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
+          _buildDivider(edgeInsets: const EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
         if (email.to.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.to, isDisplayFull),
         if (email.cc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
-          _buildDivider(edgeInsets: EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
+          _buildDivider(edgeInsets: const EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
         if (email.cc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.cc, isDisplayFull),
         if (email.bcc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
-          _buildDivider(edgeInsets: EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
+          _buildDivider(edgeInsets: const EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
         if (email.bcc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
           _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.bcc, isDisplayFull),
       ],
@@ -277,10 +242,10 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-              padding: EdgeInsets.only(top: kIsWeb ? 10: 20),
+              padding: const EdgeInsets.only(top: kIsWeb ? 10: 20),
               child: Text(
                   '${prefixEmailAddress.asName(context)}:',
-                  style: TextStyle(fontSize: 14, color: AppColor.colorEmailAddressPrefix))),
+                  style: const TextStyle(fontSize: 14, color: AppColor.colorEmailAddressPrefix))),
           Expanded(child: _buildEmailAddressWidget(
               context,
               presentationEmail,
@@ -302,26 +267,26 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
   ) {
     final displayedEmailAddress = isDisplayFull ? listEmailAddress : listEmailAddress.sublist(0, LIMIT_ADDRESS_DISPLAY);
     return Padding(
-        padding: EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.only(top: 4),
         child: Wrap(
             children: [
               ...displayedEmailAddress.map((emailAddress) {
                 return Padding(
-                    padding: EdgeInsets.only(left: 10),
+                    padding: const EdgeInsets.only(left: 10),
                     child: GestureDetector(
                       onTap: () => emailController.openEmailAddressDialog(context, emailAddress),
                       child: Chip(
-                        labelPadding: EdgeInsets.only(left: 8, right: 8, bottom: 2),
-                        label: Text('${emailAddress.asString()}', maxLines: 1, overflow: TextOverflow.ellipsis),
-                        labelStyle: TextStyle(color: AppColor.colorNameEmail, fontSize: 15, fontWeight: FontWeight.normal),
+                        labelPadding: const EdgeInsets.only(left: 8, right: 8, bottom: 2),
+                        label: Text(emailAddress.asString(), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        labelStyle: const TextStyle(color: AppColor.colorNameEmail, fontSize: 15, fontWeight: FontWeight.normal),
                         backgroundColor: AppColor.colorEmailAddressTag,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(width: 0, color: AppColor.colorEmailAddressTag),
+                          side: const BorderSide(width: 0, color: AppColor.colorEmailAddressTag),
                         ),
                         avatar: (AvatarBuilder()
-                            ..text('${emailAddress.asString().characters.first.toUpperCase()}')
-                            ..addTextStyle(TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600))
+                            ..text(emailAddress.asString().characters.first.toUpperCase())
+                            ..addTextStyle(const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600))
                             ..avatarColor(emailAddress.avatarColors))
                           .build(),
                       ),
@@ -341,14 +306,14 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
         borderRadius: BorderRadius.circular(12),
         color: Colors.transparent,
         child: Padding(
-            padding: EdgeInsets.only(top: 4, left: 16),
+            padding: const EdgeInsets.only(top: 4, left: 16),
             child: TextButton(
               onPressed: () => emailController.toggleDisplayEmailAddressAction(),
               child: Text(
                 emailController.isExpandEmailAddress
                     ? AppLocalizations.of(context).hide
                     : AppLocalizations.of(context).details,
-                style: TextStyle(fontSize: 15, color: AppColor.colorTextButton, fontWeight: FontWeight.normal),
+                style: const TextStyle(fontSize: 15, color: AppColor.colorTextButton, fontWeight: FontWeight.normal),
               ),
             )
         )
@@ -366,15 +331,15 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
     return GestureDetector(
       onTap: () => emailController.showFullEmailAddress(),
       child: Padding(
-        padding: EdgeInsets.only(left: 8),
+        padding: const EdgeInsets.only(left: 8),
         child: Chip(
-          labelPadding: EdgeInsets.symmetric(horizontal: 8),
+          labelPadding: const EdgeInsets.symmetric(horizontal: 8),
           label: Text('+${_getRemainCountAddressReceiver(email)}', maxLines: 1, overflow: TextOverflow.ellipsis),
-          labelStyle: TextStyle(color: AppColor.colorTextButton, fontSize: 15, fontWeight: FontWeight.normal),
+          labelStyle: const TextStyle(color: AppColor.colorTextButton, fontSize: 15, fontWeight: FontWeight.normal),
           backgroundColor: AppColor.colorEmailAddressTag,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
-            side: BorderSide(width: 0, color: AppColor.colorEmailAddressTag),
+            side: const BorderSide(width: 0, color: AppColor.colorEmailAddressTag),
           ),
         ),
       ),
@@ -383,15 +348,15 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
 
   Widget _buildAttachments(BuildContext context) {
    return Obx(() => emailController.viewState.value.fold(
-    (failure) => SizedBox.shrink(),
+    (failure) => const SizedBox.shrink(),
     (success) {
       if (success is LoadingState) {
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       } else {
         final attachments = emailController.attachments.listAttachmentsDisplayedOutSide;
         return attachments.isNotEmpty
           ? _buildAttachmentsBody(context, attachments)
-          : SizedBox.shrink();
+          : const SizedBox.shrink();
       }
     }));
   }
@@ -424,7 +389,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
             padding: EdgeInsets.zero,
             child: _buildAttachmentsHeader(context, attachments)),
         GridView.builder(
-          key: Key('list_attachment'),
+          key: const Key('list_attachment'),
           primary: false,
           shrinkWrap: true,
           padding: EdgeInsets.only(top: isExpand ? 0 : 16, bottom: 16),
@@ -483,18 +448,18 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${AppLocalizations.of(context).count_attachment(attachments.length)}',
-              style: TextStyle(fontSize: 12, color: AppColor.baseTextColor)),
+              AppLocalizations.of(context).count_attachment(attachments.length),
+              style: const TextStyle(fontSize: 12, color: AppColor.baseTextColor)),
             Padding(
-              padding: EdgeInsets.only(left: 8),
+              padding: const EdgeInsets.only(left: 8),
               child: Text(
                 '(${filesize(attachments.totalSize(), 1)})',
-                style: TextStyle(fontSize: 12, color: AppColor.nameUserColor, fontWeight: FontWeight.w500)))
+                style: const TextStyle(fontSize: 12, color: AppColor.nameUserColor, fontWeight: FontWeight.w500)))
           ],
         ),
         if (attachments.length > 2)
           Padding(
-            padding: EdgeInsets.only(left: 8),
+            padding: const EdgeInsets.only(left: 8),
             child: IconButton(
               icon: SvgPicture.asset(imagePaths.icExpandAttachment,
                 width: 20,
@@ -508,10 +473,10 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
 
   Widget _buildEmailContent(BuildContext context, BoxConstraints constraints) {
     return Obx(() => emailController.viewState.value.fold(
-      (failure) => SizedBox.shrink(),
+      (failure) => const SizedBox.shrink(),
       (success) {
         if (success is LoadingState) {
-          return Align(alignment: Alignment.topCenter, child: Padding(
+          return const Align(alignment: Alignment.topCenter, child: Padding(
               padding: EdgeInsets.all(16),
               child: SizedBox(
                   width: 30,
@@ -535,7 +500,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
                   mailtoDelegate: (uri) async => emailController.openMailToLink(uri));
             }
           } else {
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           }
         }
       }));
@@ -550,15 +515,15 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
 
   Widget _markAsEmailUnreadAction(BuildContext context, PresentationEmail email) {
     return (EmailActionCupertinoActionSheetActionBuilder(
-            Key('mark_as_unread_action'),
+            const Key('mark_as_unread_action'),
             SvgPicture.asset(imagePaths.icUnreadEmail, width: 28, height: 28, fit: BoxFit.fill, color: AppColor.colorTextButton),
             AppLocalizations.of(context).mark_as_unread,
             email,
             iconLeftPadding: responsiveUtils.isMobile(context)
-                ? EdgeInsets.only(left: 12, right: 16)
-                : EdgeInsets.only(right: 12),
+                ? const EdgeInsets.only(left: 12, right: 16)
+                : const EdgeInsets.only(right: 12),
             iconRightPadding: responsiveUtils.isMobile(context)
-                ? EdgeInsets.only(right: 12)
+                ? const EdgeInsets.only(right: 12)
                 : EdgeInsets.zero)
         ..onActionClick((email) => emailController.handleEmailAction(context, email, EmailActionType.markAsUnread)))
       .build();
@@ -566,7 +531,7 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
 
   Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
     return (EmailActionCupertinoActionSheetActionBuilder(
-            Key('mark_as_spam_or_un_spam_action'),
+            const Key('mark_as_spam_or_un_spam_action'),
             SvgPicture.asset(
                 emailController.currentMailbox?.isSpam == true ? imagePaths.icNotSpam : imagePaths.icSpam,
                 width: 28, height: 28, fit: BoxFit.fill, color: AppColor.colorTextButton),
@@ -575,10 +540,10 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
                 : AppLocalizations.of(context).mark_as_spam,
             email,
             iconLeftPadding: responsiveUtils.isMobile(context)
-                ? EdgeInsets.only(left: 12, right: 16)
-                : EdgeInsets.only(right: 12),
+                ? const EdgeInsets.only(left: 12, right: 16)
+                : const EdgeInsets.only(right: 12),
             iconRightPadding: responsiveUtils.isMobile(context)
-                ? EdgeInsets.only(right: 12)
+                ? const EdgeInsets.only(right: 12)
                 : EdgeInsets.zero)
         ..onActionClick((email) => emailController.handleEmailAction(context, email,
             emailController.currentMailbox?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam)))
@@ -587,8 +552,8 @@ class EmailView extends GetView with UserSettingPopupMenuMixin, NetworkConnectio
 
   List<PopupMenuEntry> _popupMenuEmailActionTile(BuildContext context, PresentationEmail email) {
     return [
-      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _markAsEmailUnreadAction(context, email)),
-      PopupMenuItem(padding: EdgeInsets.symmetric(horizontal: 8), child: _markAsEmailSpamOrUnSpamAction(context, email)),
+      PopupMenuItem(padding: const EdgeInsets.symmetric(horizontal: 8), child: _markAsEmailUnreadAction(context, email)),
+      PopupMenuItem(padding: const EdgeInsets.symmetric(horizontal: 8), child: _markAsEmailSpamOrUnSpamAction(context, email)),
     ];
   }
 }

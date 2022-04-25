@@ -106,64 +106,24 @@ class MailboxController extends BaseMailboxController {
 
   @override
   void onInit() {
-    mailboxDashBoardController.accountId.listen((accountId) {
-      if (accountId != null) {
-        getAllMailboxAction(accountId);
-      }
-    });
+    _onMailboxDashBoardListener();
     super.onInit();
   }
 
   @override
   void onReady() {
-    super.onReady();
-    mailboxDashBoardController.viewState.listen((state) {
-      state.fold(
-        (failure) {
-          if (failure is EmptyTrashFolderFailure) {
-            mailboxDashBoardController.clearState();
-            refreshMailboxChanges();
-          }
-        },
-        (success) {
-          if (success is MarkAsMultipleEmailReadAllSuccess
-              || success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-            mailboxDashBoardController.clearState();
-            refreshMailboxChanges();
-          } else if (success is MoveMultipleEmailToMailboxAllSuccess
-              || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
-            mailboxDashBoardController.clearState();
-            refreshMailboxChanges();
-          } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess
-              || success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
-            mailboxDashBoardController.clearState();
-            refreshMailboxChanges();
-          } else if (success is EmptyTrashFolderSuccess) {
-            mailboxDashBoardController.clearState();
-            refreshMailboxChanges();
-          } else if (success is MarkAsEmailReadSuccess
-              || success is MoveToMailboxSuccess
-              || success is DeleteEmailPermanentlySuccess
-              || success is SaveEmailAsDraftsSuccess
-              || success is RemoveEmailDraftsSuccess
-              || success is SendEmailSuccess
-              || success is UpdateEmailDraftsSuccess) {
-            refreshMailboxChanges();
-          }
-        }
-      );
-    });
-
-    _openMailboxEventController.stream.throttleTime(const Duration(milliseconds: 800)).listen((event) {
+    _openMailboxEventController.stream.throttleTime(Duration(milliseconds: 800)).listen((event) {
       _handleOpenMailbox(event.buildContext, event.presentationMailbox);
     });
 
     _initCollapseMailboxCategories();
+    super.onReady();
   }
 
   @override
   void onClose() {
     mailboxDashBoardController.accountId.close();
+    mailboxDashBoardController.viewState.close();
     searchInputController.dispose();
     searchFocus.dispose();
     super.onClose();
@@ -215,6 +175,50 @@ class MailboxController extends BaseMailboxController {
 
   @override
   void onError(error) {}
+
+  void _onMailboxDashBoardListener() {
+    mailboxDashBoardController.accountId.listen((accountId) {
+      log('MailboxController::_onMailboxDashBoardListener(): accountId: $accountId');
+      if (accountId != null) {
+        getAllMailboxAction(accountId);
+      }
+    });
+
+    mailboxDashBoardController.viewState.listen((state) {
+      log('MailboxController::_onMailboxDashBoardListener(): viewState: $viewState');
+      state.fold((failure) {
+        if (failure is EmptyTrashFolderFailure) {
+          mailboxDashBoardController.clearState();
+          refreshMailboxChanges();
+        }
+      }, (success) {
+        if (success is MarkAsMultipleEmailReadAllSuccess ||
+            success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+          mailboxDashBoardController.clearState();
+          refreshMailboxChanges();
+        } else if (success is MoveMultipleEmailToMailboxAllSuccess ||
+            success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
+          mailboxDashBoardController.clearState();
+          refreshMailboxChanges();
+        } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess ||
+            success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+          mailboxDashBoardController.clearState();
+          refreshMailboxChanges();
+        } else if (success is EmptyTrashFolderSuccess) {
+          mailboxDashBoardController.clearState();
+          refreshMailboxChanges();
+        } else if (success is MarkAsEmailReadSuccess ||
+            success is MoveToMailboxSuccess ||
+            success is DeleteEmailPermanentlySuccess ||
+            success is SaveEmailAsDraftsSuccess ||
+            success is RemoveEmailDraftsSuccess ||
+            success is SendEmailSuccess ||
+            success is UpdateEmailDraftsSuccess) {
+          refreshMailboxChanges();
+        }
+      });
+    });
+  }
 
   void _initCollapseMailboxCategories() {
     if (currentContext != null) {

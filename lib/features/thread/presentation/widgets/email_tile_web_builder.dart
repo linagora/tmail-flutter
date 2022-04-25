@@ -51,54 +51,37 @@ class EmailTileBuilder {
       data: ThemeData(splashColor: Colors.transparent, highlightColor: Colors.transparent),
       child: ResponsiveWidget(
         responsiveUtils: _responsiveUtils,
-        mobile: Container(
+        mobile: _wrapContainerForTile(_buildListTile()),
+        tablet: _wrapContainerForTile(_buildListTileTablet()),
+        desktop: _wrapContainerForTile(_buildListTileForDesktop()),
+      )
+    );
+  }
+
+  Widget _wrapContainerForTile(Widget tile) {
+    if (_responsiveUtils.isDesktop(_context)) {
+      return Container(
+        margin: _selectModeAll == SelectMode.ACTIVE ? EdgeInsets.only(top: 3, left: 8, right: 8) : EdgeInsets.zero,
+        padding: _selectModeAll == SelectMode.ACTIVE ? EdgeInsets.symmetric(vertical: 8) : EdgeInsets.zero,
+        decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
+            ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: AppColor.colorItemEmailSelectedDesktop)
+            : null,
+        child: tile,
+      );
+    } else {
+      return Container(
           margin: _selectModeAll == SelectMode.ACTIVE
-              ? const EdgeInsets.only(top: 3, left: 16, right: 16)
+              ? EdgeInsets.only(top: 3, left: 16, right: 16)
               : EdgeInsets.zero,
           padding: _selectModeAll == SelectMode.ACTIVE
-              ? const EdgeInsets.only(top: 8, bottom: 16, right: 8)
-              : const EdgeInsets.only(bottom: 10, left: 16, right: 16),
+              ? EdgeInsets.only(top: 8, bottom: 16, right: 8)
+              : EdgeInsets.only(bottom: 10, left: 16, right: 16),
           decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
               ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: AppColor.colorItemEmailSelectedDesktop)
               : BoxDecoration(borderRadius: BorderRadius.circular(0), color: Colors.white),
           alignment: Alignment.center,
-          child: _buildListTile()),
-        tablet: Container(
-            margin: _selectModeAll == SelectMode.ACTIVE
-                ? const EdgeInsets.only(top: 3, left: 16, right: 16)
-                : EdgeInsets.zero,
-            padding: _selectModeAll == SelectMode.ACTIVE
-                ? const EdgeInsets.only(top: 8, bottom: 16, right: 8)
-                : const EdgeInsets.only(bottom: 10, left: 16, right: 16),
-            decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
-                ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: AppColor.colorItemEmailSelectedDesktop)
-                : BoxDecoration(borderRadius: BorderRadius.circular(0), color: Colors.white),
-            alignment: Alignment.center,
-            child: _buildListTileTabletLarge()),
-        tabletLarge: Container(
-            margin: _selectModeAll == SelectMode.ACTIVE
-                ? const EdgeInsets.only(top: 3, left: 16, right: 16)
-                : EdgeInsets.zero,
-            padding: _selectModeAll == SelectMode.ACTIVE
-                ? const EdgeInsets.only(top: 8, bottom: 16, right: 8)
-                : const EdgeInsets.only(bottom: 10, left: 16, right: 16),
-            decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
-                ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: AppColor.colorItemEmailSelectedDesktop)
-                : BoxDecoration(borderRadius: BorderRadius.circular(0), color: Colors.white),
-            alignment: Alignment.center,
-            child: _buildListTileTabletLarge()),
-        desktop: Container(
-          margin: _selectModeAll == SelectMode.ACTIVE ? const EdgeInsets.only(top: 3, left: 8, right: 8) : EdgeInsets.zero,
-          padding: _selectModeAll == SelectMode.ACTIVE ? const EdgeInsets.symmetric(vertical: 8) : EdgeInsets.zero,
-          decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
-            ? BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                color: AppColor.colorItemEmailSelectedDesktop)
-            : null,
-          child: _buildListTileForDesktop(),
-        ),
-      )
-    );
+          child: tile);
+    }
   }
 
   Widget _buildListTile() {
@@ -208,7 +191,7 @@ class EmailTileBuilder {
     ]);
   }
 
-  Widget _buildListTileTabletLarge() {
+  Widget _buildListTileTablet() {
     return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
       return InkWell(
         onTap: () => _emailActionClick?.call(EmailActionType.preview, _presentationEmail),
@@ -523,11 +506,13 @@ class EmailTileBuilder {
     TextStyle? textStyle
   }) {
     if (_selectModeAll == SelectMode.ACTIVE) {
-      return Tooltip(
-          child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: SvgPicture.asset(_presentationEmail.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected, fit: BoxFit.fill)),
-          message: AppLocalizations.of(_context).select);
+      return Padding(
+          padding: EdgeInsets.all(12),
+          child: SvgPicture.asset(
+              _presentationEmail.selectMode == SelectMode.ACTIVE
+                  ? _imagePaths.icSelected
+                  : _imagePaths.icUnSelected,
+              fit: BoxFit.fill));
     } else {
       return Container(
           width: iconSize ?? 48,

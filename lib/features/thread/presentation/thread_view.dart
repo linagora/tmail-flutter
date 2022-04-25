@@ -1,15 +1,13 @@
 import 'package:core/core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
@@ -21,7 +19,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_ba
 import 'package:tmail_ui_user/features/thread/presentation/widgets/suggestion_box_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMixin {
+class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -44,11 +42,6 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (_responsiveUtils.isDesktop(context))
-                      Container(
-                          color: Colors.white,
-                          padding: const EdgeInsets.only(right: 10, top: 16, bottom: 10, left: 32),
-                          child: _buildHeader(context)),
                     Obx(() => !controller.isSearchActive() && !_responsiveUtils.isDesktop(context)
                       ? _buildAppBarNormal(context)
                       : const SizedBox.shrink()),
@@ -90,154 +83,6 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
         floatingActionButton: _buildFloatingButtonCompose(context),
       ),
     );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return Row(children: [
-      Obx(() => !controller.isSelectionEnabled() ? _buildListButtonTopBar(context) : const SizedBox.shrink()),
-      Obx(() => controller.isSelectionEnabled() ? _buildListButtonSelectionForDesktop(context) : const SizedBox.shrink()),
-      const SizedBox(width: 16),
-      Obx(() => !controller.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
-      Expanded(child: _buildSearchInputFormForDesktop(context)),
-      _buildSearchButtonViewForDesktop(context),
-      Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: (AvatarBuilder()
-              ..text(controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
-              ..backgroundColor(Colors.white)
-              ..textColor(Colors.black)
-              ..context(context)
-              ..addOnTapAvatarActionWithPositionClick((position) => openUserSettingAction(
-                  context,
-                  position,
-                  popupMenuUserSettingActionTile(context, () => controller.mailboxDashBoardController.logoutAction())))
-              ..addBoxShadows([const BoxShadow(
-                  color: AppColor.colorShadowBgContentEmail,
-                  spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
-              ..size(48))
-            .build()),
-    ]);
-  }
-
-  Widget _buildListButtonTopBar(BuildContext context) {
-    return Row(children: [
-      if (!controller.isSearchActive())
-        (ButtonBuilder(_imagePaths.icRefresh)
-            ..key(const Key('button_reload_thread'))
-            ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
-            ..paddingIcon(EdgeInsets.zero)
-            ..size(16)
-            ..radiusSplash(10)
-            ..padding(const EdgeInsets.symmetric(horizontal: 8, vertical: 8))
-            ..onPressActionClick(() => controller.refreshAllEmail()))
-          .build(),
-      if (!controller.isSearchActive()) const SizedBox(width: 16),
-      (ButtonBuilder(_imagePaths.icSelectAll)
-          ..key(const Key('button_select_all'))
-          ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
-          ..paddingIcon(const EdgeInsets.only(right: 8))
-          ..size(16)
-          ..radiusSplash(10)
-          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-          ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
-          ..onPressActionClick(() => controller.setSelectAllEmailAction())
-          ..text(AppLocalizations.of(context).select_all, isVertical: false))
-        .build(),
-      const SizedBox(width: 16),
-      (ButtonBuilder(_imagePaths.icMarkAllAsRead)
-          ..key(const Key('button_mark_all_as_read'))
-          ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
-          ..paddingIcon(const EdgeInsets.only(right: 8))
-          ..size(16)
-          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-          ..radiusSplash(10)
-          ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
-          ..onPressActionClick(() {
-            final listEmail = controller.isSearchActive()
-              ? controller.emailListSearch.allEmailUnread
-              : controller.emailList.allEmailUnread;
-
-            if (listEmail.isNotEmpty) {
-              controller.markAsReadSelectedMultipleEmail(listEmail);
-            }
-          })
-          ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
-        .build(),
-      if (!controller.isSearchActive()) const SizedBox(width: 16),
-      if (!controller.isSearchActive())
-        (ButtonBuilder(_imagePaths.icFilterWeb)
-            ..key(const Key('button_filter_messages'))
-            ..context(context)
-            ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
-            ..paddingIcon(const EdgeInsets.only(right: 8))
-            ..size(16)
-            ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-            ..radiusSplash(10)
-            ..textStyle(TextStyle(
-                fontSize: 12,
-                color: controller.filterMessageOption.value == FilterMessageOption.all ? AppColor.colorTextButtonHeaderThread : AppColor.colorNameEmail,
-                fontWeight: controller.filterMessageOption.value == FilterMessageOption.all ? FontWeight.normal : FontWeight.w500))
-            ..addIconAction(Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: SvgPicture.asset(_imagePaths.icArrowDown, fit: BoxFit.fill)))
-            ..addOnPressActionWithPositionClick((position) =>
-                controller.openFilterMessagesForTablet(
-                    context,
-                    position,
-                    _popupMenuEmailActionTile(context, controller.filterMessageOption.value)))
-            ..text(controller.filterMessageOption.value == FilterMessageOption.all
-                ? AppLocalizations.of(context).filter_messages
-                : controller.filterMessageOption.value.getTitle(context), isVertical: false))
-          .build(),
-    ]);
-  }
-
-  Widget _buildListButtonSelectionForDesktop(BuildContext context) {
-    return Row(children: [
-      buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icCloseComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
-          tooltip: AppLocalizations.of(context).cancel,
-          onTap: () => controller.cancelSelectEmail()),
-      Text(
-        AppLocalizations.of(context).count_email_selected(controller.listEmailSelected.length),
-        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton),),
-      const SizedBox(width: 30),
-      buildIconWeb(
-          icon: SvgPicture.asset(controller.listEmailSelected.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead, fit: BoxFit.fill),
-          tooltip: controller.listEmailSelected.isAllEmailRead ? AppLocalizations.of(context).mark_as_unread : AppLocalizations.of(context).mark_as_read,
-          onTap: () => controller.pressEmailSelectionAction(
-              context,
-              controller.listEmailSelected.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
-              controller.listEmailSelected)),
-      buildIconWeb(
-          icon: SvgPicture.asset(controller.listEmailSelected.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar, fit: BoxFit.fill),
-          tooltip: controller.listEmailSelected.isAllEmailStarred ? AppLocalizations.of(context).un_star : AppLocalizations.of(context).star,
-          onTap: () => controller.pressEmailSelectionAction(
-              context,
-              controller.listEmailSelected.isAllEmailStarred ? EmailActionType.markAsStarred : EmailActionType.unMarkAsStarred,
-              controller.listEmailSelected)),
-      if (controller.currentMailbox?.isDrafts == false)
-        buildIconWeb(
-            icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
-            tooltip: AppLocalizations.of(context).move,
-            onTap: () => controller.pressEmailSelectionAction(context, EmailActionType.moveToMailbox, controller.listEmailSelected)),
-      if (controller.currentMailbox?.isDrafts == false)
-        buildIconWeb(
-            icon: SvgPicture.asset(controller.currentMailbox?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
-                fit: BoxFit.fill),
-            tooltip: controller.currentMailbox?.isSpam == true ? AppLocalizations.of(context).un_spam : AppLocalizations.of(context).mark_as_spam,
-            onTap: () => controller.currentMailbox?.isSpam == true
-                ? controller.pressEmailSelectionAction(context, EmailActionType.unSpam, controller.listEmailSelected)
-                : controller.pressEmailSelectionAction(context, EmailActionType.moveToSpam, controller.listEmailSelected)),
-      buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icDelete, fit: BoxFit.fill),
-          tooltip: controller.currentMailbox?.isTrash == true
-              ? AppLocalizations.of(context).delete_permanently
-              : AppLocalizations.of(context).move_to_trash,
-          onTap: () => controller.currentMailbox?.isTrash == true
-              ? controller.deleteSelectionEmailsPermanently(context, DeleteActionType.multiple, selectedEmails: controller.listEmailSelected)
-              : controller.pressEmailSelectionAction(context, EmailActionType.moveToTrash, controller.listEmailSelected)),
-    ]);
   }
 
   Widget _buildListButtonSelectionForMobile(BuildContext context) {
@@ -292,54 +137,6 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
     });
   }
 
-  Widget _buildSearchButtonViewForDesktop(BuildContext context) {
-    return Obx(() {
-      if (!controller.isSearchActive() && _responsiveUtils.isDesktop(context)) {
-        return Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: (SearchBarView(_imagePaths)
-                ..hintTextSearch(AppLocalizations.of(context).search_emails)
-                ..maxSizeWidth(240)
-                ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
-              .build());
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
-  }
-
-  Widget _buildSearchInputFormForDesktop(BuildContext context) {
-    return Obx(() {
-      if (controller.isSearchActive() && _responsiveUtils.isDesktop(context)) {
-        return _buildSearchFormForDesktop(context);
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
-  }
-
-  Widget _buildSearchFormForDesktop(BuildContext context) {
-    return (SearchAppBarWidget(
-          context,
-          _imagePaths,
-          _responsiveUtils,
-          controller.searchQuery,
-          controller.mailboxDashBoardController.searchFocus,
-          controller.mailboxDashBoardController.searchInputController,
-          suggestionSearch: controller.mailboxDashBoardController.suggestionSearch,)
-      ..addDecoration(const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          color: AppColor.colorBgSearchBar))
-      ..setMargin(const EdgeInsets.only(right: 10))
-      ..setHeightSearchBar(45)
-      ..setHintText(AppLocalizations.of(context).search_mail)
-      ..addOnCancelSearchPressed(() => controller.disableSearch())
-      ..addOnClearTextSearchAction(() => controller.mailboxDashBoardController.clearSearchText())
-      ..addOnTextChangeSearchAction((query) => controller.mailboxDashBoardController.addSuggestionSearch(query))
-      ..addOnSearchTextAction((query) => controller.mailboxDashBoardController.searchEmail(context, query)))
-    .build();
-  }
-
   Widget _buildSearchForm(BuildContext context) {
     return (SearchAppBarWidget(
           context,
@@ -366,19 +163,18 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
               _responsiveUtils,
               controller.mailboxDashBoardController.selectedMailbox.value,
               controller.listEmailSelected,
-              controller.currentSelectMode.value,
-              controller.filterMessageOption.value)
+              controller.mailboxDashBoardController.currentSelectMode.value,
+              controller.mailboxDashBoardController.filterMessageOption.value)
           ..addOpenMailboxMenuActionClick(() => controller.openMailboxLeftMenu())
           ..addOnEditThreadAction(() => controller.enableSelectionEmail())
           ..addOnEmailSelectionAction((actionType, selectionEmail) =>
               controller.pressEmailSelectionAction(context, actionType, selectionEmail))
           ..addOnFilterEmailAction((filterMessageOption, position) =>
               _responsiveUtils.isMobileDevice(context)
-                ? controller.openFilterMessagesCupertinoActionSheet(
+                ? controller.openContextMenuAction(
                     context,
-                    _filterMessagesCupertinoActionTile(context, filterMessageOption),
-                    cancelButton: _buildCupertinoActionCancelButton(context))
-                : controller.openFilterMessagesForTablet(
+                    _filterMessagesCupertinoActionTile(context, filterMessageOption))
+                : controller.openPopupMenuAction(
                     context,
                     position,
                     _popupMenuEmailActionTile(context, filterMessageOption)))
@@ -421,15 +217,6 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
       _filterMessagesUnreadAction(context, optionCurrent),
       _filterMessageStarredAction(context, optionCurrent),
     ];
-  }
-
-  Widget _buildCupertinoActionCancelButton(BuildContext context) {
-    return CupertinoActionSheetAction(
-      child: Text(
-        AppLocalizations.of(context).cancel,
-        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorTextButton)),
-      onPressed: () => controller.closeFilterMessageActionSheet(),
-    );
   }
 
   Widget _filterMessageWithAttachmentsAction(BuildContext context, FilterMessageOption optionCurrent) {
@@ -502,23 +289,14 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
       (success) {
         if (controller.isSearchActive()) {
           return success is SearchingState
-              ? Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: _loadingWidget)
+              ? Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: loadingWidget)
               : const SizedBox.shrink();
         } else {
           return success is LoadingState
-              ? Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: _loadingWidget)
+              ? Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: loadingWidget)
               : const SizedBox.shrink();
         }
       }));
-  }
-
-  Widget get _loadingWidget {
-    return const Center(child: Padding(
-        padding: EdgeInsets.zero,
-        child: SizedBox(
-            width: 24,
-            height: 24,
-            child: CupertinoActivityIndicator(color: AppColor.colorTextButton))));
   }
 
   Widget _buildLoadingViewLoadMore() {
@@ -527,11 +305,11 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
       (success) {
         if (controller.isSearchActive()) {
           return success is SearchingMoreState
-              ? Padding(padding: const EdgeInsets.only(bottom: 16), child: _loadingWidget)
+              ? Padding(padding: const EdgeInsets.only(bottom: 16), child: loadingWidget)
               : const SizedBox.shrink();
         } else {
           return success is LoadingMoreState
-              ? Padding(padding: const EdgeInsets.only(bottom: 16), child: _loadingWidget)
+              ? Padding(padding: const EdgeInsets.only(bottom: 16), child: loadingWidget)
               : const SizedBox.shrink();
         }
       }));
@@ -566,7 +344,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
   }
 
   Widget _buildResultListEmail(BuildContext context, List<PresentationEmail> listPresentationEmail) {
-    if (controller.currentSelectMode.value == SelectMode.INACTIVE) {
+    if (controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE) {
       return listPresentationEmail.isNotEmpty
         ? RefreshIndicator(
             color: AppColor.colorTextButton,
@@ -608,7 +386,7 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
                 context,
                 listPresentationEmail[index],
                 controller.currentMailbox?.role,
-                controller.currentSelectMode.value,
+                controller.mailboxDashBoardController.currentSelectMode.value,
                 controller.mailboxDashBoardController.searchState.value.searchStatus,
                 controller.searchQuery)
             ..addOnPressEmailActionClick((action, email) => controller.pressEmailAction(context, action, email))
