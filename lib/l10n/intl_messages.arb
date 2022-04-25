@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-04-25T09:26:28.013781",
+  "@@last_modified": "2022-04-25T17:48:51.808593",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1104,6 +1104,12 @@
   },
   "manage_account": "Manage account",
   "@manage_account": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "profiles": "Profiles",
+  "@profiles": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
