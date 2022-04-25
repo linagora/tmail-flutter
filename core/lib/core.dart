@@ -28,6 +28,7 @@ export 'data/utils/device_manager.dart';
 export 'utils/app_logger.dart';
 export 'utils/benchmark.dart';
 export 'utils/fps_manager.dart';
+export 'utils/build_utils.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
