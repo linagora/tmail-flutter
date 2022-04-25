@@ -6,6 +6,7 @@ import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
@@ -20,6 +21,7 @@ abstract class ReloadableController extends BaseController {
   final AuthorizationInterceptors _authorizationInterceptors = Get.find<AuthorizationInterceptors>();
   final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
   final DeleteCredentialInteractor _deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
+  final CachingManager _cachingManager = Get.find<CachingManager>();
 
   ReloadableController();
 
@@ -90,4 +92,18 @@ abstract class ReloadableController extends BaseController {
   }
 
   void handleReloaded(Session session) {}
+
+  void _clearAllCacheAction() async {
+    await _cachingManager.clearAll();
+  }
+
+  void logoutAction() {
+    _deleteCredentialAction();
+    _clearAllCacheAction();
+    goToLogin();
+  }
+
+  void goToSettings() {
+    push(AppRoutes.MANAGE_ACCOUNT);
+  }
 }
