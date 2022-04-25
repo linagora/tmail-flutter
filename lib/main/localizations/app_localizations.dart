@@ -1168,4 +1168,9 @@ class AppLocalizations {
     return Intl.message('Profiles',
         name: 'profiles');
   }
+
+  String get identities {
+    return Intl.message('Identities',
+        name: 'identities');
+  }
 }

@@ -1,12 +1,12 @@
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/content/manage_account_content_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/account_properties/profiles/identities/identities_controller.dart';
 
-class ManageAccountContentBindings extends BaseBindings {
+class IdentitiesBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.lazyPut(() => ManageAccountContentController());
+    Get.lazyPut(() => IdentitiesController());
   }
 
   @override
