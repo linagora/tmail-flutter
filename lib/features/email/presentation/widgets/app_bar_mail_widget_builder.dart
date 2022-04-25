@@ -3,8 +3,8 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/setting/presentation/model/app_setting.dart';
-import 'package:tmail_ui_user/features/setting/presentation/model/reading_pane.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/reading_pane.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnBackActionClick = void Function();
@@ -44,12 +44,12 @@ class AppBarMailWidgetBuilder {
 
   Widget build() {
     return Container(
-      key: Key('app_bar_messenger_widget'),
+      key: const Key('app_bar_messenger_widget'),
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
       margin: EdgeInsets.zero,
       child: MediaQuery(
-        data: MediaQueryData(padding: EdgeInsets.zero),
+        data: const MediaQueryData(padding: EdgeInsets.zero),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -83,10 +83,10 @@ class AppBarMailWidgetBuilder {
     return Transform(
       transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
       child: Text(
-        '${_currentMailbox?.name?.name.capitalizeFirstEach ?? ''}',
+        _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontSize: 17, color: AppColor.colorTextButton))
+        style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton))
     );
   }
 
@@ -115,7 +115,7 @@ class AppBarMailWidgetBuilder {
               }
             }),
         Padding(
-          padding: EdgeInsets.only(left: 10, right: 16),
+          padding: const EdgeInsets.only(left: 10, right: 16),
           child: buildIconWebHasPosition(
               _context,
               tooltip: AppLocalizations.of(_context).more,

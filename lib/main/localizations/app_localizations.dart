@@ -506,9 +506,9 @@ class AppLocalizations {
     );
   }
 
-  String get logout {
-    return Intl.message('Logout',
-        name: 'logout');
+  String get sign_out {
+    return Intl.message('Sign out',
+        name: 'sign_out');
   }
 
   String get hint_search_mailboxes {
@@ -1152,5 +1152,15 @@ class AppLocalizations {
       'Unspam',
       name: 'un_spam',
     );
+  }
+
+  String get settings {
+    return Intl.message('Settings',
+        name: 'settings');
+  }
+
+  String get manage_account {
+    return Intl.message('Manage account',
+        name: 'manage_account');
   }
 }

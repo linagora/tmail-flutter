@@ -25,11 +25,12 @@ class MailboxView extends GetWidget<MailboxController> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+        elevation: _responsiveUtils.isDesktop(context) ? 0 : 16.0,
         child: Scaffold(
           backgroundColor: Colors.white,
           body: Column(
               children: [
-                _buildLogoApp(context),
+                if (!_responsiveUtils.isDesktop(context)) _buildLogoApp(context),
                 if (!_responsiveUtils.isDesktop(context)) const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
                 Expanded(child: Container(
                   padding: EdgeInsets.zero,
@@ -75,7 +76,7 @@ class MailboxView extends GetWidget<MailboxController> {
             bottom: _responsiveUtils.isDesktop(context) ? 25 : 16,
             left: _responsiveUtils.isDesktop(context) ? 32 : 16),
         child: Row(children: [
-              (SloganBuilder(arrangedByHorizontal: true)
+          (SloganBuilder(arrangedByHorizontal: true)
             ..setSloganText(AppLocalizations.of(context).app_name)
             ..setSloganTextAlign(TextAlign.center)
             ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold))

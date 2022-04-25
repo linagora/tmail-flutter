@@ -24,11 +24,6 @@ import 'package:tmail_ui_user/features/login/domain/repository/credential_reposi
 class EmailBindings extends BaseBindings {
 
   @override
-  void dependencies() {
-    super.dependencies();
-  }
-
-  @override
   void bindingsController() {
     Get.put(EmailController(
         Get.find<GetEmailContentInteractor>(),

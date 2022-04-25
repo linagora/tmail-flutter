@@ -15,6 +15,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
@@ -35,7 +36,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_p
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -68,9 +69,12 @@ class MailboxDashBoardController extends ReloadableController {
   final userProfile = Rxn<UserProfile>();
   final searchState = SearchState.initial().obs;
   final suggestionSearch = <String>[].obs;
-  final dashBoardAction = DashBoardAction.none.obs;
+  final dashBoardAction = Rxn<UIAction>();
   final routePath = AppRoutes.MAILBOX_DASHBOARD.obs;
   final appInformation = Rxn<PackageInfo>();
+  final currentSelectMode = SelectMode.INACTIVE.obs;
+  final filterMessageOption = FilterMessageOption.all.obs;
+  final listEmailSelected = <PresentationEmail>[].obs;
 
   SearchQuery? searchQuery;
   Session? sessionCurrent;
@@ -96,12 +100,12 @@ class MailboxDashBoardController extends ReloadableController {
 
   @override
   void onReady() {
-    super.onReady();
     log('MailboxDashBoardController::onReady()');
     dispatchRoute(AppRoutes.THREAD);
     _setSessionCurrent();
     _getUserProfile();
     _initPackageInfo();
+    super.onReady();
   }
 
   @override
@@ -257,9 +261,9 @@ class MailboxDashBoardController extends ReloadableController {
 
   bool get isDrawerOpen => scaffoldKey.currentState?.isDrawerOpen == true;
 
-  bool isSearchActive() {
-    return searchState.value.searchStatus == SearchStatus.ACTIVE;
-  }
+  bool isSearchActive() => searchState.value.searchStatus == SearchStatus.ACTIVE;
+
+  bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
   void enableSearch() {
     searchState.value = searchState.value.enableSearchState();
@@ -361,16 +365,14 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void dispatchDashBoardAction(DashBoardAction action, {RouterArguments? arguments}) {
-    switch(action) {
-      case DashBoardAction.none:
-        routerArguments = null;
-        Get.delete<ComposerController>();
-        break;
-      case DashBoardAction.compose:
-        routerArguments = arguments;
-        ComposerBindings().dependencies();
-        break;
+  void dispatchAction(UIAction action) {
+    log('MailboxDashBoardController::dispatchAction(): ${action.runtimeType}');
+    if (action is ComposeEmailAction) {
+      routerArguments = action.arguments;
+      ComposerBindings().dependencies();
+    } else if (action is CloseComposeEmailAction) {
+      routerArguments = null;
+      Get.delete<ComposerController>();
     }
     dashBoardAction.value = action;
   }
@@ -402,8 +404,8 @@ class MailboxDashBoardController extends ReloadableController {
 
   void composeEmailAction() {
     if (kIsWeb) {
-      if (dashBoardAction.value != DashBoardAction.compose) {
-        dispatchDashBoardAction(DashBoardAction.compose, arguments: ComposerArguments());
+      if (dashBoardAction.value is! ComposeEmailAction) {
+        dispatchAction(ComposeEmailAction(arguments: ComposerArguments()));
       }
     } else {
       push(AppRoutes.COMPOSER, arguments: ComposerArguments());
@@ -412,8 +414,8 @@ class MailboxDashBoardController extends ReloadableController {
 
   void goToComposer(ComposerArguments arguments) {
     if (kIsWeb) {
-      if (dashBoardAction.value != DashBoardAction.compose) {
-        dispatchDashBoardAction(DashBoardAction.compose, arguments: arguments);
+      if (dashBoardAction.value is! ComposeEmailAction) {
+        dispatchAction(ComposeEmailAction(arguments: arguments));
       }
     } else {
       push(AppRoutes.COMPOSER, arguments: arguments);
@@ -432,6 +434,14 @@ class MailboxDashBoardController extends ReloadableController {
     _deleteCredential();
     _clearAllCache();
     goToLogin();
+  }
+
+  void clearDashBoardAction() {
+    dashBoardAction.value = DashBoardAction.idle;
+  }
+
+  void goToSettings() {
+    dispatchAction(GoToSettingsAction());
   }
 
   @override

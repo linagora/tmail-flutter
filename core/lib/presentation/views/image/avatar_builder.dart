@@ -78,6 +78,7 @@ class AvatarBuilder {
           _onTapAvatarActionWithPositionClick?.call(position);
         }
       },
+      borderRadius: BorderRadius.circular((_size ?? 40) / 2),
       child: Container(
           key: _key,
           width: _size ?? 40,
