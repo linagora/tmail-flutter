@@ -1163,4 +1163,9 @@ class AppLocalizations {
     return Intl.message('Manage account',
         name: 'manage_account');
   }
+
+  String get profiles {
+    return Intl.message('Profiles',
+        name: 'profiles');
+  }
 }
