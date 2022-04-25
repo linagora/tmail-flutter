@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:ui';
 
+import 'package:core/core.dart';
 import 'package:flutter/scheduler.dart';
 
 /// FpsManager callback.
@@ -46,16 +47,20 @@ class FpsManager {
   }
 
   void start() async {
-    if (!_started) {
-      SchedulerBinding.instance?.addTimingsCallback(_onTimingsCallback);
-      _started = true;
+    if (BuildUtils.isDebugMode || BuildUtils.isProfileMode) {
+      if (!_started) {
+        SchedulerBinding.instance?.addTimingsCallback(_onTimingsCallback);
+        _started = true;
+      }
     }
   }
 
   void stop() {
-    if (_started) {
-      SchedulerBinding.instance?.removeTimingsCallback(_onTimingsCallback);
-      _started = false;
+    if (BuildUtils.isDebugMode || BuildUtils.isProfileMode) {
+      if (_started) {
+        SchedulerBinding.instance?.removeTimingsCallback(_onTimingsCallback);
+        _started = false;
+      }
     }
   }
 
