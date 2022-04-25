@@ -17,7 +17,6 @@ import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
-import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
@@ -31,7 +30,6 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
@@ -53,8 +51,6 @@ class MailboxDashBoardController extends ReloadableController {
   final AppToast _appToast = Get.find<AppToast>();
   final ImagePaths _imagePaths = Get.find<ImagePaths>();
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
-  final DeleteCredentialInteractor _deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
-  final CachingManager _cachingManager = Get.find<CachingManager>();
   final Connectivity _connectivity = Get.find<Connectivity>();
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -422,26 +418,8 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void _deleteCredential() async {
-    await _deleteCredentialInteractor.execute();
-  }
-
-  void _clearAllCache() async {
-    await _cachingManager.clearAll();
-  }
-
-  void logoutAction() {
-    _deleteCredential();
-    _clearAllCache();
-    goToLogin();
-  }
-
   void clearDashBoardAction() {
     dashBoardAction.value = DashBoardAction.idle;
-  }
-
-  void goToSettings() {
-    dispatchAction(GoToSettingsAction());
   }
 
   @override
