@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with NetworkConnectionMixin,
     UserSettingPopupMenuMixin, FilterEmailPopupMenuMixin {
@@ -171,7 +172,10 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
               controller.openPopupMenuAction(context, position, popupMenuUserSettingActionTile(context,
                   controller.userProfile.value,
                   onLogoutAction: () => controller.logoutAction(),
-                  onSettingAction: () => controller.goToSettings())))
+                  onSettingAction: () {
+                    popBack();
+                    controller.goToSettings();
+                  })))
           ..addBoxShadows([const BoxShadow(
               color: AppColor.colorShadowBgContentEmail,
               spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
