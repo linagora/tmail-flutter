@@ -1,11 +1,13 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/content/manage_account_content_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/account_properties/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/dashboard/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_property.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -71,11 +73,23 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeMenuWidthWeb),
-                  const Expanded(child: ManageAccountContentView())
+                  Expanded(child: _manageAccountContentView())
                 ],
               ))
             ]),
-            mobile: const ManageAccountContentView()
+            mobile: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 16, bottom: 16, left: 24, right: 32),
+                child: _buildAppbar(context)),
+              (SearchBarView(_imagePaths)
+                  ..hintTextSearch(AppLocalizations.of(context).search_emails)
+                  ..addMargin(const EdgeInsets.only(left: 32, right: 32))
+                  ..addOnOpenSearchViewAction(() => {}))
+                .build(),
+              Expanded(child: Padding(
+                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+                  child: _manageAccountContentView()))
+            ])
         ),
       ]),
     );
@@ -110,5 +124,28 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         .build(),
       const SizedBox(width: 16)
     ]);
+  }
+
+  Widget _buildAppbar(BuildContext context) {
+    return Row(children: [
+      buildIconWeb(
+          icon: SvgPicture.asset(_imagePaths.icMenuDrawer, fit: BoxFit.fill),
+          onTap:() => controller.openMenuDrawer()),
+      const SizedBox(width: 12),
+      Expanded(child: Text(
+          AppLocalizations.of(context).manage_account,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 21, color: Colors.black, fontWeight: FontWeight.bold))),
+    ]);
+  }
+
+  Widget _manageAccountContentView() {
+    switch(controller.accountPropertySelected.value) {
+      case AccountProperty.profiles:
+        return ProfilesView();
+      default:
+        return const SizedBox.shrink();
+    }
   }
 }

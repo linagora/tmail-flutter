@@ -22,6 +22,36 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
           backgroundColor: Colors.white,
           body: Column(
               children: [
+                if (!_responsiveUtils.isDesktop(context))
+                  Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.only(top: 16, bottom: 16, left: 16),
+                      child: Row(children: [
+                        (SloganBuilder(arrangedByHorizontal: true)
+                            ..setSloganText(AppLocalizations.of(context).app_name)
+                            ..setSloganTextAlign(TextAlign.center)
+                            ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold))
+                            ..setSizeLogo(24)
+                            ..setLogo(_imagePaths.icLogoTMail))
+                          .build(),
+                        Obx(() {
+                          if (controller.dashBoardController.appInformation.value != null) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                'v.${controller.dashBoardController.appInformation.value!.version}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
+                              ),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
+                      ])
+                  ),
+                if (!_responsiveUtils.isDesktop(context))
+                  const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
                 Expanded(child: Container(
                   color: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
