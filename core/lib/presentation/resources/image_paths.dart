@@ -94,6 +94,7 @@ class ImagePaths {
   String get icAvatarSpam => _getImagePath('ic_avatar_spam.svg');
   String get icLogout => _getImagePath('ic_logout.svg');
   String get icSetting => _getImagePath('ic_setting.svg');
+  String get icProfiles => _getImagePath('ic_profiles.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

@@ -19,8 +19,21 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
 
   @override
   Widget build(BuildContext context) {
+    if (controller.isMenuDrawerOpen && _responsiveUtils.isDesktop(context)) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        controller.closeMenuDrawer();
+      });
+    }
+
     return Scaffold(
+      key: controller.menuDrawerKey,
       backgroundColor: Colors.white,
+      drawer: ResponsiveWidget(
+          responsiveUtils: _responsiveUtils,
+          mobile: SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
+          desktop: const SizedBox.shrink()
+      ),
+      drawerEnableOpenDragGesture: !_responsiveUtils.isDesktop(context),
       body: Stack(children: [
         ResponsiveWidget(
             responsiveUtils: _responsiveUtils,
@@ -57,18 +70,11 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(child: const ManageAccountMenuView(), width: _responsiveUtils.defaultSizeMenuWidthWeb),
+                  SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeMenuWidthWeb),
                   const Expanded(child: ManageAccountContentView())
                 ],
               ))
             ]),
-            tabletLarge: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(child: const ManageAccountMenuView(), width: _responsiveUtils.defaultSizeMenuWidthWeb),
-                const Expanded(child: ManageAccountContentView())
-              ],
-            ),
             mobile: const ManageAccountContentView()
         ),
       ]),
