@@ -98,4 +98,11 @@ class ManageAccountDashBoardController extends ReloadableController {
     pushAndPop(AppRoutes.MANAGE_ACCOUNT,
         arguments: ManageAccountArguments(accountId.value, userProfile.value));
   }
+
+  void backToMailboxDashBoard() {
+    if (currentContext != null && !_responsiveUtils.isDesktop(currentContext!)) {
+      closeMenuDrawer();
+    }
+    popBack();
+  }
 }

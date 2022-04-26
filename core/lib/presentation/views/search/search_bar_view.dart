@@ -45,38 +45,37 @@ class SearchBarView {
   }
 
   Widget build() {
-    return InkWell(
-      onTap: () => _onOpenSearchViewAction?.call(),
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-      child: Container(
-          key: Key('search_bar_widget'),
-          alignment: Alignment.topCenter,
-          height: _heightSearchBar ?? 40,
-          width: _maxSizeWidth ?? double.infinity,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: AppColor.colorBgSearchBar),
-          padding: _padding ?? EdgeInsets.zero,
-          margin: _margin ?? EdgeInsets.zero,
-          child: MediaQuery(
-              data: MediaQueryData(padding: EdgeInsets.zero),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  buildIconWeb(
-                      splashRadius: 12,
-                      icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
-                      onTap: () => _onOpenSearchViewAction?.call()),
-                  Expanded(child:
-                    Transform(transform: Matrix4.translationValues(-5, 0.0, 0.0),
-                    child: Text(
-                        _hintTextSearch ?? '',
-                        maxLines: 1,
-                        style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar))))
-                ]
-              )
-          )
-      ),
+    return Container(
+        key: Key('search_bar_widget'),
+        alignment: Alignment.topCenter,
+        height: _heightSearchBar ?? 40,
+        width: _maxSizeWidth ?? double.infinity,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: AppColor.colorBgSearchBar),
+        padding: _padding ?? EdgeInsets.zero,
+        margin: _margin ?? EdgeInsets.zero,
+        child: InkWell(
+            onTap: () => _onOpenSearchViewAction?.call(),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            child: MediaQuery(
+            data: MediaQueryData(padding: EdgeInsets.zero),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                buildIconWeb(
+                    splashRadius: 12,
+                    icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
+                    onTap: () => _onOpenSearchViewAction?.call()),
+                Expanded(child:
+                  Transform(transform: Matrix4.translationValues(-5, 0.0, 0.0),
+                  child: Text(
+                      _hintTextSearch ?? '',
+                      maxLines: 1,
+                      style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar))))
+              ]
+            )
+        )),
     );
   }
 }

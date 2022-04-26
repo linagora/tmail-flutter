@@ -5,18 +5,25 @@ import 'package:flutter_svg/flutter_svg.dart';
 @immutable
 class PopupMenuItemWidget extends StatelessWidget {
 
-  final Function onCallBack;
+  final Function onTapCallback;
   final String icon;
   final String name;
   final Color? iconColor;
   final String? iconSelection;
 
-  PopupMenuItemWidget(this.icon, this.name, this.onCallBack, {this.iconSelection, this.iconColor});
+  PopupMenuItemWidget(
+    this.icon,
+    this.name,
+    this.onTapCallback,
+    {
+      this.iconSelection,
+      this.iconColor
+    });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: () => onCallBack.call(),
+        onTap: () => onTapCallback.call(),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: SizedBox(

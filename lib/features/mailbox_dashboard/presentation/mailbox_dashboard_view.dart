@@ -86,7 +86,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
   Widget _buildLargeScreenView(BuildContext context) {
     if (controller.isDrawerOpen && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context))) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
-        controller.closeDrawer();
+        controller.closeMailboxMenuDrawer();
       });
     }
 
