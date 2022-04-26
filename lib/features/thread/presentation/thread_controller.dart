@@ -56,7 +56,6 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_i
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
-import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_all_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
@@ -75,7 +74,6 @@ class ThreadController extends BaseController {
   final _appToast = Get.find<AppToast>();
 
   final GetEmailsInMailboxInteractor _getEmailsInMailboxInteractor;
-  final RefreshAllEmailsInMailboxInteractor _refreshAllEmailsInMailboxInteractor;
   final MarkAsMultipleEmailReadInteractor _markAsMultipleEmailReadInteractor;
   final MoveMultipleEmailToMailboxInteractor _moveMultipleEmailToMailboxInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
@@ -112,7 +110,6 @@ class ThreadController extends BaseController {
 
   ThreadController(
     this._getEmailsInMailboxInteractor,
-    this._refreshAllEmailsInMailboxInteractor,
     this._markAsMultipleEmailReadInteractor,
     this._moveMultipleEmailToMailboxInteractor,
     this._markAsStarEmailInteractor,
@@ -377,17 +374,7 @@ class ThreadController extends BaseController {
     cancelSelectEmail();
 
     if (_accountId != null) {
-      consumeState(_refreshAllEmailsInMailboxInteractor.execute(
-        _accountId!,
-        limit: ThreadConstants.defaultLimit,
-        sort: _sortOrder,
-        emailFilter: EmailFilter(
-            filter: _getFilterCondition(),
-            filterOption: mailboxDashBoardController.filterMessageOption.value,
-            mailboxId: _currentMailboxId),
-        propertiesCreated: ThreadConstants.propertiesDefault,
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-      ));
+      _getAllEmail();
     }
   }
 

@@ -22,17 +22,6 @@ abstract class ThreadRepository {
     }
   );
 
-  Stream<EmailsResponse> refreshAll(
-      AccountId accountId,
-      {
-        UnsignedInt? limit,
-        Set<Comparator>? sort,
-        EmailFilter? emailFilter,
-        Properties? propertiesCreated,
-        Properties? propertiesUpdated,
-      }
-  );
-
   Stream<EmailsResponse> refreshChanges(
     AccountId accountId,
     jmap.State currentState,
