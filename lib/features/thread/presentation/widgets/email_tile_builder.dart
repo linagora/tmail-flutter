@@ -61,8 +61,8 @@ class EmailTileBuilder {
   Widget _wrapContainerForTile(Widget tile) {
     if (_responsiveUtils.isDesktop(_context)) {
       return Container(
-        margin: _selectModeAll == SelectMode.ACTIVE ? EdgeInsets.only(top: 3, left: 8, right: 8) : EdgeInsets.zero,
-        padding: _selectModeAll == SelectMode.ACTIVE ? EdgeInsets.symmetric(vertical: 8) : EdgeInsets.zero,
+        margin: _selectModeAll == SelectMode.ACTIVE ? const EdgeInsets.only(top: 3, left: 8, right: 8) : EdgeInsets.zero,
+        padding: _selectModeAll == SelectMode.ACTIVE ? const EdgeInsets.symmetric(vertical: 8) : EdgeInsets.zero,
         decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
             ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: AppColor.colorItemEmailSelectedDesktop)
             : null,
@@ -70,7 +70,7 @@ class EmailTileBuilder {
     } else {
       return Container(
           margin: EdgeInsets.zero,
-          padding: EdgeInsets.only(bottom: 10, left: 16, right: 16),
+          padding: const EdgeInsets.only(bottom: 10, left: 16, right: 16),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(0), color: Colors.white),
           alignment: Alignment.center,
           child: tile);

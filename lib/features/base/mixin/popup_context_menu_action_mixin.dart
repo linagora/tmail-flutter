@@ -17,7 +17,7 @@ mixin PopupContextMenuActionMixin {
   void openPopupMenuAction(BuildContext context, RelativeRect? position, List<PopupMenuEntry> popupMenuItems) async {
     await showMenu(
         context: context,
-        position: position ?? RelativeRect.fromLTRB(16, 40, 16, 16),
+        position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
         color: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -28,7 +28,7 @@ mixin PopupContextMenuActionMixin {
     return CupertinoActionSheetAction(
       child: Text(
           AppLocalizations.of(context).cancel,
-          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorTextButton)),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorTextButton)),
       onPressed: () => popBack(),
     );
   }

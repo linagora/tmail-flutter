@@ -837,6 +837,7 @@ class ThreadController extends BaseController {
   void disableSearch() {
     emailListSearch.clear();
     mailboxDashBoardController.disableSearch();
+    cancelSelectEmail();
   }
 
   void _searchEmail() {
@@ -892,7 +893,7 @@ class ThreadController extends BaseController {
     _isLoadingMore = false;
   }
 
-  bool isSelectionEnabled() => mailboxDashBoardController.currentSelectMode.value == SelectMode.ACTIVE;
+  bool isSelectionEnabled() => mailboxDashBoardController.isSelectionEnabled();
 
   void pressEmailSelectionAction(BuildContext context, EmailActionType actionType, List<PresentationEmail> selectionEmail) {
     log('ThreadController::pressEmailSelectionAction(): selectionEmail: ${selectionEmail.length}');
@@ -1226,7 +1227,7 @@ class ThreadController extends BaseController {
   }
 
   void openMailboxLeftMenu() {
-    mailboxDashBoardController.openDrawer();
+    mailboxDashBoardController.openMailboxMenuDrawer();
   }
 
   void goToEmail(BuildContext context) {

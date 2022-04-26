@@ -32,7 +32,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
   Widget build(BuildContext context) {
     if (controller.isDrawerOpen && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context))) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
-        controller.closeDrawer();
+        controller.closeMailboxMenuDrawer();
       });
     }
 
@@ -401,7 +401,10 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
         ..setMargin(const EdgeInsets.only(right: 10))
         ..setHeightSearchBar(45)
         ..setHintText(AppLocalizations.of(context).search_mail)
-        ..addOnCancelSearchPressed(() => controller.disableSearch())
+        ..addOnCancelSearchPressed(() {
+          controller.disableSearch();
+          controller.dispatchAction(CancelSelectionAllEmailAction());
+        })
         ..addOnClearTextSearchAction(() => controller.clearSearchText())
         ..addOnTextChangeSearchAction((query) => controller.addSuggestionSearch(query))
         ..addOnSearchTextAction((query) => controller.searchEmail(context, query)))
