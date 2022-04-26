@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-04-25T19:06:15.088714",
+  "@@last_modified": "2022-04-26T09:31:06.288489",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1116,6 +1116,12 @@
   },
   "identities": "Identities",
   "@identities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_identity": "New Identity",
+  "@new_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

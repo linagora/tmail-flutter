@@ -143,6 +143,8 @@ dependencies:
 
   receive_sharing_intent: 1.4.5
 
+  dropdown_button2: 1.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

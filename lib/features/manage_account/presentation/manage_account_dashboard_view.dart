@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/account_properties/profiles/profiles_view.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/dashboard/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_view.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/account_property.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -73,7 +73,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeMenuWidthWeb),
-                  Expanded(child: _manageAccountContentView())
+                  Expanded(child: _viewDisplayedOfAccountMenuItem())
                 ],
               ))
             ]),
@@ -88,7 +88,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                 .build(),
               Expanded(child: Padding(
                   padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
-                  child: _manageAccountContentView()))
+                  child: _viewDisplayedOfAccountMenuItem()))
             ])
         ),
       ]),
@@ -104,7 +104,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         ..addOnOpenSearchViewAction(() => {}))
       .build(),
       const SizedBox(width: 16),
-      (AvatarBuilder()
+      Obx(() => (AvatarBuilder()
           ..text(controller.userProfile.value?.getAvatarText() ?? '')
           ..backgroundColor(Colors.white)
           ..textColor(Colors.black)
@@ -121,7 +121,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
               color: AppColor.colorShadowBgContentEmail,
               spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
           ..size(48))
-        .build(),
+        .build()),
       const SizedBox(width: 16)
     ]);
   }
@@ -140,9 +140,9 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
     ]);
   }
 
-  Widget _manageAccountContentView() {
-    switch(controller.accountPropertySelected.value) {
-      case AccountProperty.profiles:
+  Widget _viewDisplayedOfAccountMenuItem() {
+    switch(controller.accountMenuItemSelected.value) {
+      case AccountMenuItem.profiles:
         return ProfilesView();
       default:
         return const SizedBox.shrink();

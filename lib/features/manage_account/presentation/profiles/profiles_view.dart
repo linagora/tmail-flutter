@@ -2,9 +2,9 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/account_properties/profiles/identities/identities_view.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/account_properties/profiles/profiles_controller.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/profiles_tab_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_controller.dart';
 
 class ProfilesView extends GetWidget<ProfilesController> {
 
@@ -37,7 +37,7 @@ class ProfilesView extends GetWidget<ProfilesController> {
                       color: AppColor.colorTextButtonHeaderThread),
                   labelStyle: const TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.normal,
+                      fontWeight: FontWeight.w500,
                       color: AppColor.primaryColor),
                   labelColor: AppColor.primaryColor,
                   indicatorSize: TabBarIndicatorSize.label,
@@ -48,13 +48,16 @@ class ProfilesView extends GetWidget<ProfilesController> {
                     indicatorSize: CustomIndicatorSize.full),
                   onTap: (index) {},
                   tabs: [
-                    Tab(text: AppLocalizations.of(context).identities),
+                    Tab(text: ProfilesTabType.identities.getName(context)),
                   ]),
-              body: TabBarView(
-                children: [
-                  IdentitiesView(),
-                ],
-              ),
+              body: Column(children: [
+                const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+                Expanded(child: TabBarView(
+                  children: [
+                    IdentitiesView(),
+                  ],
+                ))
+              ]),
             )
         ),
       ),
