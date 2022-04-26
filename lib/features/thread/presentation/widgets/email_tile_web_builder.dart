@@ -27,6 +27,7 @@ class EmailTileBuilder {
   OnMoreActionClick? _onMoreActionClick;
 
   bool isHoverItem = false;
+  bool isHoverIcon = false;
 
   EmailTileBuilder(
     this._context,
@@ -195,16 +196,18 @@ class EmailTileBuilder {
     return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
       return InkWell(
         onTap: () => _emailActionClick?.call(EmailActionType.preview, _presentationEmail),
-        onLongPress: () => _emailActionClick?.call(EmailActionType.selection, _presentationEmail),
         onHover: (value) => setState(() => isHoverItem = value),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            GestureDetector(
-              onTap: () => _emailActionClick?.call(
-                  _selectModeAll == SelectMode.ACTIVE ? EmailActionType.selection : EmailActionType.preview,
-                  _presentationEmail),
-              child: Padding(
-                    padding: const EdgeInsets.only(top: 8, right: 12),
-                    child: _buildAvatarIcon())),
+          InkWell(
+            onTap: () {
+              if (isHoverIcon) {
+                _emailActionClick?.call(EmailActionType.selection, _presentationEmail);
+              }
+            },
+            onHover: (value) => setState(() => isHoverIcon = value),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8, right: 12),
+              child: _buildAvatarIcon())),
           Expanded(child: Column(children: [
             Transform(
                 transform: Matrix4.translationValues(0.0, isHoverItem ? -10.0 : 0.0, 0.0),
@@ -304,7 +307,6 @@ class EmailTileBuilder {
     return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
       return InkWell(
         onTap: () => _emailActionClick?.call(EmailActionType.preview, _presentationEmail),
-        onLongPress: () => _emailActionClick?.call(EmailActionType.selection, _presentationEmail),
         onHover: (value) => setState(() => isHoverItem = value),
         child: Column(children: [
           Row(children: [
@@ -324,21 +326,19 @@ class EmailTileBuilder {
                 onTap: () => _emailActionClick?.call(
                     _presentationEmail.hasStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred,
                     _presentationEmail)),
-            if (_selectModeAll == SelectMode.INACTIVE) const SizedBox(width: 8),
-            GestureDetector(
+            InkWell(
               onTap: () {
-                if (_selectModeAll == SelectMode.ACTIVE) {
+                if (isHoverIcon) {
                   _emailActionClick?.call(EmailActionType.selection, _presentationEmail);
-                } else {
-                  _emailActionClick?.call(EmailActionType.preview, _presentationEmail);
                 }
               },
+              onHover: (value) => setState(() => isHoverIcon = value),
               child: _buildAvatarIcon(
                   iconSize: 32,
                   textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
                   paddingIconSelect: const EdgeInsets.all(5)),
             ),
-            if (_selectModeAll == SelectMode.INACTIVE) const SizedBox(width: 10),
+            const SizedBox(width: 10),
             SizedBox(
               width: 160,
               child: _isSearchEnabled
@@ -361,7 +361,7 @@ class EmailTileBuilder {
           ]),
           if (_selectModeAll == SelectMode.INACTIVE)
             const Padding(
-                padding: EdgeInsets.only(top: 7.5, bottom: 7.5, left: 70),
+                padding: EdgeInsets.only(top: 7.5, bottom: 7.5, left: 80),
                 child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
         ]),
       );
@@ -504,14 +504,17 @@ class EmailTileBuilder {
     EdgeInsets? paddingIconSelect,
     TextStyle? textStyle
   }) {
-    if (_selectModeAll == SelectMode.ACTIVE) {
-      return Padding(
-          padding: const EdgeInsets.all(12),
-          child: SvgPicture.asset(
-              _presentationEmail.selectMode == SelectMode.ACTIVE
-                  ? _imagePaths.icSelected
-                  : _imagePaths.icUnSelected,
-              fit: BoxFit.fill));
+    if (isHoverIcon || _presentationEmail.selectMode == SelectMode.ACTIVE
+        || (_responsiveUtils.isMobile(_context) && _selectModeAll == SelectMode.ACTIVE)) {
+        return Padding(
+            padding: _responsiveUtils.isDesktop(_context)
+                ? const EdgeInsets.symmetric(horizontal: 4)
+                : const EdgeInsets.all(12),
+            child: SvgPicture.asset(
+                _presentationEmail.selectMode == SelectMode.ACTIVE
+                    ? _imagePaths.icSelected
+                    : _imagePaths.icUnSelected,
+                fit: BoxFit.fill));
     } else {
       return Container(
           width: iconSize ?? 48,
