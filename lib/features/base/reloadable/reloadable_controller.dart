@@ -102,8 +102,4 @@ abstract class ReloadableController extends BaseController {
     _clearAllCacheAction();
     goToLogin();
   }
-
-  void goToSettings() {
-    push(AppRoutes.MANAGE_ACCOUNT);
-  }
 }

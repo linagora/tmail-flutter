@@ -1173,4 +1173,9 @@ class AppLocalizations {
     return Intl.message('Identities',
         name: 'identities');
   }
+
+  String get new_identity {
+    return Intl.message('New Identity',
+        name: 'new_identity');
+  }
 }
