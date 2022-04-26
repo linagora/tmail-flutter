@@ -65,23 +65,29 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                         padding: const EdgeInsets.only(left: 16, right: 8),
                         key: const Key('list_manage_account_property'),
                         shrinkWrap: true,
-                        itemCount: controller.listAccountProperties.length,
-                        itemBuilder: (context, index) => Obx(() => AccountPropertyTileBuilder(
+                        itemCount: controller.listAccountMenuItem.length,
+                        itemBuilder: (context, index) => Obx(() => AccountMenuItemTileBuilder(
                             context,
                             _imagePaths,
                             _responsiveUtils,
-                            controller.listAccountProperties[index],
-                            controller.dashBoardController.accountPropertySelected.value))),
+                            controller.listAccountMenuItem[index],
+                            controller.dashBoardController.accountMenuItemSelected.value,
+                            onSelectAccountMenuItemAction: (newAccountMenuItem) =>
+                                controller.selectAccountMenuItem(newAccountMenuItem)))),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16),
                       child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
                     Padding(padding: const EdgeInsets.only(left: 32),
-                      child: InkWell(child: Row(children: [
-                        SvgPicture.asset(_imagePaths.icLogout, fit: BoxFit.fill),
-                        const SizedBox(width: 12),
-                        Expanded(child: Text(AppLocalizations.of(context).sign_out,
-                            style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: Colors.black)))
-                      ]))),
+                      child: InkWell(
+                        onTap: () => controller.dashBoardController.logoutAction(),
+                        child: Row(children: [
+                          SvgPicture.asset(_imagePaths.icLogout, fit: BoxFit.fill),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text(AppLocalizations.of(context).sign_out,
+                              style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: Colors.black)))
+                        ])
+                      )
+                    ),
                   ]),
                 )),
               ]
