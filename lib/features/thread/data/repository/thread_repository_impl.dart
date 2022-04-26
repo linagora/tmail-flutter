@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/foundation.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -143,22 +144,27 @@ class ThreadRepositoryImpl extends ThreadRepository {
     List<Email>? emailCacheList
   }) async {
     if (emailUpdated != null && emailUpdated.isNotEmpty) {
-      final newEmailUpdated = emailUpdated.map((email) {
-        if (updatedProperties == null) {
-          return email;
-        } else {
-          final emailOld = emailCacheList?.findEmailById(email.id);
-          if (emailOld != null) {
-            return emailOld.combineEmail(email, updatedProperties);
-          } else {
-            return email;
-          }
-        }
-      }).toList();
+      if (updatedProperties == null) {
+        return null;
+      }
+      final newEmailUpdated = emailUpdated
+        .map((updatedEmail) => _combineUpdatedWithEmailInCache(updatedEmail, emailCacheList))
+        .where((tuple) => tuple.value2 != null)
+        .map((tuple) => tuple.value2!.combineEmail(tuple.value1, updatedProperties))
+        .toList();
 
       return newEmailUpdated;
     }
     return emailUpdated;
+  }
+
+  dartz.Tuple2<Email, Email?> _combineUpdatedWithEmailInCache(Email updatedEmail, List<Email>? emailCacheList) {
+    final emailOld = emailCacheList?.findEmailById(updatedEmail.id);
+    if (emailOld != null) {
+      return dartz.Tuple2(updatedEmail, emailOld);
+    } else {
+      return dartz.Tuple2(updatedEmail, null);
+    }
   }
 
   Future<void> _updateEmailCache({
