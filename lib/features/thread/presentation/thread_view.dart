@@ -75,7 +75,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
                           ),
                           _buildSuggestionBox(context)
                         ]))),
-                    if (!kIsWeb) _buildListButtonSelectionForMobile(context),
+                    _buildListButtonSelectionForMobile(context),
                   ]
               )
           ))
@@ -87,7 +87,10 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
 
   Widget _buildListButtonSelectionForMobile(BuildContext context) {
     return Obx(() {
-      if (controller.isSelectionEnabled() && !_responsiveUtils.isDesktop(context) && controller.listEmailSelected.isNotEmpty) {
+      if (controller.isSelectionEnabled()
+          && controller.isSearchActive()
+          && !_responsiveUtils.isDesktop(context)
+          && controller.listEmailSelected.isNotEmpty) {
         return Column(children: [
           const Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
           Padding(

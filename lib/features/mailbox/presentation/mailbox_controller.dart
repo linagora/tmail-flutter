@@ -112,7 +112,7 @@ class MailboxController extends BaseMailboxController {
 
   @override
   void onReady() {
-    _openMailboxEventController.stream.throttleTime(Duration(milliseconds: 800)).listen((event) {
+    _openMailboxEventController.stream.throttleTime(const Duration(milliseconds: 800)).listen((event) {
       _handleOpenMailbox(event.buildContext, event.presentationMailbox);
     });
 
@@ -304,7 +304,7 @@ class MailboxController extends BaseMailboxController {
     }
 
     if (!_responsiveUtils.isDesktop(context) && !_responsiveUtils.isTabletLarge(context)) {
-      mailboxDashBoardController.closeDrawer();
+      mailboxDashBoardController.closeMailboxMenuDrawer();
     } else {
       mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
     }
@@ -679,7 +679,7 @@ class MailboxController extends BaseMailboxController {
 
   void closeMailboxScreen(BuildContext context) {
     _cancelSelectMailbox();
-    mailboxDashBoardController.closeDrawer();
+    mailboxDashBoardController.closeMailboxMenuDrawer();
   }
 
   @override

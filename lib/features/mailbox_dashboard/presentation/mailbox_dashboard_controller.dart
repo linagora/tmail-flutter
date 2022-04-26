@@ -248,11 +248,11 @@ class MailboxDashBoardController extends ReloadableController {
     selectedEmail.value = null;
   }
 
-  void openDrawer() {
+  void openMailboxMenuDrawer() {
     scaffoldKey.currentState?.openDrawer();
   }
 
-  void closeDrawer() {
+  void closeMailboxMenuDrawer() {
     scaffoldKey.currentState?.openEndDrawer();
   }
 
@@ -424,6 +424,10 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void goToSettings() {
+    if (currentContext != null && (_responsiveUtils.isMobile(currentContext!)
+        || _responsiveUtils.isTablet(currentContext!))) {
+      closeMailboxMenuDrawer();
+    }
     push(AppRoutes.MANAGE_ACCOUNT,
         arguments: ManageAccountArguments(accountId.value, userProfile.value));
   }

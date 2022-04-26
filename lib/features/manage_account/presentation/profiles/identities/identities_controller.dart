@@ -33,7 +33,7 @@ class IdentitiesController extends BaseController {
           if (success is GetAllIdentitiesSuccess) {
             if (success.identities?.isNotEmpty == true) {
               listIdentities.value = success.identities ?? [];
-              selectIdentity(listIdentities.first);
+              setIdentityDefault();
             }
           }
         }
@@ -55,6 +55,15 @@ class IdentitiesController extends BaseController {
 
   void _getAllIdentities(AccountId accountId) {
     consumeState(_getAllIdentitiesInteractor.execute(accountId));
+  }
+
+  void setIdentityDefault() {
+    try {
+      final identityDefault = listIdentities.firstWhere((identity) => identity.mayDelete == false);
+      selectIdentity(identityDefault);
+    } catch (exception) {
+      selectIdentity(listIdentities.first);
+    }
   }
 
   void selectIdentity(Identity? newIdentity) {
