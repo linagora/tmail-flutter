@@ -667,7 +667,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_delete_mailbox": "La casella di posta \"{nameMailbox}\" e tutte le sottocartelle e i messaggi contenuti verranno eliminati e non sarà possibile ripristinarli. Vuoi continuare a cancellare?",
+  "message_confirmation_dialog_delete_mailbox": "La casella di posta «{nameMailbox}» e tutte le sottocartelle e i messaggi contenuti verranno eliminati e non sarà possibile ripristinarli. Vuoi continuare a eliminare?",
   "@message_confirmation_dialog_delete_mailbox": {
     "type": "text",
     "placeholders_order": [
