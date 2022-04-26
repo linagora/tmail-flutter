@@ -2,9 +2,9 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/account_properties/profiles/profiles_bindings.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/dashboard/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_bindings.dart';
 
 class ManageAccountDashBoardBindings extends BaseBindings {
 

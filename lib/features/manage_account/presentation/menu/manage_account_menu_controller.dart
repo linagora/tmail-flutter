@@ -1,15 +1,15 @@
 
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/dashboard/manage_account_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/account_property.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 
 class ManageAccountMenuController extends BaseController {
 
   final dashBoardController = Get.find<ManageAccountDashBoardController>();
 
-  final listAccountProperties = <AccountProperty>[
-    AccountProperty.profiles
+  final listAccountMenuItem = <AccountMenuItem>[
+    AccountMenuItem.profiles
   ];
 
   @override
@@ -18,5 +18,9 @@ class ManageAccountMenuController extends BaseController {
 
   @override
   void onError(error) {
+  }
+
+  void selectAccountMenuItem(AccountMenuItem newAccountMenuItem) {
+    dashBoardController.selectAccountMenuItem(newAccountMenuItem);
   }
 }

@@ -15,11 +15,11 @@ mixin UserSettingPopupMenuMixin {
           enabled: false,
           padding: EdgeInsets.zero,
           child: _userInformation(context, userProfile)),
-      PopupMenuDivider(height: 0.5),
+      const PopupMenuDivider(height: 0.5),
       PopupMenuItem(
           padding: EdgeInsets.zero,
           child: _settingAction(context, onSettingAction)),
-      PopupMenuDivider(height: 0.5),
+      const PopupMenuDivider(height: 0.5),
       PopupMenuItem(
           padding: EdgeInsets.zero,
           child: _logoutAction(context, onLogoutAction)),
@@ -31,14 +31,14 @@ mixin UserSettingPopupMenuMixin {
       return SizedBox(
         width: 300,
         child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 20),
-            title: Text(userProfile.email, maxLines: 1, style: TextStyle(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+            title: Text(userProfile.email, maxLines: 1, style: const TextStyle(
                 fontSize: 15,
                 color: AppColor.colorHintSearchBar,
                 fontWeight: FontWeight.normal))),
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget _settingAction(BuildContext context, Function? onCallBack) {

@@ -95,6 +95,11 @@ class ImagePaths {
   String get icLogout => _getImagePath('ic_logout.svg');
   String get icSetting => _getImagePath('ic_setting.svg');
   String get icProfiles => _getImagePath('ic_profiles.svg');
+  String get icAddIdentity => _getImagePath('ic_add_identity.svg');
+  String get icDropDown => _getImagePath('ic_dropdown.svg');
+  String get icMoreVertical => _getImagePath('ic_more_vertical.svg');
+  String get icEmail => _getImagePath('ic_email.svg');
+  String get icReplyTo => _getImagePath('ic_reply_to.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
