@@ -11,8 +11,8 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
@@ -27,9 +27,8 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
-import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
-import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_all_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
@@ -41,7 +40,6 @@ class ThreadBindings extends BaseBindings {
   void bindingsController() {
     Get.put(ThreadController(
       Get.find<GetEmailsInMailboxInteractor>(),
-      Get.find<RefreshAllEmailsInMailboxInteractor>(),
       Get.find<MarkAsMultipleEmailReadInteractor>(),
       Get.find<MoveMultipleEmailToMailboxInteractor>(),
       Get.find<MarkAsStarEmailInteractor>(),
@@ -80,7 +78,6 @@ class ThreadBindings extends BaseBindings {
   @override
   void bindingsInteractor() {
     Get.lazyPut(() => GetEmailsInMailboxInteractor(Get.find<ThreadRepository>()));
-    Get.lazyPut(() => RefreshAllEmailsInMailboxInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsMultipleEmailReadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
