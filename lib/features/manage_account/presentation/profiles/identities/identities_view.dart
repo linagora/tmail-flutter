@@ -82,8 +82,8 @@ class IdentitiesView extends GetWidget<IdentitiesController> {
         responsiveUtils: _responsiveUtils,
         mobile: Scaffold(
           body: Container(
-              margin: const EdgeInsets.symmetric(vertical: 16),
-              child: Column(
+              margin: const EdgeInsets.only(top: 16, bottom: 16, right: 24),
+              child: SingleChildScrollView(child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     buttonSelectIdentity,
@@ -91,7 +91,8 @@ class IdentitiesView extends GetWidget<IdentitiesController> {
                         _imagePaths,
                         controller.identitySelected.value)),
                   ]
-              )),
+              ))
+          ),
           floatingActionButton: _responsiveUtils.isMobile(context)
             ? FloatingActionButton(
                   key: const Key('add_new_identity'),
@@ -101,7 +102,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> {
             : null),
         desktop: Container(
             margin: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-            child: Column(
+            child: SingleChildScrollView(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
@@ -112,7 +113,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> {
                       controller.identitySelected.value,
                       maxWidth: constraints.maxWidth / 2)),
                 ]
-            )
+            ))
         )
     ));
   }

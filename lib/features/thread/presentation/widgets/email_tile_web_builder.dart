@@ -61,8 +61,8 @@ class EmailTileBuilder {
   Widget _wrapContainerForTile(Widget tile) {
     if (_responsiveUtils.isDesktop(_context)) {
       return Container(
-        margin: _selectModeAll == SelectMode.ACTIVE ? EdgeInsets.only(top: 3, left: 8, right: 8) : EdgeInsets.zero,
-        padding: _selectModeAll == SelectMode.ACTIVE ? EdgeInsets.symmetric(vertical: 8) : EdgeInsets.zero,
+        margin: _selectModeAll == SelectMode.ACTIVE ? const EdgeInsets.only(top: 3, left: 8, right: 8) : EdgeInsets.zero,
+        padding: _selectModeAll == SelectMode.ACTIVE ? const EdgeInsets.symmetric(vertical: 8) : EdgeInsets.zero,
         decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
             ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: AppColor.colorItemEmailSelectedDesktop)
             : null,
@@ -71,11 +71,11 @@ class EmailTileBuilder {
     } else {
       return Container(
           margin: _selectModeAll == SelectMode.ACTIVE
-              ? EdgeInsets.only(top: 3, left: 16, right: 16)
+              ? const EdgeInsets.only(top: 3, left: 16, right: 16)
               : EdgeInsets.zero,
           padding: _selectModeAll == SelectMode.ACTIVE
-              ? EdgeInsets.only(top: 8, bottom: 16, right: 8)
-              : EdgeInsets.only(bottom: 10, left: 16, right: 16),
+              ? const EdgeInsets.only(top: 8, bottom: 16, right: 8)
+              : const EdgeInsets.only(bottom: 10, left: 16, right: 16),
           decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
               ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: AppColor.colorItemEmailSelectedDesktop)
               : BoxDecoration(borderRadius: BorderRadius.circular(0), color: Colors.white),
@@ -198,14 +198,13 @@ class EmailTileBuilder {
         onLongPress: () => _emailActionClick?.call(EmailActionType.selection, _presentationEmail),
         onHover: (value) => setState(() => isHoverItem = value),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: GestureDetector(
-                onTap: () => _emailActionClick?.call(
-                    _selectModeAll == SelectMode.ACTIVE ? EmailActionType.selection : EmailActionType.preview,
-                    _presentationEmail),
-                child: _buildAvatarIcon())),
-          const SizedBox(width: 12),
+            GestureDetector(
+              onTap: () => _emailActionClick?.call(
+                  _selectModeAll == SelectMode.ACTIVE ? EmailActionType.selection : EmailActionType.preview,
+                  _presentationEmail),
+              child: Padding(
+                    padding: const EdgeInsets.only(top: 8, right: 12),
+                    child: _buildAvatarIcon())),
           Expanded(child: Column(children: [
             Transform(
                 transform: Matrix4.translationValues(0.0, isHoverItem ? -10.0 : 0.0, 0.0),
@@ -507,7 +506,7 @@ class EmailTileBuilder {
   }) {
     if (_selectModeAll == SelectMode.ACTIVE) {
       return Padding(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           child: SvgPicture.asset(
               _presentationEmail.selectMode == SelectMode.ACTIVE
                   ? _imagePaths.icSelected

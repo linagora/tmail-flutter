@@ -222,7 +222,7 @@ class MailboxView extends GetWidget<MailboxController> {
           left: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context) ? 0 : 16,
           right: 16),
         child: (UserInformationWidgetBuilder(_imagePaths, context, controller.mailboxDashBoardController.userProfile.value)
-              ..addOnLogoutAction(() => controller.mailboxDashBoardController.logoutAction()))
+              ..addOnLogoutAction(() => controller.mailboxDashBoardController.goToSettings()))
             .build()),
       const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2)
     ]);

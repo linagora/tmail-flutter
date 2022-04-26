@@ -191,7 +191,7 @@ class MailboxView extends GetWidget<MailboxController> {
         Padding(
           padding: const EdgeInsets.only(left: 16, bottom: 10),
           child: (UserInformationWidgetBuilder(_imagePaths, context, controller.mailboxDashBoardController.userProfile.value)
-              ..addOnLogoutAction(() => controller.mailboxDashBoardController.logoutAction()))
+              ..addOnLogoutAction(() => controller.mailboxDashBoardController.goToSettings()))
             .build()),
         const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2)
       ]),

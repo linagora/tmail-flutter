@@ -77,19 +77,27 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                 ],
               ))
             ]),
-            mobile: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 16, bottom: 16, left: 24, right: 32),
-                child: _buildAppbar(context)),
-              (SearchBarView(_imagePaths)
-                  ..hintTextSearch(AppLocalizations.of(context).search_emails)
-                  ..addMargin(const EdgeInsets.only(left: 32, right: 32))
-                  ..addOnOpenSearchViewAction(() => {}))
-                .build(),
-              Expanded(child: Padding(
-                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
-                  child: _viewDisplayedOfAccountMenuItem()))
-            ])
+            mobile: SafeArea(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Padding(
+                        padding: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
+                            ? const EdgeInsets.only(bottom: 16, left: 4, right: 8)
+                            : const EdgeInsets.only(top: 16, bottom: 16, left: 24, right: 32),
+                        child: _buildAppbar(context)),
+                    (SearchBarView(_imagePaths)
+                        ..hintTextSearch(AppLocalizations.of(context).search_emails)
+                        ..addMargin(!BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
+                            ? const EdgeInsets.only(left: 16, right: 16)
+                            : const EdgeInsets.only(left: 32, right: 32))
+                        ..addOnOpenSearchViewAction(() => {}))
+                      .build(),
+                    Expanded(child: Padding(
+                        padding: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
+                            ? const EdgeInsets.only(left: 8)
+                            : const EdgeInsets.only(left: 24),
+                        child: _viewDisplayedOfAccountMenuItem()))
+                ])
+            )
         ),
       ]),
     );

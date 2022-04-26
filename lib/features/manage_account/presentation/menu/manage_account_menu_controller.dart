@@ -23,4 +23,8 @@ class ManageAccountMenuController extends BaseController {
   void selectAccountMenuItem(AccountMenuItem newAccountMenuItem) {
     dashBoardController.selectAccountMenuItem(newAccountMenuItem);
   }
+
+  void backToMailboxDashBoard() {
+    dashBoardController.backToMailboxDashBoard();
+  }
 }
