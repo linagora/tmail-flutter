@@ -65,7 +65,8 @@ class AppBarThreadWidgetBuilder {
       alignment: Alignment.topCenter,
       color: Colors.white,
       margin: EdgeInsets.zero,
-      padding: const EdgeInsets.only(left: 8, top: 16, bottom: 8, right: 8),
+      padding: EdgeInsets.only(left: 8, bottom: 8, right: 8,
+          top: (!BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(_context)) ? 0 : 16),
       child: MediaQuery(
         data: const MediaQueryData(padding: EdgeInsets.zero),
         child: kIsWeb
