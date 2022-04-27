@@ -101,7 +101,7 @@ class MailboxDashBoardController extends ReloadableController {
     dispatchRoute(AppRoutes.THREAD);
     _setSessionCurrent();
     _getUserProfile();
-    _initPackageInfo();
+    _getAppVersion();
     super.onReady();
   }
 
@@ -213,9 +213,9 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  Future<void> _initPackageInfo() async {
+  Future<void> _getAppVersion() async {
     final info = await PackageInfo.fromPlatform();
-    log('MailboxDashBoardController::_initPackageInfo(): ${info.version}');
+    log('MailboxDashBoardController::_getAppVersion(): ${info.version}');
     appInformation.value = info;
   }
 
