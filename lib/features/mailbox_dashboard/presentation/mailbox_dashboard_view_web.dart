@@ -42,7 +42,9 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       drawer: ResponsiveWidget(
           responsiveUtils: _responsiveUtils,
           mobile: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
-          tabletLarge: const SizedBox.shrink()
+          tablet: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
+          tabletLarge: const SizedBox.shrink(),
+          desktop: const SizedBox.shrink(),
       ),
       drawerEnableOpenDragGesture: _responsiveUtils.isMobile(context) || _responsiveUtils.isTablet(context),
       body: Stack(children: [
@@ -93,7 +95,8 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                 Expanded(child: _wrapContainerForThreadAndEmail(context))
               ],
             ),
-            mobile: ThreadView()
+            tablet: ThreadView(),
+            mobile: ThreadView(),
         ),
         Obx(() => controller.dashBoardAction.value is ComposeEmailAction
             ? ComposerView()

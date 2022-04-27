@@ -54,6 +54,7 @@ class EmailTileBuilder {
         responsiveUtils: _responsiveUtils,
         mobile: _wrapContainerForTile(_buildListTile()),
         tablet: _wrapContainerForTile(_buildListTileTablet()),
+        tabletLarge: _wrapContainerForTile(_buildListTileTablet()),
         desktop: _wrapContainerForTile(_buildListTileForDesktop()),
       )
     );
