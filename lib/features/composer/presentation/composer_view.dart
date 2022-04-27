@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -204,6 +206,73 @@ class ComposerView extends GetWidget<ComposerController> {
       .build();
   }
 
+  Widget _buildFromEmailAddress(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+          left: responsiveUtils.isMobile(context) ? 16 : 0,
+          top: 12,
+          bottom: 12),
+      child: Row(children: [
+        Text('${AppLocalizations.of(context).from_email_address_prefix}:',
+            style: const TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput)),
+        const SizedBox(width: 12),
+        DropdownButtonHideUnderline(
+          child: DropdownButton2<Identity>(
+            isExpanded: true,
+            customButton: SvgPicture.asset(imagePaths.icEditIdentity),
+            items: controller.listIdentities.map((item) => DropdownMenuItem<Identity>(
+              value: item,
+              child: Container(
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: item == controller.identitySelected.value ? AppColor.colorBgMenuItemDropDownSelected : Colors.transparent),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        item.name ?? '',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        item.email ?? '',
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.normal, color: AppColor.colorHintSearchBar),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    ]
+                ),
+              ),
+            )).toList(),
+            onChanged: (newIdentity) => controller.selectIdentity(newIdentity),
+            itemPadding: const EdgeInsets.symmetric(horizontal: 8),
+            customItemsHeight: 55,
+            dropdownMaxHeight: 240,
+            dropdownWidth: 300,
+            dropdownDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white),
+            dropdownElevation: 4,
+            scrollbarRadius: const Radius.circular(40),
+            scrollbarThickness: 6,
+          ),
+        ),
+        Expanded(child: Padding(
+            padding: const EdgeInsets.only(right: 8, left: 12),
+            child: Text(
+              controller.identitySelected.value?.email ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.normal, color: AppColor.colorEmailAddressPrefix),
+            ))),
+      ]),
+    );
+  }
+
   Widget _buildEmailAddress(BuildContext context) {
     return Column(
       children: [
@@ -317,6 +386,12 @@ class ComposerView extends GetWidget<ComposerController> {
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
       child: Column(children: [
+        Obx(() => controller.identitySelected.value != null
+            ? _buildFromEmailAddress(context)
+            : const SizedBox.shrink()),
+        Obx(() => controller.identitySelected.value != null
+            ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+            : const SizedBox.shrink()),
         _buildEmailAddress(context),
         const Divider(color: AppColor.colorDividerComposer, height: 1),
         Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), child: _buildSubjectEmail(context)),
@@ -360,6 +435,12 @@ class ComposerView extends GetWidget<ComposerController> {
               Expanded(child: Padding(
                 padding: const EdgeInsets.only(left: 16),
                 child: Column(children: [
+                  Obx(() => controller.identitySelected.value != null
+                      ? _buildFromEmailAddress(context)
+                      : const SizedBox.shrink()),
+                  Obx(() => controller.identitySelected.value != null
+                      ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+                      : const SizedBox.shrink()),
                   _buildEmailAddress(context),
                   const Divider(color: AppColor.colorDividerComposer, height: 1),
                   Padding(padding: const EdgeInsets.only(right: 16), child: _buildSubjectEmail(context)),
