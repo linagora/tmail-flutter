@@ -551,7 +551,8 @@ class ThreadView extends GetWidget<ThreadController> with UserSettingPopupMenuMi
             return _buildResultSearchEmails(context, controller.emailListSearch);
           }
         } else {
-          return _buildResultListEmail(context, controller.emailList);
+          //FIXME: Rebuild more than once when first launch the dashbroad => should reduce it to build only 1
+            return _buildResultListEmail(context, controller.emailList);
         }
       })
     );

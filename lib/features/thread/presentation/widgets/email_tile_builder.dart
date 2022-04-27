@@ -438,7 +438,6 @@ class EmailTileBuilder {
   Color _buildTextColorForReadEmail() {
     if (_presentationEmail.hasRead) return AppColor.colorContentEmail;
     return AppColor.colorNameEmail;
-    ;
   }
 
   Widget _buildAvatarIcon(
