@@ -63,8 +63,8 @@ class IdentityInfoTileBuilder extends StatelessWidget {
                     Expanded(child: Text(_identity?.email ?? '',
                         style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.colorHintSearchBar)))
                   ])),
-            if (_identity?.replyTo != null) const SizedBox(height: 10),
-            if (_identity?.replyTo != null)
+            if (_identity?.replyTo != null && _identity?.replyTo?.isNotEmpty == true) const SizedBox(height: 10),
+            if (_identity?.replyTo != null && _identity?.replyTo?.isNotEmpty == true)
               Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Row(children: [
@@ -75,8 +75,8 @@ class IdentityInfoTileBuilder extends StatelessWidget {
                     Expanded(child: Text(_identity?.replyTo?.listEmailAddressToString(isFullEmailAddress: true) ?? '',
                         style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.colorHintSearchBar)))
                   ])),
-            if (_identity?.cc != null) const SizedBox(height: 6),
-            if (_identity?.cc != null)
+            if (_identity?.cc != null && _identity?.cc?.isNotEmpty == true) const SizedBox(height: 6),
+            if (_identity?.cc != null && _identity?.cc?.isNotEmpty == true)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Row(children: [
@@ -93,8 +93,8 @@ class IdentityInfoTileBuilder extends StatelessWidget {
                   Expanded(child: Text(_identity?.cc?.listEmailAddressToString(isFullEmailAddress: true) ?? '',
                       style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.colorHintSearchBar)))
                 ])),
-            if (_identity?.bcc != null) const SizedBox(height: 6),
-            if (_identity?.bcc != null)
+            if (_identity?.bcc != null && _identity?.bcc?.isNotEmpty == true) const SizedBox(height: 6),
+            if (_identity?.bcc != null && _identity?.bcc?.isNotEmpty == true)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Row(children: [
