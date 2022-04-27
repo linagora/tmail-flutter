@@ -15,6 +15,7 @@ import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
@@ -44,6 +45,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -68,6 +71,8 @@ class ComposerController extends BaseController {
   final toAddressExpandMode = ExpandMode.EXPAND.obs;
   final ccAddressExpandMode = ExpandMode.EXPAND.obs;
   final bccAddressExpandMode = ExpandMode.EXPAND.obs;
+  final identitySelected = Rxn<Identity>();
+  final listIdentities = <Identity>[].obs;
 
   final SendEmailInteractor _sendEmailInteractor;
   final SaveEmailAddressesInteractor _saveEmailAddressInteractor;
@@ -80,6 +85,7 @@ class ComposerController extends BaseController {
   final SaveEmailAsDraftsInteractor _saveEmailAsDraftsInteractor;
   final GetEmailContentInteractor _getEmailContentInteractor;
   final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
+  final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
 
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
@@ -126,6 +132,7 @@ class ComposerController extends BaseController {
     this._saveEmailAsDraftsInteractor,
     this._getEmailContentInteractor,
     this._updateEmailDraftsInteractor,
+    this._getAllIdentitiesInteractor,
   );
 
   @override
@@ -138,10 +145,10 @@ class ComposerController extends BaseController {
 
   @override
   void onReady() async {
-    super.onReady();
     _initEmail();
-
+    _getAllIdentities();
     Future.delayed(const Duration(milliseconds: 500), () => _checkContactPermission());
+    super.onReady();
   }
 
   @override
@@ -173,6 +180,11 @@ class ComposerController extends BaseController {
           _uploadAttachmentsSuccess(success);
         } else if (success is GetEmailContentSuccess) {
           _getEmailContentSuccess(success);
+        } if (success is GetAllIdentitiesSuccess) {
+          if (success.identities?.isNotEmpty == true) {
+            listIdentities.value = success.identities ?? [];
+            setIdentityDefault();
+          }
         }
       });
   }
@@ -214,6 +226,13 @@ class ComposerController extends BaseController {
   void _initAttachments(ComposerArguments arguments) {
     attachments.value = arguments.attachments ?? [];
     initialAttachments = arguments.attachments ?? [];
+  }
+
+  void _getAllIdentities() {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null) {
+      consumeState(_getAllIdentitiesInteractor.execute(accountId));
+    }
   }
 
   String? getContentEmail(BuildContext context) {
@@ -881,6 +900,19 @@ class ComposerController extends BaseController {
           break;
       }
     }
+  }
+
+  void setIdentityDefault() {
+    try {
+      final identityDefault = listIdentities.firstWhere((identity) => identity.mayDelete == false);
+      selectIdentity(identityDefault);
+    } catch (exception) {
+      selectIdentity(listIdentities.first);
+    }
+  }
+
+  void selectIdentity(Identity? newIdentity) {
+    identitySelected.value = newIdentity;
   }
 
   void closeComposer() {
