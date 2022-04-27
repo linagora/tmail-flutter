@@ -37,8 +37,15 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
+import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/manage_account_datasource_impl.dart';
+import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
+import 'package:tmail_ui_user/features/manage_account/data/repository/manage_account_repository_impl.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:uuid/uuid.dart';
+import 'package:jmap_dart_client/http/http_client.dart' as jmap_http_client;
 
 class ComposerBindings extends BaseBindings {
   @override
@@ -50,6 +57,7 @@ class ComposerBindings extends BaseBindings {
   void _bindingsUtils() {
     Get.lazyPut(() => EmailAddressDatabaseManager(Get.find<DatabaseClient>()));
     Get.lazyPut(() => const Uuid());
+    Get.lazyPut(() => ManageAccountAPI(Get.find<jmap_http_client.HttpClient>()));
   }
 
   @override
@@ -64,6 +72,7 @@ class ComposerBindings extends BaseBindings {
         Get.find<HtmlAnalyzer>(),
         Get.find<DioClient>()
     ));
+    Get.lazyPut(() => ManageAccountDataSourceImpl(Get.find<ManageAccountAPI>()));
   }
 
   @override
@@ -73,6 +82,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut<ContactDataSource>(() => Get.find<ContactDataSourceImpl>());
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
+    Get.lazyPut<ManageAccountDataSource>(() => Get.find<ManageAccountDataSourceImpl>());
   }
 
   @override
@@ -90,6 +100,7 @@ class ComposerBindings extends BaseBindings {
         Get.find<EmailDataSource>(),
         Get.find<HtmlDataSource>()
     ));
+    Get.lazyPut(() => ManageAccountRepositoryImpl(Get.find<ManageAccountDataSource>()));
   }
 
   @override
@@ -98,6 +109,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut<AutoCompleteRepository>(() => Get.find<AutoCompleteRepositoryImpl>());
     Get.lazyPut<ContactRepository>(() => Get.find<ContactRepositoryImpl>());
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
+    Get.lazyPut<ManageAccountRepository>(() => Get.find<ManageAccountRepositoryImpl>());
   }
 
   @override
@@ -116,6 +128,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => SaveEmailAsDraftsInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => UpdateEmailDraftsInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => GetAllIdentitiesInteractor(Get.find<ManageAccountRepository>()));
   }
 
   @override
@@ -132,6 +145,7 @@ class ComposerBindings extends BaseBindings {
         Get.find<SaveEmailAsDraftsInteractor>(),
         Get.find<GetEmailContentInteractor>(),
         Get.find<UpdateEmailDraftsInteractor>(),
+        Get.find<GetAllIdentitiesInteractor>(),
     ));
   }
 }
