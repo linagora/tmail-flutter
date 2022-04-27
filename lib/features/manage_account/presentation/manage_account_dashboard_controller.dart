@@ -35,6 +35,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   @override
   void onReady() {
     _getArguments();
+    _getAppVersion();
     super.onReady();
   }
 
@@ -71,6 +72,12 @@ class ManageAccountDashBoardController extends ReloadableController {
         reload();
       }
     }
+  }
+
+  Future<void> _getAppVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    log('MailboxDashBoardController::_getAppVersion(): ${info.version}');
+    appInformation.value = info;
   }
 
   void _getUserProfile() async {
