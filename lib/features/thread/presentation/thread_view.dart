@@ -189,9 +189,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
     return Obx(() {
       if (!controller.isSearchActive() && !_responsiveUtils.isDesktop(context)) {
         return Container(
-          padding: EdgeInsets.only(bottom: controller.isSelectionEnabled() && controller.listEmailSelected.isNotEmpty
-              ? 80
-              : _responsiveUtils.isMobileDevice(context) ? 0 : 16),
+          padding: EdgeInsets.zero,
           child: Align(
             alignment: Alignment.bottomRight,
             child: ScrollingFloatingButtonAnimated(
