@@ -346,11 +346,11 @@ class EmailTileBuilder {
                   ? RichTextBuilder(
                       _getInformationSender(),
                       _searchQuery!.value,
-                      const TextStyle(fontSize: 15, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600),
-                      const TextStyle(fontSize: 15, color: AppColor.colorNameEmail, backgroundColor: AppColor.bgWordSearch, fontWeight: FontWeight.w600)).build()
+                       TextStyle(fontSize: 15, color: _buildTextColorForReadEmail(), fontWeight: _buildFontForReadEmail()),
+                       TextStyle(fontSize: 15, color: _buildTextColorForReadEmail(), fontWeight: _buildFontForReadEmail(), backgroundColor: AppColor.bgWordSearch)).build()
                   : Text(_getInformationSender(),
                       maxLines: 1,
-                      style: const TextStyle(fontSize: 15, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600)),
+                      style: TextStyle(fontSize: 15, color: _buildTextColorForReadEmail(), fontWeight: _buildFontForReadEmail())),
             ),
             const SizedBox(width: 24),
             Expanded(child: _buildSubjectAndContent()),
@@ -448,7 +448,7 @@ class EmailTileBuilder {
       Padding(padding: const EdgeInsets.only(right: 20, left: 8),
           child: Text(_presentationEmail.getReceivedAt(Localizations.localeOf(_context).toLanguageTag()),
               maxLines: 1,
-              style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.normal)))
+              style:  TextStyle(fontSize: 13, color: _buildTextColorForReadEmail(), fontWeight: _buildFontForReadEmail())))
     ]);
   }
 
@@ -476,11 +476,11 @@ class EmailTileBuilder {
                 ? RichTextBuilder(
                     _presentationEmail.getEmailTitle(),
                     _searchQuery!.value,
-                    const TextStyle(fontSize: 13, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600),
-                    const TextStyle(fontSize: 13, backgroundColor: AppColor.bgWordSearch, color: AppColor.colorNameEmail)).build()
+                     TextStyle(fontSize: 13, color: _buildTextColorForReadEmail(), fontWeight: _buildFontForReadEmail()),
+                     TextStyle(fontSize: 13, backgroundColor: AppColor.bgWordSearch, color: _buildTextColorForReadEmail(), fontWeight: _buildFontForReadEmail())).build()
                 : Text(_presentationEmail.getEmailTitle(),
                     maxLines: 1,
-                    style: const TextStyle(fontSize: 13, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600))
+                    style:  TextStyle(fontSize: 13, color: _buildTextColorForReadEmail(), fontWeight: _buildFontForReadEmail()))
         ),
         if (_presentationEmail.getEmailTitle().isNotEmpty) const SizedBox(width: 12),
         Expanded(
@@ -537,6 +537,15 @@ class EmailTileBuilder {
           )
       );
     }
+  }
+
+
+  FontWeight _buildFontForReadEmail() {
+    return !_presentationEmail.hasRead ? FontWeight.w600 : FontWeight.normal;
+  }
+
+  Color _buildTextColorForReadEmail() {
+    return _presentationEmail.hasRead ? AppColor.colorContentEmail : AppColor.colorNameEmail;
   }
 
   String _getInformationSender() {
