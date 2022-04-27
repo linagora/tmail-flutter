@@ -318,11 +318,13 @@ class EmailTileBuilder {
     TextStyle? textStyle
   }) {
     if (_selectModeAll == SelectMode.ACTIVE) {
-      return Tooltip(
-          child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: SvgPicture.asset(_presentationEmail.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected, fit: BoxFit.fill)),
-          message: AppLocalizations.of(_context).select);
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: SvgPicture.asset(
+          _presentationEmail.selectMode == SelectMode.ACTIVE
+            ? _imagePaths.icSelected
+              : _imagePaths.icUnSelected,
+          fit: BoxFit.fill));
     } else {
       return Container(
           width: iconSize ?? 56,
