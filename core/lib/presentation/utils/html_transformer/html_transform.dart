@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/message_content_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:html/dom.dart';
 
 class HtmlTransform {

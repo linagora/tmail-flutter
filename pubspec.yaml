@@ -122,13 +122,14 @@ dependencies:
   # enough_html_editor: Compose email for Mobile & Tablet
   enough_html_editor:
     git:
-      url: https://github.com/Enough-Software/enough_html_editor.git
+      url: https://github.com/dab246/enough_html_editor.git
+      ref: improvements_for_use_tmail
 
   # html_editor_enhanced: Compose email for Web Browser
   html_editor_enhanced:
     git:
       url: https://github.com/dab246/html-editor-enhanced.git
-      ref: fix_display_content
+      ref: improvements_for_use_tmail
 
   # fk_user_agent
   fk_user_agent: 2.1.0
