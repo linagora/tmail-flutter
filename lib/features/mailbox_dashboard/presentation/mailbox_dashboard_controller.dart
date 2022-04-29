@@ -150,14 +150,9 @@ class MailboxDashBoardController extends ReloadableController {
                 message: AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
                 icon: _imagePaths.icSendToast);
           }
-          clearState();
         } else if (success is SaveEmailAsDraftsSuccess) {
           log('MailboxDashBoardController::onDone(): SaveEmailAsDraftsSuccess');
           _saveEmailAsDraftsSuccess(success);
-          clearState();
-        } else if (success is RemoveEmailDraftsSuccess
-          || success is UpdateEmailDraftsSuccess) {
-          clearState();
         } else if (success is MoveToMailboxSuccess) {
           _moveToMailboxSuccess(success);
         } else if (success is DeleteEmailPermanentlySuccess) {

@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 

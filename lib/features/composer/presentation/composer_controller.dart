@@ -58,6 +58,7 @@ class ComposerController extends BaseController {
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final expandModeAttachments = ExpandMode.COLLAPSE.obs;
   final composerArguments = Rxn<ComposerArguments>();
@@ -92,7 +93,8 @@ class ComposerController extends BaseController {
   List<EmailAddress> listBccEmailAddress = <EmailAddress>[];
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.localContact;
   HtmlEditorApi? htmlEditorApi;
-  final html_editor_browser.HtmlEditorController htmlControllerBrowser = html_editor_browser.HtmlEditorController(processNewLineAsBr: true);
+  final html_editor_browser.HtmlEditorController htmlControllerBrowser =
+    html_editor_browser.HtmlEditorController(processNewLineAsBr: true);
 
   final subjectEmailInputController = TextEditingController();
   final toEmailAddressController = TextEditingController();
@@ -108,14 +110,21 @@ class ComposerController extends BaseController {
 
   void setSubjectEmail(String subject) => subjectEmail.value = subject;
 
-  Future<String> _getEmailBodyText({bool onlyText = false}) async {
+  Future<String> _getEmailBodyText({bool changedEmail = false}) async {
     if (kIsWeb) {
       return await htmlControllerBrowser.getText();
     } else {
-      if (onlyText) {
-        return (await htmlEditorApi?.getText()) ?? '';
+      if (changedEmail) {
+        return await htmlEditorApi?.getText() ?? '';
       } else {
-        return (await htmlEditorApi?.getFullHtml()) ?? '';
+        final content = await htmlEditorApi?.getText() ?? '';
+        if (_isMobileApp && identitySelected.value?.textSignature?.value.isNotEmpty == true) {
+          final newContent = '$content<br><br><br>--<br><br><div>${identitySelected.value?.textSignature?.value}</div><br>';
+          log('ComposerController::_generateEmail()_MOBILE: $newContent');
+          return newContent;
+        } else {
+          return content;
+        }
       }
     }
   }
@@ -328,9 +337,12 @@ class ComposerController extends BaseController {
     if (arguments.presentationEmail != null && userProfile != null) {
       final userEmailAddress = EmailAddress(null, userProfile.email);
 
-      final recipients = arguments.presentationEmail!.generateRecipientsEmailAddressForComposer(arguments.emailActionType, arguments.mailboxRole);
+      final recipients = arguments.presentationEmail!.generateRecipientsEmailAddressForComposer(
+          arguments.emailActionType,
+          arguments.mailboxRole);
 
-      if (arguments.mailboxRole == PresentationMailbox.roleSent || arguments.emailActionType == EmailActionType.edit) {
+      if (arguments.mailboxRole == PresentationMailbox.roleSent
+          || arguments.emailActionType == EmailActionType.edit) {
         listToEmailAddress = recipients.value1;
         listCcEmailAddress = recipients.value2;
         listBccEmailAddress = recipients.value3;
@@ -362,7 +374,8 @@ class ComposerController extends BaseController {
     _updateStatusEmailSendButton();
   }
 
-  void updateListEmailAddress(PrefixEmailAddress prefixEmailAddress, List<EmailAddress> newListEmailAddress) {
+  void updateListEmailAddress(PrefixEmailAddress prefixEmailAddress,
+      List<EmailAddress> newListEmailAddress) {
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.to:
         listToEmailAddress = newListEmailAddress;
@@ -395,22 +408,31 @@ class ComposerController extends BaseController {
     final headerEmailQuotedAsHtml = headerEmailQuoted != null ? headerEmailQuoted.addBlockTag('cite') : '';
 
     final trustAsHtml = arguments.emailContents?.asHtmlString ?? '';
-    final emailQuotedHtml = '<p></br></p>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}';
+    final emailQuotedHtml = '<p></br></p>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}</br></br></br>';
 
     return emailQuotedHtml;
   }
 
-  Future<Email> _generateEmail(Map<Role, MailboxId> mapDefaultMailboxId, UserProfile userProfile, {bool asDrafts = false}) async {
+  Future<Email> _generateEmail(Map<Role, MailboxId> mapDefaultMailboxId,
+      UserProfile userProfile, {bool asDrafts = false}) async {
     final generateEmailId = EmailId(Id(_uuid.v1()));
     final outboxMailboxId = mapDefaultMailboxId[PresentationMailbox.roleOutbox];
     final draftMailboxId = mapDefaultMailboxId[PresentationMailbox.roleDrafts];
-    final listFromEmailAddress = {
-      EmailAddress(null, userProfile.email)
-    };
+    Set<EmailAddress> listFromEmailAddress = {EmailAddress(null, userProfile.email)};
+    if (identitySelected.value?.email?.isNotEmpty == true) {
+      listFromEmailAddress = {EmailAddress(
+          identitySelected.value?.name,
+          identitySelected.value?.email)};
+    }
+    Set<EmailAddress> listReplyToEmailAddress = {EmailAddress(null, userProfile.email)};
+    if (identitySelected.value?.replyTo?.isNotEmpty == true) {
+      listReplyToEmailAddress = identitySelected.value!.replyTo!;
+    }
     final generatePartId = PartId(_uuid.v1());
     final generateBlobId = Id(_uuid.v1());
 
-    final emailBodyText = await _getEmailBodyText();
+    var emailBodyText = await _getEmailBodyText();
+    log('ComposerController::_generateEmail(): $emailBodyText');
     final userAgent = await userAgentPlatform;
 
     return Email(
@@ -420,7 +442,7 @@ class ComposerController extends BaseController {
       to: listToEmailAddress.toSet(),
       cc: listCcEmailAddress.toSet(),
       bcc: listBccEmailAddress.toSet(),
-      replyTo: listFromEmailAddress,
+      replyTo: listReplyToEmailAddress,
       keywords: asDrafts ? {KeyWordIdentifier.emailDraft : true} : null,
       subject: subjectEmail.value,
       htmlBody: {
@@ -504,7 +526,8 @@ class ComposerController extends BaseController {
     if (!_validateAttachmentsSize()) {
       showConfirmDialogAction(
           context,
-          AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
+          AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(
+              filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
           AppLocalizations.of(context).got_it,
           () => {},
           title: AppLocalizations.of(context).sending_failed,
@@ -521,7 +544,8 @@ class ComposerController extends BaseController {
     final session = mailboxDashBoardController.sessionCurrent;
     final mapDefaultMailboxId = mailboxDashBoardController.mapDefaultMailboxId;
     final userProfile = mailboxDashBoardController.userProfile.value;
-    if (arguments != null && session != null && mapDefaultMailboxId.isNotEmpty && userProfile != null) {
+    if (arguments != null && session != null && mapDefaultMailboxId.isNotEmpty
+        && userProfile != null) {
       _saveEmailAddress();
 
       final email = await _generateEmail(mapDefaultMailboxId, userProfile);
@@ -530,11 +554,11 @@ class ComposerController extends BaseController {
       final submissionCreateId = Id(_uuid.v1());
 
       mailboxDashBoardController.consumeState(_sendEmailInteractor.execute(
-          accountId,
-          EmailRequest(email, submissionCreateId, mailboxIdSaved: sentMailboxId,
-              emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
-                  ? arguments.presentationEmail?.id
-                  : null)));
+        accountId,
+        EmailRequest(email, submissionCreateId, mailboxIdSaved: sentMailboxId,
+          emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
+            ? arguments.presentationEmail?.id
+            : null)));
     }
 
     if (kIsWeb) {
@@ -564,7 +588,8 @@ class ComposerController extends BaseController {
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion({String? word, bool? isAll}) async {
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      return await _getAutoCompleteWithDeviceContactInteractor.execute(AutoCompletePattern(word: word, isAll: isAll))
+      return await _getAutoCompleteWithDeviceContactInteractor
+        .execute(AutoCompletePattern(word: word, isAll: isAll))
         .then((value) => value.fold(
           (failure) => <EmailAddress>[],
           (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
@@ -610,7 +635,8 @@ class ComposerController extends BaseController {
         if (currentContext != null) {
           showConfirmDialogAction(
               currentContext!,
-              AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
+              AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
+                  filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
               AppLocalizations.of(currentContext!).got_it,
               () => {},
               title: AppLocalizations.of(currentContext!).maximum_files_size,
@@ -686,7 +712,8 @@ class ComposerController extends BaseController {
   }
 
   Future<bool> _isEmailChanged(BuildContext context, ComposerArguments arguments) async {
-    final newEmailBody = await _getEmailBodyText(onlyText: true);
+    final newEmailBody = (await _getEmailBodyText(changedEmail: true))
+        .replaceAll('<p><br><br><br></p>', '');
     log('ComposerController::_isEmailChanged(): newEmailBody: $newEmailBody');
     var oldEmailBody = '';
     final contentEmail = getContentEmail(context);
@@ -747,9 +774,11 @@ class ComposerController extends BaseController {
         final oldEmail = arguments.presentationEmail;
 
         if (arguments.emailActionType == EmailActionType.edit && oldEmail != null) {
-          mailboxDashBoardController.consumeState(_updateEmailDraftsInteractor.execute(accountId, newEmail, oldEmail.id));
+          mailboxDashBoardController.consumeState(
+              _updateEmailDraftsInteractor.execute(accountId, newEmail, oldEmail.id));
         } else {
-          mailboxDashBoardController.consumeState(_saveEmailAsDraftsInteractor.execute(accountId, newEmail));
+          mailboxDashBoardController.consumeState(
+              _saveEmailAsDraftsInteractor.execute(accountId, newEmail));
         }
       }
     }
@@ -821,7 +850,8 @@ class ComposerController extends BaseController {
   }
 
   void toggleDisplayAttachments() {
-    final newExpandMode = expandModeAttachments.value == ExpandMode.COLLAPSE ? ExpandMode.EXPAND : ExpandMode.COLLAPSE;
+    final newExpandMode = expandModeAttachments.value == ExpandMode.COLLAPSE
+        ? ExpandMode.EXPAND : ExpandMode.COLLAPSE;
     expandModeAttachments.value = newExpandMode;
   }
 
@@ -912,7 +942,87 @@ class ComposerController extends BaseController {
   }
 
   void selectIdentity(Identity? newIdentity) {
+    final formerIdentity = identitySelected.value;
     identitySelected.value = newIdentity;
+    if (newIdentity != null) {
+      _applyIdentityForAllFieldComposer(formerIdentity, newIdentity);
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
+  }
+
+  bool get _isMobileApp {
+    return !BuildUtils.isWeb
+        && currentContext != null
+        && _responsiveUtils.isMobile(currentContext!);
+  }
+
+  void _applyIdentityForAllFieldComposer(Identity? formerIdentity, Identity newIdentity) {
+    if (formerIdentity != null) {
+      // Remove former identity
+      if (formerIdentity.bcc?.isNotEmpty == true) {
+        _removeBccEmailAddressFromFormerIdentity(formerIdentity.bcc!);
+      }
+
+      if (!_isMobileApp) {
+        _removeSignature();
+      }
+    }
+
+    // Add new identity
+    if (newIdentity.bcc?.isNotEmpty == true) {
+      _applyBccEmailAddressFromIdentity(newIdentity.bcc!);
+    }
+
+    if (!_isMobileApp) {
+      if (newIdentity.htmlSignature?.value.isNotEmpty == true) {
+        _applySignature(newIdentity.htmlSignature!);
+      } else if (newIdentity.textSignature?.value.isNotEmpty == true) {
+        _applySignature(newIdentity.textSignature!);
+      }
+    }
+  }
+
+  void _applyBccEmailAddressFromIdentity(Set<EmailAddress> listEmailAddress) {
+    if (!listEmailAddressType.contains(PrefixEmailAddress.bcc)) {
+      listEmailAddressType.add(PrefixEmailAddress.bcc);
+    }
+    listBccEmailAddress = listEmailAddress.toList();
+    toAddressExpandMode.value = ExpandMode.COLLAPSE;
+    ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+    bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+    _updateStatusEmailSendButton();
+  }
+
+  void _removeBccEmailAddressFromFormerIdentity(Set<EmailAddress> listEmailAddress) {
+    listBccEmailAddress = listBccEmailAddress
+        .where((address) => !listEmailAddress.contains(address))
+        .toList();
+    if (listBccEmailAddress.isEmpty) {
+      listEmailAddressType.remove(PrefixEmailAddress.bcc);
+    }
+    toAddressExpandMode.value = ExpandMode.COLLAPSE;
+    ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+    bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+    _updateStatusEmailSendButton();
+  }
+
+  void _applySignature(Signature signature) {
+    final signatureAsHtml = '--<br><br>${signature.value}';
+    log('ComposerController::_applySignature(): $signatureAsHtml');
+    if (BuildUtils.isWeb) {
+      htmlControllerBrowser.insertSignature(signatureAsHtml);
+    } else {
+      htmlEditorApi?.insertSignature(signatureAsHtml);
+    }
+  }
+
+  void _removeSignature() {
+    log('ComposerController::_removeSignature():');
+    if (BuildUtils.isWeb) {
+      htmlControllerBrowser.removeSignature();
+    } else {
+      htmlEditorApi?.removeSignature();
+    }
   }
 
   void closeComposer() {

@@ -89,7 +89,9 @@ class ComposerView extends GetWidget<ComposerController> {
                             borderRadius: const BorderRadius.all(Radius.circular(24)),
                             child: SafeArea(
                                 child: Column(children: [
-                                    Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: _buildAppBar(context, controller.isEnableEmailSendButton.value)),
+                                    Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                                        child: _buildAppBar(context, controller.isEnableEmailSendButton.value)),
                                     const Padding(padding: EdgeInsets.only(top: 8), child: Divider(color: AppColor.colorDividerComposer, height: 1)),
                                     Expanded(child: _buildBodyTablet(context)),
                                     const Divider(color: AppColor.colorDividerComposer, height: 1),
@@ -119,12 +121,13 @@ class ComposerView extends GetWidget<ComposerController> {
                   controller.closeComposer();
                 }),
             Expanded(child: _buildTitleComposer(context)),
-            buildIconWeb(
-                icon: SvgPicture.asset(
-                    isEnableSendButton ? imagePaths.icSendMobile : imagePaths.icSendDisable,
-                    fit: BoxFit.fill),
-                tooltip: AppLocalizations.of(context).send,
-                onTap: () => controller.sendEmailAction(context)),
+            if (responsiveUtils.isMobile(context))
+              buildIconWeb(
+                  icon: SvgPicture.asset(
+                      isEnableSendButton ? imagePaths.icSendMobile : imagePaths.icSendDisable,
+                      fit: BoxFit.fill),
+                  tooltip: AppLocalizations.of(context).send,
+                  onTap: () => controller.sendEmailAction(context)),
           ]
       ),
     );
@@ -481,6 +484,7 @@ class ComposerView extends GetWidget<ComposerController> {
         return HtmlEditor(
           key: const Key('composer_editor'),
           minHeight: 550,
+          initialContent: '<p><br><br><br></p>',
           onCreated: (editorApi) => controller.htmlEditorApi = editorApi);
       } else {
         final message = controller.getContentEmail(context);
