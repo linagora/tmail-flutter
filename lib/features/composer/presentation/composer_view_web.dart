@@ -331,29 +331,31 @@ class ComposerView extends GetWidget<ComposerController> {
             customButton: SvgPicture.asset(imagePaths.icEditIdentity),
             items: controller.listIdentities.map((item) => DropdownMenuItem<Identity>(
               value: item,
-              child: Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: item == controller.identitySelected.value ? AppColor.colorBgMenuItemDropDownSelected : Colors.transparent),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        item.name ?? '',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        item.email ?? '',
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.normal, color: AppColor.colorHintSearchBar),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    ]
+              child: PointerInterceptor(
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: item == controller.identitySelected.value ? AppColor.colorBgMenuItemDropDownSelected : Colors.transparent),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          item.name ?? '',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          item.email ?? '',
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.normal, color: AppColor.colorHintSearchBar),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      ]
+                  ),
                 ),
               ),
             )).toList(),
@@ -516,7 +518,7 @@ class ComposerView extends GetWidget<ComposerController> {
         Obx(() {
           if (controller.composerArguments.value != null) {
             if (controller.composerArguments.value?.emailActionType == EmailActionType.compose) {
-              final initContent = controller.textEditorWeb ?? '';
+              final initContent = controller.textEditorWeb ?? '<p><br><br><br></p>';
               return Expanded(child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: responsiveUtils.isMobile(context) ? 8 : 10),
                   child: _buildEditor(context, initContent)));
@@ -554,8 +556,8 @@ class ComposerView extends GetWidget<ComposerController> {
     return html_editor_browser.HtmlEditor(
       key: const Key('composer_editor_web'),
       controller: controller.htmlControllerBrowser,
-      htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
-        hint: AppLocalizations.of(context).hint_compose_email,
+      htmlEditorOptions: const html_editor_browser.HtmlEditorOptions(
+        hint: '',
         darkMode: false,
       ),
       blockQuotedContent: initContent,

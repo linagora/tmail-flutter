@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/html_transformer/base/text_transformer.d
 import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/sigature_transformers.dart';
 
 /// Contains the configuration for all transformations.
 class TransformConfiguration {
@@ -49,6 +50,7 @@ class TransformConfiguration {
 
   static const List<DomTransformer> standardDomTransformers = [
     RemoveScriptTransformer(),
+    SignatureTransformer(),
     BlockQuotedTransformer(),
     ImageTransformer(),
   ];
