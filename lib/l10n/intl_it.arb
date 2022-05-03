@@ -1020,5 +1020,157 @@
     "placeholders": {
       "count": {}
     }
+  },
+  "message_dialog_upload_attachments_exceeds_maximum_size": "Hai raggiunto la dimensione massima del file. Carica file la cui dimensione totale è inferiore a {maxSize}",
+  "@message_dialog_upload_attachments_exceeds_maximum_size": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "message_dialog_send_email_exceeds_maximum_size": "Impossibile inviare il tuo messaggio perché supera la dimensione massima di {maxSize}",
+  "@message_dialog_send_email_exceeds_maximum_size": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "remove_from_spam": "Rimuovi dallo spam",
+  "@remove_from_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_as_spam": "Contrassegnato come spam",
+  "@marked_as_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_as_not_spam": "Contrassegnato come non spam",
+  "@marked_as_not_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toast_message_empty_trash_folder_success": "Tutti i messaggi sono stati eliminati per sempre",
+  "@toast_message_empty_trash_folder_success": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "version": "Versione",
+  "@version": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "got_it": "Capito",
+  "@got_it": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_starred": "Contrassegna come preferito",
+  "@mark_as_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sign_out": "Esci",
+  "@sign_out": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maximum_files_size": "Dimensione massima dei file",
+  "@maximum_files_size": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exchange": "Scambio",
+  "@exchange": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move_message": "Sposta il messaggio",
+  "@move_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwarded_message": "Messaggio inoltrato",
+  "@forwarded_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "date": "Data",
+  "@date": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_spam": "Segna come spam",
+  "@mark_as_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "star": "Preferito",
+  "@star": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "un_star": "Rimuovi dal preferito",
+  "@un_star": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "un_spam": "Rimuovi dallo spam",
+  "@un_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "settings": "Impostazioni",
+  "@settings": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manage_account": "Gestisci profilo",
+  "@manage_account": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "profiles": "Profili",
+  "@profiles": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "identities": "Identità",
+  "@identities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_identity": "Nuova identità",
+  "@new_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
