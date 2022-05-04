@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart' as pathProvider;
+import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_rights_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
@@ -22,7 +22,7 @@ class HiveCacheConfig {
       Hive.init(databasePath);
     } else {
       if (!GetPlatform.isWeb) {
-        Directory directory = await pathProvider.getApplicationDocumentsDirectory();
+        Directory directory = await path_provider.getApplicationDocumentsDirectory();
         Hive.init(directory.path);
       }
     }

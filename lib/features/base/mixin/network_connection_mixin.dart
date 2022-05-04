@@ -15,17 +15,17 @@ mixin NetworkConnectionMixin {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16)),
         width: 320,
-        margin: EdgeInsets.only(bottom: 100),
+        margin: const EdgeInsets.only(bottom: 100),
         child: Material(
             elevation: 8,
-            shape:  RoundedRectangleBorder(
+            shape:  const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(16.0)),
             ),
             child: ListTile(
                 leading: SvgPicture.asset(_imagePaths.icNotConnection),
                 title: Text(
                     AppLocalizations.of(context).no_internet_connection,
-                    style: TextStyle(fontSize: 15, color: Colors.black)),
+                    style: const TextStyle(fontSize: 15, color: Colors.black)),
               )
         )
     );

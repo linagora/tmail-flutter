@@ -23,9 +23,9 @@ Decoration _radiusBoxDecoration({
             return color;
           }).toList()
         : [
-            Color.fromRGBO(0, 0, 0, 0.1),
-            Color(0x32E5E5E5),
-            Color.fromRGBO(0, 0, 0, 0.1),
+            const Color.fromRGBO(0, 0, 0, 0.1),
+            const Color(0x32E5E5E5),
+            const Color.fromRGBO(0, 0, 0, 0.1),
           ],
       stops: [animation.value - 2, animation.value, animation.value + 1]));
 }
@@ -50,7 +50,7 @@ class _EmailContentPlaceHolderLoadingState extends State<EmailContentPlaceHolder
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(duration: Duration(seconds: 1), vsync: this)..repeat();
+    _animationController = AnimationController(duration: const Duration(seconds: 1), vsync: this)..repeat();
     _animation = Tween<double>(begin: -2, end: 2)
       .animate(CurvedAnimation(curve: Curves.easeInOutSine, parent: _animationController));
   }
@@ -67,22 +67,22 @@ class _EmailContentPlaceHolderLoadingState extends State<EmailContentPlaceHolder
       animation: _animation,
       builder: (BuildContext context, Widget? child) {
         return Container(
-          margin: EdgeInsets.only(top: 16),
+          margin: const EdgeInsets.only(top: 16),
           padding: EdgeInsets.zero,
           color: Colors.transparent,
           child: Column(
             children: [
               Container(
-                margin: EdgeInsets.only(right: 64),
+                margin: const EdgeInsets.only(right: 64),
                 height: 10,
                 decoration: _radiusBoxDecoration(animation: _animation, radius: 5)),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Container(
                 height: 10,
                 decoration: _radiusBoxDecoration(animation: _animation, radius: 5)),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Container(
-                margin: EdgeInsets.only(right: 128),
+                margin: const EdgeInsets.only(right: 128),
                 height: 10,
                 decoration: _radiusBoxDecoration(animation: _animation, radius: 5)),
             ],

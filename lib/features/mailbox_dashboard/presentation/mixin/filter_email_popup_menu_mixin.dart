@@ -15,11 +15,11 @@ mixin FilterEmailPopupMenuMixin {
       PopupMenuItem(
           padding: EdgeInsets.zero,
           child: _filterEmailAction(context, optionSelected, FilterMessageOption.attachments, onCallBack)),
-      PopupMenuDivider(height: 0.5),
+      const PopupMenuDivider(height: 0.5),
       PopupMenuItem(
           padding: EdgeInsets.zero,
           child: _filterEmailAction(context, optionSelected, FilterMessageOption.unread, onCallBack)),
-      PopupMenuDivider(height: 0.5),
+      const PopupMenuDivider(height: 0.5),
       PopupMenuItem(
           padding: EdgeInsets.zero,
           child: _filterEmailAction(context, optionSelected, FilterMessageOption.starred, onCallBack)),
@@ -31,7 +31,7 @@ mixin FilterEmailPopupMenuMixin {
     return InkWell(
       onTap: () => onCallBack?.call(option == optionSelected ? FilterMessageOption.all : option),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: SizedBox(
             child: Row(children: [
               SvgPicture.asset(option.getIcon(_imagePaths),
@@ -39,12 +39,12 @@ mixin FilterEmailPopupMenuMixin {
                   height: 20,
                   fit: BoxFit.fill,
                   color: option != FilterMessageOption.starred ? AppColor.colorTextButton : null),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(child: Text(
                   option.getName(context),
-                  style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w500))),
+                  style: const TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w500))),
               if (optionSelected == option)
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
               if (optionSelected == option)
                 SvgPicture.asset(_imagePaths.icFilterSelected, width: 16, height: 16, fit: BoxFit.fill),
             ])

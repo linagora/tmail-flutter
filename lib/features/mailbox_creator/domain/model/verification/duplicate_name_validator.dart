@@ -17,7 +17,7 @@ class DuplicateNameValidator extends Validator<NewNameRequest> {
           .map((nameItem) => nameItem.toLowerCase())
           .contains(newNameRequest.value!.toLowerCase());
       if (nameExist) {
-        return Left<Failure, Success>(VerifyNameFailure(DuplicatedNameException()));
+        return Left<Failure, Success>(VerifyNameFailure(const DuplicatedNameException()));
       } else {
         return Right<Failure, Success>(VerifyNameViewState());
       }

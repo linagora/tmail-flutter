@@ -34,7 +34,7 @@ class EmailActionCupertinoActionSheetActionBuilder extends CupertinoActionSheetA
         key: key,
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Padding(
-              padding: iconLeftPadding ?? EdgeInsets.only(left: 12, right: 16),
+              padding: iconLeftPadding ?? const EdgeInsets.only(left: 12, right: 16),
               child: actionIcon),
           Expanded(child: Text(actionName, textAlign: TextAlign.left, style: actionTextStyle())),
         ]),
