@@ -32,7 +32,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
       backgroundColor: Colors.white,
       drawer: ResponsiveWidget(
           responsiveUtils: _responsiveUtils,
-          mobile: SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
+          mobile: SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeDrawer),
           desktop: const SizedBox.shrink()
       ),
       drawerEnableOpenDragGesture: !_responsiveUtils.isDesktop(context),
@@ -73,7 +73,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeMenuWidthWeb),
+                  SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeMenu),
                   Expanded(child: _viewDisplayedOfAccountMenuItem())
                 ],
               ))

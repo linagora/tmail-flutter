@@ -24,20 +24,22 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       key: controller.scaffoldKey,
       drawer: ResponsiveWidget(
         responsiveUtils: _responsiveUtils,
-        mobile: _responsiveUtils.isPortrait(context)
-            ? SizedBox(child: MailboxView(), width: double.infinity)
-            : SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
-        tablet: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+        mobile: SizedBox(child: MailboxView(), width: double.infinity),
+        landscapeMobile: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawer),
+        tablet: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawer),
         tabletLarge: const SizedBox.shrink(),
         desktop: const SizedBox.shrink(),
       ),
-      drawerEnableOpenDragGesture: _responsiveUtils.isMobile(context) || _responsiveUtils.isTablet(context),
+      drawerEnableOpenDragGesture: _responsiveUtils.isMobile(context)
+          || _responsiveUtils.isLandscapeMobile(context)
+          || _responsiveUtils.isTablet(context),
       body: Stack(children: [
         ResponsiveWidget(
           responsiveUtils: _responsiveUtils,
           desktop: _buildLargeScreenView(context),
           tabletLarge: _buildLargeScreenView(context),
           tablet: ThreadView(),
+          landscapeMobile: ThreadView(),
           mobile: ThreadView(),
         ),
         Obx(() => controller.dashBoardAction.value is ComposeEmailAction
@@ -96,7 +98,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+        SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawer),
         Expanded(child: _wrapContainerForThreadAndEmail(context))
       ],
     );

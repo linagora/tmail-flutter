@@ -161,15 +161,18 @@ class MailBoxFolderTileBuilder {
   }
 
   Widget _buildSelectModeIcon() {
-    return Transform(
-        transform: Matrix4.translationValues(kIsWeb ? -8.0 : -10.0, 0.0, 0.0),
-        child: buildIconWeb(
-            icon: SvgPicture.asset(
-                _mailboxNode.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected,
-                width: kIsWeb ? 20 : 24,
-                height: kIsWeb ? 20 : 24,
-                fit: BoxFit.fill),
-            onTap: () => _onSelectMailboxFolderClick?.call(_mailboxNode)));
+    return Container(
+      color: Colors.transparent,
+      child: Transform(
+          transform: Matrix4.translationValues(kIsWeb ? -8.0 : -10.0, 0.0, 0.0),
+          child: buildIconWeb(
+              icon: SvgPicture.asset(
+                  _mailboxNode.selectMode == SelectMode.ACTIVE ? _imagePaths.icSelected : _imagePaths.icUnSelected,
+                  width: kIsWeb ? 20 : 24,
+                  height: kIsWeb ? 20 : 24,
+                  fit: BoxFit.fill),
+              onTap: () => _onSelectMailboxFolderClick?.call(_mailboxNode))),
+    );
   }
 
   Color get backgroundColorItem {
