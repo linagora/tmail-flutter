@@ -78,10 +78,10 @@ class EmailRepositoryImpl extends EmailRepository {
       String? baseUrlDownload,
       AccountId accountId
     ) async {
-    final mapUrlDownloadCID = Map<String, String>.fromIterable(
-        attachmentInlines,
-        key: (attachment) => attachment.cid!,
-        value: (attachment) => attachment.getDownloadUrl(baseUrlDownload, accountId));
+    final mapUrlDownloadCID = {
+      for (var attachment in attachmentInlines)
+        attachment.cid! : attachment.getDownloadUrl(baseUrlDownload!, accountId)
+    };
     return await Future.wait(emailContents
       .map((emailContent) async {
         return await _htmlDataSource.transformEmailContent(emailContent, mapUrlDownloadCID);

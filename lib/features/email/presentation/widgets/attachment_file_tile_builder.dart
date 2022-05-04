@@ -55,16 +55,16 @@ class AttachmentFileTileBuilder {
         splashColor: Colors.transparent ,
         highlightColor: Colors.transparent),
       child: Container(
-        key: Key('attach_file_tile'),
+        key: const Key('attach_file_tile'),
         alignment: Alignment.center,
         margin: EdgeInsets.only(top:heightItem != null ? 8 : 0),
-        height: heightItem ?? null,
+        height: heightItem,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: AppColor.attachmentFileBorderColor),
           color: Colors.white),
         child: MediaQuery(
-          data: MediaQueryData(padding: EdgeInsets.zero),
+          data: const MediaQueryData(padding: EdgeInsets.zero),
           child: Stack(
             alignment: AlignmentDirectional.bottomEnd,
             children: [
@@ -85,7 +85,7 @@ class AttachmentFileTileBuilder {
                     _attachment.name ?? '',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12, color: AppColor.attachmentFileNameColor, fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontSize: 12, color: AppColor.attachmentFileNameColor, fontWeight: FontWeight.w500),
                   )),
                 subtitle: _attachment.size != null && _attachment.size?.value != 0
                   ? Transform(
@@ -94,7 +94,7 @@ class AttachmentFileTileBuilder {
                         filesize(_attachment.size?.value),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 12, color: AppColor.attachmentFileSizeColor)))
+                        style: const TextStyle(fontSize: 12, color: AppColor.attachmentFileSizeColor)))
                   : null,
                 trailing: buttonAction != null
                   ? Transform(
@@ -134,7 +134,7 @@ class AttachmentFileTileBuilder {
           Container(color: AppColor.backgroundCountAttachment),
           Text(
             '+${_attachmentSize - _limitDisplayAttachment + 1}',
-            style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold))
+            style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold))
         ],
       ),
     );

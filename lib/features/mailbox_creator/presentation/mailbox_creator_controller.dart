@@ -1,6 +1,5 @@
 
 import 'package:core/core.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -54,11 +53,6 @@ class MailboxCreatorController extends BaseController {
       log('MailboxCreatorController::onReady(): folderMailboxTree: $folderMailboxTree');
       _createListMailboxNameAsStringInMailboxLocation();
     }
-  }
-
-  @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
   }
 
   @override

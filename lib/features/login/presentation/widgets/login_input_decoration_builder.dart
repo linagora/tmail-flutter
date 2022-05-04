@@ -7,22 +7,22 @@ class LoginInputDecorationBuilder extends InputDecorationBuilder {
   @override
   InputDecoration build() {
     return InputDecoration(
-      enabledBorder: enabledBorder ?? OutlineInputBorder(
+      enabledBorder: enabledBorder ?? const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(29)),
         borderSide: BorderSide(width: 1, color: AppColor.textFieldBorderColor)),
-      focusedBorder: enabledBorder ?? OutlineInputBorder(
+      focusedBorder: enabledBorder ?? const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(29)),
         borderSide: BorderSide(width: 2, color: AppColor.textFieldFocusedBorderColor)),
-      errorBorder: OutlineInputBorder(
+      errorBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(29)),
         borderSide: BorderSide(width: 1, color: AppColor.textFieldErrorBorderColor)),
       prefixText: prefixText,
       labelText: labelText,
       floatingLabelBehavior: FloatingLabelBehavior.never,
-      labelStyle: labelStyle ?? TextStyle(color: AppColor.textFieldLabelColor, fontSize: 16),
+      labelStyle: labelStyle ?? const TextStyle(color: AppColor.textFieldLabelColor, fontSize: 16),
       hintText: hintText,
-      hintStyle: hintStyle ?? TextStyle(color: AppColor.textFieldHintColor, fontSize: 16),
-      contentPadding: contentPadding ?? EdgeInsets.only(left: 25, top: 15, bottom: 15, right: 25),
+      hintStyle: hintStyle ?? const TextStyle(color: AppColor.textFieldHintColor, fontSize: 16),
+      contentPadding: contentPadding ?? const EdgeInsets.only(left: 25, top: 15, bottom: 15, right: 25),
       filled: true,
       fillColor: AppColor.textFieldBorderColor);
   }

@@ -26,14 +26,14 @@ class AppBarDestinationPickerBuilder {
 
   Widget build() {
     return Container(
-        key: Key('app_bar_destination_picker'),
+        key: const Key('app_bar_destination_picker'),
         alignment: Alignment.center,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
           color: Colors.white),
         height: 52,
         child: MediaQuery(
-            data: MediaQueryData(padding: EdgeInsets.zero),
+            data: const MediaQueryData(padding: EdgeInsets.zero),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -49,19 +49,19 @@ class AppBarDestinationPickerBuilder {
   Widget _buildCancelButton() {
     if (_mailboxAction == MailboxActions.moveEmail) {
       return Padding(
-        padding: EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.only(right: 12),
         child: Material(
             borderRadius: BorderRadius.circular(20),
             color: Colors.transparent,
             child: TextButton(
                 child: Text(
                     AppLocalizations.of(_context).cancel,
-                    style: TextStyle(fontSize: 17, color: AppColor.colorTextButton)),
+                    style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton)),
                 onPressed: () => _onCloseActionClick?.call()
             )
         ));
     } else {
-      return SizedBox(width: 40, height: 40);
+      return const SizedBox(width: 40, height: 40);
     }
   }
 
@@ -71,7 +71,7 @@ class AppBarDestinationPickerBuilder {
           icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
           onTap: () => _onCloseActionClick?.call());
     } else {
-      return SizedBox(width: 100, height: 40);
+      return const SizedBox(width: 100, height: 40);
     }
   }
 
@@ -81,6 +81,6 @@ class AppBarDestinationPickerBuilder {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700));
+        style: const TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700));
   }
 }

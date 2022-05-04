@@ -41,18 +41,18 @@ class EmailAddressBottomSheetBuilder {
   }
 
   RoundedRectangleBorder _shape() {
-    return RoundedRectangleBorder(
+    return const RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(20.0),
         topRight: Radius.circular(20.0)));
   }
 
   BoxDecoration _decoration(BuildContext context) {
-    return BoxDecoration(
+    return const BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.only(
-        topLeft: const Radius.circular(20.0),
-        topRight: const Radius.circular(20.0)));
+        topLeft: Radius.circular(20.0),
+        topRight: Radius.circular(20.0)));
   }
 
   void show() {
@@ -70,27 +70,27 @@ class EmailAddressBottomSheetBuilder {
                   Align(
                       alignment: Alignment.centerRight,
                       child: IconButton(
-                          padding: EdgeInsets.only(top: 16, right: 16),
+                          padding: const EdgeInsets.only(top: 16, right: 16),
                           onPressed: () => _onCloseBottomSheetAction?.call(),
                           icon: SvgPicture.asset(_imagePaths.icCloseMailbox, width: 24, height: 24, fit: BoxFit.fill))),
                   (AvatarBuilder()
-                      ..text('${_emailAddress.asString().characters.first.toUpperCase()}')
+                      ..text(_emailAddress.asString().characters.first.toUpperCase())
                       ..size(64)
-                      ..addTextStyle(TextStyle(fontWeight: FontWeight.w600, fontSize: 23, color: Colors.white))
+                      ..addTextStyle(const TextStyle(fontWeight: FontWeight.w600, fontSize: 23, color: Colors.white))
                       ..avatarColor(_emailAddress.avatarColors))
                     .build(),
                   if (_emailAddress.displayName.isNotEmpty)
                     Padding(
-                        padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+                        padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
                         child: Text(
                           _emailAddress.asString(),
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: AppColor.colorNameEmail),
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: AppColor.colorNameEmail),
                         )),
                   Padding(
                       padding: EdgeInsets.only(left: 16, right: 16, top: _emailAddress.displayName.isNotEmpty ? 12 : 16),
                       child: Text(
                         _emailAddress.emailAddress,
-                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.normal, color: AppColor.colorMessageConfirmDialog),
+                        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.normal, color: AppColor.colorMessageConfirmDialog),
                       )),
                   Material(
                       borderRadius: BorderRadius.circular(20),
@@ -98,16 +98,16 @@ class EmailAddressBottomSheetBuilder {
                       child: TextButton(
                           child: Text(
                             AppLocalizations.of(_context).copy_email_address,
-                            style: TextStyle(fontSize: 13, color: AppColor.colorTextButton, fontWeight: FontWeight.normal),
+                            style: const TextStyle(fontSize: 13, color: AppColor.colorTextButton, fontWeight: FontWeight.normal),
                           ),
                           onPressed: () => _onCopyEmailAddressAction?.call(_emailAddress)
                       )
                   ),
                   SizedBox(height: _emailAddress.displayName.isNotEmpty ? 100 : 130),
                   Padding(
-                      padding: EdgeInsets.only(left: 16, right: 16, bottom: 20),
+                      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
                       child: SizedBox(
-                        key: Key('compose_email_button'),
+                        key: const Key('compose_email_button'),
                         width: double.infinity,
                         height: 48,
                         child: ElevatedButton(
@@ -116,8 +116,8 @@ class EmailAddressBottomSheetBuilder {
                                 backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.colorTextButton),
                                 shape: MaterialStateProperty.all(RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    side: BorderSide(width: 0, color: AppColor.colorTextButton)))),
-                            child: Text(AppLocalizations.of(_context).compose_email, style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
+                                    side: const BorderSide(width: 0, color: AppColor.colorTextButton)))),
+                            child: Text(AppLocalizations.of(_context).compose_email, style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
                             onPressed: () => _onComposeEmailAction?.call(_emailAddress)),
                       )
                   )
