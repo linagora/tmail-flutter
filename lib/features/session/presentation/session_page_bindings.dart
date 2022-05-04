@@ -8,11 +8,6 @@ import 'package:tmail_ui_user/features/session/presentation/session_controller.d
 class SessionPageBindings extends BaseBindings {
 
   @override
-  void dependencies() {
-    super.dependencies();
-  }
-
-  @override
   void bindingsController() {
     Get.lazyPut(() => SessionController(
       Get.find<GetSessionInteractor>(),

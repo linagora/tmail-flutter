@@ -70,7 +70,7 @@ class EmailAPI {
 
     if (emailRequest.emailIdDestroyed != null) {
       setEmailMethod
-        ..addDestroy({emailRequest.emailIdDestroyed!.id});
+        .addDestroy({emailRequest.emailIdDestroyed!.id});
     }
 
     final setEmailSubmissionMethod = SetEmailSubmissionMethod(accountId)
@@ -160,7 +160,7 @@ class EmailAPI {
       String baseDownloadUrl,
       AccountRequest accountRequest
   ) async {
-    var externalStorageDirPath;
+    String externalStorageDirPath;
     if (Platform.isAndroid) {
       externalStorageDirPath = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
     } else if (Platform.isIOS) {
@@ -381,7 +381,7 @@ class EmailAPI {
   Future<bool> deleteEmailPermanently(AccountId accountId, EmailId emailId) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addDestroy(Set.of([emailId.id]));
+      ..addDestroy({emailId.id});
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 

@@ -32,14 +32,14 @@ class AppBarMailboxCreatorBuilder {
 
   Widget build() {
     return Container(
-        key: Key('app_bar_mailbox_creator'),
+        key: const Key('app_bar_mailbox_creator'),
         alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
           color: AppColor.colorBgMailbox),
         child: MediaQuery(
-            data: MediaQueryData(padding: EdgeInsets.zero),
+            data: const MediaQueryData(padding: EdgeInsets.zero),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -59,7 +59,7 @@ class AppBarMailboxCreatorBuilder {
         child: TextButton(
             child: Text(
               AppLocalizations.of(_context).cancel,
-              style: TextStyle(fontSize: 17, color: AppColor.colorTextButton),
+              style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton),
             ),
             onPressed: () => _cancelActionClick?.call()
         )
@@ -82,10 +82,10 @@ class AppBarMailboxCreatorBuilder {
 
   Widget _buildTitle() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Text(
         title ?? '',
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.bold)));
+        style: const TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.bold)));
   }
 }

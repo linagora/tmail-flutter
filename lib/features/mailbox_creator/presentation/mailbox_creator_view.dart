@@ -77,7 +77,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
 
   Widget _buildAppBar(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 5),
+      padding: const EdgeInsets.only(top: 5),
       child: Obx(() => (AppBarMailboxCreatorBuilder(
               context,
               title: AppLocalizations.of(context).new_mailbox,
@@ -90,13 +90,13 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
 
   Widget _buildCreateMailboxNameInput(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Obx(() => (TextFieldBuilder()
-          ..key(Key('create_mailbox_name_input'))
+          ..key(const Key('create_mailbox_name_input'))
           ..onChange((value) => controller.setNewNameMailbox(value))
           ..keyboardType(TextInputType.visiblePassword)
           ..cursorColor(AppColor.colorTextButton)
-          ..textStyle(TextStyle(color: AppColor.colorNameEmail, fontSize: 16))
+          ..textStyle(const TextStyle(color: AppColor.colorNameEmail, fontSize: 16))
           ..addFocusNode(controller.nameInputFocusNode)
           ..textDecoration((CreateMailboxNameInputDecorationBuilder()
                 ..setHintText(AppLocalizations.of(context).hint_input_create_new_mailbox)
@@ -109,26 +109,26 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
   Widget _buildMailboxLocation(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
-        padding: EdgeInsets.only(left: 24, right: 16, top: 16),
+        padding: const EdgeInsets.only(left: 24, right: 16, top: 16),
         child: Text(
           AppLocalizations.of(context).mailbox_location.toUpperCase(),
           textAlign: TextAlign.left,
-          style: TextStyle(fontSize: 13, color: AppColor.colorHintSearchBar)),
+          style: const TextStyle(fontSize: 13, color: AppColor.colorHintSearchBar)),
       ),
       Container(
           alignment: Alignment.center,
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
               color: Colors.white
           ),
           child: MediaQuery(
-            data: MediaQueryData(padding: EdgeInsets.zero),
+            data: const MediaQueryData(padding: EdgeInsets.zero),
             child: ListTile(
                 contentPadding: EdgeInsets.zero,
                 onTap: () => controller.selectMailboxLocation(context),
                 leading: Padding(
-                    padding: EdgeInsets.only(left: 16),
+                    padding: const EdgeInsets.only(left: 16),
                     child: SvgPicture.asset(
                         _imagePaths.icFolderMailbox,
                         width: 28,
@@ -138,7 +138,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                     transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
                     child: Row(children: [
                       Expanded(child: Obx(() => Text(
-                        '${controller.selectedMailbox.value?.name?.name ?? AppLocalizations.of(context).default_mailbox}',
+                        controller.selectedMailbox.value?.name?.name ?? AppLocalizations.of(context).default_mailbox,
                         maxLines: 1,
                         overflow:TextOverflow.ellipsis,
                         style: TextStyle(

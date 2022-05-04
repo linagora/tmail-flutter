@@ -14,11 +14,6 @@ import 'package:tmail_ui_user/features/login/presentation/login_controller.dart'
 class LoginBindings extends BaseBindings {
 
   @override
-  void dependencies() {
-    super.dependencies();
-  }
-
-  @override
   void bindingsController() {
     Get.lazyPut(() => LoginController(
         Get.find<AuthenticationInteractor>(),
