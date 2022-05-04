@@ -362,7 +362,7 @@ class EmailView extends GetView with NetworkConnectionMixin {
   }
 
   int _getAttachmentLimitDisplayed(BuildContext context) {
-    if (responsiveUtils.isMobileDevice(context)) {
+    if (responsiveUtils.isScreenWithShortestSide(context)) {
       return 2;
     } else if (responsiveUtils.isTablet(context)) {
       return 3;

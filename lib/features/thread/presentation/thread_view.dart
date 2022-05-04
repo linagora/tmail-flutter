@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -32,9 +31,12 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
+        backgroundColor: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
+            ? AppColor.colorBgDesktop
+            : Colors.white,
         body: Row(children: [
-          if ((!kIsWeb && !_responsiveUtils.isMobile(context)) || (kIsWeb && _responsiveUtils.isTabletLarge(context)))
+          if ((!BuildUtils.isWeb && _responsiveUtils.isDesktop(context) && _responsiveUtils.isTabletLarge(context))
+              || (BuildUtils.isWeb && _responsiveUtils.isTabletLarge(context)))
             const VerticalDivider(color: AppColor.lineItemListColor, width: 1, thickness: 0.2),
           Expanded(child: SafeArea(
               right: _responsiveUtils.isLandscapeMobile(context),
@@ -42,26 +44,33 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Obx(() => !controller.isSearchActive() && !_responsiveUtils.isDesktop(context)
+                    Obx(() => !controller.isSearchActive()
+                        && ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)
                       ? _buildAppBarNormal(context)
                       : const SizedBox.shrink()),
                     _buildSearchInputFormForMobile(context),
                     Container(
-                        color: kIsWeb ? AppColor.colorBgDesktop : Colors.white,
+                        color: BuildUtils.isWeb ? AppColor.colorBgDesktop : Colors.white,
                         padding: EdgeInsets.zero,
                         child: _buildSearchButtonViewForMobile(context)),
                     Obx(() => controller.isMailboxTrash && controller.emailList.isNotEmpty && !controller.isSearchActive()
                         ? _buildEmptyTrashButton(context)
                         : const SizedBox.shrink()),
                     Expanded(child: Container(
-                        color: kIsWeb ? AppColor.colorBgDesktop : Colors.white,
-                        padding: _responsiveUtils.isDesktop(context) ? const EdgeInsets.only(left: 32, right: 24, top: 16, bottom: 24) : EdgeInsets.zero,
+                        color: BuildUtils.isWeb ? AppColor.colorBgDesktop : Colors.white,
+                        padding: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
+                            ? const EdgeInsets.only(left: 32, right: 24, top: 16, bottom: 24)
+                            : EdgeInsets.zero,
                         child: Stack(children: [
                           Container(
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                  borderRadius: _responsiveUtils.isDesktop(context) ? BorderRadius.circular(20) : null,
-                                  border: _responsiveUtils.isDesktop(context) ? Border.all(color: AppColor.colorBorderBodyThread, width: 1) : null,
+                                  borderRadius: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
+                                      ? BorderRadius.circular(20)
+                                      : null,
+                                  border: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
+                                      ? Border.all(color: AppColor.colorBorderBodyThread, width: 1)
+                                      : null,
                                   color: Colors.white),
                               child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,12 +121,13 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
 
   Widget _buildSearchButtonViewForMobile(BuildContext context) {
     return Obx(() {
-      if (!controller.isSearchActive() && !_responsiveUtils.isDesktop(context)) {
+      if (!controller.isSearchActive() &&
+          ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)) {
         return Container(
           color: Colors.white,
           padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
           child: (SearchBarView(_imagePaths)
-              ..hintTextSearch(kIsWeb ? AppLocalizations.of(context).search_emails : AppLocalizations.of(context).hint_search_emails)
+              ..hintTextSearch(BuildUtils.isWeb ? AppLocalizations.of(context).search_emails : AppLocalizations.of(context).hint_search_emails)
               ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
             .build());
       } else {
@@ -128,7 +138,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
 
   Widget _buildSearchInputFormForMobile(BuildContext context) {
     return Obx(() {
-      if (controller.isSearchActive() && !_responsiveUtils.isDesktop(context)) {
+      if (controller.isSearchActive() &&
+          ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)) {
         return Column(children: [
           _buildSearchForm(context),
           const Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
@@ -172,7 +183,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
           ..addOnEmailSelectionAction((actionType, selectionEmail) =>
               controller.pressEmailSelectionAction(context, actionType, selectionEmail))
           ..addOnFilterEmailAction((filterMessageOption, position) =>
-              _responsiveUtils.isMobileDevice(context)
+              _responsiveUtils.isScreenWithShortestSide(context)
                 ? controller.openContextMenuAction(
                     context,
                     _filterMessagesCupertinoActionTile(context, filterMessageOption))
@@ -186,9 +197,12 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
 
   Widget _buildFloatingButtonCompose(BuildContext context) {
     return Obx(() {
-      if (!controller.isSearchActive() && !_responsiveUtils.isDesktop(context)) {
+      if (!controller.isSearchActive()
+          && (!BuildUtils.isWeb || (BuildUtils.isWeb && !_responsiveUtils.isDesktop(context)))) {
         return Container(
-          padding: EdgeInsets.zero,
+          padding: BuildUtils.isWeb
+              ? EdgeInsets.zero
+              : controller.isSelectionEnabled() ? const EdgeInsets.only(bottom: 70) : EdgeInsets.zero,
           child: Align(
             alignment: Alignment.bottomRight,
             child: ScrollingFloatingButtonAnimated(
@@ -317,7 +331,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
 
   Widget _buildListEmail(BuildContext context) {
     return Container(
-      margin: _responsiveUtils.isDesktop(context)
+      margin: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
           ? EdgeInsets.symmetric(vertical: controller.isSelectionEnabled() ? 4 : 12, horizontal: 4)
           : EdgeInsets.only(top: controller.isSearchActive() ? 8 : 0),
       alignment: Alignment.center,
@@ -381,7 +395,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
         physics: const AlwaysScrollableScrollPhysics(),
         key: const PageStorageKey('list_presentation_email_in_threads'),
         itemCount: listPresentationEmail.length,
-        padding: EdgeInsets.only(top: kIsWeb && !_responsiveUtils.isDesktop(context) ? 10 : 0),
+        padding: EdgeInsets.only(top: BuildUtils.isWeb && !_responsiveUtils.isDesktop(context) ? 10 : 0),
         itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
                 context,
                 listPresentationEmail[index],
@@ -434,7 +448,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
               decoration: BoxDecoration(
-                  borderRadius: _responsiveUtils.isDesktop(context)
+                  borderRadius: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
                       ? const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
                       : null,
                   color: AppColor.bgStatusResultSearch),
@@ -456,10 +470,10 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
           border: Border.all(color: AppColor.colorLineLeftEmailView),
           color: Colors.white),
       margin: EdgeInsets.only(
-          left: _responsiveUtils.isDesktop(context) ? 32 : 16,
-          right: _responsiveUtils.isDesktop(context) ? 20 : 16,
-          bottom: _responsiveUtils.isDesktop(context) ? 0 : 16,
-          top: _responsiveUtils.isDesktop(context) ? 16 : 0),
+          left: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 32 : 16,
+          right: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 20 : 16,
+          bottom: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 0 : 16,
+          top: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 16 : 0),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(children: [
         Padding(

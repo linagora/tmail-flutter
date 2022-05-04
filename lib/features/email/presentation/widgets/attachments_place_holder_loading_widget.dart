@@ -84,7 +84,7 @@ class _AttachmentsPlaceHolderLoadingState extends State<AttachmentsPlaceHolderLo
 
   Widget _placeHolderAttachment(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    final percentAttachment = widget.responsiveUtils.isMobileDevice(context)
+    final percentAttachment = widget.responsiveUtils.isScreenWithShortestSide(context)
         ? 0.4
         : widget.responsiveUtils.isTablet(context) ? 0.22 : 0.14;
     return Container(

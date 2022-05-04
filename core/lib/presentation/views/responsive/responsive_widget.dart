@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class ResponsiveWidget extends StatelessWidget {
   final Widget mobile;
+  final Widget? landscapeMobile;
   final Widget? tablet;
   final Widget? tabletLarge;
   final Widget? desktop;
@@ -13,6 +14,7 @@ class ResponsiveWidget extends StatelessWidget {
     Key? key,
     required this.responsiveUtils,
     required this.mobile,
+    this.landscapeMobile,
     this.tablet,
     this.desktop,
     this.tabletLarge,
@@ -22,6 +24,7 @@ class ResponsiveWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (desktop != null && responsiveUtils.isDesktop(context)) return desktop!;
     if (tabletLarge != null && responsiveUtils.isTabletLarge(context)) return tabletLarge!;
+    if (landscapeMobile != null && responsiveUtils.isLandscapeMobile(context)) return landscapeMobile!;
     if (tablet != null && responsiveUtils.isTablet(context)) return tablet!;
     return mobile;
   }

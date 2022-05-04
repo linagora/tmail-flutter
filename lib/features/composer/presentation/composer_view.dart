@@ -29,6 +29,7 @@ class ComposerView extends GetWidget<ComposerController> {
     return ResponsiveWidget(
       responsiveUtils: responsiveUtils,
       mobile: _buildComposerViewForMobile(context),
+      landscapeMobile: _buildComposerViewForMobile(context),
       tablet: _buildComposerViewForTablet(context),
       tabletLarge: _buildComposerViewForTablet(context),
       desktop: _buildComposerViewForTablet(context),
@@ -48,8 +49,8 @@ class ComposerView extends GetWidget<ComposerController> {
             child: Scaffold(
               backgroundColor: Colors.white,
               body: SafeArea(
-                  right: responsiveUtils.isMobile(context) && responsiveUtils.isLandscape(context),
-                  left: responsiveUtils.isMobile(context) && responsiveUtils.isLandscape(context),
+                  right: responsiveUtils.isLandscapeMobile(context),
+                  left: responsiveUtils.isLandscapeMobile(context),
                   child: Container(
                       color: Colors.white,
                       child: Column(children: [
@@ -108,7 +109,9 @@ class ComposerView extends GetWidget<ComposerController> {
 
   Widget _buildAppBar(BuildContext context, bool isEnableSendButton) {
     return Container(
-      padding: responsiveUtils.isMobile(context) ? const EdgeInsets.all(8) : EdgeInsets.zero,
+      padding: responsiveUtils.isMobile(context) && responsiveUtils.isLandscapeMobile(context)
+          ? const EdgeInsets.all(8)
+          : EdgeInsets.zero,
       color: Colors.white,
       child: Row(
           children: [
