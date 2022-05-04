@@ -148,7 +148,7 @@ class AppBarThreadWidgetBuilder {
                         padding: const EdgeInsets.only(left: 40, right: 40),
                         child: _buildContentCenterAppBar()),
                     Transform(
-                        transform: Matrix4.translationValues(_responsiveUtils.isDesktop(_context) ? -2.0 : -16.0, -8.0, 0.0),
+                        transform: Matrix4.translationValues(_getXTranslationValues(), -8.0, 0.0),
                         child: Text(
                             _filterMessageOption.getTitle(_context),
                             style: const TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
@@ -213,7 +213,7 @@ class AppBarThreadWidgetBuilder {
         padding: const EdgeInsets.only(left: 16, right: 16),
         child: GestureDetector(
             onTap: () {
-              if (_onFilterEmailAction != null && _responsiveUtils.isMobileDevice(_context)) {
+              if (_onFilterEmailAction != null && _responsiveUtils.isScreenWithShortestSide(_context)) {
                 _onFilterEmailAction!.call(_filterMessageOption, null);
               }
             },
@@ -224,7 +224,7 @@ class AppBarThreadWidgetBuilder {
                   : AppColor.colorFilterMessageEnabled,
               fit: BoxFit.fill),
             onTapDown: (detail) {
-              if (_onFilterEmailAction != null && !_responsiveUtils.isMobileDevice(_context)) {
+              if (_onFilterEmailAction != null && !_responsiveUtils.isScreenWithShortestSide(_context)) {
                 final screenSize = MediaQuery.of(_context).size;
                 final offset = detail.globalPosition;
                 final position = RelativeRect.fromLTRB(
@@ -308,5 +308,13 @@ class AppBarThreadWidgetBuilder {
     }
     final maxWidth = width > widthSiblingsWidget ? width - widthSiblingsWidget : 0.0;
     return maxWidth;
+  }
+
+  double _getXTranslationValues() {
+    if (BuildUtils.isWeb) {
+      return _responsiveUtils.isDesktop(_context) && BuildUtils.isWeb ? -2.0 : -16.0;
+    } else {
+      return _responsiveUtils.isTabletLarge(_context) ? 0.0 : -16.0;
+    }
   }
 }

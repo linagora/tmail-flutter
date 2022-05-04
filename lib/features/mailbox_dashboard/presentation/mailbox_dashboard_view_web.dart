@@ -41,8 +41,8 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       backgroundColor: Colors.white,
       drawer: ResponsiveWidget(
           responsiveUtils: _responsiveUtils,
-          mobile: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
-          tablet: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawerWidthWeb),
+          mobile: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawer),
+          tablet: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawer),
           tabletLarge: const SizedBox.shrink(),
           desktop: const SizedBox.shrink(),
       ),
@@ -83,7 +83,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeMenuWidthWeb),
+                  SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeMenu),
                   Expanded(child: _wrapContainerForThreadAndEmail(context))
                 ],
               ))
@@ -91,7 +91,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
             tabletLarge: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeMenuWidthWeb),
+                SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawer),
                 Expanded(child: _wrapContainerForThreadAndEmail(context))
               ],
             ),

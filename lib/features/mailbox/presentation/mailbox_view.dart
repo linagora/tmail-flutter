@@ -24,24 +24,27 @@ class MailboxView extends GetWidget<MailboxController> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildBodyMailbox(context);
-  }
-
-  Widget _buildBodyMailbox(BuildContext context) {
     return SafeArea(bottom: false, left: false, right: false, top: _responsiveUtils.isMobile(context),
         child: ClipRRect(
-            borderRadius: _responsiveUtils.isMobile(context) && _responsiveUtils.isPortrait(context)
-              ? const BorderRadius.only(topRight: Radius.circular(14), topLeft: Radius.circular(14))
-              : const BorderRadius.all(Radius.zero),
+            borderRadius: _responsiveUtils.isPortraitMobile(context)
+                ? const BorderRadius.only(topRight: Radius.circular(14), topLeft: Radius.circular(14))
+                : const BorderRadius.all(Radius.zero),
             child: Drawer(
                 child: Scaffold(
-                  backgroundColor: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
+                  backgroundColor: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
+                      ? AppColor.colorBgDesktop
+                      : Colors.white,
                   body: Stack(children: [
                     Column(children: [
-                      if (_responsiveUtils.isDesktop(context)) _buildLogoApp(context),
-                      if (!_responsiveUtils.isDesktop(context)) _buildHeaderMailbox(context),
-                      if (_responsiveUtils.isDesktop(context)) _buildComposerButton(context),
-                      Obx(() => !controller.isSearchActive() && _responsiveUtils.isDesktop(context)
+                      if (BuildUtils.isWeb && _responsiveUtils.isDesktop(context))
+                        _buildLogoApp(context),
+                      if ((BuildUtils.isWeb && !_responsiveUtils.isDesktop(context))
+                          || !BuildUtils.isWeb)
+                        _buildHeaderMailbox(context),
+                      if (BuildUtils.isWeb && _responsiveUtils.isDesktop(context))
+                        _buildComposerButton(context),
+                      Obx(() => !controller.isSearchActive() && BuildUtils.isWeb
+                        && _responsiveUtils.isDesktop(context)
                           ? Row(children: [
                               Expanded(child: _buildSearchBarWidget(context)),
                               _buildAddNewFolderButton(context),
@@ -51,7 +54,7 @@ class MailboxView extends GetWidget<MailboxController> {
                           ? SafeArea(bottom: false, top: false, right: false, child: _buildInputSearchFormWidget(context))
                           : const SizedBox.shrink()),
                       Expanded(child: Obx(() => Container(
-                        color: _responsiveUtils.isDesktop(context)
+                        color: _responsiveUtils.isDesktop(context) && BuildUtils.isWeb
                             ? Colors.transparent
                             : controller.isSearchActive() ? Colors.white : AppColor.colorBgMailbox,
                         child: RefreshIndicator(
@@ -66,8 +69,10 @@ class MailboxView extends GetWidget<MailboxController> {
                                 : SafeArea(
                                     bottom: !controller.isSelectionEnabled(),
                                     right: false,
+                                    top: false,
                                     child: Padding(
-                                        padding: EdgeInsets.only(bottom: (_responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context)) || controller.isSelectionEnabled() ? 0 : 55),
+                                        padding: EdgeInsets.only(bottom: _responsiveUtils.isLandscapeMobile(context)
+                                            || controller.isSelectionEnabled() ? 0 : 55),
                                         child: _buildListMailbox(context)))
                         ),
                       ))),
@@ -76,7 +81,7 @@ class MailboxView extends GetWidget<MailboxController> {
                     Obx(() {
                       if (controller.mailboxDashBoardController.appInformation.value != null
                           && !controller.isSearchActive() && !controller.isSelectionEnabled()) {
-                        if (_responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context)) {
+                        if (_responsiveUtils.isLandscapeMobile(context)) {
                           return const SizedBox.shrink();
                         }
                         return Align(
@@ -219,7 +224,7 @@ class MailboxView extends GetWidget<MailboxController> {
     return Column(children: [
       Padding(
         padding: EdgeInsets.only(
-          left: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context) ? 0 : 16,
+          left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
           right: 16),
         child: (UserInformationWidgetBuilder(_imagePaths, context, controller.mailboxDashBoardController.userProfile.value)
               ..addOnLogoutAction(() => controller.mailboxDashBoardController.goToSettings()))
@@ -233,7 +238,7 @@ class MailboxView extends GetWidget<MailboxController> {
       padding: EdgeInsets.only(
           top: _responsiveUtils.isDesktop(context) ? 16 : 12,
           bottom: 16,
-          left: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context) ? 0 : 16,
+          left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
           right: 16),
       child: (SearchBarView(_imagePaths)
           ..hintTextSearch(AppLocalizations.of(context).hint_search_mailboxes)
@@ -263,15 +268,14 @@ class MailboxView extends GetWidget<MailboxController> {
       padding: EdgeInsets.only(bottom: controller.isSelectionEnabled() ? 16 : 0),
       children: [
         Obx(() {
-          if ((controller.isSelectionEnabled()
-              && _responsiveUtils.isMobile(context)
-              && _responsiveUtils.isLandscape(context))
-              || _responsiveUtils.isDesktop(context)) {
+          if ((controller.isSelectionEnabled() && _responsiveUtils.isLandscapeMobile(context))
+              || (BuildUtils.isWeb && _responsiveUtils.isDesktop(context))) {
             return const SizedBox.shrink();
           }
           return _buildUserInformation(context);
         }),
-        if (!_responsiveUtils.isDesktop(context)) _buildSearchBarWidget(context),
+        if ((BuildUtils.isWeb && !_responsiveUtils.isDesktop(context))
+          || !BuildUtils.isWeb) _buildSearchBarWidget(context),
         _buildLoadingView(),
         Obx(() => controller.defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
           ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultMailboxTree.value.root)
@@ -287,7 +291,7 @@ class MailboxView extends GetWidget<MailboxController> {
   Widget _buildHeaderMailboxCategory(BuildContext context, MailboxCategories categories) {
     return Padding(
         padding: EdgeInsets.only(
-            left: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context) ? 8 : 28,
+            left: _responsiveUtils.isLandscapeMobile(context) ? 8 : 28,
             right: 16),
         child: Row(children: [
           Expanded(child: Text(categories.getTitle(context),
@@ -311,7 +315,7 @@ class MailboxView extends GetWidget<MailboxController> {
     return Container(
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white),
         margin: EdgeInsets.only(
-            left: _responsiveUtils.isMobile(context) && _responsiveUtils.isLandscape(context) ? 0 : 16,
+            left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
             right: 16),
         padding: const EdgeInsets.only(left: 12, right: 8),
         child: TreeView(
@@ -384,16 +388,10 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildBackSearchButton(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.only(left: 5),
-        child: Material(
-            shape: const CircleBorder(),
-            color: Colors.transparent,
-            child: IconButton(
-                splashRadius: 20,
-                color: AppColor.colorTextButton,
-                icon: SvgPicture.asset(_imagePaths.icBack, width: 20, height: 20, color: AppColor.colorTextButton, fit: BoxFit.fill),
-                onPressed: () => controller.disableSearch(context)
-            )
+        padding: EdgeInsets.only(left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 5),
+        child: buildIconWeb(
+          onTap: () => controller.disableSearch(context),
+          icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton),
         ));
   }
 
@@ -406,7 +404,7 @@ class MailboxView extends GetWidget<MailboxController> {
             ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white)
             : null,
         child: ListView.builder(
-            padding: const EdgeInsets.only(left: 16, right: 8),
+            padding: EdgeInsets.only(left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16, right: 8),
             key: const Key('list_mailbox_searched'),
             itemCount: controller.listMailboxSearched.length,
             shrinkWrap: true,
