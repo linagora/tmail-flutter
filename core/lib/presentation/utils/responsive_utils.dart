@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 
 class ResponsiveUtils {
 
+  final int heightShortest = 600;
+
   final int minDesktopWidth = 1200;
   final int minTabletWidth = 600;
   final int minTabletLargeWidth = 900;
@@ -51,4 +53,8 @@ class ResponsiveUtils {
       isMobile(context) ? _loginTextFieldWidthSmallScreen : _loginTextFieldWidthLargeScreen;
 
   double getWidthLoginButton() => _loginButtonWidth;
+
+  bool isHeightShortest(BuildContext context) {
+    return MediaQuery.of(context).size.shortestSide < 600;
+  }
 }

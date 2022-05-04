@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
+import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -26,6 +27,7 @@ class LoginController extends GetxController {
   );
 
   var loginState = LoginState(Right(LoginInitAction())).obs;
+  final loginFormType = LoginFormType.baseUrlForm.obs;
 
   String? _urlText;
   String? _userNameText;
@@ -42,6 +44,20 @@ class LoginController extends GetxController {
   UserName? _parseUserName(String? userName) => userName != null ? UserName(userName.trim()) : null;
 
   Password? _parsePassword(String? password) => password != null ? Password(password.trim()) : null;
+
+  void handleNextInUrlInputFormPress() {
+    completeInputUrlAction();
+  }
+
+  void handleBackInCredentialForm() {
+    loginState.value = LoginState(Right(LoginInitAction()));
+    loginFormType.value = LoginFormType.baseUrlForm;
+  }
+
+  void completeInputUrlAction() {
+    loginState.value = LoginState(Right(InputUrlCompletion()));
+    loginFormType.value = LoginFormType.credentialForm;
+  }
 
   void handleLoginPressed() {
     final baseUri = kIsWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
@@ -82,7 +98,7 @@ class LoginController extends GetxController {
 
   @override
   void onClose() {
-    urlInputController.dispose();
+    urlInputController.clear();
     super.onClose();
   }
 }
