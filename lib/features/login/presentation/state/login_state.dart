@@ -8,6 +8,12 @@ class LoginState extends AppState {
 }
 
 @immutable
+class InputUrlCompletion extends ViewState {
+  @override
+  List<Object?> get props => [];
+}
+
+@immutable
 class LoginLoadingAction extends ViewState {
   @override
   List<Object?> get props => [];

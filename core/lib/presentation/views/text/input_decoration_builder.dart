@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 abstract class InputDecorationBuilder {
   String? prefixText;
+  TextStyle? prefixStyle;
   String? labelText;
   TextStyle? labelStyle;
   String? hintText;
@@ -9,38 +10,43 @@ abstract class InputDecorationBuilder {
   EdgeInsets? contentPadding;
   OutlineInputBorder? enabledBorder;
   OutlineInputBorder? errorBorder;
+  OutlineInputBorder? focusBorder;
   String? errorText;
   TextStyle? errorTextStyle;
 
-  void setPrefixText(String newPrefixText) {
+  void setPrefixText(String? newPrefixText) {
     prefixText = newPrefixText;
   }
 
-  void setLabelText(String newLabelText) {
+  void setPrefixStyle(TextStyle? newPrefixStyle) {
+    prefixStyle = newPrefixStyle;
+  }
+
+  void setLabelText(String? newLabelText) {
     labelText = newLabelText;
   }
 
-  void setLabelStyle(TextStyle newLabelStyle) {
+  void setLabelStyle(TextStyle? newLabelStyle) {
     labelStyle = newLabelStyle;
   }
 
-  void setHintText(String newHintText) {
+  void setHintText(String? newHintText) {
     hintText = newHintText;
   }
 
-  void setHintStyle(TextStyle newHintStyle) {
+  void setHintStyle(TextStyle? newHintStyle) {
     hintStyle = newHintStyle;
   }
 
-  void setContentPadding(EdgeInsets newContentPadding) {
+  void setContentPadding(EdgeInsets? newContentPadding) {
     contentPadding = newContentPadding;
   }
 
-  void setEnabledBorder(OutlineInputBorder newEnabledBorder) {
+  void setEnabledBorder(OutlineInputBorder? newEnabledBorder) {
     enabledBorder = newEnabledBorder;
   }
 
-  void setErrorBorder(OutlineInputBorder newErrorBorder) {
+  void setErrorBorder(OutlineInputBorder? newErrorBorder) {
     errorBorder = newErrorBorder;
   }
 
@@ -48,8 +54,12 @@ abstract class InputDecorationBuilder {
     errorText = newText;
   }
 
-  void setErrorTextStyle(TextStyle newStyle) {
+  void setErrorTextStyle(TextStyle? newStyle) {
     errorTextStyle = newStyle;
+  }
+
+  void setFocusBorder(OutlineInputBorder focusBorder) {
+    focusBorder = focusBorder;
   }
 
   InputDecoration build() {
@@ -63,6 +73,8 @@ abstract class InputDecorationBuilder {
       errorBorder: errorBorder,
       errorText: errorText,
       errorStyle: errorTextStyle,
-      enabledBorder: enabledBorder);
+      enabledBorder: enabledBorder,
+      focusedBorder: focusBorder
+    );
   }
 }
