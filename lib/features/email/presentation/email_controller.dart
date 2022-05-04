@@ -116,11 +116,6 @@ class EmailController extends BaseController {
   }
 
   @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-  }
-
-  @override
   void onDone() {
     viewState.value.fold(
       (failure) {
@@ -271,7 +266,7 @@ class EmailController extends BaseController {
           context: context,
           builder: (_) =>
               PointerInterceptor(child: (DownloadingFileDialogBuilder()
-                    ..key(Key('downloading_file_dialog'))
+                    ..key(const Key('downloading_file_dialog'))
                     ..title(AppLocalizations.of(context).preparing_to_export)
                     ..content(AppLocalizations.of(context).downloading_file(attachment.name ?? ''))
                     ..actionText(AppLocalizations.of(context).cancel)
@@ -285,7 +280,7 @@ class EmailController extends BaseController {
           context: context,
           builder: (_) =>
               PointerInterceptor(child: (DownloadingFileDialogBuilder()
-                  ..key(Key('downloading_file_for_web_dialog'))
+                  ..key(const Key('downloading_file_for_web_dialog'))
                   ..title(AppLocalizations.of(context).preparing_to_save)
                   ..content(AppLocalizations.of(context).downloading_file(attachment.name ?? '')))
                 .build()));
@@ -301,7 +296,7 @@ class EmailController extends BaseController {
   }
 
   void _exportAttachmentFailureAction(Failure failure) {
-    if (failure is ExportAttachmentFailure && !(failure.exception is CancelDownloadFileException)) {
+    if (failure is ExportAttachmentFailure && failure.exception is! CancelDownloadFileException) {
       popBack();
     }
   }
@@ -589,12 +584,12 @@ class EmailController extends BaseController {
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
-              ..key(Key('confirm_dialog_delete_email_permanently'))
+              ..key(const Key('confirm_dialog_delete_email_permanently'))
               ..title(DeleteActionType.single.getTitleDialog(context))
               ..content(DeleteActionType.single.getContentDialog(context))
               ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
               ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-              ..styleTextConfirmButton(TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
+              ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
               ..onCloseButtonAction(() => popBack())
               ..onConfirmButtonAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email))
               ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))

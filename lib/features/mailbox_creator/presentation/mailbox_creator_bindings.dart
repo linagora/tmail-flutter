@@ -6,11 +6,6 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_crea
 class MailboxCreatorBindings extends BaseBindings {
 
   @override
-  void dependencies() {
-    super.dependencies();
-  }
-
-  @override
   void bindingsController() {
     Get.lazyPut(() => MailboxCreatorController(
       Get.find<VerifyNameInteractor>(),

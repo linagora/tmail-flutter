@@ -23,9 +23,9 @@ Decoration _radiusBoxDecoration({
             return color;
           }).toList()
         : [
-            Color.fromRGBO(0, 0, 0, 0.1),
-            Color(0x32E5E5E5),
-            Color.fromRGBO(0, 0, 0, 0.1),
+            const Color.fromRGBO(0, 0, 0, 0.1),
+            const Color(0x32E5E5E5),
+            const Color.fromRGBO(0, 0, 0, 0.1),
           ],
       stops: [animation.value - 2, animation.value, animation.value + 1]));
 }
@@ -50,7 +50,7 @@ class _AttachmentsPlaceHolderLoadingState extends State<AttachmentsPlaceHolderLo
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(duration: Duration(seconds: 1), vsync: this)..repeat();
+    _animationController = AnimationController(duration: const Duration(seconds: 1), vsync: this)..repeat();
     _animation = Tween<double>(begin: -2, end: 2)
       .animate(CurvedAnimation(curve: Curves.easeInOutSine, parent: _animationController));
   }
@@ -67,13 +67,13 @@ class _AttachmentsPlaceHolderLoadingState extends State<AttachmentsPlaceHolderLo
       animation: _animation,
       builder: (BuildContext context, Widget? child) {
         return Container(
-          margin: EdgeInsets.only(top: 20),
+          margin: const EdgeInsets.only(top: 20),
           padding: EdgeInsets.zero,
           color: Colors.transparent,
           child: Row(children: [
             _placeHolderAttachment(context),
             if (widget.responsiveUtils.isDesktop(context))
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
             if (widget.responsiveUtils.isDesktop(context))
               _placeHolderAttachment(context),
           ]),
@@ -91,7 +91,7 @@ class _AttachmentsPlaceHolderLoadingState extends State<AttachmentsPlaceHolderLo
       height: 55,
       width: width * percentAttachment,
       margin: EdgeInsets.zero,
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       decoration: _radiusBoxDecoration(animation: _animation),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,14 +100,14 @@ class _AttachmentsPlaceHolderLoadingState extends State<AttachmentsPlaceHolderLo
             height: 24,
             width: 24,
             decoration: _radiusBoxDecoration(animation: _animation, radius: 12)),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 height: 5,
                 decoration: _radiusBoxDecoration(animation: _animation)),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Container(
                 height: 5,
                 decoration: _radiusBoxDecoration(animation: _animation))

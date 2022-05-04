@@ -20,14 +20,14 @@ abstract class BaseMailboxController extends BaseController {
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
 
   Future buildTree(List<PresentationMailbox> allMailbox) async {
-    this.allMailboxes = allMailbox;
+    allMailboxes = allMailbox;
     final tupleTree = await _treeBuilder.generateMailboxTreeInUI(allMailbox);
     defaultMailboxTree.value = tupleTree.value1;
     folderMailboxTree.value = tupleTree.value2;
   }
 
   Future refreshTree(List<PresentationMailbox> allMailbox) async {
-    this.allMailboxes = allMailbox;
+    allMailboxes = allMailbox;
     final tupleTree = await _treeBuilder.generateMailboxTreeInUIAfterRefreshChanges(
       allMailbox, defaultMailboxTree.value, folderMailboxTree.value);
     defaultMailboxTree.firstRebuild = true;

@@ -27,12 +27,12 @@ class BottomBarMailWidgetBuilder {
 
   Widget build() {
     return Container(
-      key: Key('bottom_bar_messenger_widget'),
+      key: const Key('bottom_bar_messenger_widget'),
       alignment: Alignment.center,
       color: Colors.white,
       child: MediaQuery(
-        data: MediaQueryData(padding: EdgeInsets.zero),
-        child: _presentationEmail != null ? _buildListOptionButton(_presentationEmail!) : SizedBox.shrink()
+        data: const MediaQueryData(padding: EdgeInsets.zero),
+        child: _presentationEmail != null ? _buildListOptionButton(_presentationEmail!) : const SizedBox.shrink()
       )
     );
   }
@@ -44,7 +44,7 @@ class BottomBarMailWidgetBuilder {
       children: [
         if (presentationEmail.numberOfAllEmailAddress() > 1)
           Expanded(child: (ButtonBuilder(_imagePaths.icReplyAll)
-              ..key(Key('button_reply_all_message'))
+              ..key(const Key('button_reply_all_message'))
               ..size(15)
               ..paddingIcon(EdgeInsets.only(
                   top: _responsiveUtils.isMobile(_context) ? 10 : 16,
@@ -60,7 +60,7 @@ class BottomBarMailWidgetBuilder {
               ..text(AppLocalizations.of(_context).reply_all, isVertical: _responsiveUtils.isMobile(_context)))
             .build()),
           Expanded(child: (ButtonBuilder(_imagePaths.icReply)
-              ..key(Key('button_reply_message'))
+              ..key(const Key('button_reply_message'))
               ..size(20)
               ..paddingIcon(EdgeInsets.only(
                   top: _responsiveUtils.isMobile(_context) ? 10 : 16,
@@ -76,7 +76,7 @@ class BottomBarMailWidgetBuilder {
               ..text(AppLocalizations.of(_context).reply, isVertical: _responsiveUtils.isMobile(_context)))
             .build()),
           Expanded(child: (ButtonBuilder(_imagePaths.icForward)
-              ..key(Key('button_forward_message'))
+              ..key(const Key('button_forward_message'))
               ..size(20)
               ..paddingIcon(EdgeInsets.only(
                   top: _responsiveUtils.isMobile(_context) ? 10 : 16,
@@ -93,7 +93,7 @@ class BottomBarMailWidgetBuilder {
             .build()),
         if (!_responsiveUtils.isDesktop(_context))
           Expanded(child: (ButtonBuilder(_imagePaths.icNewMessage)
-              ..key(Key('button_new_message'))
+              ..key(const Key('button_new_message'))
               ..size(20)
               ..paddingIcon(EdgeInsets.only(
                   top: _responsiveUtils.isMobile(_context) ? 10 : 16,

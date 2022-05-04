@@ -15,11 +15,6 @@ import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 class HomeBindings extends BaseBindings {
 
   @override
-  void dependencies() {
-    super.dependencies();
-  }
-
-  @override
   void bindingsController() {
     Get.lazyPut(() => HomeController(
         Get.find<GetCredentialInteractor>(),
