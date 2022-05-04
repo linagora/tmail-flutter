@@ -8,13 +8,13 @@ class LoginInputDecorationBuilder extends InputDecorationBuilder {
   InputDecoration build() {
     return InputDecoration(
       enabledBorder: enabledBorder ?? const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(29)),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
         borderSide: BorderSide(width: 1, color: AppColor.textFieldBorderColor)),
-      focusedBorder: enabledBorder ?? const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(29)),
+      focusedBorder:  focusBorder ?? const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
         borderSide: BorderSide(width: 2, color: AppColor.textFieldFocusedBorderColor)),
       errorBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(29)),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
         borderSide: BorderSide(width: 1, color: AppColor.textFieldErrorBorderColor)),
       prefixText: prefixText,
       labelText: labelText,

@@ -29,6 +29,14 @@ class AppLocalizations {
         name: 'login_text_slogan');
   }
 
+  String get loginInputUrlMessage {
+    return Intl.message('To login and access your message please connect to your JMAP server', name: 'loginInputUrlMessage');
+  }
+  
+  String get next {
+    return Intl.message('Next', name: 'next');
+  }
+
   String get prefix_https {
     return Intl.message('https://',
         name: 'prefix_https');
@@ -47,11 +55,6 @@ class AppLocalizations {
   String get login {
     return Intl.message('Login',
         name: 'login');
-  }
-
-  String get login_text_login_to_continue {
-    return Intl.message('Please login to continue',
-        name: 'login_text_login_to_continue');
   }
 
   String get unknown_error_login_message {
