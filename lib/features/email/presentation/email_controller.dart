@@ -510,7 +510,7 @@ class EmailController extends BaseController {
   }
 
   void openEmailAddressDialog(BuildContext context, EmailAddress emailAddress) {
-    if (responsiveUtils.isMobile(context) || responsiveUtils.isMobileDevice(context)) {
+    if (responsiveUtils.isScreenWithShortestSide(context)) {
       (EmailAddressBottomSheetBuilder(context, imagePaths, emailAddress)
           ..addOnCloseContextMenuAction(() => popBack())
           ..addOnCopyEmailAddressAction((emailAddress) => copyEmailAddress(context, emailAddress))

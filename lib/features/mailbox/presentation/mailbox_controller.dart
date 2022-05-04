@@ -221,14 +221,13 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _initCollapseMailboxCategories() {
-    if (currentContext != null) {
-      if (kIsWeb && (_responsiveUtils.isMobile(currentContext!)) || _responsiveUtils.isTablet(currentContext!)) {
-        mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode(
-            defaultMailbox: ExpandMode.COLLAPSE,
-            folderMailbox: ExpandMode.COLLAPSE);
-      } else {
-        mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode.initial();
-      }
+    if (kIsWeb && currentContext != null
+        && (_responsiveUtils.isMobile(currentContext!) || _responsiveUtils.isTablet(currentContext!))) {
+      mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode(
+          defaultMailbox: ExpandMode.COLLAPSE,
+          folderMailbox: ExpandMode.COLLAPSE);
+    } else {
+      mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode.initial();
     }
   }
 
@@ -567,7 +566,7 @@ class MailboxController extends BaseMailboxController {
           ..key(const Key('rename_mailbox_modal_sheet'))
           ..title(AppLocalizations.of(context).rename_mailbox)
           ..cancelText(AppLocalizations.of(context).cancel)
-          ..boxConstraints(_responsiveUtils.isMobileDevice(context) && _responsiveUtils.isLandscape(context)
+          ..boxConstraints(_responsiveUtils.isLandscapeMobile(context)
               ? const BoxConstraints(maxWidth: 400)
               : null)
           ..onConfirmAction(AppLocalizations.of(context).rename,

@@ -147,10 +147,7 @@ class MailboxView extends GetWidget<MailboxController> {
             left: _responsiveUtils.isDesktop(context) ? 20 : 0),
         children: [
           Obx(() {
-            if ((controller.isSelectionEnabled()
-                && _responsiveUtils.isMobile(context)
-                && _responsiveUtils.isLandscape(context))
-                || _responsiveUtils.isDesktop(context)) {
+            if (controller.isSelectionEnabled() || _responsiveUtils.isDesktop(context)) {
               return const SizedBox.shrink();
             }
             return _buildUserInformation(context);

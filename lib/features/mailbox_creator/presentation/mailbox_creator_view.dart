@@ -24,16 +24,17 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
           child: ResponsiveWidget(
               responsiveUtils: _responsiveUtils,
               mobile: SizedBox(child: _buildBody(context), width: double.infinity),
+              landscapeMobile: SizedBox(child: _buildBody(context), width: double.infinity),
               tablet: Row(children: [
-                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawer),
                 Expanded(child: Container(color: Colors.transparent)),
               ]),
               tabletLarge: Row(children: [
-                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawer),
                 Expanded(child: Container(color: Colors.transparent)),
               ]),
               desktop: Row(children: [
-                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawerWidthMobileTablet),
+                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawer),
                 Expanded(child: Container(color: Colors.transparent)),
               ])
           ),

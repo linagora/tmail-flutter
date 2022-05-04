@@ -42,6 +42,7 @@ class _TreeViewData extends StatelessWidget {
       key: PageStorageKey('tree_view'),
       shrinkWrap: true,
       primary: false,
+      padding: EdgeInsets.zero,
       itemCount: children.length,
       itemBuilder: (context, index) {
         return children.elementAt(index);
