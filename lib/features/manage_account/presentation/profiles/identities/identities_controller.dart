@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -20,8 +21,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class IdentitiesController extends BaseController {
 
@@ -29,8 +28,6 @@ class IdentitiesController extends BaseController {
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
-  final _appToast = Get.find<AppToast>();
 
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final CreateNewIdentityInteractor _createNewIdentityInteractor;
@@ -38,14 +35,14 @@ class IdentitiesController extends BaseController {
   final DeleteIdentityInteractor _deleteIdentityInteractor;
 
   final identitySelected = Rxn<Identity>();
-  final listIdentities = <Identity>[].obs;
+  final listAllIdentities = <Identity>[].obs;
+  final listSelectedIdentities = <Identity>[].obs;
+
+  final idIdentityAll = IdentityId(Id('all'));
 
   IdentitiesController(
     this._getAllIdentitiesInteractor,
     this._deleteIdentityInteractor,
-  );
-  IdentitiesController(
-    this._getAllIdentitiesInteractor,
     this._createNewIdentityInteractor,
     this._uuid,
   );
@@ -67,7 +64,10 @@ class IdentitiesController extends BaseController {
         (success) {
           if (success is GetAllIdentitiesSuccess) {
             if (success.identities?.isNotEmpty == true) {
-              listIdentities.value = success.identities ?? [];
+              _addNewIdentityAsAll();
+              final newListIdentities = success.identities!;
+              newListIdentities.sortByMayDelete();
+              listAllIdentities.addAll(newListIdentities);
               setIdentityDefault();
             }
           } else if (success is CreateNewIdentitySuccess) {
@@ -96,17 +96,47 @@ class IdentitiesController extends BaseController {
     consumeState(_getAllIdentitiesInteractor.execute(accountId));
   }
 
+  void _refreshAllIdentities() {
+    identitySelected.value = null;
+    listAllIdentities.clear();
+    listSelectedIdentities.clear();
+
+    final accountId = _accountDashBoardController.accountId.value;
+    if (accountId != null) {
+      _getAllIdentities(accountId);
+    }
+  }
+
+  void _addNewIdentityAsAll() {
+    if (currentContext != null) {
+      listAllIdentities.add(Identity(
+          id: idIdentityAll,
+          name: AppLocalizations.of(currentContext!).all_identities));
+    }
+  }
+
   void setIdentityDefault() {
     try {
-      final identityDefault = listIdentities.firstWhere((identity) => identity.mayDelete == false);
+      final identityDefault = listAllIdentities.firstWhere((identity) => identity.mayDelete == false);
       selectIdentity(identityDefault);
     } catch (exception) {
-      selectIdentity(listIdentities.first);
+      selectIdentity(listAllIdentities.first);
     }
   }
 
   void selectIdentity(Identity? newIdentity) {
     identitySelected.value = newIdentity;
+    if (newIdentity != null) {
+      _updateListSelectedIdentities(newIdentity);
+    }
+  }
+
+  void _updateListSelectedIdentities(Identity newIdentity) {
+    if (newIdentity.id == idIdentityAll) {
+      listSelectedIdentities.value = listAllIdentities.sublist(1);
+    } else  {
+      listSelectedIdentities.value = [newIdentity];
+    }
   }
 
   void goToCreateNewIdentity() async {
@@ -138,10 +168,7 @@ class IdentitiesController extends BaseController {
           icon: _imagePaths.icSelected);
     }
 
-    final accountId = _accountDashBoardController.accountId.value;
-    if (accountId != null) {
-      _getAllIdentities(accountId);
-    }
+    _refreshAllIdentities();
   }
 
   void openConfirmationDialogDeleteIdentityAction(BuildContext context, Identity identity) {
@@ -209,10 +236,7 @@ class IdentitiesController extends BaseController {
           icon: _imagePaths.icDeleteToast);
     }
 
-    final accountId = _accountDashBoardController.accountId.value;
-    if (accountId != null) {
-      _getAllIdentities(accountId);
-    }
+    _refreshAllIdentities();
   }
 
   void _deleteIdentityFailure(DeleteIdentityFailure failure) {

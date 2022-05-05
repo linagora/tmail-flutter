@@ -25,9 +25,9 @@ class IdentitiesBindings extends BaseBindings {
   void bindingsController() {
     Get.lazyPut(() => IdentitiesController(
       Get.find<GetAllIdentitiesInteractor>(),
+      Get.find<DeleteIdentityInteractor>(),
       Get.find<CreateNewIdentityInteractor>(),
       Get.find<Uuid>(),
-      Get.find<DeleteIdentityInteractor>(),
     ));
   }
 

@@ -1227,6 +1227,19 @@ class AppLocalizations {
         name: 'you_have_created_a_new_identity');
   }
 
+  String get all_identities {
+    return Intl.message(
+        'All identities',
+        name: 'all_identities');
+  }
+
+  String get default_value {
+    return Intl.message(
+      'Default',
+      name: 'default_value',
+    );
+  }
+
   String get delete_identity {
     return Intl.message('Delete identity',
         name: 'delete_identity');
