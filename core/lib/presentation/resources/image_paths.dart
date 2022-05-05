@@ -106,6 +106,12 @@ class ImagePaths {
   String get icEdit => _getImagePath('ic_edit.svg');
   String get icEye => _getImagePath('ic_eye.svg');
   String get icEyeOff => _getImagePath('ic_eye_off.svg');
+  String get icJMAPStandard => _getImagePath('ic_jmap_standard.svg');
+  String get icEncrypted => _getImagePath('ic_encrypted.svg');
+  String get icIntegration => _getImagePath('ic_integration.svg');
+  String get icTeam => _getImagePath('ic_team.svg');
+  String get loginGraphic => _getImagePath('login_graphic.png');
+  String get icPowerByLinagora => _getImagePath('power_by_linagora.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
