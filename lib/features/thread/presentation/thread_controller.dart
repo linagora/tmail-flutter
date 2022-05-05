@@ -817,7 +817,7 @@ class ThreadController extends BaseController {
 
   bool isSearchActive() => mailboxDashBoardController.isSearchActive();
 
-  void enableSearch(BuildContext context) {
+  void enableSearch() {
     mailboxDashBoardController.enableSearch();
   }
 

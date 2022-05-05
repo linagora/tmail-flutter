@@ -14,7 +14,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_th
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/quick_search_app_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/suggestion_box_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -44,15 +44,15 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Obx(() => !controller.isSearchActive()
-                        && ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)
+                    Obx(() => 
+                     ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)
                       ? _buildAppBarNormal(context)
                       : const SizedBox.shrink()),
                     _buildSearchInputFormForMobile(context),
-                    Container(
-                        color: BuildUtils.isWeb ? AppColor.colorBgDesktop : Colors.white,
-                        padding: EdgeInsets.zero,
-                        child: _buildSearchButtonViewForMobile(context)),
+                    // Container(
+                    //     color: BuildUtils.isWeb ? AppColor.colorBgDesktop : Colors.white,
+                    //     padding: EdgeInsets.zero,
+                    //     child: _buildSearchButtonViewForMobile(context)),
                     Obx(() => controller.isMailboxTrash && controller.emailList.isNotEmpty && !controller.isSearchActive()
                         ? _buildEmptyTrashButton(context)
                         : const SizedBox.shrink()),
@@ -119,31 +119,32 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
     });
   }
 
-  Widget _buildSearchButtonViewForMobile(BuildContext context) {
-    return Obx(() {
-      if (!controller.isSearchActive() &&
-          ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)) {
-        return Container(
-          color: Colors.white,
-          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
-          child: (SearchBarView(_imagePaths)
-              ..hintTextSearch(BuildUtils.isWeb ? AppLocalizations.of(context).search_emails : AppLocalizations.of(context).hint_search_emails)
-              ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
-            .build());
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
-  }
+  // Widget _buildSearchButtonViewForMobile(BuildContext context) {
+  //   return Obx(() {
+  //     if (!controller.isSearchActive() &&
+  //         ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)) {
+  //       return Container(
+  //         color: Colors.white,
+  //         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+  //         child: (SearchBarView(_imagePaths)
+  //             ..hintTextSearch(BuildUtils.isWeb ? AppLocalizations.of(context).search_emails : AppLocalizations.of(context).hint_search_emails)
+  //             ..addOnOpenSearchViewAction(() => controller.enableSearch()))
+  //           .build());
+  //     } else {
+  //       return const SizedBox.shrink();
+  //     }
+  //   });
+  // }
 
   Widget _buildSearchInputFormForMobile(BuildContext context) {
     return Obx(() {
-      if (controller.isSearchActive() &&
-          ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)) {
-        return Column(children: [
-          _buildSearchForm(context),
-          const Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
-        ]);
+      if (((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)) {
+        return Column(
+          children: [
+            _buildSearchForm(context),
+            const SizedBox(height: 8,)
+          ],
+        );
       } else {
         return const SizedBox.shrink();
       }
@@ -151,17 +152,21 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
   }
 
   Widget _buildSearchForm(BuildContext context) {
-    return (SearchAppBarWidget(
+     return (QuickSearchAppBarWidget(
           context,
           _imagePaths,
           _responsiveUtils,
           controller.searchQuery,
           controller.mailboxDashBoardController.searchFocus,
           controller.mailboxDashBoardController.searchInputController,
+          hasSearchButton: true,
+          hasBackButton: controller.isSearchActive(),
           suggestionSearch: controller.mailboxDashBoardController.suggestionSearch,)
       ..addDecoration(const BoxDecoration(color: Colors.white))
-      ..setMargin(const EdgeInsets.only(right: 10))
+      ..setHeightSearchBar(44)
+      ..setMargin(EdgeInsets.only(right: 10, left:  controller.isSearchActive() ? 0 : 10))
       ..setHintText(AppLocalizations.of(context).search_mail)
+      ..addOnOpenSearchViewAction(() => controller.enableSearch())
       ..addOnCancelSearchPressed(() => controller.disableSearch())
       ..addOnClearTextSearchAction(() => controller.mailboxDashBoardController.clearSearchText())
       ..addOnTextChangeSearchAction((query) => controller.mailboxDashBoardController.addSuggestionSearch(query))
