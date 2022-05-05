@@ -2,19 +2,14 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
+import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_input_decoration_builder.dart';
-import 'package:tmail_ui_user/features/login/presentation/widgets/login_text_input_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class LoginView extends GetWidget<LoginController> {
+class LoginView extends BaseLoginView {
 
-  final loginController = Get.find<LoginController>();
-  final imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
   final keyboardUtils = Get.find<KeyboardUtils>();
 
   LoginView({Key? key}) : super(key: key);
@@ -64,19 +59,19 @@ class LoginView extends GetWidget<LoginController> {
           children: [
             Padding(
               padding: EdgeInsets.only(
-                top: _responsiveUtils.isHeightShortest(context) ? 64 : 0),
+                top: responsiveUtils.isHeightShortest(context) ? 64 : 0),
               child: Text(
                 AppLocalizations.of(context).login,
                 style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
               )
             ),
-            Obx(() => _buildLoginMessage(context, loginController.loginState.value)),
+            Obx(() => buildLoginMessage(context, loginController.loginState.value)),
             Obx(() {
               switch (controller.loginFormType.value) {
                 case LoginFormType.baseUrlForm:
                   return _buildUrlInput(context);
                 case LoginFormType.credentialForm:
-                  return _buildInputCredentialForm(context);
+                  return buildInputCredentialForm(context);
                 default:
                   return const SizedBox.shrink();
               }
@@ -119,40 +114,6 @@ class LoginView extends GetWidget<LoginController> {
     );
   }
 
-  Widget _buildLoginMessage(BuildContext context, LoginState loginState) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 11, bottom: 36, left: 58, right: 58),
-      child: SizedBox(
-        width: _responsiveUtils.getWidthLoginTextField(context),
-        child: CenterTextBuilder()
-          .key(const Key('login_message'))
-          .text(loginState.viewState.fold(
-            (failure) => failure is AuthenticationUserFailure
-              ? AppLocalizations.of(context).unknown_error_login_message
-              : AppLocalizations.of(context).loginInputUrlMessage,
-            (success) => AppLocalizations.of(context).loginInputUrlMessage))
-          .textStyle(TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w400,
-            color: loginState.viewState.fold(
-              (failure) => failure is AuthenticationUserFailure
-                ? AppColor.textFieldErrorBorderColor
-                : AppColor.colorNameEmail,
-              (success) => AppColor.colorNameEmail)))
-          .build()
-      )
-    );
-  }
-
-  Widget _buildInputCredentialForm(BuildContext context) {
-    return Column(
-      children: [
-        _buildUserNameInput(context),
-        _buildPasswordInput(context)
-      ],
-    );
-  }
-
   Widget _buildUrlInput(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 24, left: 24, bottom: 24),
@@ -173,37 +134,6 @@ class LoginView extends GetWidget<LoginController> {
           .build()));
   }
 
-  Widget _buildUserNameInput(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16, right: 24, left: 24),
-      child: Container(
-        child: (TextFieldBuilder()
-            ..key(const Key('login_username_input'))
-            ..onChange((value) => loginController.setUserNameText(value))
-            ..textInputAction(TextInputAction.next)
-            ..keyboardType(TextInputType.emailAddress)
-            ..textDecoration((LoginInputDecorationBuilder()
-                ..setLabelText(AppLocalizations.of(context).email)
-                ..setHintText(AppLocalizations.of(context).email))
-                .build()))
-          .build()));
-  }
-
-  Widget _buildPasswordInput(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 40, right: 24, left: 24),
-      child: Container(
-        child: (LoginTextInputBuilder(context, imagePaths)
-            ..setOnSubmitted((value) => loginController.handleLoginPressed())
-            ..passwordInput(true)
-            ..key(const Key('login_password_input'))
-            ..obscureText(true)
-            ..onChange((value) => loginController.setPasswordText(value))
-            ..textInputAction(TextInputAction.done)
-            ..hintText(AppLocalizations.of(context).password))
-          .build()));
-  }
-
   Widget _buildExpandedButton(BuildContext context, Widget child) {
     return Expanded(
       child: Align(
@@ -216,7 +146,7 @@ class LoginView extends GetWidget<LoginController> {
   Widget _buildNextButton(BuildContext context) {
     return Container(
       margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
-      width: _responsiveUtils.getDeviceWidth(context),height: 48,
+      width: responsiveUtils.getDeviceWidth(context),height: 48,
       child: ElevatedButton(
         key: const Key('nextToCredentialForm'),
         style: ButtonStyle(
@@ -239,32 +169,8 @@ class LoginView extends GetWidget<LoginController> {
 
   Widget _buildLoginButtonInContext(BuildContext context) {
     return _supportScrollForm(context)
-      ? _buildLoginButton(context)
-      : _buildExpandedButton(context, _buildLoginButton(context));
-  }
-
-  Widget _buildLoginButton(BuildContext context) {
-    return Container(
-      margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
-      width: _responsiveUtils.getDeviceWidth(context),height: 48,
-      child: ElevatedButton(
-        key: const Key('loginSubmitForm'),
-        style: ButtonStyle(
-          foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.primaryColor),
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: const BorderSide(width: 0, color: AppColor.primaryColor)
-          ))
-        ),
-        child: Text(AppLocalizations.of(context).login,
-          style: const TextStyle(fontSize: 16, color: Colors.white)
-        ),
-        onPressed: () {
-          loginController.handleLoginPressed();
-        }
-      )
-    );
+      ? buildLoginButton(context)
+      : _buildExpandedButton(context, buildLoginButton(context));
   }
 
   Widget _buildLoadingCircularProgress() {
