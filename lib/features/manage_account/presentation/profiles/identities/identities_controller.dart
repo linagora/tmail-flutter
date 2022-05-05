@@ -4,24 +4,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:uuid/uuid.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class IdentitiesController extends BaseController {
 
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
+  final _appToast = Get.find<AppToast>();
+  final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
   final _appToast = Get.find<AppToast>();
 
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
+  final CreateNewIdentityInteractor _createNewIdentityInteractor;
+  final Uuid _uuid;
   final DeleteIdentityInteractor _deleteIdentityInteractor;
 
   final identitySelected = Rxn<Identity>();
@@ -30,6 +43,11 @@ class IdentitiesController extends BaseController {
   IdentitiesController(
     this._getAllIdentitiesInteractor,
     this._deleteIdentityInteractor,
+  );
+  IdentitiesController(
+    this._getAllIdentitiesInteractor,
+    this._createNewIdentityInteractor,
+    this._uuid,
   );
 
   @override
@@ -52,6 +70,8 @@ class IdentitiesController extends BaseController {
               listIdentities.value = success.identities ?? [];
               setIdentityDefault();
             }
+          } else if (success is CreateNewIdentitySuccess) {
+            _createNewIdentitySuccess(success);
           } else if (success is DeleteIdentitySuccess) {
             _deleteIdentitySuccess(success);
           }
@@ -87,6 +107,41 @@ class IdentitiesController extends BaseController {
 
   void selectIdentity(Identity? newIdentity) {
     identitySelected.value = newIdentity;
+  }
+
+  void goToCreateNewIdentity() async {
+    final accountId = _accountDashBoardController.accountId.value;
+    final userProfile = _accountDashBoardController.userProfile.value;
+    if (accountId != null && userProfile != null) {
+      final newIdentity = await push(
+          AppRoutes.IDENTITY_CREATOR,
+          arguments: IdentityCreatorArguments(accountId, userProfile));
+
+      if (newIdentity != null && newIdentity is Identity) {
+        final generateCreateId = Id(_uuid.v1());
+        _createNewIdentityAction(
+            accountId,
+            CreateNewIdentityRequest(generateCreateId, newIdentity));
+      }
+    }
+  }
+
+  void _createNewIdentityAction(AccountId accountId, CreateNewIdentityRequest identityRequest) async {
+    consumeState(_createNewIdentityInteractor.execute(accountId, identityRequest));
+  }
+
+  void _createNewIdentitySuccess(CreateNewIdentitySuccess success) {
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          message: AppLocalizations.of(currentContext!).you_have_created_a_new_identity,
+          icon: _imagePaths.icSelected);
+    }
+
+    final accountId = _accountDashBoardController.accountId.value;
+    if (accountId != null) {
+      _getAllIdentities(accountId);
+    }
   }
 
   void openConfirmationDialogDeleteIdentityAction(BuildContext context, Identity identity) {

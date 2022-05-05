@@ -96,6 +96,7 @@ Widget buildTextButton(String text, {
   double? width,
   double? height,
   Color? backgroundColor,
+  EdgeInsets? padding,
   double? radius,
   IconWebCallback? onTap,
 }) {
@@ -106,6 +107,8 @@ Widget buildTextButton(String text, {
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.resolveWith((states) => backgroundColor ?? AppColor.colorTextButton),
             elevation: MaterialStateProperty.resolveWith((states) => 0),
+            padding: MaterialStateProperty.resolveWith<EdgeInsets>(
+                (Set<MaterialState> states) => padding ?? EdgeInsets.zero),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius ?? 0)))),
         child: Text(text, style: textStyle ?? TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w500)),
         onPressed: () => onTap?.call()
