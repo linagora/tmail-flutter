@@ -2,16 +2,18 @@
 import 'package:core/core.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_info_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidgetMixin {
+class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidgetMixin, AppLoaderMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -30,17 +32,17 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
                 controller.identitySelected.value?.name ?? '',
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
               )),
             ],
           ),
-          items: controller.listIdentities.map((item) => DropdownMenuItem<Identity>(
+          items: controller.listAllIdentities.map((item) => DropdownMenuItem<Identity>(
             value: item,
             child: Text(
               item.name ?? '',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
             ),
           )).toList(),
           value: controller.identitySelected.value,
@@ -68,7 +70,9 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
       if (!_responsiveUtils.isMobile(context))
         (ButtonBuilder(_imagePaths.icAddIdentity)
             ..key(const Key('button_new_identity'))
-            ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorTextButton))
+            ..decoration(BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: AppColor.colorTextButton))
             ..paddingIcon(const EdgeInsets.only(right: 8))
             ..iconColor(Colors.white)
             ..maxWidth(170)
@@ -86,16 +90,27 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
         mobile: Scaffold(
           body: Container(
               margin: const EdgeInsets.only(top: 16, bottom: 16, right: 24),
-              child: SingleChildScrollView(child: Column(
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     buttonSelectIdentity,
-                    Obx(() => IdentityInfoTileBuilder(_imagePaths, _responsiveUtils,
-                        controller.identitySelected.value,
-                        onMenuItemIdentityAction: (identity, position) =>
-                            _openIdentityMenuAction(context, identity, position))),
+                    const SizedBox(height: 24),
+                    _buildLoadingView(),
+                    Expanded(child: Obx(() => MasonryGridView.count(
+                        key: const Key('list_identities'),
+                        crossAxisSpacing: 24.0,
+                        mainAxisSpacing: 24.0,
+                        crossAxisCount: _responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)
+                            ? 2 : 1,
+                        itemCount: controller.listSelectedIdentities.length,
+                        itemBuilder: (context, index) =>
+                            IdentityInfoTileBuilder(_imagePaths, _responsiveUtils,
+                                controller.listSelectedIdentities[index],
+                                onMenuItemIdentityAction: (identity, position) =>
+                                    _openIdentityMenuAction(context, identity, position))
+                    )))
                   ]
-              ))
+              )
           ),
           floatingActionButton: _responsiveUtils.isMobile(context)
             ? FloatingActionButton(
@@ -106,20 +121,41 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
             : null),
         desktop: Container(
             margin: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-            child: SingleChildScrollView(child: Column(
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
                       width: constraints.maxWidth / 2,
                       child: buttonSelectIdentity),
-                  Obx(() => IdentityInfoTileBuilder(_imagePaths, _responsiveUtils,
-                      controller.identitySelected.value,
-                      maxWidth: constraints.maxWidth / 2,
-                      onMenuItemIdentityAction: (identity, position) =>
-                          _openIdentityMenuAction(context, identity, position))),
+                  const SizedBox(height: 24),
+                  _buildLoadingView(),
+                  Expanded(child: Obx(() => MasonryGridView.count(
+                      key: const Key('list_identities'),
+                      crossAxisSpacing: 24.0,
+                      mainAxisSpacing: 24.0,
+                      crossAxisCount: _responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)
+                          ? 2 : 1,
+                      itemCount: controller.listSelectedIdentities.length,
+                      itemBuilder: (context, index) =>
+                          IdentityInfoTileBuilder(_imagePaths, _responsiveUtils,
+                              controller.listSelectedIdentities[index],
+                              onMenuItemIdentityAction: (identity, position) =>
+                                  _openIdentityMenuAction(context, identity, position))
+                  )))
                 ]
-            ))
+            )
         )
+    ));
+  }
+
+  Widget _buildLoadingView() {
+    return Obx(() => controller.viewState.value.fold(
+        (failure) => const SizedBox.shrink(),
+        (success) => success is LoadingState
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: loadingWidget)
+            : const SizedBox.shrink()
     ));
   }
 

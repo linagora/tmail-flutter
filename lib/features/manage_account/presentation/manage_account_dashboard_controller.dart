@@ -21,7 +21,7 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   final GetUserProfileInteractor _getUserProfileInteractor;
 
-  final menuDrawerKey = GlobalKey<ScaffoldState>();
+  final menuDrawerKey = GlobalKey<ScaffoldState>(debugLabel: 'manage_account');
 
   final appInformation = Rxn<PackageInfo>();
   final userProfile = Rxn<UserProfile>();
