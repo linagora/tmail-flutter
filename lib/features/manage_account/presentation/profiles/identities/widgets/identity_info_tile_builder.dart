@@ -12,7 +12,6 @@ class IdentityInfoTileBuilder extends StatelessWidget {
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
   final Identity? _identity;
-  final double? maxWidth;
   final OnMenuItemIdentityAction? onMenuItemIdentityAction;
 
   const IdentityInfoTileBuilder(
@@ -21,7 +20,6 @@ class IdentityInfoTileBuilder extends StatelessWidget {
     this._identity,
     {
       Key? key,
-      this.maxWidth,
       this.onMenuItemIdentityAction,
     }
   ) : super(key: key);
@@ -39,14 +37,31 @@ class IdentityInfoTileBuilder extends StatelessWidget {
             border: Border.all(color: AppColor.colorBorderIdentityInfo, width: 1),
             color: Colors.white),
         padding: const EdgeInsets.only(top: 12, bottom: 12),
-        margin: const EdgeInsets.only(top: 12),
-        width: maxWidth,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.only(left: 12, right: 8),
               child: Row(children: [
-                Expanded(child: Text(_identity?.name ?? '',
-                    style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: Colors.black))),
+                if (_identity?.mayDelete == false)
+                  Expanded(child: Row(children: [
+                    Text(_identity?.name ?? '',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 17,
+                            color: Colors.black)),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(
+                        '(${AppLocalizations.of(context).default_value})',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15,
+                            color: AppColor.colorHintSearchBar)))
+                  ]))
+                else
+                  Expanded(child: Text(_identity?.name ?? '',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 17,
+                          color: Colors.black)),),
                 buildIconWebHasPosition(
                     context,
                     icon: SvgPicture.asset(_imagePaths.icMoreVertical, fit: BoxFit.fill),
@@ -80,7 +95,8 @@ class IdentityInfoTileBuilder extends StatelessWidget {
                     Expanded(child: Text(_identity?.email ?? '',
                         style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.colorHintSearchBar)))
                   ])),
-            if (_identity?.replyTo != null && _identity?.replyTo?.isNotEmpty == true) const SizedBox(height: 10),
+            if (_identity?.replyTo != null && _identity?.replyTo?.isNotEmpty == true)
+              const SizedBox(height: 10),
             if (_identity?.replyTo != null && _identity?.replyTo?.isNotEmpty == true)
               Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -92,9 +108,10 @@ class IdentityInfoTileBuilder extends StatelessWidget {
                     Expanded(child: Text(_identity?.replyTo?.listEmailAddressToString(isFullEmailAddress: true) ?? '',
                         style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.colorHintSearchBar)))
                   ])),
-            if (_identity?.bcc != null && _identity?.bcc?.isNotEmpty == true) const SizedBox(height: 6),
             if (_identity?.bcc != null && _identity?.bcc?.isNotEmpty == true)
-                Padding(
+              const SizedBox(height: 6),
+            if (_identity?.bcc != null && _identity?.bcc?.isNotEmpty == true)
+              Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Row(children: [
                     Container(
