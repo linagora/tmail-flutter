@@ -42,7 +42,6 @@ export 'presentation/views/button/button_builder.dart';
 export 'presentation/views/button/icon_button_web.dart';
 export 'presentation/views/image/avatar_builder.dart';
 export 'presentation/views/list/sliver_grid_delegate_fixed_height.dart';
-export 'presentation/views/text/text_form_field_builder.dart';
 export 'presentation/views/image/icon_builder.dart';
 export 'presentation/views/context_menu/context_menu_action_builder.dart';
 export 'presentation/views/context_menu/context_menu_builder.dart';

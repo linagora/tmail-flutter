@@ -53,6 +53,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
               color: AppColor.colorInputBackgroundCreateMailbox),
           itemHeight: 44,
           buttonHeight: 44,
+          selectedItemHighlightColor: Colors.black12,
           itemPadding: const EdgeInsets.symmetric(horizontal: 12),
           dropdownMaxHeight: 200,
           dropdownDecoration: BoxDecoration(
@@ -75,7 +76,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
             ..radiusSplash(10)
             ..padding(const EdgeInsets.symmetric(vertical: 12))
             ..textStyle(const TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w500))
-            ..onPressActionClick(() => {})
+            ..onPressActionClick(() => controller.goToCreateNewIdentity())
             ..text(AppLocalizations.of(context).new_identity, isVertical: false))
           .build()
     ]);
@@ -99,7 +100,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
           floatingActionButton: _responsiveUtils.isMobile(context)
             ? FloatingActionButton(
                   key: const Key('add_new_identity'),
-                  onPressed: () => {},
+                  onPressed: () => controller.goToCreateNewIdentity(),
                   backgroundColor: AppColor.primaryColor,
                   child: SvgPicture.asset(_imagePaths.icAddIdentity, width: 24, height: 24))
             : null),

@@ -1179,6 +1179,54 @@ class AppLocalizations {
         name: 'new_identity');
   }
 
+  String get name {
+    return Intl.message(
+        'Name',
+        name: 'name');
+  }
+
+  String get reply_to_address {
+    return Intl.message(
+        'Reply to address',
+        name: 'reply_to_address');
+  }
+
+  String get bcc_to_address {
+    return Intl.message(
+        'Bcc to address',
+        name: 'bcc_to_address');
+  }
+
+  String get signature {
+    return Intl.message(
+        'Signature',
+        name: 'signature');
+  }
+
+  String get plain_text {
+    return Intl.message(
+        'Plain text',
+        name: 'plain_text');
+  }
+
+  String get html_template {
+    return Intl.message(
+        'Html template',
+        name: 'html_template');
+  }
+
+  String get create {
+    return Intl.message(
+        'Create',
+        name: 'create');
+  }
+
+  String get you_have_created_a_new_identity {
+    return Intl.message(
+        'You have created a new identity',
+        name: 'you_have_created_a_new_identity');
+  }
+
   String get delete_identity {
     return Intl.message('Delete identity',
         name: 'delete_identity');
