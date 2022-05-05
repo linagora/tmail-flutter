@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-05-06T15:08:19.074758",
+  "@@last_modified": "2022-05-06T16:58:28.388035",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -8,6 +8,24 @@
   },
   "login_text_slogan": "Team Mail",
   "@login_text_slogan": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loginInputUrlMessage": "To login and access your message please connect to your JMAP server",
+  "@loginInputUrlMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loginInputCredentialMessage": "Enter your credentials to sign in",
+  "@loginInputCredentialMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "next": "Next",
+  "@next": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -36,8 +54,38 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login_text_login_to_continue": "Please login to continue",
-  "@login_text_login_to_continue": {
+  "signIn": "Sign In",
+  "@signIn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "jmapBasedMailSolution": "JMAP-based\ncollaborative team mail solution",
+  "@jmapBasedMailSolution": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "jmapStandard": "JMAP standard",
+  "@jmapStandard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "encryptedMailbox": "Encrypted mailbox",
+  "@encryptedMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manageEmailAsATeam": "Manage email as a team",
+  "@manageEmailAsATeam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "multipleIntegrations": "Multiple integrations",
+  "@multipleIntegrations": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

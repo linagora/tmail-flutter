@@ -19,6 +19,7 @@ class SloganBuilder {
   String? _logo;
   double? _sizeLogo;
   OnTapCallback? _onTapCallback;
+  EdgeInsetsGeometry? _padding;
 
   SloganBuilder({this.arrangedByHorizontal = false});
 
@@ -54,6 +55,10 @@ class SloganBuilder {
     _onTapCallback = onTapCallback;
   }
 
+  void setPadding(EdgeInsetsGeometry? padding) {
+    _padding = padding;
+  }
+
   Widget build() {
     if (!arrangedByHorizontal) {
       return InkWell(
@@ -61,7 +66,7 @@ class SloganBuilder {
         child: Column(children: [
           _logoApp(),
           Padding(
-            padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+            padding: _padding ?? EdgeInsets.only(top: 16, left: 16, right: 16),
             child: Text(_text ?? '', key: _key, style: _textStyle, textAlign: _textAlign),
           ),
         ]),
@@ -72,7 +77,7 @@ class SloganBuilder {
         child: Row(children: [
           _logoApp(),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: _padding ?? EdgeInsets.symmetric(horizontal: 10),
             child: Text(_text ?? '', key: _key, style: _textStyle, textAlign: _textAlign),
           ),
         ]),
