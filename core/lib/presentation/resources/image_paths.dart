@@ -101,6 +101,8 @@ class ImagePaths {
   String get icEmail => _getImagePath('ic_email.svg');
   String get icReplyTo => _getImagePath('ic_reply_to.svg');
   String get icEditIdentity => _getImagePath('ic_edit_identity.svg');
+  String get icDeleteDialogIdentity => _getImagePath('ic_delete_dialog_identity.svg');
+  String get icDeleteDialogFailed => _getImagePath('ic_delete_dialog_failed.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

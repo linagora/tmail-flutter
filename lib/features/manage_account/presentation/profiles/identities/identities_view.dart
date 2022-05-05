@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_info_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class IdentitiesView extends GetWidget<IdentitiesController> {
+class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidgetMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -87,9 +89,10 @@ class IdentitiesView extends GetWidget<IdentitiesController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     buttonSelectIdentity,
-                    Obx(() => IdentityInfoTileBuilder(context,
-                        _imagePaths,
-                        controller.identitySelected.value)),
+                    Obx(() => IdentityInfoTileBuilder(_imagePaths, _responsiveUtils,
+                        controller.identitySelected.value,
+                        onMenuItemIdentityAction: (identity, position) =>
+                            _openIdentityMenuAction(context, identity, position))),
                   ]
               ))
           ),
@@ -108,13 +111,63 @@ class IdentitiesView extends GetWidget<IdentitiesController> {
                   SizedBox(
                       width: constraints.maxWidth / 2,
                       child: buttonSelectIdentity),
-                  Obx(() => IdentityInfoTileBuilder(context,
-                      _imagePaths,
+                  Obx(() => IdentityInfoTileBuilder(_imagePaths, _responsiveUtils,
                       controller.identitySelected.value,
-                      maxWidth: constraints.maxWidth / 2)),
+                      maxWidth: constraints.maxWidth / 2,
+                      onMenuItemIdentityAction: (identity, position) =>
+                          _openIdentityMenuAction(context, identity, position))),
                 ]
             ))
         )
     ));
+  }
+
+  void _openIdentityMenuAction(BuildContext context, Identity identity,
+      RelativeRect? position) {
+    if (_responsiveUtils.isScreenWithShortestSide(context)) {
+      controller.openContextMenuAction(context, _bottomSheetIdentityActionTiles(context, identity));
+    } else {
+      controller.openPopupMenuAction(context, position, _popupMenuIdentityActionTiles(context, identity));
+    }
+  }
+
+  List<PopupMenuEntry> _popupMenuIdentityActionTiles(BuildContext context, Identity identity) {
+    return [
+      if (identity.mayDelete == true)
+        PopupMenuItem(
+            padding: EdgeInsets.zero,
+            child: popupItem(_imagePaths.icDeleteComposer,
+                AppLocalizations.of(context).delete_identity,
+                colorIcon: AppColor.colorActionDeleteConfirmDialog,
+                styleName: const TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 17,
+                    color: AppColor.colorActionDeleteConfirmDialog),
+                onCallbackAction: () => controller.openConfirmationDialogDeleteIdentityAction(context, identity))),
+    ];
+  }
+
+  List<Widget> _bottomSheetIdentityActionTiles(BuildContext context, Identity identity) {
+    return <Widget>[
+      if (identity.mayDelete == true)
+        _deleteIdentityActionTile(context, identity),
+    ];
+  }
+
+  Widget _deleteIdentityActionTile(BuildContext context, Identity identity) {
+    return (IdentityBottomSheetActionTileBuilder(
+            const Key('delete_identity_action'),
+            SvgPicture.asset(_imagePaths.icDeleteComposer,
+                color: AppColor.colorActionDeleteConfirmDialog),
+            AppLocalizations.of(context).delete_identity,
+            identity,
+            iconLeftPadding: _responsiveUtils.isMobile(context)
+                ? const EdgeInsets.only(left: 12, right: 16)
+                : const EdgeInsets.only(right: 12),
+            iconRightPadding: _responsiveUtils.isMobile(context)
+                ? const EdgeInsets.only(right: 12)
+                : EdgeInsets.zero)
+        ..onActionClick((identity) => controller.openConfirmationDialogDeleteIdentityAction(context, identity)))
+      .build();
   }
 }
