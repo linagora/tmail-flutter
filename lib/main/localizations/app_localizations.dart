@@ -33,6 +33,10 @@ class AppLocalizations {
     return Intl.message('To login and access your message please connect to your JMAP server', name: 'loginInputUrlMessage');
   }
   
+  String get loginInputCredentialMessage {
+    return Intl.message('Enter your credentials to sign in', name: 'loginInputCredentialMessage');
+  }
+  
   String get next {
     return Intl.message('Next', name: 'next');
   }
@@ -55,6 +59,35 @@ class AppLocalizations {
   String get login {
     return Intl.message('Login',
         name: 'login');
+  }
+
+  String get signIn {
+    return Intl.message('Sign In',
+        name: 'signIn');
+  }
+
+  String get jmapBasedMailSolution {
+    return Intl.message('JMAP-based\ncollaborative team mail solution',
+        name: 'jmapBasedMailSolution');
+  }
+
+  String get jmapStandard {
+    return Intl.message('JMAP standard',
+        name: 'jmapStandard');
+  }
+
+  String get encryptedMailbox {
+    return Intl.message('Encrypted mailbox',
+      name: 'encryptedMailbox');
+  }
+
+  String get manageEmailAsATeam {
+    return Intl.message('Manage email as a team',
+      name: 'manageEmailAsATeam');
+  }
+
+  String get multipleIntegrations {
+    return Intl.message('Multiple integrations', name: 'multipleIntegrations');
   }
 
   String get unknown_error_login_message {
