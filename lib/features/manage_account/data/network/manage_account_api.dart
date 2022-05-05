@@ -4,6 +4,9 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/identities/get/get_identity_method.dart';
 import 'package:jmap_dart_client/jmap/identities/get/get_identity_response.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:jmap_dart_client/jmap/identities/set/set_identity_method.dart';
+import 'package:jmap_dart_client/jmap/identities/set/set_identity_response.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
 
@@ -29,5 +32,29 @@ class ManageAccountAPI {
       GetIdentityResponse.deserialize);
 
     return IdentitiesResponse(identities: response?.list, state: response?.state);
+  }
+
+  Future<bool> deleteIdentity(AccountId accountId, IdentityId identityId) async {
+    final setIdentityMethod = SetIdentityMethod(accountId)
+      ..addDestroy({identityId.id});
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    final setIdentityInvocation = requestBuilder.invocation(setIdentityMethod);
+
+    final response = await (requestBuilder
+      ..usings(setIdentityMethod.requiredCapabilities))
+        .build()
+        .execute();
+
+    final setIdentityResponse = response.parse<SetIdentityResponse>(
+        setIdentityInvocation.methodCallId,
+        SetIdentityResponse.deserialize);
+
+    return Future.sync(() async {
+      return setIdentityResponse?.destroyed?.contains(identityId.id) == true;
+    }).catchError((error) {
+      throw error;
+    });
   }
 }
