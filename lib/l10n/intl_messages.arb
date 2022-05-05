@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-04-26T09:31:06.288489",
+  "@@last_modified": "2022-05-05T15:05:07.334710",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1122,6 +1122,30 @@
   },
   "new_identity": "New Identity",
   "@new_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_identity": "Delete identity",
+  "@delete_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_delete_identity": "Are you sure you want to delete this identity?",
+  "@message_confirmation_dialog_delete_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "identity_has_been_deleted": "Identity has been deleted",
+  "@identity_has_been_deleted": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_failed": "Delete Failed",
+  "@delete_failed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

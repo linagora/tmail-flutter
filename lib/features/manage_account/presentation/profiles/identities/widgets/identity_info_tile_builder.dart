@@ -5,18 +5,25 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+typedef OnMenuItemIdentityAction = Function(Identity identity, RelativeRect? positon);
+
 class IdentityInfoTileBuilder extends StatelessWidget {
 
-  final BuildContext _context;
   final ImagePaths _imagePaths;
+  final ResponsiveUtils _responsiveUtils;
   final Identity? _identity;
   final double? maxWidth;
+  final OnMenuItemIdentityAction? onMenuItemIdentityAction;
 
   const IdentityInfoTileBuilder(
-    this._context,
     this._imagePaths,
+    this._responsiveUtils,
     this._identity,
-    {Key? key, this.maxWidth}
+    {
+      Key? key,
+      this.maxWidth,
+      this.onMenuItemIdentityAction,
+    }
   ) : super(key: key);
 
   @override
@@ -40,9 +47,19 @@ class IdentityInfoTileBuilder extends StatelessWidget {
               child: Row(children: [
                 Expanded(child: Text(_identity?.name ?? '',
                     style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: Colors.black))),
-                buildIconWeb(
+                buildIconWebHasPosition(
+                    context,
                     icon: SvgPicture.asset(_imagePaths.icMoreVertical, fit: BoxFit.fill),
-                    onTap: () => {})
+                    onTap: () {
+                      if (_responsiveUtils.isScreenWithShortestSide(context)) {
+                        onMenuItemIdentityAction?.call(_identity!, null);
+                      }
+                    },
+                    onTapDown: (position) {
+                      if (!_responsiveUtils.isScreenWithShortestSide(context)) {
+                        onMenuItemIdentityAction?.call(_identity!, position);
+                      }
+                    })
               ])),
             const SizedBox(height: 10),
             const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
@@ -75,24 +92,6 @@ class IdentityInfoTileBuilder extends StatelessWidget {
                     Expanded(child: Text(_identity?.replyTo?.listEmailAddressToString(isFullEmailAddress: true) ?? '',
                         style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.colorHintSearchBar)))
                   ])),
-            if (_identity?.cc != null && _identity?.cc?.isNotEmpty == true) const SizedBox(height: 6),
-            if (_identity?.cc != null && _identity?.cc?.isNotEmpty == true)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(children: [
-                  Container(
-                      width: 40,
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text(AppLocalizations.of(_context).cc_email_address_prefix,
-                          style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.normal,
-                              decoration: TextDecoration.underline,
-                              color: AppColor.colorTextButton))),
-                  const SizedBox(width: 4),
-                  Expanded(child: Text(_identity?.cc?.listEmailAddressToString(isFullEmailAddress: true) ?? '',
-                      style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.colorHintSearchBar)))
-                ])),
             if (_identity?.bcc != null && _identity?.bcc?.isNotEmpty == true) const SizedBox(height: 6),
             if (_identity?.bcc != null && _identity?.bcc?.isNotEmpty == true)
                 Padding(
@@ -101,7 +100,7 @@ class IdentityInfoTileBuilder extends StatelessWidget {
                     Container(
                         padding: const EdgeInsets.only(left: 6),
                         width: 40,
-                        child: Text(AppLocalizations.of(_context).bcc_email_address_prefix,
+                        child: Text(AppLocalizations.of(context).bcc_email_address_prefix,
                           style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.normal,
