@@ -1178,4 +1178,24 @@ class AppLocalizations {
     return Intl.message('New Identity',
         name: 'new_identity');
   }
+
+  String get delete_identity {
+    return Intl.message('Delete identity',
+        name: 'delete_identity');
+  }
+
+  String get message_confirmation_dialog_delete_identity {
+    return Intl.message('Are you sure you want to delete this identity?',
+        name: 'message_confirmation_dialog_delete_identity');
+  }
+
+  String get identity_has_been_deleted {
+    return Intl.message('Identity has been deleted',
+        name: 'identity_has_been_deleted');
+  }
+
+  String get delete_failed {
+    return Intl.message('Delete Failed',
+        name: 'delete_failed');
+  }
 }
