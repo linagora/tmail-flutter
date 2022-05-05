@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-05-05T15:05:07.334710",
+  "@@last_modified": "2022-05-05T09:06:54.039059",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1122,6 +1122,54 @@
   },
   "new_identity": "New Identity",
   "@new_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "name": "Name",
+  "@name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_to_address": "Reply to address",
+  "@reply_to_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bcc_to_address": "Bcc to address",
+  "@bcc_to_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signature": "Signature",
+  "@signature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "plain_text": "Plain text",
+  "@plain_text": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "html_template": "Html template",
+  "@html_template": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "create": "Create",
+  "@create": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_have_created_a_new_identity": "You have created a new identity",
+  "@you_have_created_a_new_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
