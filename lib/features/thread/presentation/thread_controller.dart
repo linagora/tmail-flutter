@@ -61,6 +61,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_inter
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -97,6 +98,7 @@ class ThreadController extends BaseController {
   MailboxId? _currentMailboxId;
   jmap.State? _currentEmailState;
   final ScrollController listEmailController = ScrollController();
+  late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker;
 
   SearchQuery? get searchQuery => mailboxDashBoardController.searchQuery;
 
@@ -126,7 +128,7 @@ class ThreadController extends BaseController {
 
   @override
   void onInit() {
-    _onMailboxDashBoardListener();
+    _initWorker();
     super.onInit();
   }
 
@@ -138,11 +140,8 @@ class ThreadController extends BaseController {
 
   @override
   void onClose() {
-    mailboxDashBoardController.selectedMailbox.close();
-    mailboxDashBoardController.dashBoardAction.close();
-    mailboxDashBoardController.viewState.close();
-    mailboxDashBoardController.searchState.close();
     listEmailController.dispose();
+    _clearWorker();
     super.onClose();
   }
 
@@ -224,67 +223,77 @@ class ThreadController extends BaseController {
   @override
   void onError(error) {}
 
-  void _onMailboxDashBoardListener() {
-    mailboxDashBoardController.selectedMailbox.listen((selectedMailbox) {
-      log('ThreadController::_onMailboxDashBoardListener(): selectMailbox: ${selectedMailbox?.name?.name}(${selectedMailbox?.id})');
-      if (_currentMailboxId != selectedMailbox?.id) {
-        _currentMailboxId = selectedMailbox?.id;
-        _resetToOriginalValue();
-        _getAllEmail();
-      }
-    });
-
-    mailboxDashBoardController.searchState.listen((state) {
-      log('ThreadController::_onMailboxDashBoardListener(): searchState: $state');
-      if (state.searchStatus == SearchStatus.INACTIVE) {
-        emailListSearch.clear();
-      } else if (state.searchStatus == SearchStatus.ACTIVE) {
-        cancelSelectEmail();
-      }
-    });
-
-    mailboxDashBoardController.dashBoardAction.listen((action) {
-      log('ThreadController::_onMailboxDashBoardListener(): dashBoardAction: ${action.runtimeType}');
-      if (action is RefreshAllEmailAction) {
-        refreshAllEmail();
-        mailboxDashBoardController.clearDashBoardAction();
-      } else if (action is MarkAsReadAllEmailAction) {
-        markAsReadAllEmails();
-        mailboxDashBoardController.clearDashBoardAction();
-      } if (action is SelectionAllEmailAction) {
-        setSelectAllEmailAction();
-        mailboxDashBoardController.clearDashBoardAction();
-      } if (action is CancelSelectionAllEmailAction) {
-        cancelSelectEmail();
-        mailboxDashBoardController.clearDashBoardAction();
-      } if (action is FilterMessageAction) {
-        filterMessagesAction(action.context, action.option);
-        mailboxDashBoardController.clearDashBoardAction();
-      } if (action is HandleEmailActionTypeAction) {
-        log('ThreadController::_onMailboxDashBoardListener(): ${action.listEmailSelected.length}');
-        pressEmailSelectionAction(action.context, action.emailAction, action.listEmailSelected);
-        mailboxDashBoardController.clearDashBoardAction();
-      }
-    });
-
-    mailboxDashBoardController.viewState.listen((state) {
-      log('ThreadController::_onMailboxDashBoardListener(): viewState: $state');
-      state.map((success) {
-        if (success is SearchEmailNewQuery){
-          mailboxDashBoardController.clearState();
-          _searchEmail();
-        } else if (success is MarkAsEmailReadSuccess
-            || success is MoveToMailboxSuccess
-            || success is MarkAsStarEmailSuccess
-            || success is DeleteEmailPermanentlySuccess
-            || success is SaveEmailAsDraftsSuccess
-            || success is RemoveEmailDraftsSuccess
-            || success is SendEmailSuccess
-            || success is UpdateEmailDraftsSuccess) {
-          _refreshEmailChanges();
+  void _initWorker() {
+    mailboxWorker = ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
+      if (mailbox is PresentationMailbox) {
+        if (_currentMailboxId != mailbox.id) {
+          _currentMailboxId = mailbox.id;
+          _resetToOriginalValue();
+          _getAllEmail();
         }
-      });
+      }
     });
+
+    searchWorker = ever(mailboxDashBoardController.searchState, (searchState) {
+      if (searchState is SearchState) {
+        if (searchState.searchStatus == SearchStatus.INACTIVE) {
+          emailListSearch.clear();
+        } else if (searchState.searchStatus == SearchStatus.ACTIVE) {
+          cancelSelectEmail();
+        }
+      }
+    });
+
+    dashboardActionWorker = ever(mailboxDashBoardController.dashBoardAction, (action) {
+      if (action is DashBoardAction) {
+        if (action is RefreshAllEmailAction) {
+          refreshAllEmail();
+          mailboxDashBoardController.clearDashBoardAction();
+        } else if (action is MarkAsReadAllEmailAction) {
+          markAsReadAllEmails();
+          mailboxDashBoardController.clearDashBoardAction();
+        } if (action is SelectionAllEmailAction) {
+          setSelectAllEmailAction();
+          mailboxDashBoardController.clearDashBoardAction();
+        } if (action is CancelSelectionAllEmailAction) {
+          cancelSelectEmail();
+          mailboxDashBoardController.clearDashBoardAction();
+        } if (action is FilterMessageAction) {
+          filterMessagesAction(action.context, action.option);
+          mailboxDashBoardController.clearDashBoardAction();
+        } if (action is HandleEmailActionTypeAction) {
+          pressEmailSelectionAction(action.context, action.emailAction, action.listEmailSelected);
+          mailboxDashBoardController.clearDashBoardAction();
+        }
+      }
+    });
+
+    viewStateWorker = ever(mailboxDashBoardController.viewState, (viewState) {
+      if (viewState is Either) {
+        viewState.map((success) {
+          if (success is SearchEmailNewQuery){
+            mailboxDashBoardController.clearState();
+            _searchEmail();
+          } else if (success is MarkAsEmailReadSuccess
+              || success is MoveToMailboxSuccess
+              || success is MarkAsStarEmailSuccess
+              || success is DeleteEmailPermanentlySuccess
+              || success is SaveEmailAsDraftsSuccess
+              || success is RemoveEmailDraftsSuccess
+              || success is SendEmailSuccess
+              || success is UpdateEmailDraftsSuccess) {
+            _refreshEmailChanges();
+          }
+        });
+      }
+    });
+  }
+
+  void _clearWorker() {
+    mailboxWorker.call();
+    dashboardActionWorker.call();
+    searchWorker.call();
+    viewStateWorker.call();
   }
 
   void _getAllEmail() {

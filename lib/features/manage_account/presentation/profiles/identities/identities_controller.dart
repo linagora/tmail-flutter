@@ -40,6 +40,8 @@ class IdentitiesController extends BaseController {
 
   final idIdentityAll = IdentityId(Id('all'));
 
+  late Worker accountIdWorker;
+
   IdentitiesController(
     this._getAllIdentitiesInteractor,
     this._deleteIdentityInteractor,
@@ -49,8 +51,14 @@ class IdentitiesController extends BaseController {
 
   @override
   void onInit() {
-    _onAccountDashBoardListener();
+    _initWorker();
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    _clearWorker();
+    super.onClose();
   }
 
   @override
@@ -83,13 +91,16 @@ class IdentitiesController extends BaseController {
   void onError(error) {
   }
 
-  void _onAccountDashBoardListener() {
-    _accountDashBoardController.accountId.listen((accountId) {
-      log('IdentitiesController::_onAccountDashBoardListener(): accountId: $accountId');
-      if (accountId != null) {
+  void _initWorker() {
+    accountIdWorker = ever(_accountDashBoardController.accountId, (accountId) {
+      if (accountId is AccountId) {
         _getAllIdentities(accountId);
       }
     });
+  }
+
+  void _clearWorker() {
+    accountIdWorker.call();
   }
 
   void _getAllIdentities(AccountId accountId) {
