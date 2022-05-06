@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class IdentityCreatorController extends BaseController {
@@ -36,6 +37,8 @@ class IdentityCreatorController extends BaseController {
 
   AccountId? accountId;
   UserProfile? userProfile;
+  IdentityActionType? actionType;
+  Identity? identity;
   String? _nameIdentity;
   String? _contentHtmlEditor;
 
@@ -53,7 +56,11 @@ class IdentityCreatorController extends BaseController {
   @override
   void onReady() {
     _getArguments();
-    _setDefaultValueForIdentity();
+    if (actionType == IdentityActionType.edit && identity != null) {
+      _setUpValueFromIdentity();
+    } else {
+      _setDefaultValueForIdentity();
+    }
     super.onReady();
   }
 
@@ -77,6 +84,8 @@ class IdentityCreatorController extends BaseController {
     if (arguments is IdentityCreatorArguments) {
       accountId = arguments.accountId;
       userProfile = arguments.userProfile;
+      actionType = arguments.actionType;
+      identity = arguments.identity;
     }
   }
 
@@ -86,10 +95,51 @@ class IdentityCreatorController extends BaseController {
     replyToOfIdentity.value = noneEmailAddress;
 
     if (userProfile != null && userProfile?.email.isNotEmpty == true) {
-      final userEmailAddress = EmailAddress(userProfile!.email, userProfile!.email);
+      final userEmailAddress = EmailAddress(null, userProfile!.email);
       listEmailAddressDefault.add(userEmailAddress);
       listEmailAddressOfReplyTo.add(userEmailAddress);
       emailOfIdentity.value = userEmailAddress;
+    }
+  }
+
+  void _setUpValueFromIdentity() {
+    Set<EmailAddress> listEmailAddress = {};
+    listEmailAddress.add(noneEmailAddress);
+
+    _nameIdentity = identity?.name ?? '';
+    inputNameIdentityController.text = identity?.name ?? '';
+
+    if (identity?.replyTo?.isNotEmpty == true) {
+      replyToOfIdentity.value = identity!.replyTo!.first;
+      listEmailAddress.add(identity!.replyTo!.first);
+    } else {
+      replyToOfIdentity.value = noneEmailAddress;
+    }
+
+    if (identity?.bcc?.isNotEmpty == true) {
+      bccOfIdentity.value = identity!.bcc!.first;
+      listEmailAddress.add(identity!.bcc!.first);
+    } else {
+      bccOfIdentity.value = noneEmailAddress;
+    }
+
+    if (identity?.email?.isNotEmpty == true) {
+      emailOfIdentity.value = EmailAddress(null, identity?.email!);
+      listEmailAddress.add(EmailAddress(null, identity?.email!));
+    }
+
+    listEmailAddressOfReplyTo.value = listEmailAddress.toList();
+    listEmailAddressDefault.value = listEmailAddress
+        .where((emailAddress) => emailAddress != noneEmailAddress)
+        .toList();
+
+    if (identity?.textSignature?.value.isNotEmpty == true) {
+      signaturePlainEditorController.text = identity?.textSignature?.value ?? '';
+    }
+
+    if (identity?.htmlSignature?.value.isNotEmpty == true) {
+      updateContentHtmlEditor(identity?.htmlSignature?.value ?? '');
+      signatureHtmlEditorController.setText(identity?.htmlSignature?.value ?? '');
     }
   }
 
