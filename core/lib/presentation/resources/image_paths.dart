@@ -103,6 +103,7 @@ class ImagePaths {
   String get icEditIdentity => _getImagePath('ic_edit_identity.svg');
   String get icDeleteDialogIdentity => _getImagePath('ic_delete_dialog_identity.svg');
   String get icDeleteDialogFailed => _getImagePath('ic_delete_dialog_failed.svg');
+  String get icEdit => _getImagePath('ic_edit.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

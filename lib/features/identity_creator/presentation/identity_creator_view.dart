@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/identity_creator/presentation/identity_cr
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_drop_list_field_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_field_builder.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
@@ -24,9 +25,16 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             backgroundColor: Colors.white,
             body: SafeArea(
               child: ClipRRect(
-                  borderRadius: _responsiveUtils.isMobile(context) && _responsiveUtils.isPortrait(context)
-                      ? const BorderRadius.only(topRight: Radius.circular(14), topLeft: Radius.circular(14))
-                      : const BorderRadius.all(Radius.zero),
+                  borderRadius: const BorderRadius.only(topRight: Radius.circular(14), topLeft: Radius.circular(14)),
+                  child: _buildBodyMobile(context)
+              ),
+            )
+        ),
+        landscapeMobile: Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.zero),
                   child: _buildBodyMobile(context)
               ),
             )
@@ -418,29 +426,34 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   )),
                   const SizedBox(height: 24),
                   Container(
-                    alignment: Alignment.centerRight,
+                    alignment: Alignment.center,
                     color: Colors.white,
                     child: Row(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          buildTextButton(
-                              AppLocalizations.of(context).cancel,
-                              textStyle: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: AppColor.colorTextButton),
-                              backgroundColor: AppColor.emailAddressChipColor,
-                              width: 128,
-                              height: 44,
-                              radius: 10,
-                              onTap: () => controller.closeView(context)),
+                          Expanded(
+                            child: buildTextButton(
+                                AppLocalizations.of(context).cancel,
+                                textStyle: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 17,
+                                    color: AppColor.colorTextButton),
+                                backgroundColor: AppColor.emailAddressChipColor,
+                                width: 128,
+                                height: 44,
+                                radius: 10,
+                                onTap: () => controller.closeView(context)),
+                          ),
                           const SizedBox(width: 12),
-                          buildTextButton(
-                              AppLocalizations.of(context).create,
-                              width: 128,
-                              height: 44,
-                              radius: 10,
-                              onTap: () => controller.createNewIdentity(context)),
+                          Expanded(
+                            child: Obx(() => buildTextButton(
+                                controller.actionType == IdentityActionType.create
+                                  ? AppLocalizations.of(context).create
+                                  : AppLocalizations.of(context).save,
+                                width: 128,
+                                height: 44,
+                                radius: 10,
+                                onTap: () => controller.createNewIdentity(context))),
+                          ),
                         ]
                     ),
                   )

@@ -1,0 +1,5 @@
+
+enum IdentityActionType {
+  create,
+  edit
+}
