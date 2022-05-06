@@ -6,7 +6,6 @@ import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
@@ -29,9 +28,17 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
         child: CenterTextBuilder()
           .key(const Key('login_message'))
           .text(loginState.viewState.fold(
-            (failure) => failure is AuthenticationUserFailure
-              ? AppLocalizations.of(context).unknown_error_login_message
-              : AppLocalizations.of(context).loginInputUrlMessage,
+            (failure) {
+              if (failure is LoginMissUrlAction) {
+                return AppLocalizations.of(context).requiredUrl;
+              } else if (failure is LoginMissUsernameAction) {
+                return AppLocalizations.of(context).requiredEmail;
+              } else if (failure is LoginMissPasswordAction) {
+                return AppLocalizations.of(context).requiredPassword;
+              } else {
+                return AppLocalizations.of(context).unknown_error_login_message;
+              }
+            },
             (success) {
               if (loginController.loginFormType.value == LoginFormType.credentialForm || kIsWeb) {
                 return AppLocalizations.of(context).loginInputCredentialMessage;
@@ -42,9 +49,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
             fontSize: 15,
             fontWeight: FontWeight.w400,
             color: loginState.viewState.fold(
-              (failure) => failure is AuthenticationUserFailure
-                ? AppColor.textFieldErrorBorderColor
-                : AppColor.colorNameEmail,
+              (failure) => AppColor.textFieldErrorBorderColor,
               (success) => AppColor.colorNameEmail)))
           .build()
       )

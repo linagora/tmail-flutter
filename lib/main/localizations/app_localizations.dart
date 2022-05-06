@@ -66,6 +66,21 @@ class AppLocalizations {
         name: 'signIn');
   }
 
+  String get requiredEmail {
+    return Intl.message('Email is required',
+        name: 'requiredEmail');
+  }
+
+  String get requiredPassword {
+    return Intl.message('Password is required',
+        name: 'requiredPassword');
+  }
+
+  String get requiredUrl {
+    return Intl.message('Server address is required',
+        name: 'requiredUrl');
+  }
+
   String get jmapBasedMailSolution {
     return Intl.message('JMAP-based\ncollaborative team mail solution',
         name: 'jmapBasedMailSolution');

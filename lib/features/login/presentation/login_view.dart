@@ -17,7 +17,6 @@ class LoginView extends BaseLoginView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       backgroundColor: AppColor.primaryLightColor,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
