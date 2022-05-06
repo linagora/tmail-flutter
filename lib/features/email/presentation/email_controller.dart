@@ -68,6 +68,8 @@ class EmailController extends BaseController {
   EmailId? _currentEmailId;
   List<EmailContent>? initialEmailContents;
 
+  late Worker emailWorker;
+
   PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
 
   PresentationEmail? get currentEmail => mailboxDashBoardController.selectedEmail.value;
@@ -85,12 +87,22 @@ class EmailController extends BaseController {
 
   @override
   void onInit() {
-    mailboxDashBoardController.selectedEmail.listen((presentationEmail) {
-      log('EmailController::onReady(): selectedEmail: ${presentationEmail.toString()}');
-      if (_currentEmailId != presentationEmail?.id) {
-        _currentEmailId = presentationEmail?.id;
-        _resetToOriginalValue();
-        if (presentationEmail != null) {
+    _initWorker();
+    super.onInit();
+  }
+
+  @override
+  void onClose() {
+    _clearWorker();
+    super.onClose();
+  }
+
+  void _initWorker() {
+    emailWorker = ever( mailboxDashBoardController.selectedEmail, (presentationEmail) {
+      if (presentationEmail is PresentationEmail) {
+        if (_currentEmailId != presentationEmail.id) {
+          _currentEmailId = presentationEmail.id;
+          _resetToOriginalValue();
           _getEmailContentAction(presentationEmail.id);
           if (!presentationEmail.hasRead) {
             markAsEmailRead(presentationEmail, ReadActions.markAsRead);
@@ -98,13 +110,10 @@ class EmailController extends BaseController {
         }
       }
     });
-    super.onInit();
   }
 
-  @override
-  void onClose() {
-    mailboxDashBoardController.selectedEmail.close();
-    super.onClose();
+  void _clearWorker() {
+    emailWorker.call();
   }
 
   void _getEmailContentAction(EmailId emailId) async {
