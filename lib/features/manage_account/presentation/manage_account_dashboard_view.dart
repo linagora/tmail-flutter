@@ -121,7 +121,10 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           ..addOnTapAvatarActionWithPositionClick((position) =>
               controller.openPopupMenuAction(context, position, popupMenuUserSettingActionTile(context,
                   controller.userProfile.value,
-                  onLogoutAction: () => controller.logoutAction(),
+                  onLogoutAction: ()  {
+                    popBack();
+                    controller.logoutAction();
+                  },
                   onSettingAction: ()  {
                     popBack();
                     controller.goToSettings();
