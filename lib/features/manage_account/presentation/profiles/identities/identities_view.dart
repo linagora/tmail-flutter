@@ -170,6 +170,15 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
 
   List<PopupMenuEntry> _popupMenuIdentityActionTiles(BuildContext context, Identity identity) {
     return [
+      PopupMenuItem(
+          padding: EdgeInsets.zero,
+          child: popupItem(_imagePaths.icEdit,
+              AppLocalizations.of(context).edit_identity,
+              styleName: const TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 17,
+                  color: Colors.black),
+              onCallbackAction: () => controller.goToEditIdentity(identity))),
       if (identity.mayDelete == true)
         PopupMenuItem(
             padding: EdgeInsets.zero,
@@ -186,6 +195,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
 
   List<Widget> _bottomSheetIdentityActionTiles(BuildContext context, Identity identity) {
     return <Widget>[
+      _editIdentityActionTile(context, identity),
       if (identity.mayDelete == true)
         _deleteIdentityActionTile(context, identity),
     ];
@@ -205,6 +215,22 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
                 ? const EdgeInsets.only(right: 12)
                 : EdgeInsets.zero)
         ..onActionClick((identity) => controller.openConfirmationDialogDeleteIdentityAction(context, identity)))
+      .build();
+  }
+
+  Widget _editIdentityActionTile(BuildContext context, Identity identity) {
+    return (IdentityBottomSheetActionTileBuilder(
+            const Key('edit_identity_action'),
+            SvgPicture.asset(_imagePaths.icEdit),
+            AppLocalizations.of(context).edit_identity,
+            identity,
+            iconLeftPadding: _responsiveUtils.isMobile(context)
+                ? const EdgeInsets.only(left: 12, right: 16)
+                : const EdgeInsets.only(right: 12),
+            iconRightPadding: _responsiveUtils.isMobile(context)
+                ? const EdgeInsets.only(right: 12)
+                : EdgeInsets.zero)
+        ..onActionClick((identity) => controller.goToEditIdentity(identity)))
       .build();
   }
 }

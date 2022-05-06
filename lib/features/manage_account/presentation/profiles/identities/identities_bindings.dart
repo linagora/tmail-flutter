@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/manage_account/data/repository/manage_acc
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_identity_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
 import 'package:uuid/uuid.dart';
@@ -28,6 +29,7 @@ class IdentitiesBindings extends BaseBindings {
       Get.find<DeleteIdentityInteractor>(),
       Get.find<CreateNewIdentityInteractor>(),
       Get.find<Uuid>(),
+      Get.find<EditIdentityInteractor>(),
     ));
   }
 
@@ -46,6 +48,7 @@ class IdentitiesBindings extends BaseBindings {
     Get.lazyPut(() => GetAllIdentitiesInteractor(Get.find<ManageAccountRepository>()));
     Get.lazyPut(() => CreateNewIdentityInteractor(Get.find<ManageAccountRepository>()));
     Get.lazyPut(() => DeleteIdentityInteractor(Get.find<ManageAccountRepository>()));
+    Get.lazyPut(() => EditIdentityInteractor(Get.find<ManageAccountRepository>()));
   }
 
   @override

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-05-05T09:06:54.039059",
+  "@@last_modified": "2022-05-06T15:08:19.074758",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1174,6 +1174,18 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "all_identities": "All identities",
+  "@all_identities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "default_value": "Default",
+  "@default_value": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "delete_identity": "Delete identity",
   "@delete_identity": {
     "type": "text",
@@ -1194,6 +1206,24 @@
   },
   "delete_failed": "Delete Failed",
   "@delete_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "edit_identity": "Edit identity",
+  "@edit_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_are_changed_your_identity_successfully": "You’ve changed your identity successfully",
+  "@you_are_changed_your_identity_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "save": "Save",
+  "@save": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
