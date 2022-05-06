@@ -174,7 +174,10 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
           ..addOnTapAvatarActionWithPositionClick((position) =>
               controller.openPopupMenuAction(context, position, popupMenuUserSettingActionTile(context,
                   controller.userProfile.value,
-                  onLogoutAction: () => controller.logoutAction(),
+                  onLogoutAction: () {
+                    popBack();
+                    controller.logoutAction();
+                  },
                   onSettingAction: () {
                     popBack();
                     controller.goToSettings();
