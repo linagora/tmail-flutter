@@ -166,7 +166,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
               .build()
           : const SizedBox.shrink()),
       Obx(() => !controller.isSearchActive() ? const SizedBox(width: 16) : const SizedBox.shrink()),
-      (AvatarBuilder()
+      Obx(() => (AvatarBuilder()
           ..text(controller.userProfile.value?.getAvatarText() ?? '')
           ..backgroundColor(Colors.white)
           ..textColor(Colors.black)
@@ -186,7 +186,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
               color: AppColor.colorShadowBgContentEmail,
               spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
           ..size(48))
-        .build(),
+        .build()),
       const SizedBox(width: 16)
     ]);
   }
