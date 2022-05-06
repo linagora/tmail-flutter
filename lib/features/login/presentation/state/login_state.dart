@@ -26,7 +26,19 @@ class LoginInitAction extends ViewState {
 }
 
 @immutable
-class LoginMissPropertiesAction extends Failure {
+class LoginMissUrlAction extends Failure {
+  @override
+  List<Object?> get props => [];
+}
+
+@immutable
+class LoginMissUsernameAction extends Failure {
+  @override
+  List<Object?> get props => [];
+}
+
+@immutable
+class LoginMissPasswordAction extends Failure {
   @override
   List<Object?> get props => [];
 }
