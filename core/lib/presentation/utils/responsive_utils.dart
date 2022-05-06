@@ -55,6 +55,6 @@ class ResponsiveUtils {
   double getWidthLoginButton() => _loginButtonWidth;
 
   bool isHeightShortest(BuildContext context) {
-    return MediaQuery.of(context).size.shortestSide < 600;
+    return MediaQuery.of(context).size.shortestSide < heightShortest;
   }
 }

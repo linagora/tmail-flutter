@@ -65,8 +65,12 @@ class LoginController extends GetxController {
     final password = _parsePassword(_passwordText);
     if (baseUri != null && userName != null && password != null) {
       _loginAction(baseUri, userName, password);
-    } else {
-      loginState.value = LoginState(Left(LoginMissPropertiesAction()));
+    } else if (baseUri == null) {
+      loginState.value = LoginState(Left(LoginMissUrlAction()));
+    } else if (userName == null) {
+      loginState.value = LoginState(Left(LoginMissUsernameAction()));
+    } else if (password == null) {
+      loginState.value = LoginState(Left(LoginMissPasswordAction()));
     }
   }
 
