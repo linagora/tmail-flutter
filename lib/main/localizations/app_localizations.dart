@@ -1259,4 +1259,20 @@ class AppLocalizations {
     return Intl.message('Delete Failed',
         name: 'delete_failed');
   }
+
+  String get edit_identity {
+    return Intl.message('Edit identity',
+        name: 'edit_identity');
+  }
+
+  String get you_are_changed_your_identity_successfully {
+    return Intl.message('You’ve changed your identity successfully',
+        name: 'you_are_changed_your_identity_successfully');
+  }
+
+  String get save {
+    return Intl.message(
+        'Save',
+        name: 'save');
+  }
 }

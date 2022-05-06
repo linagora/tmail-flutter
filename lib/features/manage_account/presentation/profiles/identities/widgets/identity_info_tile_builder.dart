@@ -42,22 +42,28 @@ class IdentityInfoTileBuilder extends StatelessWidget {
               padding: const EdgeInsets.only(left: 12, right: 8),
               child: Row(children: [
                 if (_identity?.mayDelete == false)
-                  Expanded(child: Row(children: [
-                    Text(_identity?.name ?? '',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 17,
-                            color: Colors.black)),
-                    const SizedBox(width: 10),
-                    Expanded(child: Text(
-                        '(${AppLocalizations.of(context).default_value})',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15,
-                            color: AppColor.colorHintSearchBar)))
+                  Expanded(child: Wrap(children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Text(_identity?.name ?? '',
+                          maxLines: 1,
+                          overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 17,
+                              color: Colors.black))),
+                    Text('(${AppLocalizations.of(context).default_value})',
+                      maxLines: 1,
+                      overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 15,
+                          color: AppColor.colorHintSearchBar))
                   ]))
                 else
                   Expanded(child: Text(_identity?.name ?? '',
+                      maxLines: 1,
+                      overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
                       style: const TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 17,

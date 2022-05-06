@@ -10,13 +10,17 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_identity_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/edit_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_identity_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -33,6 +37,7 @@ class IdentitiesController extends BaseController {
   final CreateNewIdentityInteractor _createNewIdentityInteractor;
   final Uuid _uuid;
   final DeleteIdentityInteractor _deleteIdentityInteractor;
+  final EditIdentityInteractor _editIdentityInteractor;
 
   final identitySelected = Rxn<Identity>();
   final listAllIdentities = <Identity>[].obs;
@@ -45,6 +50,7 @@ class IdentitiesController extends BaseController {
     this._deleteIdentityInteractor,
     this._createNewIdentityInteractor,
     this._uuid,
+    this._editIdentityInteractor,
   );
 
   @override
@@ -74,6 +80,8 @@ class IdentitiesController extends BaseController {
             _createNewIdentitySuccess(success);
           } else if (success is DeleteIdentitySuccess) {
             _deleteIdentitySuccess(success);
+          } else if (success is EditIdentitySuccess) {
+            _editIdentitySuccess(success);
           }
         }
     );
@@ -261,5 +269,39 @@ class IdentitiesController extends BaseController {
               ..onConfirmButtonAction('${AppLocalizations.of(context).got_it}!', () => popBack()))
             .build());
     }
+  }
+
+  void goToEditIdentity(Identity identity) async {
+    popBack();
+
+    final accountId = _accountDashBoardController.accountId.value;
+    final userProfile = _accountDashBoardController.userProfile.value;
+    if (accountId != null && userProfile != null) {
+      final newIdentity = await push(
+          AppRoutes.IDENTITY_CREATOR,
+          arguments: IdentityCreatorArguments(
+              accountId,
+              userProfile,
+              identity: identity,
+              actionType: IdentityActionType.edit));
+
+      log('IdentitiesController::goToEditIdentity(): $newIdentity');
+      _editIdentityAction(accountId, newIdentity);
+    }
+  }
+
+  void _editIdentityAction(AccountId accountId, EditIdentityRequest identityRequest) async {
+    consumeState(_editIdentityInteractor.execute(accountId, identityRequest));
+  }
+
+  void _editIdentitySuccess(EditIdentitySuccess success) {
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          message: AppLocalizations.of(currentContext!).you_are_changed_your_identity_successfully,
+          icon: _imagePaths.icSelected);
+    }
+
+    _refreshAllIdentities();
   }
 }
