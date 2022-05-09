@@ -1,6 +1,10 @@
 import 'package:core/presentation/resources/assets_paths.dart';
 
 class ImagePaths {
+  String get icClockRecentSearch => _getImagePath('ic_clock_recent_search.svg');
+  String get icAttachmentsFilter => _getImagePath('ic_attachments_filter.svg');
+  String get icCalendarFilter => _getImagePath('ic_calendar_filter.svg');
+  String get icProfileFilter => _getImagePath('ic_profile_filter.svg');
   String get icSearch => _getImagePath('ic_search.svg');
   String get icMailboxAllMail => _getImagePath('ic_mailbox_allmail.svg');
   String get icMailboxTemplate => _getImagePath('ic_mailbox_template.svg');

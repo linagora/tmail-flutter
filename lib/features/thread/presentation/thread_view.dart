@@ -41,51 +41,42 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
           Expanded(child: SafeArea(
               right: _responsiveUtils.isLandscapeMobile(context),
               left: _responsiveUtils.isLandscapeMobile(context),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Obx(() => !controller.isSearchActive()
-                        && ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)
-                      ? _buildAppBarNormal(context)
-                      : const SizedBox.shrink()),
-                    _buildSearchInputFormForMobile(context),
-                    Container(
-                        color: BuildUtils.isWeb ? AppColor.colorBgDesktop : Colors.white,
-                        padding: EdgeInsets.zero,
-                        child: _buildSearchButtonViewForMobile(context)),
-                    Obx(() => controller.isMailboxTrash && controller.emailList.isNotEmpty && !controller.isSearchActive()
-                        ? _buildEmptyTrashButton(context)
-                        : const SizedBox.shrink()),
-                    Expanded(child: Container(
-                        color: BuildUtils.isWeb ? AppColor.colorBgDesktop : Colors.white,
-                        padding: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
-                            ? const EdgeInsets.only(left: 32, right: 24, top: 16, bottom: 24)
-                            : EdgeInsets.zero,
-                        child: Stack(children: [
-                          Container(
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  borderRadius: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
-                                      ? BorderRadius.circular(20)
-                                      : null,
-                                  border: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
-                                      ? Border.all(color: AppColor.colorBorderBodyThread, width: 1)
-                                      : null,
-                                  color: Colors.white),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _buildStatusResultSearch(context),
-                                    _buildLoadingView(),
-                                    Expanded(child: _buildListEmail(context)),
-                                    _buildLoadingViewLoadMore(),
-                                  ]
-                              )
-                          ),
-                          _buildSuggestionBox(context)
-                        ]))),
-                    _buildListButtonSelectionForMobile(context),
-                  ]
+              child: Stack(
+                children: [
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Obx(() => !controller.isSearchActive()
+                            && ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)
+                          ? _buildAppBarNormal(context)
+                          : const SizedBox.shrink()),
+                        _buildSearchInputFormForMobile(context),
+                        Container(
+                            color: BuildUtils.isWeb ? AppColor.colorBgDesktop : Colors.white,
+                            padding: EdgeInsets.zero,
+                            child: _buildSearchButtonViewForMobile(context)),
+                        Obx(() => controller.isMailboxTrash && controller.emailList.isNotEmpty && !controller.isSearchActive()
+                            ? _buildEmptyTrashButton(context)
+                            : const SizedBox.shrink()),
+                        Expanded(child: Container(
+                            color: BuildUtils.isWeb ? AppColor.colorBgDesktop : Colors.white,
+                            padding: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
+                                ? const EdgeInsets.only(left: 32, right: 24, top: 16, bottom: 24)
+                                : EdgeInsets.zero,
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildStatusResultSearch(context),
+                                  _buildLoadingView(),
+                                  Expanded(child: _buildListEmail(context)),
+                                  _buildLoadingViewLoadMore(),
+                                ]
+                            ))),
+                        _buildListButtonSelectionForMobile(context),
+                      ]
+                  ),
+                  _buildSuggestionBox(context),
+                ],
               )
           ))
         ]),
@@ -428,16 +419,33 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
   }
 
   Widget _buildSuggestionBox(BuildContext context) {
-    return Obx(() => controller.mailboxDashBoardController.suggestionSearch.isNotEmpty
-      ? (SuggestionBoxWidget(
-              context,
-              _imagePaths,
-              controller.mailboxDashBoardController.suggestionSearch)
-          ..addOnSelectedSuggestion((suggestion) =>
-              controller.mailboxDashBoardController.searchEmail(context, suggestion)))
-        .build()
-      : const SizedBox.shrink()
-    );
+    return Obx(() {
+      if (controller.mailboxDashBoardController.recentSearchs.isNotEmpty 
+          && controller.isSearchActive()) {
+        if (controller
+                .mailboxDashBoardController.searchInputKey.currentContext !=
+            null) {
+          RenderBox box = controller
+              .mailboxDashBoardController.searchInputKey.currentContext
+              ?.findRenderObject() as RenderBox;
+          Offset position = box.localToGlobal(Offset.zero);
+          return Positioned(
+            left: position.dx - 256,
+            width: box.size.width * 0.75,
+            child: (SuggestionBoxWidget(context, _imagePaths,
+                    controller.mailboxDashBoardController.recentSearchs)
+                  ..addOnSelectedRecentSearch((searchValue) => controller
+                      .mailboxDashBoardController
+                      .searchEmail(context, searchValue))
+                  ..addOnSelectedSuggestion((suggestion) => controller
+                      .mailboxDashBoardController
+                      .searchEmail(context, suggestion)))
+                .build(),
+          );
+        }
+      }
+      return const SizedBox.shrink();
+    });
   }
 
   Widget _buildStatusResultSearch(BuildContext context) {

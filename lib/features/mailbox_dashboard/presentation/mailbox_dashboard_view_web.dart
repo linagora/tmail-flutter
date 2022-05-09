@@ -157,7 +157,10 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       }),
       const SizedBox(width: 16),
       Obx(() => !controller.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
-      Obx(() => controller.isSearchActive() ? Expanded(child: _buildSearchForm(context)) : const SizedBox.shrink()),
+      Container(
+        key: controller.searchInputKey,
+        child: Obx(() => controller.isSearchActive() ? Expanded(child: _buildSearchForm(context)) : const SizedBox.shrink())
+      ),
       Obx(() => !controller.isSearchActive()
           ? (SearchBarView(_imagePaths)
                 ..hintTextSearch(AppLocalizations.of(context).search_emails)

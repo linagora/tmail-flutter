@@ -66,12 +66,14 @@ class MailboxDashBoardController extends ReloadableController {
   final userProfile = Rxn<UserProfile>();
   final searchState = SearchState.initial().obs;
   final suggestionSearch = <String>[].obs;
+  final recentSearchs = <String>[].obs;
   final dashBoardAction = Rxn<UIAction>();
   final routePath = AppRoutes.MAILBOX_DASHBOARD.obs;
   final appInformation = Rxn<PackageInfo>();
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final filterMessageOption = FilterMessageOption.all.obs;
   final listEmailSelected = <PresentationEmail>[].obs;
+  final searchInputKey = GlobalKey();
 
   SearchQuery? searchQuery;
   Session? sessionCurrent;
@@ -288,10 +290,19 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void searchEmail(BuildContext context, String value) {
+    saveSearchQuery(value);
     searchQuery = SearchQuery(value);
     dispatchState(Right(SearchEmailNewQuery(searchQuery ?? SearchQuery.initial())));
     clearSuggestionSearch();
     FocusScope.of(context).unfocus();
+  }
+
+  void saveSearchQuery(String value) {
+    recentSearchs.value = recentSearchs.toSet().toList();
+    if (recentSearchs.length == 10) {
+      recentSearchs.add(value);
+    }
+    recentSearchs.add(value);
   }
 
   void _saveEmailAsDraftsSuccess(SaveEmailAsDraftsSuccess success) {
