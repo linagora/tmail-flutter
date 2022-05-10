@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
+typedef OnSearchPressed = Function();
 typedef OnCancelSearchPressed = Function();
 typedef OnClearTextSearchAction = Function();
 typedef OnTextChangeSearchAction = Function(String);
 typedef OnSearchTextAction = Function(String);
 
 class SearchAppBarWidget {
+
+OnSearchPressed? _onSearchPressed;
  OnCancelSearchPressed? _onCancelSearchPressed;
  OnTextChangeSearchAction? _onTextChangeSearchAction;
  OnClearTextSearchAction? _onClearTextSearchAction;
@@ -45,6 +48,10 @@ class SearchAppBarWidget {
        this.hasSearchButton = false,
      }
   );
+
+  void addOnCSearchPressed(OnSearchPressed onSearchPressed) {
+    _onSearchPressed = onSearchPressed;
+  }
 
   void addOnCancelSearchPressed(OnCancelSearchPressed onCancelSearchPressed) {
     _onCancelSearchPressed = onCancelSearchPressed;
@@ -135,6 +142,7 @@ class SearchAppBarWidget {
     return (TextFieldBuilder()
         ..key(const Key('search_input_form'))
         ..textInputAction(TextInputAction.done)
+        ..onTap(() => _onSearchPressed?.call())
         ..onChange((value) => _onTextChangeSearchAction?.call(value))
         ..onSubmitted((value) => _onSearchTextAction?.call(value))
         ..cursorColor(AppColor.colorTextButton)

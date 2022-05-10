@@ -65,6 +65,7 @@ class MailboxDashBoardController extends ReloadableController {
   final accountId = Rxn<AccountId>();
   final userProfile = Rxn<UserProfile>();
   final searchState = SearchState.initial().obs;
+  final shouldShowSuggestionDropdown = false.obs;
   final suggestionSearch = <String>[].obs;
   final recentSearchs = <String>[].obs;
   final dashBoardAction = Rxn<UIAction>();
@@ -257,6 +258,8 @@ class MailboxDashBoardController extends ReloadableController {
 
   bool isSearchActive() => searchState.value.searchStatus == SearchStatus.ACTIVE;
 
+  bool shouldDisplaySuggestion() => shouldShowSuggestionDropdown.value == true;
+
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
   void enableSearch() {
@@ -267,8 +270,17 @@ class MailboxDashBoardController extends ReloadableController {
     searchState.value = searchState.value.disableSearchState();
     searchQuery = SearchQuery.initial();
     clearSuggestionSearch();
+    closeSuggestionDropdown();
     searchInputController.clear();
     FocusManager.instance.primaryFocus?.unfocus();
+  }
+
+  void showSuggestionDropdown() {
+    shouldShowSuggestionDropdown.value = true;
+  }
+
+  void closeSuggestionDropdown() {
+    shouldShowSuggestionDropdown.value = false;
   }
 
   void clearSearchText() {
@@ -294,6 +306,7 @@ class MailboxDashBoardController extends ReloadableController {
     searchQuery = SearchQuery(value);
     dispatchState(Right(SearchEmailNewQuery(searchQuery ?? SearchQuery.initial())));
     clearSuggestionSearch();
+    closeSuggestionDropdown();
     FocusScope.of(context).unfocus();
   }
 

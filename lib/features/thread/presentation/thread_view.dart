@@ -75,7 +75,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
                         _buildListButtonSelectionForMobile(context),
                       ]
                   ),
-                  _buildSuggestionBox(context),
+                  if (!_responsiveUtils.isMobile(context))
+                    _buildSuggestionBox(context),
                 ],
               )
           ))
@@ -420,8 +421,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
 
   Widget _buildSuggestionBox(BuildContext context) {
     return Obx(() {
-      if (controller.mailboxDashBoardController.recentSearchs.isNotEmpty 
-          && controller.isSearchActive()) {
+      if (controller.shouldDisplaySuggestionDropdown()) {
         if (controller
                 .mailboxDashBoardController.searchInputKey.currentContext !=
             null) {
@@ -432,14 +432,11 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
           return Positioned(
             left: position.dx - 256,
             width: box.size.width * 0.75,
-            child: (SuggestionBoxWidget(context, _imagePaths,
+            child: (SuggestionBoxWidget(_imagePaths,
                     controller.mailboxDashBoardController.recentSearchs)
                   ..addOnSelectedRecentSearch((searchValue) => controller
                       .mailboxDashBoardController
-                      .searchEmail(context, searchValue))
-                  ..addOnSelectedSuggestion((suggestion) => controller
-                      .mailboxDashBoardController
-                      .searchEmail(context, suggestion)))
+                      .searchEmail(context, searchValue)))
                 .build(),
           );
         }

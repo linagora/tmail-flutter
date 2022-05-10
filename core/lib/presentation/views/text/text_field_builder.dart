@@ -5,6 +5,7 @@ typedef OnOpenSearchMailActionClick = void Function();
 
 class TextFieldBuilder {
   Key? _key;
+  VoidCallback? _onTap;
   ValueChanged<String>? _onTextChange;
   ValueChanged<String>? _onTextSubmitted;
   TextStyle? _textStyle;
@@ -20,6 +21,10 @@ class TextFieldBuilder {
 
   void key(Key key) {
     _key = key;
+  }
+
+  void onTap(VoidCallback onTap) {
+    _onTap = onTap;
   }
 
   void onChange(ValueChanged<String> onChange) {
@@ -47,7 +52,8 @@ class TextFieldBuilder {
   }
 
   void setText(String value) {
-    _textController = TextEditingController.fromValue(TextEditingValue(text: value));
+    _textController =
+        TextEditingController.fromValue(TextEditingValue(text: value));
   }
 
   void addController(TextEditingController? textEditingController) {
@@ -78,6 +84,7 @@ class TextFieldBuilder {
     return TextField(
       key: _key ?? Key('TextFieldBuilder'),
       onChanged: _onTextChange,
+      onTap: _onTap,
       cursorColor: _cursorColor ?? AppColor.primaryColor,
       controller: _textController,
       autocorrect: false,

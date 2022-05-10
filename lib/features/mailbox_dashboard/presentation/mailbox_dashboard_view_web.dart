@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_ba
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with NetworkConnectionMixin,
     UserSettingPopupMenuMixin, FilterEmailPopupMenuMixin {
@@ -156,11 +157,20 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
         }
       }),
       const SizedBox(width: 16),
-      Obx(() => !controller.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
-      Container(
-        key: controller.searchInputKey,
-        child: Obx(() => controller.isSearchActive() ? Expanded(child: _buildSearchForm(context)) : const SizedBox.shrink())
-      ),
+      Obx(() => !controller.isSearchActive()
+          ? const Spacer()
+          : const SizedBox.shrink()),
+      Obx(() => controller.isSearchActive()
+          ? Expanded(
+              child: VisibilityDetector(
+                  key: controller.searchInputKey,
+                  onVisibilityChanged: (visibilityInfo) {
+                    if (visibilityInfo.visibleFraction == 1) {
+                      controller.showSuggestionDropdown();
+                    }
+                  },
+                  child: _buildSearchForm(context)))
+          : const SizedBox.shrink()),
       Obx(() => !controller.isSearchActive()
           ? (SearchBarView(_imagePaths)
                 ..hintTextSearch(AppLocalizations.of(context).search_emails)
@@ -410,6 +420,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
         ..setMargin(const EdgeInsets.only(right: 10))
         ..setHeightSearchBar(45)
         ..setHintText(AppLocalizations.of(context).search_mail)
+        ..addOnCSearchPressed(() => controller.showSuggestionDropdown())
         ..addOnCancelSearchPressed(() {
           controller.disableSearch();
           controller.dispatchAction(CancelSelectionAllEmailAction());

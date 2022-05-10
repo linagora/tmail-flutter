@@ -122,6 +122,9 @@ dependencies:
   # hive
   hive: 2.0.4
 
+  # Detect whether widget is rendered
+  visibility_detector: 0.2.2
+
   # enough_html_editor: Compose email for Mobile & Tablet
   enough_html_editor:
     git:

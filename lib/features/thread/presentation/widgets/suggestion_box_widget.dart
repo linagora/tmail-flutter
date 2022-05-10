@@ -7,28 +7,15 @@ typedef OnSelectedSuggestion = Function(String);
 typedef OnSelectedRecentSeacrh = Function(String);
 
 class SuggestionBoxWidget {
-  OnSelectedSuggestion? _onSelectedSuggestion;
   OnSelectedRecentSeacrh? _onSelectedRecentSearch;
-
-  final BuildContext _context;
   final ImagePaths _imagePaths;
 
-  double? _elevation;
   final List<String> _listData;
 
   SuggestionBoxWidget(
-    this._context,
     this._imagePaths,
     this._listData,
   );
-
-  void setElevation(double elevation) {
-    _elevation = elevation;
-  }
-
-  void addOnSelectedSuggestion(OnSelectedSuggestion onSelectedSuggestion) {
-    _onSelectedSuggestion = onSelectedSuggestion;
-  }
 
   void addOnSelectedRecentSearch(OnSelectedSuggestion onSelectedRecentSearch) {
     _onSelectedRecentSearch = onSelectedRecentSearch;
