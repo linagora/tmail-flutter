@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_messag
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/suggestion_box_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
 
@@ -131,34 +132,50 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
   Widget _buildSearchInputFormForMobile(BuildContext context) {
     return Obx(() {
       if (controller.isSearchActive() &&
-          ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)) {
-        return Column(children: [
-          _buildSearchForm(context),
-          const Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
-        ]);
+          ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) ||
+              !BuildUtils.isWeb)) {
+        return VisibilityDetector(
+          key: controller.mailboxDashBoardController.searchInputKey,
+          onVisibilityChanged: (visibilityInfo) {
+            if (visibilityInfo.visibleFraction == 1) {
+              controller.mailboxDashBoardController.showSuggestionDropdown();
+            }
+          },
+          child: Column(children: [
+            _buildMobileSearchForm(context),
+            const Divider(
+                color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
+          ]),
+        );
       } else {
         return const SizedBox.shrink();
       }
     });
   }
 
-  Widget _buildSearchForm(BuildContext context) {
+  Widget _buildMobileSearchForm(BuildContext context) {
     return (SearchAppBarWidget(
-          context,
-          _imagePaths,
-          _responsiveUtils,
-          controller.searchQuery,
-          controller.mailboxDashBoardController.searchFocus,
-          controller.mailboxDashBoardController.searchInputController,
-          suggestionSearch: controller.mailboxDashBoardController.suggestionSearch,)
-      ..addDecoration(const BoxDecoration(color: Colors.white))
-      ..setMargin(const EdgeInsets.only(right: 10))
-      ..setHintText(AppLocalizations.of(context).search_mail)
-      ..addOnCancelSearchPressed(() => controller.disableSearch())
-      ..addOnClearTextSearchAction(() => controller.mailboxDashBoardController.clearSearchText())
-      ..addOnTextChangeSearchAction((query) => controller.mailboxDashBoardController.addSuggestionSearch(query))
-      ..addOnSearchTextAction((query) => controller.mailboxDashBoardController.searchEmail(context, query)))
-    .build();
+      context,
+      _imagePaths,
+      _responsiveUtils,
+      controller.searchQuery,
+      controller.mailboxDashBoardController.searchFocus,
+      controller.mailboxDashBoardController.searchInputController,
+      suggestionSearch: controller.mailboxDashBoardController.suggestionSearch,
+    )
+          ..addDecoration(const BoxDecoration(color: Colors.white))
+          ..setMargin(const EdgeInsets.only(right: 10))
+          ..addOnSearchPressed(() => controller.mailboxDashBoardController.showSuggestionDropdown())
+          ..setHintText(AppLocalizations.of(context).search_mail)
+          ..addOnCancelSearchPressed(() => controller.disableSearch())
+          ..addOnClearTextSearchAction(
+              () => controller.mailboxDashBoardController.clearSearchText())
+          ..addOnTextChangeSearchAction((query) =>
+              controller.mailboxDashBoardController.addSuggestionSearch(query))
+          ..addOnSearchTextAction((query) => controller
+              .mailboxDashBoardController
+              .searchEmail(context, query)))
+        .build();
   }
 
   Widget _buildAppBarNormal(BuildContext context) {
@@ -430,8 +447,15 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
               ?.findRenderObject() as RenderBox;
           Offset position = box.localToGlobal(Offset.zero);
           return Positioned(
-            left: position.dx - 256,
-            width: box.size.width * 0.75,
+            top: (BuildUtils.isWeb || _responsiveUtils.isDesktop(context))
+                ? 0
+                : (position.dy + box.size.height - 12),
+            left: (BuildUtils.isWeb || _responsiveUtils.isDesktop(context))
+                ? position.dx - 256
+                : 0,
+            width: (BuildUtils.isWeb || _responsiveUtils.isDesktop(context))
+                ? box.size.width * 0.75
+                : box.size.width,
             child: (SuggestionBoxWidget(_imagePaths,
                     controller.mailboxDashBoardController.recentSearchs)
                   ..addOnSelectedRecentSearch((searchValue) => controller

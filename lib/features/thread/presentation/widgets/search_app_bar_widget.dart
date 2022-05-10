@@ -49,7 +49,7 @@ OnSearchPressed? _onSearchPressed;
      }
   );
 
-  void addOnCSearchPressed(OnSearchPressed onSearchPressed) {
+  void addOnSearchPressed(OnSearchPressed onSearchPressed) {
     _onSearchPressed = onSearchPressed;
   }
 

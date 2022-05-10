@@ -16,23 +16,25 @@ void main() async {
     await MainBindings().dependencies();
     await HiveCacheConfig().setUp();
     await dotenv.load(fileName: 'env.file');
-    runApp(TMailApp());
+    runApp(const TMailApp());
   });
 }
 
 class TMailApp extends StatelessWidget {
+  const TMailApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: appTheme(),
-      supportedLocales: [
+      supportedLocales: const [
         Locale('en'),
         Locale('vi'),
         Locale('ru'),
         Locale('fr')
       ],
-      localizationsDelegates: [
+      localizationsDelegates: const [
         AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -46,7 +48,7 @@ class TMailApp extends StatelessWidget {
         }
         return supportedLocales.first;
       },
-      locale: Get.locale ?? Locale('en'),
+      locale: Get.locale ?? const Locale('en'),
       onGenerateTitle: (context) => AppLocalizations.of(context).page_name,
       defaultTransition: Transition.fade,
       initialRoute: AppRoutes.HOME,

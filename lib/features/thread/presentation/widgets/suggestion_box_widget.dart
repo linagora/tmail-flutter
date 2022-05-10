@@ -67,7 +67,7 @@ class SuggestionBoxWidget {
               color: Colors.grey.withOpacity(0.3),
               spreadRadius: 0.5,
               blurRadius: 2,
-              offset: const Offset(2, 2),
+              offset: const Offset(0, 0),
             ),
           ],
           color: Colors.white,

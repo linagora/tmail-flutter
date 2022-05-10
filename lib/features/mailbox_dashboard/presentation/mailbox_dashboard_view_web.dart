@@ -420,7 +420,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
         ..setMargin(const EdgeInsets.only(right: 10))
         ..setHeightSearchBar(45)
         ..setHintText(AppLocalizations.of(context).search_mail)
-        ..addOnCSearchPressed(() => controller.showSuggestionDropdown())
+        ..addOnSearchPressed(() => controller.showSuggestionDropdown())
         ..addOnCancelSearchPressed(() {
           controller.disableSearch();
           controller.dispatchAction(CancelSelectionAllEmailAction());

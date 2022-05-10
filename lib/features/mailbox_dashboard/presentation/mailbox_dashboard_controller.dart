@@ -258,7 +258,12 @@ class MailboxDashBoardController extends ReloadableController {
 
   bool isSearchActive() => searchState.value.searchStatus == SearchStatus.ACTIVE;
 
-  bool shouldDisplaySuggestion() => shouldShowSuggestionDropdown.value == true;
+  bool shouldDisplaySuggestion() {
+    if (recentSearchs.isNotEmpty) {
+      return true;
+    }
+    return false; 
+  }
 
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
@@ -313,8 +318,8 @@ class MailboxDashBoardController extends ReloadableController {
   void saveSearchQuery(String value) {
     recentSearchs.value = recentSearchs.toSet().toList();
     if (recentSearchs.length == 10) {
-      recentSearchs.add(value);
-    }
+      recentSearchs.removeAt(0);
+    } 
     recentSearchs.add(value);
   }
 
