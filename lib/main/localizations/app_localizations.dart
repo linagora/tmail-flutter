@@ -462,6 +462,34 @@ class AppLocalizations {
     );
   }
 
+  String get has_attachment {
+    return Intl.message(
+      'Has attachment',
+      name: 'has_attachment',
+    );
+  }
+
+  String get recent {
+    return Intl.message(
+      'Recent',
+      name: 'recent',
+    );
+  }
+
+  String get last_seven_days {
+    return Intl.message(
+      'Last 7 days',
+      name: 'last_seven_days',
+    );
+  }
+
+  String get from_me {
+    return Intl.message(
+      'From me',
+      name: 'from_me',
+    );
+  }
+
   String get prefix_suggestion_search {
     return Intl.message(
       'Search for',

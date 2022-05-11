@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/das
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/search_filter.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -68,6 +69,7 @@ class MailboxDashBoardController extends ReloadableController {
   final shouldShowSuggestionDropdown = false.obs;
   final suggestionSearch = <String>[].obs;
   final recentSearchs = <String>[].obs;
+  final searchFilters = <SearchFilter>[].obs;
   final dashBoardAction = Rxn<UIAction>();
   final routePath = AppRoutes.MAILBOX_DASHBOARD.obs;
   final appInformation = Rxn<PackageInfo>();
@@ -278,6 +280,10 @@ class MailboxDashBoardController extends ReloadableController {
     closeSuggestionDropdown();
     searchInputController.clear();
     FocusManager.instance.primaryFocus?.unfocus();
+  }
+
+  void handleOnTapFiler(SearchFilter searchFilterValue) {
+
   }
 
   void showSuggestionDropdown() {

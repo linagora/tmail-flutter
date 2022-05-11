@@ -1,0 +1,4 @@
+
+enum SearchFilter {
+  HAS_ATTACHMENT, LAST_SEVEN_DAYS, FROM_ME
+}

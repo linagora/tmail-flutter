@@ -1,58 +1,72 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/search_filter.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-typedef OnSelectedSuggestion = Function(String);
 typedef OnSelectedRecentSeacrh = Function(String);
+typedef OnTappedFilter = Function(SearchFilter);
 
 class SuggestionBoxWidget {
   OnSelectedRecentSeacrh? _onSelectedRecentSearch;
+  OnTappedFilter? _onTappedFilter;
+  
   final ImagePaths _imagePaths;
+  final BuildContext _context;
 
   final List<String> _listData;
 
   SuggestionBoxWidget(
+    this._context,
     this._imagePaths,
     this._listData,
   );
 
-  void addOnSelectedRecentSearch(OnSelectedSuggestion onSelectedRecentSearch) {
+  void addOnTappedFilter(OnTappedFilter onTappedFilter) {
+    _onTappedFilter = onTappedFilter;
+  }
+
+  void addOnSelectedRecentSearch(OnSelectedRecentSeacrh onSelectedRecentSearch) {
     _onSelectedRecentSearch = onSelectedRecentSearch;
   }
 
-  Widget suggestionFilterItem(String title, String iconPath) {
+  Widget suggestionFilterItem(String title, String iconPath, SearchFilter filterType) {
     return Padding(
       padding: const EdgeInsets.only(right: 4),
-      child: Container(
-        height: 32,
-        decoration: const BoxDecoration(
-            color: AppColor.colorBgSearchBar,
-            borderRadius: BorderRadius.all(
-              Radius.circular(10),
-            )),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            children: [
-              SvgPicture.asset(
-                iconPath,
-                color: AppColor.baseTextColor,
-                fit: BoxFit.fill,
-                width: 16,
-                height: 16,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontSize: 13, color: AppColor.colorTextButtonHeaderThread),
-              ),
-            ],
+      child: GestureDetector(
+        onTap: () {
+          _onTappedFilter?.call(filterType);
+        },
+        child: Container(
+          height: 32,
+          decoration: const BoxDecoration(
+              color: AppColor.colorBgSearchBar,
+              borderRadius: BorderRadius.all(
+                Radius.circular(10),
+              )),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                SvgPicture.asset(
+                  iconPath,
+                  color: AppColor.baseTextColor,
+                  fit: BoxFit.fill,
+                  width: 16,
+                  height: 16,
+                ),
+                const SizedBox(
+                  width: 4,
+                ),
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 13, color: AppColor.colorTextButtonHeaderThread),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -84,20 +98,20 @@ class SuggestionBoxWidget {
               Row(
                 children: [
                   suggestionFilterItem(
-                      'Has attachment', _imagePaths.icAttachmentsFilter),
+                      AppLocalizations.of(_context).has_attachment, _imagePaths.icAttachmentsFilter, SearchFilter.HAS_ATTACHMENT),
                   suggestionFilterItem(
-                      'Last 7 days', _imagePaths.icCalendarFilter),
-                  suggestionFilterItem('From me', _imagePaths.icProfileFilter),
+                      AppLocalizations.of(_context).last_seven_days, _imagePaths.icCalendarFilter, SearchFilter.LAST_SEVEN_DAYS),
+                  suggestionFilterItem(AppLocalizations.of(_context).from_me, _imagePaths.icProfileFilter, SearchFilter.FROM_ME),
                 ],
               ),
               const SizedBox(
                 height: 12,
               ),
-              const Text(
-                'Recent',
+              Text(
+                AppLocalizations.of(_context).recent,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 13, color: AppColor.colorTextButtonHeaderThread),
               ),
               Expanded(

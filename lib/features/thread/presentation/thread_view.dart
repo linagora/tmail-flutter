@@ -167,7 +167,9 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
           ..setMargin(const EdgeInsets.only(right: 10))
           ..addOnSearchPressed(() => controller.mailboxDashBoardController.showSuggestionDropdown())
           ..setHintText(AppLocalizations.of(context).search_mail)
-          ..addOnCancelSearchPressed(() => controller.disableSearch())
+          ..addOnCancelSearchPressed(() {
+            controller.disableSearch();
+          })
           ..addOnClearTextSearchAction(
               () => controller.mailboxDashBoardController.clearSearchText())
           ..addOnTextChangeSearchAction((query) =>
@@ -456,8 +458,11 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
             width: (BuildUtils.isWeb || _responsiveUtils.isDesktop(context))
                 ? box.size.width * 0.75
                 : box.size.width,
-            child: (SuggestionBoxWidget(_imagePaths,
+            child: (SuggestionBoxWidget(
+                  context
+                  ,_imagePaths,
                     controller.mailboxDashBoardController.recentSearchs)
+                  ..addOnTappedFilter((searchFilterType) => controller.mailboxDashBoardController.handleOnTapFiler(searchFilterType))
                   ..addOnSelectedRecentSearch((searchValue) => controller
                       .mailboxDashBoardController
                       .searchEmail(context, searchValue)))

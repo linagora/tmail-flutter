@@ -399,6 +399,9 @@
     }
   },
   "search_mail": "Search mail",
+  "has_attachment": "Has attachment",
+  "last_seven_days": "Last 7 days",
+  "from_me": "From me",
   "@search_mail": {
     "type": "text",
     "placeholders_order": [],
