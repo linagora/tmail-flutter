@@ -43,6 +43,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dar
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_recent_search_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
@@ -50,8 +51,10 @@ import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_t
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/store_recent_search_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/get_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
@@ -59,6 +62,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/store_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -83,6 +87,8 @@ class ThreadController extends BaseController {
   final LoadMoreEmailsInMailboxInteractor _loadMoreEmailsInMailboxInteractor;
   final SearchEmailInteractor _searchEmailInteractor;
   final SearchMoreEmailInteractor _searchMoreEmailInteractor;
+  final StoreRecentSearchInteractor _storeRecentSearchInteractor;
+  final GetRecentSearchInteractor _getRecentSearchInteractor;
   final DeleteMultipleEmailsPermanentlyInteractor _deleteMultipleEmailsPermanentlyInteractor;
   final EmptyTrashFolderInteractor _emptyTrashFolderInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -124,11 +130,15 @@ class ThreadController extends BaseController {
     this._emptyTrashFolderInteractor,
     this._markAsEmailReadInteractor,
     this._moveToMailboxInteractor,
+    this._getRecentSearchInteractor, 
+    this._storeRecentSearchInteractor,
   );
 
   @override
   void onInit() {
     _initWorker();
+    _onMailboxDashBoardListener();
+    consumeState(_getRecentSearchInteractor.execute());
     super.onInit();
   }
 
@@ -169,6 +179,13 @@ class ThreadController extends BaseController {
           _searchMoreEmailsSuccess(success);
         } else if (success is SearchingMoreState || success is LoadingMoreState) {
           _isLoadingMore = true;
+        } else if (success is GetRecentSearchSuccess) {
+          if (success.recentSearchs.isNotEmpty) {
+            mailboxDashBoardController.recentSearchs.value = success.recentSearchs;
+            mailboxDashBoardController.showSuggestionDropdown();
+          }
+        } else if (success is StoreRecentSearchSuccess) {
+          mailboxDashBoardController.recentSearchs.value = success.recentSearchs;
         }
       }
     );
@@ -839,7 +856,6 @@ class ThreadController extends BaseController {
 
   void _searchEmail() {
     emailListSearch.clear();
-
     if (_accountId != null && searchQuery != null) {
       consumeState(_searchEmailInteractor.execute(
         _accountId!,
@@ -848,6 +864,7 @@ class ThreadController extends BaseController {
         filter: EmailFilterCondition(text: searchQuery!.value),
         properties: ThreadConstants.propertiesDefault,
       ));
+      consumeState(_storeRecentSearchInteractor.execute(searchQuery!.value.trim())); 
     }
   }
 

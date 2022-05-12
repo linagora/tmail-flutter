@@ -1,10 +1,10 @@
 
-import 'package:tmail_ui_user/features/thread/domain/model/recent_search.dart';
+import 'package:tmail_ui_user/features/thread/data/model/recent_search_hive_cache.dart';
 
 abstract class RecentSearchDataSource {
 
-  Future<List<RecentSearch>> getAll(String? keyword);
+  Future<List<RecentSearchHiveCache>> getAll();
   
-  Future<bool> storeKeyword(String? keyword);
+  Future<List<RecentSearchHiveCache>> storeKeyword(String keyword);
 
 }

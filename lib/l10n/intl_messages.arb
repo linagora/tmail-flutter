@@ -428,6 +428,30 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "has_attachment": "Has attachment",
+  "@has_attachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recent": "Recent",
+  "@recent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last_seven_days": "Last 7 days",
+  "@last_seven_days": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "from_me": "From me",
+  "@from_me": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "prefix_suggestion_search": "Search for",
   "@prefix_suggestion_search": {
     "type": "text",

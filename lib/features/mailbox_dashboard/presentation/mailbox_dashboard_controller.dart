@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_use
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
+import 'package:tmail_ui_user/features/thread/data/model/recent_search_hive_cache.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_filter.dart';
@@ -68,7 +69,7 @@ class MailboxDashBoardController extends ReloadableController {
   final searchState = SearchState.initial().obs;
   final shouldShowSuggestionDropdown = false.obs;
   final suggestionSearch = <String>[].obs;
-  final recentSearchs = <String>[].obs;
+  final recentSearchs = <RecentSearchHiveCache>[].obs;
   final searchFilters = <SearchFilter>[].obs;
   final dashBoardAction = Rxn<UIAction>();
   final routePath = AppRoutes.MAILBOX_DASHBOARD.obs;
@@ -260,13 +261,8 @@ class MailboxDashBoardController extends ReloadableController {
 
   bool isSearchActive() => searchState.value.searchStatus == SearchStatus.ACTIVE;
 
-  bool shouldDisplaySuggestion() {
-    if (recentSearchs.isNotEmpty) {
-      return true;
-    }
-    return false; 
-  }
-
+  bool shouldDisplaySuggestion() => shouldShowSuggestionDropdown.value;
+  
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
   void enableSearch() {
@@ -326,7 +322,7 @@ class MailboxDashBoardController extends ReloadableController {
     if (recentSearchs.length == 10) {
       recentSearchs.removeAt(0);
     } 
-    recentSearchs.add(value);
+    recentSearchs.add(RecentSearchHiveCache(value: value, searchedAt: DateTime.now()));
   }
 
   void _saveEmailAsDraftsSuccess(SaveEmailAsDraftsSuccess success) {

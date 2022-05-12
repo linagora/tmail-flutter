@@ -11,15 +11,10 @@ class StoreRecentSearchInteractor {
 
   StoreRecentSearchInteractor(this.storeRecentSearchInteractor);
 
-  Stream<Either<Failure, Success>> execute(String? keyword) async* {
+  Stream<Either<Failure, Success>> execute(String keyword) async* {
     try {
-      yield Right<Failure, Success>(LoadingState());
-      final result = await storeRecentSearchInteractor.storeKeyword(keyword);
-      if (result) {
-        yield Right<Failure, Success>(StoreRecentSearchSuccess());
-      } else {
-        yield Left<Failure, Success>(StoreRecentSearchSuccessFailure(null));
-      }
+       final result = await storeRecentSearchInteractor.storeKeyword(keyword);
+       yield Right<Failure, Success>(StoreRecentSearchSuccess(result));
     } catch (e) {
       yield Left<Failure, Success>(StoreRecentSearchSuccessFailure(e));
     }

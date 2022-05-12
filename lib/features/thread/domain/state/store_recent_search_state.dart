@@ -1,11 +1,13 @@
 import 'package:core/core.dart';
+import 'package:tmail_ui_user/features/thread/data/model/recent_search_hive_cache.dart';
 
 class StoreRecentSearchSuccess extends UIState {
+  final List<RecentSearchHiveCache> recentSearchs;
 
-  StoreRecentSearchSuccess();
+  StoreRecentSearchSuccess(this.recentSearchs);
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [recentSearchs];
 }
 
 class StoreRecentSearchSuccessFailure extends FeatureFailure {

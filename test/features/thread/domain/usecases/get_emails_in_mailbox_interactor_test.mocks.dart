@@ -58,25 +58,6 @@ class MockThreadRepository extends _i1.Mock implements _i2.ThreadRepository {
               returnValue: Stream<_i4.EmailsResponse>.empty())
           as _i3.Stream<_i4.EmailsResponse>);
   @override
-  _i3.Stream<_i4.EmailsResponse> refreshAll(_i5.AccountId? accountId,
-          {_i6.UnsignedInt? limit,
-          Set<_i7.Comparator>? sort,
-          _i8.EmailFilter? emailFilter,
-          _i9.Properties? propertiesCreated,
-          _i9.Properties? propertiesUpdated}) =>
-      (super.noSuchMethod(
-              Invocation.method(#refreshAll, [
-                accountId
-              ], {
-                #limit: limit,
-                #sort: sort,
-                #emailFilter: emailFilter,
-                #propertiesCreated: propertiesCreated,
-                #propertiesUpdated: propertiesUpdated
-              }),
-              returnValue: Stream<_i4.EmailsResponse>.empty())
-          as _i3.Stream<_i4.EmailsResponse>);
-  @override
   _i3.Stream<_i4.EmailsResponse> refreshChanges(
           _i5.AccountId? accountId, _i10.State? currentState,
           {Set<_i7.Comparator>? sort,

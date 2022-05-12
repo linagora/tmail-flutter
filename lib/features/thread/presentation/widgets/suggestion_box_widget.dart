@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tmail_ui_user/features/thread/data/model/recent_search_hive_cache.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_filter.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -14,7 +15,7 @@ class SuggestionBoxWidget {
   final ImagePaths _imagePaths;
   final BuildContext _context;
 
-  final List<String> _listData;
+  final List<RecentSearchHiveCache> _listData;
 
   SuggestionBoxWidget(
     this._context,
@@ -123,7 +124,7 @@ class SuggestionBoxWidget {
                       return InkWell(
                         onTap: () {
                           if (_onSelectedRecentSearch != null) {
-                            _onSelectedRecentSearch!(_listData[index]);
+                            _onSelectedRecentSearch!(_listData[index].value.toString());
                           }
                         },
                         child: Padding(
@@ -144,7 +145,7 @@ class SuggestionBoxWidget {
                                   width: 8,
                                 ),
                                 Text(
-                                  _listData[index],
+                                  _listData[index].value.toString(),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(

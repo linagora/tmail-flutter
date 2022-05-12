@@ -165,7 +165,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
               child: VisibilityDetector(
                   key: controller.searchInputKey,
                   onVisibilityChanged: (visibilityInfo) {
-                    if (visibilityInfo.visibleFraction == 1) {
+                    if (visibilityInfo.visibleFraction == 1 && controller.recentSearchs.isNotEmpty) {
                       controller.showSuggestionDropdown();
                     }
                   },

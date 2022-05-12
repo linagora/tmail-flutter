@@ -137,7 +137,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
         return VisibilityDetector(
           key: controller.mailboxDashBoardController.searchInputKey,
           onVisibilityChanged: (visibilityInfo) {
-            if (visibilityInfo.visibleFraction == 1) {
+            if (visibilityInfo.visibleFraction == 1 && controller.mailboxDashBoardController.recentSearchs.isNotEmpty) {
               controller.mailboxDashBoardController.showSuggestionDropdown();
             }
           },

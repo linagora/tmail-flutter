@@ -10,13 +10,13 @@ class GetRecentSearchInteractor {
 
   GetRecentSearchInteractor(this.recentSearchRepository);
 
-  Stream<Either<Failure, Success>> execute(String? keyword) async* {
+  Stream<Either<Failure, Success>> execute() async* {
     try {
       yield Right<Failure, Success>(LoadingState());
 
-      final result = await recentSearchRepository.getAll(keyword);
+      final result = await recentSearchRepository.getAll();
       if (result.isNotEmpty) {
-        yield Right<Failure, Success>(GetRecentSearchSuccess());
+        yield Right<Failure, Success>(GetRecentSearchSuccess(result));
       } else {
         yield Left<Failure, Success>(GetRecentSearchFailure(null));
       }
