@@ -7,9 +7,6 @@ import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasou
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/composer_datasource_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/contact_datasource_impl.dart';
-import 'package:tmail_ui_user/features/composer/data/datasource_impl/local_autocomplete_datasource_impl.dart';
-import 'package:tmail_ui_user/features/composer/data/datasource_impl/local_composer_datasource_impl.dart';
-import 'package:tmail_ui_user/features/composer/data/local/email_address_database_manager.dart';
 import 'package:tmail_ui_user/features/composer/data/network/composer_api.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/auto_complete_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/composer_repository_impl.dart';
@@ -22,7 +19,6 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_conta
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
@@ -54,7 +50,6 @@ class ComposerBindings extends BaseBindings {
   }
 
   void _bindingsUtils() {
-    Get.lazyPut(() => EmailAddressDatabaseManager(Get.find<DatabaseClient>()));
     Get.lazyPut(() => const Uuid());
     Get.lazyPut(() => ManageAccountAPI(Get.find<jmap_http_client.HttpClient>()));
   }
@@ -62,8 +57,6 @@ class ComposerBindings extends BaseBindings {
   @override
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => ComposerDataSourceImpl(Get.find<ComposerAPI>()));
-    Get.lazyPut(() => LocalComposerDataSourceImpl(Get.find<EmailAddressDatabaseManager>()));
-    Get.lazyPut(() => LocalAutoCompleteDataSourceImpl(Get.find<EmailAddressDatabaseManager>()));
     Get.lazyPut(() => ContactDataSourceImpl());
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
@@ -84,13 +77,9 @@ class ComposerBindings extends BaseBindings {
 
   @override
   void bindingsRepositoryImpl() {
-    Get.lazyPut(() => ComposerRepositoryImpl({
-      DataSourceType.network: Get.find<ComposerDataSource>(),
-      DataSourceType.local: Get.find<LocalComposerDataSourceImpl>(),
-    }));
+    Get.lazyPut(() => ComposerRepositoryImpl(Get.find<ComposerDataSource>()));
     Get.lazyPut(() => AutoCompleteRepositoryImpl({
-      DataSourceType.network: Get.find<AutoCompleteDataSource>(),
-      DataSourceType.local: Get.find<LocalAutoCompleteDataSourceImpl>(),
+      Get.find<AutoCompleteDataSource>(),
     }));
     Get.lazyPut(() => ContactRepositoryImpl(Get.find<ContactDataSource>()));
     Get.lazyPut(() => EmailRepositoryImpl(
@@ -111,7 +100,6 @@ class ComposerBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => SaveEmailAddressesInteractor(Get.find<ComposerRepository>()));
     Get.lazyPut(() => GetAutoCompleteInteractor(Get.find<AutoCompleteRepository>()));
     Get.lazyPut(() => GetDeviceContactSuggestionsInteractor(Get.find<ContactRepository>()));
     Get.lazyPut(() => GetAutoCompleteWithDeviceContactInteractor(
@@ -132,7 +120,6 @@ class ComposerBindings extends BaseBindings {
   void bindingsController() {
     Get.lazyPut(() => ComposerController(
         Get.find<SendEmailInteractor>(),
-        Get.find<SaveEmailAddressesInteractor>(),
         Get.find<GetAutoCompleteInteractor>(),
         Get.find<GetAutoCompleteWithDeviceContactInteractor>(),
         Get.find<Uuid>(),
