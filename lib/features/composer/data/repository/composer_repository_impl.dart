@@ -1,23 +1,17 @@
 
-import 'package:core/core.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/model.dart';
+import 'package:model/email/attachment.dart';
+import 'package:model/upload/upload_request.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 
 class ComposerRepositoryImpl extends ComposerRepository {
 
-  final Map<DataSourceType, ComposerDataSource> composerDataSources;
+  final ComposerDataSource composerDataSource;
 
-  ComposerRepositoryImpl(this.composerDataSources);
-
-  @override
-  Future<bool> saveEmailAddresses(List<EmailAddress> listEmailAddress) {
-    return composerDataSources[DataSourceType.local]!.saveEmailAddresses(listEmailAddress);
-  }
+  ComposerRepositoryImpl(this.composerDataSource);
 
   @override
   Future<Attachment> uploadAttachment(UploadRequest uploadRequest) {
-    return composerDataSources[DataSourceType.network]!.uploadAttachment(uploadRequest);
+    return composerDataSource.uploadAttachment(uploadRequest);
   }
 }
