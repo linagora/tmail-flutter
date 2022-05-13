@@ -14,6 +14,6 @@ class HiveRecentSearchDataSource implements RecentSearchDataSource {
 
   @override
   Future<List<RecentSearchHiveCache>> storeKeyword(String keyword) async {
-      return _recentSearchClient.storeKeywordIntoHive(keyword);
+      return _recentSearchClient.storeRecentSeachToHive(keyword);
   }
 }

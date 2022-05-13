@@ -11,7 +11,7 @@ typedef OnTappedFilter = Function(SearchFilter);
 class SuggestionBoxWidget {
   OnSelectedRecentSeacrh? _onSelectedRecentSearch;
   OnTappedFilter? _onTappedFilter;
-  
+
   final ImagePaths _imagePaths;
   final BuildContext _context;
 
@@ -27,11 +27,13 @@ class SuggestionBoxWidget {
     _onTappedFilter = onTappedFilter;
   }
 
-  void addOnSelectedRecentSearch(OnSelectedRecentSeacrh onSelectedRecentSearch) {
+  void addOnSelectedRecentSearch(
+      OnSelectedRecentSeacrh onSelectedRecentSearch) {
     _onSelectedRecentSearch = onSelectedRecentSearch;
   }
 
-  Widget suggestionFilterItem(String title, String iconPath, SearchFilter filterType) {
+  Widget suggestionFilterItem(
+      String title, String iconPath, SearchFilter filterType) {
     return Padding(
       padding: const EdgeInsets.only(right: 4),
       child: GestureDetector(
@@ -64,7 +66,8 @@ class SuggestionBoxWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                      fontSize: 13, color: AppColor.colorTextButtonHeaderThread),
+                      fontSize: 13,
+                      color: AppColor.colorTextButtonHeaderThread),
                 ),
               ],
             ),
@@ -89,74 +92,87 @@ class SuggestionBoxWidget {
           borderRadius: const BorderRadius.all(
             Radius.circular(20),
           )),
-      child: SizedBox(
-        height: (_listData.length * 40 + 88),
+      child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(left: 12, top: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: SizedBox(
+            height: (_listData.length * 48) + 64,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    suggestionFilterItem(
+                        AppLocalizations.of(_context).has_attachment,
+                        _imagePaths.icAttachmentsFilter,
+                        SearchFilter.HAS_ATTACHMENT),
+                    suggestionFilterItem(
+                        AppLocalizations.of(_context).last_seven_days,
+                        _imagePaths.icCalendarFilter,
+                        SearchFilter.LAST_SEVEN_DAYS),
+                    suggestionFilterItem(
+                        AppLocalizations.of(_context).from_me,
+                        _imagePaths.icProfileFilter,
+                        SearchFilter.FROM_ME),
+                  ],
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  AppLocalizations.of(_context).recent,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColor.colorTextButtonHeaderThread),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Expanded(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: _listData.map((e) {
+                          return recentSearchItem(e);
+                        }).toList())),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget recentSearchItem(RecentSearchHiveCache data) {
+    return InkWell(
+      onTap: () {
+        if (_onSelectedRecentSearch != null) {
+          _onSelectedRecentSearch!(data.value.toString());
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: SizedBox(
+          height: 32,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  suggestionFilterItem(
-                      AppLocalizations.of(_context).has_attachment, _imagePaths.icAttachmentsFilter, SearchFilter.HAS_ATTACHMENT),
-                  suggestionFilterItem(
-                      AppLocalizations.of(_context).last_seven_days, _imagePaths.icCalendarFilter, SearchFilter.LAST_SEVEN_DAYS),
-                  suggestionFilterItem(AppLocalizations.of(_context).from_me, _imagePaths.icProfileFilter, SearchFilter.FROM_ME),
-                ],
+              SvgPicture.asset(
+                _imagePaths.icClockRecentSearch,
+                color: AppColor.colorDividerMailbox,
+                fit: BoxFit.fill,
+                width: 16,
+                height: 16,
               ),
               const SizedBox(
-                height: 12,
+                width: 8,
               ),
               Text(
-                AppLocalizations.of(_context).recent,
+                data.value.toString(),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontSize: 13, color: AppColor.colorTextButtonHeaderThread),
-              ),
-              Expanded(
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.only(top: 12),
-                    itemCount: _listData.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return InkWell(
-                        onTap: () {
-                          if (_onSelectedRecentSearch != null) {
-                            _onSelectedRecentSearch!(_listData[index].value.toString());
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: SizedBox(
-                            height: 24,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(
-                                  _imagePaths.icClockRecentSearch,
-                                  color: AppColor.colorDividerMailbox,
-                                  fit: BoxFit.fill,
-                                  width: 16,
-                                  height: 16,
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                Text(
-                                  _listData[index].value.toString(),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                      fontSize: 15, color: Colors.black),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
+                style: const TextStyle(fontSize: 15, color: Colors.black),
               ),
             ],
           ),

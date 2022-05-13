@@ -4,22 +4,32 @@ import 'package:tmail_ui_user/features/caching/config/hive_cache_client.dart';
 import 'package:tmail_ui_user/features/thread/data/model/recent_search_hive_cache.dart';
 
 class RecentSearchClient extends HiveCacheClient<RecentSearchHiveCache> {
+
   @override
   String get tableName => 'RecentSearchCache';
 
-  Future<List<RecentSearchHiveCache>> storeKeywordIntoHive(
+  Future<List<RecentSearchHiveCache>> storeRecentSeachToHive(
       String keyword) async {
     final boxRecentSearch = await openBox();
     if (keyword != '') {
+      final value =
+          RecentSearchHiveCache(value: keyword, searchedAt: DateTime.now());
+
       final listRecentSearch = await getAll();
+
+      listRecentSearch.asMap().forEach((index, recentSearch) async {
+          if (recentSearch.value == keyword) {
+            await boxRecentSearch.deleteAt(index);
+          }
+      });
+
       if (listRecentSearch.length == 10) {
-        boxRecentSearch.deleteAt(0);
+        await boxRecentSearch.deleteAt(0);
       }
-      insertItem(keyword,
-          RecentSearchHiveCache(value: keyword, searchedAt: DateTime.now()));
-      final array = await getAll();
-      print('Hive result: $array');
-      return array;
+
+      await boxRecentSearch.add(value);
+   
+      return await getAll();
     }
     return [];
   }
