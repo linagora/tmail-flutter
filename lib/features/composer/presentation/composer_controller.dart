@@ -32,7 +32,6 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_st
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_addresses_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
@@ -75,7 +74,6 @@ class ComposerController extends BaseController {
   final listIdentities = <Identity>[].obs;
 
   final SendEmailInteractor _sendEmailInteractor;
-  final SaveEmailAddressesInteractor _saveEmailAddressInteractor;
   final GetAutoCompleteInteractor _getAutoCompleteInteractor;
   final GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
   final Uuid _uuid;
@@ -130,7 +128,6 @@ class ComposerController extends BaseController {
 
   ComposerController(
     this._sendEmailInteractor,
-    this._saveEmailAddressInteractor,
     this._getAutoCompleteInteractor,
     this._getAutoCompleteWithDeviceContactInteractor,
     this._uuid,
@@ -545,7 +542,6 @@ class ComposerController extends BaseController {
     final userProfile = mailboxDashBoardController.userProfile.value;
     if (arguments != null && session != null && mapDefaultMailboxId.isNotEmpty
         && userProfile != null) {
-      _saveEmailAddress();
 
       final email = await _generateEmail(mapDefaultMailboxId, userProfile);
       final accountId = session.accounts.keys.first;
@@ -565,12 +561,6 @@ class ComposerController extends BaseController {
     } else {
       popBack();
     }
-  }
-
-  void _saveEmailAddress() async {
-    final listEmailAddressCanSave = <EmailAddress>{};
-    listEmailAddressCanSave.addAll(listToEmailAddress + listCcEmailAddress + listBccEmailAddress);
-    await _saveEmailAddressInteractor.execute(listEmailAddressCanSave.toList());
   }
 
   void _checkContactPermission() async {
