@@ -1,5 +1,5 @@
 name: contact
-description: A module implement request
+description: Contact Module
 publish_to: 'none'
 version: 0.0.1
 
@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  model:
+    path: ../model
 
   equatable: 2.0.3
 
@@ -38,6 +41,7 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
 
+  uses-material-design: true
   # To add assets to your package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

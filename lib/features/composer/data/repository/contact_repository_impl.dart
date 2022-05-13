@@ -2,7 +2,6 @@
 
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/auto_complete_pattern.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
 
 class ContactRepositoryImpl implements ContactRepository {

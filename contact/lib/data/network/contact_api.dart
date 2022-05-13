@@ -4,8 +4,8 @@ import 'package:contact/contact/autocomplete/autocomplete_tmail_contact_response
 import 'package:contact/contact/model/contact_filter.dart';
 import 'package:contact/contact/model/tmail_contact.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
+import 'package:model/autocomplete/auto_complete_pattern.dart';
 
 class ContactAPI {
 
@@ -13,11 +13,13 @@ class ContactAPI {
 
   ContactAPI(this._httpClient);
 
-  Future<List<TMailContact>> getAutoComplete(AccountId accountId, String word, {int? limit}) async {
+  Future<List<TMailContact>> getAutoComplete(AutoCompletePattern autoCompletePattern) async {
     final processingInvocation = ProcessingInvocation();
     final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
 
-    final autoCompleteMethod = AutoCompleteTMailContactMethod(accountId, ContactFilter(word));
+    final autoCompleteMethod = AutoCompleteTMailContactMethod(
+        autoCompletePattern.accountId!,
+        ContactFilter(autoCompletePattern.word));
 
     final autoCompleteInvocation = requestBuilder.invocation(autoCompleteMethod);
     final response = await (requestBuilder
