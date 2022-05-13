@@ -30,3 +30,4 @@ build/
 
 #generated file
 *.g.dart
+*.mocks.dart

@@ -1,5 +1,5 @@
 name: contact
-description: Contact Module
+description: TMail Contact extension
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -23,6 +23,8 @@ dependencies:
       url: https://github.com/linagora/jmap-dart-client.git
       ref: master
 
+  http_mock_adapter: 0.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -31,8 +33,6 @@ dev_dependencies:
   build_runner: 2.1.7
 
   json_serializable: 6.1.4
-
-  http_mock_adapter: 0.3.2
 
   mockito: 5.0.17
 # For information on the generic Dart part of this file, see the
