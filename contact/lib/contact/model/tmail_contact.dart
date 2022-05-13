@@ -1,5 +1,6 @@
 
 import 'package:contact/contact/model/contact.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'tmail_contact.g.dart';
@@ -33,4 +34,15 @@ class TMailContact extends Contact {
     firstname,
     surname,
     emailAddress];
+}
+
+extension TMailContactExtension on TMailContact {
+
+  String get fullName {
+    return '${firstname ?? ''} ${surname ?? ''}'.trim();
+  }
+
+  EmailAddress toEmailAddress() {
+    return EmailAddress(fullName, emailAddress);
+  }
 }

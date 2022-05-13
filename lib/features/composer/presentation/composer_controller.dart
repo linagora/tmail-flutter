@@ -26,7 +26,6 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/auto_complete_pattern.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
@@ -586,15 +585,16 @@ class ComposerController extends BaseController {
     }
   }
 
-  Future<List<EmailAddress>> getAutoCompleteSuggestion({String? word, bool? isAll}) async {
+  Future<List<EmailAddress>> getAutoCompleteSuggestion(
+      {required String word}) async {
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
       return await _getAutoCompleteWithDeviceContactInteractor
-        .execute(AutoCompletePattern(word: word, isAll: isAll))
+        .execute(AutoCompletePattern(word: word))
         .then((value) => value.fold(
           (failure) => <EmailAddress>[],
           (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
     }
-    return await _getAutoCompleteInteractor.execute(AutoCompletePattern(word: word, isAll: isAll))
+    return await _getAutoCompleteInteractor.execute(AutoCompletePattern(word: word))
       .then((value) => value.fold(
         (failure) => <EmailAddress>[],
         (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
