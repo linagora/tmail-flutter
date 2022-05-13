@@ -16,9 +16,9 @@ class AutoCompleteRepositoryImpl extends AutoCompleteRepository {
 
    await Future.wait(autoCompleteDataSources.map(
            (datasource) => datasource.getAutoComplete(autoCompletePattern)))
-       .then((newListEmails) {
-          for (var emailAddress in newListEmails) {
-            listEmailAddress.addAll(emailAddress);
+       .then((newListResult) {
+          for (var listEmails in newListResult) {
+            listEmailAddress.addAll(listEmails);
           }
         });
 

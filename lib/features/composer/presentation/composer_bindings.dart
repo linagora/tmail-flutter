@@ -1,4 +1,4 @@
-import 'package:contact/data/datasource/auto_complete_datasource.dart';
+import 'package:contact/contact_module.dart';
 import 'package:core/core.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
@@ -32,6 +33,7 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/manage_account_datasource_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
@@ -43,6 +45,10 @@ import 'package:uuid/uuid.dart';
 import 'package:jmap_dart_client/http/http_client.dart' as jmap_http_client;
 
 class ComposerBindings extends BaseBindings {
+
+  final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+  final Set<AutoCompleteDataSource> dataSources = {};
+
   @override
   void dependencies() {
     _bindingsUtils();
@@ -56,6 +62,12 @@ class ComposerBindings extends BaseBindings {
 
   @override
   void bindingsDataSourceImpl() {
+    if (mailboxDashBoardController.sessionCurrent?.hasSupportAutoComplete == true) {
+      Get.lazyPut(() => ContactAPI(Get.find<jmap_http_client.HttpClient>()));
+      Get.lazyPut(() => TMailContactDataSourceImpl(Get.find<ContactAPI>()));
+      dataSources.add(Get.find<TMailContactDataSourceImpl>());
+    }
+
     Get.lazyPut(() => ComposerDataSourceImpl(Get.find<ComposerAPI>()));
     Get.lazyPut(() => ContactDataSourceImpl());
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
@@ -78,9 +90,7 @@ class ComposerBindings extends BaseBindings {
   @override
   void bindingsRepositoryImpl() {
     Get.lazyPut(() => ComposerRepositoryImpl(Get.find<ComposerDataSource>()));
-    Get.lazyPut(() => AutoCompleteRepositoryImpl({
-      Get.find<AutoCompleteDataSource>(),
-    }));
+    Get.lazyPut(() => AutoCompleteRepositoryImpl(dataSources));
     Get.lazyPut(() => ContactRepositoryImpl(Get.find<ContactDataSource>()));
     Get.lazyPut(() => EmailRepositoryImpl(
         Get.find<EmailDataSource>(),
