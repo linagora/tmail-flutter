@@ -309,20 +309,11 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void searchEmail(BuildContext context, String value) {
-    saveSearchQuery(value);
     searchQuery = SearchQuery(value);
     dispatchState(Right(SearchEmailNewQuery(searchQuery ?? SearchQuery.initial())));
     clearSuggestionSearch();
     closeSuggestionDropdown();
     FocusScope.of(context).unfocus();
-  }
-
-  void saveSearchQuery(String value) {
-    recentSearchs.value = recentSearchs.toSet().toList();
-    if (recentSearchs.length == 10) {
-      recentSearchs.removeAt(0);
-    } 
-    recentSearchs.add(RecentSearchHiveCache(value: value, searchedAt: DateTime.now()));
   }
 
   void _saveEmailAsDraftsSuccess(SaveEmailAsDraftsSuccess success) {

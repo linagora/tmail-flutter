@@ -861,7 +861,9 @@ class ThreadController extends BaseController {
         _accountId!,
         limit: ThreadConstants.defaultLimit,
         sort: _sortOrder,
-        filter: EmailFilterCondition(text: searchQuery!.value),
+        filter: EmailFilterCondition(
+          text: searchQuery!.value, 
+        inMailbox: _currentMailboxId),
         properties: ThreadConstants.propertiesDefault,
       ));
       consumeState(_storeRecentSearchInteractor.execute(searchQuery!.value.trim())); 
