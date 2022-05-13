@@ -1,11 +1,11 @@
 name: contact
 description: Contact Module
 publish_to: 'none'
-version: 0.0.1
+
+version: 1.0.0+1
 
 environment:
-  sdk: ">=2.16.1 <3.0.0"
-  flutter: ">=1.17.0"
+  sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
   flutter:

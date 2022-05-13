@@ -88,7 +88,7 @@ class ComposerController extends BaseController {
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
   List<EmailAddress> listBccEmailAddress = <EmailAddress>[];
-  ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.localContact;
+  ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
   HtmlEditorApi? htmlEditorApi;
   final html_editor_browser.HtmlEditorController htmlControllerBrowser =
     html_editor_browser.HtmlEditorController(processNewLineAsBr: true);
@@ -152,7 +152,10 @@ class ComposerController extends BaseController {
   void onReady() async {
     _initEmail();
     _getAllIdentities();
-    Future.delayed(const Duration(milliseconds: 500), () => _checkContactPermission());
+    if (!BuildUtils.isWeb) {
+      Future.delayed(const Duration(milliseconds: 500), () =>
+          _checkContactPermission());
+    }
     super.onReady();
   }
 
@@ -579,12 +582,13 @@ class ComposerController extends BaseController {
       {required String word}) async {
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
       return await _getAutoCompleteWithDeviceContactInteractor
-        .execute(AutoCompletePattern(word: word))
+        .execute(AutoCompletePattern(word: word, accountId: mailboxDashBoardController.accountId.value))
         .then((value) => value.fold(
           (failure) => <EmailAddress>[],
           (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
     }
-    return await _getAutoCompleteInteractor.execute(AutoCompletePattern(word: word))
+    return await _getAutoCompleteInteractor
+      .execute(AutoCompletePattern(word: word, accountId: mailboxDashBoardController.accountId.value))
       .then((value) => value.fold(
         (failure) => <EmailAddress>[],
         (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
