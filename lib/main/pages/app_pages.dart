@@ -48,8 +48,10 @@ class AppPages {
     GetPage(
       name: AppRoutes.COMPOSER,
       opaque: false,
-      page: () => DeferredWidget(composer.loadLibrary, () => composer.ComposerView()),
-      binding: ComposerBindings()),
+      page: () {
+        ComposerBindings().dependencies();
+        return DeferredWidget(composer.loadLibrary, () => composer.ComposerView());
+      }),
     GetPage(
       name: AppRoutes.DESTINATION_PICKER,
       opaque: false,

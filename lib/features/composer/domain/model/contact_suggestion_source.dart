@@ -1,4 +1,4 @@
 
 enum ContactSuggestionSource {
-  all, localContact, deviceContact
+  all, tMailContact, deviceContact
 }

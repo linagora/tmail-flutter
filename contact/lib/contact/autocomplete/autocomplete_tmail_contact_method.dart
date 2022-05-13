@@ -1,3 +1,4 @@
+import 'package:contact/contact/model/capability_contact.dart';
 import 'package:contact/contact/model/contact_filter.dart';
 import 'package:contact/core/method/request/autocomplete_method.dart';
 import 'package:jmap_dart_client/http/converter/account_id_converter.dart';
@@ -19,7 +20,7 @@ class AutoCompleteTMailContactMethod extends AutoCompleteMethod {
   @override
   Set<CapabilityIdentifier> get requiredCapabilities => {
     CapabilityIdentifier.jmapCore,
-    CapabilityIdentifier(Uri.parse('com:linagora:params:jmap:contact:autocomplete'))
+    capabilityContact
   };
 
   factory AutoCompleteTMailContactMethod.fromJson(Map<String, dynamic> json) {

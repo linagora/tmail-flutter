@@ -10,3 +10,5 @@ export 'data/datasource_impl/tmail_contact_datasource_impl.dart';
 
 export 'contact/autocomplete/autocomplete_tmail_contact_method.dart';
 export 'contact/autocomplete/autocomplete_tmail_contact_response.dart';
+
+export 'contact/model/capability_contact.dart';

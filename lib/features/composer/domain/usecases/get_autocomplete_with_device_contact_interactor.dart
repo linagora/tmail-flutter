@@ -12,7 +12,9 @@ class GetAutoCompleteWithDeviceContactInteractor {
   final GetAutoCompleteInteractor _getAutoCompleteInteractor;
   final GetDeviceContactSuggestionsInteractor _getDeviceContactSuggestionsInteractor;
 
-  GetAutoCompleteWithDeviceContactInteractor(this._getAutoCompleteInteractor, this._getDeviceContactSuggestionsInteractor);
+  GetAutoCompleteWithDeviceContactInteractor(
+      this._getAutoCompleteInteractor,
+      this._getDeviceContactSuggestionsInteractor);
 
   Future<Either<Failure, Success>> execute(AutoCompletePattern autoCompletePattern) async {
     try {
