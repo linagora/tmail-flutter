@@ -71,6 +71,9 @@ workflows:
             cd ../model
             flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
 
+            cd ../contact
+            flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
+
             cd ..
             flutter pub get && flutter pub run intl_generator:extract_to_arb --output-dir=./lib/l10n lib/main/localizations/app_localizations.dart
 
@@ -92,6 +95,9 @@ workflows:
     - flutter-test@1:
         inputs:
         - additional_params: model
+    - flutter-test@1:
+        inputs:
+        - additional_params: contact
     - certificate-and-profile-installer@1:
         is_always_run: true
     - set-xcode-build-number@1:
