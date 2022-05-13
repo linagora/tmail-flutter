@@ -1,6 +1,6 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/auto_complete_pattern.dart';
+import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/auto_complete_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 

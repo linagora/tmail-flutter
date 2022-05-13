@@ -3,17 +3,16 @@ import 'package:contacts_service/contacts_service.dart' as contact_service;
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/auto_complete_pattern.dart';
 
 class ContactDataSourceImpl extends ContactDataSource {
 
   @override
   Future<List<Contact>> getContactSuggestions(AutoCompletePattern autoCompletePattern) async {
-    if (autoCompletePattern.isAll == true) {
+    if (autoCompletePattern.word.isEmpty) {
       return <DeviceContact>[];
     } else {
       final suggestedList = await contact_service.ContactsService
-          .getContactsByEmailOrName(autoCompletePattern.word ?? '');
+          .getContactsByEmailOrName(autoCompletePattern.word);
       if (suggestedList.isNotEmpty) {
         return suggestedList.expand((contact) => _toDeviceContact(contact)).toList();
       }

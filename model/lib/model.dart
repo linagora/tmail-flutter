@@ -68,3 +68,6 @@ export 'contact/device_contact.dart';
 export 'upload/file_info.dart';
 export 'upload/upload_request.dart';
 export 'upload/upload_response.dart';
+
+// AutoComplete
+export 'autocomplete/auto_complete_pattern.dart';
