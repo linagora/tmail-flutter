@@ -1,3 +1,3 @@
 # contact
 
-Contact Module
+TMail Contact extension
