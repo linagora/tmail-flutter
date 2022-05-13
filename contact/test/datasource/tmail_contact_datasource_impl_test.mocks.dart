@@ -6,8 +6,8 @@ import 'dart:async' as _i3;
 
 import 'package:contact/contact/model/tmail_contact.dart' as _i4;
 import 'package:contact/data/network/contact_api.dart' as _i2;
-import 'package:jmap_dart_client/jmap/account_id.dart' as _i5;
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:model/autocomplete/auto_complete_pattern.dart' as _i5;
 
 // ignore_for_file: avoid_redundant_argument_values
 // ignore_for_file: avoid_setters_without_getters
@@ -28,10 +28,9 @@ class MockContactAPI extends _i1.Mock implements _i2.ContactAPI {
 
   @override
   _i3.Future<List<_i4.TMailContact>> getAutoComplete(
-          _i5.AccountId? accountId, String? word, {int? limit}) =>
+          _i5.AutoCompletePattern? autoCompletePattern) =>
       (super.noSuchMethod(
-              Invocation.method(
-                  #getAutoComplete, [accountId, word], {#limit: limit}),
+              Invocation.method(#getAutoComplete, [autoCompletePattern]),
               returnValue:
                   Future<List<_i4.TMailContact>>.value(<_i4.TMailContact>[]))
           as _i3.Future<List<_i4.TMailContact>>);

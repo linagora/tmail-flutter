@@ -1,11 +1,10 @@
+import 'package:contact/data/datasource/auto_complete_datasource.dart';
 import 'package:core/core.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/composer/data/datasource/autocomplete_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
-import 'package:tmail_ui_user/features/composer/data/datasource_impl/autocomplete_datasource_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/composer_datasource_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/contact_datasource_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/local_autocomplete_datasource_impl.dart';
@@ -64,7 +63,6 @@ class ComposerBindings extends BaseBindings {
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => ComposerDataSourceImpl(Get.find<ComposerAPI>()));
     Get.lazyPut(() => LocalComposerDataSourceImpl(Get.find<EmailAddressDatabaseManager>()));
-    Get.lazyPut(() => AutoCompleteDataSourceImpl());
     Get.lazyPut(() => LocalAutoCompleteDataSourceImpl(Get.find<EmailAddressDatabaseManager>()));
     Get.lazyPut(() => ContactDataSourceImpl());
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
@@ -78,7 +76,6 @@ class ComposerBindings extends BaseBindings {
   @override
   void bindingsDataSource() {
     Get.lazyPut<ComposerDataSource>(() => Get.find<ComposerDataSourceImpl>());
-    Get.lazyPut<AutoCompleteDataSource>(() => Get.find<AutoCompleteDataSourceImpl>());
     Get.lazyPut<ContactDataSource>(() => Get.find<ContactDataSourceImpl>());
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
