@@ -412,8 +412,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
     return (SearchAppBarWidget(context, _imagePaths, _responsiveUtils,
             controller.searchQuery,
             controller.searchFocus,
-            controller.searchInputController,
-            suggestionSearch: controller.suggestionSearch)
+            controller.searchInputController)
         ..addDecoration(const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10)),
             color: AppColor.colorBgSearchBar))
@@ -426,7 +425,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
           controller.dispatchAction(CancelSelectionAllEmailAction());
         })
         ..addOnClearTextSearchAction(() => controller.clearSearchText())
-        ..addOnTextChangeSearchAction((query) => controller.addSuggestionSearch(query))
+        ..addOnTextChangeSearchAction((query) => controller.getSuggestionSearch(query))
         ..addOnSearchTextAction((query) => controller.searchEmail(context, query)))
       .build();
   }

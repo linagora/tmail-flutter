@@ -24,7 +24,6 @@ OnSearchPressed? _onSearchPressed;
   final SearchQuery? _searchQuery;
   final TextEditingController? _searchInputController;
   final FocusNode? _searchFocusNode;
-  final List<String>? suggestionSearch;
   final bool hasBackButton;
   final bool hasSearchButton;
 
@@ -44,7 +43,6 @@ OnSearchPressed? _onSearchPressed;
     this._searchInputController,
      {
        this.hasBackButton = true,
-       this.suggestionSearch,
        this.hasSearchButton = false,
      }
   );
@@ -110,8 +108,6 @@ OnSearchPressed? _onSearchPressed;
               transform: Matrix4.translationValues(0.0, _responsiveUtils.isDesktop(_context) ? -2.0 : 0.0, 0.0),
               child: _buildSearchInputForm(),
             )),
-            if (suggestionSearch?.isNotEmpty == true || (_searchQuery != null && _searchQuery!.value.isNotEmpty))
-              _buildClearTextSearchButton(),
           ]
         )
       )
@@ -127,15 +123,6 @@ OnSearchPressed? _onSearchPressed;
            _onCancelSearchPressed!();
          }
        });
- }
-
- Widget _buildClearTextSearchButton() {
-    return buildIconWeb(
-        icon: _iconClearText ?? SvgPicture.asset(_imagePaths.icComposerClose, width: 18, height: 18, fit: BoxFit.fill),
-        onTap: () {
-          _searchInputController?.clear();
-          _onClearTextSearchAction?.call();
-        });
  }
 
   Widget _buildSearchInputForm() {

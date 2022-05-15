@@ -161,7 +161,6 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
       controller.searchQuery,
       controller.mailboxDashBoardController.searchFocus,
       controller.mailboxDashBoardController.searchInputController,
-      suggestionSearch: controller.mailboxDashBoardController.suggestionSearch,
     )
           ..addDecoration(const BoxDecoration(color: Colors.white))
           ..setMargin(const EdgeInsets.only(right: 10))
@@ -173,7 +172,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
           ..addOnClearTextSearchAction(
               () => controller.mailboxDashBoardController.clearSearchText())
           ..addOnTextChangeSearchAction((query) =>
-              controller.mailboxDashBoardController.addSuggestionSearch(query))
+              controller.mailboxDashBoardController.getSuggestionSearch(query))
           ..addOnSearchTextAction((query) => controller
               .mailboxDashBoardController
               .searchEmail(context, query)))
@@ -350,11 +349,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
       color: Colors.white,
       child: Obx(() {
         if (controller.isSearchActive()) {
-          if (controller.mailboxDashBoardController.suggestionSearch.isNotEmpty) {
-            return const SizedBox.shrink();
-          } else {
-            return _buildResultSearchEmails(context, controller.emailListSearch);
-          }
+          return _buildResultSearchEmails(context, controller.emailListSearch);
         } else {
           return _buildResultListEmail(context, controller.emailList);
         }
@@ -462,7 +457,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
                   context
                   ,_imagePaths,
                     controller.mailboxDashBoardController.recentSearchs)
-                  ..addOnTappedFilter((searchFilterType) => controller.mailboxDashBoardController.handleOnTapFiler(searchFilterType))
+                  ..addOnTappedFilter((searchFilterType) => controller.mailboxDashBoardController.handleOnTapFilter(searchFilterType))
                   ..addOnSelectedRecentSearch((searchValue) => controller
                       .mailboxDashBoardController
                       .searchEmail(context, searchValue)))

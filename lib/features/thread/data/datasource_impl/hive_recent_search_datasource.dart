@@ -8,8 +8,8 @@ class HiveRecentSearchDataSource implements RecentSearchDataSource {
   HiveRecentSearchDataSource(this._recentSearchClient);
 
   @override
-  Future<List<RecentSearchHiveCache>> getAll() async {
-    return await _recentSearchClient.getAll();
+  Future<List<RecentSearchHiveCache>> getAll(String keyword) async {
+    return await _recentSearchClient.getRecentSearchs(keyword);
   }
 
   @override

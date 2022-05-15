@@ -11,7 +11,7 @@ class RecentSearchClient extends HiveCacheClient<RecentSearchHiveCache> {
   Future<List<RecentSearchHiveCache>> storeRecentSeachToHive(
       String keyword) async {
     final boxRecentSearch = await openBox();
-    if (keyword != '') {
+    if (keyword.isNotEmpty) {
       final value =
           RecentSearchHiveCache(value: keyword, searchedAt: DateTime.now());
 
@@ -32,6 +32,12 @@ class RecentSearchClient extends HiveCacheClient<RecentSearchHiveCache> {
       return await getAll();
     }
     return [];
+  }
+
+  Future<List<RecentSearchHiveCache>> getRecentSearchs(String keyword) async {
+    final allRecentSearch = await getAll();
+    allRecentSearch.removeWhere((item) => item.value != null && !item.value!.contains(keyword));
+    return allRecentSearch;
   }
 
   @override

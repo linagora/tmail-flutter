@@ -1,4 +1,3 @@
-import 'package:contact/contact_module.dart';
 import 'package:core/core.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';

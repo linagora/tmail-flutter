@@ -8,8 +8,8 @@ class RecentSearchRepositoryImpl extends RecentSearchRepository {
   RecentSearchRepositoryImpl(this.recentSearchDataSource);
 
   @override
-  Future<List<RecentSearchHiveCache>> getAll() async {
-    return recentSearchDataSource.getAll();
+  Future<List<RecentSearchHiveCache>> getAll(String keyword) async {
+    return recentSearchDataSource.getAll(keyword);
   }
 
   @override

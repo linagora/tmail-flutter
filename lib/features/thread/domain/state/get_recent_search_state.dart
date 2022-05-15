@@ -8,8 +8,6 @@ class GetRecentSearchSuccess extends UIState {
 
   @override
   List<Object?> get props => [recentSearchs];
-
-  
 }
 
 class GetRecentSearchFailure extends FeatureFailure {

@@ -16,6 +16,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
@@ -70,6 +71,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_status.d
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'dart:async';
 
 class ThreadController extends BaseController {
 
@@ -138,7 +140,11 @@ class ThreadController extends BaseController {
   void onInit() {
     _initWorker();
     _onMailboxDashBoardListener();
-    consumeState(_getRecentSearchInteractor.execute());
+    mailboxDashBoardController.searchOnChange
+        .debounceTime(const Duration(milliseconds: 500))
+        .listen((queryString) {
+      consumeState(_getRecentSearchInteractor.execute(queryString));
+    });
     super.onInit();
   }
 
@@ -150,6 +156,11 @@ class ThreadController extends BaseController {
 
   @override
   void onClose() {
+    _searchDebounce?.cancel();
+    mailboxDashBoardController.selectedMailbox.close();
+    mailboxDashBoardController.dashBoardAction.close();
+    mailboxDashBoardController.viewState.close();
+    mailboxDashBoardController.searchState.close();
     listEmailController.dispose();
     _clearWorker();
     super.onClose();

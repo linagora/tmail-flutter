@@ -15,6 +15,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
@@ -68,9 +69,9 @@ class MailboxDashBoardController extends ReloadableController {
   final userProfile = Rxn<UserProfile>();
   final searchState = SearchState.initial().obs;
   final shouldShowSuggestionDropdown = false.obs;
-  final suggestionSearch = <String>[].obs;
   final recentSearchs = <RecentSearchHiveCache>[].obs;
   final searchFilters = <SearchFilter>[].obs;
+  final searchOnChange = BehaviorSubject<String>();
   final dashBoardAction = Rxn<UIAction>();
   final routePath = AppRoutes.MAILBOX_DASHBOARD.obs;
   final appInformation = Rxn<PackageInfo>();
@@ -272,14 +273,19 @@ class MailboxDashBoardController extends ReloadableController {
   void disableSearch() {
     searchState.value = searchState.value.disableSearchState();
     searchQuery = SearchQuery.initial();
-    clearSuggestionSearch();
     closeSuggestionDropdown();
     searchInputController.clear();
     FocusManager.instance.primaryFocus?.unfocus();
   }
 
-  void handleOnTapFiler(SearchFilter searchFilterValue) {
+  void handleOnTapFilter(SearchFilter searchFilterValue) {
 
+  }
+
+  getSuggestionSearch(String query) {
+    if (query.trim().isNotEmpty) {
+      searchOnChange.add(query.trim());
+    }
   }
 
   void showSuggestionDropdown() {
@@ -292,26 +298,12 @@ class MailboxDashBoardController extends ReloadableController {
 
   void clearSearchText() {
     searchQuery = SearchQuery.initial();
-    clearSuggestionSearch();
     searchFocus.requestFocus();
-  }
-
-  void clearSuggestionSearch() {
-    suggestionSearch.clear();
-  }
-
-  void addSuggestionSearch(String query) {
-    if (query.trim().isNotEmpty) {
-      suggestionSearch.value = [query];
-    } else {
-      clearSearchText();
-    }
   }
 
   void searchEmail(BuildContext context, String value) {
     searchQuery = SearchQuery(value);
     dispatchState(Right(SearchEmailNewQuery(searchQuery ?? SearchQuery.initial())));
-    clearSuggestionSearch();
     closeSuggestionDropdown();
     FocusScope.of(context).unfocus();
   }
@@ -455,6 +447,7 @@ class MailboxDashBoardController extends ReloadableController {
     _emailReceiveManagerStreamSubscription.cancel();
     _connectivityStreamSubscription.cancel();
     searchInputController.dispose();
+    searchOnChange.close();
     searchFocus.dispose();
     super.onClose();
   }
