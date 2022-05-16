@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/get/get_identity_method.dart';
 import 'package:jmap_dart_client/jmap/identities/get/get_identity_response.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
@@ -19,10 +20,13 @@ class ManageAccountAPI {
 
   ManageAccountAPI(this._httpClient);
 
-  Future<IdentitiesResponse> getAllIdentities(AccountId accountId) async {
+  Future<IdentitiesResponse> getAllIdentities(AccountId accountId, {Properties? properties}) async {
     final processingInvocation = ProcessingInvocation();
     final jmapRequestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
     final getIdentityMethod = GetIdentityMethod(accountId);
+    if (properties != null) {
+      getIdentityMethod.addProperties(properties);
+    }
     final queryInvocation = jmapRequestBuilder.invocation(getIdentityMethod);
 
     final result = await (jmapRequestBuilder
@@ -85,10 +89,10 @@ class ManageAccountAPI {
     });
   }
 
-  Future<Identity> editIdentity(AccountId accountId, EditIdentityRequest identityRequest) async {
+  Future<bool> editIdentity(AccountId accountId, EditIdentityRequest editIdentityRequest) async {
     final setIdentityMethod = SetIdentityMethod(accountId)
       ..addUpdates({
-        identityRequest.identityId.id : PatchObject({})
+        editIdentityRequest.identityId.id : PatchObject(editIdentityRequest.identityRequest.toJson())
       });
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
@@ -105,7 +109,7 @@ class ManageAccountAPI {
         SetIdentityResponse.deserialize);
 
     return Future.sync(() async {
-      return setIdentityResponse!.updated![identityRequest.identityId]!;
+      return setIdentityResponse?.updated?.containsKey(editIdentityRequest.identityId.id) == true;
     }).catchError((error) {
       throw error;
     });
