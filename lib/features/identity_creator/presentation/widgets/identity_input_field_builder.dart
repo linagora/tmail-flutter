@@ -7,8 +7,6 @@ typedef OnChangeInputNameAction = Function(String? value);
 
 class IdentityInputFieldBuilder {
 
-  final BuildContext _context;
-  final ResponsiveUtils _responsiveUtils;
   final String _label;
   final String? _error;
   final TextEditingController? editingController;
@@ -19,8 +17,6 @@ class IdentityInputFieldBuilder {
   OnChangeInputNameAction? onChangeInputNameAction;
 
   IdentityInputFieldBuilder(
-    this._context,
-    this._responsiveUtils,
     this._label,
     this._error, {
     this.isMandatory = false,
@@ -48,8 +44,8 @@ class IdentityInputFieldBuilder {
           ..textStyle(const TextStyle(color: Colors.black, fontSize: 16))
           ..keyboardType(inputType ?? TextInputType.text)
           ..textDecoration((IdentityInputDecorationBuilder()
-                ..setContentPadding(EdgeInsets.symmetric(
-                    vertical: _responsiveUtils.isDesktop(_context) ? 16 : 12,
+                ..setContentPadding(const EdgeInsets.symmetric(
+                    vertical: BuildUtils.isWeb ? 16 : 12,
                     horizontal: 12))
                 ..setErrorText(_error))
               .build()))

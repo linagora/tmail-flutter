@@ -6,6 +6,7 @@ import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_drop_list_field_builder.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_field_no_editable_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_field_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -105,8 +106,13 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Padding(
             padding: const EdgeInsets.only(left: 24, top: 24),
-            child: Text(AppLocalizations.of(context).new_identity.inCaps,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Colors.black))),
+            child: Obx(() => Text(controller.actionType.value == IdentityActionType.create
+                    ? AppLocalizations.of(context).new_identity.inCaps
+                    : AppLocalizations.of(context).edit_identity.inCaps,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.black)))),
           const SizedBox(height: 8),
           Expanded(child: SingleChildScrollView(
             physics: const ClampingScrollPhysics(),
@@ -115,8 +121,6 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
               child: Column(children: [
                 Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Expanded(child: Obx(() => (IdentityInputFieldBuilder(
-                          context,
-                          _responsiveUtils,
                           AppLocalizations.of(context).name,
                           controller.errorNameIdentity.value,
                           editingController: controller.inputNameIdentityController,
@@ -125,14 +129,23 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                       ..addOnChangeInputNameAction((value) => controller.updateNameIdentity(context, value)))
                     .build())),
                   const SizedBox(width: 24),
-                  Expanded(child: Obx(() => (IdentityDropListFieldBuilder(
-                          _imagePaths,
+                  Expanded(child: Obx(() {
+                    if (controller.actionType.value == IdentityActionType.create) {
+                      return (IdentityDropListFieldBuilder(
+                            _imagePaths,
+                            AppLocalizations.of(context).email.inCaps,
+                            controller.emailOfIdentity.value,
+                            controller.listEmailAddressDefault)
+                        ..addOnSelectEmailAddressDropListAction((emailAddress) =>
+                            controller.updateEmailOfIdentity(emailAddress))
+                      ).build();
+                    } else {
+                      return IdentityFieldNoEditableBuilder(
                           AppLocalizations.of(context).email.inCaps,
-                          controller.emailOfIdentity.value,
-                          controller.listEmailAddressDefault)
-                      ..addOnSelectEmailAddressDropListAction((emailAddress) =>
-                          controller.updateEmailOfIdentity(emailAddress)))
-                    .build())),
+                          controller.emailOfIdentity.value
+                      ).build();
+                    }
+                  })),
                 ]),
                 const SizedBox(height: 24),
                 Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -265,12 +278,14 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                       radius: 10,
                       onTap: () => controller.closeView(context)),
                   const SizedBox(width: 12),
-                  buildTextButton(
-                      AppLocalizations.of(context).create,
+                  Obx(() => buildTextButton(
+                      controller.actionType.value == IdentityActionType.create
+                          ? AppLocalizations.of(context).create
+                          : AppLocalizations.of(context).save,
                       width: 128,
                       height: 44,
                       radius: 10,
-                      onTap: () => controller.createNewIdentity(context)),
+                      onTap: () => controller.createNewIdentity(context))),
                 ]
             ),
           )
@@ -299,8 +314,6 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                 padding: const EdgeInsets.all(24.0),
                 child: Column(children: [
                   Obx(() => (IdentityInputFieldBuilder(
-                          context,
-                          _responsiveUtils,
                           AppLocalizations.of(context).name,
                           controller.errorNameIdentity.value,
                           editingController: controller.inputNameIdentityController,
@@ -309,14 +322,23 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                       ..addOnChangeInputNameAction((value) => controller.updateNameIdentity(context, value)))
                     .build()),
                   const SizedBox(height: 24),
-                  Obx(() => (IdentityDropListFieldBuilder(
-                          _imagePaths,
+                  Obx(() {
+                    if (controller.actionType.value == IdentityActionType.create) {
+                      return (IdentityDropListFieldBuilder(
+                            _imagePaths,
+                            AppLocalizations.of(context).email.inCaps,
+                            controller.emailOfIdentity.value,
+                            controller.listEmailAddressDefault)
+                        ..addOnSelectEmailAddressDropListAction((emailAddress) =>
+                            controller.updateEmailOfIdentity(emailAddress))
+                      ).build();
+                    } else {
+                      return IdentityFieldNoEditableBuilder(
                           AppLocalizations.of(context).email.inCaps,
-                          controller.emailOfIdentity.value,
-                          controller.listEmailAddressDefault)
-                      ..addOnSelectEmailAddressDropListAction((emailAddress) =>
-                          controller.updateEmailOfIdentity(emailAddress)))
-                    .build()),
+                          controller.emailOfIdentity.value
+                      ).build();
+                    }
+                  }),
                   const SizedBox(height: 24),
                   Obx(() => (IdentityDropListFieldBuilder(
                           _imagePaths,
@@ -446,7 +468,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Obx(() => buildTextButton(
-                                controller.actionType == IdentityActionType.create
+                                controller.actionType.value == IdentityActionType.create
                                   ? AppLocalizations.of(context).create
                                   : AppLocalizations.of(context).save,
                                 width: 128,
