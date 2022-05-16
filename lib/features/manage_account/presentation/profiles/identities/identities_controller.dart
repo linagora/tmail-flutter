@@ -1,12 +1,13 @@
 
 import 'package:core/core.dart';
-import 'package:model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:model/extensions/identity_extension.dart';
+import 'package:model/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
@@ -296,16 +297,23 @@ class IdentitiesController extends BaseController {
               identity: identity,
               actionType: IdentityActionType.edit));
 
-      log('IdentitiesController::goToEditIdentity(): $newIdentity');
-      _editIdentityAction(accountId, newIdentity);
+      if (newIdentity is Identity) {
+        log('IdentitiesController::goToEditIdentity(): $newIdentity');
+        _editIdentityAction(accountId, EditIdentityRequest(
+            identityId: identity.id!,
+            identityRequest: newIdentity.toIdentityRequest()
+        ));
+      }
     }
   }
 
-  void _editIdentityAction(AccountId accountId, EditIdentityRequest identityRequest) async {
-    consumeState(_editIdentityInteractor.execute(accountId, identityRequest));
+  void _editIdentityAction(AccountId accountId, EditIdentityRequest editIdentityRequest) async {
+    log('IdentitiesController::_editIdentityAction(): $editIdentityRequest');
+    consumeState(_editIdentityInteractor.execute(accountId, editIdentityRequest));
   }
 
   void _editIdentitySuccess(EditIdentitySuccess success) {
+    log('IdentitiesController::_editIdentitySuccess(): $success');
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastWithIcon(
           currentOverlayContext!,

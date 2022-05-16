@@ -1,14 +1,11 @@
 import 'package:core/core.dart';
-import 'package:jmap_dart_client/jmap/identities/identity.dart';
 
 class EditIdentitySuccess extends UIState {
 
-  final Identity newIdentity;
-
-  EditIdentitySuccess(this.newIdentity);
+  EditIdentitySuccess();
 
   @override
-  List<Object?> get props => [newIdentity];
+  List<Object?> get props => [];
 }
 
 class EditIdentityFailure extends FeatureFailure {
