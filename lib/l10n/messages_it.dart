@@ -117,7 +117,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "hint_text_email_address" : MessageLookupByLibrary.simpleMessage("Nome o indirizzo e-mail"),
     "initializing_data" : MessageLookupByLibrary.simpleMessage("Inizializzazione dei dati..."),
     "login" : MessageLookupByLibrary.simpleMessage("Accedi"),
-    "login_text_login_to_continue" : MessageLookupByLibrary.simpleMessage("Per favore, accedi per continuare"),
     "login_text_slogan" : MessageLookupByLibrary.simpleMessage("Team Mail"),
     "mailbox_location" : MessageLookupByLibrary.simpleMessage("Posizione della casella di posta"),
     "mailbox_name_cannot_contain_special_characters" : MessageLookupByLibrary.simpleMessage("Il nome della casella do posta non può contenere caratteri speciali"),

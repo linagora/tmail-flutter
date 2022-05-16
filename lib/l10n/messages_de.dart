@@ -59,7 +59,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "hint_text_email_address" : MessageLookupByLibrary.simpleMessage("Name oder E-Mail-Adresse"),
     "initializing_data" : MessageLookupByLibrary.simpleMessage("Daten werden initialisiert …"),
     "login" : MessageLookupByLibrary.simpleMessage("Anmelden"),
-    "login_text_login_to_continue" : MessageLookupByLibrary.simpleMessage("Bitte melden Sie sich an, um fortzufahren"),
     "login_text_slogan" : MessageLookupByLibrary.simpleMessage("Team Mail"),
     "mark_as_read" : MessageLookupByLibrary.simpleMessage("Als gelesen markieren"),
     "mark_as_unread" : MessageLookupByLibrary.simpleMessage("Ungelesen markieren"),

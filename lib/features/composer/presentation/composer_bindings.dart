@@ -46,7 +46,6 @@ import 'package:jmap_dart_client/http/http_client.dart' as jmap_http_client;
 class ComposerBindings extends BaseBindings {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-  final Set<AutoCompleteDataSource> dataSources = {};
 
   @override
   void dependencies() {
@@ -61,12 +60,6 @@ class ComposerBindings extends BaseBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    if (mailboxDashBoardController.sessionCurrent?.hasSupportAutoComplete == true) {
-      Get.lazyPut(() => ContactAPI(Get.find<jmap_http_client.HttpClient>()));
-      Get.lazyPut(() => TMailContactDataSourceImpl(Get.find<ContactAPI>()));
-      dataSources.add(Get.find<TMailContactDataSourceImpl>());
-    }
-
     Get.lazyPut(() => ComposerDataSourceImpl(Get.find<ComposerAPI>()));
     Get.lazyPut(() => ContactDataSourceImpl());
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
@@ -89,7 +82,7 @@ class ComposerBindings extends BaseBindings {
   @override
   void bindingsRepositoryImpl() {
     Get.lazyPut(() => ComposerRepositoryImpl(Get.find<ComposerDataSource>()));
-    Get.lazyPut(() => AutoCompleteRepositoryImpl(dataSources));
+  //  Get.lazyPut(() => AutoCompleteRepositoryImpl(dataSources));
     Get.lazyPut(() => ContactRepositoryImpl(Get.find<ContactDataSource>()));
     Get.lazyPut(() => EmailRepositoryImpl(
         Get.find<EmailDataSource>(),

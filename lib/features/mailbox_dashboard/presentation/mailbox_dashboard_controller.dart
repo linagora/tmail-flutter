@@ -289,6 +289,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void showSuggestionDropdown() {
+    if (recentSearchs.isEmpty) return;
     shouldShowSuggestionDropdown.value = true;
   }
 

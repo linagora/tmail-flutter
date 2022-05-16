@@ -71,7 +71,6 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_status.d
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'dart:async';
 
 class ThreadController extends BaseController {
 
@@ -139,7 +138,7 @@ class ThreadController extends BaseController {
   @override
   void onInit() {
     _initWorker();
-    _onMailboxDashBoardListener();
+    //_onMailboxDashBoardListener();
     mailboxDashBoardController.searchOnChange
         .debounceTime(const Duration(milliseconds: 500))
         .listen((queryString) {
@@ -156,7 +155,6 @@ class ThreadController extends BaseController {
 
   @override
   void onClose() {
-    _searchDebounce?.cancel();
     mailboxDashBoardController.selectedMailbox.close();
     mailboxDashBoardController.dashBoardAction.close();
     mailboxDashBoardController.viewState.close();
@@ -194,7 +192,7 @@ class ThreadController extends BaseController {
           if (success.recentSearchs.isNotEmpty) {
             mailboxDashBoardController.recentSearchs.value = success.recentSearchs;
             mailboxDashBoardController.showSuggestionDropdown();
-          }
+          } 
         } else if (success is StoreRecentSearchSuccess) {
           mailboxDashBoardController.recentSearchs.value = success.recentSearchs;
         }

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-05-06T16:58:28.388035",
+  "@@last_modified": "2022-05-16T15:20:05.349943",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -56,6 +56,24 @@
   },
   "signIn": "Sign In",
   "@signIn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requiredEmail": "Email is required",
+  "@requiredEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requiredPassword": "Password is required",
+  "@requiredPassword": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requiredUrl": "Server address is required",
+  "@requiredUrl": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -428,7 +446,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "has_attachment": "Has attachment",
   "@has_attachment": {
     "type": "text",
     "placeholders_order": [],

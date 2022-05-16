@@ -33,7 +33,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "downloading_file" : m2,
     "edit" : MessageLookupByLibrary.simpleMessage("Rediger"),
     "email" : MessageLookupByLibrary.simpleMessage("e-post"),
-    "login_text_login_to_continue" : MessageLookupByLibrary.simpleMessage("Logg inn for å fortsette"),
     "move" : MessageLookupByLibrary.simpleMessage("Flytt"),
     "new_folder" : MessageLookupByLibrary.simpleMessage("Ny mappe"),
     "password" : MessageLookupByLibrary.simpleMessage("passord"),
