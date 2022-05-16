@@ -1,4 +1,5 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
@@ -13,9 +14,9 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   ManageAccountDataSourceImpl(this.manageAccountAPI);
 
   @override
-  Future<IdentitiesResponse> getAllIdentities(AccountId accountId) {
+  Future<IdentitiesResponse> getAllIdentities(AccountId accountId, {Properties? properties}) {
     return Future.sync(() async {
-      return await manageAccountAPI.getAllIdentities(accountId);
+      return await manageAccountAPI.getAllIdentities(accountId, properties: properties);
     }).catchError((error) {
       throw error;
     });
@@ -40,9 +41,9 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   }
 
   @override
-  Future<Identity> editIdentity(AccountId accountId, EditIdentityRequest identityRequest) {
+  Future<bool> editIdentity(AccountId accountId, EditIdentityRequest editIdentityRequest) {
     return Future.sync(() async {
-      return await manageAccountAPI.editIdentity(accountId, identityRequest);
+      return await manageAccountAPI.editIdentity(accountId, editIdentityRequest);
     }).catchError((error) {
       throw error;
     });

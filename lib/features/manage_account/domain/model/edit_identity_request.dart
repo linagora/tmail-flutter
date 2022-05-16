@@ -1,14 +1,15 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:model/model.dart';
 
 class EditIdentityRequest with EquatableMixin {
 
-  final Identity newIdentity;
+  final IdentityRequestDto identityRequest;
   final IdentityId identityId;
 
-  EditIdentityRequest(this.identityId, this.newIdentity);
+  EditIdentityRequest({required this.identityId, required this.identityRequest});
 
   @override
-  List<Object?> get props => [identityId, newIdentity];
+  List<Object?> get props => [identityId, identityRequest];
 }

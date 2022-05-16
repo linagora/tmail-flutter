@@ -12,10 +12,13 @@ class EditIdentityInteractor {
 
   EditIdentityInteractor(this.manageAccountRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, EditIdentityRequest identityRequest) async* {
+  Stream<Either<Failure, Success>> execute(
+      AccountId accountId,
+      EditIdentityRequest editIdentityRequest
+  ) async* {
     try {
-      final newIdentity = await manageAccountRepository.editIdentity(accountId, identityRequest);
-      yield Right(EditIdentitySuccess(newIdentity));
+      final result = await manageAccountRepository.editIdentity(accountId, editIdentityRequest);
+      yield result ? Right(EditIdentitySuccess()) : Left(EditIdentityFailure(null));
     } catch (exception) {
       yield Left(EditIdentityFailure(exception));
     }
