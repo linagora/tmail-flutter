@@ -107,6 +107,9 @@ workflows:
         - password: "$APPLEID_PASSWORD"
         - connection: 'off'
         - app_password: "$APPLE_SPECIFIC_PASSWORD"
+    meta:
+      bitrise.io:
+        stack: osx-xcode-13.1.x
 app:
   envs:
   - opts:
@@ -127,3 +130,6 @@ app:
 trigger_map:
 - push_branch: release
   workflow: primary
+meta:
+  bitrise.io:
+    stack: osx-xcode-13.1.x
