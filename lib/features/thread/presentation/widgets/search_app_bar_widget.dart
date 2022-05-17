@@ -12,7 +12,7 @@ typedef OnSearchTextAction = Function(String);
 
 class SearchAppBarWidget {
 
-OnSearchPressed? _onSearchPressed;
+ OnSearchPressed? _onSearchPressed;
  OnCancelSearchPressed? _onCancelSearchPressed;
  OnTextChangeSearchAction? _onTextChangeSearchAction;
  OnClearTextSearchAction? _onClearTextSearchAction;

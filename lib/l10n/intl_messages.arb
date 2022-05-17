@@ -60,24 +60,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredEmail": "Email is required",
-  "@requiredEmail": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "requiredPassword": "Password is required",
-  "@requiredPassword": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "requiredUrl": "Server address is required",
-  "@requiredUrl": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "jmapBasedMailSolution": "JMAP-based\ncollaborative team mail solution",
   "@jmapBasedMailSolution": {
     "type": "text",

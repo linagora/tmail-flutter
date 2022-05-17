@@ -105,7 +105,7 @@ class ThreadController extends BaseController {
   MailboxId? _currentMailboxId;
   jmap.State? _currentEmailState;
   final ScrollController listEmailController = ScrollController();
-  late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker;
+  late Worker mailboxWorker, searchWorker, searchOnChangeWorker, dashboardActionWorker, viewStateWorker;
 
   SearchQuery? get searchQuery => mailboxDashBoardController.searchQuery;
 
@@ -138,12 +138,6 @@ class ThreadController extends BaseController {
   @override
   void onInit() {
     _initWorker();
-    //_onMailboxDashBoardListener();
-    mailboxDashBoardController.searchOnChange
-        .debounceTime(const Duration(milliseconds: 500))
-        .listen((queryString) {
-      consumeState(_getRecentSearchInteractor.execute(queryString));
-    });
     super.onInit();
   }
 
@@ -250,6 +244,13 @@ class ThreadController extends BaseController {
   void onError(error) {}
 
   void _initWorker() {
+
+    searchOnChangeWorker = interval(mailboxDashBoardController.searchOnChange, (queryString) {
+      if (queryString is String) {
+        consumeState(_getRecentSearchInteractor.execute(queryString));
+      }
+    }, time: const Duration(milliseconds: 500));
+
     mailboxWorker = ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
       if (mailbox is PresentationMailbox) {
         if (_currentMailboxId != mailbox.id) {
@@ -316,6 +317,7 @@ class ThreadController extends BaseController {
   }
 
   void _clearWorker() {
+    searchOnChangeWorker.call();
     mailboxWorker.call();
     dashboardActionWorker.call();
     searchWorker.call();
@@ -871,8 +873,7 @@ class ThreadController extends BaseController {
         limit: ThreadConstants.defaultLimit,
         sort: _sortOrder,
         filter: EmailFilterCondition(
-          text: searchQuery!.value, 
-        inMailbox: _currentMailboxId),
+          text: searchQuery!.value,),
         properties: ThreadConstants.propertiesDefault,
       ));
       consumeState(_storeRecentSearchInteractor.execute(searchQuery!.value.trim())); 
