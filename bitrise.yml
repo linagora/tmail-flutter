@@ -154,6 +154,9 @@ workflows:
         - footer_icon: ''
         - icon_url_on_error: ''
         - webhook_url: "$TWAKE_WEBHOOK_API"
+    meta:
+      bitrise.io:
+        stack: osx-xcode-13.1.x
 app:
   envs:
   - opts:
@@ -168,3 +171,6 @@ app:
   - opts:
       is_expand: false
     BITRISE_EXPORT_METHOD: development
+meta:
+  bitrise.io:
+    stack: osx-xcode-13.1.x
