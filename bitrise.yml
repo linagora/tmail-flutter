@@ -41,7 +41,7 @@ workflows:
     - cache-push@2: {}
     meta:
       bitrise.io:
-        stack: osx-xcode-12.5.x
+        stack: osx-xcode-13.1.x
   primary:
     steps:
     - activate-ssh-key@4:
