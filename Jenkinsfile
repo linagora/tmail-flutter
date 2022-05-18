@@ -11,8 +11,10 @@ pipeline {
 
   stages {
     stage('Build TMail web app') {
-      // Build image
-      sh "docker build -t linagora/tmail-web ."
+      steps {
+        // Build image
+        sh "docker build -t linagora/tmail-web ."
+      }
     }
     stage('Deliver web Docker image') {
       when {
