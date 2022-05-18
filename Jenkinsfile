@@ -1,5 +1,7 @@
 pipeline {
-  agent any
+  agent {
+    label 'jdk11'
+  }
 
   options {
     // Configure an overall timeout for the build.
@@ -8,6 +10,10 @@ pipeline {
   }
 
   stages {
+    stage('Build TMail web app') {
+      // Build image
+      sh "docker build -t linagora/tmail-web ."
+    }
     stage('Deliver web Docker image') {
       when {
         anyOf {
@@ -19,17 +25,16 @@ pipeline {
       steps {
         script {
           env.DOCKER_TAG = 'master'
-          if (env.BRANCH_NAME == 'release') {
-            env.DOCKER_TAG = 'release'
-          }
           if (env.TAG_NAME) {
             env.DOCKER_TAG = env.TAG_NAME
+          } else {
+            env.DOCKER_TAG = env.BRANCH_NAME
           }
 
           echo "Docker tag: ${env.DOCKER_TAG}"
 
-          // Build image
-          sh "docker build -t linagora/tmail-web:${env.DOCKER_TAG} ."
+          // retag image name previously built
+          sh "docker tag linagora/tmail-web linagora/tmail-web:${env.DOCKER_TAG}"
 
           def webImage = docker.image "linagora/tmail-web:${env.DOCKER_TAG}"
           docker.withRegistry('', 'dockerHub') {
