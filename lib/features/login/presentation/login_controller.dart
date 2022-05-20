@@ -6,8 +6,10 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -20,6 +22,7 @@ class LoginController extends GetxController {
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
   final AuthorizationInterceptors _authorizationInterceptors;
   final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
+  final GetOIDCConfigurationInteractor _getOIDCConfigurationInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
 
@@ -28,6 +31,7 @@ class LoginController extends GetxController {
     this._dynamicUrlInterceptors,
     this._authorizationInterceptors,
     this._checkOIDCIsAvailableInteractor,
+    this._getOIDCConfigurationInteractor,
   );
 
   var loginState = LoginState(Right(LoginInitAction())).obs;
@@ -61,13 +65,13 @@ class LoginController extends GetxController {
 
   void _checkOIDCIsAvailable() async {
     final baseUri = BuildUtils.isWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
-
+    log('LoginController::_checkOIDCIsAvailable(): baseUri: $baseUri');
     if (baseUri == null) {
       loginState.value = LoginState(Left(LoginMissUrlAction()));
     } else {
       loginState.value = LoginState(Right(LoginLoadingAction()));
       await _checkOIDCIsAvailableInteractor
-          .execute(OIDCRequest(baseUrl: baseUri.path))
+          .execute(OIDCRequest(baseUrl: baseUri.origin))
           .then((response) => response.fold(
               (failure) => _showFormLoginWithCredentialAction(),
               (success) => success is CheckOIDCIsAvailableSuccess
@@ -93,7 +97,12 @@ class LoginController extends GetxController {
 
   void handleLoginPressed() {
     if (loginFormType.value == LoginFormType.ssoForm) {
-
+      final baseUri = kIsWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
+      if (baseUri != null) {
+        _getOIDCConfiguration(baseUri);
+      } else {
+        loginState.value = LoginState(Left(LoginMissUrlAction()));
+      }
     } else {
       final baseUri = kIsWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
       final userName = _parseUserName(_userNameText);
@@ -108,6 +117,30 @@ class LoginController extends GetxController {
         loginState.value = LoginState(Left(LoginMissPasswordAction()));
       }
     }
+  }
+
+  void _getOIDCConfiguration(Uri baseUri) async {
+    loginState.value = LoginState(Right(LoginLoadingAction()));
+    await _getOIDCConfigurationInteractor.execute(baseUri)
+        .then((response) => response.fold(
+            (failure) {
+              if (failure is GetOIDCConfigurationFailure) {
+                loginState.value = LoginState(Left(failure));
+              } else {
+                loginState.value = LoginState(Left(LoginCanNotVerifySSOConfigurationAction()));
+              }
+            },
+            (success) {
+              if (success is GetOIDCConfigurationSuccess) {
+                _getOIDCConfigurationSuccess(success);
+              } else {
+                loginState.value = LoginState(Left(LoginCanNotVerifySSOConfigurationAction()));
+              }
+            }));
+  }
+
+  void _getOIDCConfigurationSuccess(GetOIDCConfigurationSuccess success) {
+    loginState.value = LoginState(Right(success));
   }
 
   void _loginAction(Uri baseUrl, UserName userName, Password password) async {
@@ -125,11 +158,12 @@ class LoginController extends GetxController {
     pushAndPop(AppRoutes.SESSION);
   }
 
-  void _loginFailureAction(AuthenticationUserFailure failure) {
+  void _loginFailureAction(FeatureFailure failure) {
     loginState.value = LoginState(Left(failure));
   }
 
   void formatUrl(String url) {
+    log('LoginController::formatUrl(): $url');
     if (url.isValid()) {
       urlInputController.text = url.removePrefix();
     }

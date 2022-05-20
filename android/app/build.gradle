@@ -40,6 +40,9 @@ android {
         versionName flutterVersionName
         // The number of method references in a .dex file cannot exceed 64K
         multiDexEnabled true
+        manifestPlaceholders = [
+                'appAuthRedirectScheme': 'teammail.mobile'
+        ]
     }
 
     buildTypes {
