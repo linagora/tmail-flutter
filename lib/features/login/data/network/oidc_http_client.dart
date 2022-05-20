@@ -29,4 +29,8 @@ class OIDCHttpClient {
       return OIDCResponse.fromJson(jsonDecode(result));
     }
   }
+
+  Future<OIDCConfiguration> getOIDCConfiguration(Uri baseUri) async {
+    return OIDCConfiguration.initial();
+  }
 }

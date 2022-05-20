@@ -17,4 +17,13 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
       throw error;
     });
   }
+
+  @override
+  Future<OIDCConfiguration> getOIDCConfiguration(Uri baseUri) {
+    return Future.sync(() async {
+      return await _oidcHttpClient.getOIDCConfiguration(baseUri);
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }
