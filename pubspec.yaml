@@ -153,6 +153,9 @@ dependencies:
 
   timeago: 3.2.2
 
+  # OIDC Mobile
+  flutter_appauth: 4.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

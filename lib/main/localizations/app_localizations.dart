@@ -1399,4 +1399,10 @@ class AppLocalizations {
         'Can not verify SSO configuration, please check with your system administrator',
         name: 'canNotVerifySSOConfiguration');
   }
+
+  String get canNotGetToken {
+    return Intl.message(
+        'Can not get token, please check with your system administrator',
+        name: 'canNotGetToken');
+  }
 }

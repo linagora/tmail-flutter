@@ -48,3 +48,9 @@ class LoginCanNotVerifySSOConfigurationAction extends Failure {
   @override
   List<Object?> get props => [];
 }
+
+@immutable
+class LoginCanNotGetTokenAction extends Failure {
+  @override
+  List<Object?> get props => [];
+}
