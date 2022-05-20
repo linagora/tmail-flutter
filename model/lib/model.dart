@@ -72,3 +72,8 @@ export 'autocomplete/auto_complete_pattern.dart';
 
 // Identity
 export 'identity/identity_request_dto.dart';
+
+// OIDC
+export 'oidc/response/oidc_response.dart';
+export 'oidc/response/oidc_link_dto.dart';
+export 'oidc/request/oidc_request.dart';
