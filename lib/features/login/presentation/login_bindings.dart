@@ -16,15 +16,10 @@ import 'package:tmail_ui_user/features/login/domain/repository/credential_reposi
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 
 class LoginBindings extends BaseBindings {
-
-  @override
-  void dependencies() {
-    Get.lazyPut(() => OIDCHttpClient(Get.find<DioClient>()));
-    super.dependencies();
-  }
 
   @override
   void bindingsController() {
@@ -34,6 +29,7 @@ class LoginBindings extends BaseBindings {
         Get.find<AuthorizationInterceptors>(),
         Get.find<CheckOIDCIsAvailableInteractor>(),
         Get.find<GetOIDCConfigurationInteractor>(),
+        Get.find<GetTokenOIDCInteractor>(),
     ));
   }
 
@@ -59,6 +55,9 @@ class LoginBindings extends BaseBindings {
         Get.find<AuthenticationOIDCRepository>(),
     ));
     Get.lazyPut(() => GetOIDCConfigurationInteractor(
+        Get.find<AuthenticationOIDCRepository>(),
+    ));
+    Get.lazyPut(() => GetTokenOIDCInteractor(
         Get.find<AuthenticationOIDCRepository>(),
     ));
   }
