@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
@@ -39,6 +40,8 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
               } else if (failure is GetOIDCConfigurationFailure
                 || failure is LoginCanNotVerifySSOConfigurationAction) {
                 return AppLocalizations.of(context).canNotVerifySSOConfiguration;
+              } else if (failure is GetTokenOIDCFailure || failure is LoginCanNotGetTokenAction) {
+                return AppLocalizations.of(context).canNotGetToken;
               } else {
                 return AppLocalizations.of(context).unknown_error_login_message;
               }

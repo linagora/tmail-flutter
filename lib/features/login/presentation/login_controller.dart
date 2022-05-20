@@ -7,9 +7,11 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -23,6 +25,7 @@ class LoginController extends GetxController {
   final AuthorizationInterceptors _authorizationInterceptors;
   final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
   final GetOIDCConfigurationInteractor _getOIDCConfigurationInteractor;
+  final GetTokenOIDCInteractor _getTokenOIDCInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
 
@@ -32,6 +35,7 @@ class LoginController extends GetxController {
     this._authorizationInterceptors,
     this._checkOIDCIsAvailableInteractor,
     this._getOIDCConfigurationInteractor,
+    this._getTokenOIDCInteractor,
   );
 
   var loginState = LoginState(Right(LoginInitAction())).obs;
@@ -140,6 +144,35 @@ class LoginController extends GetxController {
   }
 
   void _getOIDCConfigurationSuccess(GetOIDCConfigurationSuccess success) {
+    loginState.value = LoginState(Right(success));
+    if (currentContext != null) {
+      _getTokenOIDCAction(currentContext!, success.oidcConfiguration);
+    }
+  }
+
+  void _getTokenOIDCAction(BuildContext context, OIDCConfiguration config) async {
+    loginState.value = LoginState(Right(LoginLoadingAction()));
+    await _getTokenOIDCInteractor
+        .execute(config.clientId, config.redirectUrl, config.discoveryUrl, config.scopes)
+        .then((response) => response.fold(
+            (failure) {
+              if (failure is GetTokenOIDCFailure) {
+                loginState.value = LoginState(Left(failure));
+              } else {
+                loginState.value = LoginState(Left(LoginCanNotGetTokenAction()));
+              }
+            },
+            (success) {
+              if (success is GetTokenOIDCSuccess) {
+                _getTokenOIDCSuccess(success);
+              } else {
+                loginState.value = LoginState(Left(LoginCanNotGetTokenAction()));
+              }
+            }));
+  }
+
+  void _getTokenOIDCSuccess(GetTokenOIDCSuccess success) {
+    log('LoginController::_getTokenOIDCSuccess(): ');
     loginState.value = LoginState(Right(success));
   }
 

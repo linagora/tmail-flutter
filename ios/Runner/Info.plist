@@ -31,7 +31,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>ShareMedia-$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-                <string>teammail-mobile</string>
+                <string>teammail.mobile</string>
 			</array>
 		</dict>
 	</array>
