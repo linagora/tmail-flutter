@@ -5,13 +5,16 @@ extension URLExtension on String {
   static final String prefixUrlHttp = 'http://';
 
   String formatURLValid() {
-    if (startsWith(prefixUrlHttps)) {
-      return this;
-    } else if (startsWith(prefixUrlHttp)) {
-      return kReleaseMode ? replaceAll(prefixUrlHttp, prefixUrlHttps) : this;
-    } else {
-      return '$prefixUrlHttps${this}';
+    if (isNotEmpty) {
+      if (startsWith(prefixUrlHttps)) {
+        return this;
+      } else if (startsWith(prefixUrlHttp)) {
+        return kReleaseMode ? replaceAll(prefixUrlHttp, prefixUrlHttps) : this;
+      } else {
+        return '$prefixUrlHttps${this}';
+      }
     }
+    return '';
   }
 
   String removePrefix() {
