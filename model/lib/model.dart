@@ -77,3 +77,4 @@ export 'identity/identity_request_dto.dart';
 export 'oidc/response/oidc_response.dart';
 export 'oidc/response/oidc_link_dto.dart';
 export 'oidc/request/oidc_request.dart';
+export 'oidc/oidc_configuration.dart';
