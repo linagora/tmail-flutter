@@ -42,3 +42,9 @@ class LoginMissPasswordAction extends Failure {
   @override
   List<Object?> get props => [];
 }
+
+@immutable
+class LoginCanNotVerifySSOConfigurationAction extends Failure {
+  @override
+  List<Object?> get props => [];
+}

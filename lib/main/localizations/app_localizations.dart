@@ -1393,4 +1393,10 @@ class AppLocalizations {
         'Sign-in with my SSO account',
         name: 'loginInputSSOMessage');
   }
+
+  String get canNotVerifySSOConfiguration {
+    return Intl.message(
+        'Can not verify SSO configuration, please check with your system administrator',
+        name: 'canNotVerifySSOConfiguration');
+  }
 }
