@@ -26,9 +26,11 @@ class LoginView extends BaseLoginView {
                 children: [
                   Center(child: SingleChildScrollView(child: _buildCenterForm(context), scrollDirection: Axis.vertical)),
                   Obx(() {
-                    return loginController.loginFormType.value == LoginFormType.credentialForm
-                      ? _buildBackButton(context)
-                      : const SizedBox.shrink();
+                    if (loginController.loginFormType.value == LoginFormType.credentialForm
+                      || loginController.loginFormType.value == LoginFormType.ssoForm) {
+                      return _buildBackButton(context);
+                    }
+                    return const SizedBox.shrink();
                   })
                 ]
               )
@@ -36,9 +38,11 @@ class LoginView extends BaseLoginView {
                 children: [
                   _buildCenterForm(context),
                   Obx(() {
-                    return loginController.loginFormType.value == LoginFormType.credentialForm
-                      ? _buildBackButton(context)
-                      : const SizedBox.shrink();
+                    if (loginController.loginFormType.value == LoginFormType.credentialForm
+                        || loginController.loginFormType.value == LoginFormType.ssoForm) {
+                      return _buildBackButton(context);
+                    }
+                    return const SizedBox.shrink();
                   })
                 ]
             ),
@@ -78,10 +82,18 @@ class LoginView extends BaseLoginView {
             Obx(() {
               switch (controller.loginFormType.value) {
                 case LoginFormType.baseUrlForm:
-                  return _supportScrollForm(context)
-                    ? _buildNextButton(context)
-                    : _buildExpandedButton(context, _buildNextButton(context));
+                  return Obx(() => loginController.loginState.value.viewState.fold(
+                    (failure) => _buildNextButtonInContext(context),
+                    (success) => success is LoginLoadingAction
+                      ? _buildLoadingCircularProgress()
+                      : _buildNextButtonInContext(context)));
                 case LoginFormType.credentialForm:
+                  return Obx(() => loginController.loginState.value.viewState.fold(
+                    (failure) => _buildLoginButtonInContext(context),
+                    (success) => success is LoginLoadingAction
+                      ? _buildLoadingCircularProgress()
+                      : _buildLoginButtonInContext(context)));
+                case LoginFormType.ssoForm:
                   return Obx(() => loginController.loginState.value.viewState.fold(
                     (failure) => _buildLoginButtonInContext(context),
                     (success) => success is LoginLoadingAction
@@ -164,6 +176,12 @@ class LoginView extends BaseLoginView {
         }
       )
     );
+  }
+
+  Widget _buildNextButtonInContext(BuildContext context) {
+    return _supportScrollForm(context)
+      ? _buildNextButton(context)
+      : _buildExpandedButton(context, _buildNextButton(context));
   }
 
   Widget _buildLoginButtonInContext(BuildContext context) {

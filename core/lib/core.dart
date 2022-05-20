@@ -77,7 +77,6 @@ export 'data/constants/constant.dart';
 // Network
 export 'data/network/config/authorization_interceptors.dart';
 export 'data/network/config/dynamic_url_interceptors.dart';
-export 'data/network/config/endpoint.dart';
 export 'data/network/config/service_path.dart';
 export 'data/network/dio_client.dart';
 export 'data/network/download/download_client.dart';
@@ -95,4 +94,5 @@ export 'data/local/database_client.dart';
 export 'data/local/database_manager.dart';
 
 // Model
-export 'data/model/data_source_type.dart';
+export 'data/model/source_type/data_source_type.dart';
+export 'data/model/query/query_parameter.dart';
