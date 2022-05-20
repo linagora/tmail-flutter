@@ -1387,4 +1387,10 @@ class AppLocalizations {
       name: 'thisEmailAddressInvalid',
     );
   }
+
+  String get loginInputSSOMessage {
+    return Intl.message(
+        'Sign-in with my SSO account',
+        name: 'loginInputSSOMessage');
+  }
 }
