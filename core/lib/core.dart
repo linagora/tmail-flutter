@@ -75,7 +75,6 @@ export 'presentation/constants/constants_ui.dart';
 export 'data/constants/constant.dart';
 
 // Network
-export 'data/network/config/authorization_interceptors.dart';
 export 'data/network/config/dynamic_url_interceptors.dart';
 export 'data/network/config/service_path.dart';
 export 'data/network/dio_client.dart';

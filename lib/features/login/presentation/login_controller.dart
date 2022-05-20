@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
@@ -172,8 +173,11 @@ class LoginController extends GetxController {
   }
 
   void _getTokenOIDCSuccess(GetTokenOIDCSuccess success) {
-    log('LoginController::_getTokenOIDCSuccess(): ');
+    log('LoginController::_getTokenOIDCSuccess(): ${success.tokenOIDC.toString()}');
     loginState.value = LoginState(Right(success));
+    _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
+    _authorizationInterceptors.setToken(success.tokenOIDC.toToken());
+    pushAndPop(AppRoutes.SESSION);
   }
 
   void _loginAction(Uri baseUrl, UserName userName, Password password) async {
