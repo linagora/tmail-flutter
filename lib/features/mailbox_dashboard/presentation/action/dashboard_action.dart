@@ -17,7 +17,7 @@ class DashBoardAction extends UIAction {
 
 class ComposeEmailAction extends DashBoardAction {
 
-  RouterArguments? arguments;
+  final RouterArguments? arguments;
 
   ComposeEmailAction({this.arguments});
 
@@ -67,8 +67,8 @@ class MarkAsReadAllEmailAction extends DashBoardAction {
 
 class FilterMessageAction extends DashBoardAction {
 
-  BuildContext context;
-  FilterMessageOption option;
+  final BuildContext context;
+  final FilterMessageOption option;
 
   FilterMessageAction(this.context, this.option);
 
@@ -78,9 +78,9 @@ class FilterMessageAction extends DashBoardAction {
 
 class HandleEmailActionTypeAction extends DashBoardAction {
 
-  BuildContext context;
-  EmailActionType emailAction;
-  List<PresentationEmail> listEmailSelected;
+  final BuildContext context;
+  final EmailActionType emailAction;
+  final List<PresentationEmail> listEmailSelected;
 
   HandleEmailActionTypeAction(this.context, this.listEmailSelected, this.emailAction);
 
@@ -88,10 +88,13 @@ class HandleEmailActionTypeAction extends DashBoardAction {
   List<Object> get props => [listEmailSelected, emailAction];
 }
 
-class GoToSettingsAction extends DashBoardAction {
+class OpenEmailDetailedAction extends DashBoardAction {
 
-  GoToSettingsAction();
+  final BuildContext context;
+  final PresentationEmail presentationEmail;
+
+  OpenEmailDetailedAction(this.context, this.presentationEmail);
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [presentationEmail];
 }
