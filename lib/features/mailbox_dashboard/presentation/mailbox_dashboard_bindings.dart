@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
@@ -14,8 +15,13 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/presentation/email_bindings.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/search_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/search_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/search_repository_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/search_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_bindings.dart';
 
@@ -34,6 +40,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.put(MailboxDashBoardController(
       Get.find<MoveToMailboxInteractor>(),
       Get.find<DeleteEmailPermanentlyInteractor>(),
+      Get.find<SaveRecentSearchInteractor>(),
     ));
   }
 
@@ -41,6 +48,7 @@ class MailboxDashBoardBindings extends BaseBindings {
   void bindingsDataSource() {
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
+    Get.lazyPut<SearchDataSource>(() => Get.find<SearchDataSourceImpl>());
   }
 
   @override
@@ -50,6 +58,7 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<HtmlAnalyzer>(),
         Get.find<DioClient>()
     ));
+    Get.lazyPut(() => SearchDataSourceImpl(Get.find<RecentSearchCacheClient>()));
   }
 
   @override
@@ -58,11 +67,13 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => RemoveEmailDraftsInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => DeleteEmailPermanentlyInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => SaveRecentSearchInteractor(Get.find<SearchRepository>()));
   }
 
   @override
   void bindingsRepository() {
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
+    Get.lazyPut<SearchRepository>(() => Get.find<SearchRepositoryImpl>());
   }
 
   @override
@@ -71,5 +82,6 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<EmailDataSource>(),
         Get.find<HtmlDataSource>()
     ));
+    Get.lazyPut(() => SearchRepositoryImpl(Get.find<SearchDataSource>()));
   }
 }

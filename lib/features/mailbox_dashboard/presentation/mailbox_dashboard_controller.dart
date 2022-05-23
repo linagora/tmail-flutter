@@ -30,10 +30,12 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -58,6 +60,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
+  final SaveRecentSearchInteractor _saveRecentSearchInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -86,6 +89,7 @@ class MailboxDashBoardController extends ReloadableController {
   MailboxDashBoardController(
     this._moveToMailboxInteractor,
     this._deleteEmailPermanentlyInteractor,
+    this._saveRecentSearchInteractor,
   );
 
   @override
@@ -392,6 +396,10 @@ class MailboxDashBoardController extends ReloadableController {
       }
     }
     return null;
+  }
+
+  void saveRecentSearch(RecentSearch recentSearch) {
+    consumeState(_saveRecentSearchInteractor.execute(recentSearch));
   }
 
   void composeEmailAction() {
