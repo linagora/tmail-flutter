@@ -510,7 +510,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                           color: AppColor.colorTextButtonHeaderThread,
                           fontWeight: FontWeight.w500))),
                 getRecentCallback: (pattern) async {
-                  return [];
+                  return controller.getAllRecentSearchAction(pattern);
                 },
                 itemRecentBuilder: (context, recent) {
                   return RecentSearchItemTileWidget(recent);
