@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 
 class CachingManager {
@@ -9,11 +10,13 @@ class CachingManager {
   final MailboxCacheClient _mailboxCacheClient;
   final StateCacheClient _stateCacheClient;
   final EmailCacheClient _emailCacheClient;
+  final RecentSearchCacheClient _recentSearchCacheClient;
 
   CachingManager(
     this._mailboxCacheClient,
     this._stateCacheClient,
-    this._emailCacheClient
+    this._emailCacheClient,
+    this._recentSearchCacheClient,
   );
 
   Future<void> clearAll() async {
@@ -22,12 +25,14 @@ class CachingManager {
         _stateCacheClient.clearAllData(),
         _mailboxCacheClient.clearAllData(),
         _emailCacheClient.clearAllData(),
+        _recentSearchCacheClient.clearAllData(),
       ]);
     } else {
       await Future.wait([
         _stateCacheClient.deleteBox(),
         _mailboxCacheClient.deleteBox(),
         _emailCacheClient.deleteBox(),
+        _recentSearchCacheClient.deleteBox(),
       ]);
     }
   }
