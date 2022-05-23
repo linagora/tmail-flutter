@@ -26,10 +26,14 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset(
-              _presentationEmail.hasStarred ? imagePath.icStar : imagePath.icUnStar,
-              width: 20, height: 20, fit: BoxFit.fill),
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: SvgPicture.asset(
+                _presentationEmail.hasStarred ? imagePath.icStar : imagePath.icUnStar,
+                width: 18, height: 18, fit: BoxFit.fill),
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
