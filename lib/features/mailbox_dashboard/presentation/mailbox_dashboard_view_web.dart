@@ -1,21 +1,24 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/network_connection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/reading_pane.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -157,7 +160,9 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       }),
       const SizedBox(width: 16),
       Obx(() => !controller.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
-      Obx(() => controller.isSearchActive() ? Expanded(child: _buildSearchForm(context)) : const SizedBox.shrink()),
+      Obx(() => controller.isSearchActive()
+          ? Expanded(child: _buildSearchForm(context))
+          : const SizedBox.shrink()),
       Obx(() => !controller.isSearchActive()
           ? (SearchBarView(_imagePaths)
                 ..hintTextSearch(AppLocalizations.of(context).search_emails)
@@ -396,24 +401,119 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
   }
 
   Widget _buildSearchForm(BuildContext context) {
-    return (SearchAppBarWidget(context, _imagePaths, _responsiveUtils,
-            controller.searchQuery,
-            controller.searchFocus,
-            controller.searchInputController,
-            suggestionSearch: controller.suggestionSearch)
-        ..addDecoration(const BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            color: AppColor.colorBgSearchBar))
-        ..setMargin(const EdgeInsets.only(right: 10))
-        ..setHeightSearchBar(45)
-        ..setHintText(AppLocalizations.of(context).search_mail)
-        ..addOnCancelSearchPressed(() {
-          controller.disableSearch();
-          controller.dispatchAction(CancelSelectionAllEmailAction());
-        })
-        ..addOnClearTextSearchAction(() => controller.clearSearchText())
-        ..addOnTextChangeSearchAction((query) => controller.addSuggestionSearch(query))
-        ..addOnSearchTextAction((query) => controller.searchEmail(context, query)))
-      .build();
+    return Row(
+        children: [
+          buildIconWeb(
+              icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
+              onTap: () {
+                controller.disableSearch();
+                controller.dispatchAction(CancelSelectionAllEmailAction());
+              }),
+          Expanded(child: Container(
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              color: AppColor.colorBgSearchBar),
+            height: 45,
+            child: TypeAheadFormFieldQuickSearch<PresentationEmail, RecentSearch>(
+                textFieldConfiguration: QuickSearchTextFieldConfiguration(
+                    controller: controller.searchInputController,
+                    autofocus: true,
+                    focusNode: controller.searchFocus,
+                    textInputAction: TextInputAction.done,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                        hintText: AppLocalizations.of(context).search_mail,
+                        hintStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0),
+                        labelStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0)
+                    ),
+                    leftButton: buildIconWeb(
+                        icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
+                        onTap: () => {}),
+                    rightButton: buildIconWeb(
+                        icon: SvgPicture.asset(_imagePaths.icComposerClose, width: 18, height: 18, fit: BoxFit.fill),
+                        onTap: () {
+                          controller.searchInputController.clear();
+                          controller.clearSearchText();
+                        })
+                ),
+                suggestionsBoxDecoration: QuickSearchSuggestionsBoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.all(Radius.circular(16)),
+                  constraints: BoxConstraints(
+                      maxWidth: _responsiveUtils.isDesktop(context) ? 556 : double.infinity,
+                      maxHeight: 322),
+                ),
+                actionButton: Padding(
+                  padding: const EdgeInsets.only(left: 24, top: 24, right: 24, bottom: 20),
+                  child: Row(
+                    children: [
+                      (ButtonBuilder(_imagePaths.icAttachmentSB)
+                          ..decoration(BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: AppColor.colorButtonHeaderThread))
+                          ..paddingIcon(const EdgeInsets.only(right: 5))
+                          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
+                          ..radiusSplash(10)
+                          ..size(16)
+                          ..textStyle(const TextStyle(fontSize: 13, color: AppColor.colorTextButtonHeaderThread))
+                          ..onPressActionClick(() => {})
+                          ..text(AppLocalizations.of(context).hasAttachment, isVertical: false))
+                        .build(),
+                      const SizedBox(width: 8),
+                      (ButtonBuilder(_imagePaths.icCalendarSB)
+                          ..decoration(BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: AppColor.colorButtonHeaderThread))
+                          ..paddingIcon(const EdgeInsets.only(right: 5))
+                          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
+                          ..radiusSplash(10)
+                          ..size(16)
+                          ..textStyle(const TextStyle(fontSize: 13, color: AppColor.colorTextButtonHeaderThread))
+                          ..onPressActionClick(() => {})
+                          ..text(AppLocalizations.of(context).last7Days, isVertical: false))
+                        .build(),
+                      const SizedBox(width: 8),
+                      (ButtonBuilder(_imagePaths.icUserSB)
+                          ..decoration(BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: AppColor.colorButtonHeaderThread))
+                          ..paddingIcon(const EdgeInsets.only(right: 5))
+                          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
+                          ..radiusSplash(10)
+                          ..size(16)
+                          ..textStyle(const TextStyle(fontSize: 13, color: AppColor.colorTextButtonHeaderThread))
+                          ..onPressActionClick(() => {})
+                          ..text(AppLocalizations.of(context).fromMe, isVertical: false))
+                        .build(),
+                    ],
+                  ),
+                ),
+                titleHeaderRecent: Padding(
+                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 8),
+                  child: Text(AppLocalizations.of(context).recent,
+                      style: const TextStyle(fontSize: 13.0,
+                          color: AppColor.colorTextButtonHeaderThread,
+                          fontWeight: FontWeight.w500))),
+                getRecentCallback: (pattern) async {
+                  return [];
+                },
+                itemRecentBuilder: (context, recent) {
+                  return RecentSearchItemTileWidget(recent);
+                },
+                suggestionsCallback: (pattern) async {
+                  return [];
+                },
+                itemBuilder: (context, email) {
+                  return EmailQuickSearchItemTileWidget(email, controller.selectedMailbox.value);
+                },
+                onSuggestionSelected: (autoCompleteResult) async {
+                }),
+          )),
+          const SizedBox(width: 16),
+        ]
+    );
   }
 }
