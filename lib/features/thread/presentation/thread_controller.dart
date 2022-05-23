@@ -264,6 +264,9 @@ class ThreadController extends BaseController {
         } if (action is HandleEmailActionTypeAction) {
           pressEmailSelectionAction(action.context, action.emailAction, action.listEmailSelected);
           mailboxDashBoardController.clearDashBoardAction();
+        } if (action is OpenEmailDetailedAction) {
+          pressEmailAction(action.context, EmailActionType.preview, action.presentationEmail);
+          mailboxDashBoardController.clearDashBoardAction();
         }
       }
     });
