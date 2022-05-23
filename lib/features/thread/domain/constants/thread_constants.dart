@@ -24,4 +24,16 @@ class ThreadConstants {
     EmailProperty.keywords,
     EmailProperty.mailboxIds,
   });
+
+  static final propertiesQuickSearch = Properties({
+    EmailProperty.id,
+    EmailProperty.subject,
+    EmailProperty.from,
+    EmailProperty.to,
+    EmailProperty.keywords,
+    EmailProperty.receivedAt,
+    EmailProperty.sentAt,
+    EmailProperty.preview,
+    EmailProperty.hasAttachment,
+  });
 }
