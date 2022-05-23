@@ -12,6 +12,10 @@ import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -33,13 +37,16 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -64,6 +71,7 @@ class MailboxDashBoardController extends ReloadableController {
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
   final SaveRecentSearchInteractor _saveRecentSearchInteractor;
   final GetAllRecentSearchLatestInteractor _getAllRecentSearchLatestInteractor;
+  final QuickSearchEmailInteractor _quickSearchEmailInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -94,6 +102,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._deleteEmailPermanentlyInteractor,
     this._saveRecentSearchInteractor,
     this._getAllRecentSearchLatestInteractor,
+    this._quickSearchEmailInteractor,
   );
 
   @override
@@ -413,6 +422,25 @@ class MailboxDashBoardController extends ReloadableController {
             (success) => success is GetAllRecentSearchLatestSuccess
                 ? success.listRecentSearch
                 : <RecentSearch>[]));
+  }
+
+  Future<List<PresentationEmail>> quickSearchEmailsAction(String pattern) async {
+    if (accountId.value != null && selectedMailbox.value != null) {
+      return await _quickSearchEmailInteractor.execute(
+        accountId.value!,
+        limit: UnsignedInt(5),
+        sort: <Comparator>{}
+          ..add(EmailComparator(EmailComparatorProperty.receivedAt)
+            ..setIsAscending(false)),
+        filter: EmailFilterCondition(
+            text: pattern,
+            inMailbox: selectedMailbox.value!.id),
+        properties: ThreadConstants.propertiesQuickSearch
+      ).then((result) => result.fold(
+          (failure) => <PresentationEmail>[],
+          (success) => success is QuickSearchEmailSuccess ? success.emailList : <PresentationEmail>[]));
+    }
+    return <PresentationEmail>[];
   }
 
   void composeEmailAction() {
