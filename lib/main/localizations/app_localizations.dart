@@ -1350,4 +1350,10 @@ class AppLocalizations {
         'Recent',
         name: 'recent');
   }
+
+  String get showingResultsFor {
+    return Intl.message(
+        'Showing results for:',
+        name: 'showingResultsFor');
+  }
 }
