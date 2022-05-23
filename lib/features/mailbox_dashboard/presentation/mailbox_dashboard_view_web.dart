@@ -420,6 +420,12 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                     autofocus: true,
                     focusNode: controller.searchFocus,
                     textInputAction: TextInputAction.done,
+                    onSubmitted: (keyword) {
+                      log('MailboxDashBoardView::_buildSearchForm(): onSubmitted: $keyword');
+                      if (keyword.trim().isNotEmpty) {
+                        controller.saveRecentSearch(RecentSearch(keyword, DateTime.now()));
+                      }
+                    },
                     decoration: InputDecoration(
                         border: InputBorder.none,
                         focusedBorder: InputBorder.none,
@@ -431,7 +437,13 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                     ),
                     leftButton: buildIconWeb(
                         icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
-                        onTap: () => {}),
+                        onTap: () {
+                          final keyword = controller.searchInputController.text;
+                          log('MailboxDashBoardView::_buildSearchForm(): buttonClick: $keyword');
+                          if (keyword.trim().isNotEmpty) {
+                            controller.saveRecentSearch(RecentSearch(keyword, DateTime.now()));
+                          }
+                        }),
                     rightButton: buildIconWeb(
                         icon: SvgPicture.asset(_imagePaths.icComposerClose, width: 18, height: 18, fit: BoxFit.fill),
                         onTap: () {
