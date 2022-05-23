@@ -31,8 +31,10 @@ import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_perman
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
@@ -61,6 +63,7 @@ class MailboxDashBoardController extends ReloadableController {
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
   final SaveRecentSearchInteractor _saveRecentSearchInteractor;
+  final GetAllRecentSearchLatestInteractor _getAllRecentSearchLatestInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -90,6 +93,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._moveToMailboxInteractor,
     this._deleteEmailPermanentlyInteractor,
     this._saveRecentSearchInteractor,
+    this._getAllRecentSearchLatestInteractor,
   );
 
   @override
@@ -400,6 +404,15 @@ class MailboxDashBoardController extends ReloadableController {
 
   void saveRecentSearch(RecentSearch recentSearch) {
     consumeState(_saveRecentSearchInteractor.execute(recentSearch));
+  }
+
+  Future<List<RecentSearch>> getAllRecentSearchAction(String pattern) async {
+    return await _getAllRecentSearchLatestInteractor.execute(pattern: pattern)
+        .then((result) => result.fold(
+            (failure) => <RecentSearch>[],
+            (success) => success is GetAllRecentSearchLatestSuccess
+                ? success.listRecentSearch
+                : <RecentSearch>[]));
   }
 
   void composeEmailAction() {

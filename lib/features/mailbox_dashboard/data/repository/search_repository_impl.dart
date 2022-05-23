@@ -13,4 +13,9 @@ class SearchRepositoryImpl extends SearchRepository {
   Future<void> saveRecentSearch(RecentSearch recentSearch) {
     return searchDataSource.saveRecentSearch(recentSearch);
   }
+
+  @override
+  Future<List<RecentSearch>> getAllRecentSearchLatest({int? limit, String? pattern}) {
+    return searchDataSource.getAllRecentSearchLatest(limit: limit, pattern: pattern);
+  }
 }

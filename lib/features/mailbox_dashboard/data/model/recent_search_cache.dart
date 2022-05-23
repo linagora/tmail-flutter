@@ -13,16 +13,26 @@ class RecentSearchCache extends HiveObject with EquatableMixin {
   final String value;
 
   @HiveField(1)
-  final DateTime creationTime;
+  final DateTime creationDate;
 
-  RecentSearchCache(this.value, this.creationTime);
+  RecentSearchCache(this.value, this.creationDate);
 
   @override
-  List<Object?> get props => [value, creationTime];
+  List<Object?> get props => [value, creationDate];
 }
 
 extension RecentSearchExtension on RecentSearch {
   RecentSearchCache toRecentSearchCache() {
     return RecentSearchCache(value, creationDate);
+  }
+}
+
+extension RecentSearchCacheExtension on RecentSearchCache {
+  RecentSearch toRecentSearch() {
+    return RecentSearch(value, creationDate);
+  }
+
+  bool match(String pattern) {
+    return value.toLowerCase().contains(pattern.toLowerCase());
   }
 }
