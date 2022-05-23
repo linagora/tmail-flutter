@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/network_connection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -24,7 +25,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with NetworkConnectionMixin,
-    UserSettingPopupMenuMixin, FilterEmailPopupMenuMixin {
+    UserSettingPopupMenuMixin, FilterEmailPopupMenuMixin, AppLoaderMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -425,6 +426,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                       if (keyword.trim().isNotEmpty) {
                         controller.saveRecentSearch(RecentSearch(keyword, DateTime.now()));
                       }
+                      controller.searchEmail(context, keyword);
                     },
                     decoration: InputDecoration(
                         border: InputBorder.none,
@@ -443,6 +445,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                           if (keyword.trim().isNotEmpty) {
                             controller.saveRecentSearch(RecentSearch(keyword, DateTime.now()));
                           }
+                          controller.searchEmail(context, keyword);
                         }),
                     rightButton: buildIconWeb(
                         icon: SvgPicture.asset(_imagePaths.icComposerClose, width: 18, height: 18, fit: BoxFit.fill),
@@ -508,20 +511,31 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                   child: Text(AppLocalizations.of(context).recent,
                       style: const TextStyle(fontSize: 13.0,
                           color: AppColor.colorTextButtonHeaderThread,
-                          fontWeight: FontWeight.w500))),
+                          fontWeight: FontWeight.w500)
+                  )
+                ),
+                loadingBuilder: (context) => Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: loadingWidget,
+                ),
                 getRecentCallback: (pattern) async {
                   return controller.getAllRecentSearchAction(pattern);
                 },
                 itemRecentBuilder: (context, recent) {
                   return RecentSearchItemTileWidget(recent);
                 },
+                onRecentSelected: (recent) {
+                  controller.searchInputController.text = recent.value;
+                  controller.searchEmail(context, recent.value);
+                },
                 suggestionsCallback: (pattern) async {
-                  return [];
+                  return controller.quickSearchEmailsAction(pattern);
                 },
                 itemBuilder: (context, email) {
                   return EmailQuickSearchItemTileWidget(email, controller.selectedMailbox.value);
                 },
                 onSuggestionSelected: (autoCompleteResult) async {
+
                 }),
           )),
           const SizedBox(width: 16),
