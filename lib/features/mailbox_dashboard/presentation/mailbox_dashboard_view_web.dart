@@ -468,15 +468,45 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     return controller.selectQuickSearchFilter(filterAction);
                   }
                 },
-                listActionPadding: const EdgeInsets.only(left: 24, top: 24, right: 24, bottom: 20),
+                listActionPadding: const EdgeInsets.only(left: 24, top: 24, right: 24, bottom: 16),
                 titleHeaderRecent: Padding(
-                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 8),
+                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 8, top: 8),
                   child: Text(AppLocalizations.of(context).recent,
                       style: const TextStyle(fontSize: 13.0,
                           color: AppColor.colorTextButtonHeaderThread,
                           fontWeight: FontWeight.w500)
                   )
                 ),
+                buttonShowAllResult: (context, keyword) {
+                  if (keyword is String) {
+                    return InkWell(
+                      onTap: () {
+                        if (keyword.trim().isNotEmpty) {
+                          controller.saveRecentSearch(RecentSearch(keyword, DateTime.now()));
+                        }
+                        controller.searchEmail(context, keyword);
+                      },
+                      child: Padding(
+                          padding: const EdgeInsets.only(left: 24, right: 24, top: 14, bottom: 14),
+                          child: Row(children: [
+                            Text(AppLocalizations.of(context).showingResultsFor,
+                                style: const TextStyle(fontSize: 13.0,
+                                    color: AppColor.colorTextButtonHeaderThread,
+                                    fontWeight: FontWeight.w500)
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(child: Text('"$keyword"',
+                                style: const TextStyle(
+                                    fontSize: 13.0,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500)))
+                          ])
+                      ),
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
                 loadingBuilder: (context) => Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: loadingWidget,
