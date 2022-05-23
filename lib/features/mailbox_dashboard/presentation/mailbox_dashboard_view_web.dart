@@ -450,8 +450,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   color: Colors.white,
                   borderRadius: const BorderRadius.all(Radius.circular(16)),
                   constraints: BoxConstraints(
-                      maxWidth: responsiveUtils.isDesktop(context) ? 556 : double.infinity,
-                      maxHeight: 322),
+                      maxWidth: responsiveUtils.isDesktop(context) ? 556 : double.infinity),
                 ),
                 listActionButton: const [
                   QuickSearchFilter.hasAttachment,
@@ -498,8 +497,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 itemBuilder: (context, email) {
                   return EmailQuickSearchItemTileWidget(email, controller.selectedMailbox.value);
                 },
-                onSuggestionSelected: (autoCompleteResult) async {
-
+                onSuggestionSelected: (presentationEmail) async {
+                  controller.dispatchAction(OpenEmailDetailedAction(context, presentationEmail));
                 }),
           )),
           const SizedBox(width: 16),
