@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -45,6 +46,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_s
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -86,6 +88,7 @@ class MailboxDashBoardController extends ReloadableController {
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final filterMessageOption = FilterMessageOption.all.obs;
   final listEmailSelected = <PresentationEmail>[].obs;
+  final listFilterQuickSearch = RxList<QuickSearchFilter>();
 
   SearchQuery? searchQuery;
   Session? sessionCurrent;
@@ -283,6 +286,7 @@ class MailboxDashBoardController extends ReloadableController {
     searchQuery = SearchQuery.initial();
     clearSuggestionSearch();
     searchInputController.clear();
+    listFilterQuickSearch.clear();
     FocusManager.instance.primaryFocus?.unfocus();
   }
 
@@ -426,6 +430,8 @@ class MailboxDashBoardController extends ReloadableController {
 
   Future<List<PresentationEmail>> quickSearchEmailsAction(String pattern) async {
     if (accountId.value != null && selectedMailbox.value != null) {
+      log('MailboxDashBoardController::quickSearchEmailsAction(): DATE_NOW: ${DateTime.now()}');
+      log('MailboxDashBoardController::quickSearchEmailsAction(): DATE: ${DateTime.now().subtract(const Duration(days: 7))}');
       return await _quickSearchEmailInteractor.execute(
         accountId.value!,
         limit: UnsignedInt(5),
@@ -434,6 +440,11 @@ class MailboxDashBoardController extends ReloadableController {
             ..setIsAscending(false)),
         filter: EmailFilterCondition(
             text: pattern,
+            hasAttachment: listFilterQuickSearch.contains(QuickSearchFilter.hasAttachment) ? true : null,
+            from: listFilterQuickSearch.contains(QuickSearchFilter.fromMe) ? userProfile.value!.email : null,
+            after: listFilterQuickSearch.contains(QuickSearchFilter.last7Days)
+                ? UTCDate(DateTime.now().subtract(const Duration(days: 7)))
+                : null,
             inMailbox: selectedMailbox.value!.id),
         properties: ThreadConstants.propertiesQuickSearch
       ).then((result) => result.fold(
@@ -441,6 +452,14 @@ class MailboxDashBoardController extends ReloadableController {
           (success) => success is QuickSearchEmailSuccess ? success.emailList : <PresentationEmail>[]));
     }
     return <PresentationEmail>[];
+  }
+
+  void selectQuickSearchFilter(QuickSearchFilter quickSearchFilter) {
+    if (listFilterQuickSearch.contains(quickSearchFilter)) {
+      listFilterQuickSearch.remove(quickSearchFilter);
+    } else {
+      listFilterQuickSearch.add(quickSearchFilter);
+    }
   }
 
   void composeEmailAction() {

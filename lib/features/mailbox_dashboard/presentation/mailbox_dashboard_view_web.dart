@@ -4,16 +4,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/network_connection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
@@ -24,17 +21,14 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with NetworkConnectionMixin,
-    UserSettingPopupMenuMixin, FilterEmailPopupMenuMixin, AppLoaderMixin {
-
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
+class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   MailboxDashBoardView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (controller.isDrawerOpen && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context))) {
+    if (controller.isDrawerOpen && (responsiveUtils.isDesktop(context)
+        || responsiveUtils.isTabletLarge(context))) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         controller.closeMailboxMenuDrawer();
       });
@@ -44,16 +38,16 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       key: controller.scaffoldKey,
       backgroundColor: Colors.white,
       drawer: ResponsiveWidget(
-          responsiveUtils: _responsiveUtils,
-          mobile: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawer),
-          tablet: SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawer),
+          responsiveUtils: responsiveUtils,
+          mobile: SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeDrawer),
+          tablet: SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeDrawer),
           tabletLarge: const SizedBox.shrink(),
           desktop: const SizedBox.shrink(),
       ),
-      drawerEnableOpenDragGesture: _responsiveUtils.isMobile(context) || _responsiveUtils.isTablet(context),
+      drawerEnableOpenDragGesture: responsiveUtils.isMobile(context) || responsiveUtils.isTablet(context),
       body: Stack(children: [
         ResponsiveWidget(
-            responsiveUtils: _responsiveUtils,
+            responsiveUtils: responsiveUtils,
             desktop: Column(children: [
               Row(children: [
                 Container(width: 256, color: Colors.white,
@@ -64,7 +58,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                         ..setSloganTextAlign(TextAlign.center)
                         ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold))
                         ..setSizeLogo(24)
-                        ..setLogo(_imagePaths.icLogoTMail))
+                        ..setLogo(imagePaths.icLogoTMail))
                       .build(),
                     Obx(() {
                       if (controller.appInformation.value != null) {
@@ -87,7 +81,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeMenu),
+                  SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
                   Expanded(child: _wrapContainerForThreadAndEmail(context))
                 ],
               ))
@@ -95,7 +89,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
             tabletLarge: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(child: MailboxView(), width: _responsiveUtils.defaultSizeDrawer),
+                SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeDrawer),
                 Expanded(child: _wrapContainerForThreadAndEmail(context))
               ],
             ),
@@ -126,7 +120,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
           }
         });
       case ReadingPane.rightOfInbox:
-        if (_responsiveUtils.isDesktop(context)) {
+        if (responsiveUtils.isDesktop(context)) {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -165,7 +159,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
           ? Expanded(child: _buildSearchForm(context))
           : const SizedBox.shrink()),
       Obx(() => !controller.isSearchActive()
-          ? (SearchBarView(_imagePaths)
+          ? (SearchBarView(imagePaths)
                 ..hintTextSearch(AppLocalizations.of(context).search_emails)
                 ..maxSizeWidth(240)
                 ..addOnOpenSearchViewAction(() => controller.enableSearch()))
@@ -199,7 +193,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
 
   Widget _buildListButtonTopBar(BuildContext context) {
     return Row(children: [
-      (ButtonBuilder(_imagePaths.icRefresh)
+      (ButtonBuilder(imagePaths.icRefresh)
           ..key(const Key('button_reload_thread'))
           ..decoration(BoxDecoration(
               borderRadius: BorderRadius.circular(10),
@@ -211,7 +205,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
           ..onPressActionClick(() => controller.dispatchAction(RefreshAllEmailAction())))
         .build(),
       const SizedBox(width: 16),
-      (ButtonBuilder(_imagePaths.icSelectAll)
+      (ButtonBuilder(imagePaths.icSelectAll)
           ..key(const Key('button_select_all'))
           ..decoration(BoxDecoration(
               borderRadius: BorderRadius.circular(10),
@@ -225,7 +219,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
           ..text(AppLocalizations.of(context).select_all, isVertical: false))
         .build(),
       const SizedBox(width: 16),
-      (ButtonBuilder(_imagePaths.icMarkAllAsRead)
+      (ButtonBuilder(imagePaths.icMarkAllAsRead)
           ..key(const Key('button_mark_all_as_read'))
           ..decoration(BoxDecoration(
               borderRadius: BorderRadius.circular(10),
@@ -239,7 +233,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
           ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
         .build(),
       const SizedBox(width: 16),
-      Obx(() => (ButtonBuilder(_imagePaths.icFilterWeb)
+      Obx(() => (ButtonBuilder(imagePaths.icFilterWeb)
           ..key(const Key('button_filter_messages'))
           ..context(context)
           ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
@@ -257,7 +251,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                   : FontWeight.w500))
           ..addIconAction(Padding(
               padding: const EdgeInsets.only(left: 8),
-              child: SvgPicture.asset(_imagePaths.icArrowDown, fit: BoxFit.fill)))
+              child: SvgPicture.asset(imagePaths.icArrowDown, fit: BoxFit.fill)))
           ..addOnPressActionWithPositionClick((position) => controller.openPopupMenuAction(context, position,
               popupMenuFilterEmailActionTile(context,
                   controller.filterMessageOption.value,
@@ -271,7 +265,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
 
   Widget _buildListButtonTopBarSearchActive(BuildContext context) {
     return Row(children: [
-      (ButtonBuilder(_imagePaths.icSelectAll)
+      (ButtonBuilder(imagePaths.icSelectAll)
           ..key(const Key('button_select_all'))
           ..decoration(BoxDecoration(
               borderRadius: BorderRadius.circular(10),
@@ -285,7 +279,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
           ..text(AppLocalizations.of(context).select_all, isVertical: false))
         .build(),
       const SizedBox(width: 16),
-      (ButtonBuilder(_imagePaths.icMarkAllAsRead)
+      (ButtonBuilder(imagePaths.icMarkAllAsRead)
           ..key(const Key('button_mark_all_as_read'))
           ..decoration(BoxDecoration(
               borderRadius: BorderRadius.circular(10),
@@ -304,7 +298,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
   Widget _buildListButtonTopBarSelection(BuildContext context) {
     return Row(children: [
       buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icCloseComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
+          icon: SvgPicture.asset(imagePaths.icCloseComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
           tooltip: AppLocalizations.of(context).cancel,
           onTap: () => controller.dispatchAction(CancelSelectionAllEmailAction())),
       Obx(() => Text(
@@ -314,8 +308,8 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       Obx(() => buildIconWeb(
           icon: SvgPicture.asset(
               controller.listEmailSelected.isAllEmailRead
-                  ? _imagePaths.icRead
-                  : _imagePaths.icUnread,
+                  ? imagePaths.icRead
+                  : imagePaths.icUnread,
               fit: BoxFit.fill),
           tooltip: controller.listEmailSelected.isAllEmailRead
               ? AppLocalizations.of(context).mark_as_unread
@@ -329,8 +323,8 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       Obx(() => buildIconWeb(
           icon: SvgPicture.asset(
               controller.listEmailSelected.isAllEmailStarred
-                  ? _imagePaths.icUnStar
-                  : _imagePaths.icStar,
+                  ? imagePaths.icUnStar
+                  : imagePaths.icStar,
               fit: BoxFit.fill),
           tooltip: controller.listEmailSelected.isAllEmailStarred
               ? AppLocalizations.of(context).un_star
@@ -344,7 +338,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
       Obx(() {
         if (controller.selectedMailbox.value?.isDrafts == false) {
           return buildIconWeb(
-              icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
+              icon: SvgPicture.asset(imagePaths.icMove, fit: BoxFit.fill),
               tooltip: AppLocalizations.of(context).move,
               onTap: () => controller.dispatchAction(
                   HandleEmailActionTypeAction(context,
@@ -359,8 +353,8 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
           return buildIconWeb(
               icon: SvgPicture.asset(
                   controller.selectedMailbox.value?.isSpam == true
-                      ? _imagePaths.icNotSpam
-                      : _imagePaths.icSpam,
+                      ? imagePaths.icNotSpam
+                      : imagePaths.icSpam,
                   fit: BoxFit.fill),
               tooltip: controller.selectedMailbox.value?.isSpam == true
                   ? AppLocalizations.of(context).un_spam
@@ -383,7 +377,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
         }
       }),
       Obx(() => buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icDelete, fit: BoxFit.fill),
+          icon: SvgPicture.asset(imagePaths.icDelete, fit: BoxFit.fill),
           tooltip: controller.selectedMailbox.value?.isTrash == true
               ? AppLocalizations.of(context).delete_permanently
               : AppLocalizations.of(context).move_to_trash,
@@ -405,7 +399,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
     return Row(
         children: [
           buildIconWeb(
-              icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
+              icon: SvgPicture.asset(imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
               onTap: () {
                 controller.disableSearch();
                 controller.dispatchAction(CancelSelectionAllEmailAction());
@@ -422,7 +416,6 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                     focusNode: controller.searchFocus,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (keyword) {
-                      log('MailboxDashBoardView::_buildSearchForm(): onSubmitted: $keyword');
                       if (keyword.trim().isNotEmpty) {
                         controller.saveRecentSearch(RecentSearch(keyword, DateTime.now()));
                       }
@@ -438,17 +431,16 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                         labelStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0)
                     ),
                     leftButton: buildIconWeb(
-                        icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
+                        icon: SvgPicture.asset(imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
                         onTap: () {
                           final keyword = controller.searchInputController.text;
-                          log('MailboxDashBoardView::_buildSearchForm(): buttonClick: $keyword');
                           if (keyword.trim().isNotEmpty) {
                             controller.saveRecentSearch(RecentSearch(keyword, DateTime.now()));
                           }
                           controller.searchEmail(context, keyword);
                         }),
-                    rightButton: buildIconWeb(
-                        icon: SvgPicture.asset(_imagePaths.icComposerClose, width: 18, height: 18, fit: BoxFit.fill),
+                    clearTextButton: buildIconWeb(
+                        icon: SvgPicture.asset(imagePaths.icClearTextSearch, width: 16, height: 16, fit: BoxFit.fill),
                         onTap: () {
                           controller.searchInputController.clear();
                           controller.clearSearchText();
@@ -458,54 +450,26 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                   color: Colors.white,
                   borderRadius: const BorderRadius.all(Radius.circular(16)),
                   constraints: BoxConstraints(
-                      maxWidth: _responsiveUtils.isDesktop(context) ? 556 : double.infinity,
+                      maxWidth: responsiveUtils.isDesktop(context) ? 556 : double.infinity,
                       maxHeight: 322),
                 ),
-                actionButton: Padding(
-                  padding: const EdgeInsets.only(left: 24, top: 24, right: 24, bottom: 20),
-                  child: Row(
-                    children: [
-                      (ButtonBuilder(_imagePaths.icAttachmentSB)
-                          ..decoration(BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: AppColor.colorButtonHeaderThread))
-                          ..paddingIcon(const EdgeInsets.only(right: 5))
-                          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-                          ..radiusSplash(10)
-                          ..size(16)
-                          ..textStyle(const TextStyle(fontSize: 13, color: AppColor.colorTextButtonHeaderThread))
-                          ..onPressActionClick(() => {})
-                          ..text(AppLocalizations.of(context).hasAttachment, isVertical: false))
-                        .build(),
-                      const SizedBox(width: 8),
-                      (ButtonBuilder(_imagePaths.icCalendarSB)
-                          ..decoration(BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: AppColor.colorButtonHeaderThread))
-                          ..paddingIcon(const EdgeInsets.only(right: 5))
-                          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-                          ..radiusSplash(10)
-                          ..size(16)
-                          ..textStyle(const TextStyle(fontSize: 13, color: AppColor.colorTextButtonHeaderThread))
-                          ..onPressActionClick(() => {})
-                          ..text(AppLocalizations.of(context).last7Days, isVertical: false))
-                        .build(),
-                      const SizedBox(width: 8),
-                      (ButtonBuilder(_imagePaths.icUserSB)
-                          ..decoration(BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: AppColor.colorButtonHeaderThread))
-                          ..paddingIcon(const EdgeInsets.only(right: 5))
-                          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-                          ..radiusSplash(10)
-                          ..size(16)
-                          ..textStyle(const TextStyle(fontSize: 13, color: AppColor.colorTextButtonHeaderThread))
-                          ..onPressActionClick(() => {})
-                          ..text(AppLocalizations.of(context).fromMe, isVertical: false))
-                        .build(),
-                    ],
-                  ),
-                ),
+                listActionButton: const [
+                  QuickSearchFilter.hasAttachment,
+                  QuickSearchFilter.last7Days,
+                  QuickSearchFilter.fromMe,
+                ],
+                actionButtonBuilder: (context, filterAction) {
+                  if (filterAction is QuickSearchFilter) {
+                    return buildQuickSearchFilterButton(context, filterAction);
+                  }
+                  return const SizedBox.shrink();
+                },
+                buttonActionCallback: (filterAction) {
+                  if (filterAction is QuickSearchFilter) {
+                    return controller.selectQuickSearchFilter(filterAction);
+                  }
+                },
+                listActionPadding: const EdgeInsets.only(left: 24, top: 24, right: 24, bottom: 20),
                 titleHeaderRecent: Padding(
                   padding: const EdgeInsets.only(left: 24, right: 24, bottom: 8),
                   child: Text(AppLocalizations.of(context).recent,
@@ -518,7 +482,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController> with Ne
                   padding: const EdgeInsets.only(bottom: 16),
                   child: loadingWidget,
                 ),
-                getRecentCallback: (pattern) async {
+                fetchRecentActionCallback: (pattern) async {
                   return controller.getAllRecentSearchAction(pattern);
                 },
                 itemRecentBuilder: (context, recent) {
