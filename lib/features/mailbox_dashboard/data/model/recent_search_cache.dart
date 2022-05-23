@@ -2,6 +2,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 
 part 'recent_search_cache.g.dart';
 
@@ -18,4 +19,10 @@ class RecentSearchCache extends HiveObject with EquatableMixin {
 
   @override
   List<Object?> get props => [value, creationTime];
+}
+
+extension RecentSearchExtension on RecentSearch {
+  RecentSearchCache toRecentSearchCache() {
+    return RecentSearchCache(value, creationDate);
+  }
 }
