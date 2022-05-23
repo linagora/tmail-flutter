@@ -112,6 +112,11 @@ class ImagePaths {
   String get icTeam => _getImagePath('ic_team.svg');
   String get loginGraphic => _getImagePath('login_graphic.png');
   String get icPowerByLinagora => _getImagePath('power_by_linagora.svg');
+  String get icAttachmentSB => _getImagePath('ic_attachment_sb.svg');
+  String get icCalendarSB => _getImagePath('ic_calendar_sb.svg');
+  String get icClockSB => _getImagePath('ic_clock_sb.svg');
+  String get icSelectedSB => _getImagePath('ic_selected_sb.svg');
+  String get icUserSB => _getImagePath('ic_user_sb.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

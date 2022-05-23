@@ -1326,4 +1326,28 @@ class AppLocalizations {
         'Save',
         name: 'save');
   }
+
+  String get hasAttachment {
+    return Intl.message(
+        'Has attachment',
+        name: 'hasAttachment');
+  }
+
+  String get last7Days {
+    return Intl.message(
+        'Last 7 days',
+        name: 'last7Days');
+  }
+
+  String get fromMe {
+    return Intl.message(
+        'From me',
+        name: 'fromMe');
+  }
+
+  String get recent {
+    return Intl.message(
+        'Recent',
+        name: 'recent');
+  }
 }
