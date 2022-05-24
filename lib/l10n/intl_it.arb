@@ -421,7 +421,7 @@
       "count": {}
     }
   },
-  "message_dialog_send_email_without_recipient": "La tua email deve avere almeno uno destinatario",
+  "message_dialog_send_email_without_recipient": "La tua e-mail deve avere almeno uno destinatario",
   "@message_dialog_send_email_without_recipient": {
     "type": "text",
     "placeholders_order": [],
@@ -433,7 +433,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_search_emails": "Cerca email e file",
+  "hint_search_emails": "Cerca e-mail e file",
   "@hint_search_emails": {
     "type": "text",
     "placeholders_order": [],
@@ -695,7 +695,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_is_not_in_the_correct_format": "L'indirizzo email non è nel formato corretto",
+  "email_address_is_not_in_the_correct_format": "L'indirizzo e-mail non è nel formato corretto",
   "@email_address_is_not_in_the_correct_format": {
     "type": "text",
     "placeholders_order": [],
@@ -725,19 +725,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copy_email_address": "Copia l'indirizzo email",
+  "copy_email_address": "Copia l'indirizzo e-mail",
   "@copy_email_address": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "compose_email": "Componi email",
+  "compose_email": "Componi un'e-mail",
   "@compose_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_copied_to_clipboard": "Indirizzo email copiato negli appunti",
+  "email_address_copied_to_clipboard": "Indirizzo e-mail copiato negli appunti",
   "@email_address_copied_to_clipboard": {
     "type": "text",
     "placeholders_order": [],
@@ -791,7 +791,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_emails": "Cerca nelle email",
+  "search_emails": "Cerca nelle e-mail",
   "@search_emails": {
     "type": "text",
     "placeholders_order": [],
@@ -899,13 +899,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_with_email_address_invalid": "Verifica la correttezza degli indirizzi email e riprova",
+  "message_dialog_send_email_with_email_address_invalid": "Verifica la correttezza degli indirizzi e-mail e riprova",
   "@message_dialog_send_email_with_email_address_invalid": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fix_email_addresses": "Correggi gli indirizzi email",
+  "fix_email_addresses": "Correggi gli indirizzi e-mail",
   "@fix_email_addresses": {
     "type": "text",
     "placeholders_order": [],
@@ -917,7 +917,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_download_has_started": "Il tuo download è iniziato",
+  "your_download_has_started": "Il tuo scaricamento è iniziato",
   "@your_download_has_started": {
     "type": "text",
     "placeholders_order": [],
