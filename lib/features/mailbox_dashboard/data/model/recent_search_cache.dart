@@ -1,6 +1,7 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
+import 'package:jmap_dart_client/jmap/core/extensions/date_time_extension.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 
@@ -34,5 +35,14 @@ extension RecentSearchCacheExtension on RecentSearchCache {
 
   bool match(String pattern) {
     return value.toLowerCase().contains(pattern.toLowerCase());
+  }
+}
+
+extension ListRecentSearchCacheExtension on List<RecentSearchCache> {
+
+  void sortByCreationDate() {
+    sort((recentSearch1, recentSearch2) {
+      return recentSearch1.creationDate.compareToSort(recentSearch1.creationDate, false);
+    });
   }
 }
