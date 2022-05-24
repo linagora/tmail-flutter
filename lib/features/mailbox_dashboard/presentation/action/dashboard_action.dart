@@ -1,9 +1,9 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:model/email/email_action_type.dart';
-import 'package:model/email/filter_message_option.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 
 class DashBoardAction extends UIAction {
@@ -97,4 +97,12 @@ class OpenEmailDetailedAction extends DashBoardAction {
 
   @override
   List<Object?> get props => [presentationEmail];
+}
+
+class DisableSearchEmailAction extends DashBoardAction {
+
+  DisableSearchEmailAction();
+
+  @override
+  List<Object?> get props => [];
 }
