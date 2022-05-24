@@ -24,7 +24,7 @@ class ProfilesView extends GetWidget<ProfilesController> {
             borderRadius: _responsiveUtils.isDesktop(context) ? BorderRadius.circular(20) : null,
             border: _responsiveUtils.isDesktop(context) ? Border.all(color: AppColor.colorBorderBodyThread, width: 1) : null,
             color: Colors.white),
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
         child: DefaultTabController(
             initialIndex: 0,
             length: 1,
