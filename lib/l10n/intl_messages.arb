@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-05-24T02:47:33.512669",
+  "@@last_modified": "2022-05-24T09:43:00.761124",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1320,6 +1320,30 @@
   },
   "showingResultsFor": "Showing results for:",
   "@showingResultsFor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "anyTime": "Any time",
+  "@anyTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last30Days": "Last 30 days",
+  "@last30Days": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last6Months": "Last 6 months",
+  "@last6Months": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "lastYears": "Last years",
+  "@lastYears": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

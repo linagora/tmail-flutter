@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
@@ -56,6 +58,9 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
                     Obx(() => controller.isMailboxTrash && controller.emailList.isNotEmpty && !controller.isSearchActive()
                         ? _buildEmptyTrashButton(context)
                         : const SizedBox.shrink()),
+                    Obx(() => controller.isSearchActive() && _responsiveUtils.isDesktop(context) && BuildUtils.isWeb
+                        ? _buildListButtonQuickSearchFilter(context)
+                        : const SizedBox.shrink()),
                     Expanded(child: Container(
                         color: BuildUtils.isWeb ? AppColor.colorBgDesktop : Colors.white,
                         padding: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
@@ -75,7 +80,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
                               child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    _buildStatusResultSearch(context),
+                                    if (_responsiveUtils.isMobile(context))
+                                      _buildStatusResultSearch(context),
                                     _buildLoadingView(),
                                     Expanded(child: _buildListEmail(context)),
                                     _buildLoadingViewLoadMore(),
@@ -333,7 +339,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
     return Container(
       margin: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
           ? EdgeInsets.symmetric(vertical: controller.isSelectionEnabled() ? 4 : 12, horizontal: 4)
-          : EdgeInsets.only(top: controller.isSearchActive() ? 8 : 0),
+          : EdgeInsets.zero,
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
       color: Colors.white,
@@ -536,5 +542,123 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin {
     return [
       PopupMenuItem(padding: const EdgeInsets.symmetric(horizontal: 8), child: _markAsEmailSpamOrUnSpamAction(context, email)),
     ];
+  }
+
+  Widget _buildListButtonQuickSearchFilter(BuildContext context) {
+    final listQuickSearchFilter = [
+      QuickSearchFilter.hasAttachment,
+      QuickSearchFilter.last7Days,
+      QuickSearchFilter.fromMe,
+    ];
+    return Padding(
+      padding: EdgeInsets.only(
+          left: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 32 : 16,
+          right: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 20 : 16,
+          bottom: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 0 : 16,
+          top: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 16 : 0),
+      child: Row(
+          children: listQuickSearchFilter
+              .map((filter) => _buildQuickSearchFilterButton(context, filter))
+              .toList()),
+    );
+  }
+
+  Widget _buildQuickSearchFilterButton(
+      BuildContext context, QuickSearchFilter filter) {
+    return Obx(() {
+      return Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: InkWell(
+          onTap: () {
+            if (filter != QuickSearchFilter.last7Days) {
+              controller.selectQuickSearchFilter(filter);
+            }
+          },
+          onTapDown: (detail) {
+            if (filter == QuickSearchFilter.last7Days) {
+              final screenSize = MediaQuery.of(context).size;
+              final offset = detail.globalPosition;
+              final position = RelativeRect.fromLTRB(
+                offset.dx,
+                offset.dy,
+                screenSize.width - offset.dx,
+                screenSize.height - offset.dy,
+              );
+              controller.openPopupReceiveTimeQuickSearchFilter(context, position,
+                  popupMenuEmailReceiveTimeType(context,
+                      controller.mailboxDashBoardController.emailReceiveTimeType.value,
+                      (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(receiveTime)));
+            }
+          },
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: filter.getBackgroundColor(controller.mailboxDashBoardController.listFilterQuickSearch)),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                SvgPicture.asset(
+                    filter.getIcon(_imagePaths, controller.mailboxDashBoardController.listFilterQuickSearch),
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.fill),
+                const SizedBox(width: 4),
+                Text(
+                  filter.getTitle(context,
+                      receiveTimeType: controller.mailboxDashBoardController.emailReceiveTimeType.value),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: filter.getTextStyle(controller.mailboxDashBoardController.listFilterQuickSearch),
+                ),
+                if (filter == QuickSearchFilter.last7Days)
+                  ... [
+                    const SizedBox(width: 4),
+                    SvgPicture.asset(
+                        _imagePaths.icChevronDown,
+                        width: 16,
+                        height: 16,
+                        fit: BoxFit.fill),
+                  ]
+              ])),
+        ),
+      );
+    });
+  }
+
+  List<PopupMenuEntry> popupMenuEmailReceiveTimeType(BuildContext context,
+      EmailReceiveTimeType? receiveTimeSelected, Function(EmailReceiveTimeType?)? onCallBack) {
+    return EmailReceiveTimeType.values
+        .map((timeType) => PopupMenuItem(
+            padding: EdgeInsets.zero,
+            child: _receiveTimeTileAction(context, receiveTimeSelected, timeType, onCallBack)))
+        .toList();
+  }
+
+  Widget _receiveTimeTileAction(
+      BuildContext context,
+      EmailReceiveTimeType? receiveTimeSelected,
+      EmailReceiveTimeType receiveTimeType,
+      Function(EmailReceiveTimeType?)? onCallBack
+  ) {
+    return InkWell(
+        onTap: () => onCallBack?.call(receiveTimeType == receiveTimeSelected
+            ? null
+            : receiveTimeType),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: SizedBox(
+              width: 320,
+              child: Row(children: [
+                Expanded(child: Text(
+                    receiveTimeType.getTitle(context),
+                    style: const TextStyle(fontSize: 17, color: Colors.black, fontWeight: FontWeight.normal))),
+                if (receiveTimeType == receiveTimeSelected)
+                  const SizedBox(width: 12),
+                if (receiveTimeType == receiveTimeSelected)
+                  SvgPicture.asset(_imagePaths.icFilterSelected, width: 24, height: 24, fit: BoxFit.fill),
+              ])
+          ),
+        )
+    );
   }
 }

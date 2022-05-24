@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
@@ -38,6 +39,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -845,13 +848,27 @@ class ThreadController extends BaseController {
     emailListSearch.clear();
 
     if (_accountId != null && searchQuery != null) {
+      UTCDate? afterTime;
+      if (mailboxDashBoardController.listFilterQuickSearch.contains(QuickSearchFilter.last7Days)
+          && mailboxDashBoardController.emailReceiveTimeType.value != null) {
+        afterTime = mailboxDashBoardController.emailReceiveTimeType.value!.toUTCDate();
+      }
+
+      final emailFilterCondition = EmailFilterCondition(
+          text: searchQuery!.value,
+          hasAttachment: mailboxDashBoardController.listFilterQuickSearch.contains(QuickSearchFilter.hasAttachment)
+              ? true : null,
+          from: mailboxDashBoardController.listFilterQuickSearch.contains(QuickSearchFilter.fromMe)
+              ? mailboxDashBoardController.userProfile.value!.email
+              : null,
+          after: afterTime,
+          inMailbox: _currentMailboxId);
+
       consumeState(_searchEmailInteractor.execute(
         _accountId!,
         limit: ThreadConstants.defaultLimit,
         sort: _sortOrder,
-        filter: EmailFilterCondition(
-            text: searchQuery!.value,
-            inMailbox: _currentMailboxId),
+        filter: emailFilterCondition,
         properties: ThreadConstants.propertiesDefault,
       ));
     }
@@ -1227,6 +1244,32 @@ class ThreadController extends BaseController {
   void _emptyTrashFolderFailure(EmptyTrashFolderFailure failure) {
     mailboxDashBoardController.dispatchState(Left(failure));
     refreshAllEmail();
+  }
+
+  void selectQuickSearchFilter(QuickSearchFilter filter) {
+    mailboxDashBoardController.selectQuickSearchFilter(filter);
+    _searchEmail();
+  }
+
+  void openPopupReceiveTimeQuickSearchFilter(
+      BuildContext context,
+      RelativeRect position,
+      List<PopupMenuEntry> entries) {
+    openPopupMenuAction(context, position, entries);
+  }
+
+  void selectReceiveTimeQuickSearchFilter(EmailReceiveTimeType? emailReceiveTimeType) {
+    popBack();
+
+    if (emailReceiveTimeType != null) {
+      if (!mailboxDashBoardController.listFilterQuickSearch.contains(QuickSearchFilter.last7Days)) {
+        mailboxDashBoardController.selectQuickSearchFilter(QuickSearchFilter.last7Days);
+      }
+    } else {
+      mailboxDashBoardController.listFilterQuickSearch.remove(QuickSearchFilter.last7Days);
+    }
+    mailboxDashBoardController.setEmailReceiveTimeType(emailReceiveTimeType);
+    _searchEmail();
   }
 
   void openMailboxLeftMenu() {

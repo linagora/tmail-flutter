@@ -33,7 +33,7 @@ abstract class BaseMailboxDashBoardView extends GetWidget<MailboxDashBoardContro
                 fit: BoxFit.fill),
             const SizedBox(width: 4),
             Text(
-              filter.getTitle(context),
+              filter.getTitle(context, receiveTimeType: controller.emailReceiveTimeType.value),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: filter.getTextStyle(controller.listFilterQuickSearch),
