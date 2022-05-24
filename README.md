@@ -2,18 +2,51 @@
 
 [![Gitter](https://badges.gitter.im/linagora/team-mail.svg)](https://gitter.im/linagora/team-mail?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-![LOGO](https://user-images.githubusercontent.com/6928740/129552343-31e21182-d07c-4f2a-bc83-4f9be70d1693.png)
+![LOGO](https://user-images.githubusercontent.com/6462404/169949991-bd72462e-fdb8-4a07-9c35-1d2c0c28f4ee.png)
 
 This project aims at providing a multi-plateform mobile email application, running the [JMAP protocol](https://jmap.io/) and will also deliver additional 
 features to the [TMail back-end](https://github.com/linagora/tmail-backend).
 
 Here is how TMail looks like on a phone:
 
-![Screenshots Mobile](https://user-images.githubusercontent.com/6928740/138420419-867405e0-a1d4-4561-8068-5d37c3f96035.png)
+![Screenshots Mobile](https://user-images.githubusercontent.com/6462404/169979675-85893fa4-325a-426b-a1a8-0751a585954a.png)
+
 
 Here is how TMail looks like on a tablet:
 
-![Screenshot Tablet](https://user-images.githubusercontent.com/6928740/138420547-4faac0a8-dfd7-448d-a3ba-2b575453c3fa.jpeg)
+![Screenshot Tablet](https://user-images.githubusercontent.com/6462404/169980415-513fb58c-004e-4946-a4dd-179b49c65470.png)
+
+
+![Screenshot_Web](https://user-images.githubusercontent.com/6462404/169980055-b1ef5ff4-daee-4f58-84d4-9703e25f38d9.png)
+
+## Build app
+1. Go to root folder of project
+2. Run `prebuild.sh` script
+```
+/bin/bash prebuild.sh 
+```
+3. Build
++ iOS:
+```
+flutter build ios 
+```
+
++ Android:
+```
+flutter build apk
+```
+
++ Web:
+
+change `SERVER_URL` in `env.file` with your JMAP server
+```
+SERVER_URL=http://your-jmap-server.domain
+```
+then run: 
+```
+flutter build web
+```
+or you can find our images in: https://hub.docker.com/r/linagora/tmail-web
 
 ## FAQ
 
