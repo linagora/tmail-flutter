@@ -1,13 +1,12 @@
 
 import 'package:equatable/equatable.dart';
 
-class CleanupRule with EquatableMixin {
-  final Duration cachingEmailPeriod;
+abstract class CleanupRule with EquatableMixin {
 
-  CleanupRule(this.cachingEmailPeriod);
+  CleanupRule();
 
   @override
-  List<Object?> get props => [cachingEmailPeriod];
+  List<Object?> get props => [];
 }
 
 class Duration with EquatableMixin {
