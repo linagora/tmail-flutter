@@ -209,7 +209,7 @@
       "emailAddress": {}
     }
   },
-  "prefix_reply_email": "Re:",
+  "prefix_reply_email": "Ant:",
   "@prefix_reply_email": {
     "type": "text",
     "placeholders_order": [],
