@@ -62,7 +62,7 @@ export 'presentation/views/modal_sheets/edit_text_modal_sheet_builder.dart';
 export 'presentation/views/search/search_bar_view.dart';
 export 'presentation/views/popup_menu/popup_menu_item_widget.dart';
 export 'presentation/views/tab_bar/custom_tab_indicator.dart';
-export 'presentation/views/typeahead/typeahead_for_quick_search.dart';
+export 'presentation/views/quick_search/quick_search_input_form.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';

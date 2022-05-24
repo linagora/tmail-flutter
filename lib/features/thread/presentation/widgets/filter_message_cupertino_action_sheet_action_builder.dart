@@ -3,9 +3,10 @@ import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 
-class FilterMessageCupertinoActionSheetActionBuilder extends CupertinoActionSheetActionBuilder<FilterMessageOption> {
+class FilterMessageCupertinoActionSheetActionBuilder
+    extends CupertinoActionSheetActionBuilder<FilterMessageOption> {
 
   final FilterMessageOption option;
   final FilterMessageOption? optionCurrent;

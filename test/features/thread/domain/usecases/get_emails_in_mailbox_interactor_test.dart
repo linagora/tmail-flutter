@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
@@ -38,7 +39,7 @@ void main() {
       when(threadRepository.getAllEmail(
           AccountFixtures.aliceAccountId,
           limit: UnsignedInt(20),
-          sort: Set()..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
+          sort: {}..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
           emailFilter: EmailFilter(
             filter: EmailFilterCondition(inMailbox: MailboxFixtures.inboxMailbox.id),
             mailboxId: MailboxFixtures.inboxMailbox.id,
@@ -66,7 +67,7 @@ void main() {
       final streamStates = getEmailsInMailboxInteractor.execute(
         AccountFixtures.aliceAccountId,
         limit: UnsignedInt(20),
-        sort: Set()..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
+        sort: {}..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
         emailFilter: EmailFilter(
           filter: EmailFilterCondition(inMailbox: MailboxFixtures.inboxMailbox.id),
           mailboxId: MailboxFixtures.inboxMailbox.id,

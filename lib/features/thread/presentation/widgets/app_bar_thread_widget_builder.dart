@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnFilterEmailAction = void Function(FilterMessageOption, RelativeRect? position);
@@ -15,6 +15,9 @@ typedef OnCancelEditThread = void Function();
 typedef OnEmailSelectionAction = void Function(EmailActionType actionType, List<PresentationEmail>);
 
 class AppBarThreadWidgetBuilder {
+  final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
   OnFilterEmailAction? _onFilterEmailAction;
   OnOpenMailboxMenuActionClick? _onOpenMailboxMenuActionClick;
   OnEditThreadAction? _onEditThreadAction;
@@ -22,8 +25,6 @@ class AppBarThreadWidgetBuilder {
   OnEmailSelectionAction? _onEmailSelectionAction;
 
   final BuildContext _context;
-  final ImagePaths _imagePaths;
-  final ResponsiveUtils _responsiveUtils;
   final PresentationMailbox? _currentMailbox;
   final List<PresentationEmail> _listSelectionEmail;
   final SelectMode _selectMode;
@@ -31,8 +32,6 @@ class AppBarThreadWidgetBuilder {
 
   AppBarThreadWidgetBuilder(
     this._context,
-    this._imagePaths,
-    this._responsiveUtils,
     this._currentMailbox,
     this._listSelectionEmail,
     this._selectMode,
@@ -65,8 +64,11 @@ class AppBarThreadWidgetBuilder {
       alignment: Alignment.topCenter,
       color: Colors.white,
       margin: EdgeInsets.zero,
-      padding: EdgeInsets.only(left: 8, bottom: 8, right: 8,
-          top: (!BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(_context)) ? 0 : 16),
+      padding: EdgeInsets.only(
+          left: 8,
+          bottom: !BuildUtils.isWeb ? 8 : 16,
+          right: 8,
+          top: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(_context) ? 0 : 16),
       child: MediaQuery(
         data: const MediaQueryData(padding: EdgeInsets.zero),
         child: kIsWeb
@@ -211,7 +213,8 @@ class AppBarThreadWidgetBuilder {
       color: Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16),
-        child: GestureDetector(
+        child: InkWell(
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
             onTap: () {
               if (_onFilterEmailAction != null && _responsiveUtils.isScreenWithShortestSide(_context)) {
                 _onFilterEmailAction!.call(_filterMessageOption, null);

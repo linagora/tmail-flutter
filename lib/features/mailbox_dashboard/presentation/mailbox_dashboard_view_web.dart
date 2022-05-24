@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
@@ -15,7 +14,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/em
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/reading_pane.dart';
-import 'package:tmail_ui_user/features/thread/presentation/extensions/filter_message_option_extension.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -396,17 +395,17 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Row(
         children: [
           buildIconWeb(
-              icon: SvgPicture.asset(imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
-              onTap: () {
-                controller.disableSearch();
-                controller.dispatchAction(CancelSelectionAllEmailAction());
-              }),
+              icon: SvgPicture.asset(
+                  imagePaths.icBack,
+                  color: AppColor.colorTextButton,
+                  fit: BoxFit.fill),
+              onTap: () => controller.dispatchAction(DisableSearchEmailAction())),
           Expanded(child: Container(
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(10)),
               color: AppColor.colorBgSearchBar),
             height: 45,
-            child: TypeAheadFormFieldQuickSearch<PresentationEmail, RecentSearch>(
+            child: QuickSearchInputForm<PresentationEmail, RecentSearch>(
                 textFieldConfiguration: QuickSearchTextFieldConfiguration(
                     controller: controller.searchInputController,
                     autofocus: true,
@@ -414,7 +413,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     textInputAction: TextInputAction.done,
                     onSubmitted: (keyword) {
                       if (keyword.trim().isNotEmpty) {
-                        controller.saveRecentSearch(RecentSearch(keyword, DateTime.now()));
+                        controller.saveRecentSearch(RecentSearch.now(keyword));
                       }
                       controller.searchEmail(context, keyword);
                     },
@@ -424,30 +423,43 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         enabledBorder: InputBorder.none,
                         contentPadding: EdgeInsets.zero,
                         hintText: AppLocalizations.of(context).search_mail,
-                        hintStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0),
-                        labelStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0)
+                        hintStyle: const TextStyle(
+                            color: AppColor.colorHintSearchBar,
+                            fontSize: 17.0),
+                        labelStyle: const TextStyle(
+                            color: AppColor.colorHintSearchBar,
+                            fontSize: 17.0)
                     ),
                     leftButton: buildIconWeb(
-                        icon: SvgPicture.asset(imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
+                        icon: SvgPicture.asset(
+                            imagePaths.icSearchBar,
+                            width: 16,
+                            height: 16,
+                            fit: BoxFit.fill),
                         onTap: () {
                           final keyword = controller.searchInputController.text;
                           if (keyword.trim().isNotEmpty) {
-                            controller.saveRecentSearch(RecentSearch(keyword, DateTime.now()));
+                            controller.saveRecentSearch(RecentSearch.now(keyword));
                           }
                           controller.searchEmail(context, keyword);
                         }),
                     clearTextButton: buildIconWeb(
-                        icon: SvgPicture.asset(imagePaths.icClearTextSearch, width: 16, height: 16, fit: BoxFit.fill),
+                        icon: SvgPicture.asset(
+                            imagePaths.icClearTextSearch,
+                            width: 16,
+                            height: 16,
+                            fit: BoxFit.fill),
                         onTap: () {
-                          controller.searchInputController.clear();
-                          controller.clearSearchText();
+                          controller.clearTextSearch();
                         })
                 ),
                 suggestionsBoxDecoration: QuickSearchSuggestionsBoxDecoration(
                   color: Colors.white,
                   borderRadius: const BorderRadius.all(Radius.circular(16)),
                   constraints: BoxConstraints(
-                      maxWidth: responsiveUtils.isDesktop(context) ? 556 : double.infinity),
+                      maxWidth: responsiveUtils.isDesktop(context)
+                          ? 556
+                          : double.infinity),
                 ),
                 debounceDuration: const Duration(milliseconds: 500),
                 listActionButton: const [
@@ -463,12 +475,18 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 },
                 buttonActionCallback: (filterAction) {
                   if (filterAction is QuickSearchFilter) {
-                    controller.selectQuickSearchFilter(filterAction, fromSuggestionBox: true);
+                    controller.selectQuickSearchFilter(
+                        filterAction,
+                        fromSuggestionBox: true);
                   }
                 },
-                listActionPadding: const EdgeInsets.only(left: 24, top: 24, right: 24, bottom: 16),
+                listActionPadding: const EdgeInsets.only(
+                    left: 24,
+                    top: 24,
+                    right: 24,
+                    bottom: 16),
                 titleHeaderRecent: Padding(
-                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 8, top: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                   child: Text(AppLocalizations.of(context).recent,
                       style: const TextStyle(fontSize: 13.0,
                           color: AppColor.colorTextButtonHeaderThread,
@@ -480,12 +498,14 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     return InkWell(
                       onTap: () {
                         if (keyword.trim().isNotEmpty) {
-                          controller.saveRecentSearch(RecentSearch(keyword, DateTime.now()));
+                          controller.saveRecentSearch(RecentSearch.now(keyword));
                         }
                         controller.searchEmail(context, keyword);
                       },
                       child: Padding(
-                          padding: const EdgeInsets.only(left: 24, right: 24, top: 14, bottom: 14),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 14),
                           child: Row(children: [
                             Text(AppLocalizations.of(context).showingResultsFor,
                                 style: const TextStyle(fontSize: 13.0,
@@ -523,10 +543,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   return controller.quickSearchEmailsAction(pattern);
                 },
                 itemBuilder: (context, email) {
-                  return EmailQuickSearchItemTileWidget(email, controller.selectedMailbox.value);
+                  return EmailQuickSearchItemTileWidget(
+                      email, controller.selectedMailbox.value);
                 },
                 onSuggestionSelected: (presentationEmail) async {
-                  controller.dispatchAction(OpenEmailDetailedAction(context, presentationEmail));
+                  controller.dispatchAction(
+                      OpenEmailDetailedAction(context, presentationEmail));
                 }),
           )),
           const SizedBox(width: 16),
