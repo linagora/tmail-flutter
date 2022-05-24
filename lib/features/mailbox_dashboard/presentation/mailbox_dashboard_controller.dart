@@ -50,6 +50,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/emai
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -82,7 +83,6 @@ class MailboxDashBoardController extends ReloadableController {
   final accountId = Rxn<AccountId>();
   final userProfile = Rxn<UserProfile>();
   final searchState = SearchState.initial().obs;
-  final suggestionSearch = <String>[].obs;
   final dashBoardAction = Rxn<UIAction>();
   final routePath = AppRoutes.MAILBOX_DASHBOARD.obs;
   final appInformation = Rxn<PackageInfo>();
@@ -286,35 +286,40 @@ class MailboxDashBoardController extends ReloadableController {
   void disableSearch() {
     searchState.value = searchState.value.disableSearchState();
     searchQuery = SearchQuery.initial();
-    clearSuggestionSearch();
     searchInputController.clear();
     listFilterQuickSearch.clear();
+    emailReceiveTimeType.value = null;
     FocusManager.instance.primaryFocus?.unfocus();
   }
 
-  void clearSearchText() {
+  void clearTextSearch() {
     searchQuery = SearchQuery.initial();
-    clearSuggestionSearch();
+    searchInputController.clear();
     searchFocus.requestFocus();
   }
 
-  void clearSuggestionSearch() {
-    suggestionSearch.clear();
-  }
-
-  void addSuggestionSearch(String query) {
-    if (query.trim().isNotEmpty) {
-      suggestionSearch.value = [query];
-    } else {
-      clearSearchText();
-    }
+  void updateTextSearch(String value) {
+    searchInputController.text = value;
   }
 
   void searchEmail(BuildContext context, String value) {
     searchQuery = SearchQuery(value);
     dispatchState(Right(SearchEmailNewQuery(searchQuery ?? SearchQuery.initial())));
-    clearSuggestionSearch();
     FocusScope.of(context).unfocus();
+    if (searchInsideEmailDetailedViewIsActive(context)) {
+      closeEmailDetailedView();
+    }
+  }
+
+  bool searchInsideEmailDetailedViewIsActive(BuildContext context) {
+    return BuildUtils.isWeb
+        && _responsiveUtils.isDesktop(context)
+        && routePath.value == AppRoutes.EMAIL;
+  }
+
+  void closeEmailDetailedView() {
+    dispatchRoute(AppRoutes.THREAD);
+    clearSelectedEmail();
   }
 
   void _saveEmailAsDraftsSuccess(SaveEmailAsDraftsSuccess success) {
@@ -470,6 +475,36 @@ class MailboxDashBoardController extends ReloadableController {
 
   void setEmailReceiveTimeType(EmailReceiveTimeType? receiveTimeType) {
     emailReceiveTimeType.value = receiveTimeType;
+  }
+
+  bool quickSearchFilterForLast7DaysIsActive () {
+    return listFilterQuickSearch.contains(QuickSearchFilter.last7Days)
+        && emailReceiveTimeType.value != null;
+  }
+
+  bool quickSearchFilterForHasAttachmentIsActive () {
+    return listFilterQuickSearch.contains(QuickSearchFilter.hasAttachment)
+        || filterMessageOption.value == FilterMessageOption.attachments;
+  }
+
+  bool quickSearchFilterForFromMeIsActive () {
+    return listFilterQuickSearch.contains(QuickSearchFilter.fromMe);
+  }
+
+  bool filterForHasAttachmentIsActive () {
+    return quickSearchFilterForHasAttachmentIsActive() || filterMessageWithAttachmentIsActive();
+  }
+
+  bool filterMessageWithAttachmentIsActive () {
+    return filterMessageOption.value == FilterMessageOption.attachments;
+  }
+
+  bool filterMessageUnreadIsActive () {
+    return filterMessageOption.value == FilterMessageOption.unread;
+  }
+
+  bool filterMessageStarredIsActive () {
+    return filterMessageOption.value == FilterMessageOption.starred;
   }
 
   void composeEmailAction() {
