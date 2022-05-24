@@ -82,16 +82,9 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Padding(
                         padding: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
-                            ? const EdgeInsets.only(bottom: 16, left: 4, right: 8)
-                            : const EdgeInsets.only(top: 16, bottom: 16, left: 24, right: 32),
+                            ? const EdgeInsets.only(left: 4, right: 8)
+                            : const EdgeInsets.only(top: 16, left: 24, right: 32),
                         child: _buildAppbar(context)),
-                    (SearchBarView(_imagePaths)
-                        ..hintTextSearch(AppLocalizations.of(context).search_emails)
-                        ..addMargin(!BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
-                            ? const EdgeInsets.only(left: 16, right: 16)
-                            : const EdgeInsets.only(left: 32, right: 32))
-                        ..addOnOpenSearchViewAction(() => {}))
-                      .build(),
                     Expanded(child: Padding(
                         padding: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
                             ? const EdgeInsets.only(left: 8)
@@ -107,11 +100,6 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
   Widget _buildRightHeader(BuildContext context) {
     return Row(children: [
       const Spacer(),
-      (SearchBarView(_imagePaths)
-        ..hintTextSearch(AppLocalizations.of(context).search_emails)
-        ..maxSizeWidth(240)
-        ..addOnOpenSearchViewAction(() => {}))
-      .build(),
       const SizedBox(width: 16),
       Obx(() => (AvatarBuilder()
           ..text(controller.userProfile.value?.getAvatarText() ?? '')
