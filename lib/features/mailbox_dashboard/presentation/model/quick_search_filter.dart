@@ -1,6 +1,7 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum QuickSearchFilter {
@@ -11,11 +12,14 @@ enum QuickSearchFilter {
 
 extension QuickSearchFilterExtension on QuickSearchFilter {
 
-  String getTitle(BuildContext context) {
+  String getTitle(BuildContext context, {EmailReceiveTimeType? receiveTimeType}) {
     switch(this) {
       case QuickSearchFilter.hasAttachment:
         return AppLocalizations.of(context).hasAttachment;
       case QuickSearchFilter.last7Days:
+        if (receiveTimeType != null) {
+          return receiveTimeType.getTitle(context);
+        }
         return AppLocalizations.of(context).last7Days;
       case QuickSearchFilter.fromMe:
         return AppLocalizations.of(context).fromMe;

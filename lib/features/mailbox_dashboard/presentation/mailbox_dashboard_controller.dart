@@ -46,6 +46,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_s
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -89,6 +90,7 @@ class MailboxDashBoardController extends ReloadableController {
   final filterMessageOption = FilterMessageOption.all.obs;
   final listEmailSelected = <PresentationEmail>[].obs;
   final listFilterQuickSearch = RxList<QuickSearchFilter>();
+  final emailReceiveTimeType = Rxn<EmailReceiveTimeType>();
 
   SearchQuery? searchQuery;
   Session? sessionCurrent;
@@ -430,8 +432,6 @@ class MailboxDashBoardController extends ReloadableController {
 
   Future<List<PresentationEmail>> quickSearchEmailsAction(String pattern) async {
     if (accountId.value != null && selectedMailbox.value != null) {
-      log('MailboxDashBoardController::quickSearchEmailsAction(): DATE_NOW: ${DateTime.now()}');
-      log('MailboxDashBoardController::quickSearchEmailsAction(): DATE: ${DateTime.now().subtract(const Duration(days: 7))}');
       return await _quickSearchEmailInteractor.execute(
         accountId.value!,
         limit: UnsignedInt(5),
@@ -454,12 +454,22 @@ class MailboxDashBoardController extends ReloadableController {
     return <PresentationEmail>[];
   }
 
-  void selectQuickSearchFilter(QuickSearchFilter quickSearchFilter) {
+  void selectQuickSearchFilter(QuickSearchFilter quickSearchFilter, {bool fromSuggestionBox = false}) {
     if (listFilterQuickSearch.contains(quickSearchFilter)) {
       listFilterQuickSearch.remove(quickSearchFilter);
+      if (fromSuggestionBox && quickSearchFilter == QuickSearchFilter.last7Days) {
+        setEmailReceiveTimeType(null);
+      }
     } else {
       listFilterQuickSearch.add(quickSearchFilter);
+      if (fromSuggestionBox && quickSearchFilter == QuickSearchFilter.last7Days) {
+        setEmailReceiveTimeType(EmailReceiveTimeType.last7Days);
+      }
     }
+  }
+
+  void setEmailReceiveTimeType(EmailReceiveTimeType? receiveTimeType) {
+    emailReceiveTimeType.value = receiveTimeType;
   }
 
   void composeEmailAction() {

@@ -1356,4 +1356,28 @@ class AppLocalizations {
         'Showing results for:',
         name: 'showingResultsFor');
   }
+
+  String get anyTime {
+    return Intl.message(
+        'Any time',
+        name: 'anyTime');
+  }
+
+  String get last30Days {
+    return Intl.message(
+        'Last 30 days',
+        name: 'last30Days');
+  }
+
+  String get last6Months {
+    return Intl.message(
+        'Last 6 months',
+        name: 'last6Months');
+  }
+
+  String get lastYears {
+    return Intl.message(
+        'Last years',
+        name: 'lastYears');
+  }
 }
