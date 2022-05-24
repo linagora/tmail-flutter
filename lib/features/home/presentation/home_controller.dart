@@ -4,7 +4,10 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/cleanup_rule.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/model/email_cleanup_rule.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/model/recent_search_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cache_interactor.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -17,6 +20,7 @@ class HomeController extends GetxController {
   final AuthorizationInterceptors _authorizationInterceptors;
   final CleanupEmailCacheInteractor _cleanupEmailCacheInteractor;
   final EmailReceiveManager _emailReceiveManager;
+  final CleanupRecentSearchCacheInteractor _cleanupRecentSearchCacheInteractor;
 
   HomeController(
     this._getCredentialInteractor,
@@ -24,6 +28,7 @@ class HomeController extends GetxController {
     this._authorizationInterceptors,
     this._cleanupEmailCacheInteractor,
     this._emailReceiveManager,
+    this._cleanupRecentSearchCacheInteractor,
   );
 
   @override
@@ -38,8 +43,8 @@ class HomeController extends GetxController {
 
   @override
   void onReady() {
+    _cleanupCache();
     super.onReady();
-    _cleanupEmailCache();
   }
 
   void _initFlutterDownloader() {
@@ -50,9 +55,11 @@ class HomeController extends GetxController {
 
   static void downloadCallback(String id, DownloadTaskStatus status, int progress) {}
 
-  void _cleanupEmailCache() async {
-    await _cleanupEmailCacheInteractor.execute(CleanupRule(Duration.defaultCacheInternal))
-      .then((value) => _getCredentialAction());
+  void _cleanupCache() async {
+    await Future.wait([
+      _cleanupEmailCacheInteractor.execute(EmailCleanupRule(Duration.defaultCacheInternal)),
+      _cleanupRecentSearchCacheInteractor.execute(RecentSearchCleanupRule())
+    ]).then((value) => _getCredentialAction());
   }
 
   void _getCredentialAction() async {

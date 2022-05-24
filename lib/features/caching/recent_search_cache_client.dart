@@ -30,7 +30,12 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
 
   @override
   Future<void> deleteMultipleItem(List<String> listKey) {
-    throw UnimplementedError();
+    return Future.sync(() async {
+      final boxEmail = await openBox();
+      return boxEmail.deleteAll(listKey);
+    }).catchError((error) {
+      throw error;
+    });
   }
 
   @override
