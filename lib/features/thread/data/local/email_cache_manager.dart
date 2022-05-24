@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.da
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_cache_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 
 class EmailCacheManager {
 

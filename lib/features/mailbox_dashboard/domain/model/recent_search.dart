@@ -7,6 +7,10 @@ class RecentSearch with EquatableMixin {
 
   RecentSearch(this.value, this.creationDate);
 
+  factory RecentSearch.now(String word) {
+    return RecentSearch(word, DateTime.now());
+  }
+
   @override
   List<Object?> get props => [value, creationDate];
 }

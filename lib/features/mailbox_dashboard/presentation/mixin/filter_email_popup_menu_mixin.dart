@@ -3,8 +3,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/filter_message_option_extension.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 
 mixin FilterEmailPopupMenuMixin {
   final _imagePaths = Get.find<ImagePaths>();
@@ -38,15 +37,24 @@ mixin FilterEmailPopupMenuMixin {
                   width: 20,
                   height: 20,
                   fit: BoxFit.fill,
-                  color: option != FilterMessageOption.starred ? AppColor.colorTextButton : null),
+                  color: option != FilterMessageOption.starred
+                      ? AppColor.colorTextButton
+                      : null),
               const SizedBox(width: 12),
               Expanded(child: Text(
                   option.getName(context),
-                  style: const TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w500))),
+                  style: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500))),
               if (optionSelected == option)
-                const SizedBox(width: 12),
-              if (optionSelected == option)
-                SvgPicture.asset(_imagePaths.icFilterSelected, width: 16, height: 16, fit: BoxFit.fill),
+                ... [
+                  const SizedBox(width: 12),
+                  SvgPicture.asset(_imagePaths.icFilterSelected,
+                      width: 16,
+                      height: 16,
+                      fit: BoxFit.fill),
+                ]
             ])
         ),
       )
