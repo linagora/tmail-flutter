@@ -157,14 +157,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       Obx(() => !controller.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
       Obx(() => controller.isSearchActive()
           ? Expanded(child: _buildSearchForm(context))
-          : const SizedBox.shrink()),
-      Obx(() => !controller.isSearchActive()
-          ? (SearchBarView(imagePaths)
-                ..hintTextSearch(AppLocalizations.of(context).search_emails)
-                ..maxSizeWidth(240)
-                ..addOnOpenSearchViewAction(() => controller.enableSearch()))
-              .build()
-          : const SizedBox.shrink()),
+          : (SearchBarView(imagePaths)
+              ..hintTextSearch(AppLocalizations.of(context).search_emails)
+              ..maxSizeWidth(240)
+              ..addOnOpenSearchViewAction(() => controller.enableSearch()))
+            .build()),
       Obx(() => !controller.isSearchActive() ? const SizedBox(width: 16) : const SizedBox.shrink()),
       Obx(() => (AvatarBuilder()
           ..text(controller.userProfile.value?.getAvatarText() ?? '')
@@ -452,6 +449,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   constraints: BoxConstraints(
                       maxWidth: responsiveUtils.isDesktop(context) ? 556 : double.infinity),
                 ),
+                debounceDuration: const Duration(milliseconds: 500),
                 listActionButton: const [
                   QuickSearchFilter.hasAttachment,
                   QuickSearchFilter.last7Days,
@@ -465,7 +463,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 },
                 buttonActionCallback: (filterAction) {
                   if (filterAction is QuickSearchFilter) {
-                    return controller.selectQuickSearchFilter(filterAction);
+                    controller.selectQuickSearchFilter(filterAction, fromSuggestionBox: true);
                   }
                 },
                 listActionPadding: const EdgeInsets.only(left: 24, top: 24, right: 24, bottom: 16),
