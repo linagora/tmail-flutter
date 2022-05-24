@@ -4,7 +4,7 @@ import 'package:model/model.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
-import 'package:tmail_ui_user/features/cleanup/domain/model/cleanup_rule.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/model/email_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_cache_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_cache_extension.dart';
@@ -63,7 +63,7 @@ class EmailCacheManager {
     }
   }
 
-  Future<bool> clean(CleanupRule cleanupRule) async {
+  Future<void> clean(EmailCleanupRule cleanupRule) async {
     final emailCacheExist = await _emailCacheClient.isExistTable();
     if (emailCacheExist) {
       final listEmailCache = await _emailCacheClient.getAll();
@@ -72,8 +72,6 @@ class EmailCacheManager {
         .map((emailCache) => emailCache.id)
         .toList();
       await _emailCacheClient.deleteMultipleItem(listEmailIdCacheExpire);
-      return true;
     }
-    return false;
   }
 }
