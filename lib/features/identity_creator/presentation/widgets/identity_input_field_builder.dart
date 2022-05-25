@@ -40,6 +40,7 @@ class IdentityInputFieldBuilder {
           ..onChange((value) => onChangeInputNameAction?.call(value))
           ..textInputAction(TextInputAction.next)
           ..addController(editingController ?? TextEditingController())
+          ..autoFocus(true)
           ..addFocusNode(focusNode)
           ..textStyle(const TextStyle(color: Colors.black, fontSize: 16))
           ..keyboardType(inputType ?? TextInputType.text)
