@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
@@ -40,6 +41,7 @@ class IdentityCreatorController extends BaseController {
   final TextEditingController inputNameIdentityController = TextEditingController();
   final FocusNode inputNameIdentityFocusNode = FocusNode();
 
+  HtmlEditorApi? signatureHtmlEditorMobileController;
   AccountId? accountId;
   UserProfile? userProfile;
   Identity? identity;
@@ -187,7 +189,13 @@ class IdentityCreatorController extends BaseController {
     }
   }
 
-  void selectSignatureType(SignatureType newSignatureType) {
+  void selectSignatureType(BuildContext context, SignatureType newSignatureType) async {
+    if (newSignatureType == SignatureType.plainText) {
+      final signatureText = await _getSignatureHtmlText();
+      log('IdentityCreatorController::selectSignatureType(): signatureText: $signatureText');
+      updateContentHtmlEditor(signatureText);
+    }
+    clearFocusEditor(context);
     signatureType.value = newSignatureType;
   }
 
@@ -203,6 +211,14 @@ class IdentityCreatorController extends BaseController {
     bccOfIdentity.value = newEmailAddress;
   }
 
+  Future<String?> _getSignatureHtmlText() async {
+    if (BuildUtils.isWeb) {
+      return await signatureHtmlEditorController.getText();
+    } else {
+      return await signatureHtmlEditorMobileController?.getText();
+    }
+  }
+
   void createNewIdentity(BuildContext context) async {
     final error = _getErrorInputNameString(context);
     if (error?.isNotEmpty == true) {
@@ -210,6 +226,10 @@ class IdentityCreatorController extends BaseController {
       errorNameIdentity.value = error;
       return;
     }
+
+    final signatureHtmlText = await _getSignatureHtmlText();
+
+    log('IdentityCreatorController::createNewIdentity(): signatureHtmlText: $signatureHtmlText');
 
     final newIdentity = Identity(
       name: _nameIdentity,
@@ -221,12 +241,12 @@ class IdentityCreatorController extends BaseController {
           ? {bccOfIdentity.value!}
           : null,
       textSignature: Signature(signaturePlainEditorController.text),
-      htmlSignature: Signature(contentHtmlEditor ?? ''));
+      htmlSignature: Signature(signatureHtmlText ?? ''));
 
     log('IdentityCreatorController::createNewIdentity(): $newIdentity');
 
     _clearAll();
-    FocusScope.of(context).unfocus();
+    clearFocusEditor(context);
     popBack(result: newIdentity);
   }
 
@@ -251,9 +271,16 @@ class IdentityCreatorController extends BaseController {
     inputNameIdentityController.clear();
   }
 
+  void clearFocusEditor(BuildContext context) {
+    if (!BuildUtils.isWeb) {
+      signatureHtmlEditorMobileController?.unfocus(context);
+    }
+    FocusScope.of(context).unfocus();
+  }
+
   void closeView(BuildContext context) {
     _clearAll();
-    FocusScope.of(context).unfocus();
+    clearFocusEditor(context);
     popBack();
   }
 }
