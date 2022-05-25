@@ -1,8 +1,9 @@
 import 'package:core/core.dart';
+import 'package:enough_html_editor/enough_html_editor.dart' as html_editor_mobile;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_drop_list_field_builder.dart';
@@ -24,77 +25,92 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         responsiveUtils: _responsiveUtils,
         mobile: Scaffold(
             backgroundColor: Colors.white,
-            body: SafeArea(
-              child: ClipRRect(
-                  borderRadius: const BorderRadius.only(topRight: Radius.circular(14), topLeft: Radius.circular(14)),
-                  child: _buildBodyMobile(context)
+            body: GestureDetector(
+              onTap: () => controller.clearFocusEditor(context),
+              child: SafeArea(
+                child: ClipRRect(
+                    borderRadius: const BorderRadius.only(topRight: Radius.circular(14), topLeft: Radius.circular(14)),
+                    child: _buildBodyMobile(context)
+                ),
               ),
             )
         ),
         landscapeMobile: Scaffold(
             backgroundColor: Colors.white,
-            body: SafeArea(
-              child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.zero),
-                  child: _buildBodyMobile(context)
+            body: GestureDetector(
+              onTap: () => controller.clearFocusEditor(context),
+              child: SafeArea(
+                child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.zero),
+                    child: _buildBodyMobile(context)
+                ),
               ),
             )
         ),
         tablet: Scaffold(
             backgroundColor: Colors.black38,
-            body: Align(alignment: Alignment.center, child: Card(
-                color: Colors.transparent,
-                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-                child: Container(
-                    decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(16))),
-                    width: _responsiveUtils.getSizeScreenWidth(context) * 0.9,
-                    height: _responsiveUtils.getSizeScreenHeight(context) * 0.9,
-                    child: ClipRRect(
-                        borderRadius: const BorderRadius.all(Radius.circular(16)),
-                        child: _buildBodyDesktop(context)
-                    )
-                )
-            )
+            body: GestureDetector(
+              onTap: () => controller.clearFocusEditor(context),
+              child: Align(alignment: Alignment.center, child: Card(
+                  color: Colors.transparent,
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+                  child: Container(
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(16))),
+                      width: _responsiveUtils.getSizeScreenWidth(context) * 0.9,
+                      height: _responsiveUtils.getSizeScreenHeight(context) * 0.9,
+                      child: ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(16)),
+                          child: _buildBodyDesktop(context)
+                      )
+                  )
+              )
+              ),
             )
         ),
         tabletLarge: Scaffold(
             backgroundColor: Colors.black38,
-            body: Align(alignment: Alignment.center, child: Card(
-                color: Colors.transparent,
-                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-                child: Container(
-                    decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(16))),
-                    width: _responsiveUtils.getSizeScreenWidth(context) * 0.6,
-                    height: _responsiveUtils.getSizeScreenHeight(context) * 0.9,
-                    child: ClipRRect(
-                        borderRadius: const BorderRadius.all(Radius.circular(16)),
-                        child: _buildBodyDesktop(context)
-                    )
-                )
-            )
+            body: GestureDetector(
+              onTap: () => controller.clearFocusEditor(context),
+              child: Align(alignment: Alignment.center, child: Card(
+                  color: Colors.transparent,
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+                  child: Container(
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(16))),
+                      width: _responsiveUtils.getSizeScreenWidth(context) * 0.6,
+                      height: _responsiveUtils.getSizeScreenHeight(context) * 0.9,
+                      child: ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(16)),
+                          child: _buildBodyDesktop(context)
+                      )
+                  )
+              )
+              ),
             )
         ),
         desktop: Scaffold(
             backgroundColor: Colors.black38,
-            body: Align(alignment: Alignment.center, child: Card(
-                color: Colors.transparent,
-                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-                child: Container(
-                    decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(16))),
-                    width: _responsiveUtils.getSizeScreenWidth(context) * 0.4,
-                    height: _responsiveUtils.getSizeScreenHeight(context) * 0.9,
-                    child: ClipRRect(
-                        borderRadius: const BorderRadius.all(Radius.circular(16)),
-                        child: _buildBodyDesktop(context)
-                    )
-                )
-            )
+            body: GestureDetector(
+              onTap: () => controller.clearFocusEditor(context),
+              child: Align(alignment: Alignment.center, child: Card(
+                  color: Colors.transparent,
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+                  child: Container(
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(16))),
+                      width: _responsiveUtils.getSizeScreenWidth(context) * 0.4,
+                      height: _responsiveUtils.getSizeScreenHeight(context) * 0.9,
+                      child: ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(16)),
+                          child: _buildBodyDesktop(context)
+                      )
+                  )
+              )
+              ),
             )
         )
     );
@@ -116,6 +132,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           const SizedBox(height: 8),
           Expanded(child: SingleChildScrollView(
             physics: const ClampingScrollPhysics(),
+            reverse: true,
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(children: [
@@ -175,37 +192,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                           fontSize: 14,
                           color: AppColor.colorContentEmail)),
                   const Spacer(),
-                  Obx(() => buildTextButton(
-                      AppLocalizations.of(context).plain_text,
-                      textStyle: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          color: controller.signatureType.value == SignatureType.plainText
-                              ? AppColor.colorContentEmail
-                              : AppColor.colorHintSearchBar),
-                      backgroundColor: controller.signatureType.value == SignatureType.plainText
-                          ? AppColor.emailAddressChipColor
-                          : Colors.transparent,
-                      width: 85,
-                      height: 30,
-                      radius: 10,
-                      onTap: () => controller.selectSignatureType(SignatureType.plainText))),
+                  Obx(() => _buildSignatureButton(context, SignatureType.plainText)),
                   const SizedBox(width: 10),
-                  Obx(() => buildTextButton(
-                      AppLocalizations.of(context).html_template,
-                      textStyle: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          color: controller.signatureType.value == SignatureType.htmlTemplate
-                              ? AppColor.colorContentEmail
-                              : AppColor.colorHintSearchBar),
-                      backgroundColor: controller.signatureType.value == SignatureType.htmlTemplate
-                          ? AppColor.emailAddressChipColor
-                          : Colors.transparent,
-                      width: 110,
-                      height: 30,
-                      radius: 10,
-                      onTap: () => controller.selectSignatureType(SignatureType.htmlTemplate))),
+                  Obx(() => _buildSignatureButton(context, SignatureType.plainText)),
                 ]),
                 const SizedBox(height: 8),
                 Obx(() => Container(
@@ -217,42 +206,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   child: Stack(
                       children: [
                         if (controller.signatureType.value == SignatureType.plainText)
-                          SizedBox(
-                            height: 230,
-                            child: (TextFieldBuilder()
-                                ..key(const Key('signature_plain_text_editor'),)
-                                ..cursorColor(Colors.black)
-                                ..addController(controller.signaturePlainEditorController)
-                                ..textStyle(const TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    color: Colors.black,
-                                    fontSize: 16))
-                                ..maxLines(null))
-                              .build())
+                          _buildSignaturePlainTextTemplate(context)
                         else
-                          HtmlEditor(
-                            key: const Key('signature_html_editor'),
-                            controller: controller.signatureHtmlEditorController,
-                            htmlEditorOptions: const HtmlEditorOptions(
-                              hint: '',
-                              darkMode: false,
-                            ),
-                            blockQuotedContent: controller.contentHtmlEditor ?? '<p></p>',
-                            htmlToolbarOptions: const HtmlToolbarOptions(
-                              toolbarPosition: ToolbarPosition.custom,
-                            ),
-                            otherOptions: const OtherOptions(height: 230),
-                            callbacks: Callbacks(onInit: () {
-                              controller.signatureHtmlEditorController.setFullScreen();
-                            }, onChangeContent: (String? changed) {
-                              controller.updateContentHtmlEditor(changed);
-                            }, onFocus: () {
-                              FocusManager.instance.primaryFocus?.unfocus();
-                              Future.delayed(const Duration(milliseconds: 500), () {
-                                controller.signatureHtmlEditorController.setFocus();
-                              });
-                            }),
-                          )
+                          _buildSignatureHtmlTemplate(context)
                       ]
                   ),
                 ))
@@ -305,11 +261,14 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           Column(children: [
             Padding(
                 padding: const EdgeInsets.only(top: 16),
-                child: Text(AppLocalizations.of(context).new_identity.inCaps,
+                child: Text(controller.actionType.value == IdentityActionType.create
+                      ? AppLocalizations.of(context).new_identity.inCaps
+                      : AppLocalizations.of(context).edit_identity.inCaps,
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 21, color: Colors.black))),
             const SizedBox(height: 8),
             Expanded(child: SingleChildScrollView(
               physics: const ClampingScrollPhysics(),
+              reverse: true,
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(children: [
@@ -365,37 +324,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                           color: AppColor.colorContentEmail)),
                   const SizedBox(height: 8),
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Obx(() => buildTextButton(
-                        AppLocalizations.of(context).plain_text,
-                        textStyle: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                            color: controller.signatureType.value == SignatureType.plainText
-                                ? AppColor.colorContentEmail
-                                : AppColor.colorHintSearchBar),
-                        backgroundColor: controller.signatureType.value == SignatureType.plainText
-                            ? AppColor.emailAddressChipColor
-                            : Colors.transparent,
-                        width: 85,
-                        height: 30,
-                        radius: 10,
-                        onTap: () => controller.selectSignatureType(SignatureType.plainText))),
+                    Obx(() => _buildSignatureButton(context, SignatureType.plainText)),
                     const SizedBox(width: 10),
-                    Obx(() => buildTextButton(
-                        AppLocalizations.of(context).html_template,
-                        textStyle: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                            color: controller.signatureType.value == SignatureType.htmlTemplate
-                                ? AppColor.colorContentEmail
-                                : AppColor.colorHintSearchBar),
-                        backgroundColor: controller.signatureType.value == SignatureType.htmlTemplate
-                            ? AppColor.emailAddressChipColor
-                            : Colors.transparent,
-                        width: 110,
-                        height: 30,
-                        radius: 10,
-                        onTap: () => controller.selectSignatureType(SignatureType.htmlTemplate))),
+                    Obx(() => _buildSignatureButton(context, SignatureType.htmlTemplate)),
                   ]),
                   const SizedBox(height: 8),
                   Obx(() => Container(
@@ -407,42 +338,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                     child: Stack(
                         children: [
                           if (controller.signatureType.value == SignatureType.plainText)
-                            SizedBox(
-                                height: 230,
-                                child: (TextFieldBuilder()
-                                  ..key(const Key('signature_plain_text_editor'),)
-                                  ..cursorColor(Colors.black)
-                                  ..addController(controller.signaturePlainEditorController)
-                                  ..textStyle(const TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.black,
-                                      fontSize: 16))
-                                  ..maxLines(null))
-                                .build())
+                            _buildSignaturePlainTextTemplate(context)
                           else
-                            HtmlEditor(
-                              key: const Key('signature_html_editor'),
-                              controller: controller.signatureHtmlEditorController,
-                              htmlEditorOptions: const HtmlEditorOptions(
-                                  hint: '',
-                                  darkMode: false,
-                              ),
-                              blockQuotedContent: controller.contentHtmlEditor ?? '<p></p>',
-                              htmlToolbarOptions: const HtmlToolbarOptions(
-                                toolbarPosition: ToolbarPosition.custom,
-                              ),
-                              otherOptions: const OtherOptions(height: 230),
-                              callbacks: Callbacks(onInit: () {
-                                controller.signatureHtmlEditorController.setFullScreen();
-                              }, onChangeContent: (String? changed) {
-                                controller.updateContentHtmlEditor(changed);
-                              }, onFocus: () {
-                                FocusManager.instance.primaryFocus?.unfocus();
-                                Future.delayed(const Duration(milliseconds: 500), () {
-                                  controller.signatureHtmlEditorController.setFocus();
-                                });
-                              }),
-                            )
+                            _buildSignatureHtmlTemplate(context)
                         ]
                     ),
                   )),
@@ -490,5 +388,88 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   onTap: () => controller.closeView(context)))
         ]
     );
+  }
+
+  Widget _buildSignatureButton(BuildContext context, SignatureType signatureType) {
+    return buildTextButton(
+        signatureType.getTitle(context),
+        textStyle: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: controller.signatureType.value == signatureType
+                ? AppColor.colorContentEmail
+                : AppColor.colorHintSearchBar),
+        backgroundColor: controller.signatureType.value == signatureType
+            ? AppColor.emailAddressChipColor
+            : Colors.transparent,
+        width: signatureType == SignatureType.plainText ? 85 : 110,
+        height: 30,
+        radius: 10,
+        onTap: () => controller.selectSignatureType(context, signatureType));
+  }
+
+  Widget _buildSignaturePlainTextTemplate(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return SizedBox(
+        height: 230,
+        child: (TextFieldBuilder()
+            ..key(const Key('signature_plain_text_editor'))
+            ..cursorColor(Colors.black)
+            ..addController(controller.signaturePlainEditorController)
+            ..textStyle(const TextStyle(
+                fontWeight: FontWeight.normal,
+                color: Colors.black,
+                fontSize: 16))
+            ..maxLines(null))
+          .build(),
+      );
+    } else {
+      return(TextFieldBuilder()
+          ..key(const Key('signature_plain_text_editor'))
+          ..cursorColor(Colors.black)
+          ..addController(controller.signaturePlainEditorController)
+          ..textStyle(const TextStyle(
+              fontWeight: FontWeight.normal,
+              color: Colors.black,
+              fontSize: 16))
+          ..minLines(12)
+          ..maxLines(null))
+        .build();
+    }
+  }
+
+  Widget _buildSignatureHtmlTemplate(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return html_editor_browser.HtmlEditor(
+        key: const Key('signature_html_editor_web'),
+        controller: controller.signatureHtmlEditorController,
+        htmlEditorOptions: const html_editor_browser.HtmlEditorOptions(
+          hint: '',
+          darkMode: false,
+        ),
+        blockQuotedContent: controller.contentHtmlEditor ?? '<p></p>',
+        htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
+          toolbarPosition: html_editor_browser.ToolbarPosition.custom,
+        ),
+        otherOptions: const html_editor_browser.OtherOptions(height: 230),
+        callbacks: html_editor_browser.Callbacks(onInit: () {
+          controller.signatureHtmlEditorController.setFullScreen();
+        }, onChangeContent: (String? changed) {
+          controller.updateContentHtmlEditor(changed);
+        }, onFocus: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+          Future.delayed(const Duration(milliseconds: 500), () {
+            controller.signatureHtmlEditorController.setFocus();
+          });
+        }),
+      );
+    } else {
+      return html_editor_mobile.HtmlEditor(
+        key: const Key('signature_html_editor_mobile'),
+        minHeight: 230,
+        onCreated: (htmlEditorController) => controller.signatureHtmlEditorMobileController = htmlEditorController,
+        initialContent: controller.contentHtmlEditor ?? '',
+      );
+    }
   }
 }

@@ -19,7 +19,7 @@ class IdentityFieldNoEditableBuilder {
       const SizedBox(height: 8),
       Container(
           height: 44,
-          alignment: Alignment.center,
+          alignment: Alignment.centerLeft,
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(

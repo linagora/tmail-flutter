@@ -12,6 +12,7 @@ class TextFieldBuilder {
   InputDecoration? _inputDecoration;
   bool? _obscureText;
   int? _maxLines = 1;
+  int? _minLines;
   TextEditingController? _textController;
   TextInputType? _keyboardType;
   Color? _cursorColor;
@@ -58,6 +59,10 @@ class TextFieldBuilder {
     _maxLines = value;
   }
 
+  void minLines(int? value) {
+    _minLines = value;
+  }
+
   void keyboardType(TextInputType? value) {
     _keyboardType = value;
   }
@@ -84,6 +89,7 @@ class TextFieldBuilder {
       textInputAction: _textInputAction,
       decoration: _inputDecoration,
       maxLines: _maxLines,
+      minLines: _minLines,
       keyboardAppearance: Brightness.light,
       style: _textStyle ?? TextStyle(color: AppColor.textFieldTextColor),
       obscureText: _obscureText ?? false,
