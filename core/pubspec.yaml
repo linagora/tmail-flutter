@@ -76,6 +76,8 @@ dependencies:
 
   pointer_interceptor: 0.9.1
 
+  flutter_keyboard_visibility: 5.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
