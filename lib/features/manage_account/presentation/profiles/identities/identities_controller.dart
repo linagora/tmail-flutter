@@ -7,7 +7,6 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/extensions/identity_extension.dart';
-import 'package:model/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
@@ -80,10 +79,11 @@ class IdentitiesController extends BaseController {
           if (success is GetAllIdentitiesSuccess) {
             if (success.identities?.isNotEmpty == true) {
               _addNewIdentityAsAll();
-              final newListIdentities = success.identities!;
-              newListIdentities.sortByMayDelete();
+              final newListIdentities = success.identities!
+                  .where((identity) => identity.mayDelete == true)
+                  .toList();
               listAllIdentities.addAll(newListIdentities);
-              setIdentityDefault();
+              selectIdentity(listAllIdentities.first);
             }
           } else if (success is CreateNewIdentitySuccess) {
             _createNewIdentitySuccess(success);
@@ -132,15 +132,6 @@ class IdentitiesController extends BaseController {
       listAllIdentities.add(Identity(
           id: idIdentityAll,
           name: AppLocalizations.of(currentContext!).all_identities));
-    }
-  }
-
-  void setIdentityDefault() {
-    try {
-      final identityDefault = listAllIdentities.firstWhere((identity) => identity.mayDelete == false);
-      selectIdentity(identityDefault);
-    } catch (exception) {
-      selectIdentity(listAllIdentities.first);
     }
   }
 
