@@ -55,7 +55,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   }
 
   String _generateHtmlDocument(String content) {
-    final htmlTemplate = generateHtml(content);
+    final htmlTemplate = generateHtml(content, hideScrollBar: true);
     return htmlTemplate;
   }
 
