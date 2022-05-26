@@ -1380,4 +1380,11 @@ class AppLocalizations {
         'Last years',
         name: 'lastYears');
   }
+
+  String get thisEmailAddressInvalid {
+    return Intl.message(
+      'This email address invalid',
+      name: 'thisEmailAddressInvalid',
+    );
+  }
 }
