@@ -5,6 +5,7 @@ abstract class VerifyNameException extends Equatable implements Exception {
   static const emptyName = 'The name cannot be empty!';
   static const duplicatedName = 'The name already exists!';
   static const nameContainSpecialCharacter = 'The name cannot contain special characters';
+  static const emailAddressInvalid = 'The email address invalid';
 
   final String? message;
 
@@ -27,6 +28,13 @@ class DuplicatedNameException extends VerifyNameException {
 
 class SpecialCharacterException extends VerifyNameException {
   const SpecialCharacterException() : super(VerifyNameException.nameContainSpecialCharacter);
+
+  @override
+  List<Object> get props => [];
+}
+
+class EmailAddressInvalidException extends VerifyNameException {
+  const EmailAddressInvalidException() : super(VerifyNameException.emailAddressInvalid);
 
   @override
   List<Object> get props => [];

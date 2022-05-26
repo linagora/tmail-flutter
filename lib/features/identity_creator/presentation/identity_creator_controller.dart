@@ -12,6 +12,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
@@ -31,6 +32,7 @@ class IdentityCreatorController extends BaseController {
   final listEmailAddressDefault = <EmailAddress>[].obs;
   final listEmailAddressOfReplyTo = <EmailAddress>[].obs;
   final errorNameIdentity = Rxn<String>();
+  final errorBccIdentity = Rxn<String>();
   final emailOfIdentity = Rxn<EmailAddress>();
   final replyToOfIdentity = Rxn<EmailAddress>();
   final bccOfIdentity = Rxn<EmailAddress>();
@@ -39,6 +41,7 @@ class IdentityCreatorController extends BaseController {
   final HtmlEditorController signatureHtmlEditorController = HtmlEditorController(processNewLineAsBr: true);
   final TextEditingController signaturePlainEditorController = TextEditingController();
   final TextEditingController inputNameIdentityController = TextEditingController();
+  final TextEditingController inputBccIdentityController = TextEditingController();
   final FocusNode inputNameIdentityFocusNode = FocusNode();
 
   HtmlEditorApi? signatureHtmlEditorMobileController;
@@ -77,6 +80,7 @@ class IdentityCreatorController extends BaseController {
     signaturePlainEditorController.dispose();
     inputNameIdentityFocusNode.dispose();
     inputNameIdentityController.dispose();
+    inputBccIdentityController.dispose();
     super.onClose();
   }
 
@@ -141,6 +145,8 @@ class IdentityCreatorController extends BaseController {
       listEmailAddressOfReplyTo.add(noneEmailAddress);
       listEmailAddressOfReplyTo.addAll(listEmailAddressDefault);
 
+      log('IdentityCreatorController::_getALlIdentitiesSuccess(): listEmailAddressOfReplyTo: ${listEmailAddressOfReplyTo.toJson()}');
+
       _setUpAllFieldEmailAddress();
     } else {
       _setDefaultEmailAddressList();
@@ -165,24 +171,48 @@ class IdentityCreatorController extends BaseController {
 
   void _setUpAllFieldEmailAddress() {
     if (actionType.value == IdentityActionType.edit && identity != null) {
-      replyToOfIdentity.value = identity?.replyTo?.isNotEmpty == true
-          ? identity!.replyTo!.first
-          : noneEmailAddress;
+      if (identity?.replyTo?.isNotEmpty == true) {
+        try {
+          replyToOfIdentity.value = listEmailAddressOfReplyTo
+              .firstWhere((emailAddress) => emailAddress ==  identity?.replyTo!.first);
+        } catch(e) {
+          replyToOfIdentity.value = null;
+        }
+      } else {
+        replyToOfIdentity.value = null;
+      }
+      log('IdentityCreatorController::_setUpAllFieldEmailAddress(): replyToOfIdentity: ${replyToOfIdentity.value}');
 
-      bccOfIdentity.value = identity?.bcc?.isNotEmpty == true
-          ? identity!.bcc!.first
-          : noneEmailAddress;
+      if (identity?.bcc?.isNotEmpty == true) {
+        try {
+          bccOfIdentity.value = listEmailAddressOfReplyTo
+              .firstWhere((emailAddress) => emailAddress ==  identity?.bcc!.first);
+
+          inputBccIdentityController.text = bccOfIdentity.value?.email ?? '';
+        } catch(e) {
+          bccOfIdentity.value = null;
+        }
+      } else {
+        bccOfIdentity.value = null;
+      }
+
+      log('IdentityCreatorController::_setUpAllFieldEmailAddress(): bccOfIdentity: ${bccOfIdentity.value}');
 
       if (identity?.email?.isNotEmpty == true) {
-        emailOfIdentity.value = EmailAddress(null, identity?.email!);
+        try {
+          emailOfIdentity.value = listEmailAddressDefault
+              .firstWhere((emailAddress) => emailAddress.email ==  identity?.email);
+        } catch(e) {
+          emailOfIdentity.value = null;
+        }
       } else {
         emailOfIdentity.value = listEmailAddressDefault.isNotEmpty
             ? listEmailAddressDefault.first
             : null;
       }
     } else {
-      replyToOfIdentity.value = noneEmailAddress;
-      bccOfIdentity.value = noneEmailAddress;
+      replyToOfIdentity.value = null;
+      bccOfIdentity.value = null;
       emailOfIdentity.value = listEmailAddressDefault.isNotEmpty
           ? listEmailAddressDefault.first
           : null;
@@ -220,10 +250,19 @@ class IdentityCreatorController extends BaseController {
   }
 
   void createNewIdentity(BuildContext context) async {
+    clearFocusEditor(context);
+
     final error = _getErrorInputNameString(context);
     if (error?.isNotEmpty == true) {
       log('IdentityCreatorController::createNewIdentity(): error: $error');
       errorNameIdentity.value = error;
+      return;
+    }
+
+    final errorBcc = _getErrorInputAddressString(context);
+    if (errorBcc?.isNotEmpty == true) {
+      log('IdentityCreatorController::createNewIdentity(): errorBcc: $errorBcc');
+      errorBccIdentity.value = errorBcc;
       return;
     }
 
@@ -246,7 +285,6 @@ class IdentityCreatorController extends BaseController {
     log('IdentityCreatorController::createNewIdentity(): $newIdentity');
 
     _clearAll();
-    clearFocusEditor(context);
     popBack(result: newIdentity);
   }
 
@@ -266,9 +304,47 @@ class IdentityCreatorController extends BaseController {
     );
   }
 
+  String? _getErrorInputAddressString(BuildContext context, {String? value}) {
+    final emailAddress = value ?? inputBccIdentityController.text;
+    if (emailAddress.trim().isEmpty) {
+      return null;
+    }
+    return _verifyNameInteractor.execute(
+        emailAddress,
+        [EmailAddressValidator()]
+    ).fold(
+        (failure) {
+          if (failure is VerifyNameFailure) {
+            return failure.getMessageIdentity(context);
+          } else {
+            return null;
+          }
+        },
+        (success) => null
+    );
+  }
+
+  void validateInputBccAddress(BuildContext context, String? value) {
+    final errorBcc = _getErrorInputAddressString(context, value: value);
+    if (errorBccIdentity.value?.isNotEmpty == true
+        && (errorBcc == null || errorBcc.isEmpty)) {
+      errorBccIdentity.value = null;
+    }
+  }
+
   void _clearAll() {
     signaturePlainEditorController.clear();
     inputNameIdentityController.clear();
+    inputBccIdentityController.clear();
+  }
+
+  List<EmailAddress> getSuggestionEmailAddress(String? pattern) {
+    if (pattern == null || pattern.isEmpty) {
+      return List.empty();
+    }
+   return listEmailAddressOfReplyTo
+       .where((emailAddress) => emailAddress.email?.contains(pattern) == true)
+       .toList();
   }
 
   void clearFocusEditor(BuildContext context) {
