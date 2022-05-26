@@ -190,8 +190,10 @@ class ComposerController extends BaseController {
           _getEmailContentSuccess(success);
         } if (success is GetAllIdentitiesSuccess) {
           if (success.identities?.isNotEmpty == true) {
-            listIdentities.value = success.identities ?? [];
-            setIdentityDefault();
+            listIdentities.value = success.identities!
+                .where((identity) => identity.mayDelete == true)
+                .toList();
+            selectIdentity(listIdentities.first);
           }
         }
       });
@@ -927,12 +929,6 @@ class ComposerController extends BaseController {
   }
 
   void setIdentityDefault() {
-    try {
-      final identityDefault = listIdentities.firstWhere((identity) => identity.mayDelete == false);
-      selectIdentity(identityDefault);
-    } catch (exception) {
-      selectIdentity(listIdentities.first);
-    }
   }
 
   void selectIdentity(Identity? newIdentity) {
