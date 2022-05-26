@@ -123,11 +123,31 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       </script>
     ''';
 
+    final scriptsDisableZoom = '''
+      <script type="text/javascript">
+        document.addEventListener('wheel', function(e) {
+          e.ctrlKey && e.preventDefault();
+        }, {
+          passive: false,
+        });
+        window.addEventListener('keydown', function(e) {
+          if (event.metaKey || event.ctrlKey) {
+            switch (event.key) {
+              case '=':
+              case '-':
+                event.preventDefault();
+                break;
+            }
+          }
+        });
+      </script>
+    ''';
+
     final htmlTemplate = generateHtml(content,
       minHeight: minHeight,
       minWidth: minWidth,
       styleCSS: tooltipLinkCss,
-      javaScripts: webViewActionScripts);
+      javaScripts: webViewActionScripts + scriptsDisableZoom);
 
     return htmlTemplate;
   }
