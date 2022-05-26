@@ -25,7 +25,8 @@ String generateHtml(String content, {
   double? minHeight,
   double? minWidth,
   String? styleCSS,
-  String? javaScripts
+  String? javaScripts,
+  bool? hideScrollBar,
 }) {
   return '''
     <!DOCTYPE html>
@@ -37,6 +38,7 @@ String generateHtml(String content, {
       .tmail-content {
         min-height: ${minHeight ?? 0}px;
         min-width: ${minWidth ?? 0}px;
+        overflow: ${hideScrollBar == true ? 'hidden' : 'auto'};
       }
       ${styleCSS ?? ''}
     </style>
