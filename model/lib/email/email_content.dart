@@ -18,8 +18,6 @@ extension EmailContentExtension on EmailContent {
   String get asHtml {
     if (type == EmailContentType.textPlain) {
       return content
-          .replaceAll("'", r"\'")
-          .replaceAll('"', r'\"')
           .replaceAll('\r', '')
           .replaceAll('\r\n', '')
           .replaceAll('\n', '<br/>')
