@@ -53,7 +53,6 @@ export 'extensions/media_type_extension.dart';
 export 'extensions/list_attachment_extension.dart';
 export 'extensions/list_presentation_email_extension.dart';
 export 'extensions/list_email_content_extension.dart';
-export 'extensions/list_identities_extension.dart';
 export 'extensions/identity_extension.dart';
 
 // Download
