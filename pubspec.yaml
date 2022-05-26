@@ -64,6 +64,9 @@ dependencies:
   # flutter_dotenv
   flutter_dotenv: 5.0.2
 
+  # flutter_typeahead
+  flutter_typeahead: 3.2.7
+
   built_collection: 5.1.1
 
   # jmap_dart_client

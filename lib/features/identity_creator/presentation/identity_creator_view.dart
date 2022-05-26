@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_drop_list_field_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_field_no_editable_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_field_builder.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_with_drop_list_field_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -175,14 +177,22 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                           controller.updaterReplyToOfIdentity(emailAddress)))
                     .build())),
                   const SizedBox(width: 24),
-                  Expanded(child: Obx(() => (IdentityDropListFieldBuilder(
-                          _imagePaths,
+                  Expanded(child: Obx(() => (IdentityInputWithDropListFieldBuilder(
                           AppLocalizations.of(context).bcc_to_address,
-                          controller.bccOfIdentity.value,
-                          controller.listEmailAddressOfReplyTo)
-                      ..addOnSelectEmailAddressDropListAction((emailAddress) =>
-                          controller.updateBccOfIdentity(emailAddress)))
-                    .build())),
+                          controller.errorBccIdentity.value,
+                          controller.inputBccIdentityController)
+                      ..addOnSelectedSuggestionAction((newEmailAddress) {
+                        controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
+                        controller.updateBccOfIdentity(newEmailAddress);
+                      })
+                      ..addOnChangeInputSuggestionAction((pattern) {
+                        controller.validateInputBccAddress(context, pattern);
+                        controller.updateBccOfIdentity(EmailAddress(null, pattern));
+                      })
+                      ..addOnSuggestionCallbackAction((pattern) =>
+                          controller.getSuggestionEmailAddress(pattern)))
+                    .build()
+                  )),
                 ]),
                 const SizedBox(height: 32),
                 Row(children: [
@@ -308,14 +318,22 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                           controller.updaterReplyToOfIdentity(newEmailAddress)))
                     .build()),
                   const SizedBox(height: 24),
-                  Obx(() => (IdentityDropListFieldBuilder(
-                          _imagePaths,
+                  Obx(() => (IdentityInputWithDropListFieldBuilder(
                           AppLocalizations.of(context).bcc_to_address,
-                          controller.bccOfIdentity.value,
-                          controller.listEmailAddressOfReplyTo)
-                      ..addOnSelectEmailAddressDropListAction((newEmailAddress) =>
-                          controller.updateBccOfIdentity(newEmailAddress)))
-                    .build()),
+                          controller.errorBccIdentity.value,
+                          controller.inputBccIdentityController)
+                      ..addOnSelectedSuggestionAction((newEmailAddress) {
+                        controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
+                        controller.updateBccOfIdentity(newEmailAddress);
+                      })
+                      ..addOnChangeInputSuggestionAction((pattern) {
+                        controller.validateInputBccAddress(context, pattern);
+                        controller.updateBccOfIdentity(EmailAddress(null, pattern));
+                      })
+                      ..addOnSuggestionCallbackAction((pattern) =>
+                          controller.getSuggestionEmailAddress(pattern)))
+                    .build()
+                  ),
                   const SizedBox(height: 32),
                   Text(AppLocalizations.of(context).signature,
                       style: const TextStyle(
