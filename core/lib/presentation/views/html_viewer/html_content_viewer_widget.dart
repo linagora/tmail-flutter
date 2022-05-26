@@ -117,6 +117,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
           });
         }
       },
+      zoomEnabled: false,
       navigationDelegate: _onNavigation,
       gestureRecognizers: {
         Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
