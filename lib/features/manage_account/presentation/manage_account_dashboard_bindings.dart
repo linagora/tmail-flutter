@@ -17,9 +17,7 @@ class ManageAccountDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.lazyPut(() => ManageAccountDashBoardController(
-      Get.find<GetUserProfileInteractor>(),
-    ));
+    Get.lazyPut(() => ManageAccountDashBoardController());
   }
 
   @override
