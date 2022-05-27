@@ -16,14 +16,6 @@ class OIDCConfiguration with EquatableMixin {
     required this.scopes
   });
 
-  factory OIDCConfiguration.initial() {
-    return OIDCConfiguration(
-        authority: 'https://auth.upn.integration-open-paas.org/auth/realms/mobile',
-        clientId: 'teammail-mobile',
-        scopes: ['openid', 'offline_access']
-    );
-  }
-
   String get discoveryUrl {
     if (authority.endsWith('/')) {
       return authority + wellKnownOpenId;

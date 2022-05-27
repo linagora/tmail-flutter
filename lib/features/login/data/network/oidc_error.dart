@@ -1,0 +1,1 @@
+class CanNotFoundOIDCAuthority implements Exception {}

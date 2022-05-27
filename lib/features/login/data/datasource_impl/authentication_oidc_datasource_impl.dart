@@ -9,19 +9,19 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   AuthenticationOIDCDataSourceImpl(this._oidcHttpClient);
 
   @override
-  Future<bool> checkOIDCIsAvailable(OIDCRequest oidcRequest) {
+  Future<OIDCResponse> checkOIDCIsAvailable(OIDCRequest oidcRequest) {
     return Future.sync(() async {
       final oidcResponse = await _oidcHttpClient.checkOIDCIsAvailable(oidcRequest);
-      return oidcResponse != null;
+      return oidcResponse!;
     }).catchError((error) {
       throw error;
     });
   }
 
   @override
-  Future<OIDCConfiguration> getOIDCConfiguration(Uri baseUri) {
+  Future<OIDCConfiguration> getOIDCConfiguration(Uri baseUri, OIDCResponse oidcResponse) {
     return Future.sync(() async {
-      return await _oidcHttpClient.getOIDCConfiguration(baseUri);
+      return await _oidcHttpClient.getOIDCConfiguration(baseUri, oidcResponse);
     }).catchError((error) {
       throw error;
     });
