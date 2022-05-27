@@ -5,8 +5,10 @@ import 'package:core/core.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
-import 'package:tmail_ui_user/features/login/data/network/endpoint.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
+import 'package:tmail_ui_user/features/login/data/network/endpoint.dart';
+import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 
 class OIDCHttpClient {
 
@@ -21,7 +23,7 @@ class OIDCHttpClient {
             .generateOIDCPath(Uri.parse(oidcRequest.baseUrl))
             .withQueryParameters([
               StringQueryParameter('resource', oidcRequest.resourceUrl),
-              StringQueryParameter('rel', oidcRequest.relUrl),
+              StringQueryParameter('rel', OIDCRequest.relUrl),
             ])
             .generateEndpointPath()
     );
@@ -33,8 +35,16 @@ class OIDCHttpClient {
     }
   }
 
-  Future<OIDCConfiguration> getOIDCConfiguration(Uri baseUri) async {
-    return OIDCConfiguration.initial();
+  Future<OIDCConfiguration> getOIDCConfiguration(Uri baseUri, OIDCResponse oidcResponse) async {
+    if (oidcResponse.links.isEmpty) {
+      throw CanNotFoundOIDCAuthority();
+    }
+    log('OIDCHttpClient::getOIDCConfiguration(): href: ${oidcResponse.links[0].href}');
+    return OIDCConfiguration(
+      authority: oidcResponse.links[0].href.toString(),
+      clientId: OIDCConstant.mobileOidcClientId,
+      scopes: OIDCConstant.oidcScope
+    );
   }
 
   Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl, String discoveryUrl, List<String> scopes) async {
