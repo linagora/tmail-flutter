@@ -9,7 +9,6 @@ import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -19,8 +18,6 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  final GetUserProfileInteractor _getUserProfileInteractor;
-
   final menuDrawerKey = GlobalKey<ScaffoldState>(debugLabel: 'manage_account');
 
   final appInformation = Rxn<PackageInfo>();
@@ -28,9 +25,9 @@ class ManageAccountDashBoardController extends ReloadableController {
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
 
-  ManageAccountDashBoardController(
-    this._getUserProfileInteractor,
-  );
+  Session? sessionCurrent;
+
+  ManageAccountDashBoardController();
 
   @override
   void onReady() {
@@ -57,6 +54,7 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
+    sessionCurrent = session;
     accountId.value = session.accounts.keys.first;
     _getUserProfile();
   }
@@ -65,8 +63,8 @@ class ManageAccountDashBoardController extends ReloadableController {
     final arguments = Get.arguments;
     log('ManageAccountDashBoardController::_getAccountIdAndUserProfile(): $arguments');
     if (arguments is ManageAccountArguments) {
-      accountId.value = arguments.accountId;
-      userProfile.value = arguments.userProfile;
+      sessionCurrent = arguments.session;
+      accountId.value = sessionCurrent?.accounts.keys.first;
     } else {
       if (kIsWeb) {
         reload();
@@ -81,7 +79,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void _getUserProfile() async {
-    consumeState(_getUserProfileInteractor.execute());
+    userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
   }
 
   void openMenuDrawer() {
@@ -103,7 +101,7 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   void goToSettings() {
     pushAndPop(AppRoutes.MANAGE_ACCOUNT,
-        arguments: ManageAccountArguments(accountId.value, userProfile.value));
+        arguments: ManageAccountArguments(sessionCurrent));
   }
 
   void backToMailboxDashBoard() {
