@@ -45,6 +45,7 @@ class LoginController extends GetxController {
   String? _urlText;
   String? _userNameText;
   String? _passwordText;
+  OIDCResponse? _oidcResponse;
 
   void setUrlText(String url) => _urlText = url.trim().formatURLValid();
 
@@ -75,8 +76,9 @@ class LoginController extends GetxController {
       loginState.value = LoginState(Left(LoginMissUrlAction()));
     } else {
       loginState.value = LoginState(Right(LoginLoadingAction()));
+      log('LoginController::_checkOIDCIsAvailable(): origin: + ${baseUri.origin}');
       await _checkOIDCIsAvailableInteractor
-          .execute(OIDCRequest(baseUrl: baseUri.origin))
+          .execute(OIDCRequest(baseUrl: baseUri.origin, resourceUrl: baseUri.origin))
           .then((response) => response.fold(
               (failure) => _showFormLoginWithCredentialAction(),
               (success) => success is CheckOIDCIsAvailableSuccess
@@ -88,6 +90,7 @@ class LoginController extends GetxController {
   void _showFormLoginWithSSOAction(CheckOIDCIsAvailableSuccess success) {
     loginState.value = LoginState(Right(success));
     loginFormType.value = LoginFormType.ssoForm;
+    _oidcResponse = success.oidcResponse;
   }
 
   void handleBackInCredentialForm() {
@@ -126,22 +129,26 @@ class LoginController extends GetxController {
 
   void _getOIDCConfiguration(Uri baseUri) async {
     loginState.value = LoginState(Right(LoginLoadingAction()));
-    await _getOIDCConfigurationInteractor.execute(baseUri)
+    if (_oidcResponse != null) {
+      await _getOIDCConfigurationInteractor.execute(baseUri, _oidcResponse!)
         .then((response) => response.fold(
-            (failure) {
-              if (failure is GetOIDCConfigurationFailure) {
-                loginState.value = LoginState(Left(failure));
-              } else {
-                loginState.value = LoginState(Left(LoginCanNotVerifySSOConfigurationAction()));
-              }
-            },
-            (success) {
-              if (success is GetOIDCConfigurationSuccess) {
-                _getOIDCConfigurationSuccess(success);
-              } else {
-                loginState.value = LoginState(Left(LoginCanNotVerifySSOConfigurationAction()));
-              }
-            }));
+          (failure) {
+            if (failure is GetOIDCConfigurationFailure) {
+              loginState.value = LoginState(Left(failure));
+            } else {
+              loginState.value = LoginState(
+                  Left(LoginCanNotVerifySSOConfigurationAction()));
+            }
+          },
+          (success) {
+            if (success is GetOIDCConfigurationSuccess) {
+              _getOIDCConfigurationSuccess(success);
+            } else {
+              loginState.value = LoginState(
+                  Left(LoginCanNotVerifySSOConfigurationAction()));
+            }
+          }));
+    }
   }
 
   void _getOIDCConfigurationSuccess(GetOIDCConfigurationSuccess success) {

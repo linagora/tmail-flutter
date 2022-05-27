@@ -1,5 +1,6 @@
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
+import 'package:model/oidc/response/oidc_response.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
@@ -10,13 +11,13 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   AuthenticationOIDCRepositoryImpl(this._oidcDataSource);
 
   @override
-  Future<bool> checkOIDCIsAvailable(OIDCRequest oidcRequest) {
+  Future<OIDCResponse> checkOIDCIsAvailable(OIDCRequest oidcRequest) {
     return _oidcDataSource.checkOIDCIsAvailable(oidcRequest);
   }
 
   @override
-  Future<OIDCConfiguration> getOIDCConfiguration(Uri baseUri) {
-    return _oidcDataSource.getOIDCConfiguration(baseUri);
+  Future<OIDCConfiguration> getOIDCConfiguration(Uri baseUri, OIDCResponse oidcResponse) {
+    return _oidcDataSource.getOIDCConfiguration(baseUri, oidcResponse);
   }
 
   @override
