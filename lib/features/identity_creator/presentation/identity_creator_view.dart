@@ -187,7 +187,11 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                       })
                       ..addOnChangeInputSuggestionAction((pattern) {
                         controller.validateInputBccAddress(context, pattern);
-                        controller.updateBccOfIdentity(EmailAddress(null, pattern));
+                        if (pattern == null || pattern.trim().isEmpty) {
+                          controller.updateBccOfIdentity(null);
+                        } else {
+                          controller.updateBccOfIdentity(EmailAddress(null, pattern));
+                        }
                       })
                       ..addOnSuggestionCallbackAction((pattern) =>
                           controller.getSuggestionEmailAddress(pattern)))
@@ -328,7 +332,11 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                       })
                       ..addOnChangeInputSuggestionAction((pattern) {
                         controller.validateInputBccAddress(context, pattern);
-                        controller.updateBccOfIdentity(EmailAddress(null, pattern));
+                        if (pattern == null || pattern.trim().isEmpty) {
+                          controller.updateBccOfIdentity(null);
+                        } else {
+                          controller.updateBccOfIdentity(EmailAddress(null, pattern));
+                        }
                       })
                       ..addOnSuggestionCallbackAction((pattern) =>
                           controller.getSuggestionEmailAddress(pattern)))
