@@ -1,15 +1,13 @@
 
 import 'package:equatable/equatable.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:model/model.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 
 class ManageAccountArguments with EquatableMixin {
 
-  final AccountId? accountId;
-  final UserProfile? userProfile;
+  final Session? session;
 
-  ManageAccountArguments(this.accountId, this.userProfile);
+  ManageAccountArguments(this.session);
 
   @override
-  List<Object?> get props => [accountId, userProfile];
+  List<Object?> get props => [session];
 }

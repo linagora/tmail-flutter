@@ -10,11 +10,11 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -37,7 +37,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
@@ -162,9 +161,7 @@ class MailboxDashBoardController extends ReloadableController {
         }
       },
       (success) {
-        if (success is GetUserProfileSuccess) {
-          userProfile.value = success.userProfile;
-        } else if (success is SendEmailSuccess) {
+        if (success is SendEmailSuccess) {
           if (currentOverlayContext != null && currentContext != null) {
             _appToast.showToastWithIcon(
                 currentOverlayContext!,
@@ -214,7 +211,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _getUserProfile() async {
-    consumeState(_getUserProfileInteractor.execute());
+    userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
   }
 
   void _setSessionCurrent() {
@@ -539,7 +536,7 @@ class MailboxDashBoardController extends ReloadableController {
       closeMailboxMenuDrawer();
     }
     push(AppRoutes.MANAGE_ACCOUNT,
-        arguments: ManageAccountArguments(accountId.value, userProfile.value));
+        arguments: ManageAccountArguments(sessionCurrent));
   }
 
   @override
