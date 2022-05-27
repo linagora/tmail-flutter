@@ -204,7 +204,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   const Spacer(),
                   Obx(() => _buildSignatureButton(context, SignatureType.plainText)),
                   const SizedBox(width: 10),
-                  Obx(() => _buildSignatureButton(context, SignatureType.plainText)),
+                  Obx(() => _buildSignatureButton(context, SignatureType.htmlTemplate)),
                 ]),
                 const SizedBox(height: 8),
                 Obx(() => Container(
