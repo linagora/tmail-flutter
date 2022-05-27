@@ -13,19 +13,10 @@ part 'identity_request_dto.g.dart';
 @JsonSerializable()
 class IdentityRequestDto with EquatableMixin {
 
-  @JsonKey(includeIfNull: false)
   final String? name;
-
-  @JsonKey(includeIfNull: false)
   final Set<EmailAddress>? bcc;
-
-  @JsonKey(includeIfNull: false)
   final Set<EmailAddress>? replyTo;
-
-  @JsonKey(includeIfNull: false)
   final Signature? textSignature;
-
-  @JsonKey(includeIfNull: false)
   final Signature? htmlSignature;
 
   IdentityRequestDto({
