@@ -176,22 +176,16 @@ class IdentityCreatorController extends BaseController {
           replyToOfIdentity.value = listEmailAddressOfReplyTo
               .firstWhere((emailAddress) => emailAddress ==  identity?.replyTo!.first);
         } catch(e) {
-          replyToOfIdentity.value = null;
+          replyToOfIdentity.value = noneEmailAddress;
         }
       } else {
-        replyToOfIdentity.value = null;
+        replyToOfIdentity.value = noneEmailAddress;
       }
       log('IdentityCreatorController::_setUpAllFieldEmailAddress(): replyToOfIdentity: ${replyToOfIdentity.value}');
 
       if (identity?.bcc?.isNotEmpty == true) {
-        try {
-          bccOfIdentity.value = listEmailAddressOfReplyTo
-              .firstWhere((emailAddress) => emailAddress ==  identity?.bcc!.first);
-
-          inputBccIdentityController.text = bccOfIdentity.value?.email ?? '';
-        } catch(e) {
-          bccOfIdentity.value = null;
-        }
+        bccOfIdentity.value = identity?.bcc!.first;
+        inputBccIdentityController.text = identity?.bcc!.first.emailAddress ?? '';
       } else {
         bccOfIdentity.value = null;
       }
@@ -220,7 +214,7 @@ class IdentityCreatorController extends BaseController {
   }
 
   void selectSignatureType(BuildContext context, SignatureType newSignatureType) async {
-    if (newSignatureType == SignatureType.plainText) {
+    if (newSignatureType == SignatureType.plainText && !BuildUtils.isWeb) {
       final signatureText = await _getSignatureHtmlText();
       log('IdentityCreatorController::selectSignatureType(): signatureText: $signatureText');
       updateContentHtmlEditor(signatureText);
@@ -243,9 +237,9 @@ class IdentityCreatorController extends BaseController {
 
   Future<String?> _getSignatureHtmlText() async {
     if (BuildUtils.isWeb) {
-      return await signatureHtmlEditorController.getText();
+      return signatureHtmlEditorController.getText();
     } else {
-      return await signatureHtmlEditorMobileController?.getText();
+      return signatureHtmlEditorMobileController?.getText();
     }
   }
 
@@ -266,20 +260,28 @@ class IdentityCreatorController extends BaseController {
       return;
     }
 
-    final signatureHtmlText = await _getSignatureHtmlText();
+    final signaturePlainText = signaturePlainEditorController.text;
+    final signatureHtmlText = BuildUtils.isWeb
+        ? contentHtmlEditor
+        : await _getSignatureHtmlText();
+    final bccAddress = bccOfIdentity.value != null && bccOfIdentity.value != noneEmailAddress
+        ? {bccOfIdentity.value!}
+        : <EmailAddress>{};
+    final replyToAddress = replyToOfIdentity.value != null && replyToOfIdentity.value != noneEmailAddress
+        ? {replyToOfIdentity.value!}
+        : <EmailAddress>{};
 
+    log('IdentityCreatorController::createNewIdentity(): bccAddress: $bccAddress');
+    log('IdentityCreatorController::createNewIdentity(): replyToAddress: $replyToAddress');
+    log('IdentityCreatorController::createNewIdentity(): signaturePlainText: $signaturePlainText');
     log('IdentityCreatorController::createNewIdentity(): signatureHtmlText: $signatureHtmlText');
 
     final newIdentity = Identity(
       name: _nameIdentity,
       email: emailOfIdentity.value?.email,
-      replyTo: replyToOfIdentity.value != null && replyToOfIdentity.value != noneEmailAddress
-          ? {replyToOfIdentity.value!}
-          : null,
-      bcc: bccOfIdentity.value != null && bccOfIdentity.value != noneEmailAddress
-          ? {bccOfIdentity.value!}
-          : null,
-      textSignature: Signature(signaturePlainEditorController.text),
+      replyTo: replyToAddress,
+      bcc: bccAddress,
+      textSignature: Signature(signaturePlainText),
       htmlSignature: Signature(signatureHtmlText ?? ''));
 
     log('IdentityCreatorController::createNewIdentity(): $newIdentity');
