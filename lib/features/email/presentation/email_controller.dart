@@ -392,7 +392,8 @@ class EmailController extends BaseController {
               success.currentMailboxId,
               MoveAction.undo,
               success.emailActionType));
-          }
+          },
+        maxWidth: responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
   }
