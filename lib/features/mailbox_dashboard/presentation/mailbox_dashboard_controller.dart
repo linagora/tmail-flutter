@@ -328,7 +328,8 @@ class MailboxDashBoardController extends ReloadableController {
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).drafts_saved,
           AppLocalizations.of(currentContext!).discard,
-          () => _discardEmail(success.emailAsDrafts)
+          () => _discardEmail(success.emailAsDrafts),
+          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
   }
@@ -349,7 +350,8 @@ class MailboxDashBoardController extends ReloadableController {
                 success.currentMailboxId,
                 MoveAction.undo,
                 success.emailActionType));
-          }
+          },
+          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
   }
