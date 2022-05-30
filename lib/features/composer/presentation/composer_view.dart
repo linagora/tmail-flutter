@@ -39,7 +39,7 @@ class ComposerView extends GetWidget<ComposerController> {
   Widget _buildComposerViewForMobile(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          controller.saveEmailAsDrafts(context);
+          controller.saveEmailAsDrafts(context, canPop: false);
           return true;
         },
         child: GestureDetector(
@@ -68,7 +68,7 @@ class ComposerView extends GetWidget<ComposerController> {
   Widget _buildComposerViewForTablet(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          controller.saveEmailAsDrafts(context);
+          controller.saveEmailAsDrafts(context, canPop: false);
           return true;
         },
         child: GestureDetector(
@@ -119,12 +119,9 @@ class ComposerView extends GetWidget<ComposerController> {
                 icon: SvgPicture.asset(imagePaths.icClose, width: 30, height: 30, fit: BoxFit.fill),
                 tooltip: AppLocalizations.of(context).close,
                 iconPadding: EdgeInsets.zero,
-                onTap: () {
-                  controller.saveEmailAsDrafts(context);
-                  controller.closeComposer();
-                }),
+                onTap: () => controller.saveEmailAsDrafts(context)),
             Expanded(child: _buildTitleComposer(context)),
-            if (responsiveUtils.isMobile(context))
+            if (responsiveUtils.isScreenWithShortestSide(context))
               buildIconWeb(
                   icon: SvgPicture.asset(
                       isEnableSendButton ? imagePaths.icSendMobile : imagePaths.icSendDisable,
@@ -158,10 +155,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 width: 150,
                 height: 44,
                 radius: 10,
-                onTap: () {
-                  controller.saveEmailAsDrafts(context);
-                  controller.closeComposer();
-                }),
+                onTap: () => controller.saveEmailAsDrafts(context)),
             const SizedBox(width: 12),
             buildTextButton(
                 AppLocalizations.of(context).send,
@@ -487,7 +481,7 @@ class ComposerView extends GetWidget<ComposerController> {
         return HtmlEditor(
           key: const Key('composer_editor'),
           minHeight: 550,
-          initialContent: '<p><br><br><br></p>',
+          initialContent: ''.addEditorDefaultSpace(),
           onCreated: (editorApi) => controller.htmlEditorApi = editorApi);
       } else {
         final message = controller.getContentEmail(context);

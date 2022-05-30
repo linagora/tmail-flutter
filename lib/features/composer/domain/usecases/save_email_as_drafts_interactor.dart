@@ -12,6 +12,7 @@ class SaveEmailAsDraftsInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, Email email) async* {
     try {
+      yield Right<Failure, Success>(SaveEmailAsDraftsLoading());
       final emailAsDrafts = await emailRepository.saveEmailAsDrafts(accountId, email);
       if (emailAsDrafts != null) {
         yield Right<Failure, Success>(SaveEmailAsDraftsSuccess(emailAsDrafts));
