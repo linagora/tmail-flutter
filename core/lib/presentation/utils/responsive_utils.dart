@@ -57,4 +57,13 @@ class ResponsiveUtils {
   bool isHeightShortest(BuildContext context) {
     return MediaQuery.of(context).size.shortestSide < heightShortest;
   }
+
+  double getMaxWidthToast(BuildContext context) {
+    final widthScreen = getSizeScreenWidth(context);
+    if (isPortraitMobile(context)) {
+      return widthScreen;
+    } else {
+      return widthScreen < 444 ? widthScreen : 444;
+    }
+  }
 }

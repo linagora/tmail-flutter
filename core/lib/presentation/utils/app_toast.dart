@@ -1,9 +1,7 @@
 import 'package:core/core.dart';
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:getwidget/getwidget.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
@@ -40,24 +38,49 @@ class AppToast {
         gravity: ToastGravity.BOTTOM);
   }
 
-  void showToastWithAction(BuildContext context, String message, String actionName, Function onActionClick) {
-    GFToast.showToast(
-      message,
-      context,
-      toastPosition: GFToastPosition.BOTTOM,
-      textStyle: TextStyle(fontSize: 16, color: Colors.white),
-      backgroundColor: AppColor.toastWithActionBackgroundColor,
-      trailing: PointerInterceptor(child: GFButton(
-        onPressed: () {
-          ToastView.dismiss();
-          onActionClick();
-        },
-        text: actionName,
-        type: GFButtonType.transparent,
-        color: AppColor.buttonActionToastWithActionColor,
-      )),
-      toastBorderRadius: 5.0,
-      toastDuration: 3
+  void showToastWithAction(
+      BuildContext context,
+      String message,
+      String actionName,
+      Function onActionClick, {double? maxWidth}) {
+    showToastMessage(
+        context,
+        message,
+        maxWidth: maxWidth,
+        trailing: TextButton(
+          onPressed: () {
+            ToastView.dismiss();
+            onActionClick.call();
+          },
+          child: Text(
+            actionName,
+            style: const TextStyle(fontSize: 16, color: AppColor.buttonActionToastWithActionColor),
+          ),
+        ));
+  }
+
+  void showToastMessage(BuildContext context, String message, {
+    Widget? leading, Widget? trailing, double? maxWidth
+  }) {
+    TMailToast.showToast(
+        message,
+        context,
+        width: maxWidth,
+        toastPosition: ToastPosition.BOTTOM,
+        textStyle: TextStyle(fontSize: 16, color: Colors.white),
+        backgroundColor: AppColor.toastWithActionBackgroundColor,
+        trailing: trailing != null
+          ? Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: PointerInterceptor(child: trailing))
+          : null,
+        leading: leading != null
+            ? Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: PointerInterceptor(child: leading))
+            : null,
+        toastBorderRadius: 5.0,
+        toastDuration: 3
     );
   }
 
