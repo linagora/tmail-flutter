@@ -91,10 +91,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 child: buildIconWeb(
                                     icon: SvgPicture.asset(imagePaths.icCloseMailbox, fit: BoxFit.fill),
                                     tooltip: AppLocalizations.of(context).close,
-                                    onTap: () {
-                                      controller.saveEmailAsDrafts(context);
-                                      controller.closeComposerWeb();
-                                    }
+                                    onTap: () => controller.saveEmailAsDrafts(context)
                                 )),
                             buildIconWeb(
                                 icon: SvgPicture.asset(imagePaths.icFullScreenComposer, fit: BoxFit.fill),
@@ -174,10 +171,7 @@ class ComposerView extends GetWidget<ComposerController> {
         buildIconWeb(
             icon: SvgPicture.asset(imagePaths.icCloseMailbox, fit: BoxFit.fill),
             tooltip: AppLocalizations.of(context).close,
-            onTap: () {
-              controller.saveEmailAsDrafts(context);
-              controller.closeComposerWeb();
-            }),
+            onTap: () => controller.saveEmailAsDrafts(context)),
         if (responsiveUtils.isDesktop(context))
           Obx(() => buildIconWeb(
               icon: SvgPicture.asset(
@@ -210,10 +204,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 icon: SvgPicture.asset(imagePaths.icClose, width: 30, height: 30, fit: BoxFit.fill),
                 tooltip: AppLocalizations.of(context).close,
                 iconPadding: EdgeInsets.zero,
-                onTap: () {
-                  controller.saveEmailAsDrafts(context);
-                  controller.closeComposerWeb();
-                }),
+                onTap: () => controller.saveEmailAsDrafts(context)),
             Expanded(child: _buildTitleComposer(context)),
             buildIconWeb(
                 icon: SvgPicture.asset(
@@ -248,10 +239,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   width: 150,
                   height: 44,
                   radius: 10,
-                  onTap: () {
-                    controller.saveEmailAsDrafts(context);
-                    controller.closeComposerWeb();
-                  }),
+                  onTap: () => controller.saveEmailAsDrafts(context)),
               const SizedBox(width: 12),
               buildTextButton(
                   AppLocalizations.of(context).send,
@@ -518,7 +506,7 @@ class ComposerView extends GetWidget<ComposerController> {
         Obx(() {
           if (controller.composerArguments.value != null) {
             if (controller.composerArguments.value?.emailActionType == EmailActionType.compose) {
-              final initContent = controller.textEditorWeb ?? '<p><br><br><br></p>';
+              final initContent = controller.textEditorWeb ?? ''.addEditorDefaultSpace();
               return Expanded(child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: responsiveUtils.isMobile(context) ? 8 : 10),
                   child: _buildEditor(context, initContent)));
