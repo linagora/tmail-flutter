@@ -32,4 +32,17 @@ extension HtmlExtension on String {
   String addBlockQuoteTag() => addBlockTag(
     'blockquote',
     attribute: 'style=\"margin-left:8px;margin-right:8px;padding-left:12px;padding-right:12px;border-left:5px solid #eee;\"');
+
+  String asSignatureHtml() => '--<br><br>$this';
+
+  String toSignatureBlock() =>
+      '<br class="tmail-break-tag"><div class="tmail-signature">${asSignatureHtml()}</div><br class="tmail-break-tag">';
+
+  String removeEditorDefaultSpace() {
+    return replaceAll('<p><br><br><br></p>', '');
+  }
+
+  String addEditorDefaultSpace() {
+    return '<p><br><br><br></p>';
+  }
 }

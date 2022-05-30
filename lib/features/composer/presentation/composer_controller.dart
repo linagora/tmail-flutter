@@ -116,7 +116,7 @@ class ComposerController extends BaseController {
       } else {
         final content = await htmlEditorApi?.getText() ?? '';
         if (_isMobileApp && identitySelected.value?.textSignature?.value.isNotEmpty == true) {
-          final newContent = '$content<br><br><br>--<br><br><div>${identitySelected.value?.textSignature?.value}</div><br>';
+          final newContent = '$content${identitySelected.value?.textSignature?.value.toSignatureBlock()}';
           log('ComposerController::_generateEmail()_MOBILE: $newContent');
           return newContent;
         } else {
@@ -143,9 +143,11 @@ class ComposerController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
-      await FkUserAgent.init();
-    });
+    if (!BuildUtils.isWeb) {
+      WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
+        await FkUserAgent.init();
+      });
+    }
   }
 
   @override
@@ -161,11 +163,19 @@ class ComposerController extends BaseController {
 
   @override
   void onClose() {
+    if (!BuildUtils.isWeb) {
+      FkUserAgent.release();
+    }
+    super.onClose();
+  }
+
+  @override
+  void dispose() {
     subjectEmailInputController.dispose();
     toEmailAddressController.dispose();
     ccEmailAddressController.dispose();
     bccEmailAddressController.dispose();
-    super.onClose();
+    super.dispose();
   }
 
   @override
@@ -435,6 +445,7 @@ class ComposerController extends BaseController {
     var emailBodyText = await _getEmailBodyText();
     log('ComposerController::_generateEmail(): $emailBodyText');
     final userAgent = await userAgentPlatform;
+    log('ComposerController::_generateEmail(): userAgent: $userAgent');
 
     return Email(
       generateEmailId,
@@ -708,14 +719,22 @@ class ComposerController extends BaseController {
   }
 
   Future<bool> _isEmailChanged(BuildContext context, ComposerArguments arguments) async {
-    final newEmailBody = (await _getEmailBodyText(changedEmail: true))
-        .replaceAll('<p><br><br><br></p>', '');
+    final currentTextInComposer = await _getEmailBodyText(changedEmail: true);
+    final newEmailBody = currentTextInComposer.removeEditorDefaultSpace();
     log('ComposerController::_isEmailChanged(): newEmailBody: $newEmailBody');
     var oldEmailBody = '';
     final contentEmail = getContentEmail(context);
     if (arguments.emailActionType != EmailActionType.compose && contentEmail != null && contentEmail.isNotEmpty) {
       oldEmailBody = kIsWeb ? contentEmail : '\n$contentEmail\n';
     }
+    if (BuildUtils.isWeb) {
+      if (identitySelected.value?.htmlSignature?.value.isNotEmpty == true) {
+        oldEmailBody = '$oldEmailBody${identitySelected.value?.htmlSignature?.value.toSignatureBlock()}';
+      } else if (identitySelected.value?.textSignature?.value.isNotEmpty == true) {
+        oldEmailBody = '$oldEmailBody${identitySelected.value?.textSignature?.value.toSignatureBlock()}';
+      }
+    }
+
     log('ComposerController::_isEmailChanged(): oldEmailBody: $oldEmailBody');
     final isEmailBodyChanged = !oldEmailBody.trim().isSame(newEmailBody.trim());
     log('ComposerController::_isEmailChanged(): isEmailBodyChanged: $isEmailBodyChanged');
@@ -752,7 +771,8 @@ class ComposerController extends BaseController {
     return false;
   }
 
-  void saveEmailAsDrafts(BuildContext context) async {
+  void saveEmailAsDrafts(BuildContext context, {bool canPop = true}) async {
+    log('ComposerController::saveEmailAsDrafts():');
     clearFocusEditor(context);
 
     final arguments = composerArguments.value;
@@ -763,8 +783,8 @@ class ComposerController extends BaseController {
     if (arguments != null && mapDefaultMailboxId.isNotEmpty && userProfile != null && session != null) {
       log('ComposerController::saveEmailAsDrafts(): saveEmailAsDrafts START');
       final isChanged = await _isEmailChanged(context, arguments);
+      log('ComposerController::saveEmailAsDrafts(): saveEmailAsDrafts isChanged: $isChanged');
       if (isChanged) {
-        log('ComposerController::saveEmailAsDrafts(): saveEmailAsDrafts isChanged: $isChanged');
         final newEmail = await _generateEmail(mapDefaultMailboxId, userProfile, asDrafts: true);
         final accountId = session.accounts.keys.first;
         final oldEmail = arguments.presentationEmail;
@@ -777,6 +797,12 @@ class ComposerController extends BaseController {
               _saveEmailAsDraftsInteractor.execute(accountId, newEmail));
         }
       }
+    }
+
+    if (BuildUtils.isWeb) {
+      mailboxDashBoardController.dispatchAction(CloseComposeEmailAction());
+    } else {
+      if (canPop) popBack();
     }
   }
 
@@ -819,7 +845,6 @@ class ComposerController extends BaseController {
   void clearFocusEditor(BuildContext context) {
     if (!kIsWeb) {
       htmlEditorApi?.unfocus(context);
-      htmlControllerBrowser.clearFocus();
     }
     FocusManager.instance.primaryFocus?.unfocus();
   }
