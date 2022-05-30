@@ -1,8 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
-typedef OnOpenSearchMailActionClick = void Function();
-
 class TextFieldBuilder {
   Key? _key;
   ValueChanged<String>? _onTextChange;
