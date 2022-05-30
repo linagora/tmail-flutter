@@ -53,7 +53,7 @@ dependencies:
   sqflite: 2.0.0+4
 
   # GetX
-  get: 4.1.4
+  get: 4.6.5
 
   # device_info_plus
   device_info_plus: 3.2.2
