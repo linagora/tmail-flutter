@@ -669,7 +669,8 @@ class ThreadController extends BaseController {
                   emailActionType!,
                   destinationPath: destinationPath));
             }
-          }
+          },
+          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
 
@@ -1043,7 +1044,8 @@ class ThreadController extends BaseController {
                 success.currentMailboxId,
                 MoveAction.undo,
                 success.emailActionType));
-          }
+          },
+          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
   }
