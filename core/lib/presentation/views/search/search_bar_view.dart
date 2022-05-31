@@ -47,7 +47,7 @@ class SearchBarView {
   Widget build() {
     return Container(
         key: Key('search_bar_widget'),
-        alignment: Alignment.topCenter,
+        alignment: Alignment.center,
         height: _heightSearchBar ?? 40,
         width: _maxSizeWidth ?? double.infinity,
         decoration: BoxDecoration(
@@ -58,24 +58,23 @@ class SearchBarView {
         child: InkWell(
             onTap: () => _onOpenSearchViewAction?.call(),
             borderRadius: BorderRadius.all(Radius.circular(10)),
-            child: MediaQuery(
-            data: MediaQueryData(padding: EdgeInsets.zero),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                SizedBox(width: 8),
                 buildIconWeb(
-                    splashRadius: 12,
+                    splashRadius: 15,
+                    minSize: 40,
+                    iconPadding: EdgeInsets.zero,
                     icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
                     onTap: () => _onOpenSearchViewAction?.call()),
                 Expanded(child:
-                  Transform(transform: Matrix4.translationValues(-5, 0.0, 0.0),
-                  child: Text(
+                  Text(
                       _hintTextSearch ?? '',
                       maxLines: 1,
-                      style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar))))
+                      style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar)))
               ]
-            )
-        )),
+            )),
     );
   }
 }

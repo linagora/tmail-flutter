@@ -61,6 +61,15 @@ class MailBoxFolderTileBuilder {
   }
 
   Widget build() {
+    return Theme(
+        data: ThemeData(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent),
+        child: _buildMailboxItem()
+    );
+  }
+
+  Widget _buildMailboxItem() {
     if (BuildUtils.isWeb) {
       if (mailboxDisplayed == MailboxDisplayed.mailbox) {
         return StatefulBuilder(
