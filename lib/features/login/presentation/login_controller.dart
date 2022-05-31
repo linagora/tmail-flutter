@@ -78,7 +78,7 @@ class LoginController extends GetxController {
       loginState.value = LoginState(Right(LoginLoadingAction()));
       log('LoginController::_checkOIDCIsAvailable(): origin: + ${baseUri.origin}');
       await _checkOIDCIsAvailableInteractor
-          .execute(OIDCRequest(baseUrl: baseUri.origin, resourceUrl: baseUri.origin))
+          .execute(OIDCRequest(baseUrl: baseUri.toString(), resourceUrl: baseUri.origin))
           .then((response) => response.fold(
               (failure) => _showFormLoginWithCredentialAction(),
               (success) => success is CheckOIDCIsAvailableSuccess
@@ -104,6 +104,7 @@ class LoginController extends GetxController {
   }
 
   void handleLoginPressed() {
+    log('LoginController::handleLoginPressed(): ${loginFormType.value}');
     if (loginFormType.value == LoginFormType.ssoForm) {
       final baseUri = kIsWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
       if (baseUri != null) {
@@ -160,12 +161,15 @@ class LoginController extends GetxController {
 
   void _getTokenOIDCAction(BuildContext context, OIDCConfiguration config) async {
     loginState.value = LoginState(Right(LoginLoadingAction()));
-    await _getTokenOIDCInteractor
-        .execute(config.clientId, config.redirectUrl, config.discoveryUrl, config.scopes)
-        .then((response) => response.fold(
+    final baseUri = kIsWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
+    if (baseUri != null) {
+      await _getTokenOIDCInteractor
+        .execute(baseUri, config.clientId, config.redirectUrl, config.discoveryUrl, config.scopes)
+        .then((response) =>
+          response.fold(
             (failure) {
               if (failure is GetTokenOIDCFailure) {
-                loginState.value = LoginState(Left(failure));
+               loginState.value = LoginState(Left(failure));
               } else {
                 loginState.value = LoginState(Left(LoginCanNotGetTokenAction()));
               }
@@ -177,6 +181,9 @@ class LoginController extends GetxController {
                 loginState.value = LoginState(Left(LoginCanNotGetTokenAction()));
               }
             }));
+    } else {
+      loginState.value = LoginState(Left(LoginCanNotGetTokenAction()));
+    }
   }
 
   void _getTokenOIDCSuccess(GetTokenOIDCSuccess success) {
@@ -203,6 +210,7 @@ class LoginController extends GetxController {
   }
 
   void _loginFailureAction(FeatureFailure failure) {
+    logError('LoginController::_loginFailureAction(): $failure');
     loginState.value = LoginState(Left(failure));
   }
 
