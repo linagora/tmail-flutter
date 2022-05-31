@@ -117,6 +117,7 @@ class ImagePaths {
   String get icClockSB => _getImagePath('ic_clock_sb.svg');
   String get icSelectedSB => _getImagePath('ic_selected_sb.svg');
   String get icUserSB => _getImagePath('ic_user_sb.svg');
+  String get icComposeWeb => _getImagePath('ic_compose_web.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
