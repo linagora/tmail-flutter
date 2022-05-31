@@ -317,7 +317,7 @@ class MailboxView extends GetWidget<MailboxController> {
         margin: EdgeInsets.only(
             left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
             right: 16),
-        padding: const EdgeInsets.only(left: 12, right: 8),
+        padding: const EdgeInsets.only(left: 12),
         child: TreeView(
             key: Key('${categories.keyValue}_mailbox_list'),
             children: _buildListChildTileWidget(context, mailboxNode, lastNode: lastNode)));
