@@ -96,18 +96,25 @@ class MailboxView extends GetWidget<MailboxController> {
 
   Widget _buildComposerButton(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.only(top: 16, right: 16, left: 20),
+        padding: const EdgeInsets.only(top: 16, right: 16, left: 16),
         color: AppColor.colorBgDesktop,
         alignment: Alignment.centerLeft,
-        child: (ButtonBuilder(_imagePaths.icCompose)
+        child: (ButtonBuilder(_imagePaths.icComposeWeb)
             ..key(const Key('button_compose_email'))
-            ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(25), color: AppColor.colorTextButton))
+            ..decoration(BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: AppColor.colorTextButton,
+                boxShadow: const [
+                  BoxShadow(
+                    blurRadius: 12.0,
+                    color: AppColor.colorShadowComposerButton
+                  )
+                ]))
             ..paddingIcon(const EdgeInsets.only(right: 8))
             ..iconColor(Colors.white)
-            ..maxWidth(140)
-            ..size(20)
+            ..size(16)
             ..radiusSplash(10)
-            ..padding(const EdgeInsets.symmetric(vertical: 13))
+            ..padding(const EdgeInsets.symmetric(vertical: 8))
             ..textStyle(const TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w500))
             ..onPressActionClick(() => controller.mailboxDashBoardController.composeEmailAction())
             ..text(AppLocalizations.of(context).compose, isVertical: false))
