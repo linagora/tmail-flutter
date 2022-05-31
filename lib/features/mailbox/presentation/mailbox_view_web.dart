@@ -34,15 +34,20 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
           body: Column(
               children: [
                 if (!_responsiveUtils.isDesktop(context)) _buildLogoApp(context),
-                if (!_responsiveUtils.isDesktop(context)) const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+                if (!_responsiveUtils.isDesktop(context))
+                  const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
                 Expanded(child: Container(
-                  padding: const EdgeInsets.only(left: 16),
+                  padding: EdgeInsets.only(left: _responsiveUtils.isDesktop(context) ? 16 : 0),
                   color: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
                   child: Column(children: [
                     if (_responsiveUtils.isDesktop(context)) _buildComposerButton(context),
-                    Obx(() => controller.isSearchActive() ? _buildInputSearchFormWidget(context) : const SizedBox.shrink()),
+                    Obx(() => controller.isSearchActive()
+                        ? _buildInputSearchFormWidget(context)
+                        : const SizedBox.shrink()),
                     Expanded(child: Obx(() => Container(
-                      color: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
+                      color: _responsiveUtils.isDesktop(context)
+                          ? AppColor.colorBgDesktop
+                          : Colors.white,
                       padding: EdgeInsets.zero,
                       margin: EdgeInsets.only(top: _responsiveUtils.isDesktop(context) ? 16 : 0),
                       child: RefreshIndicator(
@@ -147,7 +152,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
         key: const PageStorageKey('mailbox_list'),
         primary: false,
         shrinkWrap: true,
-        padding: const EdgeInsets.only(right: 16),
+        padding: EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 16 : 0),
         children: [
           Obx(() {
             if (controller.isSelectionEnabled() || _responsiveUtils.isDesktop(context)) {
@@ -200,7 +205,9 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
 
   Widget _buildHeaderMailboxCategory(BuildContext context, MailboxCategories categories) {
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: EdgeInsets.only(top: 10, bottom: 10,
+            left: _responsiveUtils.isDesktop(context) ? 0 : 16,
+            right: _responsiveUtils.isDesktop(context) ? 0 : 16),
         child: Row(children: [
           buildIconWeb(
               splashRadius: 5,
@@ -231,7 +238,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
     return Container(
         padding: EdgeInsets.only(
             right: _responsiveUtils.isDesktop(context) ? 0 : 16,
-            left: _responsiveUtils.isDesktop(context) ? 0 : 12),
+            left: _responsiveUtils.isDesktop(context) ? 0 : 16),
         child: TreeView(
             key: Key('${categories.keyValue}_mailbox_list'),
             children: _buildListChildTileWidget(
@@ -286,7 +293,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
 
   Widget _buildInputSearchFormWidget(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.only(left: 8, top: 16),
+        padding: const EdgeInsets.only(top: 16),
         child: Row(
             children: [
               buildIconWeb(
