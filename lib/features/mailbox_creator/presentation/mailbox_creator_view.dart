@@ -13,6 +13,8 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
+  MailboxCreatorView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return PointerInterceptor(child: Card(
@@ -131,8 +133,8 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                     padding: const EdgeInsets.only(left: 16),
                     child: SvgPicture.asset(
                         _imagePaths.icFolderMailbox,
-                        width: 28,
-                        height: 28,
+                        width: BuildUtils.isWeb ? 20 : 24,
+                        height: BuildUtils.isWeb ? 20 : 24,
                         fit: BoxFit.fill)),
                 title: Transform(
                     transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
