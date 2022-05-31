@@ -57,29 +57,38 @@ class ConfirmationDialogActionSheetBuilder {
           Container(
               padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
               color: Colors.white,
-              child: CupertinoActionSheetAction(
-                child: Text(
-                    _messageText ?? '',
-                    textAlign: TextAlign.center,
-                    style: _styleMessage ?? TextStyle(fontSize: 14, color: AppColor.colorMessageConfirmDialog)),
-                onPressed: () => {},
+              child: MouseRegion(
+                cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+                child: CupertinoActionSheetAction(
+                  child: Text(
+                      _messageText ?? '',
+                      textAlign: TextAlign.center,
+                      style: _styleMessage ?? TextStyle(fontSize: 14, color: AppColor.colorMessageConfirmDialog)),
+                  onPressed: () => {},
+                ),
               )
           ),
           Container(
               color: Colors.white,
-              child: CupertinoActionSheetAction(
-                child: Text(
-                    _confirmText ?? '',
-                    style: _styleConfirmButton ?? TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorActionDeleteConfirmDialog)),
-                onPressed: () => _onConfirmActionClick?.call(),
+              child: MouseRegion(
+                cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+                child: CupertinoActionSheetAction(
+                  child: Text(
+                      _confirmText ?? '',
+                      style: _styleConfirmButton ?? TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorActionDeleteConfirmDialog)),
+                  onPressed: () => _onConfirmActionClick?.call(),
+                ),
               )
           ),
         ],
-        cancelButton: CupertinoActionSheetAction(
-          child: Text(
-              _cancelText ?? '',
-              style: _styleCancelButton ?? TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorActionCancelDialog)),
-          onPressed: () => _onCancelActionClick?.call(),
+        cancelButton: MouseRegion(
+          cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+          child: CupertinoActionSheetAction(
+            child: Text(
+                _cancelText ?? '',
+                style: _styleCancelButton ?? TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorActionCancelDialog)),
+            onPressed: () => _onCancelActionClick?.call(),
+          ),
         ),
       ))
     );

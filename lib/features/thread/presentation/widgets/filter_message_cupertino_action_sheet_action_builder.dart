@@ -33,23 +33,26 @@ class FilterMessageCupertinoActionSheetActionBuilder
   Widget build() {
     return Container(
       color: bgColor ?? Colors.white,
-      child: CupertinoActionSheetAction(
-        key: key,
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Padding(
-              padding: iconLeftPadding ?? const EdgeInsets.only(left: 12, right: 16),
-              child: actionIcon),
-          Expanded(child: Text(actionName, textAlign: TextAlign.left, style: actionTextStyle())),
-          if (optionCurrent == option && actionSelected != null)
+      child: MouseRegion(
+        cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+        child: CupertinoActionSheetAction(
+          key: key,
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Padding(
-              padding: iconRightPadding ?? const EdgeInsets.only(right: 12),
-              child: actionSelected!),
-        ]),
-        onPressed: () {
-          if (onCupertinoActionSheetActionClick != null) {
-            onCupertinoActionSheetActionClick!(option);
-          }
-        },
+                padding: iconLeftPadding ?? const EdgeInsets.only(left: 12, right: 16),
+                child: actionIcon),
+            Expanded(child: Text(actionName, textAlign: TextAlign.left, style: actionTextStyle())),
+            if (optionCurrent == option && actionSelected != null)
+              Padding(
+                padding: iconRightPadding ?? const EdgeInsets.only(right: 12),
+                child: actionSelected!),
+          ]),
+          onPressed: () {
+            if (onCupertinoActionSheetActionClick != null) {
+              onCupertinoActionSheetActionClick!(option);
+            }
+          },
+        ),
       ),
     );
   }
