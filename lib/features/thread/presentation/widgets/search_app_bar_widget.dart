@@ -15,9 +15,7 @@ class SearchAppBarWidget {
  OnClearTextSearchAction? _onClearTextSearchAction;
  OnSearchTextAction? _onSearchTextAction;
 
-  final BuildContext _context;
   final ImagePaths _imagePaths;
-  final ResponsiveUtils _responsiveUtils;
   final SearchQuery? _searchQuery;
   final TextEditingController? _searchInputController;
   final FocusNode? _searchFocusNode;
@@ -33,9 +31,7 @@ class SearchAppBarWidget {
   Widget? _iconClearText;
 
   SearchAppBarWidget(
-    this._context,
     this._imagePaths,
-    this._responsiveUtils,
     this._searchQuery,
     this._searchFocusNode,
     this._searchInputController,
@@ -93,20 +89,15 @@ class SearchAppBarWidget {
       decoration: _decoration,
       padding: _padding ?? EdgeInsets.zero,
       margin: _margin,
-      child: MediaQuery(
-        data: const MediaQueryData(padding: EdgeInsets.zero),
-        child: Row(
-          children: [
-            if (hasBackButton) _buildBackButton(),
-            if (hasSearchButton) _buildSearchButton(),
-            Expanded(child: Transform(
-              transform: Matrix4.translationValues(0.0, _responsiveUtils.isDesktop(_context) ? -2.0 : 0.0, 0.0),
-              child: _buildSearchInputForm(),
-            )),
-            if (suggestionSearch?.isNotEmpty == true || (_searchQuery != null && _searchQuery!.value.isNotEmpty))
-              _buildClearTextSearchButton(),
-          ]
-        )
+      child: Row(
+        children: [
+          if (hasBackButton) _buildBackButton(),
+          if (hasSearchButton) _buildSearchButton(),
+          Expanded(child: _buildSearchInputForm()),
+          if (suggestionSearch?.isNotEmpty == true
+              || (_searchQuery != null && _searchQuery!.value.isNotEmpty))
+            _buildClearTextSearchButton(),
+        ]
       )
     );
   }
