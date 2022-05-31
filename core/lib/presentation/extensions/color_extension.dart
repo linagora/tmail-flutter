@@ -119,6 +119,7 @@ extension AppColor on Color {
   static const colorActionButtonHover = Color(0xFFA2AAB3);
   static const colorBgMenuItemDropDownSelected = Color(0x80DEE2E7);
   static const colorButtonCancelDialog = Color(0x0D000000);
+  static const colorShadowComposerButton = Color(0x99007AFF);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
