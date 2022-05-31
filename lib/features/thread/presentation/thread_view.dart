@@ -79,7 +79,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                     else
                       const SizedBox.shrink(),
                     Obx(() {
-                      if (controller.isMailboxTrash && controller.emailList.isNotEmpty
+                      if (controller.isMailboxTrash
+                          && controller.emailList.isNotEmpty
                           && !controller.isSearchActive()) {
                         return _buildEmptyTrashButton(context);
                       } else {
@@ -99,7 +100,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                     Expanded(child: Container(
                         alignment: Alignment.center,
                         margin: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
-                            ? const EdgeInsets.only(left: 32, right: 24, top: 16, bottom: 24)
+                            ? const EdgeInsets.only(right: 16, top: 16, bottom: 16)
                             : EdgeInsets.zero,
                         decoration: BoxDecoration(
                             borderRadius: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
@@ -550,8 +551,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
           border: Border.all(color: AppColor.colorLineLeftEmailView),
           color: Colors.white),
       margin: EdgeInsets.only(
-          left: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 32 : 16,
-          right: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 20 : 16,
+          left: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 0 : 16,
+          right: 16,
           bottom: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 0 : 16,
           top: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 16 : 0),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
