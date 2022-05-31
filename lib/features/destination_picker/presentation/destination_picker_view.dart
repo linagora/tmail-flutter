@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/app_bar_destination_picker_builder.dart';
@@ -17,7 +18,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_sear
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class DestinationPickerView extends GetWidget<DestinationPickerController> {
+class DestinationPickerView extends GetWidget<DestinationPickerController>
+    with AppLoaderMixin {
 
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -161,12 +163,9 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) => success is LoadingState
-        ? const Center(child: Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(color: AppColor.primaryColor))))
+        ? Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: loadingWidget)
         : const SizedBox.shrink()));
   }
 
@@ -181,17 +180,18 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
           const SizedBox(height: 12),
         if (actions == MailboxActions.create) _buildUnifiedMailbox(context),
         const SizedBox(height: 12),
-        Obx(() => controller.defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
-            ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultMailboxTree.value.root, actions)
+        Obx(() => controller.defaultMailboxHasChild
+            ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultRootNode, actions)
             : const SizedBox.shrink()),
         if (actions == MailboxActions.create) const SizedBox(height: 12),
         if (actions != MailboxActions.create && !kIsWeb)
           const Padding(
             padding: EdgeInsets.only(left: 60),
             child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
-        Obx(() => controller.folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
-            ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderMailboxTree.value.root, actions)
+        Obx(() => controller.folderMailboxHasChild
+            ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderRootNode, actions)
             : const SizedBox.shrink()),
+        const SizedBox(height: 12),
       ]
     );
   }
@@ -218,7 +218,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
         child: Row(children: [
           Expanded(child: Text(categories.getTitle(context),
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              overflow: CommonTextStyle.defaultTextOverFlow,
               style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold))),
           buildIconWeb(
               icon: SvgPicture.asset(
@@ -239,7 +239,11 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
         margin: EdgeInsets.only(
             left: actions == MailboxActions.moveEmail ? 8 : _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
             right: actions == MailboxActions.moveEmail ? 0 : 16),
-        padding: const EdgeInsets.only(left: 12, right: 8),
+        padding: EdgeInsets.only(
+            top: _responsiveUtils.isDesktop(context) && actions == MailboxActions.create ? 8 : 0,
+            bottom: _responsiveUtils.isDesktop(context) && actions == MailboxActions.create ? 8 : 0,
+            left: _responsiveUtils.isDesktop(context) ? 0 : 12,
+            right: actions == MailboxActions.create ? 8 : 16),
         child: TreeView(
             key: Key('${categories.keyValue}_mailbox_list'),
             children: _buildListChildTileWidget(context, mailboxNode, lastNode: lastNode)));
@@ -269,9 +273,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
 
   Widget _buildListMailboxSearched(BuildContext context) {
     return Obx(() => Container(
-        margin: _responsiveUtils.isDesktop(context)
-            ? const EdgeInsets.only(left: 16, right: 16)
-            : EdgeInsets.zero,
+        margin: const EdgeInsets.only(right: 8, bottom: 12),
         decoration: _responsiveUtils.isDesktop(context)
             ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white)
             : null,
@@ -287,6 +289,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
                         _imagePaths,
                         _responsiveUtils,
                         controller.listMailboxSearched[index],
+                        mailboxDisplayed: MailboxDisplayed.destinationPicker,
                         lastMailbox: controller.listMailboxSearched.last)
                     ..addOnOpenMailboxAction((mailbox) => controller.selectMailboxAction(mailbox)))
                   .build())
@@ -309,7 +312,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
           onTap: () => controller.selectMailboxAction(null),
           leading: Padding(
             padding: const EdgeInsets.only(left: 16),
-            child: SvgPicture.asset(_imagePaths.icFolderMailbox, width: 28, height: 28, fit: BoxFit.fill)),
+            child: SvgPicture.asset(_imagePaths.icFolderMailbox,
+                width: BuildUtils.isWeb ? 20 : 24,
+                height: BuildUtils.isWeb ? 20 : 24,
+                fit: BoxFit.fill)),
           title: Transform(
             transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
             child: Row(
@@ -329,7 +335,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
   }
 
   void _handleOpenMailboxClick(MailboxNode mailboxNode) {
-    var presentationMailbox;
+    PresentationMailbox presentationMailbox;
     final path = controller.findNodePath(mailboxNode.item.id)
         ?? mailboxNode.item.name?.name;
     if (path != null) {

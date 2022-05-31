@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 
 typedef OnOpenMailboxActionClick = void Function(PresentationMailbox);
 typedef OnSelectMailboxActionClick = void Function(PresentationMailbox);
@@ -16,6 +17,7 @@ class MailboxSearchTileBuilder {
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
   final BuildContext _context;
+  final MailboxDisplayed mailboxDisplayed;
 
   bool isHoverItem = false;
 
@@ -31,6 +33,7 @@ class MailboxSearchTileBuilder {
     {
       this.allSelectMode = SelectMode.INACTIVE,
       this.lastMailbox,
+      this.mailboxDisplayed = MailboxDisplayed.mailbox,
     }
   );
 
@@ -159,7 +162,7 @@ class MailboxSearchTileBuilder {
   }
 
   Widget? _buildMenuIcon() {
-    if (isHoverItem) {
+    if (isHoverItem && mailboxDisplayed == MailboxDisplayed.mailbox) {
       return Padding(
         padding: const EdgeInsets.only(right: 8),
         child: InkWell(
@@ -188,9 +191,13 @@ class MailboxSearchTileBuilder {
     if (isHoverItem) {
       return AppColor.colorBgMailboxSelected;
     } else {
-      return _responsiveUtils.isDesktop(_context)
-          ? AppColor.colorBgDesktop
-          : Colors.white;
+      if (mailboxDisplayed == MailboxDisplayed.mailbox) {
+        return _responsiveUtils.isDesktop(_context)
+            ? AppColor.colorBgDesktop
+            : Colors.white;
+      } else {
+        return Colors.white;
+      }
     }
   }
 }
