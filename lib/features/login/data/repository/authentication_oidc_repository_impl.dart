@@ -24,4 +24,14 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl, String discoveryUrl, List<String> scopes) {
     return _oidcDataSource.getTokenOIDC(clientId, redirectUrl, discoveryUrl, scopes);
   }
+
+  @override
+  Future<TokenOIDC> getStoredTokenOIDC(String tokenIdHash) {
+    return _oidcDataSource.getStoredTokenOIDC(tokenIdHash);
+  }
+
+  @override
+  Future<void> persistTokenOIDC(TokenOIDC tokenOidc) {
+    return _oidcDataSource.persistTokenOIDC(tokenOidc);
+  }
 }
