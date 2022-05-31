@@ -364,9 +364,7 @@ class MailboxView extends GetWidget<MailboxController> {
           children: [
             _buildBackSearchButton(context),
             Expanded(child: (SearchAppBarWidget(
-                  context,
                   _imagePaths,
-                  _responsiveUtils,
                   controller.searchQuery.value,
                   controller.searchFocus,
                   controller.searchInputController,
@@ -411,7 +409,9 @@ class MailboxView extends GetWidget<MailboxController> {
             primary: false,
             itemBuilder: (context, index) =>
                 Obx(() => (MailboxSearchTileBuilder(
+                        context,
                         _imagePaths,
+                        _responsiveUtils,
                         controller.listMailboxSearched[index],
                         allSelectMode: controller.currentSelectMode.value,
                         lastMailbox: controller.listMailboxSearched.last)
