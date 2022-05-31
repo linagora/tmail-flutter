@@ -25,11 +25,14 @@ mixin PopupContextMenuActionMixin {
   }
 
   Widget buildCancelButton(BuildContext context) {
-    return CupertinoActionSheetAction(
-      child: Text(
-          AppLocalizations.of(context).cancel,
-          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorTextButton)),
-      onPressed: () => popBack(),
+    return MouseRegion(
+      cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+      child: CupertinoActionSheetAction(
+        child: Text(
+            AppLocalizations.of(context).cancel,
+            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorTextButton)),
+        onPressed: () => popBack(),
+      ),
     );
   }
 }

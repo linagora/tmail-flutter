@@ -1405,4 +1405,17 @@ class AppLocalizations {
         'Can not get token, please check with your system administrator',
         name: 'canNotGetToken');
   }
+
+  String get moveMailbox {
+    return Intl.message(
+      'Move mailbox',
+      name: 'moveMailbox',
+    );
+  }
+
+  String get deleteMailbox {
+    return Intl.message(
+        'Delete mailbox',
+        name: 'deleteMailbox');
+  }
 }
