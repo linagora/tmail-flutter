@@ -114,7 +114,7 @@ extension AppColor on Color {
   static const colorFocusButton = Color(0x14818C99);
   static const colorBorderEmailAddressInvalid = Color(0xFFFF3347);
   static const colorBorderIdentityInfo = Color(0xFFE7E8EC);
-  static const colorBgMailboxSelected = Color(0xFF99E4E8EC);
+  static const colorBgMailboxSelected = Color(0x99E4E8EC);
   static const colorLoading = Color(0x2999A2AD);
   static const colorActionButtonHover = Color(0xFFA2AAB3);
   static const colorBgMenuItemDropDownSelected = Color(0x80DEE2E7);

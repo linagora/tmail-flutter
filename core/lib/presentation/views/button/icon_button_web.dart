@@ -12,6 +12,7 @@ Widget buildIconWeb({
   EdgeInsets? iconPadding,
   double? iconSize,
   double? splashRadius,
+  double? minSize,
 }) {
   return Material(
       color: Colors.transparent,
@@ -19,6 +20,7 @@ Widget buildIconWeb({
       child: IconButton(
           icon: icon,
           iconSize: iconSize,
+          constraints: minSize != null ? BoxConstraints(minWidth: minSize, minHeight: minSize) : null,
           padding: iconPadding ?? EdgeInsets.all(8.0),
           splashRadius: splashRadius ?? 15,
           tooltip: tooltip ?? '',
