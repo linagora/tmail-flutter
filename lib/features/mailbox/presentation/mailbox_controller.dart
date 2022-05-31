@@ -684,6 +684,28 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
+  void handleMailboxAction(BuildContext context, MailboxActions actions,
+      PresentationMailbox mailbox) {
+    popBack();
+
+    switch(actions) {
+      case MailboxActions.delete:
+        _openConfirmationDialogDeleteMailboxAction(context, mailbox);
+        break;
+      case MailboxActions.rename:
+        _openDialogRenameMailboxAction(context, mailbox);
+        break;
+      case MailboxActions.move:
+        _appToast.showToast(AppLocalizations.of(context).the_feature_is_under_development);
+        break;
+      case MailboxActions.markAsRead:
+        _appToast.showToast(AppLocalizations.of(context).the_feature_is_under_development);
+        break;
+      default:
+        break;
+    }
+  }
+
   void closeMailboxScreen(BuildContext context) {
     _cancelSelectMailbox();
     mailboxDashBoardController.closeMailboxMenuDrawer();

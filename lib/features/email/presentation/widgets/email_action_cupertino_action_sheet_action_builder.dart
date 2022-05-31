@@ -30,19 +30,22 @@ class EmailActionCupertinoActionSheetActionBuilder extends CupertinoActionSheetA
   Widget build() {
     return Container(
       color: bgColor ?? Colors.white,
-      child: CupertinoActionSheetAction(
-        key: key,
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Padding(
-              padding: iconLeftPadding ?? const EdgeInsets.only(left: 12, right: 16),
-              child: actionIcon),
-          Expanded(child: Text(actionName, textAlign: TextAlign.left, style: actionTextStyle())),
-        ]),
-        onPressed: () {
-          if (onCupertinoActionSheetActionClick != null) {
-            onCupertinoActionSheetActionClick!(presentationEmail);
-          }
-        },
+      child: MouseRegion(
+        cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+        child: CupertinoActionSheetAction(
+          key: key,
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Padding(
+                padding: iconLeftPadding ?? const EdgeInsets.only(left: 12, right: 16),
+                child: actionIcon),
+            Expanded(child: Text(actionName, textAlign: TextAlign.left, style: actionTextStyle())),
+          ]),
+          onPressed: () {
+            if (onCupertinoActionSheetActionClick != null) {
+              onCupertinoActionSheetActionClick!(presentationEmail);
+            }
+          },
+        ),
       ),
     );
   }
