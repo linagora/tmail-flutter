@@ -5,17 +5,20 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_search_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin {
+class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, PopupMenuWidgetMixin {
 
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -350,6 +353,63 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin {
   }
 
   void _openMailboxMenuAction(BuildContext context, RelativeRect position,
-      PresentationMailbox presentationMailbox) {
+      PresentationMailbox mailbox) {
+    final listMailboxActions = [
+      MailboxActions.markAsRead,
+      if (!mailbox.hasRole()) MailboxActions.move,
+      if (!mailbox.hasRole()) MailboxActions.rename,
+      if (!mailbox.hasRole()) MailboxActions.delete,
+    ];
+
+    if (_responsiveUtils.isScreenWithShortestSide(context)) {
+      controller.openContextMenuAction(context,
+          _bottomSheetIdentityActionTiles(context, mailbox, listMailboxActions));
+    } else {
+      controller.openPopupMenuAction(context, position,
+          _popupMenuMailboxActionTiles(context, mailbox, listMailboxActions));
+    }
+  }
+
+  List<Widget> _bottomSheetIdentityActionTiles(BuildContext context,
+      PresentationMailbox mailbox, List<MailboxActions> listMailboxActions) {
+    return listMailboxActions
+        .map((action) => _mailboxContextMenuActionTile(context, action, mailbox))
+        .toList();
+  }
+
+  Widget _mailboxContextMenuActionTile(BuildContext context, MailboxActions actions,
+      PresentationMailbox mailbox) {
+    return (MailboxBottomSheetActionTileBuilder(
+            Key('${actions.name}_action'),
+            SvgPicture.asset(
+                actions.getContextMenuIcon(_imagePaths),
+                color: actions.getColorContextMenuIcon()),
+            actions.getTitleContextMenu(context),
+            mailbox)
+        ..onActionClick((mailbox) =>
+            controller.handleMailboxAction(context, actions, mailbox)))
+      .build();
+  }
+
+  List<PopupMenuEntry> _popupMenuMailboxActionTiles(BuildContext context,
+      PresentationMailbox mailbox, List<MailboxActions> listMailboxActions) {
+    return listMailboxActions
+        .map((action) => _mailboxPopupMenuActionTile(context, action, mailbox))
+        .toList();
+  }
+
+  PopupMenuItem _mailboxPopupMenuActionTile(BuildContext context, MailboxActions actions,
+      PresentationMailbox mailbox) {
+    return PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: popupItem(actions.getContextMenuIcon(_imagePaths),
+            actions.getTitleContextMenu(context),
+            colorIcon: actions.getColorContextMenuIcon(),
+            styleName: TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 17,
+                color: actions.getColorContextMenuIcon()),
+            onCallbackAction: () =>
+                controller.handleMailboxAction(context, actions, mailbox)));
   }
 }

@@ -3,21 +3,21 @@ import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 
-class IdentityBottomSheetActionTileBuilder extends CupertinoActionSheetActionBuilder<Identity> {
+class MailboxBottomSheetActionTileBuilder extends CupertinoActionSheetActionBuilder<PresentationMailbox> {
 
-  final Identity identity;
+  final PresentationMailbox presentationMailbox;
   final SvgPicture? actionSelected;
   final Color? bgColor;
   final EdgeInsets? iconLeftPadding;
   final EdgeInsets? iconRightPadding;
 
-  IdentityBottomSheetActionTileBuilder(
+  MailboxBottomSheetActionTileBuilder(
       Key key,
       SvgPicture actionIcon,
       String actionName,
-      this.identity,
+      this.presentationMailbox,
       {
         this.actionSelected,
         this.bgColor,
@@ -42,7 +42,7 @@ class IdentityBottomSheetActionTileBuilder extends CupertinoActionSheetActionBui
           ]),
           onPressed: () {
             if (onCupertinoActionSheetActionClick != null) {
-              onCupertinoActionSheetActionClick!(identity);
+              onCupertinoActionSheetActionClick!(presentationMailbox);
             }
           },
         ),

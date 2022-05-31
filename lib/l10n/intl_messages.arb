@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-05-27T10:11:30.148525",
+  "@@last_modified": "2022-05-31T15:17:59.229845",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1368,6 +1368,18 @@
   },
   "canNotGetToken": "Can not get token, please check with your system administrator",
   "@canNotGetToken": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveMailbox": "Move mailbox",
+  "@moveMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteMailbox": "Delete mailbox",
+  "@deleteMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
