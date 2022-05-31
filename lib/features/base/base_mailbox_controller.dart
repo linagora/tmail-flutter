@@ -110,4 +110,14 @@ abstract class BaseMailboxController extends BaseController {
       }
     }).toList();
   }
+
+  bool get defaultMailboxHasChild =>
+      defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false;
+
+  bool get folderMailboxHasChild =>
+      folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false;
+
+  MailboxNode get defaultRootNode => defaultMailboxTree.value.root;
+
+  MailboxNode get folderRootNode => folderMailboxTree.value.root;
 }
