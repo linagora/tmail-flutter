@@ -1,4 +1,4 @@
-import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
 class CommonTextStyle {
@@ -8,4 +8,6 @@ class CommonTextStyle {
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.normal,
   );
+
+  static final defaultTextOverFlow = BuildUtils.isWeb ? null : TextOverflow.ellipsis;
 }

@@ -10,7 +10,7 @@ class ResponsiveUtils {
   final int minTabletLargeWidth = 900;
 
   final double defaultSizeDrawer = 320;
-  final double defaultSizeMenu = 262;
+  final double defaultSizeMenu = 256;
 
   final double _loginTextFieldWidthSmallScreen = 280.0;
   final double _loginTextFieldWidthLargeScreen = 320.0;

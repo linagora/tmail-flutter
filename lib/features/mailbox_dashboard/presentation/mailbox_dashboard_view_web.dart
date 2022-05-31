@@ -49,8 +49,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             responsiveUtils: responsiveUtils,
             desktop: Column(children: [
               Row(children: [
-                Container(width: 256, color: Colors.white,
-                  padding: const EdgeInsets.only(top: 25, bottom: 25, left: 32),
+                Container(
+                  width: responsiveUtils.defaultSizeMenu,
+                  color: Colors.white,
+                  padding: const EdgeInsets.only(top: 25, bottom: 25, left: 28),
                   child: Row(children: [
                     (SloganBuilder(arrangedByHorizontal: true)
                         ..setSloganText(AppLocalizations.of(context).app_name)
