@@ -76,7 +76,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   ])
                 ),
                 Expanded(child: Padding(
-                  padding: const EdgeInsets.only(right: 10, top: 16, bottom: 10, left: 48),
+                  padding: const EdgeInsets.only(right: 10, top: 16, bottom: 10),
                   child: _buildRightHeader(context)))
               ]),
               Expanded(child: Row(
