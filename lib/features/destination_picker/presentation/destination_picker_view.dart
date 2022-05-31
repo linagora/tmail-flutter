@@ -283,7 +283,9 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
             primary: false,
             itemBuilder: (context, index) =>
                 Obx(() => (MailboxSearchTileBuilder(
+                        context,
                         _imagePaths,
+                        _responsiveUtils,
                         controller.listMailboxSearched[index],
                         lastMailbox: controller.listMailboxSearched.last)
                     ..addOnOpenMailboxAction((mailbox) => controller.selectMailboxAction(mailbox)))
@@ -347,7 +349,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController> {
               Padding(padding: const EdgeInsets.only(left: 5), child: buildIconWeb(
                   icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
                   onTap: () => controller.disableSearch(context))),
-              Expanded(child: (SearchAppBarWidget(context, _imagePaths, _responsiveUtils,
+              Expanded(child: (SearchAppBarWidget(
+                      _imagePaths,
                       controller.searchQuery.value,
                       controller.searchFocus,
                       controller.searchInputController,
