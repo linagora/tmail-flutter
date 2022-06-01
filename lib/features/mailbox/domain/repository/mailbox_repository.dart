@@ -17,4 +17,6 @@ abstract class MailboxRepository {
   Future<bool> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds);
 
   Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request);
+
+  Future<bool> markAsMailboxRead(AccountId accountId, MailboxId mailboxId, MailboxName mailboxName);
 }

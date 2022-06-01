@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
@@ -194,7 +195,7 @@ class ThreadController extends BaseController {
           _markAsStarMultipleEmailFailure(failure);
         } else if (failure is EmptyTrashFolderFailure) {
           _emptyTrashFolderFailure(failure);
-        }  else if (failure is LoadMoreEmailsFailure) {
+        } else if (failure is LoadMoreEmailsFailure) {
           stopFpsMeter();
         }
       },
@@ -253,25 +254,22 @@ class ThreadController extends BaseController {
         if (action is RefreshAllEmailAction) {
           refreshAllEmail();
           mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is MarkAsReadAllEmailAction) {
-          markAsReadAllEmails();
-          mailboxDashBoardController.clearDashBoardAction();
-        } if (action is SelectionAllEmailAction) {
+        } else if (action is SelectionAllEmailAction) {
           setSelectAllEmailAction();
           mailboxDashBoardController.clearDashBoardAction();
-        } if (action is CancelSelectionAllEmailAction) {
+        } else if (action is CancelSelectionAllEmailAction) {
           cancelSelectEmail();
           mailboxDashBoardController.clearDashBoardAction();
-        } if (action is FilterMessageAction) {
+        } else if (action is FilterMessageAction) {
           filterMessagesAction(action.context, action.option);
           mailboxDashBoardController.clearDashBoardAction();
-        } if (action is HandleEmailActionTypeAction) {
+        } else if (action is HandleEmailActionTypeAction) {
           pressEmailSelectionAction(action.context, action.emailAction, action.listEmailSelected);
           mailboxDashBoardController.clearDashBoardAction();
-        } if (action is OpenEmailDetailedAction) {
+        } else if (action is OpenEmailDetailedAction) {
           pressEmailAction(action.context, EmailActionType.preview, action.presentationEmail);
           mailboxDashBoardController.clearDashBoardAction();
-        } if (action is DisableSearchEmailAction) {
+        } else if (action is DisableSearchEmailAction) {
           closeSearchEmailAction();
           mailboxDashBoardController.clearDashBoardAction();
         }
@@ -291,6 +289,7 @@ class ThreadController extends BaseController {
               || success is SaveEmailAsDraftsSuccess
               || success is RemoveEmailDraftsSuccess
               || success is SendEmailSuccess
+              || success is MarkAsMailboxReadAllSuccess
               || success is UpdateEmailDraftsSuccess) {
             _refreshEmailChanges();
           }
@@ -494,13 +493,6 @@ class ThreadController extends BaseController {
     emailList.value = emailList.map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE)).toList();
     mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
     mailboxDashBoardController.listEmailSelected.clear();
-  }
-
-  void markAsReadAllEmails() {
-    final listEmail = emailList.allEmailUnread;
-    if (listEmail.isNotEmpty) {
-      markAsReadSelectedMultipleEmail(listEmail);
-    }
   }
 
   void markAsReadSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail) {

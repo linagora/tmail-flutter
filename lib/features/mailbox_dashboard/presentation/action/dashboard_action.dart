@@ -57,14 +57,6 @@ class CancelSelectionAllEmailAction extends DashBoardAction {
   List<Object?> get props => [];
 }
 
-class MarkAsReadAllEmailAction extends DashBoardAction {
-
-  MarkAsReadAllEmailAction();
-
-  @override
-  List<Object?> get props => [];
-}
-
 class FilterMessageAction extends DashBoardAction {
 
   final BuildContext context;

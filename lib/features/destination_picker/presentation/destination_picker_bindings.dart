@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -15,6 +18,9 @@ import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_reposit
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
+import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
+import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
+import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 
 class DestinationPickerBindings extends BaseBindings {
 
@@ -41,6 +47,8 @@ class DestinationPickerBindings extends BaseBindings {
   void bindingsDataSource() {
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
+    Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
+    Get.lazyPut<ThreadDataSource>(() => Get.find<ThreadDataSourceImpl>());
   }
 
   @override
@@ -48,6 +56,8 @@ class DestinationPickerBindings extends BaseBindings {
     Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
     Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
+    Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
+    Get.lazyPut(() => ThreadDataSourceImpl(Get.find<ThreadAPI>()));
   }
 
   @override
@@ -68,7 +78,9 @@ class DestinationPickerBindings extends BaseBindings {
           DataSourceType.network: Get.find<MailboxDataSource>(),
           DataSourceType.local: Get.find<MailboxCacheDataSourceImpl>()
         },
-        Get.find<StateDataSource>()
+        Get.find<StateDataSource>(),
+        Get.find<ThreadDataSource>(),
+        Get.find<EmailDataSource>()
     ));
   }
 }

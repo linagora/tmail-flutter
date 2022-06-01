@@ -1418,4 +1418,11 @@ class AppLocalizations {
         'Delete mailbox',
         name: 'deleteMailbox');
   }
+
+  String toastMessageMarkAsMailboxReadSuccess(String mailboxName) {
+    return Intl.message(
+        'You’ve marked all messages in "$mailboxName" as read',
+        name: 'toastMessageMarkAsMailboxReadSuccess',
+        args: [mailboxName]);
+  }
 }
