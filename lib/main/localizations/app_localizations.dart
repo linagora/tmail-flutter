@@ -1425,4 +1425,10 @@ class AppLocalizations {
         name: 'toastMessageMarkAsMailboxReadSuccess',
         args: [mailboxName]);
   }
+
+  String get allMailboxes {
+    return Intl.message(
+        'All mailboxes',
+        name: 'allMailboxes');
+  }
 }

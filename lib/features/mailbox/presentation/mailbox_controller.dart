@@ -17,21 +17,26 @@ import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
@@ -77,6 +82,7 @@ class MailboxController extends BaseMailboxController {
   final DeleteMultipleMailboxInteractor _deleteMultipleMailboxInteractor;
   final VerifyNameInteractor _verifyNameInteractor;
   final RenameMailboxInteractor _renameMailboxInteractor;
+  final MoveMailboxInteractor _moveMailboxInteractor;
   final Uuid _uuid;
 
   final listMailboxSearched = <PresentationMailbox>[].obs;
@@ -103,6 +109,7 @@ class MailboxController extends BaseMailboxController {
     this._deleteMultipleMailboxInteractor,
     this._verifyNameInteractor,
     this._renameMailboxInteractor,
+    this._moveMailboxInteractor,
     this._uuid,
     treeBuilder,
   ) : super(treeBuilder);
@@ -172,6 +179,8 @@ class MailboxController extends BaseMailboxController {
             _searchMailboxAction(allMailboxes, searchQuery.value);
           } else if (success is RenameMailboxSuccess) {
             refreshMailboxChanges();
+          } else if (success is MoveMailboxSuccess) {
+            _moveMailboxSuccess(success);
           }
         }
     );
@@ -483,6 +492,9 @@ class MailboxController extends BaseMailboxController {
       case MailboxActions.markAsRead:
         _markAsReadMailboxAction(selectionMailbox.first);
         break;
+      case MailboxActions.move:
+        _moveMailboxAction(selectionMailbox.first);
+        break;
       default:
         break;
     }
@@ -664,6 +676,69 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
+  void _moveMailboxAction(PresentationMailbox mailboxSelected) async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null) {
+      final destinationMailbox = await push(
+          AppRoutes.DESTINATION_PICKER,
+          arguments: DestinationPickerArguments(
+              accountId,
+              MailboxActions.move,
+              mailboxIdSelected: mailboxSelected.id));
+
+      _handleMovingMailbox(
+          accountId,
+          MoveAction.moving,
+          mailboxSelected,
+          destinationMailbox: destinationMailbox);
+    }
+
+    _cancelSelectMailbox();
+  }
+
+  void _handleMovingMailbox(
+      AccountId accountId,
+      MoveAction moveAction,
+      PresentationMailbox mailboxSelected,
+      {PresentationMailbox? destinationMailbox}) {
+    consumeState(_moveMailboxInteractor.execute(accountId,
+        MoveMailboxRequest(
+            mailboxSelected.id,
+            moveAction,
+            destinationMailboxId: destinationMailbox?.id,
+            destinationMailboxName: destinationMailbox?.name,
+            parentId: mailboxSelected.parentId)));
+  }
+
+  void _moveMailboxSuccess(MoveMailboxSuccess success) {
+    if (success.moveAction == MoveAction.moving
+        && currentOverlayContext != null
+        && currentContext != null) {
+      _appToast.showToastWithAction(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).moved_to_mailbox(
+              success.destinationMailboxName?.name ?? AppLocalizations.of(currentContext!).default_mailbox),
+          AppLocalizations.of(currentContext!).undo_action,
+          () {
+            _undoMovingMailbox(MoveMailboxRequest(
+                success.mailboxIdSelected,
+                MoveAction.undo,
+                destinationMailboxId: success.parentId,
+                parentId: success.destinationMailboxId));
+          },
+          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
+    }
+
+    refreshMailboxChanges();
+  }
+
+  void _undoMovingMailbox(MoveMailboxRequest newMoveRequest) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null) {
+      consumeState(_moveMailboxInteractor.execute(accountId, newMoveRequest));
+    }
+  }
+
   void _createListMailboxNameAsStringInMailboxParent(PresentationMailbox mailboxRenamed) {
     if (mailboxRenamed.parentId == null) {
       final allChildrenAtMailboxLocation = (defaultMailboxTree.value.root.childrenItems ?? <MailboxNode>[]) + (folderMailboxTree.value.root.childrenItems ?? <MailboxNode>[]);
@@ -715,7 +790,7 @@ class MailboxController extends BaseMailboxController {
         _openDialogRenameMailboxAction(context, mailbox);
         break;
       case MailboxActions.move:
-        _appToast.showToast(AppLocalizations.of(context).the_feature_is_under_development);
+        _moveMailboxAction(mailbox);
         break;
       case MailboxActions.markAsRead:
         _markAsReadMailboxAction(mailbox);
