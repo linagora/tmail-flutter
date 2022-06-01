@@ -3,8 +3,17 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
@@ -13,13 +22,22 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 
 class MailboxRepositoryImpl extends MailboxRepository {
 
   final Map<DataSourceType, MailboxDataSource> mapDataSource;
   final StateDataSource stateDataSource;
+  final ThreadDataSource threadDataSource;
+  final EmailDataSource emailDataSource;
 
-  MailboxRepositoryImpl(this.mapDataSource, this.stateDataSource);
+  MailboxRepositoryImpl(
+    this.mapDataSource,
+    this.stateDataSource,
+    this.threadDataSource,
+    this.emailDataSource
+  );
 
   @override
   Stream<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties}) async* {
@@ -151,5 +169,55 @@ class MailboxRepositoryImpl extends MailboxRepository {
   @override
   Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) {
     return mapDataSource[DataSourceType.network]!.renameMailbox(accountId, request);
+  }
+
+  @override
+  Future<bool> markAsMailboxRead(AccountId accountId, MailboxId mailboxId, MailboxName mailboxName) async {
+    bool mailboxHasEmails = true;
+    UTCDate? lastReceivedDate;
+    EmailId? lastEmailId;
+
+    while(mailboxHasEmails) {
+      final emailResponse = await threadDataSource.getAllEmail(accountId,
+        limit: UnsignedInt(20),
+        filter: EmailFilterCondition(
+            inMailbox: mailboxId,
+            notKeyword: KeyWordIdentifier.emailSeen.value,
+            before: lastReceivedDate),
+        sort: <Comparator>{}
+          ..add(EmailComparator(EmailComparatorProperty.receivedAt)
+            ..setIsAscending(false)),
+        properties: Properties({
+          EmailProperty.id,
+          EmailProperty.keywords,
+          EmailProperty.receivedAt,
+        })
+      ).then((response) {
+        var listEmails = response.emailList;
+        if (listEmails != null && listEmails.isNotEmpty && lastEmailId != null) {
+          listEmails = listEmails
+              .where((email) => email.id != lastEmailId)
+              .toList();
+        }
+        return EmailsResponse(emailList: listEmails, state: response.state);
+      });
+      log('MailboxRepositoryImpl::markAsMailboxRead(): listEmails: ${emailResponse.emailList?.length}');
+      final listEmailUnread = emailResponse.emailList;
+
+      if (listEmailUnread == null || listEmailUnread.isEmpty) {
+        mailboxHasEmails = false;
+      } else {
+        log('MailboxRepositoryImpl::markAsMailboxRead(): listEmailUnread: ${listEmailUnread.length}');
+        final result = await emailDataSource.markAsRead(accountId,
+            listEmailUnread, ReadActions.markAsRead);
+
+        if (result.length != listEmailUnread.length) {
+          mailboxHasEmails = false;
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 }
