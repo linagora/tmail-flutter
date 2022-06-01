@@ -10,7 +10,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_search_tile_builder.dart';
@@ -31,47 +30,45 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
         elevation: _responsiveUtils.isDesktop(context) ? 0 : 16.0,
         child: Scaffold(
           backgroundColor: Colors.white,
-          body: Column(
-              children: [
-                if (!_responsiveUtils.isDesktop(context)) _buildLogoApp(context),
-                if (!_responsiveUtils.isDesktop(context))
-                  const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
-                Expanded(child: Container(
-                  padding: EdgeInsets.only(left: _responsiveUtils.isDesktop(context) ? 16 : 0),
-                  color: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
-                  child: Column(children: [
-                    if (_responsiveUtils.isDesktop(context)) _buildComposerButton(context),
-                    Obx(() => controller.isSearchActive()
-                        ? _buildInputSearchFormWidget(context)
-                        : const SizedBox.shrink()),
-                    Expanded(child: Obx(() => Container(
-                      color: _responsiveUtils.isDesktop(context)
-                          ? AppColor.colorBgDesktop
-                          : Colors.white,
-                      padding: EdgeInsets.zero,
-                      margin: EdgeInsets.only(top: _responsiveUtils.isDesktop(context) ? 16 : 0),
-                      child: RefreshIndicator(
-                          color: AppColor.primaryColor,
-                          onRefresh: () async => controller.refreshAllMailbox(),
-                          child: controller.isSearchActive()
-                              ? _buildListMailboxSearched(context, controller.listMailboxSearched)
-                              : _buildListMailbox(context)),
-                    ))),
-                  ]),
-                )),
-                Obx(() {
-                  if (controller.isSearchActive()) {
-                    return controller.listPresentationMailboxSelected.isNotEmpty
-                        ? _buildOptionSelectionMailbox(context)
-                        : const SizedBox.shrink();
-                  } else {
-                    return controller.listMailboxNodeSelected.isNotEmpty
-                        ? _buildOptionSelectionMailbox(context)
-                        : const SizedBox.shrink();
-                  }
-                }),
-              ]
-          ),
+          body: Column(children: [
+            if (!_responsiveUtils.isDesktop(context)) _buildLogoApp(context),
+            if (!_responsiveUtils.isDesktop(context))
+              const Divider(
+                  color: AppColor.colorDividerMailbox,
+                  height: 0.5,
+                  thickness: 0.2),
+            Expanded(child: Container(
+              padding: EdgeInsets.only(
+                  left: _responsiveUtils.isDesktop(context) ? 16 : 0),
+              color: _responsiveUtils.isDesktop(context)
+                  ? AppColor.colorBgDesktop
+                  : Colors.white,
+              child: Column(children: [
+                if (_responsiveUtils.isDesktop(context))
+                  _buildComposerButton(context),
+                Obx(() => controller.isSearchActive()
+                    ? _buildInputSearchFormWidget(context)
+                    : const SizedBox.shrink()),
+                Expanded(child: Obx(() {
+                  return Container(
+                    color: _responsiveUtils.isDesktop(context)
+                        ? AppColor.colorBgDesktop
+                        : Colors.white,
+                    padding: EdgeInsets.zero,
+                    margin: EdgeInsets.only(
+                        top: _responsiveUtils.isDesktop(context) ? 16 : 0),
+                    child: RefreshIndicator(
+                        color: AppColor.primaryColor,
+                        onRefresh: () async => controller.refreshAllMailbox(),
+                        child: controller.isSearchActive()
+                            ? _buildListMailboxSearched(
+                                context, controller.listMailboxSearched)
+                            : _buildListMailbox(context)),
+                  );
+                })),
+              ]),
+            )),
+          ]),
         )
     );
   }
@@ -360,18 +357,6 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                   ..addOnSelectMailboxActionClick((mailbox) => controller.selectMailboxSearched(context, mailbox)))
                 .build()))
     );
-  }
-
-  Widget _buildOptionSelectionMailbox(BuildContext context) {
-    return Column(children: [
-      const Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
-      Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: (BottomBarSelectionMailboxWidget(context, _imagePaths, controller.listMailboxSelected)
-              ..addOnMailboxActionsClick((actions, listMailboxSelected) => controller.pressMailboxSelectionAction(context, actions, listMailboxSelected)))
-            .build()
-      )
-    ]);
   }
 
   Widget _buildVersionInformation(BuildContext context, PackageInfo packageInfo) {

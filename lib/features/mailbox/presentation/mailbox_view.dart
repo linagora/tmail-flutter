@@ -24,69 +24,58 @@ class MailboxView extends GetWidget<MailboxController> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(bottom: false, left: false, right: false, top: _responsiveUtils.isMobile(context),
+    return SafeArea(bottom: false, left: false, right: false,
+        top: _responsiveUtils.isMobile(context),
         child: ClipRRect(
             borderRadius: _responsiveUtils.isPortraitMobile(context)
-                ? const BorderRadius.only(topRight: Radius.circular(14), topLeft: Radius.circular(14))
+                ? const BorderRadius.only(
+                    topRight: Radius.circular(14),
+                    topLeft: Radius.circular(14))
                 : const BorderRadius.all(Radius.zero),
             child: Drawer(
                 child: Scaffold(
-                  backgroundColor: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
-                      ? AppColor.colorBgDesktop
-                      : Colors.white,
+                  backgroundColor: Colors.white,
                   body: Stack(children: [
                     Column(children: [
-                      if (BuildUtils.isWeb && _responsiveUtils.isDesktop(context))
-                        _buildLogoApp(context),
-                      if ((BuildUtils.isWeb && !_responsiveUtils.isDesktop(context))
-                          || !BuildUtils.isWeb)
-                        _buildHeaderMailbox(context),
-                      if (BuildUtils.isWeb && _responsiveUtils.isDesktop(context))
-                        _buildComposerButton(context),
-                      Obx(() => !controller.isSearchActive() && BuildUtils.isWeb
-                        && _responsiveUtils.isDesktop(context)
-                          ? Row(children: [
-                              Expanded(child: _buildSearchBarWidget(context)),
-                              _buildAddNewFolderButton(context),
-                            ])
-                          : const SizedBox.shrink()),
+                      _buildHeaderMailbox(context),
                       Obx(() => controller.isSearchActive()
-                          ? SafeArea(bottom: false, top: false, right: false, child: _buildInputSearchFormWidget(context))
+                          ? SafeArea(bottom: false, top: false, right: false,
+                                child: _buildInputSearchFormWidget(context))
                           : const SizedBox.shrink()),
                       Expanded(child: Obx(() => Container(
-                        color: _responsiveUtils.isDesktop(context) && BuildUtils.isWeb
-                            ? Colors.transparent
-                            : controller.isSearchActive() ? Colors.white : AppColor.colorBgMailbox,
+                        color: controller.isSearchActive()
+                            ? Colors.white
+                            : AppColor.colorBgMailbox,
                         child: RefreshIndicator(
-                            color: AppColor.primaryColor,
-                            onRefresh: () async => controller.refreshAllMailbox(),
+                          color: AppColor.primaryColor,
+                          onRefresh: () async => controller.refreshAllMailbox(),
+                          child: SafeArea(top: false, right: false,
+                            bottom: !controller.isSelectionEnabled(),
                             child: controller.isSearchActive()
-                                ? SafeArea(
-                                    bottom: !controller.isSelectionEnabled(),
-                                    top: false,
-                                    right: false,
-                                    child: _buildListMailboxSearched(context))
-                                : SafeArea(
-                                    bottom: !controller.isSelectionEnabled(),
-                                    right: false,
-                                    top: false,
-                                    child: Padding(
-                                        padding: EdgeInsets.only(bottom: _responsiveUtils.isLandscapeMobile(context)
+                                ? _buildListMailboxSearched(context)
+                                : Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: _responsiveUtils.isLandscapeMobile(context)
                                             || controller.isSelectionEnabled() ? 0 : 55),
-                                        child: _buildListMailbox(context)))
+                                    child: _buildListMailbox(context))
+                          )
                         ),
                       ))),
-                      Obx(() => controller.isSelectionEnabled() ? _buildOptionSelectionMailbox(context) : const SizedBox.shrink()),
+                      Obx(() => controller.isSelectionEnabled()
+                          ? _buildOptionSelectionMailbox(context)
+                          : const SizedBox.shrink()),
                     ]),
                     Obx(() {
-                      if (controller.mailboxDashBoardController.appInformation.value != null
-                          && !controller.isSearchActive() && !controller.isSelectionEnabled()) {
+                      final appInformation = controller.mailboxDashBoardController.appInformation.value;
+                      if (appInformation != null
+                          && !controller.isSearchActive()
+                          && !controller.isSelectionEnabled()) {
                         if (_responsiveUtils.isLandscapeMobile(context)) {
                           return const SizedBox.shrink();
                         }
                         return Align(
                             alignment: Alignment.bottomCenter,
-                            child: _buildVersionInformation(context, controller.mailboxDashBoardController.appInformation.value!));
+                            child: _buildVersionInformation(context, appInformation));
                       } else {
                         return const SizedBox.shrink();
                       }
@@ -96,19 +85,6 @@ class MailboxView extends GetWidget<MailboxController> {
             )
         )
     );
-  }
-
-  Widget _buildLogoApp(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        padding: const EdgeInsets.only(left: 32, top: 20, bottom: 24),
-        child: (SloganBuilder(arrangedByHorizontal: true)
-            ..setSloganText(AppLocalizations.of(context).app_name)
-            ..setSloganTextAlign(TextAlign.center)
-            ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 25, fontWeight: FontWeight.bold))
-            ..setSizeLogo(24)
-            ..setLogo(_imagePaths.icLogoTMail))
-          .build());
   }
 
   Widget _buildHeaderMailbox(BuildContext context) {
@@ -153,42 +129,6 @@ class MailboxView extends GetWidget<MailboxController> {
           const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
       ]
     );
-  }
-
-  Widget _buildComposerButton(BuildContext context) {
-    return Row(children: [
-      Expanded(child: Container(
-          padding: const EdgeInsets.only(top: 16, left: 20),
-          color: AppColor.colorBgDesktop,
-          alignment: Alignment.centerLeft,
-          child: (ButtonBuilder(_imagePaths.icCompose)
-              ..key(const Key('button_compose_email'))
-              ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(25), color: AppColor.colorTextButton))
-              ..paddingIcon(const EdgeInsets.only(right: 8))
-              ..iconColor(Colors.white)
-              ..maxWidth(140)
-              ..size(20)
-              ..radiusSplash(10)
-              ..padding(const EdgeInsets.symmetric(vertical: 13))
-              ..textStyle(const TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w500))
-              ..onPressActionClick(() => controller.mailboxDashBoardController.composeEmailAction())
-              ..text(AppLocalizations.of(context).compose, isVertical: false))
-            .build())
-      ),
-      Obx(() {
-        if (controller.isSearchActive()) {
-          return controller.listMailboxSearched.isNotEmpty
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: _buildEditMailboxButton(context, controller.isSelectionEnabled()))
-              : const SizedBox.shrink();
-        } else {
-          return Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: _buildEditMailboxButton(context, controller.isSelectionEnabled()));
-        }
-      })
-    ]);
   }
 
   Widget _buildCloseScreenButton(BuildContext context) {
@@ -423,29 +363,21 @@ class MailboxView extends GetWidget<MailboxController> {
   }
 
   Widget _buildOptionSelectionMailbox(BuildContext context) {
-    if (_responsiveUtils.isDesktop(context)) {
-      return Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: const [BoxShadow(color: AppColor.colorEmailAddressTag, spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))],
-            color: Colors.white),
-        margin: const EdgeInsets.only(left: 10, bottom: 10, right: 10),
-        padding: const EdgeInsets.all(8),
-        child: (BottomBarSelectionMailboxWidget(context, _imagePaths, controller.listMailboxSelected)
-            ..addOnMailboxActionsClick((actions, listMailboxSelected) => controller.pressMailboxSelectionAction(context, actions, listMailboxSelected)))
-          .build(),
-      );
-    } else {
-      return Column(children: [
-        const Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: (BottomBarSelectionMailboxWidget(context, _imagePaths, controller.listMailboxSelected)
-                ..addOnMailboxActionsClick((actions, listMailboxSelected) => controller.pressMailboxSelectionAction(context, actions, listMailboxSelected)))
-              .build()))
-      ]);
-    }
+    return Column(children: [
+      const Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
+      SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: (BottomBarSelectionMailboxWidget(context,
+                  _imagePaths,
+                  controller.listMailboxSelected)
+              ..addOnMailboxActionsClick((actions, listMailboxSelected) =>
+                  controller.pressMailboxSelectionAction(
+                      context,
+                      actions,
+                      listMailboxSelected)))
+            .build()))
+    ]);
   }
 
   Widget _buildVersionInformation(BuildContext context, PackageInfo packageInfo) {
