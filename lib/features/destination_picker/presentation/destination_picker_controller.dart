@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -30,6 +31,7 @@ class DestinationPickerController extends BaseMailboxController {
   final searchQuery = SearchQuery.initial().obs;
   final mailboxCategoriesExpandMode = MailboxCategoriesExpandMode.initial().obs;
 
+  MailboxId? mailboxIdSelected;
   AccountId? accountId;
   final searchInputController = TextEditingController();
   final searchFocus = FocusNode();
@@ -46,6 +48,7 @@ class DestinationPickerController extends BaseMailboxController {
     final arguments = Get.arguments;
     if (arguments != null && arguments is DestinationPickerArguments) {
       mailboxAction.value = arguments.mailboxAction;
+      mailboxIdSelected = arguments.mailboxIdSelected;
       accountId = arguments.accountId;
       getAllMailboxAction();
     }
@@ -56,7 +59,14 @@ class DestinationPickerController extends BaseMailboxController {
     super.onData(newState);
     newState.map((success) {
       if (success is GetAllMailboxSuccess) {
-        buildTree(success.mailboxList);
+        if (mailboxAction.value == MailboxActions.move && mailboxIdSelected != null) {
+          final newMailboxList = success.mailboxList
+              .where((mailbox) => mailbox.id != mailboxIdSelected)
+              .toList();
+          buildTree(newMailboxList);
+        } else {
+          buildTree(success.mailboxList);
+        }
       }
     });
   }
