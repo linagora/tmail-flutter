@@ -68,14 +68,26 @@ class AppBarThreadWidgetBuilder {
           left: 8,
           bottom: !BuildUtils.isWeb ? 8 : 16,
           right: 8,
-          top: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(_context) ? 0 : 16),
+          top: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(_context)
+              ? 0
+              : 16),
       child: MediaQuery(
         data: const MediaQueryData(padding: EdgeInsets.zero),
-        child: kIsWeb
-            ? _selectMode == SelectMode.INACTIVE ? _buildBodyAppBarForWeb() : _buildBodyAppBarForWebSelection()
-            : _selectMode == SelectMode.INACTIVE ? _buildBodyAppBarForMobile() : _buildBodyAppBarForMobileSelection()
+        child: _buildAppBar()
       )
     );
+  }
+
+  Widget _buildAppBar() {
+    if (BuildUtils.isWeb) {
+      return _selectMode == SelectMode.INACTIVE
+          ? _buildBodyAppBarForWeb()
+          : _buildBodyAppBarForWebSelection();
+    } else {
+      return _selectMode == SelectMode.INACTIVE
+          ? _buildBodyAppBarForMobile()
+          : _buildBodyAppBarForMobileSelection();
+    }
   }
 
   Widget _buildBodyAppBarForWeb() {
@@ -94,12 +106,15 @@ class AppBarThreadWidgetBuilder {
   Widget _buildBodyAppBarForWebSelection() {
     return Row(children: [
       buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icCloseComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
+          icon: SvgPicture.asset(_imagePaths.icCloseComposer,
+              color: AppColor.colorTextButton,
+              fit: BoxFit.fill),
           tooltip: AppLocalizations.of(_context).cancel,
           onTap: () => _onCancelEditThread?.call()),
       Expanded(child: Text(
         AppLocalizations.of(_context).count_email_selected(_listSelectionEmail.length),
-        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))),
+        style: const TextStyle(fontSize: 17,
+            fontWeight: FontWeight.w500, color: AppColor.colorTextButton))),
       buildIconWeb(
           icon: SvgPicture.asset(_listSelectionEmail.isAllEmailRead ? _imagePaths.icRead : _imagePaths.icUnread, fit: BoxFit.fill),
           tooltip: _listSelectionEmail.isAllEmailRead ? AppLocalizations.of(_context).unread : AppLocalizations.of(_context).read,
@@ -150,10 +165,15 @@ class AppBarThreadWidgetBuilder {
                         padding: const EdgeInsets.only(left: 40, right: 40),
                         child: _buildContentCenterAppBar()),
                     Transform(
-                        transform: Matrix4.translationValues(_getXTranslationValues(), -8.0, 0.0),
+                        transform: Matrix4.translationValues(
+                            _getXTranslationValues(),
+                            -8.0,
+                            0.0),
                         child: Text(
                             _filterMessageOption.getTitle(_context),
-                            style: const TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
+                            style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColor.colorContentEmail)))
                   ])
                 : Padding(
                     padding: const EdgeInsets.only(left: 60, right: 40),
@@ -177,10 +197,15 @@ class AppBarThreadWidgetBuilder {
                         padding: const EdgeInsets.only(left: 40, right: 40),
                         child: _buildContentCenterAppBar()),
                     Transform(
-                        transform: Matrix4.translationValues(_responsiveUtils.isDesktop(_context) ? -2.0 : -16.0, -8.0, 0.0),
+                        transform: Matrix4.translationValues(
+                            _responsiveUtils.isDesktop(_context) ? -2.0 : -16.0,
+                            -8.0,
+                            0.0),
                         child: Text(
                             _filterMessageOption.getTitle(_context),
-                            style: const TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
+                            style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColor.colorContentEmail)))
                   ])
                 : Padding(
                     padding: const EdgeInsets.only(left: 60, right: 40),
@@ -200,7 +225,9 @@ class AppBarThreadWidgetBuilder {
               onPressed: () => _onEditThreadAction?.call(),
               child: Text(
                 AppLocalizations.of(_context).edit,
-                style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton),
+                style: const TextStyle(
+                    fontSize: 17,
+                    color: AppColor.colorTextButton),
               ),
             )
         )
@@ -216,7 +243,8 @@ class AppBarThreadWidgetBuilder {
         child: InkWell(
             borderRadius: const BorderRadius.all(Radius.circular(10)),
             onTap: () {
-              if (_onFilterEmailAction != null && _responsiveUtils.isScreenWithShortestSide(_context)) {
+              if (_onFilterEmailAction != null
+                  && _responsiveUtils.isScreenWithShortestSide(_context)) {
                 _onFilterEmailAction!.call(_filterMessageOption, null);
               }
             },
@@ -227,7 +255,8 @@ class AppBarThreadWidgetBuilder {
                   : AppColor.colorFilterMessageEnabled,
               fit: BoxFit.fill),
             onTapDown: (detail) {
-              if (_onFilterEmailAction != null && !_responsiveUtils.isScreenWithShortestSide(_context)) {
+              if (_onFilterEmailAction != null
+                  && !_responsiveUtils.isScreenWithShortestSide(_context)) {
                 final screenSize = MediaQuery.of(_context).size;
                 final offset = detail.globalPosition;
                 final position = RelativeRect.fromLTRB(
@@ -251,7 +280,11 @@ class AppBarThreadWidgetBuilder {
 
   Widget _buildBackButton() {
     return buildIconWeb(
-        icon: SvgPicture.asset(_imagePaths.icBack, width: 20, height: 20, color: AppColor.colorTextButton, fit: BoxFit.fill),
+        icon: SvgPicture.asset(_imagePaths.icBack,
+            width: 20,
+            height: 20,
+            color: AppColor.colorTextButton,
+            fit: BoxFit.fill),
         onTap:() => _onCancelEditThread?.call());
   }
 
@@ -262,7 +295,9 @@ class AppBarThreadWidgetBuilder {
             '${_listSelectionEmail.length}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton)));
+            style: const TextStyle(
+                fontSize: 17,
+                color: AppColor.colorTextButton)));
   }
 
   Widget _buildContentCenterAppBar() {
@@ -271,9 +306,17 @@ class AppBarThreadWidgetBuilder {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         InkWell(
-          onTap: () => !_responsiveUtils.isTabletLarge(_context) ? _onOpenMailboxMenuActionClick?.call() : null,
+          onTap: () {
+            if (!_responsiveUtils.isTabletLarge(_context)
+                && !_responsiveUtils.isDesktop(_context)) {
+              _onOpenMailboxMenuActionClick?.call();
+            }
+          },
           child: Padding(
-            padding: !_responsiveUtils.isTabletLarge(_context) ? EdgeInsets.zero : const EdgeInsets.only(bottom: 8, top: 8),
+            padding: (!_responsiveUtils.isTabletLarge(_context)
+                    && !_responsiveUtils.isDesktop(_context))
+                ? EdgeInsets.zero
+                : const EdgeInsets.only(bottom: 8, top: 8),
             child: Container(
               padding: EdgeInsets.zero,
               margin: EdgeInsets.zero,
@@ -281,17 +324,31 @@ class AppBarThreadWidgetBuilder {
               child: Text(
                 _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
                 maxLines: 1,
-                overflow: GetPlatform.isWeb ? TextOverflow.clip : TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 21, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700))
+                overflow: CommonTextStyle.defaultTextOverFlow,
+                style: const TextStyle(
+                    fontSize: 21,
+                    color: AppColor.colorNameEmail,
+                    fontWeight: FontWeight.w700))
             ))),
-        if (!_responsiveUtils.isTabletLarge(_context))
+        if (!_responsiveUtils.isTabletLarge(_context)
+            && !_responsiveUtils.isDesktop(_context))
           Transform(
             transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
             child: IconButton(
               padding: EdgeInsets.zero,
               color: AppColor.baseTextColor,
-              icon: SvgPicture.asset(_imagePaths.icChevronDown, width: 20, height: 16, fit: BoxFit.fill),
-              onPressed: () => !_responsiveUtils.isTabletLarge(_context) ? _onOpenMailboxMenuActionClick?.call() : null))
+              icon: SvgPicture.asset(_imagePaths.icChevronDown,
+                  width: 20,
+                  height: 16,
+                  fit: BoxFit.fill),
+              onPressed: () {
+                if (!_responsiveUtils.isTabletLarge(_context)
+                    && !_responsiveUtils.isDesktop(_context)) {
+                  _onOpenMailboxMenuActionClick?.call();
+                }
+              }
+            )
+          )
       ]
     );
   }
@@ -309,13 +366,17 @@ class AppBarThreadWidgetBuilder {
       width = width * 0.25;
       widthSiblingsWidget = 150;
     }
-    final maxWidth = width > widthSiblingsWidget ? width - widthSiblingsWidget : 0.0;
+    final maxWidth = width > widthSiblingsWidget
+        ? width - widthSiblingsWidget
+        : 0.0;
     return maxWidth;
   }
 
   double _getXTranslationValues() {
     if (BuildUtils.isWeb) {
-      return _responsiveUtils.isDesktop(_context) && BuildUtils.isWeb ? -2.0 : -16.0;
+      return _responsiveUtils.isDesktop(_context) && BuildUtils.isWeb
+          ? -2.0
+          : -16.0;
     } else {
       return _responsiveUtils.isTabletLarge(_context) ? 0.0 : -16.0;
     }
