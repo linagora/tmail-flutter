@@ -59,7 +59,7 @@ class MailboxTree with EquatableMixin {
     return matchedNode;
   }
 
-  void updateNodesUIMode(SelectMode? selectMode, ExpandMode? expandMode) {
+  void updateNodesUIMode({SelectMode? selectMode, ExpandMode? expandMode}) {
     if (selectMode == null && expandMode == null) {
       return;
     }
