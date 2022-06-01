@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
@@ -23,6 +26,9 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_in
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
+import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
+import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
+import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:uuid/uuid.dart';
 
 class MailboxBindings extends BaseBindings {
@@ -57,6 +63,8 @@ class MailboxBindings extends BaseBindings {
   void bindingsDataSource() {
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
+    Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
+    Get.lazyPut<ThreadDataSource>(() => Get.find<ThreadDataSourceImpl>());
   }
 
   @override
@@ -64,6 +72,8 @@ class MailboxBindings extends BaseBindings {
     Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
     Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
+    Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
+    Get.lazyPut(() => ThreadDataSourceImpl(Get.find<ThreadAPI>()));
   }
 
   @override
@@ -92,6 +102,8 @@ class MailboxBindings extends BaseBindings {
         DataSourceType.local: Get.find<MailboxCacheDataSourceImpl>()
       },
       Get.find<StateDataSource>(),
+      Get.find<ThreadDataSource>(),
+      Get.find<EmailDataSource>(),
     ));
   }
 }

@@ -373,18 +373,20 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
   void _openMailboxMenuAction(BuildContext context, RelativeRect position,
       PresentationMailbox mailbox) {
     final listMailboxActions = [
-      MailboxActions.markAsRead,
+      if (mailbox.getCountUnReadEmails().isNotEmpty) MailboxActions.markAsRead,
       if (!mailbox.hasRole()) MailboxActions.move,
       if (!mailbox.hasRole()) MailboxActions.rename,
       if (!mailbox.hasRole()) MailboxActions.delete,
     ];
 
-    if (_responsiveUtils.isScreenWithShortestSide(context)) {
-      controller.openContextMenuAction(context,
-          _bottomSheetIdentityActionTiles(context, mailbox, listMailboxActions));
-    } else {
-      controller.openPopupMenuAction(context, position,
-          _popupMenuMailboxActionTiles(context, mailbox, listMailboxActions));
+    if (listMailboxActions.isNotEmpty) {
+      if (_responsiveUtils.isScreenWithShortestSide(context)) {
+        controller.openContextMenuAction(context,
+            _bottomSheetIdentityActionTiles(context, mailbox, listMailboxActions));
+      } else {
+        controller.openPopupMenuAction(context, position,
+            _popupMenuMailboxActionTiles(context, mailbox, listMailboxActions));
+      }
     }
   }
 

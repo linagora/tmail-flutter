@@ -54,8 +54,12 @@ class BottomBarSelectionMailboxWidget {
             ..paddingIcon(const EdgeInsets.all(8))
             ..textStyle(TextStyle(
                 fontSize: 12,
-                color: _isRenameMailboxValid ? AppColor.colorTextButton : AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(_isRenameMailboxValid ? AppColor.colorTextButton : AppColor.colorTextButton.withOpacity(0.3))
+                color: _isRenameMailboxValid
+                    ? AppColor.colorTextButton
+                    : AppColor.colorTextButton.withOpacity(0.3)))
+            ..iconColor(_isRenameMailboxValid
+                ? AppColor.colorTextButton
+                : AppColor.colorTextButton.withOpacity(0.3))
             ..onPressActionClick(() {
               if (_isRenameMailboxValid) {
                 _onMailboxActionsClick?.call(MailboxActions.rename, _listSelectionMailbox);
@@ -66,9 +70,19 @@ class BottomBarSelectionMailboxWidget {
         Expanded(child: (ButtonBuilder(_imagePaths.icRead)
             ..key(const Key('button_mark_read_all_mailbox'))
             ..paddingIcon(const EdgeInsets.all(8))
-            ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(AppColor.colorTextButton.withOpacity(0.3))
-            ..onPressActionClick(() => {})
+            ..textStyle(TextStyle(
+                fontSize: 12,
+                color: _isDeleteMailboxValid
+                    ? AppColor.colorTextButton
+                    : AppColor.colorTextButton.withOpacity(0.3)))
+            ..iconColor(_isDeleteMailboxValid
+                ? AppColor.colorTextButton
+                : AppColor.colorTextButton.withOpacity(0.3))
+            ..onPressActionClick(() {
+              if (_isMarkAsReadMailboxValid) {
+                _onMailboxActionsClick?.call(MailboxActions.markAsRead, _listSelectionMailbox);
+              }
+            })
             ..text(AppLocalizations.of(_context).mark_as_read, isVertical: true))
           .build()),
         Expanded(child: (ButtonBuilder(_imagePaths.icDelete)
@@ -76,8 +90,12 @@ class BottomBarSelectionMailboxWidget {
             ..paddingIcon(const EdgeInsets.all(8))
             ..textStyle(TextStyle(
                 fontSize: 12,
-                color: _isDeleteMailboxValid ? AppColor.colorTextButton : AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(_isDeleteMailboxValid ? AppColor.colorTextButton : AppColor.colorTextButton.withOpacity(0.3))
+                color: _isDeleteMailboxValid
+                    ? AppColor.colorTextButton
+                    : AppColor.colorTextButton.withOpacity(0.3)))
+            ..iconColor(_isDeleteMailboxValid
+                ? AppColor.colorTextButton
+                : AppColor.colorTextButton.withOpacity(0.3))
             ..onPressActionClick(() {
               if (_isDeleteMailboxValid) {
                 _onMailboxActionsClick?.call(MailboxActions.delete, _listSelectionMailbox);
@@ -89,9 +107,15 @@ class BottomBarSelectionMailboxWidget {
     );
   }
 
-  bool get _isDeleteMailboxValid => _listSelectionMailbox.length == 1 && _isAllFolderMailbox;
+  bool get _isDeleteMailboxValid => _listSelectionMailbox.length == 1
+      && _isAllFolderMailbox;
 
-  bool get _isRenameMailboxValid => _listSelectionMailbox.length == 1 && _isAllFolderMailbox;
+  bool get _isRenameMailboxValid => _listSelectionMailbox.length == 1
+      && _isAllFolderMailbox;
 
-  bool get _isAllFolderMailbox => _listSelectionMailbox.every((mailbox) => !mailbox.hasRole());
+  bool get _isMarkAsReadMailboxValid => _listSelectionMailbox.length == 1
+      && _listSelectionMailbox.first.getCountUnReadEmails().isNotEmpty;
+
+  bool get _isAllFolderMailbox =>
+      _listSelectionMailbox.every((mailbox) => !mailbox.hasRole());
 }

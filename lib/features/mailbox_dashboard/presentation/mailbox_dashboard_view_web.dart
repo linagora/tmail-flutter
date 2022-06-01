@@ -227,7 +227,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
           ..radiusSplash(10)
           ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
-          ..onPressActionClick(() => controller.dispatchAction(MarkAsReadAllEmailAction()))
+          ..onPressActionClick(() => controller.markAsReadMailboxAction())
           ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
         .build(),
       const SizedBox(width: 16),
@@ -287,7 +287,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
           ..radiusSplash(10)
           ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
-          ..onPressActionClick(() => controller.dispatchAction(MarkAsReadAllEmailAction()))
+          ..onPressActionClick(() => controller.markAsReadMailboxAction())
           ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
         .build(),
     ]);
