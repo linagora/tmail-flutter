@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.d
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
@@ -219,5 +220,10 @@ class MailboxRepositoryImpl extends MailboxRepository {
     }
 
     return true;
+  }
+
+  @override
+  Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) {
+    return mapDataSource[DataSourceType.network]!.moveMailbox(accountId, request);
   }
 }

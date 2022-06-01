@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_respons
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 
 class MailboxDataSourceImpl extends MailboxDataSource {
@@ -66,6 +67,15 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) {
     return Future.sync(() async {
       return await mailboxAPI.renameMailbox(accountId, request);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) {
+    return Future.sync(() async {
+      return await mailboxAPI.moveMailbox(accountId, request);
     }).catchError((error) {
       throw error;
     });

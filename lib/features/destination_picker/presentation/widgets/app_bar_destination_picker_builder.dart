@@ -47,7 +47,7 @@ class AppBarDestinationPickerBuilder {
   }
 
   Widget _buildCancelButton() {
-    if (_mailboxAction == MailboxActions.moveEmail) {
+    if (_mailboxAction == MailboxActions.moveEmail || _mailboxAction == MailboxActions.move) {
       return Padding(
         padding: const EdgeInsets.only(right: 12),
         child: Material(
