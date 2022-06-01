@@ -263,12 +263,22 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _setUpMapMailboxIdDefault(List<PresentationMailbox> allMailbox, MailboxTree defaultTree, MailboxTree folderTree) {
+    final mapDefaultMailboxId = {
+      for (var mailboxNode
+          in defaultTree.root.childrenItems ?? List<MailboxNode>.empty())
+        mailboxNode.item.role!: mailboxNode.item.id
+    };
 
-    final mapDefaultMailboxId = { for (var mailboxNode in defaultTree.root.childrenItems ?? List<MailboxNode>.empty()) mailboxNode.item.role! : mailboxNode.item.id };
+    final mapDefaultMailbox = {
+      for (var mailboxNode
+          in defaultTree.root.childrenItems ?? List<MailboxNode>.empty())
+        mailboxNode.item.role!: mailboxNode.item
+    };
 
-    final mapDefaultMailbox = { for (var mailboxNode in defaultTree.root.childrenItems ?? List<MailboxNode>.empty()) mailboxNode.item.role! : mailboxNode.item };
-
-    final mapMailbox = { for (var presentationMailbox in allMailbox) presentationMailbox.id : presentationMailbox };
+    final mapMailbox = {
+      for (var presentationMailbox in allMailbox)
+        presentationMailbox.id: presentationMailbox
+    };
 
     mailboxDashBoardController.setMapDefaultMailboxId(mapDefaultMailboxId);
 
@@ -434,8 +444,8 @@ class MailboxController extends BaseMailboxController {
           .map((mailbox) => mailbox.toSelectedPresentationMailbox(selectMode: SelectMode.INACTIVE))
           .toList();
     } else {
-      defaultMailboxTree.value.updateNodesUIMode(SelectMode.INACTIVE, ExpandMode.COLLAPSE);
-      folderMailboxTree.value.updateNodesUIMode(SelectMode.INACTIVE, ExpandMode.COLLAPSE);
+      defaultMailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
+      folderMailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
     }
     currentSelectMode.value = SelectMode.INACTIVE;
   }
@@ -473,12 +483,16 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
-  void _openConfirmationDialogDeleteMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
+  void _openConfirmationDialogDeleteMailboxAction(BuildContext context,
+      PresentationMailbox presentationMailbox) {
     if (_responsiveUtils.isMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
-          ..messageText(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
-          ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
-          ..onConfirmAction(AppLocalizations.of(context).delete, () => _deleteMailboxAction(presentationMailbox)))
+          ..messageText(AppLocalizations.of(context)
+              .message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
+          ..onCancelAction(AppLocalizations.of(context).cancel, () =>
+              popBack())
+          ..onConfirmAction(AppLocalizations.of(context).delete, () =>
+              _deleteMailboxAction(presentationMailbox)))
         .show();
     } else {
       showDialog(
@@ -487,13 +501,20 @@ class MailboxController extends BaseMailboxController {
           builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
               ..key(const Key('confirm_dialog_delete_mailbox'))
               ..title(AppLocalizations.of(context).delete_mailboxes)
-              ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
-              ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog, fit: BoxFit.fill))
+              ..content(AppLocalizations.of(context)
+                  .message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
+              ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog,
+                  fit: BoxFit.fill))
               ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-              ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
+              ..styleTextConfirmButton(const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                  color: AppColor.colorActionDeleteConfirmDialog))
               ..onCloseButtonAction(() => popBack())
-              ..onConfirmButtonAction(AppLocalizations.of(context).delete, () => _deleteMailboxAction(presentationMailbox))
-              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
+              ..onConfirmButtonAction(AppLocalizations.of(context).delete, () =>
+                  _deleteMailboxAction(presentationMailbox))
+              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
+                  popBack()))
             .build()));
     }
   }
