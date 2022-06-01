@@ -15,8 +15,15 @@ import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_perman
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_bindings.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
+import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/search_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/search_datasource_impl.dart';
@@ -24,6 +31,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/search_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/search_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
@@ -55,6 +63,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<SaveRecentSearchInteractor>(),
       Get.find<GetAllRecentSearchLatestInteractor>(),
       Get.find<QuickSearchEmailInteractor>(),
+      Get.find<MarkAsMailboxReadInteractor>(),
     ));
   }
 
@@ -65,6 +74,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<SearchDataSource>(() => Get.find<SearchDataSourceImpl>());
     Get.lazyPut<ThreadDataSource>(() => Get.find<ThreadDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
+    Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
   }
 
   @override
@@ -78,6 +88,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => ThreadDataSourceImpl(Get.find<ThreadAPI>()));
     Get.lazyPut(() => LocalThreadDataSourceImpl(Get.find<EmailCacheManager>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
+    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
+    Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
   }
 
   @override
@@ -89,6 +101,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => SaveRecentSearchInteractor(Get.find<SearchRepository>()));
     Get.lazyPut(() => GetAllRecentSearchLatestInteractor(Get.find<SearchRepository>()));
     Get.lazyPut(() => QuickSearchEmailInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => MarkAsMailboxReadInteractor(Get.find<MailboxRepository>()));
   }
 
   @override
@@ -96,6 +109,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
     Get.lazyPut<SearchRepository>(() => Get.find<SearchRepositoryImpl>());
     Get.lazyPut<ThreadRepository>(() => Get.find<ThreadRepositoryImpl>());
+    Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
   }
 
   @override
@@ -111,6 +125,15 @@ class MailboxDashBoardBindings extends BaseBindings {
         DataSourceType.local: Get.find<LocalThreadDataSourceImpl>()
       },
       Get.find<StateDataSource>(),
+      Get.find<EmailDataSource>(),
+    ));
+    Get.lazyPut(() => MailboxRepositoryImpl(
+      {
+        DataSourceType.network: Get.find<MailboxDataSource>(),
+        DataSourceType.local: Get.find<MailboxCacheDataSourceImpl>()
+      },
+      Get.find<StateDataSource>(),
+      Get.find<ThreadDataSource>(),
       Get.find<EmailDataSource>(),
     ));
   }

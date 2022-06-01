@@ -37,10 +37,13 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
@@ -75,6 +78,7 @@ class MailboxDashBoardController extends ReloadableController {
   final SaveRecentSearchInteractor _saveRecentSearchInteractor;
   final GetAllRecentSearchLatestInteractor _getAllRecentSearchLatestInteractor;
   final QuickSearchEmailInteractor _quickSearchEmailInteractor;
+  final MarkAsMailboxReadInteractor _markAsMailboxReadInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -107,6 +111,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._saveRecentSearchInteractor,
     this._getAllRecentSearchLatestInteractor,
     this._quickSearchEmailInteractor,
+    this._markAsMailboxReadInteractor,
   );
 
   @override
@@ -176,6 +181,8 @@ class MailboxDashBoardController extends ReloadableController {
           _moveToMailboxSuccess(success);
         } else if (success is DeleteEmailPermanentlySuccess) {
           _deleteEmailPermanentlySuccess(success);
+        } else if (success is MarkAsMailboxReadAllSuccess) {
+          _markAsReadMailboxSuccess(success);
         }
       }
     );
@@ -504,6 +511,30 @@ class MailboxDashBoardController extends ReloadableController {
 
   bool filterMessageStarredIsActive () {
     return filterMessageOption.value == FilterMessageOption.starred;
+  }
+
+  void markAsReadMailboxAction() {
+    final currentAccountId = accountId.value;
+    final mailboxId = selectedMailbox.value?.id;
+    final mailboxName = selectedMailbox.value?.name;
+    if (currentAccountId != null && mailboxId != null && mailboxName != null) {
+      markAsReadMailbox(currentAccountId, mailboxId, mailboxName);
+    }
+  }
+
+  void markAsReadMailbox(AccountId accountId, MailboxId mailboxId, MailboxName mailboxName) {
+    consumeState(_markAsMailboxReadInteractor.execute(accountId, mailboxId, mailboxName));
+  }
+
+  void _markAsReadMailboxSuccess(MarkAsMailboxReadAllSuccess success) {
+    if (currentContext != null && currentOverlayContext != null) {
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
+          message: AppLocalizations.of(currentContext!)
+              .toastMessageMarkAsMailboxReadSuccess(success.mailboxName.name),
+          icon: _imagePaths.icReadToast);
+    }
   }
 
   void composeEmailAction() {

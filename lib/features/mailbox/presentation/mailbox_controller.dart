@@ -49,6 +49,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -215,6 +216,7 @@ class MailboxController extends BaseMailboxController {
               success is SaveEmailAsDraftsSuccess ||
               success is RemoveEmailDraftsSuccess ||
               success is SendEmailSuccess ||
+              success is MarkAsMailboxReadAllSuccess ||
               success is UpdateEmailDraftsSuccess) {
             refreshMailboxChanges();
           }
@@ -478,6 +480,9 @@ class MailboxController extends BaseMailboxController {
       case MailboxActions.rename:
         _openDialogRenameMailboxAction(context, selectionMailbox.first);
         break;
+      case MailboxActions.markAsRead:
+        _markAsReadMailboxAction(selectionMailbox.first);
+        break;
       default:
         break;
     }
@@ -650,6 +655,15 @@ class MailboxController extends BaseMailboxController {
     _cancelSelectMailbox();
   }
 
+  void _markAsReadMailboxAction(PresentationMailbox presentationMailbox) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final mailboxId = presentationMailbox.id;
+    final mailboxName = presentationMailbox.name;
+    if (accountId != null && mailboxName != null) {
+      mailboxDashBoardController.markAsReadMailbox(accountId, mailboxId, mailboxName);
+    }
+  }
+
   void _createListMailboxNameAsStringInMailboxParent(PresentationMailbox mailboxRenamed) {
     if (mailboxRenamed.parentId == null) {
       final allChildrenAtMailboxLocation = (defaultMailboxTree.value.root.childrenItems ?? <MailboxNode>[]) + (folderMailboxTree.value.root.childrenItems ?? <MailboxNode>[]);
@@ -704,7 +718,7 @@ class MailboxController extends BaseMailboxController {
         _appToast.showToast(AppLocalizations.of(context).the_feature_is_under_development);
         break;
       case MailboxActions.markAsRead:
-        _appToast.showToast(AppLocalizations.of(context).the_feature_is_under_development);
+        _markAsReadMailboxAction(mailbox);
         break;
       default:
         break;
