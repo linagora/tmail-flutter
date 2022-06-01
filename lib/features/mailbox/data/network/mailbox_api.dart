@@ -23,6 +23,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
@@ -190,6 +191,34 @@ class MailboxAPI {
           ..usings(setMailboxMethod.requiredCapabilities))
         .build()
         .execute();
+
+    final setMailboxResponse = response.parse<SetMailboxResponse>(
+        setMailboxInvocation.methodCallId,
+        SetMailboxResponse.deserialize);
+
+    return Future.sync(() async {
+      return setMailboxResponse?.updated?.isNotEmpty == true;
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) async {
+    final setMailboxMethod = SetMailboxMethod(accountId)
+      ..addUpdates({
+        request.mailboxId.id : PatchObject({
+          'parentId': request.destinationMailboxId?.id.value
+        })
+      });
+
+    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+
+    final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
+
+    final response = await (requestBuilder
+        ..usings(setMailboxMethod.requiredCapabilities))
+      .build()
+      .execute();
 
     final setMailboxResponse = response.parse<SetMailboxResponse>(
         setMailboxInvocation.methodCallId,

@@ -141,7 +141,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   Widget _buildSearchBarWidget(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(
-            top: _responsiveUtils.isScreenWithShortestSide(context) || kIsWeb ? 12 : 0,
+            top: _responsiveUtils.isScreenWithShortestSide(context) || BuildUtils.isWeb ? 12 : 0,
             left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
             right: 16),
         child: (SearchBarView(_imagePaths)
@@ -174,17 +174,19 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
       primary: false,
       shrinkWrap: true,
       children: [
-        if (actions == MailboxActions.moveEmail) _buildSearchBarWidget(context),
+        if (actions == MailboxActions.moveEmail || actions == MailboxActions.move)
+          _buildSearchBarWidget(context),
         _buildLoadingView(),
         if (actions == MailboxActions.create && !BuildUtils.isWeb && _responsiveUtils.isScreenWithShortestSide(context))
           const SizedBox(height: 12),
-        if (actions == MailboxActions.create) _buildUnifiedMailbox(context),
+        if (actions == MailboxActions.create || actions == MailboxActions.move)
+          _buildUnifiedMailbox(context, actions),
         const SizedBox(height: 12),
         Obx(() => controller.defaultMailboxHasChild
             ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultRootNode, actions)
             : const SizedBox.shrink()),
         if (actions == MailboxActions.create) const SizedBox(height: 12),
-        if (actions != MailboxActions.create && !kIsWeb)
+        if (actions != MailboxActions.create && !BuildUtils.isWeb)
           const Padding(
             padding: EdgeInsets.only(left: 60),
             child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
@@ -197,7 +199,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   Widget _buildMailboxCategory(BuildContext context, MailboxCategories categories, MailboxNode mailboxNode, MailboxActions? actions) {
-    if (actions == MailboxActions.moveEmail) {
+    if (actions == MailboxActions.moveEmail || actions == MailboxActions.move) {
       return _buildBodyMailboxCategory(context, categories, mailboxNode, actions);
     }
     return Column(children: [
@@ -237,12 +239,18 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
     return Container(
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white),
         margin: EdgeInsets.only(
-            left: actions == MailboxActions.moveEmail ? 8 : _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
-            right: actions == MailboxActions.moveEmail ? 0 : 16),
+            left: actions == MailboxActions.moveEmail
+                  || actions == MailboxActions.move
+                  || _responsiveUtils.isLandscapeMobile(context)
+                ? 0
+                : 16,
+            right: actions == MailboxActions.moveEmail || actions == MailboxActions.move
+                ? 0
+                : 16),
         padding: EdgeInsets.only(
             top: _responsiveUtils.isDesktop(context) && actions == MailboxActions.create ? 8 : 0,
             bottom: _responsiveUtils.isDesktop(context) && actions == MailboxActions.create ? 8 : 0,
-            left: _responsiveUtils.isDesktop(context) ? 0 : 12,
+            left: _responsiveUtils.isDesktop(context) || actions != MailboxActions.create ? 0 : 12,
             right: actions == MailboxActions.create ? 8 : 16),
         child: TreeView(
             key: Key('${categories.keyValue}_mailbox_list'),
@@ -297,12 +305,43 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
     ));
   }
 
-  Widget _buildUnifiedMailbox(BuildContext context) {
+  Widget _buildUnifiedMailbox(BuildContext context, MailboxActions? actions) {
+    if (actions == MailboxActions.move) {
+      return InkWell(
+        onTap: () => controller.selectMailboxAction(null),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(14)),
+          child: Container(
+              color: Colors.white,
+              padding: const EdgeInsets.only(left: 16, top: 16),
+              child: Row(children: [
+                SvgPicture.asset(
+                    _imagePaths.icFolderMailbox,
+                    width: BuildUtils.isWeb ? 20 : 24,
+                    height: BuildUtils.isWeb ? 20 : 24,
+                    fit: BoxFit.fill),
+                const SizedBox(width: 8),
+                Expanded(child: Text(
+                  AppLocalizations.of(context).default_mailbox,
+                  maxLines: 1,
+                  overflow: CommonTextStyle.defaultTextOverFlow,
+                  style: const TextStyle(
+                      fontSize: 15,
+                      color: AppColor.colorNameEmail,
+                      fontWeight: FontWeight.normal),
+                )),
+                const SizedBox(width: 8),
+              ])
+          ),
+        ),
+      );
+    }
+
     return Container(
       alignment: Alignment.center,
       margin: EdgeInsets.only(
           left: !_responsiveUtils.isLandscapeMobile(context) ? 16 : 0,
-          top: kIsWeb ? 16 : 0,
+          top: BuildUtils.isWeb ? 16 : 0,
           right: 16),
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white),
       child: MediaQuery(
@@ -323,7 +362,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 Expanded(child: Text(
                   AppLocalizations.of(context).default_mailbox,
                   maxLines: 1,
-                  overflow:TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 15, color: AppColor.colorNameEmail),
                 ))
               ]

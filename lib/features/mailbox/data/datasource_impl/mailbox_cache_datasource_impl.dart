@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 
 class MailboxCacheDataSourceImpl extends MailboxDataSource {
@@ -57,6 +58,11 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
 
   @override
   Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) {
     throw UnimplementedError();
   }
 }
