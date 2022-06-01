@@ -372,13 +372,11 @@ class MailboxController extends BaseMailboxController {
 
   void enableSearch() {
     _cancelSelectMailbox();
-    listMailboxNodeSelected.clear();
     searchState.value = searchState.value.enableSearchState();
   }
 
   void disableSearch(BuildContext context) {
     _cancelSelectMailbox();
-    listPresentationMailboxSelected.clear();
     listMailboxSearched.clear();
     searchState.value = searchState.value.disableSearchState();
     searchQuery.value = SearchQuery.initial();
@@ -390,12 +388,10 @@ class MailboxController extends BaseMailboxController {
     searchQuery.value = SearchQuery.initial();
     searchFocus.requestFocus();
     listMailboxSearched.clear();
-    listPresentationMailboxSelected.clear();
   }
 
   void searchMailbox(String value) {
     searchQuery.value = SearchQuery(value);
-    listPresentationMailboxSelected.clear();
     _searchMailboxAction(allMailboxes, searchQuery.value);
   }
 
@@ -430,14 +426,6 @@ class MailboxController extends BaseMailboxController {
     listMailboxSearched.value = listMailboxSearched
         .map((mailbox) => mailbox.id == mailboxSelected.id ? mailbox.toggleSelectPresentationMailbox() : mailbox)
         .toList();
-
-    if (kIsWeb) {
-      if (mailboxSelected.selectMode == SelectMode.ACTIVE) {
-        listPresentationMailboxSelected.removeWhere((mailbox) => mailbox.id == mailboxSelected.id);
-      } else {
-        listPresentationMailboxSelected.add(mailboxSelected);
-      }
-    }
   }
 
   void _cancelSelectMailbox() {
@@ -450,10 +438,6 @@ class MailboxController extends BaseMailboxController {
       folderMailboxTree.value.updateNodesUIMode(SelectMode.INACTIVE, ExpandMode.COLLAPSE);
     }
     currentSelectMode.value = SelectMode.INACTIVE;
-    if (kIsWeb) {
-      listPresentationMailboxSelected.clear();
-      listMailboxNodeSelected.clear();
-    }
   }
 
   List<PresentationMailbox> get listMailboxSelected {

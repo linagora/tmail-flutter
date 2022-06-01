@@ -14,8 +14,6 @@ abstract class BaseMailboxController extends BaseController {
 
   final folderMailboxTree = MailboxTree(MailboxNode.root()).obs;
   final defaultMailboxTree = MailboxTree(MailboxNode.root()).obs;
-  final listMailboxNodeSelected = <MailboxNode>[].obs;
-  final listPresentationMailboxSelected = <PresentationMailbox>[].obs;
 
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
 
@@ -56,13 +54,6 @@ abstract class BaseMailboxController extends BaseController {
     final newSelectMode = mailboxNodeSelected.selectMode == SelectMode.INACTIVE
         ? SelectMode.ACTIVE
         : SelectMode.INACTIVE;
-
-
-    if (newSelectMode == SelectMode.INACTIVE) {
-      listMailboxNodeSelected.removeWhere((mailboxNode) => mailboxNode.item.id == mailboxNodeSelected.item.id);
-    } else {
-      listMailboxNodeSelected.add(mailboxNodeSelected);
-    }
 
     if (defaultMailboxTree.value.updateSelectedNode(mailboxNodeSelected, newSelectMode) != null) {
       log('selectMailboxNode() refresh defaultMailboxTree');
