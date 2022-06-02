@@ -194,11 +194,17 @@ class EmailAPI {
       AccountRequest accountRequest,
       CancelToken cancelToken
   ) async {
+    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
+      ? accountRequest.bearerToken
+      : accountRequest.basicAuth;
+
+    log('EmailAPI::exportAttachment(): authentication: $authentication');
+
     return _downloadManager.downloadFile(
       attachment.getDownloadUrl(baseDownloadUrl, accountId),
       getTemporaryDirectory(),
       attachment.name ?? '',
-      accountRequest.basicAuth,
+      authentication,
       cancelToken: cancelToken);
   }
 

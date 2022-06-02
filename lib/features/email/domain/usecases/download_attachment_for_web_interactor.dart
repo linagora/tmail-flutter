@@ -20,7 +20,10 @@ class DownloadAttachmentForWebInteractor {
         [credentialRepository.getUserName(), credentialRepository.getPassword()],
         eagerError: true
       ).then((List responses) async {
-        final accountRequest = AccountRequest(responses.first, responses.last);
+        final accountRequest = AccountRequest(
+            userName: responses.first,
+            password: responses.last,
+            authenticationType: AuthenticationType.basic);
         return await emailRepository.downloadAttachmentForWeb(
             attachment,
             accountId,

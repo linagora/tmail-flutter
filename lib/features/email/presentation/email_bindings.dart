@@ -18,7 +18,19 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
+import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
+import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
+import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_oidc_datasource_impl.dart';
+import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_account_datasource_impl.dart';
+import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
+import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 
 class EmailBindings extends BaseBindings {
@@ -41,14 +53,22 @@ class EmailBindings extends BaseBindings {
   void bindingsDataSource() {
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
+    Get.lazyPut<AccountDatasource>(() => Get.find<HiveAccountDatasourceImpl>());
+    Get.lazyPut<AuthenticationOIDCDataSource>(() => Get.find<AuthenticationOIDCDataSourceImpl>());
   }
 
   @override
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
+    Get.lazyPut(() => HiveAccountDatasourceImpl(Get.find<AccountCacheManager>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
         Get.find<HtmlAnalyzer>(),
         Get.find<DioClient>(),
+    ));
+    Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
+        Get.find<OIDCHttpClient>(),
+        Get.find<TokenOidcCacheManager>(),
+        Get.find<OidcConfigurationCacheManager>()
     ));
   }
 
@@ -63,6 +83,8 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut(() => ExportAttachmentInteractor(
         Get.find<EmailRepository>(),
         Get.find<CredentialRepository>(),
+        Get.find<AccountRepository>(),
+        Get.find<AuthenticationOIDCRepository>(),
     ));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
@@ -76,6 +98,8 @@ class EmailBindings extends BaseBindings {
   void bindingsRepository() {
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
     Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
+    Get.lazyPut<AccountRepository>(() => Get.find<AccountRepositoryImpl>());
+    Get.lazyPut<AuthenticationOIDCRepository>(() => Get.find<AuthenticationOIDCRepositoryImpl>());
   }
 
   @override
@@ -85,5 +109,7 @@ class EmailBindings extends BaseBindings {
         Get.find<HtmlDataSource>(),
     ));
     Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
+    Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));
+    Get.lazyPut(() => AuthenticationOIDCRepositoryImpl(Get.find<AuthenticationOIDCDataSource>()));
   }
 }
