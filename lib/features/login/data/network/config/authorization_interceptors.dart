@@ -49,6 +49,8 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
     _token = newToken;
   }
 
+  OIDCConfiguration? get oidcConfig => _configOIDC;
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     switch(_authenticationType) {

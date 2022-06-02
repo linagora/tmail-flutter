@@ -36,3 +36,10 @@ class NotFoundAccessTokenException implements Exception {
 class AccessTokenInvalidException implements Exception {
   AccessTokenInvalidException();
 }
+
+class DownloadAttachmentHasTokenExpiredException implements Exception {
+
+  final String refreshToken;
+
+  DownloadAttachmentHasTokenExpiredException(this.refreshToken);
+}

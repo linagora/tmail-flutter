@@ -19,4 +19,9 @@ class HiveAccountDatasourceImpl extends AccountDatasource {
     log('HiveAccountDatasourceImpl::setCurrentAccount(): $_accountCacheManager');
     return _accountCacheManager.setSelectedAccount(newCurrentAccount);
   }
+
+  @override
+  Future<void> deleteCurrentAccount(String accountId) {
+    return _accountCacheManager.deleteSelectedAccount(accountId);
+  }
 }

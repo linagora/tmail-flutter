@@ -19,4 +19,9 @@ class AccountRepositoryImpl extends AccountRepository {
     log('AccountRepositoryImpl::setCurrentAccount(): $newCurrentAccount');
     return _accountDatasource.setCurrentAccount(newCurrentAccount);
   }
+
+  @override
+  Future<void> deleteCurrentAccount(String accountId) {
+    return _accountDatasource.deleteCurrentAccount(accountId);
+  }
 }
