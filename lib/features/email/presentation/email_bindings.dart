@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_account_d
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc_repository_impl.dart';
@@ -32,6 +33,7 @@ import 'package:tmail_ui_user/features/login/data/repository/credential_reposito
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/refresh_token_oidc_interactor.dart';
 
 class EmailBindings extends BaseBindings {
 
@@ -79,6 +81,9 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut(() => DownloadAttachmentsInteractor(
         Get.find<EmailRepository>(),
         Get.find<CredentialRepository>(),
+        Get.find<AccountRepository>(),
+        Get.find<AuthenticationOIDCRepository>(),
+        Get.find<AuthorizationInterceptors>(),
     ));
     Get.lazyPut(() => ExportAttachmentInteractor(
         Get.find<EmailRepository>(),
@@ -91,6 +96,10 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut(() => DownloadAttachmentForWebInteractor(
       Get.find<EmailRepository>(),
       Get.find<CredentialRepository>(),
+    ));
+    Get.lazyPut(() => RefreshTokenOIDCInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+      Get.find<AccountRepository>(),
     ));
   }
 
