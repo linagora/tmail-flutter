@@ -12,6 +12,7 @@ class TokenOidcCacheManager {
 
   Future<TokenOIDC> getTokenOidc(String tokenIdHash) async {
     final tokenCache = await _tokenOidcCacheClient.getItem(tokenIdHash);
+    log('TokenOidcCacheManager::getTokenOidc(): tokenCache: $tokenCache');
     if (tokenCache == null) {
       throw NotFoundStoredTokenException();
     } else {
