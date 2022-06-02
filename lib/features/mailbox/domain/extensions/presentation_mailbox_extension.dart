@@ -10,7 +10,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
             return imagePaths.icMailboxInbox;
           case 'drafts':
             return imagePaths.icMailboxDrafts;
-          case 'outbox':
+          case 'archive':
             return imagePaths.icMailboxArchived;
           case 'sent':
             return imagePaths.icMailboxSent;

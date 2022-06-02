@@ -155,6 +155,7 @@ class EmailController extends BaseController {
 
   @override
   void onError(error) {
+    log('EmailController::onError(): $error');
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
