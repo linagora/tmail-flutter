@@ -44,4 +44,20 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   Future<void> persistAuthorityOidc(String authority) {
     return _oidcDataSource.persistAuthorityOidc(authority);
   }
+
+  @override
+  Future<TokenOIDC> refreshingTokensOIDC(
+      String clientId,
+      String redirectUrl,
+      String discoveryUrl,
+      List<String> scopes,
+      String refreshToken
+  ) {
+    return _oidcDataSource.refreshingTokensOIDC(
+        clientId,
+        redirectUrl,
+        discoveryUrl,
+        scopes,
+        refreshToken);
+  }
 }

@@ -27,6 +27,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 
 class EmailAPI {
 
@@ -160,6 +161,12 @@ class EmailAPI {
       String baseDownloadUrl,
       AccountRequest accountRequest
   ) async {
+    if (accountRequest.authenticationType == AuthenticationType.oidc &&
+        accountRequest.token?.isExpired == true &&
+        accountRequest.token?.refreshToken.isNotEmpty == true) {
+      throw DownloadAttachmentHasTokenExpiredException(accountRequest.token!.refreshToken);
+    }
+
     String externalStorageDirPath;
     if (Platform.isAndroid) {
       externalStorageDirPath = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
@@ -169,12 +176,16 @@ class EmailAPI {
       throw DeviceNotSupportedException();
     }
 
+    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
+        ? accountRequest.bearerToken
+        : accountRequest.basicAuth;
+
     final taskIds = await Future.wait(
       attachments.map((attachment) async => await FlutterDownloader.enqueue(
         url: attachment.getDownloadUrl(baseDownloadUrl, accountId),
         savedDir: externalStorageDirPath,
         headers: {
-          HttpHeaders.authorizationHeader: accountRequest.basicAuth,
+          HttpHeaders.authorizationHeader: authentication,
           HttpHeaders.acceptHeader: DioClient.jmapHeader
         },
         fileName: attachment.name,

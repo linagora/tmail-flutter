@@ -228,7 +228,7 @@ class EmailController extends BaseController {
       final status = await Permission.storage.status;
       switch (status) {
         case PermissionStatus.granted:
-          _downloadAttachmentsAction(context, attachments);
+          _downloadAttachmentsAction(attachments);
           break;
         case PermissionStatus.permanentlyDenied:
           _appToast.showToast(AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments);
@@ -237,7 +237,7 @@ class EmailController extends BaseController {
           final requested = await Permission.storage.request();
           switch (requested) {
             case PermissionStatus.granted:
-              _downloadAttachmentsAction(context, attachments);
+              _downloadAttachmentsAction(attachments);
               break;
             default:
               _appToast.showToast(AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments);
@@ -246,11 +246,11 @@ class EmailController extends BaseController {
         }
       }
     } else {
-      _downloadAttachmentsAction(context, attachments);
+      _downloadAttachmentsAction(attachments);
     }
   }
 
-  void _downloadAttachmentsAction(BuildContext context, List<Attachment> attachments) async {
+  void _downloadAttachmentsAction(List<Attachment> attachments) async {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl();
@@ -258,7 +258,7 @@ class EmailController extends BaseController {
     }
   }
 
-  void _downloadAttachmentsFailure(Failure failure) {
+  void _downloadAttachmentsFailure(DownloadAttachmentsFailure failure) {
     if (currentContext != null) {
       _appToast.showErrorToast(AppLocalizations.of(currentContext!).attachment_download_failed);
     }

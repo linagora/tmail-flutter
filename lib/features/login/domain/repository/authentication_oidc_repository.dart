@@ -15,4 +15,11 @@ abstract class AuthenticationOIDCRepository {
   Future<void> persistAuthorityOidc(String authority);
 
   Future<OIDCConfiguration> getStoredOidcConfiguration();
+
+  Future<TokenOIDC> refreshingTokensOIDC(
+      String clientId,
+      String redirectUrl,
+      String discoveryUrl,
+      List<String> scopes,
+      String refreshToken);
 }

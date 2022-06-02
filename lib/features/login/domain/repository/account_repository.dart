@@ -5,4 +5,6 @@ abstract class AccountRepository {
   Future<Account> getCurrentAccount();
 
   Future<void> setCurrentAccount(Account newCurrentAccount);
+
+  Future<void> deleteCurrentAccount(String accountId);
 }

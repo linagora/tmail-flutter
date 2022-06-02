@@ -62,4 +62,11 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   Future<void> persistAuthorityOidc(String authority) {
     return _oidcConfigurationCacheManager.persistAuthorityOidc(authority);
   }
+
+  @override
+  Future<TokenOIDC> refreshingTokensOIDC(String clientId, String redirectUrl,
+      String discoveryUrl, List<String> scopes, String refreshToken) {
+    return _oidcHttpClient.refreshingTokensOIDC(
+        clientId, redirectUrl, discoveryUrl, scopes, refreshToken);
+  }
 }
