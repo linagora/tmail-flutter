@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -72,6 +73,7 @@ class MailboxDashBoardBindings extends BaseBindings {
   void bindingsController() {
     Get.put(MailboxDashBoardController(
       Get.find<LogoutOidcInteractor>(),
+      Get.find<DeleteAuthorityOidcInteractor>(),
       Get.find<MoveToMailboxInteractor>(),
       Get.find<DeleteEmailPermanentlyInteractor>(),
       Get.find<SaveRecentSearchInteractor>(),
@@ -128,6 +130,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<AccountRepository>(),
       Get.find<AuthenticationOIDCRepository>(),
     ));
+    Get.lazyPut(() => DeleteAuthorityOidcInteractor(Get.find<AuthenticationOIDCRepository>()));
   }
 
   @override

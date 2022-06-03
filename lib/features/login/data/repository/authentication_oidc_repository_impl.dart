@@ -66,4 +66,9 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   Future<bool> logout(TokenId tokenId, OIDCConfiguration config) {
     return _oidcDataSource.logout(tokenId, config);
   }
+
+  @override
+  Future<void> deleteAuthorityOidc() {
+    return _oidcDataSource.deleteAuthorityOidc();
+  }
 }
