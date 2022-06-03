@@ -14,6 +14,8 @@ abstract class AuthenticationOIDCRepository {
 
   Future<void> persistAuthorityOidc(String authority);
 
+  Future<void> deleteAuthorityOidc();
+
   Future<OIDCConfiguration> getStoredOidcConfiguration();
 
   Future<TokenOIDC> refreshingTokensOIDC(
