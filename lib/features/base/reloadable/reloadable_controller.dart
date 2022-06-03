@@ -63,7 +63,7 @@ abstract class ReloadableController extends BaseController {
 
   void _setUpInterceptors(GetCredentialViewState credentialViewState) {
     _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
-    _authorizationInterceptors.changeAuthorization(
+    _authorizationInterceptors.setBasicAuthorization(
       credentialViewState.userName.userName,
       credentialViewState.password.value,
     );

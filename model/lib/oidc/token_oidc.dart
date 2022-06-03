@@ -17,10 +17,6 @@ class TokenOIDC with EquatableMixin {
     {this.expiredTime}
   );
 
-  factory TokenOIDC.empty() {
-    return TokenOIDC('', TokenId(''), '');
-  }
-
   @override
   List<Object?> get props => [token, tokenId, expiredTime, refreshToken];
 }
@@ -30,6 +26,8 @@ extension TokenOIDCExtension on TokenOIDC {
   bool isTokenValid() => token.isNotEmpty && tokenId.uuid.isNotEmpty;
 
   Token toToken() {
-    return Token(token, tokenId);
+    return Token(token, tokenId, refreshToken, expiredTime: expiredTime);
   }
+
+  String get tokenIdHash => tokenId.uuid.hashCode.toString();
 }
