@@ -119,13 +119,15 @@ class HomeController extends BaseController {
 
   void _goToSessionWithTokenOidc(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
     _dynamicUrlInterceptors.changeBaseUrl(storedTokenOidcSuccess.baseUrl.toString());
-    _authorizationInterceptors.setToken(storedTokenOidcSuccess.tokenOidc.toToken());
+    _authorizationInterceptors.setTokenAndAuthorityOidc(
+        newToken: storedTokenOidcSuccess.tokenOidc.toToken(),
+        newConfig: storedTokenOidcSuccess.oidcConfiguration);
     pushAndPop(AppRoutes.SESSION);
   }
 
   void _goToSessionWithBasicAuth(GetCredentialViewState credentialViewState) {
     _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
-    _authorizationInterceptors.changeAuthorization(
+    _authorizationInterceptors.setBasicAuthorization(
       credentialViewState.userName.userName,
       credentialViewState.password.value,
     );
