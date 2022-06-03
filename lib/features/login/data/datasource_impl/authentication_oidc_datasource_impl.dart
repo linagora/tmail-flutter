@@ -78,4 +78,9 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
       throw error;
     });
   }
+
+  @override
+  Future<void> deleteAuthorityOidc() {
+    return _oidcConfigurationCacheManager.deleteAuthorityOidc();
+  }
 }

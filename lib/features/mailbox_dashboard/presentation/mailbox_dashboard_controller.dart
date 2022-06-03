@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/mark_as_mailbox_read_state.dart';
@@ -105,13 +106,14 @@ class MailboxDashBoardController extends ReloadableController {
 
   MailboxDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
+    DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
     this._moveToMailboxInteractor,
     this._deleteEmailPermanentlyInteractor,
     this._saveRecentSearchInteractor,
     this._getAllRecentSearchLatestInteractor,
     this._quickSearchEmailInteractor,
     this._markAsMailboxReadInteractor,
-  ) : super(logoutOidcInteractor);
+  ) : super(logoutOidcInteractor, deleteAuthorityOidcInteractor);
 
   @override
   void onInit() {

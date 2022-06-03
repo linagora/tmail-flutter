@@ -1,6 +1,7 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -9,8 +10,10 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
@@ -26,8 +29,11 @@ abstract class ReloadableController extends BaseController {
   final CachingManager _cachingManager = Get.find<CachingManager>();
 
   final LogoutOidcInteractor _logoutOidcInteractor;
+  final DeleteAuthorityOidcInteractor _deleteAuthorityOidcInteractor;
 
-  ReloadableController(this._logoutOidcInteractor);
+  ReloadableController(
+      this._logoutOidcInteractor,
+      this._deleteAuthorityOidcInteractor);
 
   @override
   void onData(Either<Failure, Success> newState) {
@@ -38,6 +44,8 @@ abstract class ReloadableController extends BaseController {
           goToLogin();
         } else if (failure is GetSessionFailure) {
           _handleGetSessionFailure();
+        } else if (failure is LogoutOidcFailure) {
+          log('ReloadableController::onData(): LogoutOidcFailure: $failure');
         }
       },
       (success) {
@@ -45,6 +53,8 @@ abstract class ReloadableController extends BaseController {
           _handleGetCredentialSuccess(success);
         } else if (success is GetSessionSuccess) {
           _handleGetSessionSuccess(success);
+        } else if (success is LogoutOidcSuccess) {
+          handleLogoutOidcSuccess(success);
         }
       }
     );
@@ -100,19 +110,26 @@ abstract class ReloadableController extends BaseController {
   void logoutAction() async {
     final authenticationType = _authorizationInterceptors.authenticationType;
     if (authenticationType == AuthenticationType.oidc) {
-      await _logoutOidcInteractor.execute()
-        .then((value) async {
-          await Future.wait([
-              _deleteCredentialInteractor.execute(),
-              _cachingManager.clearAll(),
-          ]);
-        });
+      consumeState(_logoutOidcInteractor.execute());
     } else {
       await Future.wait([
         _deleteCredentialInteractor.execute(),
         _cachingManager.clearAll(),
       ]);
+
+      _authorizationInterceptors.clear();
+      goToLogin();
     }
+  }
+
+  void handleLogoutOidcSuccess(LogoutOidcSuccess success) async {
+    log('ReloadableController::handleLogoutOidcSuccess(): $success');
+    await Future.wait([
+      _deleteCredentialInteractor.execute(),
+      _deleteAuthorityOidcInteractor.execute(),
+      _cachingManager.clearAll(),
+    ]);
+
     _authorizationInterceptors.clear();
     goToLogin();
   }

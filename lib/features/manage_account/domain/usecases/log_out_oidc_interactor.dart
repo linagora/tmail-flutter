@@ -18,7 +18,7 @@ class LogoutOidcInteractor {
 
   LogoutOidcInteractor(this._accountRepository, this._authenticationOIDCRepository);
 
-  Future<Either<Failure, Success>> execute() async {
+  Stream<Either<Failure, Success>> execute() async* {
     try {
       final currentAccount = await _accountRepository.getCurrentAccount();
 
@@ -33,16 +33,16 @@ class LogoutOidcInteractor {
         });
         log('LogoutOidcInteractor::execute(): statusSuccess: $result');
         if (result) {
-          return Right<Failure, Success>(LogoutOidcSuccess());
+          yield Right<Failure, Success>(LogoutOidcSuccess());
         } else {
-          return Left<Failure, Success>(LogoutOidcFailure(null));
+          yield Left<Failure, Success>(LogoutOidcFailure(null));
         }
       } else {
-        return Left<Failure, Success>(LogoutOidcFailure(NotFoundAuthenticatedAccountException()));
+        yield Left<Failure, Success>(LogoutOidcFailure(NotFoundAuthenticatedAccountException()));
       }
     } catch (e) {
       log('LogoutOidcInteractor::execute(): EXCEPTION: $e');
-      return Left<Failure, Success>(LogoutOidcFailure(e));
+      yield Left<Failure, Success>(LogoutOidcFailure(e));
     }
   }
 }

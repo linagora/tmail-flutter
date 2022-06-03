@@ -25,4 +25,9 @@ class OidcConfigurationCacheManager {
     log('OidcConfigurationCacheManager::persistAuthorityOidc(): $authority');
     await _sharedPreferences.setString(OIDCConstant.keyAuthorityOidc, authority);
   }
+
+  Future<void> deleteAuthorityOidc() async {
+    log('OidcConfigurationCacheManager::deleteAuthorityOidc()');
+    await _sharedPreferences.remove(OIDCConstant.keyAuthorityOidc);
+  }
 }
