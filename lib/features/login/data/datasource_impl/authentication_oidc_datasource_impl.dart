@@ -69,4 +69,9 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
     return _oidcHttpClient.refreshingTokensOIDC(
         clientId, redirectUrl, discoveryUrl, scopes, refreshToken);
   }
+
+  @override
+  Future<void> logout(TokenId tokenId, OIDCConfiguration config) {
+    throw UnimplementedError();
+  }
 }
