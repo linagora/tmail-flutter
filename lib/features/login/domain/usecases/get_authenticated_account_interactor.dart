@@ -24,6 +24,7 @@ class GetAuthenticatedAccountInteractor {
     try {
       yield Right<Failure, Success>(LoadingState());
       final account = await _accountRepository.getCurrentAccount();
+      log('GetAuthenticatedAccountInteractor::execute(): account: $account');
       yield Right(GetAuthenticatedAccountSuccess(account));
       if (account.authenticationType == AuthenticationType.oidc) {
         yield* _getStoredTokenOidcInteractor.execute(account.id);

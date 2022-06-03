@@ -14,6 +14,18 @@ import 'package:tmail_ui_user/features/email/domain/repository/email_repository.
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_bindings.dart';
+import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
+import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
+import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_oidc_datasource_impl.dart';
+import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_account_datasource_impl.dart';
+import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
+import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -36,6 +48,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_s
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/local_thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
@@ -58,6 +71,7 @@ class MailboxDashBoardBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.put(MailboxDashBoardController(
+      Get.find<LogoutOidcInteractor>(),
       Get.find<MoveToMailboxInteractor>(),
       Get.find<DeleteEmailPermanentlyInteractor>(),
       Get.find<SaveRecentSearchInteractor>(),
@@ -75,6 +89,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<ThreadDataSource>(() => Get.find<ThreadDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
+    Get.lazyPut<AccountDatasource>(() => Get.find<HiveAccountDatasourceImpl>());
+    Get.lazyPut<AuthenticationOIDCDataSource>(() => Get.find<AuthenticationOIDCDataSourceImpl>());
   }
 
   @override
@@ -90,6 +106,12 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
     Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
     Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
+    Get.lazyPut(() => HiveAccountDatasourceImpl(Get.find<AccountCacheManager>()));
+    Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
+        Get.find<OIDCHttpClient>(),
+        Get.find<TokenOidcCacheManager>(),
+        Get.find<OidcConfigurationCacheManager>()
+    ));
   }
 
   @override
@@ -102,6 +124,10 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => GetAllRecentSearchLatestInteractor(Get.find<SearchRepository>()));
     Get.lazyPut(() => QuickSearchEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => MarkAsMailboxReadInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => LogoutOidcInteractor(
+      Get.find<AccountRepository>(),
+      Get.find<AuthenticationOIDCRepository>(),
+    ));
   }
 
   @override
@@ -110,6 +136,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<SearchRepository>(() => Get.find<SearchRepositoryImpl>());
     Get.lazyPut<ThreadRepository>(() => Get.find<ThreadRepositoryImpl>());
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
+    Get.lazyPut<AccountRepository>(() => Get.find<AccountRepositoryImpl>());
+    Get.lazyPut<AuthenticationOIDCRepository>(() => Get.find<AuthenticationOIDCRepositoryImpl>());
   }
 
   @override
@@ -136,5 +164,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<ThreadDataSource>(),
       Get.find<EmailDataSource>(),
     ));
+    Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));
+    Get.lazyPut(() => AuthenticationOIDCRepositoryImpl(Get.find<AuthenticationOIDCDataSource>()));
   }
 }
