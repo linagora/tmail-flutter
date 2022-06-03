@@ -8,6 +8,7 @@ import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
+import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
@@ -97,5 +98,15 @@ class OIDCHttpClient {
     } else {
       throw NotFoundAccessTokenException();
     }
+  }
+
+  Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config) async {
+    final endSession = await _appAuth.endSession(EndSessionRequest(
+        idTokenHint: tokenId.uuid,
+        postLogoutRedirectUrl: config.redirectUrl,
+        discoveryUrl: config.discoveryUrl
+    ));
+    log('OIDCHttpClient::logoutOidc(): ${endSession?.state}');
+    return endSession?.state?.isNotEmpty == true;
   }
 }

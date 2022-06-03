@@ -63,7 +63,7 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   }
 
   @override
-  Future<void> logout(TokenId tokenId, OIDCConfiguration config) {
-    throw UnimplementedError();
+  Future<bool> logout(TokenId tokenId, OIDCConfiguration config) {
+    return _oidcDataSource.logout(tokenId, config);
   }
 }

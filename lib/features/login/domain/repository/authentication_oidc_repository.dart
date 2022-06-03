@@ -23,5 +23,5 @@ abstract class AuthenticationOIDCRepository {
       List<String> scopes,
       String refreshToken);
 
-  Future<void> logout(TokenId tokenId, OIDCConfiguration config);
+  Future<bool> logout(TokenId tokenId, OIDCConfiguration config);
 }
