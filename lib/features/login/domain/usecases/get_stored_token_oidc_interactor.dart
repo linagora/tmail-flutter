@@ -2,6 +2,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
+import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/uri_extension.dart';
@@ -20,15 +21,18 @@ class GetStoredTokenOidcInteractor {
       yield Right<Failure, Success>(LoadingState());
       final futureValue = await Future.wait([
         _credentialRepository.getBaseUrl(),
-        _authenticationOIDCRepository.getStoredTokenOIDC(tokenIdHash)
+        _authenticationOIDCRepository.getStoredTokenOIDC(tokenIdHash),
+        _authenticationOIDCRepository.getStoredOidcConfiguration(),
       ], eagerError: true);
 
-      final baseUrl = futureValue.first as Uri;
-      final tokenOidc = futureValue.last as TokenOIDC;
+      final baseUrl = futureValue[0] as Uri;
+      final tokenOidc = futureValue[1] as TokenOIDC;
+      final oidcConfiguration = futureValue[2] as OIDCConfiguration;
       log('GetStoredTokenOidcInteractor::execute(): $tokenOidc');
+      log('GetStoredTokenOidcInteractor::execute(): oidcConfiguration: $oidcConfiguration');
 
       if (_isCredentialValid(baseUrl)) {
-        yield Right(GetStoredTokenOidcSuccess(baseUrl, tokenOidc));
+        yield Right(GetStoredTokenOidcSuccess(baseUrl, tokenOidc, oidcConfiguration));
       } else {
         yield Left(GetStoredTokenOidcFailure(const InvalidBaseUrl()));
       }
