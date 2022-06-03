@@ -1,14 +1,21 @@
 
 import 'dart:convert';
 
-import 'package:core/core.dart';
+import 'package:core/data/model/query/query_parameter.dart';
+import 'package:core/data/network/dio_client.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
-import 'package:model/model.dart';
+import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/request/oidc_request.dart';
+import 'package:model/oidc/response/oidc_response.dart';
+import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/token_response_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/endpoint.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 
 class OIDCHttpClient {
 
@@ -48,20 +55,47 @@ class OIDCHttpClient {
   }
 
   Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl, String discoveryUrl, List<String> scopes) async {
-    final tokenResponse = await _appAuth.authorizeAndExchangeCode(AuthorizationTokenRequest(
+    final authorizationTokenResponse = await _appAuth.authorizeAndExchangeCode(AuthorizationTokenRequest(
         clientId,
         redirectUrl,
         discoveryUrl: discoveryUrl,
         scopes: scopes,
         preferEphemeralSession: true));
 
-    log('OIDCHttpClient::getTokenOIDC(): token: ${tokenResponse?.accessToken}');
+    log('OIDCHttpClient::getTokenOIDC(): token: ${authorizationTokenResponse?.accessToken}');
+
+    if (authorizationTokenResponse != null) {
+      final tokenOIDC = authorizationTokenResponse.toTokenOIDC();
+      if (tokenOIDC.isTokenValid()) {
+        return tokenOIDC;
+      } else {
+        throw AccessTokenInvalidException();
+      }
+    } else {
+      throw NotFoundAccessTokenException();
+    }
+  }
+
+  Future<TokenOIDC> refreshingTokensOIDC(String clientId, String redirectUrl,
+      String discoveryUrl, List<String> scopes, String refreshToken) async {
+    final tokenResponse = await _appAuth.token(TokenRequest(
+        clientId,
+        redirectUrl,
+        discoveryUrl: discoveryUrl,
+        refreshToken: refreshToken,
+        scopes: scopes));
+
+    log('OIDCHttpClient::refreshingTokensOIDC(): refreshToken: ${tokenResponse?.accessToken}');
 
     if (tokenResponse != null) {
       final tokenOIDC = tokenResponse.toTokenOIDC();
-      return tokenOIDC.isTokenValid() ? tokenOIDC : TokenOIDC.empty();
+      if (tokenOIDC.isTokenValid()) {
+        return tokenOIDC;
+      } else {
+        throw AccessTokenInvalidException();
+      }
     } else {
-      return TokenOIDC.empty();
+      throw NotFoundAccessTokenException();
     }
   }
 }

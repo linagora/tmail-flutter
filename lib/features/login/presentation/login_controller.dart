@@ -164,7 +164,7 @@ class LoginController extends GetxController {
     final baseUri = kIsWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
     if (baseUri != null) {
       await _getTokenOIDCInteractor
-        .execute(baseUri, config.clientId, config.redirectUrl, config.discoveryUrl, config.scopes)
+        .execute(baseUri, config)
         .then((response) =>
           response.fold(
             (failure) {
@@ -176,7 +176,7 @@ class LoginController extends GetxController {
             },
             (success) {
               if (success is GetTokenOIDCSuccess) {
-                _getTokenOIDCSuccess(success);
+                _getTokenOIDCSuccess(success, config);
               } else {
                 loginState.value = LoginState(Left(LoginCanNotGetTokenAction()));
               }
@@ -186,11 +186,13 @@ class LoginController extends GetxController {
     }
   }
 
-  void _getTokenOIDCSuccess(GetTokenOIDCSuccess success) {
+  void _getTokenOIDCSuccess(GetTokenOIDCSuccess success, OIDCConfiguration config) {
     log('LoginController::_getTokenOIDCSuccess(): ${success.tokenOIDC.toString()}');
     loginState.value = LoginState(Right(success));
     _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
-    _authorizationInterceptors.setToken(success.tokenOIDC.toToken());
+    _authorizationInterceptors.setTokenAndAuthorityOidc(
+        newToken: success.tokenOIDC.toToken(),
+        newConfig: config);
     pushAndPop(AppRoutes.SESSION);
   }
 
@@ -205,7 +207,7 @@ class LoginController extends GetxController {
   void _loginSuccessAction(AuthenticationUserViewState success) {
     loginState.value = LoginState(Right(success));
     _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
-    _authorizationInterceptors.changeAuthorization(_userNameText, _passwordText);
+    _authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);
     pushAndPop(AppRoutes.SESSION);
   }
 

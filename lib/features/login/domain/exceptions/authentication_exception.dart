@@ -28,3 +28,11 @@ class InvalidBaseUrl extends AuthenticationException {
   @override
   List<Object?> get props => [];
 }
+
+class NotFoundAccessTokenException implements Exception {
+  NotFoundAccessTokenException();
+}
+
+class AccessTokenInvalidException implements Exception {
+  AccessTokenInvalidException();
+}
