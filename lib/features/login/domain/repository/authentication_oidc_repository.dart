@@ -22,4 +22,6 @@ abstract class AuthenticationOIDCRepository {
       String discoveryUrl,
       List<String> scopes,
       String refreshToken);
+
+  Future<void> logout(TokenId tokenId, OIDCConfiguration config);
 }
