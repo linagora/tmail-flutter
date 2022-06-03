@@ -25,4 +25,9 @@ class AccountCacheManager {
     log('AccountCacheManager::setSelectedAccount(): $_accountCacheClient');
     return _accountCacheClient.insertItem(account.id, account.toCache());
   }
+
+  Future<void> deleteSelectedAccount(String accountId) {
+    log('AccountCacheManager::deleteSelectedAccount(): $accountId');
+    return _accountCacheClient.deleteItem(accountId);
+  }
 }

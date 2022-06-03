@@ -9,6 +9,8 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart' as JmapHttpClient;
 import 'package:tmail_ui_user/features/composer/data/network/composer_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
+import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
@@ -35,7 +37,20 @@ class NetworkBindings extends Bindings {
   void _bindingDio() {
     _bindingBaseOption();
     Get.put(Dio(Get.find<BaseOptions>()));
+    Get.put(DioClient(Get.find<Dio>()));
+    Get.put(const FlutterAppAuth());
+    Get.put(OIDCHttpClient(Get.find<DioClient>(), Get.find<FlutterAppAuth>()));
     _bindingInterceptors();
+  }
+
+  void _bindingInterceptors() {
+    Get.put(DynamicUrlInterceptors());
+    Get.put(AuthorizationInterceptors(
+        Get.find<Dio>(),
+        Get.find<OIDCHttpClient>(),
+        Get.find<TokenOidcCacheManager>(),
+        Get.find<AccountCacheManager>()
+    ));
     Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
     Get.find<Dio>().interceptors.add(Get.find<AuthorizationInterceptors>());
     if (kDebugMode) {
@@ -43,13 +58,7 @@ class NetworkBindings extends Bindings {
     }
   }
 
-  void _bindingInterceptors() {
-    Get.put(DynamicUrlInterceptors());
-    Get.put(AuthorizationInterceptors());
-  }
-
   void _bindingApi() {
-    Get.put(DioClient(Get.find<Dio>()));
     Get.put(JmapHttpClient.HttpClient(Get.find<Dio>()));
     Get.put(DownloadClient(Get.find<DioClient>()));
     Get.put(DownloadManager(Get.find<DownloadClient>()));
@@ -60,8 +69,6 @@ class NetworkBindings extends Bindings {
       Get.find<JmapHttpClient.HttpClient>(),
       Get.find<DownloadManager>()));
     Get.put(ComposerAPI(Get.find<DioClient>()));
-    Get.put(const FlutterAppAuth());
-    Get.put(OIDCHttpClient(Get.find<DioClient>(), Get.find<FlutterAppAuth>()));
   }
 
   void _bindingConnection() {

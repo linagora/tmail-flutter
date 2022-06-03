@@ -9,8 +9,8 @@ class MainBindings extends Bindings {
   @override
   Future dependencies() async {
     await CoreBindings().dependencies();
-    NetworkBindings().dependencies();
     LocalBindings().dependencies();
+    NetworkBindings().dependencies();
     CredentialBindings().dependencies();
     SessionBindings().dependencies();
   }
