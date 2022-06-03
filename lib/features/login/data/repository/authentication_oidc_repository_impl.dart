@@ -1,6 +1,7 @@
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
+import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
@@ -59,5 +60,10 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
         discoveryUrl,
         scopes,
         refreshToken);
+  }
+
+  @override
+  Future<void> logout(TokenId tokenId, OIDCConfiguration config) {
+    throw UnimplementedError();
   }
 }
