@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication
 import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_oidc_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_account_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
@@ -52,7 +53,8 @@ class LoginBindings extends BaseBindings {
     Get.lazyPut(() => AuthenticationDataSourceImpl());
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
         Get.find<OIDCHttpClient>(),
-        Get.find<TokenOidcCacheManager>()
+        Get.find<TokenOidcCacheManager>(),
+        Get.find<OidcConfigurationCacheManager>()
     ));
     Get.lazyPut(() => HiveAccountDatasourceImpl(
         Get.find<AccountCacheManager>()
