@@ -9,6 +9,7 @@ import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -27,7 +28,9 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   Session? sessionCurrent;
 
-  ManageAccountDashBoardController();
+  ManageAccountDashBoardController(
+    LogoutOidcInteractor logoutOidcInteractor
+  ) : super(logoutOidcInteractor);
 
   @override
   void onReady() {

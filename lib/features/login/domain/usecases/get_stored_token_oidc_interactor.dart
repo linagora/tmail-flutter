@@ -18,6 +18,7 @@ class GetStoredTokenOidcInteractor {
 
   Stream<Either<Failure, Success>> execute(String tokenIdHash) async* {
     try {
+      log('GetStoredTokenOidcInteractor::execute(): tokenIdHash: $tokenIdHash');
       yield Right<Failure, Success>(LoadingState());
       final futureValue = await Future.wait([
         _credentialRepository.getBaseUrl(),
