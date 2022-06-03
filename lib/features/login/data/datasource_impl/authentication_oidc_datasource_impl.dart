@@ -1,5 +1,6 @@
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
+import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 
@@ -7,8 +8,12 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
 
   final OIDCHttpClient _oidcHttpClient;
   final TokenOidcCacheManager _tokenOidcCacheManager;
+  final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
 
-  AuthenticationOIDCDataSourceImpl(this._oidcHttpClient, this._tokenOidcCacheManager);
+  AuthenticationOIDCDataSourceImpl(
+    this._oidcHttpClient,
+    this._tokenOidcCacheManager,
+    this._oidcConfigurationCacheManager);
 
   @override
   Future<OIDCResponse> checkOIDCIsAvailable(OIDCRequest oidcRequest) {
@@ -46,5 +51,15 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   @override
   Future<void> persistTokenOIDC(TokenOIDC tokenOidc) async {
     return _tokenOidcCacheManager.persistOneTokenOidc(tokenOidc);
+  }
+
+  @override
+  Future<OIDCConfiguration> getStoredOidcConfiguration() {
+    return _oidcConfigurationCacheManager.getOidcConfiguration();
+  }
+
+  @override
+  Future<void> persistAuthorityOidc(String authority) {
+    return _oidcConfigurationCacheManager.persistAuthorityOidc(authority);
   }
 }
