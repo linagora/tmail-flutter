@@ -71,7 +71,11 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   }
 
   @override
-  Future<void> logout(TokenId tokenId, OIDCConfiguration config) {
-    throw UnimplementedError();
+  Future<bool> logout(TokenId tokenId, OIDCConfiguration config) {
+    return Future.sync(() async {
+       return await _oidcHttpClient.logoutOidc(tokenId, config);
+    }).catchError((error) {
+      throw error;
+    });
   }
 }
