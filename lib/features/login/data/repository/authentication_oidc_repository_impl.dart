@@ -17,8 +17,8 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   }
 
   @override
-  Future<OIDCConfiguration> getOIDCConfiguration(Uri baseUri, OIDCResponse oidcResponse) {
-    return _oidcDataSource.getOIDCConfiguration(baseUri, oidcResponse);
+  Future<OIDCConfiguration> getOIDCConfiguration(OIDCResponse oidcResponse) {
+    return _oidcDataSource.getOIDCConfiguration(oidcResponse);
   }
 
   @override
