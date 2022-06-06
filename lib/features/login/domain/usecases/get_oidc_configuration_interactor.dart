@@ -9,9 +9,9 @@ class GetOIDCConfigurationInteractor {
 
   GetOIDCConfigurationInteractor(this._oidcRepository);
 
-  Future<Either<Failure, Success>> execute(Uri baseUri, OIDCResponse oidcResponse) async {
+  Future<Either<Failure, Success>> execute(OIDCResponse oidcResponse) async {
     try {
-      final oidcConfiguration = await _oidcRepository.getOIDCConfiguration(baseUri, oidcResponse);
+      final oidcConfiguration = await _oidcRepository.getOIDCConfiguration(oidcResponse);
       log('GetOIDCConfigurationInteractor::execute(): oidcConfiguration: $oidcConfiguration');
       return Right<Failure, Success>(GetOIDCConfigurationSuccess(oidcConfiguration));
     } catch (e) {
