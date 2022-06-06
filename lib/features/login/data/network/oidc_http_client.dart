@@ -43,7 +43,7 @@ class OIDCHttpClient {
     }
   }
 
-  Future<OIDCConfiguration> getOIDCConfiguration(Uri baseUri, OIDCResponse oidcResponse) async {
+  Future<OIDCConfiguration> getOIDCConfiguration(OIDCResponse oidcResponse) async {
     if (oidcResponse.links.isEmpty) {
       throw CanNotFoundOIDCAuthority();
     }

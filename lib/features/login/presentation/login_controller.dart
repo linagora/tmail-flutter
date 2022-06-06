@@ -106,12 +106,7 @@ class LoginController extends GetxController {
   void handleLoginPressed() {
     log('LoginController::handleLoginPressed(): ${loginFormType.value}');
     if (loginFormType.value == LoginFormType.ssoForm) {
-      final baseUri = kIsWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
-      if (baseUri != null) {
-        _getOIDCConfiguration(baseUri);
-      } else {
-        loginState.value = LoginState(Left(LoginMissUrlAction()));
-      }
+      _getOIDCConfiguration();
     } else {
       final baseUri = kIsWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
       final userName = _parseUserName(_userNameText);
@@ -128,10 +123,10 @@ class LoginController extends GetxController {
     }
   }
 
-  void _getOIDCConfiguration(Uri baseUri) async {
+  void _getOIDCConfiguration() async {
     loginState.value = LoginState(Right(LoginLoadingAction()));
     if (_oidcResponse != null) {
-      await _getOIDCConfigurationInteractor.execute(baseUri, _oidcResponse!)
+      await _getOIDCConfigurationInteractor.execute(_oidcResponse!)
         .then((response) => response.fold(
           (failure) {
             if (failure is GetOIDCConfigurationFailure) {
