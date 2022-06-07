@@ -9,15 +9,11 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   String get tableName => 'StateCache';
 
   @override
-  Future<Box<StateCache>> openBox() {
-    return Future.sync(() async {
-      if (Hive.isBoxOpen(tableName)) {
-        return Hive.box<StateCache>(tableName);
-      }
-      return await Hive.openBox<StateCache>(tableName);
-    }).catchError((error) {
-      throw error;
-    });
+  Future<Box<StateCache>> openBox() async {
+    if (Hive.isBoxOpen(tableName)) {
+      return Hive.box<StateCache>(tableName);
+    }
+    return Hive.openBox<StateCache>(tableName);
   }
 
   @override

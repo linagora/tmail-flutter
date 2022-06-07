@@ -99,15 +99,11 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   }
 
   @override
-  Future<Box<AccountCache>> openBox() {
-    return Future.sync(() async {
-      if (Hive.isBoxOpen(tableName)) {
-        return Hive.box<AccountCache>(tableName);
-      }
-      return await Hive.openBox<AccountCache>(tableName);
-    }).catchError((error) {
-      throw error;
-    });
+  Future<Box<AccountCache>> openBox() async {
+    if (Hive.isBoxOpen(tableName)) {
+      return Hive.box<AccountCache>(tableName);
+    }
+    return Hive.openBox<AccountCache>(tableName);
   }
 
   @override
