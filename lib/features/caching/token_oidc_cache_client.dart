@@ -97,15 +97,11 @@ class TokenOidcCacheClient extends HiveCacheClient<TokenOidcCache> {
   }
 
   @override
-  Future<Box<TokenOidcCache>> openBox() {
-    return Future.sync(() async {
-      if (Hive.isBoxOpen(tableName)) {
-        return Hive.box<TokenOidcCache>(tableName);
-      }
-      return await Hive.openBox<TokenOidcCache>(tableName);
-    }).catchError((error) {
-      throw error;
-    });
+  Future<Box<TokenOidcCache>> openBox() async {
+    if (Hive.isBoxOpen(tableName)) {
+      return Hive.box<TokenOidcCache>(tableName);
+    }
+    return Hive.openBox<TokenOidcCache>(tableName);
   }
 
   @override

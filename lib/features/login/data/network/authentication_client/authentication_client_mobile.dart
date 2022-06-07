@@ -45,7 +45,7 @@ class AuthenticationClientMobile implements AuthenticationClientBase {
   Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config) async {
     final endSession = await _appAuth.endSession(EndSessionRequest(
         idTokenHint: tokenId.uuid,
-        postLogoutRedirectUrl: config.redirectUrl,
+        postLogoutRedirectUrl: config.logoutRedirectUrl,
         discoveryUrl: config.discoveryUrl
     ));
     log('AuthenticationClientMobile::logoutOidc(): ${endSession?.state}');

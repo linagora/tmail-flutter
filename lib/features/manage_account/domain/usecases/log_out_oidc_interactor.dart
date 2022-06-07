@@ -21,7 +21,7 @@ class LogoutOidcInteractor {
   Stream<Either<Failure, Success>> execute() async* {
     try {
       final currentAccount = await _accountRepository.getCurrentAccount();
-
+      log('LogoutOidcInteractor::execute(): currentAccount: $currentAccount');
       if (currentAccount.authenticationType == AuthenticationType.oidc) {
         final result = await Future.wait([
           _authenticationOIDCRepository.getStoredTokenOIDC(currentAccount.id),
@@ -29,6 +29,8 @@ class LogoutOidcInteractor {
         ]).then((result) async {
           final tokenOidc = result.first as TokenOIDC;
           final oidcConfig = result.last as OIDCConfiguration;
+          log('LogoutOidcInteractor::execute(): tokenOidc: ${tokenOidc.tokenId.uuid}');
+          log('LogoutOidcInteractor::execute(): oidcConfig: $oidcConfig');
           return await _authenticationOIDCRepository.logout(tokenOidc.tokenId, oidcConfig);
         });
         log('LogoutOidcInteractor::execute(): statusSuccess: $result');

@@ -88,15 +88,11 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
   }
 
   @override
-  Future<Box<RecentSearchCache>> openBox() {
-    return Future.sync(() async {
-      if (Hive.isBoxOpen(tableName)) {
-        return Hive.box<RecentSearchCache>(tableName);
-      }
-      return await Hive.openBox<RecentSearchCache>(tableName);
-    }).catchError((error) {
-      throw error;
-    });
+  Future<Box<RecentSearchCache>> openBox() async {
+    if (Hive.isBoxOpen(tableName)) {
+      return Hive.box<RecentSearchCache>(tableName);
+    }
+    return Hive.openBox<RecentSearchCache>(tableName);
   }
 
   @override

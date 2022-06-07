@@ -44,8 +44,13 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
   }
 
   @override
-  Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config) {
-    throw UnimplementedError();
+  Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config) async {
+    final endSession = await _appAuthWeb.endSession(EndSessionRequest(
+        idTokenHint: tokenId.uuid,
+        postLogoutRedirectUrl: config.logoutRedirectUrl,
+        discoveryUrl: config.discoveryUrl
+    ));
+    return endSession != null;
   }
 
   @override

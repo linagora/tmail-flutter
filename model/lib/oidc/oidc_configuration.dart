@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 class OIDCConfiguration with EquatableMixin {
   static const redirectOidcMobile = 'teammail.mobile://oauthredirect';
   static const redirectOidcWeb = 'http://localhost:3000/login-callback.html';
+  static const logoutRedirectOidcWeb = 'http://localhost:3000/logout-callback.html';
   static const wellKnownOpenId = '.well-known/openid-configuration';
 
   final String authority;
@@ -26,6 +27,8 @@ class OIDCConfiguration with EquatableMixin {
   }
 
   String get redirectUrl => BuildUtils.isWeb ? redirectOidcWeb : redirectOidcMobile;
+
+  String get logoutRedirectUrl => BuildUtils.isWeb ? logoutRedirectOidcWeb : redirectOidcMobile;
 
   String get clientIdHash => clientId.hashCode.toString();
 
