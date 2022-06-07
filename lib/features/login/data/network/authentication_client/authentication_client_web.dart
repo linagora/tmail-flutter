@@ -2,6 +2,7 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/token_response_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:universal_html/html.dart' as html;
@@ -55,8 +56,27 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
 
   @override
   Future<TokenOIDC> refreshingTokensOIDC(String clientId, String redirectUrl,
-      String discoveryUrl, List<String> scopes, String refreshToken) {
-    throw UnimplementedError();
+      String discoveryUrl, List<String> scopes, String refreshToken) async {
+    final tokenResponse = await _appAuthWeb.token(TokenRequest(
+        clientId,
+        redirectUrl,
+        discoveryUrl: discoveryUrl,
+        refreshToken: refreshToken,
+        grantType: 'refresh_token',
+        scopes: scopes));
+
+    log('AuthenticationClientMobile::refreshingTokensOIDC(): refreshToken: ${tokenResponse?.accessToken}');
+
+    if (tokenResponse != null) {
+      final tokenOIDC = tokenResponse.toTokenOIDC();
+      if (tokenOIDC.isTokenValid()) {
+        return tokenOIDC;
+      } else {
+        throw AccessTokenInvalidException();
+      }
+    } else {
+      throw NotFoundAccessTokenException();
+    }
   }
 
   @override
