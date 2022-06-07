@@ -1,7 +1,9 @@
 
 import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_interface.dart';
@@ -20,7 +22,25 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
   @override
   Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl,
       String discoveryUrl, List<String> scopes) async {
-    throw UnimplementedError();
+    final authorizationTokenResponse = await _appAuthWeb.authorizeAndExchangeCode(AuthorizationTokenRequest(
+        clientId,
+        redirectUrl,
+        discoveryUrl: discoveryUrl,
+        scopes: scopes,
+        preferEphemeralSession: true));
+
+    log('AuthClientMobile::getTokenOIDC(): token: ${authorizationTokenResponse?.accessToken}');
+
+    if (authorizationTokenResponse != null) {
+      final tokenOIDC = authorizationTokenResponse.toTokenOIDC();
+      if (tokenOIDC.isTokenValid()) {
+        return tokenOIDC;
+      } else {
+        throw AccessTokenInvalidException();
+      }
+    } else {
+      throw NotFoundAccessTokenException();
+    }
   }
 
   @override
