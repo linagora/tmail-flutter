@@ -46,7 +46,8 @@ class LoginView extends BaseLoginView {
               ),
               Obx(() => buildLoginMessage(context, loginController.loginState.value)),
               buildInputCredentialForm(context),
-              buildLoginButton(context)
+              buildLoginButton(context),
+              buildSSOButton(context),
             ],
           )
         ),
@@ -161,7 +162,8 @@ class LoginView extends BaseLoginView {
                         ),
                         Obx(() => buildLoginMessage(context, loginController.loginState.value)),
                         buildInputCredentialForm(context),
-                        buildLoginButton(context)
+                        buildLoginButton(context),
+                        buildSSOButton(context),
                       ],
                     )
                   )
@@ -196,6 +198,30 @@ class LoginView extends BaseLoginView {
             textAlign: TextAlign.center),
         ),
       ]
+    );
+  }
+
+  Widget buildSSOButton(BuildContext context) {
+    return Container(
+        margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
+        width: responsiveUtils.getDeviceWidth(context),height: 48,
+        child: ElevatedButton(
+            key: const Key('ssoSubmitForm'),
+            style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
+                backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.textFieldErrorBorderColor),
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: const BorderSide(width: 0, color: AppColor.textFieldErrorBorderColor)
+                ))
+            ),
+            child: Text(AppLocalizations.of(context).singleSignOn,
+                style: const TextStyle(fontSize: 16, color: Colors.white)
+            ),
+            onPressed: () {
+              loginController.handleSSOPressed();
+            }
+        )
     );
   }
 }
