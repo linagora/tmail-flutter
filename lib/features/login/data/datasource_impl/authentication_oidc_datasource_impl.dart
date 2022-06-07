@@ -83,4 +83,10 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   Future<void> deleteAuthorityOidc() {
     return _oidcConfigurationCacheManager.deleteAuthorityOidc();
   }
+
+  @override
+  Future<void> authenticateOidcOnBrowser(String clientId, String redirectUrl,
+      String discoveryUrl, List<String> scopes) {
+    throw UnimplementedError();
+  }
 }
