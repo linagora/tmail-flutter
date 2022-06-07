@@ -1431,4 +1431,14 @@ class AppLocalizations {
         'All mailboxes',
         name: 'allMailboxes');
   }
+
+  String get singleSignOn {
+    return Intl.message('Single Sign-On',
+        name: 'singleSignOn');
+  }
+
+  String get ssoNotAvailable {
+    return Intl.message('Single sign-on (SSO) is not available',
+        name: 'ssoNotAvailable');
+  }
 }

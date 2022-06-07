@@ -123,6 +123,28 @@ class LoginController extends GetxController {
     }
   }
 
+  void handleSSOPressed() async {
+    final baseUri = _parseUri(AppConfig.baseUrl);
+
+    if (baseUri != null) {
+      log('LoginController::handleSSOPressed(): baseUri: ${baseUri.toString()}');
+      loginState.value = LoginState(Right(LoginLoadingAction()));
+      await _checkOIDCIsAvailableInteractor
+        .execute(OIDCRequest(baseUrl: baseUri.toString(), resourceUrl: baseUri.origin))
+        .then((response) => response.fold(
+          (failure) => loginState.value = LoginState(Left(LoginSSONotAvailableAction())),
+          (success) {
+            if (success is CheckOIDCIsAvailableSuccess) {
+              loginState.value = LoginState(Right(success));
+              _oidcResponse = success.oidcResponse;
+              _getOIDCConfiguration();
+            } else {
+              loginState.value = LoginState(Left(LoginSSONotAvailableAction()));
+            }
+          }));
+    }
+  }
+
   void _getOIDCConfiguration() async {
     loginState.value = LoginState(Right(LoginLoadingAction()));
     if (_oidcResponse != null) {
