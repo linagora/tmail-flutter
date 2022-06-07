@@ -85,19 +85,19 @@ class LoginView extends BaseLoginView {
                   return Obx(() => loginController.loginState.value.viewState.fold(
                     (failure) => _buildNextButtonInContext(context),
                     (success) => success is LoginLoadingAction
-                      ? _buildLoadingCircularProgress()
+                      ? buildLoadingCircularProgress()
                       : _buildNextButtonInContext(context)));
                 case LoginFormType.credentialForm:
                   return Obx(() => loginController.loginState.value.viewState.fold(
                     (failure) => _buildLoginButtonInContext(context),
                     (success) => success is LoginLoadingAction
-                      ? _buildLoadingCircularProgress()
+                      ? buildLoadingCircularProgress()
                       : _buildLoginButtonInContext(context)));
                 case LoginFormType.ssoForm:
                   return Obx(() => loginController.loginState.value.viewState.fold(
                     (failure) => _buildLoginButtonInContext(context),
                     (success) => success is LoginLoadingAction
-                      ? _buildLoadingCircularProgress()
+                      ? buildLoadingCircularProgress()
                       : _buildLoginButtonInContext(context)));
                 default:
                   return const SizedBox.shrink();
@@ -188,14 +188,6 @@ class LoginView extends BaseLoginView {
     return _supportScrollForm(context)
       ? buildLoginButton(context)
       : _buildExpandedButton(context, buildLoginButton(context));
-  }
-
-  Widget _buildLoadingCircularProgress() {
-    return const SizedBox(
-      key: Key('login_loading_icon'),
-      width: 40,
-      height: 40,
-      child: CircularProgressIndicator(color: AppColor.primaryColor));
   }
   
   bool _supportScrollForm(BuildContext context) {
