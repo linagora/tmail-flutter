@@ -13,6 +13,7 @@ class GetOIDCConfigurationInteractor {
     try {
       final oidcConfiguration = await _oidcRepository.getOIDCConfiguration(oidcResponse);
       log('GetOIDCConfigurationInteractor::execute(): oidcConfiguration: $oidcConfiguration');
+      await _oidcRepository.persistAuthorityOidc(oidcConfiguration.authority);
       return Right<Failure, Success>(GetOIDCConfigurationSuccess(oidcConfiguration));
     } catch (e) {
       log('GetOIDCConfigurationInteractor::execute(): ERROR: $e');
