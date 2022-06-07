@@ -13,6 +13,8 @@ import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.d
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
+import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
@@ -41,7 +43,7 @@ abstract class ReloadableController extends BaseController {
     viewState.value.fold(
       (failure) {
         if (failure is GetCredentialFailure) {
-          goToLogin();
+          _goToLogin();
         } else if (failure is GetSessionFailure) {
           _handleGetSessionFailure();
         } else if (failure is LogoutOidcFailure) {
@@ -71,8 +73,8 @@ abstract class ReloadableController extends BaseController {
     consumeState(_getCredentialInteractor.execute().asStream());
   }
 
-  void goToLogin() {
-    pushAndPopAll(AppRoutes.LOGIN);
+  void _goToLogin({LoginArguments? arguments}) {
+    pushAndPopAll(AppRoutes.LOGIN, arguments: arguments);
   }
 
   void _setUpInterceptors(GetCredentialViewState credentialViewState) {
@@ -92,13 +94,12 @@ abstract class ReloadableController extends BaseController {
     consumeState(_getSessionInteractor.execute().asStream());
   }
 
-  void _handleGetSessionFailure() {
-    _deleteCredentialAction();
-    goToLogin();
-  }
-
-  void _deleteCredentialAction() async {
-    await _deleteCredentialInteractor.execute();
+  void _handleGetSessionFailure() async {
+    await Future.wait([
+      _deleteCredentialInteractor.execute(),
+      _cachingManager.clearAll(),
+    ]);
+    _goToLogin();
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
@@ -118,7 +119,8 @@ abstract class ReloadableController extends BaseController {
       ]);
 
       _authorizationInterceptors.clear();
-      goToLogin();
+      await HiveCacheConfig().closeHive();
+      _goToLogin();
     }
   }
 
@@ -131,6 +133,7 @@ abstract class ReloadableController extends BaseController {
     ]);
 
     _authorizationInterceptors.clear();
-    goToLogin();
+    await HiveCacheConfig().closeHive();
+    _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
   }
 }

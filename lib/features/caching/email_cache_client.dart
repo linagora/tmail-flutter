@@ -11,15 +11,11 @@ class EmailCacheClient extends HiveCacheClient<EmailCache> {
   String get tableName => 'EmailCache';
 
   @override
-  Future<Box<EmailCache>> openBox() {
-    return Future.sync(() async {
-      if (Hive.isBoxOpen(tableName)) {
-        return Hive.box<EmailCache>(tableName);
-      }
-      return await Hive.openBox<EmailCache>(tableName);
-    }).catchError((error) {
-      throw error;
-    });
+  Future<Box<EmailCache>> openBox() async {
+    if (Hive.isBoxOpen(tableName)) {
+      return Hive.box<EmailCache>(tableName);
+    }
+    return Hive.openBox<EmailCache>(tableName);
   }
 
   @override
