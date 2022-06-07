@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
+import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class LoginView extends BaseLoginView {
@@ -47,7 +48,11 @@ class LoginView extends BaseLoginView {
               Obx(() => buildLoginMessage(context, loginController.loginState.value)),
               buildInputCredentialForm(context),
               buildLoginButton(context),
-              buildSSOButton(context),
+              Obx(() => loginController.loginState.value.viewState.fold(
+                  (failure) => _buildSSOButton(context),
+                  (success) => success is LoginLoadingAction
+                      ? buildLoadingCircularProgress()
+                      : _buildSSOButton(context))),
             ],
           )
         ),
@@ -163,7 +168,11 @@ class LoginView extends BaseLoginView {
                         Obx(() => buildLoginMessage(context, loginController.loginState.value)),
                         buildInputCredentialForm(context),
                         buildLoginButton(context),
-                        buildSSOButton(context),
+                        Obx(() => loginController.loginState.value.viewState.fold(
+                            (failure) => _buildSSOButton(context),
+                            (success) => success is LoginLoadingAction
+                                ? buildLoadingCircularProgress()
+                                : _buildSSOButton(context))),
                       ],
                     )
                   )
@@ -201,7 +210,7 @@ class LoginView extends BaseLoginView {
     );
   }
 
-  Widget buildSSOButton(BuildContext context) {
+  Widget _buildSSOButton(BuildContext context) {
     return Container(
         margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
         width: responsiveUtils.getDeviceWidth(context),height: 48,
