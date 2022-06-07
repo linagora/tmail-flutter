@@ -10,12 +10,12 @@ import 'package:model/oidc/token.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
+import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 
 class AuthorizationInterceptors extends InterceptorsWrapper {
 
   final Dio _dio;
-  final OIDCHttpClient _oidcHttpClient;
+  final AuthenticationClientBase _authenticationClient;
   final TokenOidcCacheManager _tokenOidcCacheManager;
   final AccountCacheManager _accountCacheManager;
 
@@ -26,7 +26,7 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
 
   AuthorizationInterceptors(
     this._dio,
-    this._oidcHttpClient,
+    this._authenticationClient,
     this._tokenOidcCacheManager,
     this._accountCacheManager
   );
@@ -79,7 +79,7 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
     if ((_isTokenExpired() || err.response?.statusCode == 401) &&
         _isAuthenticationOidcValid()) {
       try {
-        final newToken = await _oidcHttpClient.refreshingTokensOIDC(
+        final newToken = await _authenticationClient.refreshingTokensOIDC(
             _configOIDC!.clientId,
             _configOIDC!.redirectUrl,
             _configOIDC!.discoveryUrl,
