@@ -11,8 +11,10 @@ import 'package:tmail_ui_user/features/composer/data/network/composer_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
+import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
@@ -39,7 +41,9 @@ class NetworkBindings extends Bindings {
     Get.put(Dio(Get.find<BaseOptions>()));
     Get.put(DioClient(Get.find<Dio>()));
     Get.put(const FlutterAppAuth());
-    Get.put(OIDCHttpClient(Get.find<DioClient>(), Get.find<FlutterAppAuth>()));
+    Get.put(AppAuthWebPlugin());
+    Get.put(OIDCHttpClient(Get.find<DioClient>()));
+    Get.put(AuthenticationClientBase());
     _bindingInterceptors();
   }
 
@@ -47,7 +51,7 @@ class NetworkBindings extends Bindings {
     Get.put(DynamicUrlInterceptors());
     Get.put(AuthorizationInterceptors(
         Get.find<Dio>(),
-        Get.find<OIDCHttpClient>(),
+        Get.find<AuthenticationClientBase>(),
         Get.find<TokenOidcCacheManager>(),
         Get.find<AccountCacheManager>()
     ));
