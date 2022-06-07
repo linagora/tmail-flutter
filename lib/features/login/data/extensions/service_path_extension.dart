@@ -1,6 +1,6 @@
 
-import 'package:core/core.dart';
-import 'package:tmail_ui_user/features/login/data/network/endpoint.dart';
+import 'package:core/data/model/query/query_parameter.dart';
+import 'package:core/data/network/config/service_path.dart';
 
 extension ServicePathExtension on ServicePath {
   String generateEndpointPath() {
@@ -8,7 +8,7 @@ extension ServicePathExtension on ServicePath {
   }
 
   ServicePath generateOIDCPath(Uri baseUrl) {
-    return ServicePath(baseUrl.origin + Endpoint.oidc + path);
+    return ServicePath(baseUrl.toString() + path);
   }
 
   ServicePath withQueryParameters(List<QueryParameter> queryParameters) {
