@@ -71,4 +71,10 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   Future<void> deleteAuthorityOidc() {
     return _oidcDataSource.deleteAuthorityOidc();
   }
+
+  @override
+  Future<void> authenticateOidcOnBrowser(String clientId,
+      String redirectUrl, String discoveryUrl, List<String> scopes) {
+    return _oidcDataSource.authenticateOidcOnBrowser(clientId, redirectUrl, discoveryUrl, scopes);
+  }
 }

@@ -26,4 +26,10 @@ abstract class AuthenticationOIDCDataSource {
       String refreshToken);
 
   Future<bool> logout(TokenId tokenId, OIDCConfiguration config);
+
+  Future<void> authenticateOidcOnBrowser(
+      String clientId,
+      String redirectUrl,
+      String discoveryUrl,
+      List<String> scopes);
 }
