@@ -47,12 +47,12 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   }
 
   @override
-  Future<TokenOIDC> getStoredTokenOIDC(String tokenIdHash) async {
+  Future<TokenOIDC> getStoredTokenOIDC(String tokenIdHash) {
     return _tokenOidcCacheManager.getTokenOidc(tokenIdHash);
   }
 
   @override
-  Future<void> persistTokenOIDC(TokenOIDC tokenOidc) async {
+  Future<void> persistTokenOIDC(TokenOIDC tokenOidc) {
     return _tokenOidcCacheManager.persistOneTokenOidc(tokenOidc);
   }
 
