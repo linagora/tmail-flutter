@@ -156,6 +156,12 @@ dependencies:
   # OIDC Mobile
   flutter_appauth: 4.0.0
 
+  # OIDC Web
+  flutter_appauth_web:
+    git:
+      url: https://github.com/dab246/flutter_appauth_web.git
+      ref: dev
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
