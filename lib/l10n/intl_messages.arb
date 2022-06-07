@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-06-01T17:23:21.677245",
+  "@@last_modified": "2022-06-06T13:32:00.583993",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1396,6 +1396,18 @@
   },
   "allMailboxes": "All mailboxes",
   "@allMailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "singleSignOn": "Single Sign-On",
+  "@singleSignOn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ssoNotAvailable": "Single sign-on (SSO) is not available",
+  "@ssoNotAvailable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

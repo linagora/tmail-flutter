@@ -54,3 +54,8 @@ class LoginCanNotGetTokenAction extends Failure {
   @override
   List<Object?> get props => [];
 }
+
+class LoginSSONotAvailableAction extends Failure {
+  @override
+  List<Object?> get props => [];
+}

@@ -37,6 +37,8 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
                 return AppLocalizations.of(context).requiredEmail;
               } else if (failure is LoginMissPasswordAction) {
                 return AppLocalizations.of(context).requiredPassword;
+              } else if (failure is LoginSSONotAvailableAction) {
+                return AppLocalizations.of(context).ssoNotAvailable;
               } else if (failure is GetOIDCConfigurationFailure
                 || failure is LoginCanNotVerifySSOConfigurationAction) {
                 return AppLocalizations.of(context).canNotVerifySSOConfiguration;
