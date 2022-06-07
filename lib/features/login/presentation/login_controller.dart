@@ -8,11 +8,13 @@ import 'package:tmail_ui_user/features/login/data/network/config/authorization_i
 import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
@@ -30,6 +32,7 @@ class LoginController extends GetxController {
   final GetOIDCConfigurationInteractor _getOIDCConfigurationInteractor;
   final GetTokenOIDCInteractor _getTokenOIDCInteractor;
   final AuthenticateOidcOnBrowserInteractor _authenticateOidcOnBrowserInteractor;
+  final GetAuthenticationInfoInteractor _getAuthenticationInfoInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
 
@@ -41,6 +44,7 @@ class LoginController extends GetxController {
     this._getOIDCConfigurationInteractor,
     this._getTokenOIDCInteractor,
     this._authenticateOidcOnBrowserInteractor,
+    this._getAuthenticationInfoInteractor,
   );
 
   var loginState = LoginState(Right(LoginInitAction())).obs;
@@ -68,6 +72,24 @@ class LoginController extends GetxController {
   Password? _parsePassword(String? password) => password != null && password.trim().isNotEmpty
       ? Password(password.trim())
       : null;
+
+  @override
+  void onReady() {
+    super.onReady();
+    if(BuildUtils.isWeb) {
+      _getAuthenticationInfo();
+    }
+  }
+
+  void _getAuthenticationInfo() async {
+    await _getAuthenticationInfoInteractor.execute()
+      .then((result) => result.fold(
+        (failure) => null,
+        (success) {
+          if (success is GetAuthenticationInfoSuccess) {
+          }
+        }));
+  }
 
   void handleNextInUrlInputFormPress() {
     _checkOIDCIsAvailable();
