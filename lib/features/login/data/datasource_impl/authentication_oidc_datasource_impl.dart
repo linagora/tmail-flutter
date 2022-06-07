@@ -90,6 +90,10 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   @override
   Future<void> authenticateOidcOnBrowser(String clientId, String redirectUrl,
       String discoveryUrl, List<String> scopes) {
-    throw UnimplementedError();
+    return _authenticationClient.authenticateOidcOnBrowser(
+        clientId,
+        redirectUrl,
+        discoveryUrl,
+        scopes);
   }
 }

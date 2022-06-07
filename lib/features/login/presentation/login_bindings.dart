@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/login/domain/repository/account_repositor
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
@@ -39,6 +40,7 @@ class LoginBindings extends BaseBindings {
         Get.find<CheckOIDCIsAvailableInteractor>(),
         Get.find<GetOIDCConfigurationInteractor>(),
         Get.find<GetTokenOIDCInteractor>(),
+        Get.find<AuthenticateOidcOnBrowserInteractor>(),
     ));
   }
 
@@ -80,6 +82,9 @@ class LoginBindings extends BaseBindings {
         Get.find<CredentialRepository>(),
         Get.find<AuthenticationOIDCRepository>(),
         Get.find<AccountRepository>()
+    ));
+    Get.lazyPut(() => AuthenticateOidcOnBrowserInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
     ));
   }
 
