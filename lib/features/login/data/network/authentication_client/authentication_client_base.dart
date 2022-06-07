@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
   if (dart.library.html) 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_web.dart';
 
 abstract class AuthenticationClientBase {
-  Future authenticateOidcOnBrowser(
+  Future<void> authenticateOidcOnBrowser(
       String clientId,
       String redirectUrl,
       String discoveryUrl,

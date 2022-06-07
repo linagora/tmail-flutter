@@ -59,3 +59,8 @@ class LoginSSONotAvailableAction extends Failure {
   @override
   List<Object?> get props => [];
 }
+
+class LoginCanNotAuthenticationSSOAction extends Failure {
+  @override
+  List<Object?> get props => [];
+}
