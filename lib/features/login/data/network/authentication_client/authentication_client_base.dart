@@ -12,6 +12,8 @@ abstract class AuthenticationClientBase {
       String discoveryUrl,
       List<String> scopes);
 
+  Future<String?> getAuthenticationInfo();
+
   Future<TokenOIDC> getTokenOIDC(
       String clientId,
       String redirectUrl,

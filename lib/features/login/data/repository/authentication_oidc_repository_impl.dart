@@ -77,4 +77,9 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
       String redirectUrl, String discoveryUrl, List<String> scopes) {
     return _oidcDataSource.authenticateOidcOnBrowser(clientId, redirectUrl, discoveryUrl, scopes);
   }
+
+  @override
+  Future<String?> getAuthenticationInfo() {
+    return _oidcDataSource.getAuthenticationInfo();
+  }
 }
