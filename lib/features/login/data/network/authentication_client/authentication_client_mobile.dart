@@ -77,7 +77,7 @@ class AuthenticationClientMobile implements AuthenticationClientBase {
   }
 
   @override
-  Future authenticateOidcOnBrowser(String clientId, String redirectUrl,
+  Future<void> authenticateOidcOnBrowser(String clientId, String redirectUrl,
       String discoveryUrl, List<String> scopes) {
     return Future.value(null);
   }

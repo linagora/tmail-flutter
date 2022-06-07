@@ -5,10 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
@@ -27,6 +29,7 @@ class LoginController extends GetxController {
   final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
   final GetOIDCConfigurationInteractor _getOIDCConfigurationInteractor;
   final GetTokenOIDCInteractor _getTokenOIDCInteractor;
+  final AuthenticateOidcOnBrowserInteractor _authenticateOidcOnBrowserInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
 
@@ -37,6 +40,7 @@ class LoginController extends GetxController {
     this._checkOIDCIsAvailableInteractor,
     this._getOIDCConfigurationInteractor,
     this._getTokenOIDCInteractor,
+    this._authenticateOidcOnBrowserInteractor,
   );
 
   var loginState = LoginState(Right(LoginInitAction())).obs;
@@ -171,7 +175,11 @@ class LoginController extends GetxController {
 
   void _getOIDCConfigurationSuccess(GetOIDCConfigurationSuccess success) {
     loginState.value = LoginState(Right(success));
-    _getTokenOIDCAction(success.oidcConfiguration);
+    if (BuildUtils.isWeb) {
+      _authenticateOidcOnBrowserAction(success.oidcConfiguration);
+    } else {
+      _getTokenOIDCAction(success.oidcConfiguration);
+    }
   }
 
   void _getTokenOIDCAction(OIDCConfiguration config) async {
@@ -198,6 +206,29 @@ class LoginController extends GetxController {
             }));
     } else {
       loginState.value = LoginState(Left(LoginCanNotGetTokenAction()));
+    }
+  }
+
+  void _authenticateOidcOnBrowserAction(OIDCConfiguration config) async {
+    loginState.value = LoginState(Right(LoginLoadingAction()));
+    final baseUri = _parseUri(AppConfig.baseUrl);
+    if (baseUri != null) {
+      await _authenticateOidcOnBrowserInteractor.execute(baseUri, config)
+          .then((response) => response.fold(
+              (failure) {
+                if (failure is AuthenticateOidcOnBrowserFailure) {
+                  loginState.value = LoginState(Left(failure));
+                } else {
+                  loginState.value = LoginState(Left(LoginCanNotAuthenticationSSOAction()));
+                }
+              },
+              (success) {
+                if (success is! AuthenticateOidcOnBrowserSuccess) {
+                  loginState.value = LoginState(Left(LoginCanNotAuthenticationSSOAction()));
+                }
+              }));
+    } else {
+      loginState.value = LoginState(Left(LoginCanNotAuthenticationSSOAction()));
     }
   }
 
