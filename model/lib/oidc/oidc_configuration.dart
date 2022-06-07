@@ -1,13 +1,14 @@
 
+import 'package:core/utils/build_utils.dart';
 import 'package:equatable/equatable.dart';
 
 class OIDCConfiguration with EquatableMixin {
-  static const redirectOidc = 'teammail.mobile://oauthredirect';
+  static const redirectOidcMobile = 'teammail.mobile://oauthredirect';
+  static const redirectOidcWeb = 'http://localhost:3000/login-callback.html';
   static const wellKnownOpenId = '.well-known/openid-configuration';
 
   final String authority;
   final String clientId;
-  final String redirectUrl = redirectOidc;
   final List<String> scopes;
 
   OIDCConfiguration({
@@ -23,6 +24,8 @@ class OIDCConfiguration with EquatableMixin {
       return authority + '/' + wellKnownOpenId;
     }
   }
+
+  String get redirectUrl => BuildUtils.isWeb ? redirectOidcWeb : redirectOidcMobile;
 
   String get clientIdHash => clientId.hashCode.toString();
 
