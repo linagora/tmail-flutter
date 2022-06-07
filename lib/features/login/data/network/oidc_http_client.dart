@@ -50,7 +50,7 @@ class OIDCHttpClient {
     log('OIDCHttpClient::getOIDCConfiguration(): href: ${oidcResponse.links[0].href}');
     return OIDCConfiguration(
       authority: oidcResponse.links[0].href.toString(),
-      clientId: OIDCConstant.mobileOidcClientId,
+      clientId: OIDCConstant.clientId,
       scopes: OIDCConstant.oidcScope
     );
   }
