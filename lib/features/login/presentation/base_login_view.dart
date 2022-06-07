@@ -129,4 +129,12 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
             ..hintText(AppLocalizations.of(context).password))
           .build()));
   }
+
+  Widget buildLoadingCircularProgress() {
+    return const SizedBox(
+        key: Key('login_loading_icon'),
+        width: 40,
+        height: 40,
+        child: CircularProgressIndicator(color: AppColor.primaryColor));
+  }
 }
