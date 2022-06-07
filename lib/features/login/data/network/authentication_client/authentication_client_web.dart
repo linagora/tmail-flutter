@@ -1,5 +1,8 @@
 
+import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_interface.dart';
 import 'package:model/oidc/oidc_configuration.dart';
@@ -40,6 +43,13 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
             redirectUrl,
             discoveryUrl: discoveryUrl,
             scopes: scopes));
+  }
+
+  @override
+  Future<String?> getAuthenticationInfo() async {
+    final authUrl = html.window.sessionStorage[OIDCConstant.authResponseKey];
+    log('AuthenticationClientWeb::getAuthenticationInfo(): authUrl: $authUrl');
+    return authUrl;
   }
 }
 

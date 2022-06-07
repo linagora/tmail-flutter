@@ -81,6 +81,11 @@ class AuthenticationClientMobile implements AuthenticationClientBase {
       String discoveryUrl, List<String> scopes) {
     return Future.value(null);
   }
+
+  @override
+  Future<String?> getAuthenticationInfo() {
+    return Future.value(null);
+  }
 }
 
 AuthenticationClientBase getAuthenticationClientImplementation() =>
