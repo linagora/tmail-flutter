@@ -32,4 +32,6 @@ abstract class AuthenticationOIDCRepository {
       String redirectUrl,
       String discoveryUrl,
       List<String> scopes);
+
+  Future<String?> getAuthenticationInfo();
 }

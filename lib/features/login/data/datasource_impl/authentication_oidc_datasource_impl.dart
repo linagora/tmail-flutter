@@ -96,4 +96,9 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
         discoveryUrl,
         scopes);
   }
+
+  @override
+  Future<String?> getAuthenticationInfo() {
+    return _authenticationClient.getAuthenticationInfo();
+  }
 }
