@@ -16,7 +16,7 @@ class OidcConfigurationCacheManager {
     } else {
       return OIDCConfiguration(
           authority: authority,
-          clientId: OIDCConstant.mobileOidcClientId,
+          clientId: OIDCConstant.clientId,
           scopes: OIDCConstant.oidcScope);
     }
   }
