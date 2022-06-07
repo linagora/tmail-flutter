@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_account_d
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
@@ -69,6 +70,7 @@ class EmailBindings extends BaseBindings {
     ));
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
         Get.find<OIDCHttpClient>(),
+        Get.find<AuthenticationClientBase>(),
         Get.find<TokenOidcCacheManager>(),
         Get.find<OidcConfigurationCacheManager>()
     ));

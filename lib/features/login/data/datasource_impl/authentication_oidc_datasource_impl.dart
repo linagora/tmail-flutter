@@ -2,16 +2,19 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 
 class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
 
   final OIDCHttpClient _oidcHttpClient;
+  final AuthenticationClientBase _authenticationClient;
   final TokenOidcCacheManager _tokenOidcCacheManager;
   final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
 
   AuthenticationOIDCDataSourceImpl(
     this._oidcHttpClient,
+    this._authenticationClient,
     this._tokenOidcCacheManager,
     this._oidcConfigurationCacheManager);
 
@@ -37,7 +40,7 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   @override
   Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl, String discoveryUrl, List<String> scopes) {
     return Future.sync(() async {
-      return await _oidcHttpClient.getTokenOIDC(clientId, redirectUrl, discoveryUrl, scopes);
+      return await _authenticationClient.getTokenOIDC(clientId, redirectUrl, discoveryUrl, scopes);
     }).catchError((error) {
       throw error;
     });
@@ -66,14 +69,14 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   @override
   Future<TokenOIDC> refreshingTokensOIDC(String clientId, String redirectUrl,
       String discoveryUrl, List<String> scopes, String refreshToken) {
-    return _oidcHttpClient.refreshingTokensOIDC(
+    return _authenticationClient.refreshingTokensOIDC(
         clientId, redirectUrl, discoveryUrl, scopes, refreshToken);
   }
 
   @override
   Future<bool> logout(TokenId tokenId, OIDCConfiguration config) {
     return Future.sync(() async {
-       return await _oidcHttpClient.logoutOidc(tokenId, config);
+       return await _authenticationClient.logoutOidc(tokenId, config);
     }).catchError((error) {
       throw error;
     });
