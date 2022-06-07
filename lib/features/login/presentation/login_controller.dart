@@ -10,12 +10,14 @@ import 'package:tmail_ui_user/features/login/domain/state/authentication_user_st
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
@@ -33,6 +35,7 @@ class LoginController extends GetxController {
   final GetTokenOIDCInteractor _getTokenOIDCInteractor;
   final AuthenticateOidcOnBrowserInteractor _authenticateOidcOnBrowserInteractor;
   final GetAuthenticationInfoInteractor _getAuthenticationInfoInteractor;
+  final GetStoredOidcConfigurationInteractor _getStoredOidcConfigurationInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
 
@@ -45,6 +48,7 @@ class LoginController extends GetxController {
     this._getTokenOIDCInteractor,
     this._authenticateOidcOnBrowserInteractor,
     this._getAuthenticationInfoInteractor,
+    this._getStoredOidcConfigurationInteractor,
   );
 
   var loginState = LoginState(Right(LoginInitAction())).obs;
@@ -74,11 +78,11 @@ class LoginController extends GetxController {
       : null;
 
   @override
-  void onReady() {
-    super.onReady();
-    if(BuildUtils.isWeb) {
+  void onInit() {
+    if (BuildUtils.isWeb) {
       _getAuthenticationInfo();
     }
+    super.onInit();
   }
 
   void _getAuthenticationInfo() async {
@@ -87,8 +91,20 @@ class LoginController extends GetxController {
         (failure) => null,
         (success) {
           if (success is GetAuthenticationInfoSuccess) {
+            _getStoredOidcConfiguration();
           }
         }));
+  }
+
+  void _getStoredOidcConfiguration() async {
+    await _getStoredOidcConfigurationInteractor.execute()
+        .then((result) => result.fold(
+            (failure) => null,
+            (success) {
+              if (success is GetStoredOidcConfigurationSuccess) {
+                _getTokenOIDCAction(success.oidcConfiguration);
+              }
+            }));
   }
 
   void handleNextInUrlInputFormPress() {
