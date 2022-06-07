@@ -171,12 +171,10 @@ class LoginController extends GetxController {
 
   void _getOIDCConfigurationSuccess(GetOIDCConfigurationSuccess success) {
     loginState.value = LoginState(Right(success));
-    if (currentContext != null) {
-      _getTokenOIDCAction(currentContext!, success.oidcConfiguration);
-    }
+    _getTokenOIDCAction(success.oidcConfiguration);
   }
 
-  void _getTokenOIDCAction(BuildContext context, OIDCConfiguration config) async {
+  void _getTokenOIDCAction(OIDCConfiguration config) async {
     loginState.value = LoginState(Right(LoginLoadingAction()));
     final baseUri = kIsWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
     if (baseUri != null) {
