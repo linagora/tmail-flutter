@@ -2,8 +2,10 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_response_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
+import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
@@ -11,8 +13,6 @@ import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_inte
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
-
-import '../../utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 
 class AuthenticationClientWeb implements AuthenticationClientBase {
 
