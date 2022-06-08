@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:core/core.dart';
+import 'package:filesize/filesize.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,6 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_fil
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:filesize/filesize.dart';
 
 class EmailView extends GetView with NetworkConnectionMixin {
 
@@ -411,11 +409,7 @@ class EmailView extends GetView with NetworkConnectionMixin {
                   if (kIsWeb) {
                     emailController.downloadAttachmentForWeb(context, attachment);
                   } else {
-                    if (Platform.isAndroid) {
-                      emailController.downloadAttachments(context, [attachment]);
-                    } else if (Platform.isIOS) {
-                      emailController.exportAttachment(context, attachment);
-                    }
+                    emailController.exportAttachment(context, attachment);
                   }
                 }))
             .build())
