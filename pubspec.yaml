@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 0.3.6
 
 environment:
-  sdk: ">=2.14.0 <3.0.0"
+  sdk: ">=2.16.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -78,7 +78,7 @@ dependencies:
   # http_parser
   http_parser: 4.0.0
 
-  collection: 1.15.0
+  collection: 1.16.0
 
   # file_size
   filesize: 2.0.1
@@ -159,8 +159,7 @@ dependencies:
   # OIDC Web
   flutter_appauth_web:
     git:
-      url: https://github.com/dab246/flutter_appauth_web.git
-      ref: dev
+      url: https://github.com/CarlosPacheco/flutter_appauth_web.git
 
 dev_dependencies:
   flutter_test:
