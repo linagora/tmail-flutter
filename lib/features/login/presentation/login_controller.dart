@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configurat
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -85,10 +86,21 @@ class LoginController extends GetxController {
     super.onInit();
   }
 
+  @override
+  void onReady() {
+    if (BuildUtils.isWeb) {
+      final arguments = Get.arguments;
+      if (arguments is LoginArguments) {
+        loginFormType.value = arguments.loginFormType;
+      }
+    }
+    super.onReady();
+  }
+
   void _getAuthenticationInfo() async {
     await _getAuthenticationInfoInteractor.execute()
       .then((result) => result.fold(
-        (failure) => null,
+        (failure) => {},
         (success) {
           if (success is GetAuthenticationInfoSuccess) {
             _getStoredOidcConfiguration();
@@ -99,7 +111,7 @@ class LoginController extends GetxController {
   void _getStoredOidcConfiguration() async {
     await _getStoredOidcConfigurationInteractor.execute()
         .then((result) => result.fold(
-            (failure) => null,
+            (failure) => {},
             (success) {
               if (success is GetStoredOidcConfigurationSuccess) {
                 _getTokenOIDCAction(success.oidcConfiguration);
@@ -141,6 +153,7 @@ class LoginController extends GetxController {
   }
 
   void _showFormLoginWithCredentialAction() {
+    log('LoginController::_showFormLoginWithCredentialAction()');
     loginState.value = LoginState(Right(InputUrlCompletion()));
     loginFormType.value = LoginFormType.credentialForm;
   }
