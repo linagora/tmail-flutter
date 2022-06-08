@@ -7,6 +7,7 @@ import 'package:model/account/account.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
