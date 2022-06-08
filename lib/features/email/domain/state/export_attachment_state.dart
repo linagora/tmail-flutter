@@ -1,16 +1,16 @@
 import 'package:core/core.dart';
 
 class ExportAttachmentSuccess extends UIState {
-  final String filePath;
+  final DownloadedResponse downloadedResponse;
 
-  ExportAttachmentSuccess(this.filePath);
+  ExportAttachmentSuccess(this.downloadedResponse);
 
   @override
-  List<Object> get props => [filePath];
+  List<Object> get props => [downloadedResponse];
 }
 
 class ExportAttachmentFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   ExportAttachmentFailure(this.exception);
 

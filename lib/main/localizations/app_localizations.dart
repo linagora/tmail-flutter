@@ -1441,4 +1441,11 @@ class AppLocalizations {
     return Intl.message('Single sign-on (SSO) is not available',
         name: 'ssoNotAvailable');
   }
+
+  String get noPreviewAvailable {
+    return Intl.message(
+      'No preview available',
+      name: 'noPreviewAvailable',
+    );
+  }
 }
