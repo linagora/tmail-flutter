@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
@@ -10,11 +12,15 @@ class SessionController extends GetxController {
   final GetSessionInteractor _getSessionInteractor;
   final DeleteCredentialInteractor _deleteCredentialInteractor;
   final CachingManager _cachingManager;
+  final DeleteAuthorityOidcInteractor _deleteAuthorityOidcInteractor;
+  final AuthorizationInterceptors _authorizationInterceptors;
 
   SessionController(
     this._getSessionInteractor,
     this._deleteCredentialInteractor,
     this._cachingManager,
+    this._deleteAuthorityOidcInteractor,
+    this._authorizationInterceptors,
   );
 
   @override
@@ -30,17 +36,13 @@ class SessionController extends GetxController {
         (success) => success is GetSessionSuccess ? _goToMailboxDashBoard(success) : _goToLogin()));
   }
 
-  void _deleteCredential() async {
-    await _deleteCredentialInteractor.execute();
-  }
-
-  void _clearAllCache() async {
-    await _cachingManager.clearAll();
-  }
-
-  void _goToLogin() {
-    _deleteCredential();
-    _clearAllCache();
+  void _goToLogin() async {
+    await Future.wait([
+      _deleteCredentialInteractor.execute(),
+      _deleteAuthorityOidcInteractor.execute(),
+      _cachingManager.clearAll()
+    ]);
+    _authorizationInterceptors.clear();
     pushAndPopAll(AppRoutes.LOGIN);
   }
 
