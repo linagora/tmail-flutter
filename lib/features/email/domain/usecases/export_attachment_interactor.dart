@@ -35,7 +35,7 @@ class ExportAttachmentInteractor {
 
       log('ExportAttachmentInteractor::execute(): account: $account');
 
-      final filePath = await Future.wait([
+      final downloadedResponse = await Future.wait([
           if (account.authenticationType == AuthenticationType.oidc)
             _authenticationOIDCRepository.getStoredTokenOIDC(account.id)
           else
@@ -66,7 +66,7 @@ class ExportAttachmentInteractor {
             accountRequest,
             cancelToken);
       });
-      yield Right<Failure, Success>(ExportAttachmentSuccess(filePath));
+      yield Right<Failure, Success>(ExportAttachmentSuccess(downloadedResponse));
     } catch (exception) {
       log('ExportAttachmentInteractor::execute(): exception: $exception');
       yield Left<Failure, Success>(ExportAttachmentFailure(exception));

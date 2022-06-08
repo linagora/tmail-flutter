@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-06-06T13:32:00.583993",
+  "@@last_modified": "2022-06-13T12:33:59.446625",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1408,6 +1408,12 @@
   },
   "ssoNotAvailable": "Single sign-on (SSO) is not available",
   "@ssoNotAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noPreviewAvailable": "No preview available",
+  "@noPreviewAvailable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

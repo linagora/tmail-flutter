@@ -153,6 +153,8 @@ dependencies:
 
   timeago: 3.2.2
 
+  open_file: 3.2.1
+
   # OIDC Mobile
   flutter_appauth: 4.0.0
 
