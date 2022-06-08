@@ -29,6 +29,9 @@ import 'package:tmail_ui_user/features/login/domain/repository/account_repositor
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -75,6 +78,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.put(MailboxDashBoardController(
       Get.find<LogoutOidcInteractor>(),
       Get.find<DeleteAuthorityOidcInteractor>(),
+      Get.find<GetAuthenticatedAccountInteractor>(),
       Get.find<MoveToMailboxInteractor>(),
       Get.find<DeleteEmailPermanentlyInteractor>(),
       Get.find<SaveRecentSearchInteractor>(),
@@ -133,6 +137,16 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<AuthenticationOIDCRepository>(),
     ));
     Get.lazyPut(() => DeleteAuthorityOidcInteractor(Get.find<AuthenticationOIDCRepository>()));
+    Get.lazyPut(() => GetCredentialInteractor(Get.find<CredentialRepository>()));
+    Get.lazyPut(() => GetStoredTokenOidcInteractor(
+        Get.find<AuthenticationOIDCRepository>(),
+        Get.find<CredentialRepository>(),
+    ));
+    Get.lazyPut(() => GetAuthenticatedAccountInteractor(
+        Get.find<AccountRepository>(),
+        Get.find<GetCredentialInteractor>(),
+        Get.find<GetStoredTokenOidcInteractor>(),
+    ));
   }
 
   @override

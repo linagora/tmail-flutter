@@ -6,14 +6,16 @@ import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/account/authentication_type.dart';
+import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_state.dart';
@@ -24,7 +26,6 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 abstract class ReloadableController extends BaseController {
-  final GetCredentialInteractor _getCredentialInteractor = Get.find<GetCredentialInteractor>();
   final DynamicUrlInterceptors _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
   final AuthorizationInterceptors _authorizationInterceptors = Get.find<AuthorizationInterceptors>();
   final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
@@ -33,10 +34,13 @@ abstract class ReloadableController extends BaseController {
 
   final LogoutOidcInteractor _logoutOidcInteractor;
   final DeleteAuthorityOidcInteractor _deleteAuthorityOidcInteractor;
+  final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor;
 
   ReloadableController(
-      this._logoutOidcInteractor,
-      this._deleteAuthorityOidcInteractor);
+    this._logoutOidcInteractor,
+    this._deleteAuthorityOidcInteractor,
+    this._getAuthenticatedAccountInteractor,
+  );
 
   @override
   void onData(Either<Failure, Success> newState) {
@@ -44,11 +48,13 @@ abstract class ReloadableController extends BaseController {
     viewState.value.fold(
       (failure) {
         if (failure is GetCredentialFailure) {
-          _goToLogin();
+          _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
         } else if (failure is GetSessionFailure) {
           _handleGetSessionFailure();
         } else if (failure is LogoutOidcFailure) {
           log('ReloadableController::onData(): LogoutOidcFailure: $failure');
+        } else if (failure is GetStoredTokenOidcFailure) {
+          _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
         }
       },
       (success) {
@@ -58,6 +64,8 @@ abstract class ReloadableController extends BaseController {
           _handleGetSessionSuccess(success);
         } else if (success is LogoutOidcSuccess) {
           handleLogoutOidcSuccess(success);
+        } else if (success is GetStoredTokenOidcSuccess) {
+          _handleGetStoredTokenOIDCSuccess(success);
         }
       }
     );
@@ -67,11 +75,11 @@ abstract class ReloadableController extends BaseController {
   * trigger reload by getting Credential again then setting up Interceptor and retrieving session
   * */
   void reload() {
-    _getCredentialAction();
+    _getAuthenticatedAccountAction();
   }
 
-  void _getCredentialAction() {
-    consumeState(_getCredentialInteractor.execute().asStream());
+  void _getAuthenticatedAccountAction() {
+    consumeState(_getAuthenticatedAccountInteractor.execute());
   }
 
   void _goToLogin({LoginArguments? arguments}) {
@@ -98,9 +106,15 @@ abstract class ReloadableController extends BaseController {
   void _handleGetSessionFailure() async {
     await Future.wait([
       _deleteCredentialInteractor.execute(),
+      _deleteAuthorityOidcInteractor.execute(),
       _cachingManager.clearAll(),
     ]);
-    _goToLogin();
+    final authenticationType = _authorizationInterceptors.authenticationType;
+    if (authenticationType == AuthenticationType.oidc) {
+      _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
+    } else {
+      _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
+    }
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
@@ -120,7 +134,7 @@ abstract class ReloadableController extends BaseController {
       ]);
       _authorizationInterceptors.clear();
       await HiveCacheConfig().closeHive();
-      _goToLogin();
+      _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
     }
   }
 
@@ -134,5 +148,17 @@ abstract class ReloadableController extends BaseController {
     _authorizationInterceptors.clear();
     await HiveCacheConfig().closeHive();
     _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
+  }
+
+  void _handleGetStoredTokenOIDCSuccess(GetStoredTokenOidcSuccess tokenOidcSuccess) {
+    _setUpInterceptorsOidc(tokenOidcSuccess);
+    _getSessionAction();
+  }
+
+  void _setUpInterceptorsOidc(GetStoredTokenOidcSuccess tokenOidcSuccess) {
+    _dynamicUrlInterceptors.changeBaseUrl(tokenOidcSuccess.baseUrl.toString());
+    _authorizationInterceptors.setTokenAndAuthorityOidc(
+        newToken: tokenOidcSuccess.tokenOidc.toToken(),
+        newConfig: tokenOidcSuccess.oidcConfiguration);
   }
 }

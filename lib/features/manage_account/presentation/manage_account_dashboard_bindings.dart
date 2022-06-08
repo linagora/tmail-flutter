@@ -15,6 +15,9 @@ import 'package:tmail_ui_user/features/login/domain/repository/account_repositor
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
@@ -34,7 +37,8 @@ class ManageAccountDashBoardBindings extends BaseBindings {
   void bindingsController() {
     Get.lazyPut(() => ManageAccountDashBoardController(
         Get.find<LogoutOidcInteractor>(),
-        Get.find<DeleteAuthorityOidcInteractor>()
+        Get.find<DeleteAuthorityOidcInteractor>(),
+        Get.find<GetAuthenticatedAccountInteractor>()
     ));
   }
 
@@ -63,6 +67,16 @@ class ManageAccountDashBoardBindings extends BaseBindings {
         Get.find<AuthenticationOIDCRepository>(),
     ));
     Get.lazyPut(() => DeleteAuthorityOidcInteractor(Get.find<AuthenticationOIDCRepository>()));
+    Get.lazyPut(() => GetCredentialInteractor(Get.find<CredentialRepository>()));
+    Get.lazyPut(() => GetStoredTokenOidcInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+      Get.find<CredentialRepository>(),
+    ));
+    Get.lazyPut(() => GetAuthenticatedAccountInteractor(
+      Get.find<AccountRepository>(),
+      Get.find<GetCredentialInteractor>(),
+      Get.find<GetStoredTokenOidcInteractor>(),
+    ));
   }
 
   @override
