@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/account/account.dart';
+import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -13,13 +14,18 @@ import 'package:tmail_ui_user/features/cleanup/domain/model/recent_search_cleanu
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
 class HomeController extends BaseController {
@@ -32,6 +38,7 @@ class HomeController extends BaseController {
   final DeleteCredentialInteractor _deleteCredentialInteractor;
   final CachingManager _cachingManager;
   final DeleteAuthorityOidcInteractor _deleteAuthorityOidcInteractor;
+  final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
 
   HomeController(
     this._getAuthenticatedAccountInteractor,
@@ -43,6 +50,7 @@ class HomeController extends BaseController {
     this._deleteCredentialInteractor,
     this._cachingManager,
     this._deleteAuthorityOidcInteractor,
+    this._checkOIDCIsAvailableInteractor,
   );
 
   Account? currentAccount;
@@ -94,8 +102,8 @@ class HomeController extends BaseController {
     });
   }
 
-  void _goToLogin() {
-    pushAndPop(AppRoutes.LOGIN);
+  void _goToLogin({LoginArguments? arguments}) {
+    pushAndPop(AppRoutes.LOGIN, arguments: arguments);
   }
 
   @override
@@ -131,7 +139,33 @@ class HomeController extends BaseController {
       _deleteCredentialInteractor.execute(),
       _deleteAuthorityOidcInteractor.execute(),
       _cachingManager.clearAll()
-    ]).then((value) => _goToLogin());
+    ]).then((value) {
+      if (BuildUtils.isWeb) {
+        _checkOIDCIsAvailable();
+      } else {
+        _goToLogin();
+      }
+    });
+  }
+
+  Uri? _parseUri(String? url) => url != null && url.trim().isNotEmpty
+      ? Uri.parse(url.trim())
+      : null;
+
+  void _checkOIDCIsAvailable() async {
+    final baseUri = _parseUri(AppConfig.baseUrl);
+    log('LoginController::_checkOIDCIsAvailable(): baseUri: $baseUri');
+    if (baseUri != null) {
+      await _checkOIDCIsAvailableInteractor
+          .execute(OIDCRequest(baseUrl: baseUri.toString(), resourceUrl: baseUri.origin))
+          .then((response) => response.fold(
+              (failure) => _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm)),
+              (success) => success is CheckOIDCIsAvailableSuccess
+                  ? _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm))
+                  : _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm))));
+    } else {
+      _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
+    }
   }
 
   void _goToSessionWithTokenOidc(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
