@@ -79,19 +79,13 @@ class LoginController extends GetxController {
       : null;
 
   @override
-  void onInit() {
-    if (BuildUtils.isWeb) {
-      _getAuthenticationInfo();
-    }
-    super.onInit();
-  }
-
-  @override
   void onReady() {
     if (BuildUtils.isWeb) {
       final arguments = Get.arguments;
       if (arguments is LoginArguments) {
         loginFormType.value = arguments.loginFormType;
+      } else {
+        _getAuthenticationInfo();
       }
     }
     super.onReady();
@@ -100,10 +94,12 @@ class LoginController extends GetxController {
   void _getAuthenticationInfo() async {
     await _getAuthenticationInfoInteractor.execute()
       .then((result) => result.fold(
-        (failure) => {},
+        (failure) => _checkOIDCIsAvailable(),
         (success) {
           if (success is GetAuthenticationInfoSuccess) {
             _getStoredOidcConfiguration();
+          } else {
+            _checkOIDCIsAvailable();
           }
         }));
   }
