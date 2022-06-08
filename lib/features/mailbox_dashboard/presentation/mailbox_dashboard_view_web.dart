@@ -28,7 +28,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   Widget build(BuildContext context) {
     if (controller.isDrawerOpen && (responsiveUtils.isDesktop(context)
         || responsiveUtils.isTabletLarge(context))) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         controller.closeMailboxMenuDrawer();
       });
     }

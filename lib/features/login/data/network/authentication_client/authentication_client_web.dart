@@ -65,8 +65,6 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
         grantType: 'refresh_token',
         scopes: scopes));
 
-    log('AuthenticationClientMobile::refreshingTokensOIDC(): refreshToken: ${tokenResponse?.accessToken}');
-
     if (tokenResponse != null) {
       final tokenOIDC = tokenResponse.toTokenOIDC();
       if (tokenOIDC.isTokenValid()) {
