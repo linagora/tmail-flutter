@@ -42,4 +42,8 @@ class HiveCacheConfig {
     Hive.registerAdapter(TokenOidcCacheAdapter());
     Hive.registerAdapter(AccountCacheAdapter());
   }
+
+  Future closeHive() async {
+    await Hive.close();
+  }
 }
