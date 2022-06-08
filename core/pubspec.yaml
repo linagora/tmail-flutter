@@ -20,7 +20,7 @@ publish_to: none
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.14.0 <3.0.0"
+  sdk: ">=2.16.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -65,7 +65,7 @@ dependencies:
   url_launcher: 6.0.17
 
   # collection
-  collection: 1.15.0
+  collection: 1.16.0
 
   universal_html: 2.0.8
 
