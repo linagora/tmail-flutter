@@ -70,6 +70,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     if (arguments is ManageAccountArguments) {
       sessionCurrent = arguments.session;
       accountId.value = sessionCurrent?.accounts.keys.first;
+      _getUserProfile();
     } else {
       if (kIsWeb) {
         reload();
