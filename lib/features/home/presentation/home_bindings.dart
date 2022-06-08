@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource/cleanup_datasource.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource_impl/cleanup_datasource_impl.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_search_cache_manager.dart';
@@ -24,6 +25,8 @@ import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
@@ -41,6 +44,9 @@ class HomeBindings extends BaseBindings {
         Get.find<CleanupEmailCacheInteractor>(),
         Get.find<EmailReceiveManager>(),
         Get.find<CleanupRecentSearchCacheInteractor>(),
+        Get.find<DeleteCredentialInteractor>(),
+        Get.find<CachingManager>(),
+        Get.find<DeleteAuthorityOidcInteractor>(),
     ));
   }
 
@@ -81,6 +87,7 @@ class HomeBindings extends BaseBindings {
     ));
     Get.lazyPut(() => CleanupEmailCacheInteractor(Get.find<CleanupRepository>()));
     Get.lazyPut(() => CleanupRecentSearchCacheInteractor(Get.find<CleanupRepository>()));
+    Get.lazyPut(() => DeleteAuthorityOidcInteractor(Get.find<AuthenticationOIDCRepository>()));
   }
 
   @override
