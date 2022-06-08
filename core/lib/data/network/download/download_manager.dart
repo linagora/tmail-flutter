@@ -1,30 +1,35 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:universal_html/html.dart' as html;
+
 import 'package:core/core.dart';
+import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:universal_html/html.dart' as html;
 
 class DownloadManager {
   final DownloadClient _downloadClient;
 
   DownloadManager(this._downloadClient);
 
-  Future<String> downloadFile(
+  Future<DownloadedResponse> downloadFile(
       String downloadUrl,
       Future<Directory> directoryToSave,
       String filename,
       String basicAuth,
       {CancelToken? cancelToken}
   ) async {
-    final streamController = StreamController<String>();
+    final streamController = StreamController<DownloadedResponse>();
 
     try {
       await Future.wait([
         _downloadClient.downloadFile(downloadUrl, basicAuth, cancelToken),
         directoryToSave
       ]).then((values) {
-        final fileStream = (values[0] as ResponseBody).stream;
+        final response = (values[0] as ResponseBody);
+        final mediaType = _extractMediaTypeFromResponse(response);
+        final fileStream = response.stream;
         final tempFilePath = '${(values[1] as Directory).absolute.path}/$filename';
 
         final file = File(tempFilePath);
@@ -52,7 +57,7 @@ class DownloadManager {
           if (cancelToken != null && cancelToken.isCancelled) {
             streamController.sink.addError(CancelDownloadFileException(cancelToken.cancelError?.message));
           } else {
-            streamController.sink.add(tempFilePath);
+            streamController.sink.add(DownloadedResponse(tempFilePath, mediaType: mediaType));
           }
           await streamController.close();
         }, onError: (error) async {
@@ -99,5 +104,15 @@ class DownloadManager {
     }
 
     return false;
+  }
+
+  MediaType? _extractMediaTypeFromResponse(ResponseBody responseBody) {
+    try {
+      final contentType = responseBody.headers[Headers.contentTypeHeader];
+      return MediaType.parse(contentType!.first);
+    } catch (e) {
+      logError('DownloadManager::_extractMediaTypeFromResponse(): $e');
+      return null;
+    }
   }
 }

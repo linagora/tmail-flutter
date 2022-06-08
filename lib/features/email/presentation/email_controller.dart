@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -11,9 +13,12 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
+import 'package:open_file/open_file.dart' as open_file;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:share/share.dart' as share_library;
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -21,15 +26,15 @@ import 'package:tmail_ui_user/features/email/domain/state/download_attachment_fo
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
@@ -37,12 +42,10 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:share/share.dart' as share_library;
 
 class EmailController extends BaseController {
 
@@ -314,7 +317,26 @@ class EmailController extends BaseController {
   void _exportAttachmentSuccessAction(Success success) async {
     popBack();
     if (success is ExportAttachmentSuccess) {
-      await share_library.Share.shareFiles([success.filePath]);
+      _openDownloadedPreviewWorkGroupDocument(success.downloadedResponse);
+    }
+  }
+
+  void _openDownloadedPreviewWorkGroupDocument(DownloadedResponse downloadedResponse) async {
+    log('EmailController::_openDownloadedPreviewWorkGroupDocument(): $downloadedResponse');
+    if (downloadedResponse.mediaType == null) {
+      await share_library.Share.shareFiles([downloadedResponse.filePath]);
+    }
+
+    final openResult = await open_file.OpenFile.open(
+        downloadedResponse.filePath,
+        type: Platform.isAndroid ? downloadedResponse.mediaType!.mimeType : null,
+        uti: Platform.isIOS ? downloadedResponse.mediaType!.getDocumentUti().value : null);
+
+    if (openResult.type != open_file.ResultType.done) {
+      logError('EmailController::_openDownloadedPreviewWorkGroupDocument(): no preview available');
+      if (currentContext != null) {
+        _appToast.showErrorToast(AppLocalizations.of(currentContext!).noPreviewAvailable);
+      }
     }
   }
 
