@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
@@ -47,6 +48,7 @@ class HomeBindings extends BaseBindings {
         Get.find<DeleteCredentialInteractor>(),
         Get.find<CachingManager>(),
         Get.find<DeleteAuthorityOidcInteractor>(),
+        Get.find<CheckOIDCIsAvailableInteractor>(),
     ));
   }
 
@@ -88,6 +90,7 @@ class HomeBindings extends BaseBindings {
     Get.lazyPut(() => CleanupEmailCacheInteractor(Get.find<CleanupRepository>()));
     Get.lazyPut(() => CleanupRecentSearchCacheInteractor(Get.find<CleanupRepository>()));
     Get.lazyPut(() => DeleteAuthorityOidcInteractor(Get.find<AuthenticationOIDCRepository>()));
+    Get.lazyPut(() => CheckOIDCIsAvailableInteractor(Get.find<AuthenticationOIDCRepository>()));
   }
 
   @override
