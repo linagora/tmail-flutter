@@ -144,7 +144,7 @@ class ComposerController extends BaseController {
   void onInit() {
     super.onInit();
     if (!BuildUtils.isWeb) {
-      WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
         await FkUserAgent.init();
       });
     }

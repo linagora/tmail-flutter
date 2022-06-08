@@ -22,7 +22,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
   @override
   Widget build(BuildContext context) {
     if (controller.isMenuDrawerOpen && _responsiveUtils.isDesktop(context)) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         controller.closeMenuDrawer();
       });
     }
