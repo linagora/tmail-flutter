@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -117,7 +118,6 @@ abstract class ReloadableController extends BaseController {
         _deleteCredentialInteractor.execute(),
         _cachingManager.clearAll(),
       ]);
-
       _authorizationInterceptors.clear();
       await HiveCacheConfig().closeHive();
       _goToLogin();
@@ -131,7 +131,6 @@ abstract class ReloadableController extends BaseController {
       _deleteAuthorityOidcInteractor.execute(),
       _cachingManager.clearAll(),
     ]);
-
     _authorizationInterceptors.clear();
     await HiveCacheConfig().closeHive();
     _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
