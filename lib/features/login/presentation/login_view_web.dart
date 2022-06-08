@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
+import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -46,13 +47,40 @@ class LoginView extends BaseLoginView {
                 )
               ),
               Obx(() => buildLoginMessage(context, loginController.loginState.value)),
-              buildInputCredentialForm(context),
-              buildLoginButton(context),
-              Obx(() => loginController.loginState.value.viewState.fold(
-                  (failure) => _buildSSOButton(context),
-                  (success) => success is LoginLoadingAction
-                      ? buildLoadingCircularProgress()
-                      : _buildSSOButton(context))),
+              Obx(() {
+                switch (controller.loginFormType.value) {
+                  case LoginFormType.credentialForm:
+                    return buildInputCredentialForm(context);
+                  case LoginFormType.ssoForm:
+                    return const SizedBox(height: 150);
+                  default:
+                    return const SizedBox.shrink();
+                }
+              }),
+              Obx(() {
+                switch (controller.loginFormType.value) {
+                  case LoginFormType.baseUrlForm:
+                    return Obx(() => loginController.loginState.value.viewState.fold(
+                        (failure) => const SizedBox.shrink(),
+                        (success) => success is LoginLoadingAction
+                            ? buildLoadingCircularProgress()
+                            : const SizedBox.shrink()));
+                  case LoginFormType.credentialForm:
+                    return Obx(() => loginController.loginState.value.viewState.fold(
+                        (failure) => buildLoginButton(context),
+                        (success) => success is LoginLoadingAction
+                            ? buildLoadingCircularProgress()
+                            : buildLoginButton(context)));
+                  case LoginFormType.ssoForm:
+                    return Obx(() => loginController.loginState.value.viewState.fold(
+                        (failure) => _buildSSOButton(context),
+                        (success) => success is LoginLoadingAction
+                            ? buildLoadingCircularProgress()
+                            : _buildSSOButton(context)));
+                  default:
+                    return const SizedBox.shrink();
+                }
+              })
             ],
           )
         ),
@@ -166,13 +194,40 @@ class LoginView extends BaseLoginView {
                           )
                         ),
                         Obx(() => buildLoginMessage(context, loginController.loginState.value)),
-                        buildInputCredentialForm(context),
-                        buildLoginButton(context),
-                        Obx(() => loginController.loginState.value.viewState.fold(
-                            (failure) => _buildSSOButton(context),
-                            (success) => success is LoginLoadingAction
-                                ? buildLoadingCircularProgress()
-                                : _buildSSOButton(context))),
+                        Obx(() {
+                          switch (controller.loginFormType.value) {
+                            case LoginFormType.credentialForm:
+                              return buildInputCredentialForm(context);
+                            case LoginFormType.ssoForm:
+                              return const SizedBox(height: 150);
+                            default:
+                              return const SizedBox.shrink();
+                          }
+                        }),
+                        Obx(() {
+                          switch (controller.loginFormType.value) {
+                            case LoginFormType.baseUrlForm:
+                              return Obx(() => loginController.loginState.value.viewState.fold(
+                                  (failure) => const SizedBox.shrink(),
+                                  (success) => success is LoginLoadingAction
+                                      ? buildLoadingCircularProgress()
+                                      : const SizedBox.shrink()));
+                            case LoginFormType.credentialForm:
+                              return Obx(() => loginController.loginState.value.viewState.fold(
+                                  (failure) => buildLoginButton(context),
+                                  (success) => success is LoginLoadingAction
+                                      ? buildLoadingCircularProgress()
+                                      : buildLoginButton(context)));
+                            case LoginFormType.ssoForm:
+                              return Obx(() => loginController.loginState.value.viewState.fold(
+                                  (failure) => _buildSSOButton(context),
+                                  (success) => success is LoginLoadingAction
+                                      ? buildLoadingCircularProgress()
+                                      : _buildSSOButton(context)));
+                            default:
+                              return const SizedBox.shrink();
+                          }
+                        })
                       ],
                     )
                   )
@@ -218,10 +273,10 @@ class LoginView extends BaseLoginView {
             key: const Key('ssoSubmitForm'),
             style: ButtonStyle(
                 foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
-                backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.textFieldErrorBorderColor),
+                backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.primaryColor),
                 shape: MaterialStateProperty.all(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
-                    side: const BorderSide(width: 0, color: AppColor.textFieldErrorBorderColor)
+                    side: const BorderSide(width: 0, color: AppColor.primaryColor)
                 ))
             ),
             child: Text(AppLocalizations.of(context).singleSignOn,

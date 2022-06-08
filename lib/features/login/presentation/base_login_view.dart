@@ -49,7 +49,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
               }
             },
             (success) {
-              if (loginController.loginFormType.value == LoginFormType.credentialForm || kIsWeb) {
+              if (loginController.loginFormType.value == LoginFormType.credentialForm) {
                 return AppLocalizations.of(context).loginInputCredentialMessage;
               } else if (loginController.loginFormType.value == LoginFormType.ssoForm) {
                 return AppLocalizations.of(context).loginInputSSOMessage;
