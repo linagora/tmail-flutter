@@ -62,7 +62,7 @@ class EmailCacheClient extends HiveCacheClient<EmailCache> {
   Future<void> insertItem(String key, EmailCache newObject) {
     return Future.sync(() async {
       final boxEmail = await openBox();
-      boxEmail.put(key, newObject);
+      return boxEmail.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -72,7 +72,7 @@ class EmailCacheClient extends HiveCacheClient<EmailCache> {
   Future<void> insertMultipleItem(Map<String, EmailCache> mapObject) {
     return Future.sync(() async {
       final boxEmail = await openBox();
-      boxEmail.putAll(mapObject);
+      return boxEmail.putAll(mapObject);
     }).catchError((error) {
       throw error;
     });
@@ -82,7 +82,7 @@ class EmailCacheClient extends HiveCacheClient<EmailCache> {
   Future<void> updateItem(String key, EmailCache newObject) {
     return Future.sync(() async {
       final boxEmail = await openBox();
-      boxEmail.put(key, newObject);
+      return boxEmail.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -91,7 +91,7 @@ class EmailCacheClient extends HiveCacheClient<EmailCache> {
   @override
   Future<bool> isExistTable() {
     return Future.sync(() async {
-      return await Hive.boxExists(tableName);
+      return Hive.boxExists(tableName);
     }).catchError((error) {
       throw error;
     });
@@ -113,7 +113,7 @@ class EmailCacheClient extends HiveCacheClient<EmailCache> {
   Future<void> updateMultipleItem(Map<String, EmailCache> mapObject) {
     return Future.sync(() async {
       final boxEmail = await openBox();
-      boxEmail.putAll(mapObject);
+      return boxEmail.putAll(mapObject);
     }).catchError((error) {
       throw error;
     });
@@ -136,7 +136,7 @@ class EmailCacheClient extends HiveCacheClient<EmailCache> {
   Future<void> clearAllData() {
     return Future.sync(() async {
       final boxEmail = await openBox();
-      boxEmail.clear();
+      return boxEmail.clear();
     }).catchError((error) {
       throw error;
     });
