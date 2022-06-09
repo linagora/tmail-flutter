@@ -8,7 +8,7 @@ import 'package:model/account/authentication_type.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token.dart';
 import 'package:model/oidc/token_oidc.dart';
-import 'package:tmail_ui_user/features/login/data/extensions/oidc_configuration_extensions.dart';
+import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';

@@ -6,7 +6,7 @@ import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
-import 'package:tmail_ui_user/features/login/data/extensions/oidc_configuration_extensions.dart';
+import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_response_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
