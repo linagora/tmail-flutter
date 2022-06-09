@@ -4,7 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
-import 'package:tmail_ui_user/features/login/data/extensions/oidc_configuration_extensions.dart';
+import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
