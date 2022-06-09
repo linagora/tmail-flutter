@@ -11,7 +11,7 @@ class TokenOidcCacheClient extends HiveCacheClient<TokenOidcCache> {
   Future<void> clearAllData() {
     return Future.sync(() async {
       final boxToken = await openBox();
-      boxToken.clear();
+      return boxToken.clear();
     }).catchError((error) {
       throw error;
     });
@@ -61,7 +61,7 @@ class TokenOidcCacheClient extends HiveCacheClient<TokenOidcCache> {
   Future<void> insertItem(String key, TokenOidcCache newObject) {
     return Future.sync(() async {
       final boxToken = await openBox();
-      boxToken.put(key, newObject);
+      return boxToken.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -71,7 +71,7 @@ class TokenOidcCacheClient extends HiveCacheClient<TokenOidcCache> {
   Future<void> insertMultipleItem(Map<String, TokenOidcCache> mapObject) {
     return Future.sync(() async {
       final boxToken = await openBox();
-      boxToken.putAll(mapObject);
+      return boxToken.putAll(mapObject);
     }).catchError((error) {
       throw error;
     });
@@ -90,7 +90,7 @@ class TokenOidcCacheClient extends HiveCacheClient<TokenOidcCache> {
   @override
   Future<bool> isExistTable() {
     return Future.sync(() async {
-      return await Hive.boxExists(tableName);
+      return Hive.boxExists(tableName);
     }).catchError((error) {
       throw error;
     });
@@ -108,7 +108,7 @@ class TokenOidcCacheClient extends HiveCacheClient<TokenOidcCache> {
   Future<void> updateItem(String key, TokenOidcCache newObject) {
     return Future.sync(() async {
       final boxToken = await openBox();
-      boxToken.put(key, newObject);
+      return boxToken.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -118,7 +118,7 @@ class TokenOidcCacheClient extends HiveCacheClient<TokenOidcCache> {
   Future<void> updateMultipleItem(Map<String, TokenOidcCache> mapObject) {
     return Future.sync(() async {
       final boxToken = await openBox();
-      boxToken.putAll(mapObject);
+      return boxToken.putAll(mapObject);
     }).catchError((error) {
       throw error;
     });

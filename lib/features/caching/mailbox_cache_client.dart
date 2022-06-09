@@ -60,7 +60,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   Future<void> insertItem(String key, MailboxCache newObject) {
     return Future.sync(() async {
       final boxMailbox = await openBox();
-      boxMailbox.put(key, newObject);
+      return boxMailbox.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -70,7 +70,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   Future<void> insertMultipleItem(Map<String, MailboxCache> mapObject) {
     return Future.sync(() async {
       final boxMailbox = await openBox();
-      boxMailbox.putAll(mapObject);
+      return boxMailbox.putAll(mapObject);
     }).catchError((error) {
       throw error;
     });
@@ -80,7 +80,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   Future<void> updateItem(String key, MailboxCache newObject) {
     return Future.sync(() async {
       final boxMailbox = await openBox();
-      boxMailbox.put(key, newObject);
+      return boxMailbox.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -89,7 +89,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   @override
   Future<bool> isExistTable() {
     return Future.sync(() async {
-      return await Hive.boxExists(tableName);
+      return Hive.boxExists(tableName);
     }).catchError((error) {
       throw error;
     });
@@ -109,7 +109,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   Future<void> updateMultipleItem(Map<String, MailboxCache> mapObject) {
     return Future.sync(() async {
       final boxMailbox = await openBox();
-      boxMailbox.putAll(mapObject);
+      return boxMailbox.putAll(mapObject);
     }).catchError((error) {
       throw error;
     });
@@ -119,7 +119,7 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
   Future<void> clearAllData() {
     return Future.sync(() async {
       final boxMailbox = await openBox();
-      boxMailbox.clear();
+      return boxMailbox.clear();
     }).catchError((error) {
       throw error;
     });
