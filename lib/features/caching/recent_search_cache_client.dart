@@ -11,8 +11,8 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
   @override
   Future<void> clearAllData() {
     return Future.sync(() async {
-      final boxState = await openBox();
-      boxState.clear();
+      final boxRecent = await openBox();
+      return boxRecent.clear();
     }).catchError((error) {
       throw error;
     });
@@ -21,8 +21,8 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
   @override
   Future<void> deleteItem(String key) {
     return Future.sync(() async {
-      final boxState = await openBox();
-      return boxState.delete(key);
+      final boxRecent = await openBox();
+      return boxRecent.delete(key);
     }).catchError((error) {
       throw error;
     });
@@ -31,8 +31,8 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
   @override
   Future<void> deleteMultipleItem(List<String> listKey) {
     return Future.sync(() async {
-      final boxEmail = await openBox();
-      return boxEmail.deleteAll(listKey);
+      final boxRecent = await openBox();
+      return boxRecent.deleteAll(listKey);
     }).catchError((error) {
       throw error;
     });
@@ -41,8 +41,8 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
   @override
   Future<List<RecentSearchCache>> getAll() {
     return Future.sync(() async {
-      final boxState = await openBox();
-      return boxState.values.toList();
+      final boxRecent = await openBox();
+      return boxRecent.values.toList();
     }).catchError((error) {
       throw error;
     });
@@ -50,14 +50,19 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
 
   @override
   Future<RecentSearchCache?> getItem(String key) {
-    throw UnimplementedError();
+    return Future.sync(() async {
+      final boxRecent = await openBox();
+      return boxRecent.get(key);
+    }).catchError((error) {
+      throw error;
+    });
   }
 
   @override
   Future<void> insertItem(String key, RecentSearchCache newObject) {
     return Future.sync(() async {
-      final boxState = await openBox();
-      boxState.put(key, newObject);
+      final boxRecent = await openBox();
+      return boxRecent.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -65,14 +70,19 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
 
   @override
   Future<void> insertMultipleItem(Map<String, RecentSearchCache> mapObject) {
-    throw UnimplementedError();
+    return Future.sync(() async {
+      final boxRecent = await openBox();
+      return boxRecent.putAll(mapObject);
+    }).catchError((error) {
+      throw error;
+    });
   }
 
   @override
   Future<bool> isExistItem(String key) {
     return Future.sync(() async {
-      final boxState = await openBox();
-      return boxState.containsKey(key);
+      final boxRecent = await openBox();
+      return boxRecent.containsKey(key);
     }).catchError((error) {
       throw error;
     });
@@ -81,7 +91,7 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
   @override
   Future<bool> isExistTable() {
     return Future.sync(() async {
-      return await Hive.boxExists(tableName);
+      return Hive.boxExists(tableName);
     }).catchError((error) {
       throw error;
     });
@@ -98,8 +108,8 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
   @override
   Future<void> updateItem(String key, RecentSearchCache newObject) {
     return Future.sync(() async {
-      final boxState = await openBox();
-      boxState.put(key, newObject);
+      final boxRecent = await openBox();
+      return boxRecent.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -107,6 +117,11 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
 
   @override
   Future<void> updateMultipleItem(Map<String, RecentSearchCache> mapObject) {
-    throw UnimplementedError();
+    return Future.sync(() async {
+      final boxRecent = await openBox();
+      return boxRecent.putAll(mapObject);
+    }).catchError((error) {
+      throw error;
+    });
   }
 }

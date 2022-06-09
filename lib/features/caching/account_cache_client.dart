@@ -11,8 +11,8 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   @override
   Future<void> clearAllData() {
     return Future.sync(() async {
-      final boxToken = await openBox();
-      boxToken.clear();
+      final boxAccount = await openBox();
+      return boxAccount.clear();
     }).catchError((error) {
       throw error;
     });
@@ -21,8 +21,8 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   @override
   Future<void> deleteItem(String key) {
     return Future.sync(() async {
-      final boxToken = await openBox();
-      return boxToken.delete(key);
+      final boxAccount = await openBox();
+      return boxAccount.delete(key);
     }).catchError((error) {
       throw error;
     });
@@ -31,8 +31,8 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   @override
   Future<void> deleteMultipleItem(List<String> listKey) {
     return Future.sync(() async {
-      final boxToken = await openBox();
-      return boxToken.deleteAll(listKey);
+      final boxAccount = await openBox();
+      return boxAccount.deleteAll(listKey);
     }).catchError((error) {
       throw error;
     });
@@ -41,8 +41,8 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   @override
   Future<List<AccountCache>> getAll() {
     return Future.sync(() async {
-      final boxToken = await openBox();
-      return boxToken.values.toList();
+      final boxAccount = await openBox();
+      return boxAccount.values.toList();
     }).catchError((error) {
       throw error;
     });
@@ -51,8 +51,8 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   @override
   Future<AccountCache?> getItem(String key) {
     return Future.sync(() async {
-      final boxToken = await openBox();
-      return boxToken.get(key);
+      final boxAccount = await openBox();
+      return boxAccount.get(key);
     }).catchError((error) {
       throw error;
     });
@@ -62,8 +62,8 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   Future<void> insertItem(String key, AccountCache newObject) {
     log('AccountCacheClient::insertItem(): $key: $newObject');
     return Future.sync(() async {
-      final boxToken = await openBox();
-      boxToken.put(key, newObject);
+      final boxAccount = await openBox();
+      return boxAccount.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -72,8 +72,8 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   @override
   Future<void> insertMultipleItem(Map<String, AccountCache> mapObject) {
     return Future.sync(() async {
-      final boxToken = await openBox();
-      boxToken.putAll(mapObject);
+      final boxAccount = await openBox();
+      return boxAccount.putAll(mapObject);
     }).catchError((error) {
       throw error;
     });
@@ -82,8 +82,8 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   @override
   Future<bool> isExistItem(String key) {
     return Future.sync(() async {
-      final boxToken = await openBox();
-      return boxToken.containsKey(key);
+      final boxAccount = await openBox();
+      return boxAccount.containsKey(key);
     }).catchError((error) {
       throw error;
     });
@@ -92,7 +92,7 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   @override
   Future<bool> isExistTable() {
     return Future.sync(() async {
-      return await Hive.boxExists(tableName);
+      return Hive.boxExists(tableName);
     }).catchError((error) {
       throw error;
     });
@@ -109,8 +109,8 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   @override
   Future<void> updateItem(String key, AccountCache newObject) {
     return Future.sync(() async {
-      final boxToken = await openBox();
-      boxToken.put(key, newObject);
+      final boxAccount = await openBox();
+      return boxAccount.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -119,11 +119,10 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
   @override
   Future<void> updateMultipleItem(Map<String, AccountCache> mapObject) {
     return Future.sync(() async {
-      final boxToken = await openBox();
-      boxToken.putAll(mapObject);
+      final boxAccount = await openBox();
+      return boxAccount.putAll(mapObject);
     }).catchError((error) {
       throw error;
     });
   }
-
 }

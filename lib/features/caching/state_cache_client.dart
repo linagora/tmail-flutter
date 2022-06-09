@@ -60,7 +60,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   Future<void> insertItem(String key, StateCache newObject) {
     return Future.sync(() async {
       final boxState = await openBox();
-      boxState.put(key, newObject);
+      return boxState.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -70,7 +70,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   Future<void> insertMultipleItem(Map<String, StateCache> mapObject) {
     return Future.sync(() async {
       final boxState = await openBox();
-      boxState.putAll(mapObject);
+      return boxState.putAll(mapObject);
     }).catchError((error) {
       throw error;
     });
@@ -80,7 +80,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   Future<void> updateItem(String key, StateCache newObject) {
     return Future.sync(() async {
       final boxState = await openBox();
-      boxState.put(key, newObject);
+      return boxState.put(key, newObject);
     }).catchError((error) {
       throw error;
     });
@@ -99,7 +99,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   Future<void> deleteMultipleItem(List<String> listKey) {
     return Future.sync(() async {
       final boxState = await openBox();
-      boxState.deleteAll(listKey);
+      return boxState.deleteAll(listKey);
     }).catchError((error) {
       throw error;
     });
@@ -109,7 +109,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   Future<void> updateMultipleItem(Map<String, StateCache> mapObject) {
     return Future.sync(() async {
       final boxState = await openBox();
-      boxState.putAll(mapObject);
+      return boxState.putAll(mapObject);
     }).catchError((error) {
       throw error;
     });
@@ -119,7 +119,7 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
   Future<void> clearAllData() {
     return Future.sync(() async {
       final boxState = await openBox();
-      boxState.clear();
+      return boxState.clear();
     }).catchError((error) {
       throw error;
     });
