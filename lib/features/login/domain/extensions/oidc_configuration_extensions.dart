@@ -1,6 +1,6 @@
 
 import 'package:core/utils/build_utils.dart';
-import 'package:model/model.dart';
+import 'package:model/oidc/oidc_configuration.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 extension OidcConfigurationExtensions on OIDCConfiguration {

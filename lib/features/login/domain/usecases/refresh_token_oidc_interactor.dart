@@ -2,7 +2,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/login/data/extensions/oidc_configuration_extensions.dart';
+import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/state/refresh_token_oidc_state.dart';
