@@ -98,7 +98,8 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut(() => DownloadAttachmentForWebInteractor(
       Get.find<EmailRepository>(),
       Get.find<CredentialRepository>(),
-    ));
+      Get.find<AccountRepository>(),
+      Get.find<AuthenticationOIDCRepository>()));
     Get.lazyPut(() => RefreshTokenOIDCInteractor(
       Get.find<AuthenticationOIDCRepository>(),
       Get.find<AccountRepository>(),
