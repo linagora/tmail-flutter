@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:core/core.dart';
+import 'package:core/data/network/dio_client.dart';
+import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
+import 'package:core/domain/exceptions/download_file_exception.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -79,31 +82,40 @@ class DownloadManager {
     return streamController.stream.first;
   }
 
-  Future<bool> downloadFileForWeb(String downloadUrl, String filename, String basicAuth) async {
-    final headerParam = Map<String, String>();
-    headerParam[HttpHeaders.authorizationHeader] = basicAuth;
-    headerParam[HttpHeaders.acceptHeader] = DioClient.jmapHeader;
+  Future<bool> downloadFileForWeb(
+      String downloadUrl,
+      String filename,
+      String authentication) async {
+    try {
+      final headerParam = Map<String, String>();
+      headerParam[HttpHeaders.authorizationHeader] = authentication;
+      headerParam[HttpHeaders.acceptHeader] = DioClient.jmapHeader;
 
-    http.Response res = await http.get(Uri.parse(downloadUrl), headers: headerParam);
+      http.Response res = await http.get(
+          Uri.parse(downloadUrl),
+          headers: headerParam);
 
-    if (res.statusCode == 200) {
-      final blob = html.Blob([res.bodyBytes]);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.document.createElement('a') as html.AnchorElement
-        ..href = url
-        ..style.display = 'none'
-        ..download = filename;
-      html.document.body?.children.add(anchor);
+      if (res.statusCode == 200) {
+        final blob = html.Blob([res.bodyBytes]);
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        final anchor = html.document.createElement('a') as html.AnchorElement
+          ..href = url
+          ..style.display = 'none'
+          ..download = filename;
+        html.document.body?.children.add(anchor);
 
-      anchor.click();
+        anchor.click();
 
-      html.document.body?.children.remove(anchor);
-      html.Url.revokeObjectUrl(url);
+        html.document.body?.children.remove(anchor);
+        html.Url.revokeObjectUrl(url);
 
-      return true;
+        return true;
+      }
+
+      return false;
+    } catch (exception) {
+      throw exception;
     }
-
-    return false;
   }
 
   MediaType? _extractMediaTypeFromResponse(ResponseBody responseBody) {

@@ -9,7 +9,7 @@ class DownloadAttachmentForWebSuccess extends UIState {
 }
 
 class DownloadAttachmentForWebFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   DownloadAttachmentForWebFailure(this.exception);
 
