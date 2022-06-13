@@ -218,8 +218,6 @@ class EmailAPI {
       ? accountRequest.bearerToken
       : accountRequest.basicAuth;
 
-    log('EmailAPI::exportAttachment(): authentication: $authentication');
-
     return _downloadManager.downloadFile(
       attachment.getDownloadUrl(baseDownloadUrl, accountId),
       getTemporaryDirectory(),
@@ -234,10 +232,14 @@ class EmailAPI {
       String baseDownloadUrl,
       AccountRequest accountRequest,
   ) async {
+    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
+        ? accountRequest.bearerToken
+        : accountRequest.basicAuth;
+
     return _downloadManager.downloadFileForWeb(
         attachment.getDownloadUrl(baseDownloadUrl, accountId),
         attachment.name ?? '',
-        accountRequest.basicAuth,
+        authentication,
     );
   }
 
