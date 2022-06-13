@@ -77,7 +77,8 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     final requestOptions = err.requestOptions;
     log('AuthorizationInterceptors::onError(): $err');
-    if ((_isTokenExpired() || err.response?.statusCode == 401) &&
+    if (_isTokenExpired() &&
+        err.response?.statusCode == 401 &&
         _isAuthenticationOidcValid()) {
       try {
         final newToken = await _authenticationClient.refreshingTokensOIDC(
