@@ -85,7 +85,7 @@ class AppToast {
   }
 
   void showToastWithIcon(BuildContext context, {
-      String? message, String? icon, Color? bgColor,
+      String? message, String? icon, Color? bgColor, Color? iconColor,
       Color? textColor, double? radius, EdgeInsets? padding,
       TextStyle? textStyle, double? widthToast, Duration? toastLength}) {
     double sizeWidth = context.width > 360 ? 360 : context.width - 40;
@@ -104,8 +104,14 @@ class AppToast {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (icon != null) SvgPicture.asset(icon, width: 24, height: 24, fit: BoxFit.fill),
-            if (icon != null) SizedBox(width: 10.0),
+            if (icon != null)
+              SvgPicture.asset(icon,
+                  width: 24,
+                  height: 24,
+                  fit: BoxFit.fill,
+                  color: iconColor),
+            if (icon != null)
+              SizedBox(width: 10.0),
             Expanded(child: Text(
                 message ?? '',
                 style: textStyle ?? TextStyle(fontSize: 15, color: textColor ?? Colors.black))),
