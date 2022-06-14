@@ -4,6 +4,7 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 
 typedef OnDownloadAttachmentFileActionClick = void Function(Attachment attachment);
 typedef OnExpandAttachmentActionClick = void Function();
@@ -59,6 +60,7 @@ class AttachmentFileTileBuilder {
         alignment: Alignment.center,
         margin: EdgeInsets.only(top:heightItem != null ? 8 : 0),
         height: heightItem,
+        padding: EdgeInsets.zero,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: AppColor.attachmentFileBorderColor),
@@ -76,11 +78,19 @@ class AttachmentFileTileBuilder {
                   if (_onDownloadAttachmentFileActionClick != null) {
                     _onDownloadAttachmentFileActionClick!(_attachment);
                   }},
-                leading: Transform(
-                  transform: Matrix4.translationValues(14.0, 2.0, 0.0),
-                  child: SvgPicture.asset(_imagePaths.icFileAttachment, width: 24, height: 24, fit: BoxFit.fill)),
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 8, bottom: BuildUtils.isWeb ? 6 : 14),
+                  child: SvgPicture.asset(
+                      _attachment.getIcon(_imagePaths),
+                      width: 44,
+                      height: 44,
+                      fit: BoxFit.fill),
+                ),
                 title: Transform(
-                  transform: Matrix4.translationValues(-8.0, -8.0, 0.0),
+                  transform: Matrix4.translationValues(
+                      BuildUtils.isWeb ? 0.0 : -8.0,
+                      BuildUtils.isWeb ? -8.0 : -10.0,
+                      0.0),
                   child: Text(
                     _attachment.name ?? '',
                     maxLines: 1,
@@ -89,7 +99,10 @@ class AttachmentFileTileBuilder {
                   )),
                 subtitle: _attachment.size != null && _attachment.size?.value != 0
                   ? Transform(
-                      transform: Matrix4.translationValues(-8.0, -8.0, 0.0),
+                      transform: Matrix4.translationValues(
+                          BuildUtils.isWeb ? 0.0 : -8.0,
+                          BuildUtils.isWeb ? -8.0 : -10.0,
+                          0.0),
                       child: Text(
                         filesize(_attachment.size?.value),
                         maxLines: 1,
@@ -106,7 +119,12 @@ class AttachmentFileTileBuilder {
                 Transform(
                   transform: Matrix4.translationValues(5.0, 5.0, 0.0),
                   child: IconButton(
-                    icon: SvgPicture.asset(_imagePaths.icDownload, width: 24, height: 24, fit: BoxFit.fill),
+                    icon: SvgPicture.asset(
+                        _imagePaths.icDownload,
+                        width: 24,
+                        height: 24,
+                        color: AppColor.primaryColor,
+                        fit: BoxFit.fill),
                     onPressed: () {
                       if (_onDownloadAttachmentFileActionClick != null) {
                         _onDownloadAttachmentFileActionClick!(_attachment);

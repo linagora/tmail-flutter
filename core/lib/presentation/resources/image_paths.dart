@@ -118,6 +118,13 @@ class ImagePaths {
   String get icSelectedSB => _getImagePath('ic_selected_sb.svg');
   String get icUserSB => _getImagePath('ic_user_sb.svg');
   String get icComposeWeb => _getImagePath('ic_compose_web.svg');
+  String get icFileDocx => _getImagePath('ic_file_docx.svg');
+  String get icFileZip => _getImagePath('ic_file_zip.svg');
+  String get icFileXlsx => _getImagePath('ic_file_xlsx.svg');
+  String get icFilePng => _getImagePath('ic_file_png.svg');
+  String get icFilePdf => _getImagePath('ic_file_pdf.svg');
+  String get icFilePptx => _getImagePath('ic_file_pptx.svg');
+  String get icFileEPup => _getImagePath('ic_file_epup.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
