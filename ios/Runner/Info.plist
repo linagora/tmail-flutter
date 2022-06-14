@@ -6,6 +6,7 @@
 	<array>
 		<string>https</string>
 		<string>http</string>
+		<string>mailto</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
