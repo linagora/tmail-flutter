@@ -347,15 +347,24 @@ class EmailController extends BaseController {
   void _downloadAttachmentForWebAction(BuildContext context, Attachment attachment) async {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
+      _appToast.showToastWithIcon(context,
+          message: AppLocalizations.of(currentContext!).your_download_has_started,
+          iconColor: AppColor.primaryColor,
+          icon: imagePaths.icDownload);
+
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl();
-      _appToast.showToast(AppLocalizations.of(context).your_download_has_started);
       consumeState(_downloadAttachmentForWebInteractor.execute(attachment, accountId, baseDownloadUrl));
     }
   }
 
-  void _downloadAttachmentForWebFailureAction(Failure failure) {
-    if (failure is DownloadAttachmentForWebFailure && currentContext != null) {
-      _appToast.showErrorToast(AppLocalizations.of(currentContext!).attachment_download_failed);
+  void _downloadAttachmentForWebFailureAction(DownloadAttachmentForWebFailure failure) {
+    if (currentOverlayContext != null &&  currentContext != null) {
+      _appToast.showToastWithIcon(currentOverlayContext!,
+          message: AppLocalizations.of(currentContext!).attachment_download_failed,
+          bgColor: AppColor.toastErrorBackgroundColor,
+          textColor: Colors.white,
+          iconColor: Colors.white,
+          icon: imagePaths.icDownload);
     }
   }
 
