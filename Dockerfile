@@ -38,11 +38,11 @@ RUN cd core \
 
 # Stage 2 - Create the run-time image
 FROM nginx:stable
-RUN chmod -R 755 /usr/share/nginx/html
+RUN chmod -R 755 /usr/share/nginx/html && apt install -y gzip
 COPY --from=build-env /app/server/nginx.conf /etc/nginx
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 
 # Record the exposed port
 EXPOSE 80
 
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+CMD gzip -k -f /usr/share/nginx/html/assets/env.file && nginx -g 'daemon off;'
