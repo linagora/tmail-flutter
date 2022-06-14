@@ -308,17 +308,18 @@ class EmailController extends BaseController {
     }
   }
 
-  void _exportAttachmentFailureAction(Failure failure) {
-    if (failure is ExportAttachmentFailure && failure.exception is! CancelDownloadFileException) {
+  void _exportAttachmentFailureAction(ExportAttachmentFailure failure) {
+    if (failure.exception is! CancelDownloadFileException) {
       popBack();
+      if (currentContext != null) {
+        _appToast.showErrorToast(AppLocalizations.of(currentContext!).attachment_download_failed);
+      }
     }
   }
 
-  void _exportAttachmentSuccessAction(Success success) async {
+  void _exportAttachmentSuccessAction(ExportAttachmentSuccess success) async {
     popBack();
-    if (success is ExportAttachmentSuccess) {
-      _openDownloadedPreviewWorkGroupDocument(success.downloadedResponse);
-    }
+    _openDownloadedPreviewWorkGroupDocument(success.downloadedResponse);
   }
 
   void _openDownloadedPreviewWorkGroupDocument(DownloadedResponse downloadedResponse) async {
