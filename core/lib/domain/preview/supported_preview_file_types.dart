@@ -5,6 +5,41 @@ class SupportedPreviewFileTypes {
     'image/gif',
     'image/png',];
 
+  static const docMimeTypes = [
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.oasis.opendocument.text',
+    'application/vnd.oasis.opendocument.text-template',
+    'application/vnd.oasis.opendocument.text-web',
+    'application/vnd.oasis.opendocument.text-master',
+    'application/msword',
+    'application/vnd.ms-works'];
+
+  static const pdfMimeTypes = [
+    'application/pdf',
+    'application/rtf'];
+
+  static const xlsMimeTypes = [
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.oasis.opendocument.spreadsheet',
+    'application/vnd.oasis.opendocument.spreadsheet-template',
+    'application/vnd.oasis.opendocument.chart',
+    'application/vnd.oasis.opendocument.formula',
+    'application/vnd.ms-excel'];
+
+  static const pptMimeTypes = [
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.oasis.opendocument.presentation',
+    'application/vnd.oasis.opendocument.presentation-template',
+    'application/vnd.ms-powerpoint'];
+
+  static const zipMimeTypes = [
+    'application/x-tar',
+    'application/x-gtar',
+    'application/x-gzip',
+    'application/x-compressed',
+    'application/x-zip-compressed',
+    'application/java-archive'];
+
   static const iOSSupportedTypes = {
     'text/plain' : 'public.plain-text',
     'text/html' : 'public.html',
