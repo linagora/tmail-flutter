@@ -479,6 +479,7 @@ class EmailView extends GetView with NetworkConnectionMixin {
               icon: SvgPicture.asset(imagePaths.icExpandAttachment,
                 width: 20,
                 height: 20,
+                color: AppColor.primaryColor,
                 fit: BoxFit.fill),
               onPressed: () => emailController.toggleDisplayAttachmentsAction()
             ))

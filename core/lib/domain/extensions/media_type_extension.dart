@@ -9,5 +9,15 @@ extension MediaTypeExtension on MediaType {
 
   bool isImageFile() => SupportedPreviewFileTypes.imageMimeTypes.contains(mimeType);
 
+  bool isDocFile() => SupportedPreviewFileTypes.docMimeTypes.contains(mimeType);
+
+  bool isPowerPointFile() => SupportedPreviewFileTypes.pptMimeTypes.contains(mimeType);
+
+  bool isExcelFile() => SupportedPreviewFileTypes.xlsMimeTypes.contains(mimeType);
+
+  bool isZipFile() => SupportedPreviewFileTypes.zipMimeTypes.contains(mimeType);
+
+  bool isPdfFile() => SupportedPreviewFileTypes.pdfMimeTypes.contains(mimeType);
+
   DocumentUti getDocumentUti() => DocumentUti(SupportedPreviewFileTypes.iOSSupportedTypes[mimeType]);
 }
