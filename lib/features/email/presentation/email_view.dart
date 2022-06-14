@@ -22,7 +22,7 @@ class EmailView extends GetView with NetworkConnectionMixin {
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
-  static const int LIMIT_ADDRESS_DISPLAY = 1;
+  static const int limitAddressDisplay = 1;
 
   EmailView({Key? key}) : super(key: key);
 
@@ -182,6 +182,7 @@ class EmailView extends GetView with NetworkConnectionMixin {
                       emailController.isDisplayFullEmailAddress.value)
                   : const SizedBox.shrink()),
               _buildDivider(edgeInsets: const EdgeInsets.only(top: 8)),
+              _buildLoadingView(),
               _buildAttachments(context),
               if (kIsWeb)
                 Expanded(child: _buildEmailContent(context, constraints))
@@ -192,6 +193,29 @@ class EmailView extends GetView with NetworkConnectionMixin {
           );
         })
     );
+  }
+
+  Widget _buildLoadingView() {
+    return Obx(() {
+      if (emailController.emailContents.isEmpty) {
+        return emailController.viewState.value.fold(
+          (failure) => const SizedBox.shrink(),
+          (success) {
+            if (success is LoadingState) {
+              return const Align(alignment: Alignment.topCenter, child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: CupertinoActivityIndicator(color: AppColor.colorLoading))));
+            } else {
+              return const SizedBox.shrink();
+            }
+          });
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 
   Widget _buildEmailTime(BuildContext context) {
@@ -263,7 +287,10 @@ class EmailView extends GetView with NetworkConnectionMixin {
       PrefixEmailAddress prefixEmailAddress,
       bool isDisplayFull,
   ) {
-    final displayedEmailAddress = isDisplayFull ? listEmailAddress : listEmailAddress.sublist(0, LIMIT_ADDRESS_DISPLAY);
+    final displayedEmailAddress = isDisplayFull
+        ? listEmailAddress
+        : listEmailAddress.sublist(0, limitAddressDisplay);
+
     return Padding(
         padding: const EdgeInsets.only(top: 4),
         child: Wrap(
@@ -319,10 +346,10 @@ class EmailView extends GetView with NetworkConnectionMixin {
   }
 
   String _getRemainCountAddressReceiver(PresentationEmail email) {
-    if (email.numberOfAllEmailAddress() - LIMIT_ADDRESS_DISPLAY >= 999) {
+    if (email.numberOfAllEmailAddress() - limitAddressDisplay >= 999) {
       return '999';
     }
-    return '${email.numberOfAllEmailAddress() - LIMIT_ADDRESS_DISPLAY}';
+    return '${email.numberOfAllEmailAddress() - limitAddressDisplay}';
   }
 
   Widget _buildEmailAddressCounter(BuildContext context, PresentationEmail email) {
@@ -345,18 +372,12 @@ class EmailView extends GetView with NetworkConnectionMixin {
   }
 
   Widget _buildAttachments(BuildContext context) {
-   return Obx(() => emailController.viewState.value.fold(
-    (failure) => const SizedBox.shrink(),
-    (success) {
-      if (success is LoadingState) {
-        return const SizedBox.shrink();
-      } else {
-        final attachments = emailController.attachments.listAttachmentsDisplayedOutSide;
-        return attachments.isNotEmpty
-          ? _buildAttachmentsBody(context, attachments)
-          : const SizedBox.shrink();
-      }
-    }));
+   return Obx(() {
+     final attachments = emailController.attachments.listAttachmentsDisplayedOutSide;
+     return attachments.isNotEmpty
+         ? _buildAttachmentsBody(context, attachments)
+         : const SizedBox.shrink();
+   });
   }
 
   int _getAttachmentLimitDisplayed(BuildContext context) {
@@ -466,38 +487,27 @@ class EmailView extends GetView with NetworkConnectionMixin {
   }
 
   Widget _buildEmailContent(BuildContext context, BoxConstraints constraints) {
-    return Obx(() => emailController.viewState.value.fold(
-      (failure) => const SizedBox.shrink(),
-      (success) {
-        if (success is LoadingState) {
-          return const Align(alignment: Alignment.topCenter, child: Padding(
-              padding: EdgeInsets.all(16),
-              child: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: CupertinoActivityIndicator(color: AppColor.colorLoading))));
-        } else {
-          if (emailController.emailContents.isNotEmpty) {
-            final allEmailContents = emailController.emailContents.asHtmlString;
+    return Obx(() {
+      if (emailController.emailContents.isNotEmpty) {
+        final allEmailContents = emailController.emailContents.asHtmlString;
 
-            if (kIsWeb) {
-              return HtmlContentViewerOnWeb(
-                  widthContent: constraints.maxWidth,
-                  heightContent: responsiveUtils.getSizeScreenHeight(context),
-                  contentHtml: allEmailContents,
-                  controller: HtmlViewerControllerForWeb(),
-                  mailtoDelegate: (uri) => emailController.openMailToLink(uri));
-            } else {
-              return HtmlContentViewer(
-                  heightContent: responsiveUtils.getSizeScreenHeight(context),
-                  contentHtml: allEmailContents,
-                  mailtoDelegate: (uri) async => emailController.openMailToLink(uri));
-            }
-          } else {
-            return const SizedBox.shrink();
-          }
+        if (kIsWeb) {
+          return HtmlContentViewerOnWeb(
+              widthContent: constraints.maxWidth,
+              heightContent: responsiveUtils.getSizeScreenHeight(context),
+              contentHtml: allEmailContents,
+              controller: HtmlViewerControllerForWeb(),
+              mailtoDelegate: (uri) => emailController.openMailToLink(uri));
+        } else {
+          return HtmlContentViewer(
+              heightContent: responsiveUtils.getSizeScreenHeight(context),
+              contentHtml: allEmailContents,
+              mailtoDelegate: (uri) async => emailController.openMailToLink(uri));
         }
-      }));
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 
   List<Widget> _emailActionMoreActionTile(BuildContext context, PresentationEmail email) {
