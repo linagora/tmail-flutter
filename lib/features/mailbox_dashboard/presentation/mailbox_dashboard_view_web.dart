@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/re
 import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/reading_pane.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -150,21 +151,21 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         if (controller.isSelectionEnabled()) {
           return _buildListButtonTopBarSelection(context);
         } else {
-          return controller.isSearchActive()
+          return controller.searchCtrl.isSearchActive()
             ? _buildListButtonTopBarSearchActive(context)
             : _buildListButtonTopBar(context);
         }
       }),
       const SizedBox(width: 16),
-      Obx(() => !controller.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
-      Obx(() => controller.isSearchActive()
+      Obx(() => !controller.searchCtrl.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
+      Obx(() => controller.searchCtrl.isSearchActive()
           ? Expanded(child: _buildSearchForm(context))
           : (SearchBarView(imagePaths)
               ..hintTextSearch(AppLocalizations.of(context).search_emails)
               ..maxSizeWidth(240)
-              ..addOnOpenSearchViewAction(() => controller.enableSearch()))
+              ..addOnOpenSearchViewAction(() => controller.searchCtrl.enableSearch()))
             .build()),
-      Obx(() => !controller.isSearchActive() ? const SizedBox(width: 16) : const SizedBox.shrink()),
+      Obx(() => !controller.searchCtrl.isSearchActive() ? const SizedBox(width: 16) : const SizedBox.shrink()),
       Obx(() => (AvatarBuilder()
           ..text(controller.userProfile.value?.getAvatarText() ?? '')
           ..backgroundColor(Colors.white)
@@ -410,9 +411,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             height: 45,
             child: QuickSearchInputForm<PresentationEmail, RecentSearch>(
                 textFieldConfiguration: QuickSearchTextFieldConfiguration(
-                    controller: controller.searchInputController,
+                    controller: controller.searchCtrl.searchInputController,
                     autofocus: true,
-                    focusNode: controller.searchFocus,
+                    focusNode: controller.searchCtrl.searchFocus,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (keyword) {
                       if (keyword.trim().isNotEmpty) {
@@ -422,7 +423,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     },
                     onChanged: (query) {
                       log('MailboxDashBoardView::_buildSearchForm(): onChanged: $query');
-                      controller.onChangeTextSearch(query);
+                      controller.searchCtrl.onChangeTextSearch(query);
                     },
                     decoration: InputDecoration(
                         border: InputBorder.none,
@@ -444,7 +445,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             height: 16,
                             fit: BoxFit.fill),
                         onTap: () {
-                          final keyword = controller.searchInputController.text;
+                          final keyword = controller.searchCtrl.searchInputController.text;
                           if (keyword.trim().isNotEmpty) {
                             controller.saveRecentSearch(RecentSearch.now(keyword));
                           }
@@ -457,7 +458,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             height: 16,
                             fit: BoxFit.fill),
                         onTap: () {
-                          controller.clearTextSearch();
+                          controller.searchCtrl.clearTextSearch();
                         })
                 ),
                 suggestionsBoxDecoration: QuickSearchSuggestionsBoxDecoration(
@@ -483,8 +484,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 buttonActionCallback: (filterAction) {
                   if (filterAction is QuickSearchFilter) {
                     controller.selectQuickSearchFilter(
-                        filterAction,
-                        fromSuggestionBox: true);
+                      quickSearchFilter: filterAction,
+                    );
                   }
                 },
                 listActionPadding: const EdgeInsets.only(
@@ -543,11 +544,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   return RecentSearchItemTileWidget(recent);
                 },
                 onRecentSelected: (recent) {
-                  controller.searchInputController.text = recent.value;
+                  controller.searchCtrl.searchInputController.text = recent.value;
                   controller.searchEmail(context, recent.value);
                 },
                 suggestionsCallback: (pattern) async {
-                  return controller.quickSearchEmailsAction(pattern);
+                  controller.searchCtrl.updateFilterEmail(text: SearchQuery(pattern));
+                  return controller.quickSearchEmails();
                 },
                 itemBuilder: (context, email) {
                   return EmailQuickSearchItemTileWidget(

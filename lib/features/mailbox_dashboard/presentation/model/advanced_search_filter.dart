@@ -1,8 +1,10 @@
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-enum AdvancedSearchFilter {
+enum AdvancedSearchFilterField {
   form,
   to,
   subject,
@@ -13,50 +15,57 @@ enum AdvancedSearchFilter {
   hasAttachment
 }
 
-extension AdvancedSearchFilterExtension on AdvancedSearchFilter {
+extension AdvancedSearchFilterFieldExtension on AdvancedSearchFilterField {
   String getTitle(BuildContext context) {
     switch (this) {
-      case AdvancedSearchFilter.form:
+      case AdvancedSearchFilterField.form:
         return AppLocalizations.of(context).form;
-      case AdvancedSearchFilter.to:
+      case AdvancedSearchFilterField.to:
         return AppLocalizations.of(context).to;
-      case AdvancedSearchFilter.subject:
+      case AdvancedSearchFilterField.subject:
         return AppLocalizations.of(context).subject;
-      case AdvancedSearchFilter.hasKeyword:
+      case AdvancedSearchFilterField.hasKeyword:
         return AppLocalizations.of(context).hasTheWords;
-      case AdvancedSearchFilter.notKeyword:
+      case AdvancedSearchFilterField.notKeyword:
         return AppLocalizations.of(context).doesNotHave;
-      case AdvancedSearchFilter.mailBox:
+      case AdvancedSearchFilterField.mailBox:
         return AppLocalizations.of(context).mailbox;
-      case AdvancedSearchFilter.date:
+      case AdvancedSearchFilterField.date:
         return AppLocalizations.of(context).date;
-      case AdvancedSearchFilter.hasAttachment:
+      case AdvancedSearchFilterField.hasAttachment:
         return AppLocalizations.of(context).hasAttachment;
     }
   }
 
   String getHintText(BuildContext context) {
     switch (this) {
-      case AdvancedSearchFilter.form:
-      case AdvancedSearchFilter.to:
+      case AdvancedSearchFilterField.form:
+      case AdvancedSearchFilterField.to:
         return AppLocalizations.of(context).nameOrEmailAddress;
-      case AdvancedSearchFilter.subject:
-      case AdvancedSearchFilter.hasKeyword:
-      case AdvancedSearchFilter.notKeyword:
+      case AdvancedSearchFilterField.subject:
+      case AdvancedSearchFilterField.hasKeyword:
+      case AdvancedSearchFilterField.notKeyword:
         return AppLocalizations.of(context).enterSearchTerm;
-      case AdvancedSearchFilter.mailBox:
+      case AdvancedSearchFilterField.mailBox:
         return AppLocalizations.of(context).allMails;
-      case AdvancedSearchFilter.date:
+      case AdvancedSearchFilterField.date:
         return AppLocalizations.of(context).allTime;
-      case AdvancedSearchFilter.hasAttachment:
+      case AdvancedSearchFilterField.hasAttachment:
         return AppLocalizations.of(context).hasAttachment;
     }
   }
 
-  TextStyle getTextStyle() {
+  TextStyle getTitleTextStyle() {
     return const TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
         color: AppColor.colorContentEmail);
+  }
+
+  TextStyle getHintTextStyle() {
+    return const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: AppColor.colorHintSearchBar);
   }
 }

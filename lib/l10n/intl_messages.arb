@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "@@last_modified": "2022-06-15T21:54:38.825430",
+=======
+  "@@last_modified": "2022-06-16T23:49:59.773832",
+>>>>>>> d2f6808 (TF-627: create advanced search action)
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",

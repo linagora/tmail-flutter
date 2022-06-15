@@ -52,7 +52,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/mark_as
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/local_thread_datasource_impl.dart';
@@ -75,6 +76,10 @@ class MailboxDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsController() {
+    Get.put(SearchController(
+      Get.find<QuickSearchEmailInteractor>(),
+    ));
+
     Get.put(MailboxDashBoardController(
       Get.find<LogoutOidcInteractor>(),
       Get.find<DeleteAuthorityOidcInteractor>(),
@@ -83,7 +88,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<DeleteEmailPermanentlyInteractor>(),
       Get.find<SaveRecentSearchInteractor>(),
       Get.find<GetAllRecentSearchLatestInteractor>(),
-      Get.find<QuickSearchEmailInteractor>(),
       Get.find<MarkAsMailboxReadInteractor>(),
     ));
   }

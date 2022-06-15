@@ -26,10 +26,9 @@ extension QuickSearchFilterExtension on QuickSearchFilter {
     }
   }
 
-  String getIcon(ImagePaths imagePaths, List<QuickSearchFilter> listFilter) {
-    final filterSelected = listFilter.contains(this);
+  String getIcon(ImagePaths imagePaths, bool isSelected) {
 
-    if (filterSelected) {
+    if (isSelected) {
       return imagePaths.icSelectedSB;
     } else {
       switch(this) {
@@ -43,20 +42,18 @@ extension QuickSearchFilterExtension on QuickSearchFilter {
     }
   }
 
-  Color getBackgroundColor(List<QuickSearchFilter> listFilter) {
-    final filterSelected = listFilter.contains(this);
+  Color getBackgroundColor(bool isSelected) {
 
-    if (filterSelected) {
+    if (isSelected) {
       return AppColor.colorItemEmailSelectedDesktop;
     } else {
       return AppColor.colorButtonHeaderThread;
     }
   }
 
-  TextStyle getTextStyle(List<QuickSearchFilter> listFilter) {
-    final filterSelected = listFilter.contains(this);
+  TextStyle getTextStyle(bool isSelected) {
 
-    if (filterSelected) {
+    if (isSelected) {
       return const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w500,
