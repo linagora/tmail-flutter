@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
@@ -24,6 +25,10 @@ class MailboxView extends GetWidget<MailboxController> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+    ));
+
     return SafeArea(bottom: false, left: false, right: false,
         top: _responsiveUtils.isMobile(context),
         child: ClipRRect(
