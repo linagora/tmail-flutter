@@ -6,6 +6,7 @@ import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
@@ -121,7 +122,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
             ..radiusSplash(10)
             ..padding(const EdgeInsets.symmetric(vertical: 8))
             ..textStyle(const TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w500))
-            ..onPressActionClick(() => controller.mailboxDashBoardController.composeEmailAction())
+            ..onPressActionClick(() => controller.mailboxDashBoardController.goToComposer(ComposerArguments()))
             ..text(AppLocalizations.of(context).compose, isVertical: false))
           .build());
   }

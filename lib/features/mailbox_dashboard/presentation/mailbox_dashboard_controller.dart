@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_s
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
@@ -94,6 +95,7 @@ class MailboxDashBoardController extends ReloadableController {
   final listEmailSelected = <PresentationEmail>[].obs;
   final listFilterQuickSearch = RxList<QuickSearchFilter>();
   final emailReceiveTimeType = Rxn<EmailReceiveTimeType>();
+  final composerOverlayState = ComposerOverlayState.inActive.obs;
 
   SearchQuery? searchQuery;
   Session? sessionCurrent;
@@ -398,14 +400,19 @@ class MailboxDashBoardController extends ReloadableController {
 
   void dispatchAction(UIAction action) {
     log('MailboxDashBoardController::dispatchAction(): ${action.runtimeType}');
-    if (action is ComposeEmailAction) {
-      routerArguments = action.arguments;
-      ComposerBindings().dependencies();
-    } else if (action is CloseComposeEmailAction) {
-      routerArguments = null;
-      Get.delete<ComposerController>();
-    }
     dashBoardAction.value = action;
+  }
+
+  void openComposerOverlay(RouterArguments? arguments) {
+    routerArguments = arguments;
+    ComposerBindings().dependencies();
+    composerOverlayState.value = ComposerOverlayState.active;
+  }
+
+  void closeComposerOverlay() {
+    routerArguments = null;
+    Get.delete<ComposerController>();
+    composerOverlayState.value = ComposerOverlayState.inActive;
   }
 
   void dispatchRoute(String route) {
@@ -543,20 +550,10 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void composeEmailAction() {
-    if (kIsWeb) {
-      if (dashBoardAction.value is! ComposeEmailAction) {
-        dispatchAction(ComposeEmailAction(arguments: ComposerArguments()));
-      }
-    } else {
-      push(AppRoutes.COMPOSER, arguments: ComposerArguments());
-    }
-  }
-
   void goToComposer(ComposerArguments arguments) {
-    if (kIsWeb) {
-      if (dashBoardAction.value is! ComposeEmailAction) {
-        dispatchAction(ComposeEmailAction(arguments: arguments));
+    if (BuildUtils.isWeb) {
+      if (composerOverlayState.value == ComposerOverlayState.inActive) {
+        openComposerOverlay(arguments);
       }
     } else {
       push(AppRoutes.COMPOSER, arguments: arguments);
