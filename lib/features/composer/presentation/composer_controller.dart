@@ -41,7 +41,6 @@ import 'package:tmail_ui_user/features/composer/presentation/model/screen_displa
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -800,7 +799,7 @@ class ComposerController extends BaseController {
     }
 
     if (BuildUtils.isWeb) {
-      mailboxDashBoardController.dispatchAction(CloseComposeEmailAction());
+      mailboxDashBoardController.closeComposerOverlay();
     } else {
       if (canPop) popBack();
     }
@@ -851,7 +850,7 @@ class ComposerController extends BaseController {
 
   void closeComposerWeb() {
     FocusManager.instance.primaryFocus?.unfocus();
-    mailboxDashBoardController.dispatchAction(CloseComposeEmailAction());
+    mailboxDashBoardController.closeComposerOverlay();
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) {
@@ -867,7 +866,7 @@ class ComposerController extends BaseController {
 
   void deleteComposer() {
     FocusManager.instance.primaryFocus?.unfocus();
-    mailboxDashBoardController.dispatchAction(CloseComposeEmailAction());
+    mailboxDashBoardController.closeComposerOverlay();
   }
 
   void toggleDisplayAttachments() {

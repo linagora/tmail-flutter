@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
@@ -379,7 +380,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
               text: Padding(padding: const EdgeInsets.only(right: 10),
                 child: Text(AppLocalizations.of(context).compose,
                   style: const TextStyle(color: AppColor.colorTextButton, fontSize: 15.0, fontWeight: FontWeight.w500))),
-              onPress: () => controller.composeEmailAction(),
+              onPress: () => controller.mailboxDashBoardController.goToComposer(ComposerArguments()),
               scrollController: controller.listEmailController,
               color: Colors.white,
               elevation: 4.0,

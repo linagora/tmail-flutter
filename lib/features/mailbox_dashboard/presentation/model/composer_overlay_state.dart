@@ -1,0 +1,4 @@
+
+enum ComposerOverlayState {
+  active, inActive
+}

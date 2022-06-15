@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dar
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
@@ -97,7 +98,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             tablet: ThreadView(),
             mobile: ThreadView(),
         ),
-        Obx(() => controller.dashBoardAction.value is ComposeEmailAction
+        Obx(() => controller.composerOverlayState.value == ComposerOverlayState.active
             ? ComposerView()
             : const SizedBox.shrink()),
         Obx(() => controller.isNetworkConnectionAvailable()
