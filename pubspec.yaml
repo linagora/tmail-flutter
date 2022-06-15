@@ -44,10 +44,10 @@ dependencies:
   get: 4.6.5
 
   # intl
-  intl_generator: 0.2.1
+  intl_generator: 0.3.0
 
   # flutter_svg
-  flutter_svg: 1.0.3
+  flutter_svg: 1.1.0
 
   # Http client
   dio: 4.0.4
@@ -167,15 +167,19 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  build_runner: 2.1.7
+  build_runner: 2.1.11
 
-  mockito: 5.0.17
+  mockito: 5.2.0
 
-  hive_generator: 1.1.1
+  hive_generator: 1.1.3
 
   flutter_lints: 1.0.4
 
   flutter_launcher_icons: 0.9.3
+
+  flutter_native_splash: 2.2.3+1
+
+  xml: 6.1.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -238,4 +242,10 @@ flutter_icons:
   remove_alpha_ios: true
   image_path: "assets/icons/icon_launcher.png"
   adaptive_icon_background: "#000000"
-  adaptive_icon_foreground: "assets/icons/icon_launcher_foreground.png"
+  adaptive_icon_foreground: "assets/icons/icon_launcher.png"
+
+flutter_native_splash:
+  color: "#000000"
+  branding: "assets/icons/icon_branding.png"
+  image: "assets/icons/icon_logo.png"
+  web: false
