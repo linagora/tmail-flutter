@@ -40,7 +40,6 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -583,13 +582,8 @@ class EmailController extends BaseController {
         emailActionType: EmailActionType.composeFromEmailAddress,
         emailAddress: emailAddress,
         mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
-    if (kIsWeb) {
-      if (mailboxDashBoardController.dashBoardAction.value is! ComposeEmailAction) {
-        mailboxDashBoardController.dispatchAction(ComposeEmailAction(arguments: arguments));
-      }
-    } else {
-      push(AppRoutes.COMPOSER, arguments: arguments);
-    }
+
+    mailboxDashBoardController.goToComposer(arguments);
   }
 
   void openMailToLink(Uri? uri) {
@@ -602,15 +596,11 @@ class EmailController extends BaseController {
           emailActionType: EmailActionType.composeFromEmailAddress,
           emailAddress: emailAddress,
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
-      if (kIsWeb) {
-        if (mailboxDashBoardController.dashBoardAction.value is! ComposeEmailAction) {
-          mailboxDashBoardController.dispatchAction(ComposeEmailAction(arguments: arguments));
-        }
-        if (Get.currentRoute == AppRoutes.EMAIL) {
-          popBack();
-        }
-      } else {
-        push(AppRoutes.COMPOSER, arguments: arguments);
+
+      mailboxDashBoardController.goToComposer(arguments);
+
+      if (BuildUtils.isWeb && Get.currentRoute == AppRoutes.EMAIL) {
+        popBack();
       }
     }
   }
@@ -657,7 +647,10 @@ class EmailController extends BaseController {
 
   void pressEmailAction(EmailActionType emailActionType) {
     if (emailActionType == EmailActionType.compose) {
-      composeEmailAction();
+      mailboxDashBoardController.goToComposer(ComposerArguments());
+      if (BuildUtils.isWeb && Get.currentRoute == AppRoutes.EMAIL) {
+        popBack();
+      }
     } else {
       final arguments = ComposerArguments(
           emailActionType: emailActionType,
@@ -666,29 +659,10 @@ class EmailController extends BaseController {
           attachments: emailActionType == EmailActionType.forward ? attachments : null,
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
 
-      if (kIsWeb) {
-        if (mailboxDashBoardController.dashBoardAction.value is! ComposeEmailAction) {
-          mailboxDashBoardController.dispatchAction(ComposeEmailAction(arguments: arguments));
-        }
-        if (Get.currentRoute == AppRoutes.EMAIL) {
-          popBack();
-        }
-      } else {
-        push(AppRoutes.COMPOSER, arguments: arguments);
-      }
-    }
-  }
-
-  void composeEmailAction() {
-    if (kIsWeb) {
-      if (mailboxDashBoardController.dashBoardAction.value is! ComposeEmailAction) {
-        mailboxDashBoardController.dispatchAction(ComposeEmailAction(arguments: ComposerArguments()));
-      }
-      if (Get.currentRoute == AppRoutes.EMAIL) {
+      mailboxDashBoardController.goToComposer(arguments);
+      if (BuildUtils.isWeb && Get.currentRoute == AppRoutes.EMAIL) {
         popBack();
       }
-    } else {
-      push(AppRoutes.COMPOSER, arguments: ComposerArguments());
     }
   }
 }
