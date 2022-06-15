@@ -25,6 +25,7 @@
 
    <application
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
