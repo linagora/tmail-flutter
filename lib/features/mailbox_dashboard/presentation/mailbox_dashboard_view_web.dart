@@ -420,6 +420,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       }
                       controller.searchEmail(context, keyword);
                     },
+                    onChanged: (query) {
+                      log('MailboxDashBoardView::_buildSearchForm(): onChanged: $query');
+                      controller.onChangeTextSearch(query);
+                    },
                     decoration: InputDecoration(
                         border: InputBorder.none,
                         focusedBorder: InputBorder.none,
