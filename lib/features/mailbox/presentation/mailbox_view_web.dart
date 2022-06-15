@@ -308,7 +308,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                     minSize: 40,
                     splashRadius: 15,
                     icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton),
-                    onTap: () => controller.disableSearch(context)),
+                    onTap: () => controller.disableSearch()),
                 Expanded(child: (SearchAppBarWidget(
                         _imagePaths,
                         controller.searchQuery.value,

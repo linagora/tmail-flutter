@@ -117,6 +117,7 @@ class MailboxController extends BaseMailboxController {
   @override
   void onInit() {
     _initWorker();
+    _registerSearchFocusListener();
     super.onInit();
   }
 
@@ -230,6 +231,17 @@ class MailboxController extends BaseMailboxController {
             refreshMailboxChanges();
           }
         });
+      }
+    });
+  }
+
+  void _registerSearchFocusListener() {
+    searchFocus.addListener(() {
+      final hasFocus = searchFocus.hasFocus;
+      final query = searchQuery.value.value;
+      log('MailboxController::_registerSearchFocusListener(): hasFocus: $hasFocus | query: $query');
+      if (!hasFocus && query.isEmpty) {
+        disableSearch();
       }
     });
   }
@@ -396,13 +408,13 @@ class MailboxController extends BaseMailboxController {
     searchState.value = searchState.value.enableSearchState();
   }
 
-  void disableSearch(BuildContext context) {
+  void disableSearch() {
     _cancelSelectMailbox();
     listMailboxSearched.clear();
     searchState.value = searchState.value.disableSearchState();
     searchQuery.value = SearchQuery.initial();
     searchInputController.clear();
-    FocusScope.of(context).unfocus();
+    searchFocus.unfocus();
   }
 
   void clearSearchText() {

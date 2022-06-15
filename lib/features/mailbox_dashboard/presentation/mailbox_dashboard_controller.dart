@@ -123,6 +123,7 @@ class MailboxDashBoardController extends ReloadableController {
   void onInit() {
     _registerNetworkConnectivityState();
     _registerPendingEmailAddress();
+    _registerSearchFocusListener();
     super.onInit();
   }
 
@@ -222,6 +223,17 @@ class MailboxDashBoardController extends ReloadableController {
         });
   }
 
+  void _registerSearchFocusListener() {
+    searchFocus.addListener(() {
+      final hasFocus = searchFocus.hasFocus;
+      final query = searchQuery?.value;
+      log('MailboxDashBoardController::_registerSearchFocusListener(): hasFocus: $hasFocus | query: $query');
+      if (!hasFocus && (query == null || query.isEmpty)) {
+        disableSearch();
+      }
+    });
+  }
+
   void _getUserProfile() async {
     userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
   }
@@ -298,13 +310,17 @@ class MailboxDashBoardController extends ReloadableController {
     searchInputController.clear();
     listFilterQuickSearch.clear();
     emailReceiveTimeType.value = null;
-    FocusManager.instance.primaryFocus?.unfocus();
+    searchFocus.unfocus();
   }
 
   void clearTextSearch() {
     searchQuery = SearchQuery.initial();
     searchInputController.clear();
     searchFocus.requestFocus();
+  }
+
+  void onChangeTextSearch(String value) {
+    searchQuery = SearchQuery(value);
   }
 
   void updateTextSearch(String value) {

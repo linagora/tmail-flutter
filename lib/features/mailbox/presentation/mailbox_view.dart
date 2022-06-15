@@ -333,7 +333,7 @@ class MailboxView extends GetWidget<MailboxController> {
     return Padding(
         padding: EdgeInsets.only(left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 5),
         child: buildIconWeb(
-          onTap: () => controller.disableSearch(context),
+          onTap: () => controller.disableSearch(),
           icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton),
         ));
   }
