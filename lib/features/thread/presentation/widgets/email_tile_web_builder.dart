@@ -94,14 +94,19 @@ class EmailTileBuilder {
             : null,
         child: tile,
       );
-    } else {
+    } else if (_responsiveUtils.isTabletLarge(_context) || _responsiveUtils.isTablet(_context)) {
       return Container(
-          margin: _selectModeAll == SelectMode.ACTIVE
-              ? const EdgeInsets.only(top: 3, left: 16, right: 16)
-              : EdgeInsets.zero,
-          padding: _selectModeAll == SelectMode.ACTIVE
-              ? const EdgeInsets.only(top: 8, bottom: 16, right: 8)
-              : const EdgeInsets.only(bottom: 10, left: 16, right: 16),
+          margin: const EdgeInsets.only(top: 3, left: 16, right: 16),
+          padding: const EdgeInsets.only(bottom: 8, right: 8, top: 8),
+          decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
+              ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: AppColor.colorItemEmailSelectedDesktop)
+              : BoxDecoration(borderRadius: BorderRadius.circular(0), color: Colors.white),
+          alignment: Alignment.center,
+          child: tile);
+    }else {
+      return Container(
+          margin: const EdgeInsets.only(top: 3, left: 16, right: 16),
+          padding: const EdgeInsets.only(bottom: 8, right: 8, top: 8),
           decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
               ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: AppColor.colorItemEmailSelectedDesktop)
               : BoxDecoration(borderRadius: BorderRadius.circular(0), color: Colors.white),
@@ -240,127 +245,143 @@ class EmailTileBuilder {
       return InkWell(
         onTap: () => _emailActionClick?.call(EmailActionType.preview, _presentationEmail),
         onHover: (value) => _onHoverItemChanged(value, setState),
-        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          InkWell(
-            onTap: () {
-              if (isHoverIcon) {
-                _emailActionClick?.call(EmailActionType.selection, _presentationEmail);
-              }
-            },
-            onHover: (value) => _onHoverIconChanged(value, setState),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8, right: 12),
-              child: _buildAvatarIcon())),
-          Expanded(child: Column(children: [
-            Transform(
-                transform: Matrix4.translationValues(0.0, isHoverItem ? -10.0 : 0.0, 0.0),
-                child: Row(children: [
-                  if (!_presentationEmail.hasRead)
-                    Padding(
-                        padding: const EdgeInsets.only(right: 5),
-                        child: SvgPicture.asset(_imagePaths.icUnreadStatus, width: 9, height: 9, fit: BoxFit.fill)),
-                  Expanded(
-                      child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
-                          ? RichTextBuilder(
-                              _getInformationSender(),
-                              _searchQuery!.value,
-                              TextStyle(
-                                  fontSize: 15,
-                                  color: _buildTextColorForReadEmail(),
-                                  fontWeight: _buildFontForReadEmail()),
-                              TextStyle(
-                                  fontSize: 15,
-                                  color: _buildTextColorForReadEmail(),
-                                  backgroundColor: AppColor.bgWordSearch,
-                                  fontWeight: _buildFontForReadEmail())
-                            ).build()
-                          : Text(
-                              _getInformationSender(),
-                              maxLines: 1,
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: _buildTextColorForReadEmail(),
-                                  fontWeight: _buildFontForReadEmail()))
-                  ),
-                  if (isHoverItem)
-                    _buildListActionButtonWhenHover()
-                  else
-                    _buildDateTimeForMobileTabletScreen()
-                ])),
-            Transform(
-              transform: Matrix4.translationValues(0.0, isHoverItem ? -10.0 : 0.0, 0.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+        child: Stack(
+          children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              InkWell(
+                onTap: () {
+                  if (isHoverIcon) {
+                    _emailActionClick?.call(EmailActionType.selection, _presentationEmail);
+                  }
+                },
+                onHover: (value) => _onHoverIconChanged(value, setState),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8, right: 12),
+                  child: _buildAvatarIcon())),
+              Expanded(child: Stack(alignment: Alignment.bottomCenter,
                 children: [
-                  Padding(
-                      padding: EdgeInsets.only(top: isHoverItem ? 0 : 8),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Expanded(child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
-                              ? RichTextBuilder(
-                                  _presentationEmail.getEmailTitle(),
-                                  _searchQuery!.value,
-                                  TextStyle(
-                                      fontSize: 13,
-                                      color: _buildTextColorForReadEmail()),
-                                  TextStyle(
-                                      fontSize: 13,
-                                      backgroundColor: AppColor.bgWordSearch,
-                                      color: _buildTextColorForReadEmail())
-                                ).build()
-                              : Text(
-                                  _presentationEmail.getEmailTitle(),
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      color: _buildTextColorForReadEmail()))
-                          ),
-                          if (_searchStatus == SearchStatus.ACTIVE && _presentationEmail.mailboxName.isNotEmpty)
-                            Container(
-                                margin: const EdgeInsets.only(left: 8),
-                                padding: const EdgeInsets.only(left: 8, right: 8, top: 3, bottom: 3),
-                                constraints: const BoxConstraints(maxWidth: 100),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: AppColor.backgroundCounterMailboxColor),
-                                child: Text(
-                                  _presentationEmail.mailboxName,
-                                  maxLines: 1,
-                                  style: const TextStyle(fontSize: 10, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
-                                )
-                            ),
-                          if (_presentationEmail.hasStarred)
-                            SvgPicture.asset(_imagePaths.icStar, width: 15, height: 15, fit: BoxFit.fill)
-                        ],
-                      )),
-                  Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Row(children: [
-                        Expanded(child: _searchStatus ==
-                            SearchStatus.ACTIVE && _searchQuery != null &&
-                            _searchQuery!.value.isNotEmpty
+                  Column(children: [
+                    Row(children: [
+                      if (!_presentationEmail.hasRead)
+                        Padding(
+                            padding: const EdgeInsets.only(right: 5),
+                            child: SvgPicture.asset(
+                                _imagePaths.icUnreadStatus,
+                                width: 9,
+                                height: 9,
+                                fit: BoxFit.fill)),
+                      Expanded(child: _searchStatus == SearchStatus.ACTIVE &&
+                        _searchQuery != null &&
+                        _searchQuery!.value.isNotEmpty
                             ? RichTextBuilder(
-                                _presentationEmail.getPartialContent(),
+                                _getInformationSender(),
                                 _searchQuery!.value,
-                                const TextStyle(fontSize: 13, color: AppColor.colorContentEmail),
-                                const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, backgroundColor: AppColor.bgWordSearch)).build()
+                                TextStyle(
+                                    fontSize: 15,
+                                    color: _buildTextColorForReadEmail(),
+                                    fontWeight: _buildFontForReadEmail()),
+                                TextStyle(
+                                    fontSize: 15,
+                                    color: _buildTextColorForReadEmail(),
+                                    backgroundColor: AppColor.bgWordSearch,
+                                    fontWeight: _buildFontForReadEmail())
+                              ).build()
                             : Text(
-                                _presentationEmail.getPartialContent(),
+                                _getInformationSender(),
                                 maxLines: 1,
-                                style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail))
-                        ),
-                      ])),
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: _buildTextColorForReadEmail(),
+                                    fontWeight: _buildFontForReadEmail()))
+                      ),
+                      if (isHoverItem)
+                        const SizedBox(width: 120)
+                      else
+                        _buildDateTimeForMobileTabletScreen()
+                    ]),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Expanded(child: _searchStatus == SearchStatus.ACTIVE && _searchQuery != null && _searchQuery!.value.isNotEmpty
+                                ? RichTextBuilder(
+                                    _presentationEmail.getEmailTitle(),
+                                    _searchQuery!.value,
+                                    TextStyle(
+                                        fontSize: 13,
+                                        color: _buildTextColorForReadEmail()),
+                                    TextStyle(
+                                        fontSize: 13,
+                                        backgroundColor: AppColor.bgWordSearch,
+                                        color: _buildTextColorForReadEmail())
+                                  ).build()
+                                : Text(
+                                    _presentationEmail.getEmailTitle(),
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: _buildTextColorForReadEmail()))
+                            ),
+                            if (_searchStatus == SearchStatus.ACTIVE && _presentationEmail.mailboxName.isNotEmpty)
+                              Container(
+                                  margin: const EdgeInsets.only(left: 8),
+                                  padding: const EdgeInsets.only(left: 8, right: 8, top: 3, bottom: 3),
+                                  constraints: const BoxConstraints(maxWidth: 100),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: AppColor.backgroundCounterMailboxColor),
+                                  child: Text(
+                                    _presentationEmail.mailboxName,
+                                    maxLines: 1,
+                                    style: const TextStyle(fontSize: 10, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold),
+                                  )
+                              ),
+                            if (_presentationEmail.hasStarred)
+                              SvgPicture.asset(_imagePaths.icStar, width: 15, height: 15, fit: BoxFit.fill)
+                          ],
+                        )),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Row(children: [
+                          Expanded(child: _searchStatus ==
+                              SearchStatus.ACTIVE && _searchQuery != null &&
+                              _searchQuery!.value.isNotEmpty
+                              ? RichTextBuilder(
+                                  _presentationEmail.getPartialContent(),
+                                  _searchQuery!.value,
+                                  const TextStyle(fontSize: 13, color: AppColor.colorContentEmail),
+                                  const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, backgroundColor: AppColor.bgWordSearch)).build()
+                              : Text(
+                                  _presentationEmail.getPartialContent(),
+                                  maxLines: 1,
+                                  style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail))
+                          ),
+                        ])),
+                  ]),
                   if (_selectModeAll == SelectMode.INACTIVE)
-                    const Padding(
-                        padding: EdgeInsets.only(top: 12),
-                        child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
+                    Transform(
+                      transform: Matrix4.translationValues(0.0, 10.0, 0.0),
+                      child: const Divider(
+                          color: AppColor.lineItemListColor,
+                          height: 1,
+                          thickness: 0.2),
+                    ),
                 ],
-              )
-            ),
-          ]))
-        ]),
+              ))
+            ]),
+            if (isHoverItem)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Transform(
+                    transform: Matrix4.translationValues(
+                        0.0,
+                        _selectModeAll == SelectMode.INACTIVE ? -5.0 : 0.0,
+                        0.0),
+                    child: _buildListActionButtonWhenHover()))
+          ],
+        ),
       );
     });
   }
@@ -436,6 +457,10 @@ class EmailTileBuilder {
   Widget _buildListActionButtonWhenHover() {
     return Row(children: [
       buildIconWeb(
+          minSize: 18,
+          iconSize: 18,
+          iconPadding: const EdgeInsets.all(5),
+          splashRadius: 10,
           icon: SvgPicture.asset(
               _presentationEmail.hasRead ? _imagePaths.icRead : _imagePaths.icUnread,
               color: AppColor.colorActionButtonHover,
@@ -446,17 +471,29 @@ class EmailTileBuilder {
           onTap: () => _emailActionClick?.call(
               _presentationEmail.hasRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
               _presentationEmail)),
+      const SizedBox(width: 5),
       if (_mailboxRole != PresentationMailbox.roleDrafts)
-        buildIconWeb(
-            icon: SvgPicture.asset(
-                _imagePaths.icMove,
-                width: 16,
-                height: 16,
-                color: AppColor.colorActionButtonHover,
-                fit: BoxFit.fill),
-            tooltip: AppLocalizations.of(_context).move,
-            onTap: () => _emailActionClick?.call(EmailActionType.moveToMailbox, _presentationEmail)),
+        ... [
+          buildIconWeb(
+              minSize: 18,
+              iconSize: 18,
+              iconPadding: const EdgeInsets.all(5),
+              splashRadius: 10,
+              icon: SvgPicture.asset(
+                  _imagePaths.icMove,
+                  width: 16,
+                  height: 16,
+                  color: AppColor.colorActionButtonHover,
+                  fit: BoxFit.fill),
+              tooltip: AppLocalizations.of(_context).move,
+              onTap: () => _emailActionClick?.call(EmailActionType.moveToMailbox, _presentationEmail)),
+          const SizedBox(width: 5),
+        ],
       buildIconWeb(
+          minSize: 18,
+          iconSize: 18,
+          iconPadding: const EdgeInsets.all(5),
+          splashRadius: 10,
           icon: SvgPicture.asset(
               _imagePaths.icDelete,
               width: 16,
@@ -469,6 +506,7 @@ class EmailTileBuilder {
           onTap: () => _emailActionClick?.call(
               _mailboxRole != PresentationMailbox.roleTrash ? EmailActionType.moveToTrash : EmailActionType.deletePermanently,
               _presentationEmail)),
+      const SizedBox(width: 5),
       if (_mailboxRole != PresentationMailbox.roleDrafts)
         buildIconWebHasPosition(
             _context,
@@ -571,15 +609,17 @@ class EmailTileBuilder {
   }) {
     if (isHoverIcon || _presentationEmail.selectMode == SelectMode.ACTIVE
         || (_responsiveUtils.isMobile(_context) && _selectModeAll == SelectMode.ACTIVE)) {
-        return Padding(
-            padding: _responsiveUtils.isDesktop(_context)
-                ? const EdgeInsets.symmetric(horizontal: 4)
-                : const EdgeInsets.all(12),
-            child: SvgPicture.asset(
-                _presentationEmail.selectMode == SelectMode.ACTIVE
-                    ? _imagePaths.icSelected
-                    : _imagePaths.icUnSelected,
-                fit: BoxFit.fill));
+        return Container(
+          color: Colors.transparent,
+          padding: _responsiveUtils.isDesktop(_context)
+              ? const EdgeInsets.symmetric(horizontal: 4)
+              : const EdgeInsets.all(12),
+          child: SvgPicture.asset(
+              _presentationEmail.selectMode == SelectMode.ACTIVE
+                  ? _imagePaths.icSelected
+                  : _imagePaths.icUnSelected,
+              fit: BoxFit.fill),
+        );
     } else {
       return Container(
           width: iconSize ?? 48,

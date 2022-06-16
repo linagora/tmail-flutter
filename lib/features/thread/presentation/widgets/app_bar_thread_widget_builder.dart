@@ -64,13 +64,9 @@ class AppBarThreadWidgetBuilder {
       alignment: Alignment.topCenter,
       color: Colors.white,
       margin: EdgeInsets.zero,
-      padding: EdgeInsets.only(
-          left: 8,
-          bottom: !BuildUtils.isWeb ? 8 : 16,
-          right: 8,
-          top: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(_context)
-              ? 0
-              : 16),
+      padding: EdgeInsets.symmetric(
+          vertical: _selectMode == SelectMode.INACTIVE ? 16 : 11,
+          horizontal: 8),
       child: MediaQuery(
         data: const MediaQueryData(padding: EdgeInsets.zero),
         child: _buildAppBar()
@@ -109,46 +105,101 @@ class AppBarThreadWidgetBuilder {
           icon: SvgPicture.asset(_imagePaths.icCloseComposer,
               color: AppColor.colorTextButton,
               fit: BoxFit.fill),
+          minSize: 25,
+          iconSize: 25,
+          iconPadding: const EdgeInsets.all(5),
+          splashRadius: 15,
           tooltip: AppLocalizations.of(_context).cancel,
           onTap: () => _onCancelEditThread?.call()),
       Expanded(child: Text(
         AppLocalizations.of(_context).count_email_selected(_listSelectionEmail.length),
-        style: const TextStyle(fontSize: 17,
-            fontWeight: FontWeight.w500, color: AppColor.colorTextButton))),
+        style: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w500,
+            color: AppColor.colorTextButton))),
       buildIconWeb(
-          icon: SvgPicture.asset(_listSelectionEmail.isAllEmailRead ? _imagePaths.icRead : _imagePaths.icUnread, fit: BoxFit.fill),
-          tooltip: _listSelectionEmail.isAllEmailRead ? AppLocalizations.of(_context).unread : AppLocalizations.of(_context).read,
+          minSize: 25,
+          iconSize: 25,
+          iconPadding: const EdgeInsets.all(5),
+          splashRadius: 15,
+          icon: SvgPicture.asset(
+              _listSelectionEmail.isAllEmailRead
+                  ? _imagePaths.icRead
+                  : _imagePaths.icUnread,
+              fit: BoxFit.fill),
+          tooltip: _listSelectionEmail.isAllEmailRead
+              ? AppLocalizations.of(_context).unread
+              : AppLocalizations.of(_context).read,
           onTap: () => _onEmailSelectionAction?.call(
-              _listSelectionEmail.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
+              _listSelectionEmail.isAllEmailRead
+                  ? EmailActionType.markAsUnread
+                  : EmailActionType.markAsRead,
               _listSelectionEmail)),
+      const SizedBox(width: 5),
       buildIconWeb(
-          icon: SvgPicture.asset(_listSelectionEmail.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar, fit: BoxFit.fill),
-          tooltip: _listSelectionEmail.isAllEmailStarred ? AppLocalizations.of(_context).not_starred : AppLocalizations.of(_context).starred,
+          minSize: 25,
+          iconSize: 25,
+          iconPadding: const EdgeInsets.all(5),
+          splashRadius: 15,
+          icon: SvgPicture.asset(
+              _listSelectionEmail.isAllEmailStarred
+                  ? _imagePaths.icUnStar
+                  : _imagePaths.icStar,
+              fit: BoxFit.fill),
+          tooltip: _listSelectionEmail.isAllEmailStarred
+              ? AppLocalizations.of(_context).not_starred
+              : AppLocalizations.of(_context).starred,
           onTap: () => _onEmailSelectionAction?.call(
-              _listSelectionEmail.isAllEmailStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred,
+              _listSelectionEmail.isAllEmailStarred
+                  ? EmailActionType.unMarkAsStarred
+                  : EmailActionType.markAsStarred,
               _listSelectionEmail)),
+      const SizedBox(width: 5),
       if (_currentMailbox?.isDrafts == false)
-        buildIconWeb(
-            icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
-            tooltip: AppLocalizations.of(_context).move,
-            onTap: () => _onEmailSelectionAction?.call(EmailActionType.moveToMailbox, _listSelectionEmail)),
-      if (_currentMailbox?.isDrafts == false)
-        buildIconWeb(
-            icon: SvgPicture.asset(_currentMailbox?.isSpam == true
-                ? _imagePaths.icNotSpam : _imagePaths.icSpam,
-                fit: BoxFit.fill),
-            tooltip: _currentMailbox?.isSpam == true ? AppLocalizations.of(_context).un_spam : AppLocalizations.of(_context).mark_as_spam,
-            onTap: () => _currentMailbox?.isSpam == true
-                ? _onEmailSelectionAction?.call(EmailActionType.unSpam, _listSelectionEmail)
-                : _onEmailSelectionAction?.call(EmailActionType.moveToSpam, _listSelectionEmail)),
+        ... [
+          buildIconWeb(
+              minSize: 25,
+              iconSize: 25,
+              iconPadding: const EdgeInsets.all(5),
+              splashRadius: 15,
+              icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
+              tooltip: AppLocalizations.of(_context).move,
+              onTap: () => _onEmailSelectionAction?.call(EmailActionType.moveToMailbox, _listSelectionEmail)),
+          const SizedBox(width: 5),
+          buildIconWeb(
+              minSize: 25,
+              iconSize: 25,
+              iconPadding: const EdgeInsets.all(5),
+              splashRadius: 15,
+              icon: SvgPicture.asset(_currentMailbox?.isSpam == true
+                  ? _imagePaths.icNotSpam : _imagePaths.icSpam,
+                  fit: BoxFit.fill),
+              tooltip: _currentMailbox?.isSpam == true
+                  ? AppLocalizations.of(_context).un_spam
+                  : AppLocalizations.of(_context).mark_as_spam,
+              onTap: () => _currentMailbox?.isSpam == true
+                  ? _onEmailSelectionAction?.call(EmailActionType.unSpam, _listSelectionEmail)
+                  : _onEmailSelectionAction?.call(EmailActionType.moveToSpam, _listSelectionEmail)),
+          const SizedBox(width: 5),
+        ],
       buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icDelete, fit: BoxFit.fill),
+          minSize: 25,
+          iconSize: 25,
+          iconPadding: const EdgeInsets.all(5),
+          splashRadius: 15,
+          icon: SvgPicture.asset(
+              _imagePaths.icDeleteComposer,
+              width: 18,
+              height: 18,
+              color: AppColor.textFieldErrorBorderColor,
+              fit: BoxFit.fill),
           tooltip: _currentMailbox?.role != PresentationMailbox.roleTrash
               ? AppLocalizations.of(_context).move_to_trash
               : AppLocalizations.of(_context).delete_permanently,
           onTap: () => _currentMailbox?.isTrash == true
               ? _onEmailSelectionAction?.call(EmailActionType.deletePermanently, _listSelectionEmail)
               : _onEmailSelectionAction?.call(EmailActionType.moveToTrash, _listSelectionEmail)),
+      const SizedBox(width: 10),
     ]);
   }
 
@@ -241,7 +292,7 @@ class AppBarThreadWidgetBuilder {
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16),
         child: InkWell(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            borderRadius: const BorderRadius.all(Radius.circular(12)),
             onTap: () {
               if (_onFilterEmailAction != null
                   && _responsiveUtils.isScreenWithShortestSide(_context)) {
@@ -274,6 +325,10 @@ class AppBarThreadWidgetBuilder {
 
   Widget _buildMenuButton() {
     return buildIconWeb(
+        minSize: 20,
+        iconSize: 20,
+        iconPadding: const EdgeInsets.all(3),
+        splashRadius: 15,
         icon: SvgPicture.asset(_imagePaths.icMenuDrawer, fit: BoxFit.fill),
         onTap:() => _onOpenMailboxMenuActionClick?.call());
   }

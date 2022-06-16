@@ -61,7 +61,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                                   color: Colors.white,
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 16,
-                                      vertical: BuildUtils.isWeb && _responsiveUtils.isTabletLarge(context) ? 8 : 0),
+                                      vertical: BuildUtils.isWeb && !_responsiveUtils.isDesktop(context) ? 8 : 0),
                                   margin: const EdgeInsets.only(
                                       bottom: !BuildUtils.isWeb ? 16 : 0),
                                   child: _buildSearchFormInActive(context))
@@ -70,7 +70,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                                   color: Colors.white,
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 8,
-                                      vertical: BuildUtils.isWeb && _responsiveUtils.isTabletLarge(context) ? 8 : 0),
+                                      vertical: BuildUtils.isWeb && !_responsiveUtils.isDesktop(context) ? 8 : 0),
                                   margin: const EdgeInsets.only(
                                       bottom: !BuildUtils.isWeb ? 16 : 0),
                                   child: _buildSearchFormActive(context))
