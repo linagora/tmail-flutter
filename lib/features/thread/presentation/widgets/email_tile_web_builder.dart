@@ -85,10 +85,12 @@ class EmailTileBuilder {
   Widget _wrapContainerForTile(Widget tile) {
     if (_responsiveUtils.isDesktop(_context)) {
       return Container(
-        margin: _selectModeAll == SelectMode.ACTIVE ? const EdgeInsets.only(top: 3, left: 8, right: 8) : EdgeInsets.zero,
-        padding: _selectModeAll == SelectMode.ACTIVE ? const EdgeInsets.symmetric(vertical: 8) : EdgeInsets.zero,
+        margin: const EdgeInsets.only(top: 3),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: _selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE
-            ? BoxDecoration(borderRadius: BorderRadius.circular(14), color: AppColor.colorItemEmailSelectedDesktop)
+            ? BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                color: AppColor.colorItemEmailSelectedDesktop)
             : null,
         child: tile,
       );
@@ -331,7 +333,7 @@ class EmailTileBuilder {
       return InkWell(
         onTap: () => _emailActionClick?.call(EmailActionType.preview, _presentationEmail),
         onHover: (value) => _onHoverItemChanged(value, setState),
-        child: Column(children: [
+        child: Stack(alignment: Alignment.bottomCenter, children: [
           Row(children: [
             Container(
                 padding: const EdgeInsets.only(left: 16, right: 16),
@@ -382,10 +384,13 @@ class EmailTileBuilder {
             else
               _buildDateTimeForDesktopScreen()
           ]),
-          if (_selectModeAll == SelectMode.INACTIVE)
-            const Padding(
-                padding: EdgeInsets.only(top: 7.5, bottom: 7.5, left: 80),
-                child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
+          if ( _selectModeAll == SelectMode.INACTIVE)
+            Transform(
+              transform: Matrix4.translationValues(0.0, 8.5, 0.0),
+              child: const Padding(
+                  padding: EdgeInsets.only(left: 80),
+                  child: Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2)),
+            )
         ]),
       );
     });
