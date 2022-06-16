@@ -111,13 +111,17 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                                 ? Border.all(color: AppColor.colorBorderBodyThread, width: 1)
                                 : null,
                             color: Colors.white),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildLoadingView(),
-                              Expanded(child: _buildListEmail(context)),
-                              _buildLoadingViewLoadMore(),
-                            ]
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(
+                              BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 20 : 0)),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildLoadingView(),
+                                Expanded(child: _buildListEmail(context)),
+                                _buildLoadingViewLoadMore(),
+                              ]
+                          ),
                         )
                     )),
                     _buildListButtonSelectionForMobile(context),
@@ -464,7 +468,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   Widget _buildListEmail(BuildContext context) {
     return Container(
       margin: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
-          ? EdgeInsets.symmetric(vertical: controller.isSelectionEnabled() ? 4 : 12, horizontal: 4)
+          ? const EdgeInsets.symmetric(horizontal: 4)
           : EdgeInsets.zero,
       alignment: Alignment.center,
       padding: EdgeInsets.zero,
@@ -511,9 +515,9 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
       child: ListView.builder(
         controller: controller.listEmailController,
         physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.zero,
         key: const PageStorageKey('list_presentation_email_in_threads'),
         itemCount: listPresentationEmail.length,
-        padding: EdgeInsets.only(top: BuildUtils.isWeb && !_responsiveUtils.isDesktop(context) ? 10 : 0),
         itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
                 context,
                 listPresentationEmail[index],
