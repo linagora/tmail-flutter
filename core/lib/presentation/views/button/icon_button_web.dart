@@ -34,24 +34,28 @@ Widget buildIconWebHasPosition(BuildContext context, {
   IconWebHasPositionCallback? onTapDown,
   IconWebCallback? onTap,
 }) {
-  return InkWell(
-      onTapDown: (detail) {
-        final screenSize = MediaQuery.of(context).size;
-        final offset = detail.globalPosition;
-        final position = RelativeRect.fromLTRB(
-          offset.dx,
-          offset.dy,
-          screenSize.width - offset.dx,
-          screenSize.height - offset.dy,
-        );
-        onTapDown?.call(position);
-      },
-      onTap: () => onTap?.call(),
-      borderRadius: BorderRadius.all(Radius.circular(35)),
-      child: Tooltip(
-        message: tooltip ?? '',
-        child: icon,
-      )
+  return Material(
+    color: Colors.transparent,
+    shape: CircleBorder(),
+    child: InkWell(
+        onTapDown: (detail) {
+          final screenSize = MediaQuery.of(context).size;
+          final offset = detail.globalPosition;
+          final position = RelativeRect.fromLTRB(
+            offset.dx,
+            offset.dy,
+            screenSize.width - offset.dx,
+            screenSize.height - offset.dy,
+          );
+          onTapDown?.call(position);
+        },
+        onTap: () => onTap?.call(),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        child: Tooltip(
+          message: tooltip ?? '',
+          child: icon,
+        )
+    ),
   );
 }
 
