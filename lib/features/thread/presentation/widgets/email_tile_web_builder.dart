@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,6 +30,8 @@ class EmailTileBuilder {
 
   bool isHoverItem = false;
   bool isHoverIcon = false;
+  Timer? _debounceTimeIcon;
+  Timer? _debounceTimeItem;
 
   EmailTileBuilder(
     this._context,
@@ -44,6 +48,24 @@ class EmailTileBuilder {
 
   void addOnMoreActionClick(OnMoreActionClick onMoreActionClick) {
     _onMoreActionClick = onMoreActionClick;
+  }
+
+  void _onHoverIconChanged(bool isHover, StateSetter setState) {
+    if (_debounceTimeIcon?.isActive ?? false) _debounceTimeIcon?.cancel();
+    _debounceTimeIcon = Timer(const Duration(milliseconds: 300), () {
+      setState(() {
+        isHoverIcon = isHover;
+      });
+    });
+  }
+
+  void _onHoverItemChanged(bool isHover, StateSetter setState) {
+    if (_debounceTimeItem?.isActive ?? false) _debounceTimeItem?.cancel();
+    _debounceTimeItem = Timer(const Duration(milliseconds: 300), () {
+      setState(() {
+        isHoverItem = isHover;
+      });
+    });
   }
 
   Widget build() {
@@ -197,7 +219,7 @@ class EmailTileBuilder {
     return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
       return InkWell(
         onTap: () => _emailActionClick?.call(EmailActionType.preview, _presentationEmail),
-        onHover: (value) => setState(() => isHoverItem = value),
+        onHover: (value) => _onHoverItemChanged(value, setState),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           InkWell(
             onTap: () {
@@ -205,7 +227,7 @@ class EmailTileBuilder {
                 _emailActionClick?.call(EmailActionType.selection, _presentationEmail);
               }
             },
-            onHover: (value) => setState(() => isHoverIcon = value),
+            onHover: (value) => _onHoverIconChanged(value, setState),
             child: Padding(
               padding: const EdgeInsets.only(top: 8, right: 12),
               child: _buildAvatarIcon())),
@@ -308,7 +330,7 @@ class EmailTileBuilder {
     return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
       return InkWell(
         onTap: () => _emailActionClick?.call(EmailActionType.preview, _presentationEmail),
-        onHover: (value) => setState(() => isHoverItem = value),
+        onHover: (value) => _onHoverItemChanged(value, setState),
         child: Column(children: [
           Row(children: [
             Container(
@@ -333,7 +355,7 @@ class EmailTileBuilder {
                   _emailActionClick?.call(EmailActionType.selection, _presentationEmail);
                 }
               },
-              onHover: (value) => setState(() => isHoverIcon = value),
+              onHover: (value) => _onHoverIconChanged(value, setState),
               child: _buildAvatarIcon(
                   iconSize: 32,
                   textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
