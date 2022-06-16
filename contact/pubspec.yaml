@@ -16,7 +16,7 @@ dependencies:
 
   equatable: 2.0.3
 
-  json_annotation: 4.4.0
+  json_annotation: 4.5.0
 
   jmap_dart_client:
     git:
@@ -30,9 +30,9 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^1.0.0
 
-  build_runner: 2.1.7
+  build_runner: 2.1.11
 
-  json_serializable: 6.1.4
+  json_serializable: 6.2.0
 
   mockito: 5.0.17
 # For information on the generic Dart part of this file, see the
