@@ -46,7 +46,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
 
   Widget _buildBody(BuildContext context) {
     return SafeArea(
-        top: _responsiveUtils.isMobile(context),
+        top: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context),
         bottom: false,
         left: false,
         right: false,
@@ -54,8 +54,8 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
           onTap: () => FocusScope.of(context).unfocus(),
           child: ClipRRect(
               borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(_responsiveUtils.isMobile(context) ? 14 : 0),
-                  topLeft: Radius.circular(_responsiveUtils.isMobile(context) ? 14 : 0)),
+                  topRight: Radius.circular(!BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context) ? 14 : 0),
+                  topLeft: Radius.circular(!BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context) ? 14 : 0)),
               child: Container(
                   color: AppColor.colorBgMailbox,
                   child: SafeArea(

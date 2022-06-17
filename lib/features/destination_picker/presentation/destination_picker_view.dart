@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -102,13 +101,21 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   Widget _buildBodyMailboxLocation(BuildContext context, MailboxActions? actions) {
-    return SafeArea(top: _responsiveUtils.isPortraitMobile(context), bottom: false, left: false, right: false,
+    return SafeArea(
+        top: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context),
+        bottom: false,
+        left: false,
+        right: false,
         child: GestureDetector(
           onTap: () => {},
           child: ClipRRect(
               borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(_responsiveUtils.isPortraitMobile(context) ? 14 : 0),
-                  topLeft: Radius.circular(_responsiveUtils.isPortraitMobile(context) ? 14 : 0)),
+                  topRight: Radius.circular(
+                      !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
+                          ? 14 : 0),
+                  topLeft: Radius.circular(
+                      !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
+                          ? 14 : 0)),
               child: Container(
                   color: Colors.white,
                   child: Column(children: [
@@ -188,7 +195,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         if (actions == MailboxActions.create) const SizedBox(height: 12),
         if (actions != MailboxActions.create && !BuildUtils.isWeb)
           const Padding(
-            padding: EdgeInsets.only(left: 60),
+            padding: EdgeInsets.only(left: 55, right: 20),
             child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
         Obx(() => controller.folderMailboxHasChild
             ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderRootNode, actions)
@@ -238,23 +245,37 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
 
     return Container(
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white),
-        margin: EdgeInsets.only(
-            left: actions == MailboxActions.moveEmail
-                  || actions == MailboxActions.move
-                  || _responsiveUtils.isLandscapeMobile(context)
-                ? 0
-                : 16,
-            right: actions == MailboxActions.moveEmail || actions == MailboxActions.move
-                ? 0
-                : 16),
-        padding: EdgeInsets.only(
-            top: _responsiveUtils.isDesktop(context) && actions == MailboxActions.create ? 8 : 0,
-            bottom: _responsiveUtils.isDesktop(context) && actions == MailboxActions.create ? 8 : 0,
-            left: _responsiveUtils.isDesktop(context) || actions != MailboxActions.create ? 0 : 12,
-            right: actions == MailboxActions.create ? 8 : 16),
+        margin: _marginMailboxList(context, actions),
+        padding: _paddingMailboxList(context, actions),
         child: TreeView(
             key: Key('${categories.keyValue}_mailbox_list'),
             children: _buildListChildTileWidget(context, mailboxNode, lastNode: lastNode)));
+  }
+
+  EdgeInsets _marginMailboxList(BuildContext context, MailboxActions? actions) {
+    if (BuildUtils.isWeb) {
+      return EdgeInsets.only(
+          left: actions == MailboxActions.moveEmail
+              || actions == MailboxActions.move ? 0 : 16,
+          right: actions == MailboxActions.moveEmail
+              || actions == MailboxActions.move ? 0 : 16);
+    } else {
+      return EdgeInsets.only(
+          left: 16,
+          right: actions == MailboxActions.create ? 16 : 8);
+    }
+  }
+
+  EdgeInsets _paddingMailboxList(BuildContext context, MailboxActions? actions) {
+    if (BuildUtils.isWeb) {
+      return EdgeInsets.only(
+          left: actions == MailboxActions.create ? 0 : 8,
+          right: actions == MailboxActions.create ? 8 : 16);
+    } else {
+      return EdgeInsets.only(
+          left: actions == MailboxActions.create ? 16 : 8,
+          right: 0);
+    }
   }
 
   List<Widget> _buildListChildTileWidget(BuildContext context, MailboxNode parentNode, {MailboxNode? lastNode}) {
