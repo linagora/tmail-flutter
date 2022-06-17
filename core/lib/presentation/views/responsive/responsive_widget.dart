@@ -22,10 +22,11 @@ class ResponsiveWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (desktop != null && responsiveUtils.isDesktop(context)) return desktop!;
-    if (tabletLarge != null && responsiveUtils.isTabletLarge(context)) return tabletLarge!;
+    log('ResponsiveWidget::build(): WIDTH_SIZE: ${responsiveUtils.getDeviceWidth(context)}');
     if (landscapeMobile != null && responsiveUtils.isLandscapeMobile(context)) return landscapeMobile!;
     if (tablet != null && responsiveUtils.isTablet(context)) return tablet!;
+    if (tabletLarge != null && responsiveUtils.isTabletLarge(context)) return tabletLarge!;
+    if (desktop != null && responsiveUtils.isDesktop(context)) return desktop!;
     return mobile;
   }
 }

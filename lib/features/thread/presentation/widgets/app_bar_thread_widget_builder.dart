@@ -307,14 +307,12 @@ class AppBarThreadWidgetBuilder {
       children: [
         InkWell(
           onTap: () {
-            if (!_responsiveUtils.isTabletLarge(_context)
-                && !_responsiveUtils.isDesktop(_context)) {
+            if (_responsiveUtils.isSmallScreen(_context)) {
               _onOpenMailboxMenuActionClick?.call();
             }
           },
           child: Padding(
-            padding: (!_responsiveUtils.isTabletLarge(_context)
-                    && !_responsiveUtils.isDesktop(_context))
+            padding: (_responsiveUtils.isSmallScreen(_context))
                 ? EdgeInsets.zero
                 : const EdgeInsets.only(bottom: 8, top: 8),
             child: Container(
@@ -330,8 +328,7 @@ class AppBarThreadWidgetBuilder {
                     color: AppColor.colorNameEmail,
                     fontWeight: FontWeight.w700))
             ))),
-        if (!_responsiveUtils.isTabletLarge(_context)
-            && !_responsiveUtils.isDesktop(_context))
+        if (_responsiveUtils.isSmallScreen(_context))
           Transform(
             transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
             child: IconButton(
@@ -341,12 +338,7 @@ class AppBarThreadWidgetBuilder {
                   width: 20,
                   height: 16,
                   fit: BoxFit.fill),
-              onPressed: () {
-                if (!_responsiveUtils.isTabletLarge(_context)
-                    && !_responsiveUtils.isDesktop(_context)) {
-                  _onOpenMailboxMenuActionClick?.call();
-                }
-              }
+              onPressed: () => _onOpenMailboxMenuActionClick?.call()
             )
           )
       ]
@@ -356,7 +348,7 @@ class AppBarThreadWidgetBuilder {
   double _getMaxWidthAppBarTitle() {
     var width = MediaQuery.of(_context).size.width;
     var widthSiblingsWidget = 220;
-    if (_responsiveUtils.isTablet(_context)) {
+    if (_responsiveUtils.isTablet(_context) || _responsiveUtils.isLandscapeMobile(_context)) {
       width = width * 0.7;
       widthSiblingsWidget = 250;
     } else if (_responsiveUtils.isTabletLarge(_context)) {

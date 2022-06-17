@@ -66,4 +66,8 @@ class ResponsiveUtils {
       return widthScreen < 444 ? widthScreen : 444;
     }
   }
+
+  bool isSmallScreen(BuildContext context) {
+    return isPortraitMobile(context) || isLandscapeMobile(context) || isTablet(context);
+  }
 }
