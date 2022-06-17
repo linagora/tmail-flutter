@@ -119,7 +119,11 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               child: Container(
                   color: Colors.white,
                   child: Column(children: [
-                      SafeArea(left: false, right: false, bottom: false, child: _buildAppBar(context)),
+                      SafeArea(
+                          left: !BuildUtils.isWeb && _responsiveUtils.isLandscapeMobile(context),
+                          right: false,
+                          bottom: false,
+                          child: _buildAppBar(context)),
                       const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
                       Obx(() => controller.isSearchActive()
                           ? SafeArea(bottom: false, top: false, right: false, child: _buildInputSearchFormWidget(context))
@@ -129,7 +133,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                           child: SafeArea(
                               top: false,
                               bottom: false,
-                              left: _responsiveUtils.isLandscapeMobile(context) ? true : false,
+                              left: !BuildUtils.isWeb && _responsiveUtils.isLandscapeMobile(context),
                               right: false,
                               child: _buildBodyDestinationPicker(context, actions))))
                   ])
@@ -261,8 +265,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               || actions == MailboxActions.move ? 0 : 16);
     } else {
       return EdgeInsets.only(
-          left: 16,
-          right: actions == MailboxActions.create ? 16 : 8);
+          left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
+          right: actions == MailboxActions.create
+              ? 16
+              : _responsiveUtils.isLandscapeMobile(context) ? 0 : 8);
     }
   }
 
