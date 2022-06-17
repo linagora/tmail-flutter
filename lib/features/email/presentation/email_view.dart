@@ -96,7 +96,7 @@ class EmailView extends GetView with NetworkConnectionMixin {
 
   Widget _buildBottomBar(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.zero,
+      padding: const EdgeInsets.only(bottom: 16),
       child: Obx(() => (BottomBarMailWidgetBuilder(
               context,
               imagePaths,
