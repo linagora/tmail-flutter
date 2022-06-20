@@ -233,7 +233,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
         .build(),
       const SizedBox(width: 16),
-      Obx(() => (ButtonBuilder(imagePaths.icFilterWeb)
+      Obx(() => (ButtonBuilder(imagePaths.icFilterAdvanced)
           ..key(const Key('button_filter_messages'))
           ..context(context)
           ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
