@@ -1,1 +1,678 @@
-{}
+{
+  "prefix_https": "https://",
+  "@prefix_https": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply": "Respondi",
+  "@reply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_all": "Respondi al ĉiuj",
+  "@reply_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "to_email_address_prefix": "Al",
+  "@to_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "prefix_reply_email": "Re:",
+  "@prefix_reply_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "prefix_forward_email": "Plusendo:",
+  "@prefix_forward_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "header_email_quoted": "Je {sentDate}, de {emailAddress}",
+  "@header_email_quoted": {
+    "type": "text",
+    "placeholders_order": [
+      "sentDate",
+      "emailAddress"
+    ],
+    "placeholders": {
+      "sentDate": {},
+      "emailAddress": {}
+    }
+  },
+  "mark_as_unread": "Marki kiel nelegitan",
+  "@mark_as_unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_read": "Marki kiel legitan",
+  "@mark_as_read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move_to_trash": "Movi en rubujon",
+  "@move_to_trash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloading_file": "Elŝutante {fileName}",
+  "@downloading_file": {
+    "type": "text",
+    "placeholders_order": [
+      "fileName"
+    ],
+    "placeholders": {
+      "fileName": {}
+    }
+  },
+  "undo_action": "MALFARI",
+  "@undo_action": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "read": "Legita",
+  "@read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unread": "Nelegita",
+  "@unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folders": "Dosierujoj",
+  "@folders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "done": "Finita",
+  "@done": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "details": "Detaloj",
+  "@details": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_message": "Nova mesaĝo",
+  "@new_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "show_all": "Montri ĉiujn",
+  "@show_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "password": "pasvorto",
+  "@password": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "login": "Ensaluti",
+  "@login": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "next": "Sekva",
+  "@next": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signIn": "Saluti",
+  "@signIn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storage": "KONSERVEJO",
+  "@storage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forward": "Plusendi",
+  "@forward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "from_email_address_prefix": "De",
+  "@from_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unread_email_notification": "nova",
+  "@unread_email_notification": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bcc_email_address_prefix": "Kaŝkopio",
+  "@bcc_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cc_email_address_prefix": "Kopio",
+  "@cc_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subject_email": "Titolo",
+  "@subject_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spam": "Trudmesaĝo",
+  "@spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "flag": "Flago",
+  "@flag": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search_folder": "Serĉi dosierujon",
+  "@search_folder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "my_folders": "MIAJ DOSIERUJOJ",
+  "@my_folders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_folder": "Nova dosierujo",
+  "@new_folder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search_mail": "Serĉi retmesaĝojn",
+  "@search_mail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sign_out": "Adiaŭi",
+  "@sign_out": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "jmapStandard": "Normo JMAP",
+  "@jmapStandard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "encryptedMailbox": "Ĉifrita retpoŝtkesto",
+  "@encryptedMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move_to_spam": "Movi en trudmesaĝujon",
+  "@move_to_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "photos_and_videos": "Fotoj kaj filmoj",
+  "@photos_and_videos": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_text_email_address": "Nomo aŭ retpoŝta adreso",
+  "@hint_text_email_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_content_email_composer": "Ekverku vian mesaĝon ĉi tie",
+  "@hint_content_email_composer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discard": "Forĵeti",
+  "@discard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rename": "Ŝanĝi nomon",
+  "@rename": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hide": "Kaŝi",
+  "@hide": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "app_name": "Tmail",
+  "@app_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select": "Elekti",
+  "@select": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "more": "Pli",
+  "@more": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "back": "Reen",
+  "@back": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "show": "Montri",
+  "@show": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_mailbox": "Nova retpoŝtkesto",
+  "@new_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailbox_location": "Loko de retpoŝtkesto",
+  "@mailbox_location": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "default_mailbox": "Implicita retpoŝtkesto",
+  "@default_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "drafts_saved": "Malneto konserviĝis",
+  "@drafts_saved": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_mailboxes": "Forigi retpoŝtkestojn",
+  "@delete_mailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rename_mailbox": "Ŝanĝi nomon de retpoŝtkesto",
+  "@rename_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "compose_email": "Verki retmesaĝon",
+  "@compose_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search_emails": "Serĉi retmesaĝojn",
+  "@search_emails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select_all": "Elekti ĉion",
+  "@select_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "filter_messages": "Filtri retmesaĝojn",
+  "@filter_messages": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sending_failed": "Sendado malsukcesis",
+  "@sending_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_all": "Forviŝi ĉiujn",
+  "@delete_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy_email_address": "Kopii retpoŝtan adreson",
+  "@copy_email_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "save_to_drafts": "Konservi kiel malneton",
+  "@save_to_drafts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "version": "Versio",
+  "@version": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maximum_files_size": "Maksimuma grando de dosiero",
+  "@maximum_files_size": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "name": "Nomo",
+  "@name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "settings": "Agordoj",
+  "@settings": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "profiles": "Profiloj",
+  "@profiles": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "identities": "Identecoj",
+  "@identities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signature": "Signaturo",
+  "@signature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "create": "Krei",
+  "@create": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "default_value": "Implicita",
+  "@default_value": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "save": "Konservi",
+  "@save": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move_message": "Movi mesaĝon",
+  "@move_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manage_account": "Administri konton",
+  "@manage_account": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_identity": "Nova identeco",
+  "@new_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "html_template": "HTML-ŝablono",
+  "@html_template": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "all_identities": "Ĉiuj identecoj",
+  "@all_identities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveMailbox": "Movi retpoŝtkeston",
+  "@moveMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteMailbox": "Forigi retpoŝtkeston",
+  "@deleteMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "send_anyway": "Sendi malgraŭ tio",
+  "@send_anyway": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty_subject": "Malplena titolo",
+  "@empty_subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_internet_connection": "Sen Interreta konekto",
+  "@no_internet_connection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_spam": "Marki kiel trudmesaĝon",
+  "@mark_as_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwarded_message": "Plusendita mesaĝo",
+  "@forwarded_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cancel": "Nuligi",
+  "@cancel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "edit": "Redakti",
+  "@edit": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "compose": "Verki",
+  "@compose": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fromMe": "De mi",
+  "@fromMe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "browse": "Foliumi",
+  "@browse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "results": "Rezultoj",
+  "@results": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move": "Movi",
+  "@move": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fullscreen": "Plenekrane",
+  "@fullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "send": "Sendi",
+  "@send": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete": "Forviŝi",
+  "@delete": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "close": "Fermi",
+  "@close": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_identity": "Forviŝi identecon",
+  "@delete_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "date": "Dato",
+  "@date": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "un_spam": "Malmarki kiel trudmesaĝon",
+  "@un_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "edit_identity": "Modifi identecon",
+  "@edit_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "anyTime": "Iam ajn",
+  "@anyTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allMailboxes": "Ĉiuj retpoŝtkestoj",
+  "@allMailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_message_forever": "Forviŝi mesaĝon nemalfareble",
+  "@delete_message_forever": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_to_address": "Respondi al adreso",
+  "@reply_to_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bcc_to_address": "Kaŝkopii al adreso",
+  "@bcc_to_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_all_as_read": "Marki ĉiujn kiel legitajn",
+  "@mark_all_as_read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisEmailAddressInvalid": "Ĉi tiu retpoŝta adreso ŝajnas nevalida",
+  "@thisEmailAddressInvalid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_input_create_new_mailbox": "Tajpu nomon de retpoŝtkesto",
+  "@hint_input_create_new_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_as_not_spam": "Markita kiel ne trudmesaĝon",
+  "@marked_as_not_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  }
+}
