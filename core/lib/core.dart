@@ -14,6 +14,8 @@ export 'domain/extensions/media_type_extension.dart';
 // Exceptions
 export 'domain/exceptions/download_file_exception.dart';
 export 'data/extensions/options_extensions.dart';
+export 'domain/exceptions/remote_exception.dart';
+export 'data/network/remote_exception_thrower.dart';
 
 // Utils
 export 'presentation/utils/theme_utils.dart';
