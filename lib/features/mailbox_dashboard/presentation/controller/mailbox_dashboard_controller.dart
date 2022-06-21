@@ -491,6 +491,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   Future<List<PresentationEmail>> quickSearchEmails() async {
+    searchCtrl.updateFilterEmail(mailBoxId: selectedMailbox.value?.id);
     return searchCtrl.quickSearchEmails(accountId.value);
   }
 

@@ -73,8 +73,8 @@ class SearchEmailFilter {
     );
   }
 
-  EmailFilterCondition mappingToListEmailFilterCondition() {
-    return EmailFilterCondition(
+  Filter? mappingToEmailFilterCondition() {
+    final emailEmailFilterConditionShared = EmailFilterCondition(
       text: text?.value,
       inMailbox: mailBoxId,
       after: emailReceiveTimeType?.toUTCDate(),
@@ -82,9 +82,14 @@ class SearchEmailFilter {
       notKeyword: notKeyword,
       hasAttachment: hasAttachment?.getValue(),
       subject: subject,
-      from: from.isEmpty ? null : from.first,
-      to: to.isEmpty ? null : to.first,
     );
 
+    return LogicFilterOperator(Operator.AND, {
+      emailEmailFilterConditionShared,
+      LogicFilterOperator(
+          Operator.AND, to.map((e) => EmailFilterCondition(to: e)).toSet()),
+      LogicFilterOperator(
+          Operator.AND, from.map((e) => EmailFilterCondition(from: e)).toSet()),
+    });
   }
 }

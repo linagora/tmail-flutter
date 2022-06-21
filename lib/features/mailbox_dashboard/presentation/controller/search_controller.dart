@@ -117,7 +117,7 @@ class SearchController extends BaseController {
                   EmailComparator(EmailComparatorProperty.receivedAt)
                     ..setIsAscending(false)),
               filter:
-                  searchEmailFilter.value.mappingToListEmailFilterCondition(),
+                  searchEmailFilter.value.mappingToEmailFilterCondition(),
               properties: ThreadConstants.propertiesQuickSearch)
           .then((result) => result.fold(
               (failure) => <PresentationEmail>[],
