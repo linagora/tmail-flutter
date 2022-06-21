@@ -145,13 +145,12 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
   }
 
   Widget _buildListMailbox(BuildContext context) {
-    return ListView(
+    return SingleChildScrollView(
         controller: controller.mailboxListScrollController,
         key: const PageStorageKey('mailbox_list'),
-        primary: false,
-        shrinkWrap: true,
+        physics: const ClampingScrollPhysics(),
         padding: EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 16 : 0),
-        children: [
+        child: Column(children: [
           Obx(() {
             if (controller.isSelectionEnabled() || _responsiveUtils.isDesktop(context)) {
               return const SizedBox.shrink();
@@ -163,12 +162,15 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
               ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultRootNode)
               : const SizedBox.shrink()),
           const SizedBox(height: 8),
-          Obx(() => controller.folderMailboxHasChild
-              ? Column(children: const [
-                  Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
-                  SizedBox(height: 8),
-                ])
-              : const SizedBox.shrink()),
+          Obx(() {
+            if (controller.folderMailboxHasChild) {
+              return Column(children: const [
+                Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+                SizedBox(height: 8),
+              ]);
+            }
+            return const SizedBox.shrink();
+          }),
           Obx(() => controller.folderMailboxHasChild
               ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderRootNode)
               : const SizedBox.shrink()),
@@ -186,7 +188,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                     tooltip: AppLocalizations.of(context).new_mailbox,
                     onTap: () => controller.goToCreateNewMailboxView())),
           ]),
-        ]
+        ])
     );
   }
 
