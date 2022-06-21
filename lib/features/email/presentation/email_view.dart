@@ -60,8 +60,12 @@ class EmailView extends GetView with NetworkConnectionMixin {
               border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
               color: Colors.white)
           : null,
-        margin: responsiveUtils.isDesktop(context) ? const EdgeInsets.all(16) : EdgeInsets.zero,
-        padding: responsiveUtils.isDesktop(context) ? const EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 3) : EdgeInsets.zero,
+        margin: responsiveUtils.isDesktop(context)
+            ? const EdgeInsets.only(right: 16, top: 16, bottom: 16)
+            : EdgeInsets.zero,
+        padding: responsiveUtils.isDesktop(context)
+            ? const EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 3)
+            : EdgeInsets.zero,
         child: Column(children: [
           _buildAppBar(context),
           if (responsiveUtils.isDesktop(context)) const SizedBox(height: 5),
