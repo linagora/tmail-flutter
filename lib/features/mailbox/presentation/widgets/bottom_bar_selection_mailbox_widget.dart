@@ -46,7 +46,11 @@ class BottomBarSelectionMailboxWidget {
             ..paddingIcon(const EdgeInsets.all(8))
             ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton.withOpacity(0.3)))
             ..iconColor(AppColor.colorTextButton.withOpacity(0.3))
-            ..onPressActionClick(() => {})
+            ..onPressActionClick(() {
+              if (_isMoveMailboxValid) {
+                _onMailboxActionsClick?.call(MailboxActions.move, _listSelectionMailbox);
+              }
+            })
             ..text(AppLocalizations.of(_context).move, isVertical: true))
           .build()),
         Expanded(child: (ButtonBuilder(_imagePaths.icRenameMailbox)
@@ -115,6 +119,9 @@ class BottomBarSelectionMailboxWidget {
 
   bool get _isMarkAsReadMailboxValid => _listSelectionMailbox.length == 1
       && _listSelectionMailbox.first.getCountUnReadEmails().isNotEmpty;
+
+  bool get _isMoveMailboxValid => _listSelectionMailbox.length == 1
+      && _isAllFolderMailbox;
 
   bool get _isAllFolderMailbox =>
       _listSelectionMailbox.every((mailbox) => !mailbox.hasRole());

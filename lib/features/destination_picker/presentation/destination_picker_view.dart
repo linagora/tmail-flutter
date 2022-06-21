@@ -334,11 +334,12 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   Widget _buildUnifiedMailbox(BuildContext context, MailboxActions? actions) {
     if (actions == MailboxActions.move) {
       return InkWell(
-        onTap: () => controller.selectMailboxAction(null),
+        onTap: () => controller.selectMailboxAction(PresentationMailbox.unifiedMailbox),
         child: ClipRRect(
           borderRadius: const BorderRadius.all(Radius.circular(14)),
           child: Container(
               color: Colors.white,
+              margin: const EdgeInsets.only(left: BuildUtils.isWeb ? 8 : 0),
               padding: const EdgeInsets.only(left: 16, top: 16),
               child: Row(children: [
                 SvgPicture.asset(
@@ -374,7 +375,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         data: const MediaQueryData(padding: EdgeInsets.zero),
         child: ListTile(
           contentPadding: EdgeInsets.zero,
-          onTap: () => controller.selectMailboxAction(null),
+          onTap: () => controller.selectMailboxAction(PresentationMailbox.unifiedMailbox),
           leading: Padding(
             padding: const EdgeInsets.only(left: 16),
             child: SvgPicture.asset(_imagePaths.icFolderMailbox,

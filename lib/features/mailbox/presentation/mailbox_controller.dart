@@ -698,14 +698,18 @@ class MailboxController extends BaseMailboxController {
               MailboxActions.move,
               mailboxIdSelected: mailboxSelected.id));
 
-      _handleMovingMailbox(
-          accountId,
-          MoveAction.moving,
-          mailboxSelected,
-          destinationMailbox: destinationMailbox);
-    }
+      if (destinationMailbox is PresentationMailbox) {
+        final mailboxDestination = destinationMailbox == PresentationMailbox.unifiedMailbox
+            ? null : destinationMailbox;
+        _handleMovingMailbox(
+            accountId,
+            MoveAction.moving,
+            mailboxSelected,
+            destinationMailbox: mailboxDestination);
 
-    _cancelSelectMailbox();
+        _cancelSelectMailbox();
+      }
+    }
   }
 
   void _handleMovingMailbox(
