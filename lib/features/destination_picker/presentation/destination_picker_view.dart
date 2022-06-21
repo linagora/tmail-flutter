@@ -181,31 +181,30 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   Widget _buildListMailbox(BuildContext context, MailboxActions? actions) {
-    return ListView(
-      primary: false,
-      shrinkWrap: true,
-      children: [
-        if (actions == MailboxActions.moveEmail || actions == MailboxActions.move)
-          _buildSearchBarWidget(context),
-        _buildLoadingView(),
-        if (actions == MailboxActions.create && !BuildUtils.isWeb && _responsiveUtils.isScreenWithShortestSide(context))
+    return SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
+        child: Column(children: [
+          if (actions == MailboxActions.moveEmail || actions == MailboxActions.move)
+            _buildSearchBarWidget(context),
+          _buildLoadingView(),
+          if (actions == MailboxActions.create && !BuildUtils.isWeb && _responsiveUtils.isScreenWithShortestSide(context))
+            const SizedBox(height: 12),
+          if (actions == MailboxActions.create || actions == MailboxActions.move)
+            _buildUnifiedMailbox(context, actions),
           const SizedBox(height: 12),
-        if (actions == MailboxActions.create || actions == MailboxActions.move)
-          _buildUnifiedMailbox(context, actions),
-        const SizedBox(height: 12),
-        Obx(() => controller.defaultMailboxHasChild
-            ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultRootNode, actions)
-            : const SizedBox.shrink()),
-        if (actions == MailboxActions.create) const SizedBox(height: 12),
-        if (actions != MailboxActions.create && !BuildUtils.isWeb)
-          const Padding(
-            padding: EdgeInsets.only(left: 55, right: 20),
-            child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
-        Obx(() => controller.folderMailboxHasChild
-            ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderRootNode, actions)
-            : const SizedBox.shrink()),
-        const SizedBox(height: 12),
-      ]
+          Obx(() => controller.defaultMailboxHasChild
+              ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultRootNode, actions)
+              : const SizedBox.shrink()),
+          if (actions == MailboxActions.create) const SizedBox(height: 12),
+          if (actions != MailboxActions.create && !BuildUtils.isWeb)
+            const Padding(
+                padding: EdgeInsets.only(left: 55, right: 20),
+                child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
+          Obx(() => controller.folderMailboxHasChild
+              ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderRootNode, actions)
+              : const SizedBox.shrink()),
+          const SizedBox(height: 12),
+        ])
     );
   }
 
