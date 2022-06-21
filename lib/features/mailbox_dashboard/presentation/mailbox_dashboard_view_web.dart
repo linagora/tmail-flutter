@@ -163,7 +163,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           : (SearchBarView(imagePaths)
               ..hintTextSearch(AppLocalizations.of(context).search_emails)
               ..maxSizeWidth(240)
-              ..addOnOpenSearchViewAction(() => controller.searchCtrl.enableSearch()))
+              ..addOnOpenSearchViewAction(() => controller.searchCtrl.enableSearch())
+              ..addCheckOpenAdvancedSearch(controller.searchCtrl.isAdvancedSearchViewOpen.value)
+              ..addOnOpenAdvancedSearchViewAction(() => {})
+      )
             .build()),
       Obx(() => !controller.searchCtrl.isSearchActive() ? const SizedBox(width: 16) : const SizedBox.shrink()),
       Obx(() => (AvatarBuilder()
@@ -450,6 +453,16 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             controller.saveRecentSearch(RecentSearch.now(keyword));
                           }
                           controller.searchEmail(context, keyword);
+                        }),
+                    rightButton: buildIconWeb(
+                        icon: SvgPicture.asset(
+                            imagePaths.icFilterAdvanced,
+                            color: controller.searchCtrl.isAdvancedSearchViewOpen.value ? AppColor.colorFilterMessageEnabled : AppColor.colorFilterMessageDisabled,
+                            width: 16,
+                            height: 16,
+                            fit: BoxFit.fill),
+                        onTap: () {
+                          // controller.searchCtrl.showAdvancedFilterView(context,Container());
                         }),
                     clearTextButton: buildIconWeb(
                         icon: SvgPicture.asset(

@@ -59,6 +59,7 @@ export 'presentation/views/floating_button/scrolling_floating_button_animated.da
 export 'presentation/views/bottom_popup/cupertino_action_sheet_action_builder.dart';
 export 'presentation/views/bottom_popup/cupertino_action_sheet_builder.dart';
 export 'presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
+export 'presentation/views/bottom_popup/full_screen_action_sheet_builder.dart';
 export 'presentation/views/modal_sheets/edit_text_modal_sheet_builder.dart';
 export 'presentation/views/search/search_bar_view.dart';
 export 'presentation/views/popup_menu/popup_menu_item_widget.dart';

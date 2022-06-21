@@ -6,9 +6,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnOpenSearchViewAction = Function();
+typedef OnOpenAdvancedSearchViewAction = Function();
+
 
 class SearchBarView {
  OnOpenSearchViewAction? _onOpenSearchViewAction;
+ OnOpenAdvancedSearchViewAction? _onOpenAdvancedSearchViewAction;
 
  final ImagePaths _imagePaths;
 
@@ -17,12 +20,21 @@ class SearchBarView {
   EdgeInsets? _margin;
   String? _hintTextSearch;
   double? _maxSizeWidth;
+  bool _checkOpenAdvancedSearch = false;
 
  SearchBarView(this._imagePaths);
 
   void addOnOpenSearchViewAction(OnOpenSearchViewAction onOpenSearchViewAction) {
     _onOpenSearchViewAction = onOpenSearchViewAction;
   }
+
+  void addOnOpenAdvancedSearchViewAction(OnOpenAdvancedSearchViewAction onOpenAdvancedSearchViewAction) {
+    _onOpenAdvancedSearchViewAction = onOpenAdvancedSearchViewAction;
+  }
+
+ void addCheckOpenAdvancedSearch(bool checkOpenAdvancedSearch) {
+   _checkOpenAdvancedSearch = checkOpenAdvancedSearch;
+ }
 
   void setHeightSearchBar(double heightSearchBar) {
     _heightSearchBar = heightSearchBar;
@@ -72,7 +84,19 @@ class SearchBarView {
                   Text(
                       _hintTextSearch ?? '',
                       maxLines: 1,
-                      style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar)))
+                      style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar))),
+                if(_onOpenAdvancedSearchViewAction!=null)
+                  buildIconWeb(
+                    splashRadius: 15,
+                    minSize: 40,
+                    iconPadding: EdgeInsets.zero,
+                    icon: SvgPicture.asset(_imagePaths.icFilterAdvanced,
+                        width: 16,
+                        height: 16,
+                        fit: BoxFit.fill,
+                        color: _checkOpenAdvancedSearch ? AppColor.colorFilterMessageEnabled : AppColor.colorFilterMessageDisabled,
+                    ),
+                    onTap: () => _onOpenAdvancedSearchViewAction?.call()),
               ]
             )),
     );

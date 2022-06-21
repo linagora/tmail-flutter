@@ -96,7 +96,6 @@ class ThreadController extends BaseController {
 
   final emailList = <PresentationEmail>[].obs;
   final searchIsActive = RxBool(false);
-
   bool canLoadMore = true;
   bool canSearchMore = true;
   bool _isLoadingMore = false;
@@ -105,7 +104,7 @@ class ThreadController extends BaseController {
   jmap.State? _currentEmailState;
   final ScrollController listEmailController = ScrollController();
   late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker;
-  
+
   Set<Comparator>? get _sortOrder => <Comparator>{}
     ..add(EmailComparator(EmailComparatorProperty.receivedAt)
       ..setIsAscending(false));
@@ -821,6 +820,10 @@ class ThreadController extends BaseController {
   void _searchEmail({UnsignedInt? limit}) {
     if (_accountId != null && searchQuery != null) {
       searchIsActive.value = true;
+
+      if (mailboxDashBoardController.filterMessageWithAttachmentIsActive()) {
+        searchCtrl.updateFilterEmail(hasAttachment: HasAttachment.yes);
+      }
 
       if (mailboxDashBoardController.filterMessageUnreadIsActive()) {
         searchCtrl.updateFilterEmail(notKeyword: KeyWordIdentifier.emailSeen.value);

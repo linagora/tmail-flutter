@@ -162,7 +162,14 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   Widget _buildSearchFormInActive(BuildContext context) {
     return (SearchBarView(_imagePaths)
         ..hintTextSearch(AppLocalizations.of(context).search_emails)
-        ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
+        ..addOnOpenSearchViewAction(() => controller.enableSearch(context))
+        ..addCheckOpenAdvancedSearch(controller.searchCtrl.isAdvancedSearchViewOpen.value)
+        ..addOnOpenAdvancedSearchViewAction(
+                () => controller.searchCtrl.showAdvancedFilterView(
+                    context,
+                    Container(),
+                )
+        ))
       .build();
   }
 
@@ -220,6 +227,19 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                           }
                           controller.mailboxDashBoardController.searchEmail(context, keyword);
                         }),
+                    rightButton: buildIconWeb(
+                      icon: SvgPicture.asset(
+                            _imagePaths.icFilterAdvanced,
+                            color: controller.searchCtrl.isAdvancedSearchViewOpen.value ? AppColor.colorFilterMessageEnabled : AppColor.colorFilterMessageDisabled,
+                            width: 16,
+                            height: 16,
+                            fit: BoxFit.fill),
+                      onTap: () {
+                        controller.searchCtrl.showAdvancedFilterView(
+                            context,
+                            Container(),
+                        );
+                      }),
                     clearTextButton: buildIconWeb(
                         icon: SvgPicture.asset(
                             _imagePaths.icClearTextSearch,
@@ -228,7 +248,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                             fit: BoxFit.fill),
                         onTap: () {
                           controller.clearTextSearch();
-                        })
+                        }),
                 ),
                 suggestionsBoxDecoration: const QuickSearchSuggestionsBoxDecoration(
                   color: Colors.white,

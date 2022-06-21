@@ -1,7 +1,11 @@
 import 'dart:async';
 
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/views/bottom_popup/full_screen_action_sheet_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -25,14 +29,47 @@ class SearchController extends BaseController {
   final QuickSearchEmailInteractor _quickSearchEmailInteractor;
 
   final searchEmailFilter = SearchEmailFilter().obs;
+  final _imagePaths = Get.find<ImagePaths>();
 
   TextEditingController searchInputController = TextEditingController();
   FocusNode searchFocus = FocusNode();
   final searchState = SearchState.initial().obs;
+  final isAdvancedSearchViewOpen = false.obs;
 
   SearchController(
     this._quickSearchEmailInteractor,
   );
+
+  selectOpenAdvanceSearch() {
+    isAdvancedSearchViewOpen.value = !isAdvancedSearchViewOpen.value;
+  }
+
+  showAdvancedFilterView(BuildContext context, Widget child) async {
+    selectOpenAdvanceSearch();
+    await FullScreenActionSheetBuilder(
+      context: context,
+      child: Container(
+        color: Colors.red,
+      ),
+      cancelWidget: Padding(
+        padding: const EdgeInsets.only(right: 16),
+        child: SvgPicture.asset(
+          _imagePaths.icClearTextSearch,
+          color: AppColor.colorHintSearchBar,
+          width: 24,
+          height: 24,
+        ),
+      ),
+      titleWidget: const Text(
+        'Advanced search',
+        style: TextStyle(
+          fontSize: 20,
+          color: AppColor.colorNameEmail,
+        ),
+      ),
+    ).show();
+    selectOpenAdvanceSearch();
+  }
 
   cleanSearchFilter() {
     searchEmailFilter.value = SearchEmailFilter();
@@ -70,19 +107,23 @@ class SearchController extends BaseController {
     }
   }
 
-  Future<List<PresentationEmail>> quickSearchEmails(AccountId? accountId) async {
+  Future<List<PresentationEmail>> quickSearchEmails(
+      AccountId? accountId) async {
     if (accountId != null) {
-      return await _quickSearchEmailInteractor.execute(
-          accountId,
-          limit: UnsignedInt(5),
-          sort: <Comparator>{}
-            ..add(EmailComparator(EmailComparatorProperty.receivedAt)
-              ..setIsAscending(false)),
-          filter: searchEmailFilter.value.mappingToListEmailFilterCondition(),
-          properties: ThreadConstants.propertiesQuickSearch
-      ).then((result) => result.fold(
+      return await _quickSearchEmailInteractor
+          .execute(accountId,
+              limit: UnsignedInt(5),
+              sort: <Comparator>{}..add(
+                  EmailComparator(EmailComparatorProperty.receivedAt)
+                    ..setIsAscending(false)),
+              filter:
+                  searchEmailFilter.value.mappingToListEmailFilterCondition(),
+              properties: ThreadConstants.propertiesQuickSearch)
+          .then((result) => result.fold(
               (failure) => <PresentationEmail>[],
-              (success) => success is QuickSearchEmailSuccess ? success.emailList : <PresentationEmail>[]));
+              (success) => success is QuickSearchEmailSuccess
+                  ? success.emailList
+                  : <PresentationEmail>[]));
     }
     return <PresentationEmail>[];
   }
@@ -151,14 +192,14 @@ class SearchController extends BaseController {
     searchInputController.text = value;
   }
 
-  bool checkQuickSearchFilterSelected(
-      QuickSearchFilter quickSearchFilter, UserProfile userProfile,bool fromSuggestBox) {
+  bool checkQuickSearchFilterSelected(QuickSearchFilter quickSearchFilter,
+      UserProfile userProfile, bool fromSuggestBox) {
     switch (quickSearchFilter) {
       case QuickSearchFilter.hasAttachment:
         return searchEmailFilter.value.hasAttachment == HasAttachment.yes;
       case QuickSearchFilter.last7Days:
-        if(fromSuggestBox){
-          return searchEmailFilter.value.emailReceiveTimeType !=null;
+        if (fromSuggestBox) {
+          return searchEmailFilter.value.emailReceiveTimeType != null;
         }
         return searchEmailFilter.value.emailReceiveTimeType ==
             EmailReceiveTimeType.last7Days;
