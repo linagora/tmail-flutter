@@ -353,13 +353,13 @@ class ComposerController extends BaseController {
 
       if (arguments.mailboxRole == PresentationMailbox.roleSent
           || arguments.emailActionType == EmailActionType.edit) {
-        listToEmailAddress = recipients.value1;
-        listCcEmailAddress = recipients.value2;
-        listBccEmailAddress = recipients.value3;
+        listToEmailAddress = List.from(recipients.value1);
+        listCcEmailAddress = List.from(recipients.value2);
+        listBccEmailAddress = List.from(recipients.value3);
       } else {
-        listToEmailAddress = recipients.value1.toSet().filterEmailAddress(userEmailAddress);
-        listCcEmailAddress = recipients.value2.toSet().filterEmailAddress(userEmailAddress);
-        listBccEmailAddress = recipients.value3.toSet().filterEmailAddress(userEmailAddress);
+        listToEmailAddress = List.from(recipients.value1.toSet().filterEmailAddress(userEmailAddress));
+        listCcEmailAddress = List.from(recipients.value2.toSet().filterEmailAddress(userEmailAddress));
+        listBccEmailAddress = List.from(recipients.value3.toSet().filterEmailAddress(userEmailAddress));
       }
 
       if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty) {
@@ -388,13 +388,13 @@ class ComposerController extends BaseController {
       List<EmailAddress> newListEmailAddress) {
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.to:
-        listToEmailAddress = newListEmailAddress;
+        listToEmailAddress = List.from(newListEmailAddress);
         break;
       case PrefixEmailAddress.cc:
-        listCcEmailAddress = newListEmailAddress;
+        listCcEmailAddress = List.from(newListEmailAddress);
         break;
       case PrefixEmailAddress.bcc:
-        listBccEmailAddress = newListEmailAddress;
+        listBccEmailAddress = List.from(newListEmailAddress);
         break;
       default:
         break;
