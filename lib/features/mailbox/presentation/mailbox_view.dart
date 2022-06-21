@@ -205,13 +205,12 @@ class MailboxView extends GetWidget<MailboxController> {
   }
 
   Widget _buildListMailbox(BuildContext context) {
-    return ListView(
+    return SingleChildScrollView(
       controller: controller.mailboxListScrollController,
       key: const PageStorageKey('mailbox_list'),
-      primary: false,
-      shrinkWrap: true,
+      physics: const ClampingScrollPhysics(),
       padding: EdgeInsets.only(bottom: controller.isSelectionEnabled() ? 16 : 0),
-      children: [
+      child: Column(children: [
         Obx(() {
           if ((controller.isSelectionEnabled() && _responsiveUtils.isLandscapeMobile(context))
               || (BuildUtils.isWeb && _responsiveUtils.isDesktop(context))) {
@@ -220,16 +219,16 @@ class MailboxView extends GetWidget<MailboxController> {
           return _buildUserInformation(context);
         }),
         if ((BuildUtils.isWeb && !_responsiveUtils.isDesktop(context))
-          || !BuildUtils.isWeb) _buildSearchBarWidget(context),
+            || !BuildUtils.isWeb) _buildSearchBarWidget(context),
         _buildLoadingView(),
         Obx(() => controller.defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
-          ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultMailboxTree.value.root)
-          : const SizedBox.shrink()),
+            ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultMailboxTree.value.root)
+            : const SizedBox.shrink()),
         const SizedBox(height: 12),
         Obx(() => controller.folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
-          ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderMailboxTree.value.root)
-          : const SizedBox.shrink()),
-      ]
+            ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderMailboxTree.value.root)
+            : const SizedBox.shrink()),
+      ])
     );
   }
 
