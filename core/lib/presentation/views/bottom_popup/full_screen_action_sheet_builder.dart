@@ -11,6 +11,7 @@ class FullScreenActionSheetBuilder {
   final Widget? titleWidget;
   final Widget? cancelWidget;
   OnCloseActionClick? onCloseActionClick;
+  late double _statusBarHeight = MediaQuery.of(context).padding.top;
 
   FullScreenActionSheetBuilder({
     required this.context,
@@ -26,11 +27,10 @@ class FullScreenActionSheetBuilder {
       isScrollControlled: true,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       backgroundColor: Colors.transparent,
+      enableDrag: false,
       builder: (context) => PointerInterceptor(child: _buildBody(context)),
     );
   }
-
-  double _getStatusBarHeight() => MediaQuery.of(context).viewPadding.top;
 
   Widget _buildBody(BuildContext context) {
     return SafeArea(
@@ -41,7 +41,7 @@ class FullScreenActionSheetBuilder {
       child: GestureDetector(
         onTap: () => {},
         child: Padding(
-            padding: EdgeInsets.only(top: _getStatusBarHeight()),
+            padding: EdgeInsets.only(top: _statusBarHeight),
             child: ClipRRect(
               borderRadius: BorderRadius.only(
                 topRight: Radius.circular(14),

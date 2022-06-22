@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -24,7 +23,7 @@ extension EmailReceiveTimeTypeExtension on EmailReceiveTimeType {
       case EmailReceiveTimeType.last6Months:
         return AppLocalizations.of(context).last6Months;
       case EmailReceiveTimeType.lastYears:
-        return AppLocalizations.of(context).lastYears;
+        return AppLocalizations.of(context).lastYear;
     }
   }
 

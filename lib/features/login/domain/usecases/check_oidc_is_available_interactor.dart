@@ -13,7 +13,7 @@ class CheckOIDCIsAvailableInteractor {
     try {
       final result = await _oidcRepository.checkOIDCIsAvailable(oidcRequest);
       log('CheckOIDCIsAvailableInteractor::execute(): result: $result');
-      return Right<Failure, Success>(CheckOIDCIsAvailableSuccess(result));
+      return Left<Failure, Success>(CheckOIDCIsAvailableFailure('dddd'));
     } catch (e) {
       log('CheckOIDCIsAvailableInteractor::execute(): ERROR: $e');
       return Left<Failure, Success>(CheckOIDCIsAvailableFailure(e));

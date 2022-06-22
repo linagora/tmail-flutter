@@ -1375,10 +1375,10 @@ class AppLocalizations {
         name: 'last6Months');
   }
 
-  String get lastYears {
+  String get lastYear {
     return Intl.message(
-        'Last years',
-        name: 'lastYears');
+        'Last year',
+        name: 'lastYear');
   }
 
   String get thisEmailAddressInvalid {
@@ -1516,6 +1516,20 @@ class AppLocalizations {
     return Intl.message(
       'All time',
       name: 'allTime',
+    );
+  }
+
+  String get search {
+    return Intl.message(
+      'Search',
+      name: 'search',
+    );
+  }
+
+  String get clearFilter {
+    return Intl.message(
+      'Clear filter',
+      name: 'clearFilter',
     );
   }
 }

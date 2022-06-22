@@ -211,6 +211,9 @@ class MailboxDashBoardController extends ReloadableController {
     userProfile.value = sessionCurrent != null
         ? UserProfile(sessionCurrent!.username.value)
         : null;
+    if(userProfile.value != null){
+      searchCtrl.setUserProfile(userProfile.value!);
+    }
   }
 
   void _setSessionCurrent() {
@@ -219,6 +222,9 @@ class MailboxDashBoardController extends ReloadableController {
     if (arguments is Session) {
       sessionCurrent = arguments;
       accountId.value = sessionCurrent?.accounts.keys.first;
+      if(accountId.value != null){
+        searchCtrl.setAccountId(accountId.value!);
+      }
     } else {
       if (kIsWeb) {
         reload();
@@ -379,6 +385,9 @@ class MailboxDashBoardController extends ReloadableController {
   void handleReloaded(Session session) {
     sessionCurrent = session;
     accountId.value = sessionCurrent?.accounts.keys.first;
+    if(accountId.value != null){
+      searchCtrl.setAccountId(accountId.value!);
+    }
     _getUserProfile();
   }
 
@@ -408,18 +417,6 @@ class MailboxDashBoardController extends ReloadableController {
             (success) => success is GetAllRecentSearchLatestSuccess
                 ? success.listRecentSearch
                 : <RecentSearch>[]));
-  }
-
-  bool filterMessageWithAttachmentIsActive() {
-    return filterMessageOption.value == FilterMessageOption.attachments;
-  }
-
-  bool filterMessageUnreadIsActive() {
-    return filterMessageOption.value == FilterMessageOption.unread;
-  }
-
-  bool filterMessageStarredIsActive() {
-    return filterMessageOption.value == FilterMessageOption.starred;
   }
 
   void searchEmail(BuildContext context, String value) {
@@ -486,20 +483,18 @@ class MailboxDashBoardController extends ReloadableController {
   }) {
     searchCtrl.selectQuickSearchFilter(
       quickSearchFilter: quickSearchFilter,
-      userProfile: userProfile.value!,
     );
   }
 
   Future<List<PresentationEmail>> quickSearchEmails() async {
-    searchCtrl.updateFilterEmail(mailBoxId: selectedMailbox.value?.id);
-    return searchCtrl.quickSearchEmails(accountId.value);
+    searchCtrl.updateFilterEmail(mailbox: selectedMailbox.value);
+    return searchCtrl.quickSearchEmails();
   }
 
   bool checkQuickSearchFilterSelected(QuickSearchFilter quickSearchFilter,{bool fromSuggestionBox = false,}
       ) {
     return searchCtrl.checkQuickSearchFilterSelected(
       quickSearchFilter,
-      userProfile.value!,
       fromSuggestionBox
     );
   }

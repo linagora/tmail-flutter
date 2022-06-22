@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/wrapper_utils.dart';
 import 'package:core/presentation/views/bottom_popup/full_screen_action_sheet_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
@@ -12,14 +14,14 @@ import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search_email_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_input_form.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -28,13 +30,30 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_status.d
 class SearchController extends BaseController {
   final QuickSearchEmailInteractor _quickSearchEmailInteractor;
 
-  final searchEmailFilter = SearchEmailFilter().obs;
   final _imagePaths = Get.find<ImagePaths>();
 
-  TextEditingController searchInputController = TextEditingController();
-  FocusNode searchFocus = FocusNode();
+  final searchEmailFilter = SearchEmailFilter().obs;
   final searchState = SearchState.initial().obs;
   final isAdvancedSearchViewOpen = false.obs;
+  final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.anyTime.obs;
+  final mailboxFilterSelectedFormAdvancedSearch = Rxn<PresentationMailbox>();
+  final hasAttachmentFilterSelectedFormAdvancedSearch = false.obs;
+
+  late AccountId _accountId;
+  late UserProfile _userProfile;
+
+  TextEditingController searchInputController = TextEditingController();
+  TextEditingController fromFilterInputController = TextEditingController();
+  TextEditingController toFilterInputController = TextEditingController();
+  TextEditingController subjectFilterInputController = TextEditingController();
+  TextEditingController hasKeyWordFilterInputController = TextEditingController();
+  TextEditingController notKeyWordFilterInputController = TextEditingController();
+  TextEditingController dateFilterInputController = TextEditingController();
+  TextEditingController mailBoxFilterInputController = TextEditingController();
+
+  FocusNode searchFocus = FocusNode();
+
+  SearchEmailFilter get searchEmailFilterValue => searchEmailFilter.value;
 
   SearchController(
     this._quickSearchEmailInteractor,
@@ -44,17 +63,23 @@ class SearchController extends BaseController {
     isAdvancedSearchViewOpen.value = !isAdvancedSearchViewOpen.value;
   }
 
-  showAdvancedFilterView(BuildContext context, Widget child) async {
+ void setAccountId(AccountId accountId){
+    _accountId = accountId;
+ }
+
+  void setUserProfile(UserProfile userProfile){
+    _userProfile = userProfile;
+  }
+
+  showAdvancedFilterView(BuildContext context,Function() onSearchEmail) async {
     selectOpenAdvanceSearch();
     await FullScreenActionSheetBuilder(
       context: context,
-      child: Container(
-        color: Colors.red,
-      ),
+      child: AdvancedInputForm(onSearchEmail),
       cancelWidget: Padding(
         padding: const EdgeInsets.only(right: 16),
         child: SvgPicture.asset(
-          _imagePaths.icClearTextSearch,
+          _imagePaths.icCloseAdvancedSearch,
           color: AppColor.colorHintSearchBar,
           width: 24,
           height: 24,
@@ -75,22 +100,40 @@ class SearchController extends BaseController {
     searchEmailFilter.value = SearchEmailFilter();
   }
 
+  initSearchFilterField(BuildContext context) {
+     fromFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.from.firstOrNull);
+     toFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.to.firstOrNull);
+     subjectFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.subject);
+     hasKeyWordFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.hasKeyword);
+     notKeyWordFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.notKeyword);
+     dateFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.emailReceiveTimeType.getTitle(context));
+     mailBoxFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.mailbox?.name?.name);
+     dateFilterSelectedFormAdvancedSearch.value = searchEmailFilter.value.emailReceiveTimeType;
+     mailboxFilterSelectedFormAdvancedSearch.value = searchEmailFilter.value.mailbox;
+     hasAttachmentFilterSelectedFormAdvancedSearch.value = searchEmailFilter.value.hasAttachment;
+  }
+
+  String? _writeEmptyToNull(String text){
+    if(text.isEmpty) return null;
+    return text;
+  }
+
+  String _writeNullToEmpty(String? text){
+    return text ?? '';
+  }
+
   void selectQuickSearchFilter({
     required QuickSearchFilter quickSearchFilter,
-    required UserProfile userProfile,
     bool fromSuggestionBox = false,
   }) {
     final isSelected = checkQuickSearchFilterSelected(
       quickSearchFilter,
-      userProfile,
       fromSuggestionBox,
     );
 
     switch (quickSearchFilter) {
       case QuickSearchFilter.hasAttachment:
-        final HasAttachment? hasAttachment =
-            isSelected ? HasAttachment.all : HasAttachment.yes;
-        updateFilterEmail(hasAttachment: hasAttachment);
+        updateFilterEmail(hasAttachment: !isSelected);
         return;
       case QuickSearchFilter.last7Days:
         final EmailReceiveTimeType? emailReceiveTimeType = isSelected
@@ -100,32 +143,44 @@ class SearchController extends BaseController {
         return;
       case QuickSearchFilter.fromMe:
         isSelected
-            ? searchEmailFilter.value.from.remove(userProfile.email)
-            : searchEmailFilter.value.from.add(userProfile.email);
+            ? searchEmailFilter.value.from.remove(_userProfile.email)
+            : searchEmailFilter.value.from.add(_userProfile.email);
         updateFilterEmail(from: searchEmailFilter.value.from);
         return;
     }
   }
 
-  Future<List<PresentationEmail>> quickSearchEmails(
-      AccountId? accountId) async {
-    if (accountId != null) {
-      return await _quickSearchEmailInteractor
-          .execute(accountId,
-              limit: UnsignedInt(5),
-              sort: <Comparator>{}..add(
-                  EmailComparator(EmailComparatorProperty.receivedAt)
-                    ..setIsAscending(false)),
-              filter:
-                  searchEmailFilter.value.mappingToEmailFilterCondition(),
-              properties: ThreadConstants.propertiesQuickSearch)
-          .then((result) => result.fold(
-              (failure) => <PresentationEmail>[],
-              (success) => success is QuickSearchEmailSuccess
-                  ? success.emailList
-                  : <PresentationEmail>[]));
+  Future<List<PresentationEmail>> quickSearchEmails() async {
+    return await _quickSearchEmailInteractor
+        .execute(_accountId,
+        limit: UnsignedInt(5),
+        sort: <Comparator>{}..add(
+            EmailComparator(EmailComparatorProperty.receivedAt)
+              ..setIsAscending(false)),
+        filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+        properties: ThreadConstants.propertiesQuickSearch)
+        .then((result) => result.fold(
+            (failure) => <PresentationEmail>[],
+            (success) => success is QuickSearchEmailSuccess
+            ? success.emailList
+            : <PresentationEmail>[]));
+  }
+
+  void updateFilterEmailFromAdvancedSearchView() {
+    if(fromFilterInputController.text.isNotEmpty){
+      searchEmailFilter.value.from.add(fromFilterInputController.text);
     }
-    return <PresentationEmail>[];
+    if(toFilterInputController.text.isNotEmpty){
+      searchEmailFilter.value.to.add(toFilterInputController.text);
+    }
+    searchEmailFilter.value = searchEmailFilter.value.copyWith(
+      subject: _writeEmptyToNull(subjectFilterInputController.text),
+      hasKeyword: Wrapped.value(_writeEmptyToNull(hasKeyWordFilterInputController.text)),
+      notKeyword: Wrapped.value(_writeEmptyToNull(notKeyWordFilterInputController.text)),
+      mailbox: mailboxFilterSelectedFormAdvancedSearch.value,
+      emailReceiveTimeType: dateFilterSelectedFormAdvancedSearch.value,
+      hasAttachment: hasAttachmentFilterSelectedFormAdvancedSearch.value,
+    );
   }
 
   void updateFilterEmail({
@@ -133,11 +188,11 @@ class SearchController extends BaseController {
     Set<String>? to,
     SearchQuery? text,
     String? subject,
-    String? hasKeyword,
-    String? notKeyword,
-    MailboxId? mailBoxId,
+    Wrapped<String?>? hasKeyword,
+    Wrapped<String?>? notKeyword,
+    PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
-    HasAttachment? hasAttachment,
+    bool? hasAttachment,
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       from: from,
@@ -146,7 +201,7 @@ class SearchController extends BaseController {
       subject: subject,
       hasKeyword: hasKeyword,
       notKeyword: notKeyword,
-      mailBoxId: mailBoxId,
+      mailbox: mailbox,
       emailReceiveTimeType: emailReceiveTimeType,
       hasAttachment: hasAttachment,
     );
@@ -192,19 +247,18 @@ class SearchController extends BaseController {
     searchInputController.text = value;
   }
 
-  bool checkQuickSearchFilterSelected(QuickSearchFilter quickSearchFilter,
-      UserProfile userProfile, bool fromSuggestBox) {
+  bool checkQuickSearchFilterSelected(QuickSearchFilter quickSearchFilter, bool fromSuggestBox) {
     switch (quickSearchFilter) {
       case QuickSearchFilter.hasAttachment:
-        return searchEmailFilter.value.hasAttachment == HasAttachment.yes;
+        return searchEmailFilter.value.hasAttachment == true;
       case QuickSearchFilter.last7Days:
         if (fromSuggestBox) {
-          return searchEmailFilter.value.emailReceiveTimeType != null;
+          return true;
         }
         return searchEmailFilter.value.emailReceiveTimeType ==
             EmailReceiveTimeType.last7Days;
       case QuickSearchFilter.fromMe:
-        return searchEmailFilter.value.from.contains(userProfile.email) &&
+        return searchEmailFilter.value.from.contains(_userProfile.email) &&
             searchEmailFilter.value.from.length == 1;
     }
   }
@@ -218,6 +272,13 @@ class SearchController extends BaseController {
   @override
   void onClose() {
     searchInputController.dispose();
+    fromFilterInputController.dispose();
+    subjectFilterInputController.dispose();
+    toFilterInputController.dispose();
+    hasKeyWordFilterInputController.dispose();
+    notKeyWordFilterInputController.dispose();
+    mailBoxFilterInputController.dispose();
+    dateFilterInputController.dispose();
     searchFocus.dispose();
     super.onClose();
   }

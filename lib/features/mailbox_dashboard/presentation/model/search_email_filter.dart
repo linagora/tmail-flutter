@@ -1,29 +1,12 @@
+import 'package:collection/collection.dart';
+import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-
-enum HasAttachment {
-  yes,
-  no,
-  all,
-}
-
-extension HasAttachmentExtension on HasAttachment {
-  bool? getValue() {
-    switch (this) {
-      case HasAttachment.yes:
-        return true;
-      case HasAttachment.no:
-        return false;
-      case HasAttachment.all:
-        return null;
-    }
-  }
-}
 
 class SearchEmailFilter {
   final Set<String> from;
@@ -32,42 +15,45 @@ class SearchEmailFilter {
   final String? subject;
   final String? hasKeyword;
   final String? notKeyword;
-  final MailboxId? mailBoxId;
-  final EmailReceiveTimeType? emailReceiveTimeType;
-  final HasAttachment? hasAttachment;
+  final PresentationMailbox? mailbox;
+  final EmailReceiveTimeType emailReceiveTimeType;
+  final bool hasAttachment;
 
   SearchEmailFilter({
     Set<String>? from,
     Set<String>? to,
+    EmailReceiveTimeType? emailReceiveTimeType,
+    bool? hasAttachment,
     this.text,
     this.subject,
     this.hasKeyword,
     this.notKeyword,
-    this.mailBoxId,
-    this.emailReceiveTimeType,
-    this.hasAttachment,
+    this.mailbox,
   })  : from = from ?? <String>{},
-        to = to ?? <String>{};
+        to = to ?? <String>{},
+        hasAttachment = hasAttachment ?? false,
+        emailReceiveTimeType =
+            emailReceiveTimeType ?? EmailReceiveTimeType.anyTime;
 
   SearchEmailFilter copyWith({
     Set<String>? from,
     Set<String>? to,
     SearchQuery? text,
     String? subject,
-    String? hasKeyword,
-    String? notKeyword,
-    MailboxId? mailBoxId,
+    Wrapped<String?>? hasKeyword,
+    Wrapped<String?>? notKeyword,
+    PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
-    HasAttachment? hasAttachment,
+    bool? hasAttachment,
   }) {
     return SearchEmailFilter(
       from: from ?? this.from,
       to: to ?? this.to,
       text: text ?? this.text,
       subject: subject ?? this.subject,
-      hasKeyword: hasKeyword ?? this.hasKeyword,
-      notKeyword: notKeyword ?? this.notKeyword,
-      mailBoxId: mailBoxId ?? this.mailBoxId,
+      hasKeyword: hasKeyword != null ? hasKeyword.value : this.hasKeyword,
+      notKeyword: notKeyword !=null ? notKeyword.value : this.notKeyword,
+      mailbox: mailbox ?? this.mailbox,
       emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
       hasAttachment: hasAttachment ?? this.hasAttachment,
     );
@@ -75,14 +61,18 @@ class SearchEmailFilter {
 
   Filter? mappingToEmailFilterCondition() {
     final emailEmailFilterConditionShared = EmailFilterCondition(
+      from: from.firstOrNull,
+      to: to.firstOrNull,
       text: text?.value,
-      inMailbox: mailBoxId,
-      after: emailReceiveTimeType?.toUTCDate(),
+      inMailbox: mailbox?.id,
+      after: emailReceiveTimeType.toUTCDate(),
       hasKeyword: hasKeyword,
       notKeyword: notKeyword,
-      hasAttachment: hasAttachment?.getValue(),
+      hasAttachment: hasAttachment == false ? null : hasAttachment,
       subject: subject,
     );
+
+    return emailEmailFilterConditionShared;
 
     return LogicFilterOperator(Operator.AND, {
       emailEmailFilterConditionShared,

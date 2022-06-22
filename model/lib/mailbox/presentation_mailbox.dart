@@ -4,7 +4,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
 import 'package:model/mailbox/select_mode.dart';
 
-class PresentationMailbox extends Mailbox with EquatableMixin {
+class PresentationMailbox with EquatableMixin {
 
   static final PresentationMailbox unifiedMailbox = PresentationMailbox(MailboxId(Id('unified')));
 

@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/das
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search_icon_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
@@ -164,8 +165,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               ..hintTextSearch(AppLocalizations.of(context).search_emails)
               ..maxSizeWidth(240)
               ..addOnOpenSearchViewAction(() => controller.searchCtrl.enableSearch())
-              ..addCheckOpenAdvancedSearch(controller.searchCtrl.isAdvancedSearchViewOpen.value)
-              ..addOnOpenAdvancedSearchViewAction(() => {})
+              ..addRightButton(AdvancedSearchIconWidget(context,(){
+                controller.searchEmail(context, controller.searchCtrl.searchInputController.text);
+              }))
       )
             .build()),
       Obx(() => !controller.searchCtrl.isSearchActive() ? const SizedBox(width: 16) : const SizedBox.shrink()),
@@ -454,16 +456,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           }
                           controller.searchEmail(context, keyword);
                         }),
-                    rightButton: buildIconWeb(
-                        icon: SvgPicture.asset(
-                            imagePaths.icFilterAdvanced,
-                            color: controller.searchCtrl.isAdvancedSearchViewOpen.value ? AppColor.colorFilterMessageEnabled : AppColor.colorFilterMessageDisabled,
-                            width: 16,
-                            height: 16,
-                            fit: BoxFit.fill),
-                        onTap: () {
-                          // controller.searchCtrl.showAdvancedFilterView(context,Container());
-                        }),
+                    rightButton: AdvancedSearchIconWidget(context,(){
+                      controller.searchEmail(context, controller.searchCtrl.searchInputController.text);
+                    }),
                     clearTextButton: buildIconWeb(
                         icon: SvgPicture.asset(
                             imagePaths.icClearTextSearch,
