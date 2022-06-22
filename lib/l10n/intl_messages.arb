@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-06-13T12:33:59.446625",
+  "@@last_modified": "2022-06-22T11:25:25.867848",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1414,6 +1414,12 @@
   },
   "noPreviewAvailable": "No preview available",
   "@noPreviewAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "wrongUrlMessage": "Server URL is not valid, please try again",
+  "@wrongUrlMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

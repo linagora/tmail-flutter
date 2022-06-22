@@ -20,7 +20,7 @@ class GetCredentialInteractor {
       if (isCredentialValid(baseUrl)) {
         return Right(GetCredentialViewState(baseUrl, userName, password));
       } else {
-        return Left(GetCredentialFailure(const BadCredentials()));
+        return Left(GetCredentialFailure(BadCredentials()));
       }
     } catch (exception) {
       return Left(GetCredentialFailure(exception));
