@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/app_toast.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -25,6 +26,7 @@ class SessionPageBindings extends BaseBindings {
       Get.find<CachingManager>(),
       Get.find<DeleteAuthorityOidcInteractor>(),
       Get.find<AuthorizationInterceptors>(),
+      Get.find<AppToast>(),
     ));
   }
 

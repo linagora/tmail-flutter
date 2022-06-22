@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
@@ -12,11 +13,6 @@ import 'package:tmail_ui_user/features/session/domain/usecases/get_session_inter
 class SessionBindings extends BaseBindings {
 
   @override
-  void dependencies() {
-    super.dependencies();
-  }
-
-  @override
   void bindingsController() {
   }
 
@@ -27,7 +23,9 @@ class SessionBindings extends BaseBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.put(SessionDataSourceImpl(Get.find<SessionAPI>()));
+    Get.put(SessionDataSourceImpl(
+        Get.find<SessionAPI>(),
+        Get.find<RemoteExceptionThrower>()));
   }
 
   @override
