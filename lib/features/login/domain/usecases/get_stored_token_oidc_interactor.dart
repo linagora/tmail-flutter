@@ -35,7 +35,7 @@ class GetStoredTokenOidcInteractor {
       if (_isCredentialValid(baseUrl)) {
         yield Right(GetStoredTokenOidcSuccess(baseUrl, tokenOidc, oidcConfiguration));
       } else {
-        yield Left(GetStoredTokenOidcFailure(const InvalidBaseUrl()));
+        yield Left(GetStoredTokenOidcFailure(InvalidBaseUrl()));
       }
     } catch (e) {
       log('GetStoredTokenOidcInteractor::execute(): $e');
