@@ -1448,4 +1448,9 @@ class AppLocalizations {
       name: 'noPreviewAvailable',
     );
   }
+
+  String get wrongUrlMessage {
+    return Intl.message('Server URL is not valid, please try again',
+        name: 'wrongUrlMessage');
+  }
 }

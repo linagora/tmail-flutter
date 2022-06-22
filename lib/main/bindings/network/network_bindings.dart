@@ -26,6 +26,7 @@ class NetworkBindings extends Bindings {
     _bindingDio();
     _bindingApi();
     _bindingConnection();
+    _bindingException();
   }
 
   void _bindingBaseOption() {
@@ -77,5 +78,9 @@ class NetworkBindings extends Bindings {
 
   void _bindingConnection() {
     Get.put(Connectivity());
+  }
+
+  void _bindingException() {
+    Get.put(RemoteExceptionThrower());
   }
 }

@@ -1,17 +1,26 @@
-import 'package:equatable/equatable.dart';
 
-abstract class AuthenticationException extends Equatable {
+import 'package:core/domain/exceptions/remote_exception.dart';
+
+abstract class AuthenticationException extends RemoteException {
   static const wrongCredential = 'Credential is wrong';
+  static const badGateway = 'Bad gateway';
   static const invalidBaseUrl = 'Invalid base URL';
 
-  const AuthenticationException(String message);
+  AuthenticationException(String message) : super(message: message);
 }
 
 class BadCredentials extends AuthenticationException {
-  const BadCredentials() : super(AuthenticationException.wrongCredential);
+  BadCredentials() : super(AuthenticationException.wrongCredential);
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [message];
+}
+
+class BadGateway extends AuthenticationException {
+  BadGateway() : super(AuthenticationException.badGateway);
+
+  @override
+  List<Object?> get props => [message];
 }
 
 class NotFoundAuthenticatedAccountException implements Exception {
@@ -23,10 +32,10 @@ class NotFoundStoredTokenException implements Exception {
 }
 
 class InvalidBaseUrl extends AuthenticationException {
-  const InvalidBaseUrl() : super(AuthenticationException.invalidBaseUrl);
+  InvalidBaseUrl() : super(AuthenticationException.invalidBaseUrl);
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [message];
 }
 
 class NotFoundAccessTokenException implements Exception {
