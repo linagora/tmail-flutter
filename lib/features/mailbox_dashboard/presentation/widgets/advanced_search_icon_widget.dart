@@ -32,7 +32,8 @@ class AdvancedSearchIconWidget extends StatelessWidget {
               height: 16),
           onTap: () {
             controller.showAdvancedFilterView(_parentContext, _onSearchEmail);
-          }),
+          }
+        ),
     );
   }
 }

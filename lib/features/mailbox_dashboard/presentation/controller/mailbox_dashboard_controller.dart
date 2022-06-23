@@ -252,11 +252,13 @@ class MailboxDashBoardController extends ReloadableController {
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
     selectedMailbox.value = newPresentationMailbox;
+    searchCtrl.updateFilterEmail(mailbox: selectedMailbox.value);
   }
 
   void setNewFirstSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
     selectedMailbox.firstRebuild = true;
     selectedMailbox.value = newPresentationMailbox;
+    searchCtrl.updateFilterEmail(mailbox: selectedMailbox.value);
   }
 
   void setSelectedEmail(PresentationEmail? newPresentationEmail) {
@@ -419,7 +421,7 @@ class MailboxDashBoardController extends ReloadableController {
                 : <RecentSearch>[]));
   }
 
-  void searchEmail(BuildContext context, String value) {
+   searchEmail(BuildContext context, String value) {
     searchCtrl.updateFilterEmail(text: SearchQuery(value));
     dispatchState(Right(
         SearchEmailNewQuery(searchCtrl.searchEmailFilter.value.text ?? SearchQuery.initial())));

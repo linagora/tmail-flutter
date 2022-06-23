@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -17,7 +15,6 @@ typedef void RecentSelectionCallback<R>(R recent);
 typedef Widget ErrorBuilder(BuildContext context, Object? error);
 typedef Widget ButtonActionBuilder(BuildContext context, dynamic action);
 typedef void ButtonActionCallback(dynamic action);
-
 typedef Widget AnimationTransitionBuilder(
     BuildContext context, Widget child, AnimationController? controller);
 
@@ -565,7 +562,7 @@ class _TypeAheadFieldQuickSearchState<T, R>
     extends State<TypeAheadFieldQuickSearch<T, R>> with WidgetsBindingObserver {
   FocusNode? _focusNode;
   TextEditingController? _textEditingController;
-  _SuggestionsBox? _suggestionsBox;
+  SuggestionsBox? _suggestionsBox;
 
   TextEditingController? get _effectiveController =>
       widget.textFieldConfiguration.controller ?? _textEditingController;
@@ -623,7 +620,7 @@ class _TypeAheadFieldQuickSearchState<T, R>
       this._focusNode = FocusNode();
     }
 
-    this._suggestionsBox = _SuggestionsBox(context, widget.direction,
+    this._suggestionsBox = SuggestionsBox(context, widget.direction,
         widget.autoFlipDirection, widget.hideSuggestionsBox);
     widget.suggestionsBoxController?._suggestionsBox = this._suggestionsBox;
     widget.suggestionsBoxController?._effectiveFocusNode =
@@ -691,55 +688,56 @@ class _TypeAheadFieldQuickSearchState<T, R>
     }
   }
 
-  void _initOverlayEntry() {
-    this._suggestionsBox!._overlayEntry = OverlayEntry(builder: (context) {
-      final suggestionsList = _SuggestionsList<T, R>(
-        suggestionsBox: _suggestionsBox,
-        decoration: widget.suggestionsBoxDecoration,
-        debounceDuration: widget.debounceDuration,
-        controller: this._effectiveController,
-        loadingBuilder: widget.loadingBuilder,
-        scrollController: widget.scrollController,
-        noItemsFoundBuilder: widget.noItemsFoundBuilder,
-        errorBuilder: widget.errorBuilder,
-        transitionBuilder: widget.transitionBuilder,
-        suggestionsCallback: widget.suggestionsCallback,
-        animationDuration: widget.animationDuration,
-        animationStart: widget.animationStart,
-        getImmediateSuggestions: widget.getImmediateSuggestions,
-        onSuggestionSelected: (T selection) {
-          if (!widget.keepSuggestionsOnSuggestionSelected) {
-            this._effectiveFocusNode!.unfocus();
-            this._suggestionsBox!.close();
-          }
-          widget.onSuggestionSelected(selection);
-        },
-        itemBuilder: widget.itemBuilder,
-        direction: _suggestionsBox!.direction,
-        hideOnLoading: widget.hideOnLoading,
-        hideOnEmpty: widget.hideOnEmpty,
-        hideOnError: widget.hideOnError,
-        keepSuggestionsOnLoading: widget.keepSuggestionsOnLoading,
-        minCharsForSuggestions: widget.minCharsForSuggestions,
-        listActionButton: widget.listActionButton,
-        actionButtonBuilder: widget.actionButtonBuilder,
-        buttonActionCallback: widget.buttonActionCallback,
-        buttonShowAllResult: widget.buttonShowAllResult,
-        titleHeaderRecent: widget.titleHeaderRecent,
-        itemRecentBuilder: widget.itemRecentBuilder,
-        fetchRecentActionCallback: widget.fetchRecentActionCallback,
-        onRecentSelected: (R selection) {
-          if (!widget.keepSuggestionsOnSuggestionSelected) {
-            this._effectiveFocusNode!.unfocus();
-            this._suggestionsBox!.close();
-          }
-          if (widget.onRecentSelected != null) {
-            widget.onRecentSelected!(selection);
-          }
-        },
-        listActionPadding: widget.listActionPadding,
-        hideSuggestionsBox: widget.hideSuggestionsBox,
-      );
+  void _initOverlayEntry({Widget? childOverlayEntryInput}) {
+    this._suggestionsBox!.overlayEntry = OverlayEntry(builder: (context) {
+      final childOverlayEntry = childOverlayEntryInput ??
+          _SuggestionsList<T, R>(
+            suggestionsBox: _suggestionsBox,
+            decoration: widget.suggestionsBoxDecoration,
+            debounceDuration: widget.debounceDuration,
+            controller: this._effectiveController,
+            loadingBuilder: widget.loadingBuilder,
+            scrollController: widget.scrollController,
+            noItemsFoundBuilder: widget.noItemsFoundBuilder,
+            errorBuilder: widget.errorBuilder,
+            transitionBuilder: widget.transitionBuilder,
+            suggestionsCallback: widget.suggestionsCallback,
+            animationDuration: widget.animationDuration,
+            animationStart: widget.animationStart,
+            getImmediateSuggestions: widget.getImmediateSuggestions,
+            onSuggestionSelected: (T selection) {
+              if (!widget.keepSuggestionsOnSuggestionSelected) {
+                this._effectiveFocusNode!.unfocus();
+                this._suggestionsBox!.close();
+              }
+              widget.onSuggestionSelected(selection);
+            },
+            itemBuilder: widget.itemBuilder,
+            direction: _suggestionsBox!.direction,
+            hideOnLoading: widget.hideOnLoading,
+            hideOnEmpty: widget.hideOnEmpty,
+            hideOnError: widget.hideOnError,
+            keepSuggestionsOnLoading: widget.keepSuggestionsOnLoading,
+            minCharsForSuggestions: widget.minCharsForSuggestions,
+            listActionButton: widget.listActionButton,
+            actionButtonBuilder: widget.actionButtonBuilder,
+            buttonActionCallback: widget.buttonActionCallback,
+            buttonShowAllResult: widget.buttonShowAllResult,
+            titleHeaderRecent: widget.titleHeaderRecent,
+            itemRecentBuilder: widget.itemRecentBuilder,
+            fetchRecentActionCallback: widget.fetchRecentActionCallback,
+            onRecentSelected: (R selection) {
+              if (!widget.keepSuggestionsOnSuggestionSelected) {
+                this._effectiveFocusNode!.unfocus();
+                this._suggestionsBox!.close();
+              }
+              if (widget.onRecentSelected != null) {
+                widget.onRecentSelected!(selection);
+              }
+            },
+            listActionPadding: widget.listActionPadding,
+            hideSuggestionsBox: widget.hideSuggestionsBox,
+          );
 
       double w = _suggestionsBox!.textBoxWidth;
       if (widget.suggestionsBoxDecoration.constraints != null) {
@@ -772,11 +770,11 @@ class _TypeAheadFieldQuickSearchState<T, R>
                       widget.suggestionsBoxVerticalOffset
                   : _suggestionsBox!.directionUpOffset),
           child: _suggestionsBox!.direction == AxisDirection.down
-              ? suggestionsList
+              ? childOverlayEntry
               : FractionalTranslation(
                   translation:
                       Offset(0.0, -1.0), // visually flips list to go up
-                  child: suggestionsList,
+                  child: childOverlayEntry,
                 ),
         ),
       );
@@ -837,15 +835,28 @@ class _TypeAheadFieldQuickSearchState<T, R>
               !_effectiveFocusNode!.hasFocus)
             widget.textFieldConfiguration.clearTextButton!,
           if (widget.textFieldConfiguration.rightButton != null)
-            widget.textFieldConfiguration.rightButton!,
+            GestureDetector(
+              child: widget.textFieldConfiguration.rightButton!,
+              onTapDown: (_) {
+                if (_suggestionsBox!.isOpened) {
+                  this._suggestionsBox!.close();
+                  _initOverlayEntry();
+                } else {
+                  _initOverlayEntry(childOverlayEntryInput: widget.textFieldConfiguration.childOverlayEntry);
+                  this._suggestionsBox!.open();
+                }
+              },
+            ),
         ],
       ),
     );
   }
+
+  SuggestionsBox? handleSuggestionBox() => _suggestionsBox;
 }
 
 class _SuggestionsList<T, R> extends StatefulWidget {
-  final _SuggestionsBox? suggestionsBox;
+  final SuggestionsBox? suggestionsBox;
   final TextEditingController? controller;
   final bool getImmediateSuggestions;
   final SuggestionSelectionCallback<T>? onSuggestionSelected;
@@ -1526,6 +1537,8 @@ class QuickSearchTextFieldConfiguration {
   final Widget? leftButton, rightButton;
   final Widget? clearTextButton;
 
+  final Widget? childOverlayEntry;
+
   /// Creates a QuickSearchTextFieldConfiguration
   const QuickSearchTextFieldConfiguration({
     this.decoration: const InputDecoration(),
@@ -1561,6 +1574,7 @@ class QuickSearchTextFieldConfiguration {
     this.leftButton,
     this.rightButton,
     this.clearTextButton,
+      this.childOverlayEntry,
   });
 
   /// Copies the [QuickSearchTextFieldConfiguration] and only changes the specified
@@ -1598,6 +1612,7 @@ class QuickSearchTextFieldConfiguration {
       bool? enableInteractiveSelection,
       Widget? leftButton,
       Widget? rightButton,
+      Widget? childOverLayEntry,
       Widget? clearTextButton}) {
     return QuickSearchTextFieldConfiguration(
       decoration: decoration ?? this.decoration,
@@ -1633,12 +1648,13 @@ class QuickSearchTextFieldConfiguration {
           enableInteractiveSelection ?? this.enableInteractiveSelection,
       leftButton: leftButton ?? this.leftButton,
       rightButton: rightButton ?? this.rightButton,
+      childOverlayEntry: childOverlayEntry ?? this.childOverlayEntry,
       clearTextButton: clearTextButton ?? this.clearTextButton,
     );
   }
 }
 
-class _SuggestionsBox {
+class SuggestionsBox {
   static const int waitMetricsTimeoutMillis = 1000;
   static const double minOverlaySpace = 64.0;
 
@@ -1647,7 +1663,7 @@ class _SuggestionsBox {
   final bool autoFlipDirection;
   final bool hideSuggestionBox;
 
-  OverlayEntry? _overlayEntry;
+  OverlayEntry? overlayEntry;
   AxisDirection direction;
 
   bool isOpened = false;
@@ -1657,23 +1673,23 @@ class _SuggestionsBox {
   double textBoxHeight = 100.0;
   late double directionUpOffset;
 
-  _SuggestionsBox(this.context, this.direction, this.autoFlipDirection,
+  SuggestionsBox(this.context, this.direction, this.autoFlipDirection,
       this.hideSuggestionBox)
       : desiredDirection = direction;
 
   void open() {
     if (this.hideSuggestionBox) return;
     if (this.isOpened) return;
-    assert(this._overlayEntry != null);
+    assert(this.overlayEntry != null);
     resize();
-    Overlay.of(context)!.insert(this._overlayEntry!);
+    Overlay.of(context)!.insert(this.overlayEntry!);
     this.isOpened = true;
   }
 
   void close() {
     if (!this.isOpened) return;
-    assert(this._overlayEntry != null);
-    this._overlayEntry!.remove();
+    assert(this.overlayEntry != null);
+    this.overlayEntry!.remove();
     this.isOpened = false;
   }
 
@@ -1728,7 +1744,7 @@ class _SuggestionsBox {
     // user may have closed the widget with the keyboard still open
     if (widgetMounted) {
       _adjustMaxHeightAndOrientation();
-      _overlayEntry!.markNeedsBuild();
+      overlayEntry!.markNeedsBuild();
     }
   }
 
@@ -1854,7 +1870,7 @@ class _SuggestionsBox {
 /// Supply an instance of this class to the [TypeAhead.suggestionsBoxController]
 /// property to manually control the suggestions box
 class QuickSearchSuggestionsBoxController {
-  _SuggestionsBox? _suggestionsBox;
+  SuggestionsBox? _suggestionsBox;
   FocusNode? _effectiveFocusNode;
 
   /// Opens the suggestions box

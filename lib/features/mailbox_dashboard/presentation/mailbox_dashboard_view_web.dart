@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailb
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search_icon_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search_input_form.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
@@ -457,8 +458,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           controller.searchEmail(context, keyword);
                         }),
                     rightButton: AdvancedSearchIconWidget(context,(){
-                      controller.searchEmail(context, controller.searchCtrl.searchInputController.text);
                     }),
+                    childOverlayEntry:
+                      AdvancedSearchInputForm(null),
                     clearTextButton: buildIconWeb(
                         icon: SvgPicture.asset(
                             imagePaths.icClearTextSearch,

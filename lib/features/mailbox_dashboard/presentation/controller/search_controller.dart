@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/wrapper_utils.dart';
 import 'package:core/presentation/views/bottom_popup/full_screen_action_sheet_builder.dart';
 import 'package:core/utils/app_logger.dart';
@@ -21,7 +22,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_s
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search_email_filter.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_input_form.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search_input_form.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -31,6 +32,7 @@ class SearchController extends BaseController {
   final QuickSearchEmailInteractor _quickSearchEmailInteractor;
 
   final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final searchEmailFilter = SearchEmailFilter().obs;
   final searchState = SearchState.initial().obs;
@@ -73,27 +75,29 @@ class SearchController extends BaseController {
 
   showAdvancedFilterView(BuildContext context,Function() onSearchEmail) async {
     selectOpenAdvanceSearch();
-    await FullScreenActionSheetBuilder(
-      context: context,
-      child: AdvancedInputForm(onSearchEmail),
-      cancelWidget: Padding(
-        padding: const EdgeInsets.only(right: 16),
-        child: SvgPicture.asset(
-          _imagePaths.icCloseAdvancedSearch,
-          color: AppColor.colorHintSearchBar,
-          width: 24,
-          height: 24,
+    if(_responsiveUtils.isMobile(context)){
+      await FullScreenActionSheetBuilder(
+        context: context,
+        child: AdvancedSearchInputForm(onSearchEmail),
+        cancelWidget: Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: SvgPicture.asset(
+            _imagePaths.icCloseAdvancedSearch,
+            color: AppColor.colorHintSearchBar,
+            width: 24,
+            height: 24,
+          ),
         ),
-      ),
-      titleWidget: const Text(
-        'Advanced search',
-        style: TextStyle(
-          fontSize: 20,
-          color: AppColor.colorNameEmail,
+        titleWidget: const Text(
+          'Advanced search',
+          style: TextStyle(
+            fontSize: 20,
+            color: AppColor.colorNameEmail,
+          ),
         ),
-      ),
-    ).show();
-    selectOpenAdvanceSearch();
+      ).show();
+      selectOpenAdvanceSearch();
+    }
   }
 
   cleanSearchFilter() {

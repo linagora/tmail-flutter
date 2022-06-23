@@ -11,9 +11,9 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 typedef OnSearchEmail = VoidCallback;
 
-class AdvancedInputForm extends StatelessWidget
+class AdvancedSearchInputForm extends StatelessWidget
     with PopupContextMenuActionMixin {
-  AdvancedInputForm(
+  AdvancedSearchInputForm(
     this._onSearchEmail, {
     Key? key,
   }) : super(key: key);
@@ -203,6 +203,8 @@ class AdvancedInputForm extends StatelessWidget
       ),
     );
   }
+
+
 
   Widget _buildButton({
     required Color colorButton,
