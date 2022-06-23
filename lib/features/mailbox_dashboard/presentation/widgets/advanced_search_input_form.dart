@@ -3,69 +3,75 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-typedef OnSearchEmail = VoidCallback;
-
-class AdvancedSearchInputForm extends StatelessWidget
+class AdvancedSearchInputForm extends GetWidget<MailboxDashBoardController>
     with PopupContextMenuActionMixin {
-  AdvancedSearchInputForm(
-    this._onSearchEmail, {
+  AdvancedSearchInputForm({
+    required this.searchController,
+    required this.imagePaths,
+    required this.responsiveUtils,
     Key? key,
   }) : super(key: key);
 
-  final controller = Get.find<SearchController>();
-  final _imagePaths = Get.find<ImagePaths>();
-  final OnSearchEmail? _onSearchEmail;
+  final SearchController searchController;
+  final ImagePaths imagePaths;
+  final ResponsiveUtils responsiveUtils;
 
   @override
   Widget build(BuildContext context) {
-    controller.initSearchFilterField(context);
+    // searchController.initSearchFilterField(context);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
-        child: Obx(
-          () => Column(
+        child: Material(
+          color: Colors.white,
+          child: Column(
             children: [
               _buildFilterField(
-                textEditingController: controller.fromFilterInputController,
+                textEditingController:
+                    searchController.fromFilterInputController,
                 context: context,
                 advancedSearchFilterField: AdvancedSearchFilterField.form,
               ),
               _buildFilterField(
-                textEditingController: controller.toFilterInputController,
+                textEditingController: searchController.toFilterInputController,
                 context: context,
                 advancedSearchFilterField: AdvancedSearchFilterField.to,
               ),
               _buildFilterField(
-                textEditingController: controller.subjectFilterInputController,
+                textEditingController:
+                    searchController.subjectFilterInputController,
                 context: context,
                 advancedSearchFilterField: AdvancedSearchFilterField.subject,
               ),
               _buildFilterField(
                 textEditingController:
-                    controller.hasKeyWordFilterInputController,
+                    searchController.hasKeyWordFilterInputController,
                 context: context,
                 advancedSearchFilterField: AdvancedSearchFilterField.hasKeyword,
               ),
               _buildFilterField(
                 textEditingController:
-                    controller.notKeyWordFilterInputController,
+                    searchController.notKeyWordFilterInputController,
                 context: context,
                 advancedSearchFilterField: AdvancedSearchFilterField.notKeyword,
               ),
               _buildFilterField(
-                textEditingController: controller.mailBoxFilterInputController,
+                textEditingController:
+                    searchController.mailBoxFilterInputController,
                 context: context,
                 advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
                 isSelectFormList: true,
               ),
               _buildFilterField(
-                textEditingController: controller.dateFilterInputController,
+                textEditingController:
+                    searchController.dateFilterInputController,
                 context: context,
                 advancedSearchFilterField: AdvancedSearchFilterField.date,
                 isSelectFormList: true,
@@ -82,8 +88,9 @@ class AdvancedSearchInputForm extends StatelessWidget
                   Expanded(
                     child: _buildButton(
                       onAction: () {
-                        controller.cleanSearchFilter();
-                        _onSearchEmail?.call();
+                        searchController.cleanSearchFilter();
+                        controller.searchEmail(context,
+                            searchController.searchInputController.text);
                         popBack();
                       },
                       colorButton: AppColor.primaryColor.withOpacity(0.14),
@@ -95,8 +102,10 @@ class AdvancedSearchInputForm extends StatelessWidget
                   Expanded(
                     child: _buildButton(
                       onAction: () {
-                        controller.updateFilterEmailFromAdvancedSearchView();
-                        _onSearchEmail?.call();
+                        searchController
+                            .updateFilterEmailFromAdvancedSearchView();
+                        controller.searchEmail(context,
+                            searchController.searchInputController.text);
                         popBack();
                       },
                       colorButton: AppColor.primaryColor,
@@ -120,8 +129,9 @@ class AdvancedSearchInputForm extends StatelessWidget
             child: PopupMenuItem(
               child: Text(e.getTitle(context)),
               onTap: () {
-                controller.dateFilterSelectedFormAdvancedSearch.value = e;
-                controller.dateFilterInputController.text = e.getTitle(context);
+                searchController.dateFilterSelectedFormAdvancedSearch.value = e;
+                searchController.dateFilterInputController.text =
+                    e.getTitle(context);
               },
             ),
           ),
@@ -136,66 +146,89 @@ class AdvancedSearchInputForm extends StatelessWidget
     VoidCallback? onTap,
     bool isSelectFormList = false,
   }) {
+    final child = [
+      Text(
+        advancedSearchFilterField.getTitle(context),
+        style: const TextStyle(
+          fontSize: 14,
+          color: AppColor.colorContentEmail,
+        ),
+      ),
+      const Padding(padding: EdgeInsets.all(4)),
+      responsiveUtils.isMobile(context)
+          ? _buildTextField(
+              context: context,
+              advancedSearchFilterField: advancedSearchFilterField,
+              textEditingController: textEditingController,
+            )
+          : Expanded(
+              child: _buildTextField(
+                context: context,
+                advancedSearchFilterField: advancedSearchFilterField,
+                textEditingController: textEditingController,
+              ),
+            )
+    ];
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            advancedSearchFilterField.getTitle(context),
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColor.colorContentEmail,
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 44,
-            child: TextField(
-              controller: textEditingController,
-              readOnly: isSelectFormList,
-              onTap: onTap,
-              decoration: InputDecoration(
-                  filled: true,
-                  fillColor: AppColor.loginTextFieldBackgroundColor,
-                  contentPadding: const EdgeInsets.only(
-                    right: 8,
-                    left: 12,
-                  ),
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10),
-                    ),
-                  ),
-                  hintText: advancedSearchFilterField.getHintText(context),
-                  hintStyle: const TextStyle(
-                    fontSize: 14,
-                    color: AppColor.colorHintSearchBar,
-                  ),
-                  suffixIconConstraints:
-                      const BoxConstraints(minHeight: 24, minWidth: 24),
-                  suffixIcon: isSelectFormList
-                      ? buildIconWeb(
-                          icon: SvgPicture.asset(
-                            _imagePaths.icDropDown,
-                          ),
-                        )
-                      : null),
-            ),
-          )
-        ],
-      ),
+      child: responsiveUtils.isMobile(context)
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: child,
+            )
+          : Row(children: child),
     );
   }
+
+  Widget _buildTextField({
+    required BuildContext context,
+    required AdvancedSearchFilterField advancedSearchFilterField,
+    required TextEditingController textEditingController,
+    VoidCallback? onTap,
+    bool isSelectFormList = false,
+  }) =>
+      TextField(
+        controller: textEditingController,
+        readOnly: isSelectFormList,
+        onTap: onTap,
+        decoration: InputDecoration(
+            filled: true,
+            fillColor: AppColor.loginTextFieldBackgroundColor,
+            contentPadding: const EdgeInsets.only(
+              right: 8,
+              left: 12,
+            ),
+            border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(10),
+              ),
+            ),
+            hintText: advancedSearchFilterField.getHintText(context),
+            hintStyle: const TextStyle(
+              fontSize: 14,
+              color: AppColor.colorHintSearchBar,
+            ),
+            suffixIconConstraints:
+                const BoxConstraints(minHeight: 24, minWidth: 24),
+            suffixIcon: isSelectFormList
+                ? buildIconWeb(
+                    icon: SvgPicture.asset(
+                      imagePaths.icDropDown,
+                    ),
+                  )
+                : null),
+      );
 
   Widget _buildCheckboxHasAttachment(BuildContext context) {
     return CheckboxListTile(
       contentPadding: EdgeInsets.zero,
       controlAffinity: ListTileControlAffinity.leading,
-      value: controller.hasAttachmentFilterSelectedFormAdvancedSearch.value,
+      value:
+          searchController.hasAttachmentFilterSelectedFormAdvancedSearch.value,
       onChanged: (value) {
-        controller.hasAttachmentFilterSelectedFormAdvancedSearch.value =
+        searchController.hasAttachmentFilterSelectedFormAdvancedSearch.value =
             value ?? false;
       },
       title: Text(
@@ -203,8 +236,6 @@ class AdvancedSearchInputForm extends StatelessWidget
       ),
     );
   }
-
-
 
   Widget _buildButton({
     required Color colorButton,

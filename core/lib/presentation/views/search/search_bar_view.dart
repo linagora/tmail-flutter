@@ -1,11 +1,11 @@
+
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnOpenSearchViewAction = Function();
-typedef OnOpenAdvancedSearchViewAction = Function();
-
 
 class SearchBarView {
  OnOpenSearchViewAction? _onOpenSearchViewAction;
@@ -17,18 +17,12 @@ class SearchBarView {
   EdgeInsets? _margin;
   String? _hintTextSearch;
   double? _maxSizeWidth;
-  Widget? _rightButton;
 
  SearchBarView(this._imagePaths);
-
 
   void addOnOpenSearchViewAction(OnOpenSearchViewAction onOpenSearchViewAction) {
     _onOpenSearchViewAction = onOpenSearchViewAction;
   }
-
- void addRightButton(Widget rightButton) {
-   _rightButton = rightButton;
- }
 
   void setHeightSearchBar(double heightSearchBar) {
     _heightSearchBar = heightSearchBar;
@@ -78,9 +72,7 @@ class SearchBarView {
                   Text(
                       _hintTextSearch ?? '',
                       maxLines: 1,
-                      style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar))),
-                if(_rightButton != null)
-                  _rightButton!,
+                      style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar)))
               ]
             )),
     );

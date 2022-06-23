@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,15 +9,14 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 
 class AdvancedSearchIconWidget extends StatelessWidget {
   AdvancedSearchIconWidget(
-    this._parentContext,
-    this._onSearchEmail, {
+    this._parentContext, {
     Key? key,
   }) : super(key: key);
 
   final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
   final controller = Get.find<SearchController>();
   final BuildContext _parentContext;
-  final Function() _onSearchEmail;
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +30,9 @@ class AdvancedSearchIconWidget extends StatelessWidget {
                   : AppColor.colorFilterMessageDisabled,
               width: 16,
               height: 16),
-          onTap: () {
-            controller.showAdvancedFilterView(_parentContext, _onSearchEmail);
-          }
+          onTap: _responsiveUtils.isMobile(context) ? () {
+            controller.showAdvancedFilterView(_parentContext);
+          } : null
         ),
     );
   }

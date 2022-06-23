@@ -18,6 +18,8 @@ typedef void ButtonActionCallback(dynamic action);
 typedef Widget AnimationTransitionBuilder(
     BuildContext context, Widget child, AnimationController? controller);
 
+typedef RightButtonActionCallback = Function();
+
 final supportedPlatform = (kIsWeb || Platform.isAndroid || Platform.isIOS);
 
 /// A [FormField](https://docs.flutter.io/flutter/widgets/FormField-class.html)
@@ -648,7 +650,10 @@ class _TypeAheadFieldQuickSearchState<T, R>
 
     WidgetsBinding.instance.addPostFrameCallback((duration) {
       if (mounted) {
-        this._initOverlayEntry();
+        this._initOverlayEntry(
+            advancedSearchView: widget.textFieldConfiguration.isOpenAdvancedSearchView == true
+                ? widget.textFieldConfiguration.advancedSearchView
+                : null);
         // calculate initial suggestions list size
         this._suggestionsBox!.resize();
 
@@ -688,10 +693,10 @@ class _TypeAheadFieldQuickSearchState<T, R>
     }
   }
 
-  void _initOverlayEntry({Widget? childOverlayEntryInput}) {
+  void _initOverlayEntry({Widget? advancedSearchView}) {
     this._suggestionsBox!.overlayEntry = OverlayEntry(builder: (context) {
-      final childOverlayEntry = childOverlayEntryInput ??
-          _SuggestionsList<T, R>(
+      final childOverlayEntry = _SuggestionsList<T, R>(
+            advancedSearchView: advancedSearchView,
             suggestionsBox: _suggestionsBox,
             decoration: widget.suggestionsBoxDecoration,
             debounceDuration: widget.debounceDuration,
@@ -838,12 +843,15 @@ class _TypeAheadFieldQuickSearchState<T, R>
             GestureDetector(
               child: widget.textFieldConfiguration.rightButton!,
               onTapDown: (_) {
-                if (_suggestionsBox!.isOpened) {
+                widget.textFieldConfiguration.rightButtonActionCallback?.call();
+                if (widget.textFieldConfiguration.isOpenAdvancedSearchView == true) {
                   this._suggestionsBox!.close();
                   _initOverlayEntry();
                 } else {
-                  _initOverlayEntry(childOverlayEntryInput: widget.textFieldConfiguration.childOverlayEntry);
+                  this._suggestionsBox!.close();
+                  _initOverlayEntry(advancedSearchView: widget.textFieldConfiguration.advancedSearchView);
                   this._suggestionsBox!.open();
+
                 }
               },
             ),
@@ -882,6 +890,7 @@ class _SuggestionsList<T, R> extends StatefulWidget {
   final ButtonActionCallback? buttonActionCallback;
   final ButtonActionBuilder? buttonShowAllResult;
   final Widget? titleHeaderRecent;
+  final Widget? advancedSearchView;
   final ItemBuilder<R>? itemRecentBuilder;
   final FetchRecentActionCallback<R>? fetchRecentActionCallback;
   final RecentSelectionCallback<R>? onRecentSelected;
@@ -920,6 +929,7 @@ class _SuggestionsList<T, R> extends StatefulWidget {
     this.onRecentSelected,
     this.listActionPadding,
     this.hideSuggestionsBox: false,
+    required this.advancedSearchView,
   });
 
   @override
@@ -1088,6 +1098,10 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
       child = createSuggestionsWidget();
     } else {
       child = createRecentWidget();
+    }
+
+    if(widget.advancedSearchView!= null){
+      child = widget.advancedSearchView!;
     }
 
     final animationChild = widget.transitionBuilder != null
@@ -1537,8 +1551,9 @@ class QuickSearchTextFieldConfiguration {
   final Widget? leftButton, rightButton;
   final Widget? clearTextButton;
 
-  final Widget? childOverlayEntry;
-
+  final Widget? advancedSearchView;
+  final RightButtonActionCallback? rightButtonActionCallback;
+  final bool? isOpenAdvancedSearchView;
   /// Creates a QuickSearchTextFieldConfiguration
   const QuickSearchTextFieldConfiguration({
     this.decoration: const InputDecoration(),
@@ -1573,8 +1588,10 @@ class QuickSearchTextFieldConfiguration {
     this.enableInteractiveSelection: true,
     this.leftButton,
     this.rightButton,
+    this.rightButtonActionCallback,
     this.clearTextButton,
-      this.childOverlayEntry,
+    this.advancedSearchView,
+    this.isOpenAdvancedSearchView,
   });
 
   /// Copies the [QuickSearchTextFieldConfiguration] and only changes the specified
@@ -1612,7 +1629,9 @@ class QuickSearchTextFieldConfiguration {
       bool? enableInteractiveSelection,
       Widget? leftButton,
       Widget? rightButton,
-      Widget? childOverLayEntry,
+      RightButtonActionCallback? rightButtonActionCallback,
+      Widget? advancedSearchView,
+      bool? isOpenAdvancedSearchView,
       Widget? clearTextButton}) {
     return QuickSearchTextFieldConfiguration(
       decoration: decoration ?? this.decoration,
@@ -1648,7 +1667,9 @@ class QuickSearchTextFieldConfiguration {
           enableInteractiveSelection ?? this.enableInteractiveSelection,
       leftButton: leftButton ?? this.leftButton,
       rightButton: rightButton ?? this.rightButton,
-      childOverlayEntry: childOverlayEntry ?? this.childOverlayEntry,
+      rightButtonActionCallback: rightButtonActionCallback ?? this.rightButtonActionCallback,
+      advancedSearchView: advancedSearchView ?? this.advancedSearchView,
+      isOpenAdvancedSearchView: isOpenAdvancedSearchView ?? this.isOpenAdvancedSearchView,
       clearTextButton: clearTextButton ?? this.clearTextButton,
     );
   }

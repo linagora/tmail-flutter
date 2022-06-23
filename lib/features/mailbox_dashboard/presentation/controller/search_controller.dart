@@ -48,8 +48,10 @@ class SearchController extends BaseController {
   TextEditingController fromFilterInputController = TextEditingController();
   TextEditingController toFilterInputController = TextEditingController();
   TextEditingController subjectFilterInputController = TextEditingController();
-  TextEditingController hasKeyWordFilterInputController = TextEditingController();
-  TextEditingController notKeyWordFilterInputController = TextEditingController();
+  TextEditingController hasKeyWordFilterInputController =
+      TextEditingController();
+  TextEditingController notKeyWordFilterInputController =
+      TextEditingController();
   TextEditingController dateFilterInputController = TextEditingController();
   TextEditingController mailBoxFilterInputController = TextEditingController();
 
@@ -65,20 +67,24 @@ class SearchController extends BaseController {
     isAdvancedSearchViewOpen.value = !isAdvancedSearchViewOpen.value;
   }
 
- void setAccountId(AccountId accountId){
+  void setAccountId(AccountId accountId) {
     _accountId = accountId;
- }
+  }
 
-  void setUserProfile(UserProfile userProfile){
+  void setUserProfile(UserProfile userProfile) {
     _userProfile = userProfile;
   }
 
-  showAdvancedFilterView(BuildContext context,Function() onSearchEmail) async {
+  showAdvancedFilterView(BuildContext context) async {
     selectOpenAdvanceSearch();
-    if(_responsiveUtils.isMobile(context)){
+    if (_responsiveUtils.isMobile(context)) {
       await FullScreenActionSheetBuilder(
         context: context,
-        child: AdvancedSearchInputForm(onSearchEmail),
+        child: AdvancedSearchInputForm(
+          searchController: this,
+          imagePaths: _imagePaths,
+          responsiveUtils: _responsiveUtils,
+        ),
         cancelWidget: Padding(
           padding: const EdgeInsets.only(right: 16),
           child: SvgPicture.asset(
@@ -105,24 +111,34 @@ class SearchController extends BaseController {
   }
 
   initSearchFilterField(BuildContext context) {
-     fromFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.from.firstOrNull);
-     toFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.to.firstOrNull);
-     subjectFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.subject);
-     hasKeyWordFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.hasKeyword);
-     notKeyWordFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.notKeyword);
-     dateFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.emailReceiveTimeType.getTitle(context));
-     mailBoxFilterInputController.text = _writeNullToEmpty(searchEmailFilter.value.mailbox?.name?.name);
-     dateFilterSelectedFormAdvancedSearch.value = searchEmailFilter.value.emailReceiveTimeType;
-     mailboxFilterSelectedFormAdvancedSearch.value = searchEmailFilter.value.mailbox;
-     hasAttachmentFilterSelectedFormAdvancedSearch.value = searchEmailFilter.value.hasAttachment;
+    fromFilterInputController.text =
+        _writeNullToEmpty(searchEmailFilter.value.from.firstOrNull);
+    toFilterInputController.text =
+        _writeNullToEmpty(searchEmailFilter.value.to.firstOrNull);
+    subjectFilterInputController.text =
+        _writeNullToEmpty(searchEmailFilter.value.subject);
+    hasKeyWordFilterInputController.text =
+        _writeNullToEmpty(searchEmailFilter.value.hasKeyword);
+    notKeyWordFilterInputController.text =
+        _writeNullToEmpty(searchEmailFilter.value.notKeyword);
+    dateFilterInputController.text = _writeNullToEmpty(
+        searchEmailFilter.value.emailReceiveTimeType.getTitle(context));
+    mailBoxFilterInputController.text =
+        _writeNullToEmpty(searchEmailFilter.value.mailbox?.name?.name);
+    dateFilterSelectedFormAdvancedSearch.value =
+        searchEmailFilter.value.emailReceiveTimeType;
+    mailboxFilterSelectedFormAdvancedSearch.value =
+        searchEmailFilter.value.mailbox;
+    hasAttachmentFilterSelectedFormAdvancedSearch.value =
+        searchEmailFilter.value.hasAttachment;
   }
 
-  String? _writeEmptyToNull(String text){
-    if(text.isEmpty) return null;
+  String? _writeEmptyToNull(String text) {
+    if (text.isEmpty) return null;
     return text;
   }
 
-  String _writeNullToEmpty(String? text){
+  String _writeNullToEmpty(String? text) {
     return text ?? '';
   }
 
@@ -157,30 +173,32 @@ class SearchController extends BaseController {
   Future<List<PresentationEmail>> quickSearchEmails() async {
     return await _quickSearchEmailInteractor
         .execute(_accountId,
-        limit: UnsignedInt(5),
-        sort: <Comparator>{}..add(
-            EmailComparator(EmailComparatorProperty.receivedAt)
-              ..setIsAscending(false)),
-        filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
-        properties: ThreadConstants.propertiesQuickSearch)
+            limit: UnsignedInt(5),
+            sort: <Comparator>{}..add(
+                EmailComparator(EmailComparatorProperty.receivedAt)
+                  ..setIsAscending(false)),
+            filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+            properties: ThreadConstants.propertiesQuickSearch)
         .then((result) => result.fold(
             (failure) => <PresentationEmail>[],
             (success) => success is QuickSearchEmailSuccess
-            ? success.emailList
-            : <PresentationEmail>[]));
+                ? success.emailList
+                : <PresentationEmail>[]));
   }
 
   void updateFilterEmailFromAdvancedSearchView() {
-    if(fromFilterInputController.text.isNotEmpty){
+    if (fromFilterInputController.text.isNotEmpty) {
       searchEmailFilter.value.from.add(fromFilterInputController.text);
     }
-    if(toFilterInputController.text.isNotEmpty){
+    if (toFilterInputController.text.isNotEmpty) {
       searchEmailFilter.value.to.add(toFilterInputController.text);
     }
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       subject: _writeEmptyToNull(subjectFilterInputController.text),
-      hasKeyword: Wrapped.value(_writeEmptyToNull(hasKeyWordFilterInputController.text)),
-      notKeyword: Wrapped.value(_writeEmptyToNull(notKeyWordFilterInputController.text)),
+      hasKeyword: Wrapped.value(
+          _writeEmptyToNull(hasKeyWordFilterInputController.text)),
+      notKeyword: Wrapped.value(
+          _writeEmptyToNull(notKeyWordFilterInputController.text)),
       mailbox: mailboxFilterSelectedFormAdvancedSearch.value,
       emailReceiveTimeType: dateFilterSelectedFormAdvancedSearch.value,
       hasAttachment: hasAttachmentFilterSelectedFormAdvancedSearch.value,
@@ -217,8 +235,10 @@ class SearchController extends BaseController {
       final query = searchEmailFilter.value.text?.value;
       log('MailboxDashBoardController::_registerSearchFocusListener(): hasFocus: $hasFocus | query: $query');
       if (!hasFocus && (query == null || query.isEmpty)) {
-        disableSearch();
-      }
+        updateFilterEmail(text: SearchQuery.initial());
+        searchInputController.clear();
+        cleanSearchFilter();
+        searchFocus.unfocus();      }
     });
   }
 
@@ -251,7 +271,8 @@ class SearchController extends BaseController {
     searchInputController.text = value;
   }
 
-  bool checkQuickSearchFilterSelected(QuickSearchFilter quickSearchFilter, bool fromSuggestBox) {
+  bool checkQuickSearchFilterSelected(
+      QuickSearchFilter quickSearchFilter, bool fromSuggestBox) {
     switch (quickSearchFilter) {
       case QuickSearchFilter.hasAttachment:
         return searchEmailFilter.value.hasAttachment == true;

@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quic
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search_icon_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search_input_form.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search_input_form.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/reading_pane.dart';
@@ -165,11 +166,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           : (SearchBarView(imagePaths)
               ..hintTextSearch(AppLocalizations.of(context).search_emails)
               ..maxSizeWidth(240)
-              ..addOnOpenSearchViewAction(() => controller.searchCtrl.enableSearch())
-              ..addRightButton(AdvancedSearchIconWidget(context,(){
-                controller.searchEmail(context, controller.searchCtrl.searchInputController.text);
-              }))
-      )
+              ..addOnOpenSearchViewAction(() => controller.searchCtrl.enableSearch()))
             .build()),
       Obx(() => !controller.searchCtrl.isSearchActive() ? const SizedBox(width: 16) : const SizedBox.shrink()),
       Obx(() => (AvatarBuilder()
@@ -457,10 +454,14 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           }
                           controller.searchEmail(context, keyword);
                         }),
-                    rightButton: AdvancedSearchIconWidget(context,(){
-                    }),
-                    childOverlayEntry:
-                      AdvancedSearchInputForm(null),
+                    rightButton: AdvancedSearchIconWidget(context),
+                    rightButtonActionCallback: controller.searchCtrl.selectOpenAdvanceSearch,
+                    advancedSearchView: AdvancedSearchInputForm(
+                          responsiveUtils: responsiveUtils,
+                          imagePaths: imagePaths,
+                          searchController: controller.searchCtrl,
+                        ),
+                    isOpenAdvancedSearchView: controller.searchCtrl.isAdvancedSearchViewOpen.value,
                     clearTextButton: buildIconWeb(
                         icon: SvgPicture.asset(
                             imagePaths.icClearTextSearch,

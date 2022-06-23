@@ -61,8 +61,6 @@ class SearchEmailFilter {
 
   Filter? mappingToEmailFilterCondition() {
     final emailEmailFilterConditionShared = EmailFilterCondition(
-      from: from.firstOrNull,
-      to: to.firstOrNull,
       text: text?.value,
       inMailbox: mailbox?.id,
       after: emailReceiveTimeType.toUTCDate(),
@@ -71,9 +69,6 @@ class SearchEmailFilter {
       hasAttachment: hasAttachment == false ? null : hasAttachment,
       subject: subject,
     );
-
-    return emailEmailFilterConditionShared;
-
     return LogicFilterOperator(Operator.AND, {
       emailEmailFilterConditionShared,
       LogicFilterOperator(

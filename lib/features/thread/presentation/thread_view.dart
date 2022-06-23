@@ -11,7 +11,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filt
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search_icon_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search_input_form.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search_input_form.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
@@ -163,12 +165,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   Widget _buildSearchFormInActive(BuildContext context) {
     return (SearchBarView(_imagePaths)
         ..hintTextSearch(AppLocalizations.of(context).search_emails)
-        ..addOnOpenSearchViewAction(() => controller.enableSearch(context))
-        ..addRightButton(AdvancedSearchIconWidget(
-            context,
-            ()=> controller.mailboxDashBoardController.searchEmail(context,controller.searchController.text)
-        ))
-    ).build();
+        ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
+        .build();
   }
 
   Widget _buildSearchFormActive(BuildContext context) {
@@ -235,11 +233,14 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                           controller.clearTextSearch();
                         }
                     ),
-                    rightButton: AdvancedSearchIconWidget(
-                        context,
-                            ()=> controller.mailboxDashBoardController.searchEmail(context,controller.searchController.text)
-                    )
-                ),
+                    rightButton: AdvancedSearchIconWidget(context),
+                    rightButtonActionCallback: controller.searchCtrl.selectOpenAdvanceSearch,
+                    advancedSearchView: AdvancedSearchInputForm(
+                      responsiveUtils: _responsiveUtils,
+                      imagePaths: _imagePaths,
+                      searchController: controller.searchCtrl,
+                    ),
+                    isOpenAdvancedSearchView: controller.searchCtrl.isAdvancedSearchViewOpen.value,                ),
                 suggestionsBoxDecoration: const QuickSearchSuggestionsBoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(16)),
