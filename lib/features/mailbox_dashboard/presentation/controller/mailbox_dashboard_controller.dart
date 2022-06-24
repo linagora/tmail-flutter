@@ -201,6 +201,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _getUserProfile() async {
     userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
+    searchController.userProfile.value = userProfile.value;
   }
 
   void _setSessionCurrent() {
@@ -209,6 +210,7 @@ class MailboxDashBoardController extends ReloadableController {
     if (arguments is Session) {
       sessionCurrent = arguments;
       accountId.value = sessionCurrent?.accounts.keys.first;
+      searchController.accountId.value = accountId.value;
     } else {
       if (kIsWeb) {
         reload();
@@ -379,6 +381,7 @@ class MailboxDashBoardController extends ReloadableController {
   void handleReloaded(Session session) {
     sessionCurrent = session;
     accountId.value = sessionCurrent?.accounts.keys.first;
+    searchController.accountId.value = accountId.value;
     _getUserProfile();
   }
 
