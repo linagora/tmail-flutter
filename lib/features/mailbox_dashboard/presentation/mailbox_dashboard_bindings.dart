@@ -78,6 +78,8 @@ class MailboxDashBoardBindings extends BaseBindings {
   void bindingsController() {
     Get.put(SearchController(
       Get.find<QuickSearchEmailInteractor>(),
+      Get.find<SaveRecentSearchInteractor>(),
+      Get.find<GetAllRecentSearchLatestInteractor>(),
     ));
     Get.put(MailboxDashBoardController(
       Get.find<LogoutOidcInteractor>(),
@@ -85,9 +87,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<GetAuthenticatedAccountInteractor>(),
       Get.find<MoveToMailboxInteractor>(),
       Get.find<DeleteEmailPermanentlyInteractor>(),
-      Get.find<SaveRecentSearchInteractor>(),
-      Get.find<GetAllRecentSearchLatestInteractor>(),
-      Get.find<QuickSearchEmailInteractor>(),
       Get.find<MarkAsMailboxReadInteractor>(),
     ));
   }
