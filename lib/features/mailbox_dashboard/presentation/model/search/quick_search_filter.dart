@@ -1,16 +1,13 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum QuickSearchFilter {
   hasAttachment,
   last7Days,
-  fromMe
-}
-
-extension QuickSearchFilterExtension on QuickSearchFilter {
+  fromMe;
 
   String getTitle(BuildContext context, {EmailReceiveTimeType? receiveTimeType}) {
     switch(this) {
@@ -26,10 +23,9 @@ extension QuickSearchFilterExtension on QuickSearchFilter {
     }
   }
 
-  String getIcon(ImagePaths imagePaths, List<QuickSearchFilter> listFilter) {
-    final filterSelected = listFilter.contains(this);
+  String getIcon(ImagePaths imagePaths, bool quickSearchFilterSelected) {
 
-    if (filterSelected) {
+    if (quickSearchFilterSelected) {
       return imagePaths.icSelectedSB;
     } else {
       switch(this) {
@@ -43,20 +39,18 @@ extension QuickSearchFilterExtension on QuickSearchFilter {
     }
   }
 
-  Color getBackgroundColor(List<QuickSearchFilter> listFilter) {
-    final filterSelected = listFilter.contains(this);
+  Color getBackgroundColor(bool quickSearchFilterSelected) {
 
-    if (filterSelected) {
+    if (quickSearchFilterSelected) {
       return AppColor.colorItemEmailSelectedDesktop;
     } else {
       return AppColor.colorButtonHeaderThread;
     }
   }
 
-  TextStyle getTextStyle(List<QuickSearchFilter> listFilter) {
-    final filterSelected = listFilter.contains(this);
+  TextStyle getTextStyle(bool quickSearchFilterSelected) {
 
-    if (filterSelected) {
+    if (quickSearchFilterSelected) {
       return const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w500,

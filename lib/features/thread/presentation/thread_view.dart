@@ -8,8 +8,8 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/email_receive_time_type.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -684,8 +684,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                     fit: BoxFit.fill),
                 const SizedBox(width: 4),
                 Text(
-                  filter.getTitle(context,
-                      receiveTimeType: controller.mailboxDashBoardController.emailReceiveTimeType.value),
+                  filter.getTitle(context, receiveTimeType: controller.mailboxDashBoardController.emailReceiveTimeType.value),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: filter.getTextStyle(controller.mailboxDashBoardController.listFilterQuickSearch),
@@ -758,8 +757,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                 fit: BoxFit.fill),
             const SizedBox(width: 4),
             Text(
-              filter.getTitle(context,
-                  receiveTimeType: controller.mailboxDashBoardController.emailReceiveTimeType.value),
+              filter.getTitle(context, receiveTimeType: controller.mailboxDashBoardController.emailReceiveTimeType.value),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: filter.getTextStyle(controller.mailboxDashBoardController.listFilterQuickSearch),
