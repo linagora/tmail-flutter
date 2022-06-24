@@ -10,13 +10,8 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
-import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -37,28 +32,19 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/mark_as_mailbox_read_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/mark_as_mailbox_read_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
-import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -73,12 +59,10 @@ class MailboxDashBoardController extends ReloadableController {
   final Connectivity _connectivity = Get.find<Connectivity>();
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
+  final SearchController searchController = Get.find<SearchController>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
-  final SaveRecentSearchInteractor _saveRecentSearchInteractor;
-  final GetAllRecentSearchLatestInteractor _getAllRecentSearchLatestInteractor;
-  final QuickSearchEmailInteractor _quickSearchEmailInteractor;
   final MarkAsMailboxReadInteractor _markAsMailboxReadInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -86,23 +70,18 @@ class MailboxDashBoardController extends ReloadableController {
   final selectedEmail = Rxn<PresentationEmail>();
   final accountId = Rxn<AccountId>();
   final userProfile = Rxn<UserProfile>();
-  final searchState = SearchState.initial().obs;
   final dashBoardAction = Rxn<UIAction>();
   final routePath = AppRoutes.MAILBOX_DASHBOARD.obs;
   final appInformation = Rxn<PackageInfo>();
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final filterMessageOption = FilterMessageOption.all.obs;
   final listEmailSelected = <PresentationEmail>[].obs;
-  final listFilterQuickSearch = RxList<QuickSearchFilter>();
   final emailReceiveTimeType = Rxn<EmailReceiveTimeType>();
   final composerOverlayState = ComposerOverlayState.inActive.obs;
 
-  SearchQuery? searchQuery;
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxId = {};
   Map<MailboxId, PresentationMailbox> mapMailbox = {};
-  TextEditingController searchInputController = TextEditingController();
-  FocusNode searchFocus = FocusNode();
   RouterArguments? routerArguments;
   late StreamSubscription _connectivityStreamSubscription;
   late StreamSubscription _emailReceiveManagerStreamSubscription;
@@ -113,9 +92,6 @@ class MailboxDashBoardController extends ReloadableController {
     GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
     this._moveToMailboxInteractor,
     this._deleteEmailPermanentlyInteractor,
-    this._saveRecentSearchInteractor,
-    this._getAllRecentSearchLatestInteractor,
-    this._quickSearchEmailInteractor,
     this._markAsMailboxReadInteractor,
   ) : super(logoutOidcInteractor,
       deleteAuthorityOidcInteractor,
@@ -125,7 +101,6 @@ class MailboxDashBoardController extends ReloadableController {
   void onInit() {
     _registerNetworkConnectivityState();
     _registerPendingEmailAddress();
-    _registerSearchFocusListener();
     super.onInit();
   }
 
@@ -225,17 +200,6 @@ class MailboxDashBoardController extends ReloadableController {
         });
   }
 
-  void _registerSearchFocusListener() {
-    searchFocus.addListener(() {
-      final hasFocus = searchFocus.hasFocus;
-      final query = searchQuery?.value;
-      log('MailboxDashBoardController::_registerSearchFocusListener(): hasFocus: $hasFocus | query: $query');
-      if (!hasFocus && (query == null || query.isEmpty)) {
-        disableSearch();
-      }
-    });
-  }
-
   void _getUserProfile() async {
     userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
   }
@@ -298,53 +262,24 @@ class MailboxDashBoardController extends ReloadableController {
 
   bool get isDrawerOpen => scaffoldKey.currentState?.isDrawerOpen == true;
 
-  bool isSearchActive() => searchState.value.searchStatus == SearchStatus.ACTIVE;
 
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
-  void enableSearch() {
-    searchState.value = searchState.value.enableSearchState();
-  }
-
-  void disableSearch() {
-    searchState.value = searchState.value.disableSearchState();
-    searchQuery = SearchQuery.initial();
-    searchInputController.clear();
-    listFilterQuickSearch.clear();
-    emailReceiveTimeType.value = null;
-    searchFocus.unfocus();
-  }
-
-  void clearTextSearch() {
-    searchQuery = SearchQuery.initial();
-    searchInputController.clear();
-    searchFocus.requestFocus();
-  }
-
-  void onChangeTextSearch(String value) {
-    searchQuery = SearchQuery(value);
-  }
-
-  void updateTextSearch(String value) {
-    searchInputController.text = value;
-  }
-
-  void searchEmail(BuildContext context, String value) {
-    searchQuery = SearchQuery(value);
-    dispatchState(Right(SearchEmailNewQuery(searchQuery ?? SearchQuery.initial())));
+  void searchEmail(BuildContext context) {
+    dispatchState(Right(SearchEmailNewQuery(searchController.searchEmailFilter.value.text ?? SearchQuery.initial())));
     FocusScope.of(context).unfocus();
-    if (searchInsideEmailDetailedViewIsActive(context)) {
-      closeEmailDetailedView();
+    if (_searchInsideEmailDetailedViewIsActive(context)) {
+      _closeEmailDetailedView();
     }
   }
 
-  bool searchInsideEmailDetailedViewIsActive(BuildContext context) {
+  bool _searchInsideEmailDetailedViewIsActive(BuildContext context) {
     return BuildUtils.isWeb
         && _responsiveUtils.isDesktop(context)
         && routePath.value == AppRoutes.EMAIL;
   }
 
-  void closeEmailDetailedView() {
+  void _closeEmailDetailedView() {
     dispatchRoute(AppRoutes.THREAD);
     clearSelectedEmail();
   }
@@ -457,77 +392,8 @@ class MailboxDashBoardController extends ReloadableController {
     return null;
   }
 
-  void saveRecentSearch(RecentSearch recentSearch) {
-    consumeState(_saveRecentSearchInteractor.execute(recentSearch));
-  }
-
-  Future<List<RecentSearch>> getAllRecentSearchAction(String pattern) async {
-    return await _getAllRecentSearchLatestInteractor.execute(pattern: pattern)
-        .then((result) => result.fold(
-            (failure) => <RecentSearch>[],
-            (success) => success is GetAllRecentSearchLatestSuccess
-                ? success.listRecentSearch
-                : <RecentSearch>[]));
-  }
-
-  Future<List<PresentationEmail>> quickSearchEmailsAction(String pattern) async {
-    if (accountId.value != null && selectedMailbox.value != null) {
-      return await _quickSearchEmailInteractor.execute(
-        accountId.value!,
-        limit: UnsignedInt(5),
-        sort: <Comparator>{}
-          ..add(EmailComparator(EmailComparatorProperty.receivedAt)
-            ..setIsAscending(false)),
-        filter: EmailFilterCondition(
-            text: pattern,
-            hasAttachment: listFilterQuickSearch.contains(QuickSearchFilter.hasAttachment) ? true : null,
-            from: listFilterQuickSearch.contains(QuickSearchFilter.fromMe) ? userProfile.value!.email : null,
-            after: listFilterQuickSearch.contains(QuickSearchFilter.last7Days)
-                ? UTCDate(DateTime.now().subtract(const Duration(days: 7)))
-                : null,
-            inMailbox: selectedMailbox.value!.id),
-        properties: ThreadConstants.propertiesQuickSearch
-      ).then((result) => result.fold(
-          (failure) => <PresentationEmail>[],
-          (success) => success is QuickSearchEmailSuccess ? success.emailList : <PresentationEmail>[]));
-    }
-    return <PresentationEmail>[];
-  }
-
-  void selectQuickSearchFilter(QuickSearchFilter quickSearchFilter, {bool fromSuggestionBox = false}) {
-    if (listFilterQuickSearch.contains(quickSearchFilter)) {
-      listFilterQuickSearch.remove(quickSearchFilter);
-      if (fromSuggestionBox && quickSearchFilter == QuickSearchFilter.last7Days) {
-        setEmailReceiveTimeType(null);
-      }
-    } else {
-      listFilterQuickSearch.add(quickSearchFilter);
-      if (fromSuggestionBox && quickSearchFilter == QuickSearchFilter.last7Days) {
-        setEmailReceiveTimeType(EmailReceiveTimeType.last7Days);
-      }
-    }
-  }
-
   void setEmailReceiveTimeType(EmailReceiveTimeType? receiveTimeType) {
     emailReceiveTimeType.value = receiveTimeType;
-  }
-
-  bool quickSearchFilterForLast7DaysIsActive () {
-    return listFilterQuickSearch.contains(QuickSearchFilter.last7Days)
-        && emailReceiveTimeType.value != null;
-  }
-
-  bool quickSearchFilterForHasAttachmentIsActive () {
-    return listFilterQuickSearch.contains(QuickSearchFilter.hasAttachment)
-        || filterMessageOption.value == FilterMessageOption.attachments;
-  }
-
-  bool quickSearchFilterForFromMeIsActive () {
-    return listFilterQuickSearch.contains(QuickSearchFilter.fromMe);
-  }
-
-  bool filterForHasAttachmentIsActive () {
-    return quickSearchFilterForHasAttachmentIsActive() || filterMessageWithAttachmentIsActive();
   }
 
   bool filterMessageWithAttachmentIsActive () {
@@ -594,8 +460,6 @@ class MailboxDashBoardController extends ReloadableController {
     _emailReceiveManager.closeEmailReceiveManagerStream();
     _emailReceiveManagerStreamSubscription.cancel();
     _connectivityStreamSubscription.cancel();
-    searchInputController.dispose();
-    searchFocus.dispose();
     super.onClose();
   }
 }
