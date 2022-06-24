@@ -32,6 +32,7 @@ export 'utils/app_logger.dart';
 export 'utils/benchmark.dart';
 export 'utils/fps_manager.dart';
 export 'utils/build_utils.dart';
+export 'utils/wrapper.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
