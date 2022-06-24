@@ -72,23 +72,20 @@ class SearchController extends BaseController {
     required QuickSearchFilter quickSearchFilter,
     bool fromSuggestionBox = false,
   }) {
-    final isSelected = checkQuickSearchFilterSelected(
-      quickSearchFilter,
-      fromSuggestionBox,
-    );
+    final quickSearchFilterSelected = checkQuickSearchFilterSelected(quickSearchFilter: quickSearchFilter, fromSuggestionBox: fromSuggestionBox);
 
     switch (quickSearchFilter) {
       case QuickSearchFilter.hasAttachment:
-        updateFilterEmail(hasAttachment: !isSelected);
+        updateFilterEmail(hasAttachment: !quickSearchFilterSelected);
         return;
       case QuickSearchFilter.last7Days:
-        final EmailReceiveTimeType? emailReceiveTimeType = isSelected
+        final EmailReceiveTimeType? emailReceiveTimeType = quickSearchFilterSelected
             ? EmailReceiveTimeType.allTime
             : EmailReceiveTimeType.last7Days;
         updateFilterEmail(emailReceiveTimeType: emailReceiveTimeType);
         return;
       case QuickSearchFilter.fromMe:
-        isSelected
+        quickSearchFilterSelected
             ? searchEmailFilter.value.from.remove(_userProfile.email)
             : searchEmailFilter.value.from.add(_userProfile.email);
         updateFilterEmail(from: searchEmailFilter.value.from);
@@ -179,13 +176,12 @@ class SearchController extends BaseController {
     searchInputController.text = value;
   }
 
-  bool checkQuickSearchFilterSelected(
-      QuickSearchFilter quickSearchFilter, bool fromSuggestBox) {
+  bool checkQuickSearchFilterSelected({required QuickSearchFilter quickSearchFilter, bool fromSuggestionBox = false}) {
     switch (quickSearchFilter) {
       case QuickSearchFilter.hasAttachment:
         return searchEmailFilter.value.hasAttachment == true;
       case QuickSearchFilter.last7Days:
-        if (fromSuggestBox) {
+        if (fromSuggestionBox) {
           return true;
         }
         return searchEmailFilter.value.emailReceiveTimeType == EmailReceiveTimeType.last7Days;

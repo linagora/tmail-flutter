@@ -20,14 +20,16 @@ abstract class BaseMailboxDashBoardView extends GetWidget<MailboxDashBoardContro
   Widget buildQuickSearchFilterButton(
       BuildContext context, QuickSearchFilter filter) {
     return Obx(() {
+      final isSelected = controller.searchController.checkQuickSearchFilterSelected(quickSearchFilter: filter);
+
       return Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: filter.getBackgroundColor(controller.listFilterQuickSearch)),
+              color: filter.getBackgroundColor(isSelected)),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             SvgPicture.asset(
-                filter.getIcon(imagePaths, controller.listFilterQuickSearch),
+                filter.getIcon(imagePaths, isSelected),
                 width: 16,
                 height: 16,
                 fit: BoxFit.fill),
@@ -36,7 +38,7 @@ abstract class BaseMailboxDashBoardView extends GetWidget<MailboxDashBoardContro
               filter.getTitle(context, receiveTimeType: controller.emailReceiveTimeType.value),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: filter.getTextStyle(controller.listFilterQuickSearch),
+              style: filter.getTextStyle(isSelected),
             )
           ]));
     });
