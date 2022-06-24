@@ -8,7 +8,6 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
-import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
@@ -40,8 +39,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/mark_as_ma
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -105,7 +106,7 @@ class ThreadController extends BaseController {
   final ScrollController listEmailController = ScrollController();
   late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker;
 
-  SearchQuery? get searchQuery => mailboxDashBoardController.searchQuery;
+  SearchQuery? get searchQuery => searchController.searchQuery;
 
   Set<Comparator>? get _sortOrder => <Comparator>{}
     ..add(EmailComparator(EmailComparatorProperty.receivedAt)
@@ -115,9 +116,11 @@ class ThreadController extends BaseController {
 
   PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
 
-  TextEditingController get searchController => mailboxDashBoardController.searchInputController;
+  SearchController get searchController => mailboxDashBoardController.searchController;
 
-  String get currentTextSearch => mailboxDashBoardController.searchInputController.text;
+  SearchEmailFilter get _searchEmailFilter => searchController.searchEmailFilter.value;
+
+  String get currentTextSearch => searchController.searchInputController.text;
 
   ThreadController(
     this._getEmailsInMailboxInteractor,
@@ -241,7 +244,7 @@ class ThreadController extends BaseController {
       }
     });
 
-    searchWorker = ever(mailboxDashBoardController.searchState, (searchState) {
+    searchWorker = ever(searchController.searchState, (searchState) {
       if (searchState is SearchState) {
         if (searchState.searchStatus == SearchStatus.ACTIVE) {
           cancelSelectEmail();
@@ -793,15 +796,15 @@ class ThreadController extends BaseController {
     }
   }
 
-  bool isSearchActive() => mailboxDashBoardController.isSearchActive();
+  bool isSearchActive() => searchController.isSearchActive();
 
   void enableSearch(BuildContext context) {
-    mailboxDashBoardController.enableSearch();
+    searchController.enableSearch();
   }
 
   void disableSearch() {
     searchIsActive.value = false;
-    mailboxDashBoardController.disableSearch();
+    searchController.disableSearch();
   }
 
   void closeSearchEmailAction() {
@@ -811,53 +814,20 @@ class ThreadController extends BaseController {
   }
 
   void clearTextSearch() {
-    mailboxDashBoardController.clearTextSearch();
+    searchController.clearTextSearch();
   }
 
   void _searchEmail({UnsignedInt? limit}) {
     if (_accountId != null && searchQuery != null) {
       searchIsActive.value = true;
 
-      UTCDate? afterTime;
-      bool? hasAttachment;
-      String? fromAddress;
-      String? keywordUnread;
-      String? keywordStarred;
-
-      if (mailboxDashBoardController.quickSearchFilterForLast7DaysIsActive()) {
-        afterTime = mailboxDashBoardController.emailReceiveTimeType.value!.toUTCDate();
-      }
-
-      if (mailboxDashBoardController.filterForHasAttachmentIsActive()) {
-        hasAttachment = true;
-      }
-
-      if (mailboxDashBoardController.quickSearchFilterForFromMeIsActive()) {
-        fromAddress = mailboxDashBoardController.userProfile.value?.email;
-      }
-
-      if (mailboxDashBoardController.filterMessageUnreadIsActive()) {
-        keywordUnread = KeyWordIdentifier.emailSeen.value;
-      }
-
-      if (mailboxDashBoardController.filterMessageStarredIsActive()) {
-        keywordStarred = KeyWordIdentifier.emailFlagged.value;
-      }
-
-      final emailFilterCondition = EmailFilterCondition(
-          text: searchQuery!.value,
-          hasAttachment: hasAttachment,
-          from: fromAddress,
-          after: afterTime,
-          hasKeyword: keywordStarred,
-          notKeyword: keywordUnread,
-          inMailbox: _currentMailboxId);
+      searchController.updateFilterEmail(mailbox: currentMailbox);
 
       consumeState(_searchEmailInteractor.execute(
         _accountId!,
         limit: limit ?? ThreadConstants.defaultLimit,
         sort: _sortOrder,
-        filter: emailFilterCondition,
+        filter: _searchEmailFilter.mappingToEmailFilterCondition(),
         properties: ThreadConstants.propertiesDefault,
       ));
     }
@@ -1236,7 +1206,7 @@ class ThreadController extends BaseController {
   }
 
   void selectQuickSearchFilter(QuickSearchFilter filter) {
-    mailboxDashBoardController.selectQuickSearchFilter(filter);
+    searchController.selectQuickSearchFilter(quickSearchFilter: filter);
     _searchEmail();
   }
 
@@ -1250,14 +1220,8 @@ class ThreadController extends BaseController {
   void selectReceiveTimeQuickSearchFilter(EmailReceiveTimeType? emailReceiveTimeType) {
     popBack();
 
-    if (emailReceiveTimeType != null) {
-      if (!mailboxDashBoardController.listFilterQuickSearch.contains(QuickSearchFilter.last7Days)) {
-        mailboxDashBoardController.selectQuickSearchFilter(QuickSearchFilter.last7Days);
-      }
-    } else {
-      mailboxDashBoardController.listFilterQuickSearch.remove(QuickSearchFilter.last7Days);
-    }
-    mailboxDashBoardController.setEmailReceiveTimeType(emailReceiveTimeType);
+    searchController.updateFilterEmail(emailReceiveTimeType: emailReceiveTimeType);
+
     _searchEmail();
   }
 
