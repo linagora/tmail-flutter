@@ -23,7 +23,7 @@ enum QuickSearchFilter {
     }
   }
 
-  String getIcon(ImagePaths imagePaths, bool quickSearchFilterSelected) {
+  String getIcon(ImagePaths imagePaths, {required bool quickSearchFilterSelected}) {
 
     if (quickSearchFilterSelected) {
       return imagePaths.icSelectedSB;
@@ -39,7 +39,7 @@ enum QuickSearchFilter {
     }
   }
 
-  Color getBackgroundColor(bool quickSearchFilterSelected) {
+  Color getBackgroundColor({required bool quickSearchFilterSelected}) {
 
     if (quickSearchFilterSelected) {
       return AppColor.colorItemEmailSelectedDesktop;
@@ -48,7 +48,7 @@ enum QuickSearchFilter {
     }
   }
 
-  TextStyle getTextStyle(bool quickSearchFilterSelected) {
+  TextStyle getTextStyle({required bool quickSearchFilterSelected}) {
 
     if (quickSearchFilterSelected) {
       return const TextStyle(
