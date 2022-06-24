@@ -9,8 +9,12 @@ import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
@@ -22,6 +26,8 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_status.d
 
 class SearchController extends BaseController {
   final QuickSearchEmailInteractor _quickSearchEmailInteractor;
+  final SaveRecentSearchInteractor _saveRecentSearchInteractor;
+  final GetAllRecentSearchLatestInteractor _getAllRecentSearchLatestInteractor;
 
   final _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
@@ -37,13 +43,22 @@ class SearchController extends BaseController {
 
   get _userProfile => _mailboxDashBoardController.userProfile;
 
-  FocusNode searchFocus = FocusNode();
+  get searchEmailFilterValue => searchEmailFilter.value;
 
-  SearchEmailFilter get searchEmailFilterValue => searchEmailFilter.value;
+  FocusNode searchFocus = FocusNode();
+  SearchQuery? searchQuery;
 
   SearchController(
     this._quickSearchEmailInteractor,
+    this._saveRecentSearchInteractor,
+    this._getAllRecentSearchLatestInteractor,
   );
+
+  @override
+  void onInit() {
+    _registerSearchFocusListener();
+    super.onInit();
+  }
 
   selectOpenAdvanceSearch() {
     isAdvancedSearchViewOpen.toggle();
@@ -121,7 +136,7 @@ class SearchController extends BaseController {
     );
   }
 
-  void registerSearchFocusListener() {
+  void _registerSearchFocusListener() {
     searchFocus.addListener(() {
       final hasFocus = searchFocus.hasFocus;
       final query = searchEmailFilter.value.text?.value;
@@ -177,6 +192,19 @@ class SearchController extends BaseController {
       case QuickSearchFilter.fromMe:
         return searchEmailFilter.value.from.contains(_userProfile.email) && searchEmailFilter.value.from.length == 1;
     }
+  }
+
+  void saveRecentSearch(RecentSearch recentSearch) {
+    consumeState(_saveRecentSearchInteractor.execute(recentSearch));
+  }
+
+  Future<List<RecentSearch>> getAllRecentSearchAction(String pattern) async {
+    return await _getAllRecentSearchLatestInteractor.execute(pattern: pattern)
+        .then((result) => result.fold(
+            (failure) => <RecentSearch>[],
+            (success) => success is GetAllRecentSearchLatestSuccess
+            ? success.listRecentSearch
+            : <RecentSearch>[]));
   }
 
   @override
