@@ -182,16 +182,15 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
             height: 45,
             child: QuickSearchInputForm<PresentationEmail, RecentSearch>(
                 textFieldConfiguration: QuickSearchTextFieldConfiguration(
-                    controller: controller.searchController,
+                    controller: controller.searchController.searchInputController,
                     autofocus: true,
-                    focusNode: controller.mailboxDashBoardController.searchFocus,
+                    focusNode: controller.searchController.searchFocus,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (keyword) {
                       if (keyword.trim().isNotEmpty) {
-                        controller.mailboxDashBoardController
-                            .saveRecentSearch(RecentSearch.now(keyword));
+                        controller.searchController.saveRecentSearch(RecentSearch.now(keyword));
                       }
-                      controller.mailboxDashBoardController.searchEmail(context, keyword);
+                      controller.mailboxDashBoardController.searchEmail(context);
                     },
                     decoration: InputDecoration(
                         border: InputBorder.none,
@@ -215,10 +214,9 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                         onTap: () {
                           final keyword = controller.currentTextSearch;
                           if (keyword.trim().isNotEmpty) {
-                            controller.mailboxDashBoardController
-                                .saveRecentSearch(RecentSearch.now(keyword));
+                            controller.searchController.saveRecentSearch(RecentSearch.now(keyword));
                           }
-                          controller.mailboxDashBoardController.searchEmail(context, keyword);
+                          controller.mailboxDashBoardController.searchEmail(context);
                         }),
                     clearTextButton: buildIconWeb(
                         icon: SvgPicture.asset(
@@ -251,8 +249,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                 },
                 buttonActionCallback: (filterAction) {
                   if (filterAction is QuickSearchFilter) {
-                    controller.mailboxDashBoardController
-                        .selectQuickSearchFilter(filterAction, fromSuggestionBox: true);
+                    controller.searchController.selectQuickSearchFilter(quickSearchFilter: filterAction, fromSuggestionBox: true);
                   }
                 },
                 listActionPadding: const EdgeInsets.only(
@@ -273,10 +270,9 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                     return InkWell(
                       onTap: () {
                         if (keyword.trim().isNotEmpty) {
-                          controller.mailboxDashBoardController
-                              .saveRecentSearch(RecentSearch.now(keyword));
+                          controller.searchController.saveRecentSearch(RecentSearch.now(keyword));
                         }
-                        controller.mailboxDashBoardController.searchEmail(context, keyword);
+                        controller.mailboxDashBoardController.searchEmail(context);
                       },
                       child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
@@ -304,21 +300,17 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                   child: loadingWidget,
                 ),
                 fetchRecentActionCallback: (pattern) async {
-                  return controller.mailboxDashBoardController
-                      .getAllRecentSearchAction(pattern);
+                  return controller.searchController.getAllRecentSearchAction(pattern);
                 },
                 itemRecentBuilder: (context, recent) {
                   return RecentSearchItemTileWidget(recent);
                 },
                 onRecentSelected: (recent) {
-                  controller.mailboxDashBoardController
-                      .updateTextSearch(recent.value);
-                  controller.mailboxDashBoardController
-                      .searchEmail(context, recent.value);
+                  controller.searchController.updateTextSearch(recent.value);
+                  controller.mailboxDashBoardController.searchEmail(context);
                 },
                 suggestionsCallback: (pattern) async {
-                  return controller.mailboxDashBoardController
-                      .quickSearchEmailsAction(pattern);
+                  return controller.searchController.quickSearchEmails();
                 },
                 itemBuilder: (context, email) {
                   return EmailQuickSearchItemTileWidget(
@@ -523,7 +515,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                 listPresentationEmail[index],
                 controller.currentMailbox?.role,
                 controller.mailboxDashBoardController.currentSelectMode.value,
-                controller.mailboxDashBoardController.searchState.value.searchStatus,
+                controller.searchController.searchState.value.searchStatus,
                 controller.searchQuery)
             ..addOnPressEmailActionClick((action, email) => controller.pressEmailAction(context, action, email))
             ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
@@ -646,6 +638,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   Widget _buildQuickSearchFilterButton(
       BuildContext context, QuickSearchFilter filter) {
     return Obx(() {
+      final quickSearchFilterSelected = controller.searchController.checkQuickSearchFilterSelected(quickSearchFilter: filter);
+
       return Padding(
         padding: const EdgeInsets.only(right: 8),
         child: InkWell(
@@ -674,11 +668,11 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
           child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: filter.getBackgroundColor(controller.mailboxDashBoardController.listFilterQuickSearch)),
+                  color: filter.getBackgroundColor(quickSearchFilterSelected)),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 SvgPicture.asset(
-                    filter.getIcon(_imagePaths, controller.mailboxDashBoardController.listFilterQuickSearch),
+                    filter.getIcon(_imagePaths, quickSearchFilterSelected),
                     width: 16,
                     height: 16,
                     fit: BoxFit.fill),
@@ -687,7 +681,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                   filter.getTitle(context, receiveTimeType: controller.mailboxDashBoardController.emailReceiveTimeType.value),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: filter.getTextStyle(controller.mailboxDashBoardController.listFilterQuickSearch),
+                  style: filter.getTextStyle(quickSearchFilterSelected),
                 ),
                 if (filter == QuickSearchFilter.last7Days)
                   ... [
@@ -744,14 +738,16 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   Widget _buildQuickSearchFilterButtonSuggestionBox(
       BuildContext context, QuickSearchFilter filter) {
     return Obx(() {
+      final quickSearchFilterSelected = controller.searchController.checkQuickSearchFilterSelected(quickSearchFilter: filter);
+
       return Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: filter.getBackgroundColor(controller.mailboxDashBoardController.listFilterQuickSearch)),
+              color: filter.getBackgroundColor(quickSearchFilterSelected)),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             SvgPicture.asset(
-                filter.getIcon(_imagePaths, controller.mailboxDashBoardController.listFilterQuickSearch),
+                filter.getIcon(_imagePaths, quickSearchFilterSelected),
                 width: 16,
                 height: 16,
                 fit: BoxFit.fill),
@@ -760,7 +756,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
               filter.getTitle(context, receiveTimeType: controller.mailboxDashBoardController.emailReceiveTimeType.value),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: filter.getTextStyle(controller.mailboxDashBoardController.listFilterQuickSearch),
+              style: filter.getTextStyle(quickSearchFilterSelected),
             )
           ]));
     });
