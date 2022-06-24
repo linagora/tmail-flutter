@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_sea
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
