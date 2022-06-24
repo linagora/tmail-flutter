@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -106,8 +105,6 @@ class ThreadController extends BaseController {
   final ScrollController listEmailController = ScrollController();
   late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker;
 
-  SearchQuery? get searchQuery => searchController.searchQuery;
-
   Set<Comparator>? get _sortOrder => <Comparator>{}
     ..add(EmailComparator(EmailComparatorProperty.receivedAt)
       ..setIsAscending(false));
@@ -121,6 +118,8 @@ class ThreadController extends BaseController {
   SearchEmailFilter get _searchEmailFilter => searchController.searchEmailFilter.value;
 
   String get currentTextSearch => searchController.searchInputController.text;
+
+  SearchQuery? get searchQuery => searchController.searchEmailFilter.value.text;
 
   ThreadController(
     this._getEmailsInMailboxInteractor,
@@ -1206,7 +1205,9 @@ class ThreadController extends BaseController {
   }
 
   void selectQuickSearchFilter(QuickSearchFilter filter) {
-    searchController.selectQuickSearchFilter(quickSearchFilter: filter);
+    mailboxDashBoardController.selectQuickSearchFilter(
+      quickSearchFilter: filter,
+    );
     _searchEmail();
   }
 
@@ -1220,8 +1221,16 @@ class ThreadController extends BaseController {
   void selectReceiveTimeQuickSearchFilter(EmailReceiveTimeType? emailReceiveTimeType) {
     popBack();
 
-    searchController.updateFilterEmail(emailReceiveTimeType: emailReceiveTimeType);
-
+    if (emailReceiveTimeType != null) {
+      searchController.updateFilterEmail(emailReceiveTimeType: emailReceiveTimeType);
+    } else {
+      searchController.updateFilterEmail(emailReceiveTimeType: EmailReceiveTimeType.allTime);
+    }
+    searchController.setEmailReceiveTimeType(emailReceiveTimeType);
+    searchController.updateFilterEmail();
+    if(searchQuery == null){
+      searchController.updateFilterEmail(text: SearchQuery.initial());
+    }
     _searchEmail();
   }
 
