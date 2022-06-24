@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
@@ -15,7 +16,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -29,8 +29,6 @@ class SearchController extends BaseController {
   final SaveRecentSearchInteractor _saveRecentSearchInteractor;
   final GetAllRecentSearchLatestInteractor _getAllRecentSearchLatestInteractor;
 
-  final _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-
   final searchInputController = TextEditingController();
   final searchEmailFilter = SearchEmailFilter().obs;
   final searchState = SearchState.initial().obs;
@@ -38,15 +36,11 @@ class SearchController extends BaseController {
   final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
   final mailboxFilterSelectedFormAdvancedSearch = Rxn<PresentationMailbox>();
   final hasAttachment = false.obs;
-
-  get _accountId => _mailboxDashBoardController.accountId;
-
-  get _userProfile => _mailboxDashBoardController.userProfile;
+  final emailReceiveTimeType = Rxn<EmailReceiveTimeType>();
 
   get searchEmailFilterValue => searchEmailFilter.value;
 
   FocusNode searchFocus = FocusNode();
-  SearchQuery? searchQuery;
 
   SearchController(
     this._quickSearchEmailInteractor,
@@ -70,32 +64,40 @@ class SearchController extends BaseController {
 
   void selectQuickSearchFilter({
     required QuickSearchFilter quickSearchFilter,
+    required UserProfile userProfile,
     bool fromSuggestionBox = false,
   }) {
-    final quickSearchFilterSelected = checkQuickSearchFilterSelected(quickSearchFilter: quickSearchFilter, fromSuggestionBox: fromSuggestionBox);
+    final quickSearchFilterSelected = checkQuickSearchFilterSelected(
+      userProfile: userProfile,
+      quickSearchFilter: quickSearchFilter,
+      fromSuggestionBox: fromSuggestionBox,
+    );
 
     switch (quickSearchFilter) {
       case QuickSearchFilter.hasAttachment:
         updateFilterEmail(hasAttachment: !quickSearchFilterSelected);
         return;
       case QuickSearchFilter.last7Days:
-        final EmailReceiveTimeType? emailReceiveTimeType = quickSearchFilterSelected
-            ? EmailReceiveTimeType.allTime
-            : EmailReceiveTimeType.last7Days;
-        updateFilterEmail(emailReceiveTimeType: emailReceiveTimeType);
+        if (quickSearchFilterSelected) {
+          setEmailReceiveTimeType(null);
+          updateFilterEmail(emailReceiveTimeType: EmailReceiveTimeType.allTime);
+        } else {
+          setEmailReceiveTimeType(EmailReceiveTimeType.last7Days);
+          updateFilterEmail(emailReceiveTimeType: EmailReceiveTimeType.last7Days);
+        }
         return;
       case QuickSearchFilter.fromMe:
         quickSearchFilterSelected
-            ? searchEmailFilter.value.from.remove(_userProfile.email)
-            : searchEmailFilter.value.from.add(_userProfile.email);
+            ? searchEmailFilter.value.from.remove(userProfile.email)
+            : searchEmailFilter.value.from.add(userProfile.email);
         updateFilterEmail(from: searchEmailFilter.value.from);
         return;
     }
   }
 
-  Future<List<PresentationEmail>> quickSearchEmails() async {
+  Future<List<PresentationEmail>> quickSearchEmails({required AccountId accountId}) async {
     return await _quickSearchEmailInteractor
-        .execute(_accountId,
+        .execute(accountId,
             limit: UnsignedInt(5),
             sort: <Comparator>{}..add(
                 EmailComparator(EmailComparatorProperty.receivedAt)
@@ -176,17 +178,21 @@ class SearchController extends BaseController {
     searchInputController.text = value;
   }
 
-  bool checkQuickSearchFilterSelected({required QuickSearchFilter quickSearchFilter, bool fromSuggestionBox = false}) {
+  bool checkQuickSearchFilterSelected({
+    required QuickSearchFilter quickSearchFilter,
+    required UserProfile userProfile,
+    bool fromSuggestionBox = false,
+  }) {
     switch (quickSearchFilter) {
       case QuickSearchFilter.hasAttachment:
         return searchEmailFilter.value.hasAttachment == true;
       case QuickSearchFilter.last7Days:
-        if (fromSuggestionBox) {
+        if (emailReceiveTimeType.value != null) {
           return true;
         }
         return searchEmailFilter.value.emailReceiveTimeType == EmailReceiveTimeType.last7Days;
       case QuickSearchFilter.fromMe:
-        return searchEmailFilter.value.from.contains(_userProfile.email) && searchEmailFilter.value.from.length == 1;
+        return searchEmailFilter.value.from.contains(userProfile.email) && searchEmailFilter.value.from.length == 1;
     }
   }
 
@@ -195,12 +201,17 @@ class SearchController extends BaseController {
   }
 
   Future<List<RecentSearch>> getAllRecentSearchAction(String pattern) async {
-    return await _getAllRecentSearchLatestInteractor.execute(pattern: pattern)
+    return await _getAllRecentSearchLatestInteractor
+        .execute(pattern: pattern)
         .then((result) => result.fold(
             (failure) => <RecentSearch>[],
             (success) => success is GetAllRecentSearchLatestSuccess
-            ? success.listRecentSearch
-            : <RecentSearch>[]));
+                ? success.listRecentSearch
+                : <RecentSearch>[]));
+  }
+
+  void setEmailReceiveTimeType(EmailReceiveTimeType? receiveTimeType) {
+    emailReceiveTimeType.value = receiveTimeType;
   }
 
   @override

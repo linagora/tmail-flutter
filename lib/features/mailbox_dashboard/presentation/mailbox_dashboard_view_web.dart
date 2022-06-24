@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dar
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
@@ -25,6 +26,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   MailboxDashBoardView({Key? key}) : super(key: key);
 
+  final SearchController searchController = Get.find<SearchController>(); 
+  
   @override
   Widget build(BuildContext context) {
     if (controller.isDrawerOpen && (responsiveUtils.isDesktop(context)
@@ -150,21 +153,21 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         if (controller.isSelectionEnabled()) {
           return _buildListButtonTopBarSelection(context);
         } else {
-          return controller.searchController.isSearchActive()
+          return searchController.isSearchActive()
             ? _buildListButtonTopBarSearchActive(context)
             : _buildListButtonTopBar(context);
         }
       }),
       const SizedBox(width: 16),
-      Obx(() => !controller.searchController.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
-      Obx(() => controller.searchController.isSearchActive()
+      Obx(() => !searchController.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
+      Obx(() => searchController.isSearchActive()
           ? Expanded(child: _buildSearchForm(context))
           : (SearchBarView(imagePaths)
               ..hintTextSearch(AppLocalizations.of(context).search_emails)
               ..maxSizeWidth(240)
-              ..addOnOpenSearchViewAction(() => controller.searchController.enableSearch()))
+              ..addOnOpenSearchViewAction(() => searchController.enableSearch()))
             .build()),
-      Obx(() => !controller.searchController.isSearchActive() ? const SizedBox(width: 16) : const SizedBox.shrink()),
+      Obx(() => !searchController.isSearchActive() ? const SizedBox(width: 16) : const SizedBox.shrink()),
       Obx(() => (AvatarBuilder()
           ..text(controller.userProfile.value?.getAvatarText() ?? '')
           ..backgroundColor(Colors.white)
@@ -410,19 +413,19 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             height: 45,
             child: QuickSearchInputForm<PresentationEmail, RecentSearch>(
                 textFieldConfiguration: QuickSearchTextFieldConfiguration(
-                    controller: controller.searchController.searchInputController,
+                    controller: searchController.searchInputController,
                     autofocus: true,
-                    focusNode: controller.searchController.searchFocus,
+                    focusNode: searchController.searchFocus,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (keyword) {
                       if (keyword.trim().isNotEmpty) {
-                        controller.searchController.saveRecentSearch(RecentSearch.now(keyword));
+                        searchController.saveRecentSearch(RecentSearch.now(keyword));
                       }
-                      controller.searchEmail(context);
+                      controller.searchEmail(context, keyword);
                     },
                     onChanged: (query) {
                       log('MailboxDashBoardView::_buildSearchForm(): onChanged: $query');
-                      controller.searchController.onChangeTextSearch(query);
+                      searchController.onChangeTextSearch(query);
                     },
                     decoration: InputDecoration(
                         border: InputBorder.none,
@@ -444,11 +447,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             height: 16,
                             fit: BoxFit.fill),
                         onTap: () {
-                          final keyword = controller.searchController.searchInputController.text;
+                          final keyword = searchController.searchInputController.text;
                           if (keyword.trim().isNotEmpty) {
-                            controller.searchController.saveRecentSearch(RecentSearch.now(keyword));
+                            searchController.saveRecentSearch(RecentSearch.now(keyword));
                           }
-                          controller.searchEmail(context);
+                          controller.searchEmail(context, keyword);
                         }),
                     clearTextButton: buildIconWeb(
                         icon: SvgPicture.asset(
@@ -457,7 +460,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             height: 16,
                             fit: BoxFit.fill),
                         onTap: () {
-                          controller.searchController.clearTextSearch();
+                          searchController.clearTextSearch();
                         })
                 ),
                 suggestionsBoxDecoration: QuickSearchSuggestionsBoxDecoration(
@@ -482,9 +485,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 },
                 buttonActionCallback: (filterAction) {
                   if (filterAction is QuickSearchFilter) {
-                    controller.searchController.selectQuickSearchFilter(
+                    controller.selectQuickSearchFilter(
                         quickSearchFilter: filterAction,
-                        fromSuggestionBox: true);
+                        fromSuggestionBox: true,
+                    );
                   }
                 },
                 listActionPadding: const EdgeInsets.only(
@@ -505,9 +509,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     return InkWell(
                       onTap: () {
                         if (keyword.trim().isNotEmpty) {
-                          controller.searchController.saveRecentSearch(RecentSearch.now(keyword));
+                          searchController.saveRecentSearch(RecentSearch.now(keyword));
                         }
-                        controller.searchEmail(context);
+                        controller.searchEmail(context, keyword);
                       },
                       child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -537,17 +541,17 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   child: loadingWidget,
                 ),
                 fetchRecentActionCallback: (pattern) async {
-                  return controller.searchController.getAllRecentSearchAction(pattern);
+                  return searchController.getAllRecentSearchAction(pattern);
                 },
                 itemRecentBuilder: (context, recent) {
                   return RecentSearchItemTileWidget(recent);
                 },
                 onRecentSelected: (recent) {
-                  controller.searchController.searchInputController.text = recent.value;
-                  controller.searchEmail(context);
+                  searchController.searchInputController.text = recent.value;
+                  controller.searchEmail(context, recent.value);
                 },
                 suggestionsCallback: (pattern) async {
-                  return controller.searchController.quickSearchEmails();
+                  return controller.quickSearchEmails();
                 },
                 itemBuilder: (context, email) {
                   return EmailQuickSearchItemTileWidget(

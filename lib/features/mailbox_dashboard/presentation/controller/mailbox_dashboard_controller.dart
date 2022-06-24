@@ -39,7 +39,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -76,7 +76,6 @@ class MailboxDashBoardController extends ReloadableController {
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final filterMessageOption = FilterMessageOption.all.obs;
   final listEmailSelected = <PresentationEmail>[].obs;
-  final emailReceiveTimeType = Rxn<EmailReceiveTimeType>();
   final composerOverlayState = ComposerOverlayState.inActive.obs;
 
   Session? sessionCurrent;
@@ -265,11 +264,16 @@ class MailboxDashBoardController extends ReloadableController {
 
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
-  void searchEmail(BuildContext context) {
+  void searchEmail(BuildContext context, String value) {
+    searchController.updateFilterEmail(text: SearchQuery(value));
     dispatchState(Right(SearchEmailNewQuery(searchController.searchEmailFilter.value.text ?? SearchQuery.initial())));
     FocusScope.of(context).unfocus();
     if (_searchInsideEmailDetailedViewIsActive(context)) {
       _closeEmailDetailedView();
+    }
+    if (value.isEmpty){
+      searchController.disableSearch();
+      searchController.setEmailReceiveTimeType(null);
     }
   }
 
@@ -392,10 +396,6 @@ class MailboxDashBoardController extends ReloadableController {
     return null;
   }
 
-  void setEmailReceiveTimeType(EmailReceiveTimeType? receiveTimeType) {
-    emailReceiveTimeType.value = receiveTimeType;
-  }
-
   bool filterMessageWithAttachmentIsActive () {
     return filterMessageOption.value == FilterMessageOption.attachments;
   }
@@ -454,6 +454,26 @@ class MailboxDashBoardController extends ReloadableController {
     push(AppRoutes.MANAGE_ACCOUNT,
         arguments: ManageAccountArguments(sessionCurrent));
   }
+
+  void selectQuickSearchFilter({
+    required QuickSearchFilter quickSearchFilter,
+    bool fromSuggestionBox = false,
+  }) => searchController.selectQuickSearchFilter(
+    quickSearchFilter: quickSearchFilter,
+    userProfile: userProfile.value!,
+    fromSuggestionBox: fromSuggestionBox,
+  );
+
+  bool checkQuickSearchFilterSelected({
+    required QuickSearchFilter quickSearchFilter,
+    bool fromSuggestionBox = false,
+  }) => searchController.checkQuickSearchFilterSelected(
+      quickSearchFilter: quickSearchFilter,
+      userProfile: userProfile.value!,
+      fromSuggestionBox: fromSuggestionBox,
+  );
+
+  Future<List<PresentationEmail>> quickSearchEmails() => searchController.quickSearchEmails(accountId: accountId.value!);
 
   @override
   void onClose() {
