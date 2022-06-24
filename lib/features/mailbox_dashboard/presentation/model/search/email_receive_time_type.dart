@@ -13,7 +13,7 @@ enum EmailReceiveTimeType {
   String getTitle(BuildContext context) {
     switch(this) {
       case EmailReceiveTimeType.allTime:
-        return AppLocalizations.of(context).anyTime;
+        return AppLocalizations.of(context).allTime;
       case EmailReceiveTimeType.last7Days:
         return AppLocalizations.of(context).last7Days;
       case EmailReceiveTimeType.last30Days:
