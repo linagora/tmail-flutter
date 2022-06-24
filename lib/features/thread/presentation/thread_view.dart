@@ -235,11 +235,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                     ),
                     rightButton: AdvancedSearchIconWidget(context),
                     rightButtonActionCallback: controller.searchCtrl.selectOpenAdvanceSearch,
-                    advancedSearchView: AdvancedSearchInputForm(
-                      responsiveUtils: _responsiveUtils,
-                      imagePaths: _imagePaths,
-                      searchController: controller.searchCtrl,
-                    ),
+                    advancedSearchView: AdvancedSearchInputForm(),
                     isOpenAdvancedSearchView: controller.searchCtrl.isAdvancedSearchViewOpen.value,                ),
                 suggestionsBoxDecoration: const QuickSearchSuggestionsBoxDecoration(
                   color: Colors.white,

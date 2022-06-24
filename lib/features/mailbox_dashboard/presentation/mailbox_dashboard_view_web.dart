@@ -457,9 +457,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     rightButton: AdvancedSearchIconWidget(context),
                     rightButtonActionCallback: controller.searchCtrl.selectOpenAdvanceSearch,
                     advancedSearchView: AdvancedSearchInputForm(
-                          responsiveUtils: responsiveUtils,
-                          imagePaths: imagePaths,
-                          searchController: controller.searchCtrl,
                         ),
                     isOpenAdvancedSearchView: controller.searchCtrl.isAdvancedSearchViewOpen.value,
                     clearTextButton: buildIconWeb(
