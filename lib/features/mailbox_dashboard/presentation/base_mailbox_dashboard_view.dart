@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/base/mixin/network_connection_mixin.dart'
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 
 abstract class BaseMailboxDashBoardView extends GetWidget<MailboxDashBoardController>
     with NetworkConnectionMixin, UserSettingPopupMenuMixin, FilterEmailPopupMenuMixin,

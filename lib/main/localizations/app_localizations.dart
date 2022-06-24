@@ -1453,4 +1453,88 @@ class AppLocalizations {
     return Intl.message('Server URL is not valid, please try again',
         name: 'wrongUrlMessage');
   }
+
+  String get form {
+    return Intl.message(
+      'From',
+      name: 'form',
+    );
+  }
+
+  String get to {
+    return Intl.message(
+      'To',
+      name: 'to',
+    );
+  }
+
+  String get subject {
+    return Intl.message(
+      'Subject',
+      name: 'subject',
+    );
+  }
+
+  String get hasTheWords {
+    return Intl.message(
+      'Has the words',
+      name: 'hasTheWords',
+    );
+  }
+
+  String get doesNotHave {
+    return Intl.message(
+      'Doesn’t have',
+      name: 'doesNotHave',
+    );
+  }
+
+  String get mailbox {
+    return Intl.message(
+      'Mailbox',
+      name: 'mailbox',
+    );
+  }
+
+  String get nameOrEmailAddress {
+    return Intl.message(
+      'Name or email address',
+      name: 'nameOrEmailAddress',
+    );
+  }
+
+  String get enterSearchTerm {
+    return Intl.message(
+      'Enter search term',
+      name: 'enterSearchTerm',
+    );
+  }
+
+  String get allMails {
+    return Intl.message(
+      'All mails',
+      name: 'allMails',
+    );
+  }
+
+  String get allTime {
+    return Intl.message(
+      'All time',
+      name: 'allTime',
+    );
+  }
+
+  String get search {
+    return Intl.message(
+      'Search',
+      name: 'search',
+    );
+  }
+
+  String get clearFilter {
+    return Intl.message(
+      'Clear filter',
+      name: 'clearFilter',
+    );
+  }
 }
