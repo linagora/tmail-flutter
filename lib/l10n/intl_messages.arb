@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-06-22T11:25:25.867848",
+  "@@last_modified": "2022-06-24T14:16:53.170960",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1420,6 +1420,78 @@
   },
   "wrongUrlMessage": "Server URL is not valid, please try again",
   "@wrongUrlMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "form": "From",
+  "@form": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "to": "To",
+  "@to": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subject": "Subject",
+  "@subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hasTheWords": "Has the words",
+  "@hasTheWords": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doesNotHave": "Doesn’t have",
+  "@doesNotHave": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailbox": "Mailbox",
+  "@mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameOrEmailAddress": "Name or email address",
+  "@nameOrEmailAddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterSearchTerm": "Enter search term",
+  "@enterSearchTerm": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allMails": "All mails",
+  "@allMails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allTime": "All time",
+  "@allTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search": "Search",
+  "@search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearFilter": "Clear filter",
+  "@clearFilter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
