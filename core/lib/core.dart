@@ -33,6 +33,7 @@ export 'utils/benchmark.dart';
 export 'utils/fps_manager.dart';
 export 'utils/build_utils.dart';
 export 'utils/wrapper.dart';
+export 'utils/string_convert.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
