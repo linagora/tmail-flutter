@@ -36,7 +36,27 @@ class AdvancedFilterController extends BaseController {
     _searchController.cleanSearchFilter();
   }
 
+  void _updateFilterEmailFromAdvancedSearchView() {
+    if (fromFilterInputController.text.isNotEmpty) {
+      _searchEmailFilter.from.add(fromFilterInputController.text);
+    }
+    if (toFilterInputController.text.isNotEmpty) {
+      _searchEmailFilter.to.add(toFilterInputController.text);
+    }
+    _searchController.searchEmailFilter.value = _searchEmailFilter.copyWith(
+      subject: StringConvert.writeEmptyToNull(subjectFilterInputController.text),
+      hasKeyword: Wrapped.value(
+          StringConvert.writeEmptyToNull(hasKeyWordFilterInputController.text)),
+      notKeyword: Wrapped.value(
+          StringConvert.writeNullToEmpty(notKeyWordFilterInputController.text)),
+      mailbox: mailboxFilterSelectedFormAdvancedSearch.value,
+      emailReceiveTimeType: dateFilterSelectedFormAdvancedSearch.value,
+      hasAttachment: hasAttachment.value,
+    );
+  }
+
   applyAdvancedSearchFilter(BuildContext context){
+    _updateFilterEmailFromAdvancedSearchView();
     _mailboxDashBoardController.searchEmail(context, StringConvert.writeNullToEmpty(_searchEmailFilter.text?.value));
   }
 

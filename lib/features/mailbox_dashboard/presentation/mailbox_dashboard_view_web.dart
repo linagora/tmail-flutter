@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailb
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
@@ -235,7 +236,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
         .build(),
       const SizedBox(width: 16),
-      Obx(() => (ButtonBuilder(imagePaths.icFilterWeb)
+      Obx(() => (ButtonBuilder(imagePaths.icFilterAdvanced)
           ..key(const Key('button_filter_messages'))
           ..context(context)
           ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorButtonHeaderThread))
@@ -461,7 +462,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             fit: BoxFit.fill),
                         onTap: () {
                           searchController.clearTextSearch();
-                        })
+                        }),
+                    rightButton: IconOpenAdvancedSearchWidget(context)
                 ),
                 suggestionsBoxDecoration: QuickSearchSuggestionsBoxDecoration(
                   color: Colors.white,
