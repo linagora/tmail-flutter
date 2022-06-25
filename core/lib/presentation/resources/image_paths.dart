@@ -75,7 +75,7 @@ class ImagePaths {
   String get icSendMobile => _getImagePath('ic_send_mobile.svg');
   String get icSendDisable => _getImagePath('ic_send_disable.svg');
   String get icArrowDown => _getImagePath('ic_arrow_down.svg');
-  String get icFilterWeb => _getImagePath('ic_filter_web.svg');
+  String get icFilterAdvanced => _getImagePath('ic_filter_advanced.svg');
   String get icMarkAllAsRead => _getImagePath('ic_mark_all_as_read.svg');
   String get icRefresh => _getImagePath('ic_refresh.svg');
   String get icSelectAll => _getImagePath('ic_select_all.svg');
@@ -125,6 +125,7 @@ class ImagePaths {
   String get icFilePdf => _getImagePath('ic_file_pdf.svg');
   String get icFilePptx => _getImagePath('ic_file_pptx.svg');
   String get icFileEPup => _getImagePath('ic_file_epup.svg');
+  String get icCloseAdvancedSearch => _getImagePath('ic_close_advanced_search.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
