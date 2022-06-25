@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_re
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_bottom_sheet.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -28,6 +29,8 @@ class SearchController extends BaseController {
   final QuickSearchEmailInteractor _quickSearchEmailInteractor;
   final SaveRecentSearchInteractor _saveRecentSearchInteractor;
   final GetAllRecentSearchLatestInteractor _getAllRecentSearchLatestInteractor;
+
+  final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final searchInputController = TextEditingController();
   final searchEmailFilter = SearchEmailFilter().obs;
@@ -214,6 +217,14 @@ class SearchController extends BaseController {
 
   void setEmailReceiveTimeType(EmailReceiveTimeType? receiveTimeType) {
     emailReceiveTimeType.value = receiveTimeType;
+  }
+
+  showAdvancedFilterView(BuildContext context) async {
+    selectOpenAdvanceSearch();
+    if (_responsiveUtils.isMobile(context)) {
+      await showAdvancedSearchFilterBottomSheet(context);
+      selectOpenAdvanceSearch();
+    }
   }
 
   @override
