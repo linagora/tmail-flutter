@@ -1357,12 +1357,6 @@ class AppLocalizations {
         name: 'showingResultsFor');
   }
 
-  String get anyTime {
-    return Intl.message(
-        'Any time',
-        name: 'anyTime');
-  }
-
   String get last30Days {
     return Intl.message(
         'Last 30 days',
@@ -1535,6 +1529,13 @@ class AppLocalizations {
     return Intl.message(
       'Clear filter',
       name: 'clearFilter',
+    );
+  }
+
+  String get advancedSearch {
+    return Intl.message(
+      'Advanced search',
+      name: 'advancedSearch',
     );
   }
 }

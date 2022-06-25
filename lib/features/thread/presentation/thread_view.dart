@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_sea
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -226,7 +227,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                             fit: BoxFit.fill),
                         onTap: () {
                           controller.clearTextSearch();
-                        })
+                        }),
+                    rightButton: IconOpenAdvancedSearchWidget(context)
                 ),
                 suggestionsBoxDecoration: const QuickSearchSuggestionsBoxDecoration(
                   color: Colors.white,
