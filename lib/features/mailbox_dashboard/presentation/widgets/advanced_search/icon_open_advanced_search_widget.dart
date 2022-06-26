@@ -14,7 +14,6 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
   }) : super(key: key);
 
   final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
   final controller = Get.find<SearchController>();
   final BuildContext _parentContext;
 
@@ -30,7 +29,9 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
                   : AppColor.colorFilterMessageDisabled,
               width: 16,
               height: 16),
-          onTap: _responsiveUtils.isMobile(context) ? () {controller.showAdvancedFilterView(_parentContext);} : null),
+          onTap: () {
+            controller.showAdvancedFilterView(_parentContext);
+          }),
     );
   }
 }
