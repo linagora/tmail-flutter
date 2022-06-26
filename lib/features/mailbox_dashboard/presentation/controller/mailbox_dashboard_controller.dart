@@ -243,6 +243,7 @@ class MailboxDashBoardController extends ReloadableController {
   void setNewFirstSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
     selectedMailbox.firstRebuild = true;
     selectedMailbox.value = newPresentationMailbox;
+
   }
 
   void setSelectedEmail(PresentationEmail? newPresentationEmail) {

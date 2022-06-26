@@ -31,6 +31,7 @@ class AdvancedSearchFilterFormBottomView
               _buildButton(
                 onAction: () {
                   controller.cleanSearchFilter();
+                  popBack();
                 },
                 colorButton: AppColor.primaryColor.withOpacity(0.14),
                 colorText: AppColor.primaryColor,

@@ -1538,4 +1538,11 @@ class AppLocalizations {
       name: 'advancedSearch',
     );
   }
+
+  String get selectMailbox {
+    return Intl.message(
+      'Select Mailbox',
+      name: 'selectMailbox',
+    );
+  }
 }
