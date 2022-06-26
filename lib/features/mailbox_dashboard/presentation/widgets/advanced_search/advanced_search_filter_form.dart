@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -7,8 +6,8 @@ import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixi
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/drop_down_button_filter_widget.dart';
 
 class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     with PopupContextMenuActionMixin {
@@ -16,8 +15,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     Key? key,
   }) : super(key: key);
 
-  final ImagePaths imagePaths = Get.find<ImagePaths>();
-  final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
+  final ImagePaths _imagePaths = Get.find<ImagePaths>();
+  final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
 
   @override
   Widget build(BuildContext context) {
@@ -57,46 +56,19 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
             isSelectFormList: true,
           ),
-          // _buildFilterField(
-          //   textEditingController: controller.dateFilterInputController,
-          //   context: context,
-          //   advancedSearchFilterField: AdvancedSearchFilterField.date,
-          //   isSelectFormList: true,
-          //   onTap: () {
-          //     openContextMenuAction(
-          //       context,
-          //       _buildEmailReceiveTimeTypeActionTiles(context),
-          //     );
-          //   },
-          // ),
-          _buildEmailReceiveTimeTypeDropDownButton(),
-          _buildCheckboxHasAttachment(context),
-          Row(
-            children: [
-              Expanded(
-                child: _buildButton(
-                  onAction: () {
-                    controller.cleanSearchFilter();
-                  },
-                  colorButton: AppColor.primaryColor.withOpacity(0.14),
-                  colorText: AppColor.primaryColor,
-                  text: AppLocalizations.of(context).clearFilter,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildButton(
-                  onAction: () {
-                    controller.applyAdvancedSearchFilter(context);
-                    popBack();
-                  },
-                  colorButton: AppColor.primaryColor,
-                  colorText: AppColor.primaryLightColor,
-                  text: AppLocalizations.of(context).search,
-                ),
-              ),
-            ],
+          _buildFilterField(
+            textEditingController: controller.dateFilterInputController,
+            context: context,
+            advancedSearchFilterField: AdvancedSearchFilterField.date,
+            isSelectFormList: true,
+            onTap: () {
+              openContextMenuAction(
+                context,
+                _buildEmailReceiveTimeTypeActionTiles(context),
+              );
+            },
           ),
+         const AdvancedSearchFilterFormBottomView()
         ],
       ),
     );
@@ -107,7 +79,21 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         .map(
           (e) => Material(
             child: PopupMenuItem(
-              child: Text(e.getTitle(context)),
+              child: Row(children: [
+                const SizedBox(width: 12),
+                Expanded(
+                    child: Text(e.getTitle(context),
+                        style: const TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500))),
+                if (e ==
+                    controller.dateFilterSelectedFormAdvancedSearch.value) ...[
+                  const SizedBox(width: 12),
+                  SvgPicture.asset(_imagePaths.icFilterSelected,
+                      width: 16, height: 16, fit: BoxFit.fill),
+                ]
+              ]),
               onTap: () {
                 controller.dateFilterSelectedFormAdvancedSearch.value = e;
                 controller.dateFilterInputController.text = e.getTitle(context);
@@ -127,7 +113,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   }) {
     final child = [
       SizedBox(
-        width: responsiveUtils.isMobile(context) ? null : 112,
+        width: _responsiveUtils.isMobile(context) ? null : 112,
         child: Text(
           advancedSearchFilterField.getTitle(context),
           style: const TextStyle(
@@ -137,7 +123,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         ),
       ),
       const Padding(padding: EdgeInsets.all(4)),
-      responsiveUtils.isMobile(context)
+      _responsiveUtils.isMobile(context)
           ? _buildTextField(
               isSelectFormList: isSelectFormList,
               onTap: onTap,
@@ -146,7 +132,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               textEditingController: textEditingController,
             )
           : Expanded(
-              child: _buildTextField(
+              child: _buildTextFieldFilterForWeb(
                 isSelectFormList: isSelectFormList,
                 onTap: onTap,
                 context: context,
@@ -157,15 +143,36 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     ];
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: responsiveUtils.isMobile(context)
+      child: _responsiveUtils.isMobile(context)
           ? Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: child,
             )
-          : Row(children: child),
+          : SizedBox(height: 44, child: Row(children: child)),
     );
+  }
+
+  Widget _buildTextFieldFilterForWeb({
+    required BuildContext context,
+    required AdvancedSearchFilterField advancedSearchFilterField,
+    required TextEditingController textEditingController,
+    VoidCallback? onTap,
+    bool isSelectFormList = false,
+  }) {
+    switch (advancedSearchFilterField) {
+      case AdvancedSearchFilterField.date:
+        return const DateDropDownButton();
+      default:
+        return _buildTextField(
+          isSelectFormList: isSelectFormList,
+          onTap: onTap,
+          context: context,
+          advancedSearchFilterField: advancedSearchFilterField,
+          textEditingController: textEditingController,
+        );
+    }
   }
 
   Widget _buildTextField({
@@ -174,130 +181,37 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     required TextEditingController textEditingController,
     VoidCallback? onTap,
     bool isSelectFormList = false,
-  }) =>
-      TextField(
-        controller: textEditingController,
-        readOnly: isSelectFormList,
-        onTap: onTap,
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: AppColor.loginTextFieldBackgroundColor,
-          contentPadding: const EdgeInsets.only(
-            right: 8,
-            left: 12,
-          ),
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(10),
-            ),
-          ),
-          hintText: advancedSearchFilterField.getHintText(context),
-          hintStyle: const TextStyle(
-            fontSize: 14,
-            color: AppColor.colorHintSearchBar,
-          ),
-          suffixIconConstraints:
-              const BoxConstraints(minHeight: 24, minWidth: 24),
-          suffixIcon: isSelectFormList
-              ? buildIconWeb(
-                  icon: SvgPicture.asset(
-                    imagePaths.icDropDown,
-                  ),
-                )
-              : null,
-        ),
-      );
-
-  Widget _buildCheckboxHasAttachment(BuildContext context) {
-    return Obx(
-      () => CheckboxListTile(
-        contentPadding: EdgeInsets.zero,
-        controlAffinity: ListTileControlAffinity.leading,
-        value: controller.hasAttachment.value,
-        onChanged: (value) {
-          controller.hasAttachment.value = value ?? false;
-        },
-        title: Text(AppLocalizations.of(context).hasAttachment),
-      ),
-    );
-  }
-
-  Widget _buildButton({
-    required Color colorButton,
-    required Color colorText,
-    required String text,
-    required VoidCallback onAction,
   }) {
-    return InkWell(
-      onTap: onAction,
-      onTapDown: (_) {
-        onAction.call();
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10), color: colorButton),
-        child: Text(
-          text,
-          style: TextStyle(fontSize: 17, color: colorText),
+    return TextField(
+      controller: textEditingController,
+      readOnly: isSelectFormList,
+      onTap: onTap,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: AppColor.loginTextFieldBackgroundColor,
+        contentPadding: const EdgeInsets.only(
+          right: 8,
+          left: 12,
         ),
-      ),
-    );
-  }
-
-  Widget _buildEmailReceiveTimeTypeDropDownButton() {
-    return DropdownButtonHideUnderline(
-      child: DropdownButton2<EmailReceiveTimeType>(
-        isExpanded: true,
-        hint: Row(
-          children: [
-            Expanded(
-                child: Text(
-              controller.dateFilterSelectedFormAdvancedSearch.value.name,
-              style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black),
-              maxLines: 1,
-              overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
-            )),
-          ],
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(10),
+          ),
         ),
-        items: EmailReceiveTimeType.values
-            .map((item) => DropdownMenuItem<EmailReceiveTimeType>(
-                  value: item,
-                  child: Text(
-                    item.name,
-                    style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black),
-                    maxLines: 1,
-                    overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
-                  ),
-                ))
-            .toList(),
-        value: controller.dateFilterSelectedFormAdvancedSearch.value,
-        onChanged: (item) {
-          controller.dateFilterSelectedFormAdvancedSearch.value = item!;
-        },
-        icon: SvgPicture.asset(imagePaths.icDropDown),
-        buttonPadding: const EdgeInsets.symmetric(horizontal: 12),
-        buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-                color: AppColor.colorInputBorderCreateMailbox, width: 0.5),
-            color: AppColor.colorInputBackgroundCreateMailbox),
-        itemHeight: 44,
-        buttonHeight: 44,
-        selectedItemHighlightColor: Colors.black12,
-        itemPadding: const EdgeInsets.symmetric(horizontal: 12),
-        dropdownMaxHeight: 200,
-        dropdownDecoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.white),
-        dropdownElevation: 4,
-        scrollbarRadius: const Radius.circular(40),
-        scrollbarThickness: 6,
+        hintText: advancedSearchFilterField.getHintText(context),
+        hintStyle: const TextStyle(
+          fontSize: 14,
+          color: AppColor.colorHintSearchBar,
+        ),
+        suffixIconConstraints:
+            const BoxConstraints(minHeight: 24, minWidth: 24),
+        suffixIcon: isSelectFormList
+            ? buildIconWeb(
+                icon: SvgPicture.asset(
+                  _imagePaths.icDropDown,
+                ),
+              )
+            : null,
       ),
     );
   }
