@@ -74,11 +74,6 @@ class AdvancedFilterController extends BaseController {
   }
 
   @override
-  void onInit() {
-    super.onInit();
-    // TODO: implement onDone
-  }
-  @override
   void onDone() {
     // TODO: implement onDone
   }
