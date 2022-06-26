@@ -38,6 +38,7 @@ class SearchController extends BaseController {
   final accountId = Rxn<AccountId>();
   final userProfile = Rxn<UserProfile>();
   final isAdvancedSearchViewOpen = false.obs;
+  final isAdvancedSearchHasApply = false.obs;
   final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
   final mailboxFilterSelectedFormAdvancedSearch = Rxn<PresentationMailbox>();
   final hasAttachment = false.obs;
@@ -144,11 +145,11 @@ class SearchController extends BaseController {
     searchFocus.addListener(() {
       final hasFocus = searchFocus.hasFocus;
       final query = searchEmailFilter.value.text?.value;
-      log('MailboxDashBoardController::_registerSearchFocusListener(): hasFocus: $hasFocus | query: $query');
-      if (!hasFocus && (query == null || query.isEmpty)) {
+      log('SearchController::_registerSearchFocusListener(): hasFocus: $hasFocus | query: $query');
+      if (!hasFocus && (query == null || query.isEmpty) && isAdvancedSearchHasApply.isFalse) {
         updateFilterEmail(text: SearchQuery.initial());
         searchInputController.clear();
-        cleanSearchFilter();
+          cleanSearchFilter();
         searchFocus.unfocus();
       }
     });
@@ -165,7 +166,6 @@ class SearchController extends BaseController {
     searchState.value = searchState.value.disableSearchState();
     updateFilterEmail(text: SearchQuery.initial());
     searchInputController.clear();
-    cleanSearchFilter();
     searchFocus.unfocus();
   }
 

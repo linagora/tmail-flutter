@@ -25,16 +25,6 @@ class DateDropDownButton extends GetWidget<AdvancedFilterController> {
   }
 }
 
-class MailBoxDropDownButton extends StatelessWidget {
-  const MailBoxDropDownButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-
 Widget _buildDropDownButton<T>({
   required List<T> items,
   required T itemSelected,

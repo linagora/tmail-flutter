@@ -20,7 +20,6 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
 
   @override
   Widget build(BuildContext context) {
-    controller.initSearchFilterField(context);
     return Material(
       color: Colors.white,
       child: Column(
@@ -55,6 +54,9 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             context: context,
             advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
             isSelectFormList: true,
+            onTap: () async {
+             await controller.selectedMailBox();
+            }
           ),
           _buildFilterField(
             textEditingController: controller.dateFilterInputController,
