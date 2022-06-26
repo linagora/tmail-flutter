@@ -10,7 +10,12 @@ Future<void> showAdvancedSearchFilterBottomSheet(BuildContext context) async {
 
   await FullScreenActionSheetBuilder(
     context: context,
-    child: AdvancedSearchInputForm(),
+    child: SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+        child: AdvancedSearchInputForm(),
+      ),
+    ),
     cancelWidget: Padding(
       padding: const EdgeInsets.only(right: 16),
       child: SvgPicture.asset(
