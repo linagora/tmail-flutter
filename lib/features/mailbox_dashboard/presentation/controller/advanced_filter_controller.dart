@@ -56,13 +56,15 @@ class AdvancedFilterController extends BaseController {
     if (toFilterInputController.text.isNotEmpty) {
       _searchController.updateFilterEmail(to: toFilterInputController.text.split(',').toSet());
     }
+    if (hasKeyWordFilterInputController.text.isNotEmpty) {
+      _searchController.updateFilterEmail(hasKeyword: hasKeyWordFilterInputController.text.split(',').toSet());
+    }
+    if (notKeyWordFilterInputController.text.isNotEmpty) {
+      _searchController.updateFilterEmail(notKeyword: notKeyWordFilterInputController.text.split(',').toSet());
+    }
 
     _searchController.updateFilterEmail(
       subject: StringConvert.writeEmptyToNull(subjectFilterInputController.text),
-      hasKeyword: Wrapped.value(
-          StringConvert.writeEmptyToNull(hasKeyWordFilterInputController.text)),
-      notKeyword: Wrapped.value(
-          StringConvert.writeEmptyToNull(notKeyWordFilterInputController.text)),
       emailReceiveTimeType: dateFilterSelectedFormAdvancedSearch.value,
       hasAttachment: hasAttachment.value,
     );
@@ -96,11 +98,11 @@ class AdvancedFilterController extends BaseController {
 
   initSearchFilterField(BuildContext context) {
     _searchController.updateFilterEmail(mailbox: _mailboxDashBoardController.selectedMailbox.value);
-    fromFilterInputController.text = StringConvert.writeNullToEmpty(_searchController.searchEmailFilter.value.from.firstOrNull);
+    fromFilterInputController.text = StringConvert.writeNullToEmpty(_searchEmailFilter.from.firstOrNull);
     toFilterInputController.text = StringConvert.writeNullToEmpty(_searchEmailFilter.to.firstOrNull);
     subjectFilterInputController.text = StringConvert.writeNullToEmpty(_searchEmailFilter.subject);
-    hasKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(_searchEmailFilter.hasKeyword);
-    notKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(_searchEmailFilter.notKeyword);
+    hasKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(_searchEmailFilter.hasKeyword.firstOrNull);
+    notKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(_searchEmailFilter.notKeyword.firstOrNull);
     dateFilterInputController.text = StringConvert.writeNullToEmpty(_searchEmailFilter.emailReceiveTimeType.getTitle(context));
     mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(_searchEmailFilter.mailbox?.name?.name);
     dateFilterSelectedFormAdvancedSearch.value = _searchEmailFilter.emailReceiveTimeType;
