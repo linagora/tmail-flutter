@@ -7,20 +7,23 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 660,
-      height: 558,
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColor.colorShadowBgContentEmail,
-            spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5)),
-        ]
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Container(
+        width: 660,
+        height: 558,
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: const [
+            BoxShadow(
+              color: AppColor.colorShadowBgContentEmail,
+              spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5)),
+          ]
+        ),
+        child: AdvancedSearchInputForm(),
       ),
-      child: AdvancedSearchInputForm(),
     );
   }
 }
