@@ -29,8 +29,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   MailboxDashBoardView({Key? key}) : super(key: key);
 
-  final SearchController searchController = Get.find<SearchController>(); 
-  
+  final SearchController searchController = Get.find<SearchController>();
+
   @override
   Widget build(BuildContext context) {
     if (controller.isDrawerOpen && (responsiveUtils.isDesktop(context)
@@ -417,7 +417,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               color: AppColor.colorBgSearchBar),
             height: 45,
             child: PortalTarget(
-              visible: controller.searchController.isAdvancedSearchViewOpen.isTrue,
+              visible: searchController.isAdvancedSearchViewOpen.isTrue,
               anchor: const Aligned(
                 follower: Alignment.topLeft,
                 target: Alignment.bottomLeft,
@@ -431,10 +431,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               portalFollower:const AdvancedSearchFilterOverlay(),
               child: QuickSearchInputForm<PresentationEmail, RecentSearch>(
                   textFieldConfiguration: QuickSearchTextFieldConfiguration(
-                      controller: controller.searchController.searchInputController,
+                      controller: searchController.searchInputController,
                       autofocus: true,
-                      enabled: controller.searchController.isAdvancedSearchViewOpen.isFalse,
-                      focusNode: controller.searchController.searchFocus,
+                      enabled: searchController.isAdvancedSearchViewOpen.isFalse,
+                      focusNode: searchController.searchFocus,
                       textInputAction: TextInputAction.done,
                       onSubmitted: (keyword) {
                         if (keyword.trim().isNotEmpty) {
@@ -444,7 +444,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       },
                       onChanged: (query) {
                         log('MailboxDashBoardView::_buildSearchForm(): onChanged: $query');
-                        controller.searchController.onChangeTextSearch(query);
+                        searchController.onChangeTextSearch(query);
                       },
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -466,9 +466,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                               height: 16,
                               fit: BoxFit.fill),
                           onTap: () {
-                            final keyword = controller.searchController.searchInputController.text;
+                            final keyword = searchController.searchInputController.text;
                             if (keyword.trim().isNotEmpty) {
-                              controller.searchController.saveRecentSearch(RecentSearch.now(keyword));
+                              searchController.saveRecentSearch(RecentSearch.now(keyword));
                             }
                             controller.searchEmail(context, keyword);
                           }),
@@ -479,7 +479,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                               height: 16,
                               fit: BoxFit.fill),
                           onTap: () {
-                            controller.searchController.clearTextSearch();
+                            searchController.clearTextSearch();
                           }),
                       rightButton: IconOpenAdvancedSearchWidget(context)
                   ),
@@ -505,7 +505,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   },
                   buttonActionCallback: (filterAction) {
                     if (filterAction is QuickSearchFilter) {
-                      controller.searchController.selectQuickSearchFilter(
+                      controller.selectQuickSearchFilter(
                           quickSearchFilter: filterAction,
                           fromSuggestionBox: true,
                       );
@@ -529,7 +529,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       return InkWell(
                         onTap: () {
                           if (keyword.trim().isNotEmpty) {
-                            controller.searchController.saveRecentSearch(RecentSearch.now(keyword));
+                            searchController.saveRecentSearch(RecentSearch.now(keyword));
                           }
                           controller.searchEmail(context, keyword);
                         },
@@ -561,17 +561,17 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     child: loadingWidget,
                   ),
                   fetchRecentActionCallback: (pattern) async {
-                    return controller.searchController.getAllRecentSearchAction(pattern);
+                    return searchController.getAllRecentSearchAction(pattern);
                   },
                   itemRecentBuilder: (context, recent) {
                     return RecentSearchItemTileWidget(recent);
                   },
                   onRecentSelected: (recent) {
-                    controller.searchController.searchInputController.text = recent.value;
+                    searchController.searchInputController.text = recent.value;
                     controller.searchEmail(context, recent.value);
                   },
                   suggestionsCallback: (pattern) async {
-                    return controller.searchController.quickSearchEmails();
+                    return controller.quickSearchEmails();
                   },
                   itemBuilder: (context, email) {
                     return EmailQuickSearchItemTileWidget(
