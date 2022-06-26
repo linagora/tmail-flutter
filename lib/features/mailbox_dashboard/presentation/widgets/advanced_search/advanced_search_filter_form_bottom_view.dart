@@ -30,7 +30,7 @@ class AdvancedSearchFilterFormBottomView
                 Expanded(child: _buildCheckboxHasAttachment(context)),
               _buildButton(
                 onAction: () {
-                  controller.cleanSearchFilter();
+                  controller.cleanSearchFilter(context);
                   popBack();
                 },
                 colorButton: AppColor.primaryColor.withOpacity(0.14),
