@@ -35,7 +35,7 @@ class AdvancedFilterController extends BaseController {
     _searchController.isAdvancedSearchViewOpen.toggle();
   }
 
-  cleanSearchFilter() {
+  cleanSearchFilter(BuildContext context) {
     _searchController.cleanSearchFilter();
     dateFilterSelectedFormAdvancedSearch.value = EmailReceiveTimeType.allTime;
     fromFilterInputController.text = '';
@@ -45,22 +45,31 @@ class AdvancedFilterController extends BaseController {
     notKeyWordFilterInputController.text = '';
     dateFilterInputController.text = '';
     hasAttachment.value = false;
-    _searchController.isAdvancedSearchHasApply.isFalse;
+    _searchController.isAdvancedSearchHasApply.value = false;
     _searchController.isAdvancedSearchViewOpen.toggle();
+    _mailboxDashBoardController.searchEmail(context, StringConvert.writeNullToEmpty(_searchEmailFilter.text?.value));
   }
 
   void _updateFilterEmailFromAdvancedSearchView() {
     if (fromFilterInputController.text.isNotEmpty) {
       _searchController.updateFilterEmail(from: fromFilterInputController.text.split(',').toSet());
+    } else {
+      _searchController.updateFilterEmail(from: {});
     }
     if (toFilterInputController.text.isNotEmpty) {
       _searchController.updateFilterEmail(to: toFilterInputController.text.split(',').toSet());
+    } else {
+      _searchController.updateFilterEmail(to: {});
     }
     if (hasKeyWordFilterInputController.text.isNotEmpty) {
       _searchController.updateFilterEmail(hasKeyword: hasKeyWordFilterInputController.text.split(',').toSet());
+    } else {
+      _searchController.updateFilterEmail(hasKeyword: {});
     }
     if (notKeyWordFilterInputController.text.isNotEmpty) {
       _searchController.updateFilterEmail(notKeyword: notKeyWordFilterInputController.text.split(',').toSet());
+    } else {
+      _searchController.updateFilterEmail(notKeyword: {});
     }
 
     _searchController.updateFilterEmail(
@@ -93,7 +102,7 @@ class AdvancedFilterController extends BaseController {
         notKeyWordFilterInputController.text.isNotEmpty ||
         dateFilterInputController.text.isNotEmpty ||
         mailBoxFilterInputController.text.isNotEmpty ||
-        hasAttachment.isFalse;
+        hasAttachment.isTrue;
   }
 
   initSearchFilterField(BuildContext context) {

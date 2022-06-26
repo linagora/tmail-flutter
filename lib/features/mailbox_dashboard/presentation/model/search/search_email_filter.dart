@@ -59,7 +59,7 @@ class SearchEmailFilter {
     );
   }
 
-  Filter? mappingToEmailFilterCondition() {
+  Filter? mappingToEmailFilterCondition({Filter? moreFilterCondition}) {
     final emailEmailFilterConditionShared = EmailFilterCondition(
       text: text?.value,
       inMailbox: mailbox?.id,
@@ -77,6 +77,7 @@ class SearchEmailFilter {
           Operator.AND, hasKeyword.map((e) => EmailFilterCondition(hasKeyword: e)).toSet()),
       LogicFilterOperator(
           Operator.AND, notKeyword.map((e) => EmailFilterCondition(notKeyword: e)).toSet()),
+      if(moreFilterCondition !=null) moreFilterCondition
     });
   }
 }

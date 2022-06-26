@@ -35,8 +35,6 @@ class SearchController extends BaseController {
   final searchInputController = TextEditingController();
   final searchEmailFilter = SearchEmailFilter().obs;
   final searchState = SearchState.initial().obs;
-  final accountId = Rxn<AccountId>();
-  final userProfile = Rxn<UserProfile>();
   final isAdvancedSearchViewOpen = false.obs;
   final isAdvancedSearchHasApply = false.obs;
   final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
