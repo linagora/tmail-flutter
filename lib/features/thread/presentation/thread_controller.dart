@@ -820,7 +820,9 @@ class ThreadController extends BaseController {
     if (_accountId != null && searchQuery != null) {
       searchIsActive.value = true;
 
-      searchController.updateFilterEmail(mailbox: currentMailbox);
+      if(searchController.isAdvancedSearchHasApply.isFalse){
+        searchController.updateFilterEmail(mailbox: currentMailbox);
+      }
 
       consumeState(_searchEmailInteractor.execute(
         _accountId!,

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-06-25T22:39:15.113430",
+  "@@last_modified": "2022-06-26T22:28:09.520951",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1492,6 +1492,12 @@
   },
   "advancedSearch": "Advanced search",
   "@advancedSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectMailbox": "Select Mailbox",
+  "@selectMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

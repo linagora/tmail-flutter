@@ -200,6 +200,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                   textFieldConfiguration: QuickSearchTextFieldConfiguration(
                       controller: controller.searchController.searchInputController,
                       autofocus: true,
+                      enabled: controller.searchController.isAdvancedSearchViewOpen.isFalse,
                       focusNode: controller.searchController.searchFocus,
                       textInputAction: TextInputAction.done,
                       onSubmitted: (keyword) {
