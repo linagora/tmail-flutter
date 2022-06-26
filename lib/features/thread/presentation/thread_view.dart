@@ -267,7 +267,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                   },
                   buttonActionCallback: (filterAction) {
                     if (filterAction is QuickSearchFilter) {
-                      controller.searchController.selectQuickSearchFilter(
+                      controller.mailboxDashBoardController.selectQuickSearchFilter(
                         quickSearchFilter: filterAction,
                         fromSuggestionBox: true,
                       );
@@ -331,7 +331,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                     controller.mailboxDashBoardController.searchEmail(context, recent.value);
                   },
                   suggestionsCallback: (pattern) async {
-                    return controller.searchController.quickSearchEmails();
+                    return controller.mailboxDashBoardController.quickSearchEmails();
                   },
                   itemBuilder: (context, email) {
                     return EmailQuickSearchItemTileWidget(

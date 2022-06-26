@@ -103,7 +103,8 @@ class ThreadController extends BaseController {
   MailboxId? _currentMailboxId;
   jmap.State? _currentEmailState;
   final ScrollController listEmailController = ScrollController();
-  late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker;
+  late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker, advancedSearchFilterWorker;
+
 
   Set<Comparator>? get _sortOrder => <Comparator>{}
     ..add(EmailComparator(EmailComparatorProperty.receivedAt)
@@ -251,6 +252,12 @@ class ThreadController extends BaseController {
       }
     });
 
+    advancedSearchFilterWorker = ever(searchController.isAdvancedSearchViewOpen, (hasOpen) {
+      if (hasOpen == true) {
+        mailboxDashBoardController.filterMessageOption.value = FilterMessageOption.all;
+      }
+    });
+
     dashboardActionWorker = ever(mailboxDashBoardController.dashBoardAction, (action) {
       if (action is DashBoardAction) {
         if (action is RefreshAllEmailAction) {
@@ -304,6 +311,7 @@ class ThreadController extends BaseController {
     mailboxWorker.call();
     dashboardActionWorker.call();
     searchWorker.call();
+    advancedSearchFilterWorker.call();
     viewStateWorker.call();
   }
 
@@ -571,8 +579,8 @@ class ThreadController extends BaseController {
         message: newFilterOption.getMessageToast(context),
         icon: newFilterOption.getIconToast(_imagePaths));
 
-    if (isSearchActive()) {
-      _searchEmail();
+    if (isSearchActive() || searchController.isAdvancedSearchHasApply.isTrue) {
+      _searchEmail(filterMessageOption: _getFilterCondition());
     } else {
       refreshAllEmail();
     }
@@ -816,7 +824,7 @@ class ThreadController extends BaseController {
     searchController.clearTextSearch();
   }
 
-  void _searchEmail({UnsignedInt? limit}) {
+  void _searchEmail({UnsignedInt? limit, EmailFilterCondition? filterMessageOption}) {
     if (_accountId != null && searchQuery != null) {
       searchIsActive.value = true;
 
@@ -824,11 +832,17 @@ class ThreadController extends BaseController {
         searchController.updateFilterEmail(mailbox: currentMailbox);
       }
 
+      filterMessageOption = EmailFilterCondition(
+        notKeyword: filterMessageOption?.notKeyword,
+        hasKeyword: filterMessageOption?.hasKeyword,
+        hasAttachment: filterMessageOption?.hasAttachment,
+      );
+
       consumeState(_searchEmailInteractor.execute(
         _accountId!,
         limit: limit ?? ThreadConstants.defaultLimit,
         sort: _sortOrder,
-        filter: _searchEmailFilter.mappingToEmailFilterCondition(),
+        filter: _searchEmailFilter.mappingToEmailFilterCondition(moreFilterCondition: filterMessageOption),
         properties: ThreadConstants.propertiesDefault,
       ));
     }
