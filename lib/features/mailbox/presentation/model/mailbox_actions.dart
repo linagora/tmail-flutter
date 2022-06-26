@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 enum MailboxActions {
   create,
   moveEmail,
+  select,
   delete,
   rename,
   move,
@@ -21,6 +22,8 @@ extension MailboxActionsExtension on MailboxActions {
         return AppLocalizations.of(context).mailbox_location;
       case MailboxActions.moveEmail:
         return AppLocalizations.of(context).move_message;
+      case MailboxActions.select:
+        return AppLocalizations.of(context).selectMailbox;
       case MailboxActions.move:
         return AppLocalizations.of(context).allMailboxes;
       default:
