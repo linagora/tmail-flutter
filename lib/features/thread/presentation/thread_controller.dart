@@ -289,8 +289,8 @@ class ThreadController extends BaseController {
       if (viewState is Either) {
         viewState.map((success) {
           if (success is SearchEmailNewQuery){
-            _searchEmail();
             mailboxDashBoardController.clearState();
+            _searchEmail();
           } else if (success is MarkAsEmailReadSuccess
               || success is MoveToMailboxSuccess
               || success is MarkAsStarEmailSuccess

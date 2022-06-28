@@ -33,8 +33,8 @@ class AdvancedSearchFilterFormBottomView
                   controller.cleanSearchFilter(context);
                   popBack();
                 },
-                colorButton: AppColor.primaryColor.withOpacity(0.14),
-                colorText: AppColor.primaryColor,
+                colorButton: Colors.transparent,
+                colorText: AppColor.colorMessageConfirmDialog,
                 text: AppLocalizations.of(context).clearFilter,
               ),
               const SizedBox(width: 12),
@@ -80,8 +80,8 @@ class AdvancedSearchFilterFormBottomView
         onAction.call();
       },
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 154),
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        height: 44,
+        constraints: const BoxConstraints(maxWidth: 144),
         alignment: Alignment.center,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), color: colorButton),
