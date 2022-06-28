@@ -92,7 +92,7 @@ class SearchController extends BaseController {
         return;
       case QuickSearchFilter.fromMe:
         quickSearchFilterSelected
-            ? searchEmailFilter.value.from.remove(userProfile.email)
+            ? searchEmailFilter.value.from.removeWhere((e) => e == userProfile.email)
             : searchEmailFilter.value.from.add(userProfile.email);
         updateFilterEmail(from: searchEmailFilter.value.from);
         return;
@@ -195,7 +195,7 @@ class SearchController extends BaseController {
         }
         return searchEmailFilter.value.emailReceiveTimeType == EmailReceiveTimeType.last7Days;
       case QuickSearchFilter.fromMe:
-        return searchEmailFilter.value.from.contains(userProfile.email) && searchEmailFilter.value.from.length == 1;
+        return searchEmailFilter.value.from.contains( userProfile.email) && searchEmailFilter.value.from.length == 1;
     }
   }
 

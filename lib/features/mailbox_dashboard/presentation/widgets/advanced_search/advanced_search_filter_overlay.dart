@@ -11,7 +11,7 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
       padding: const EdgeInsets.only(top: 8),
       child: Container(
         width: 660,
-        height: 558,
+        height: MediaQuery.of(context).size.height,
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -22,7 +22,12 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
               spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5)),
           ]
         ),
-        child: AdvancedSearchInputForm(),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+            child: AdvancedSearchInputForm(),
+          ),
+        ),
       ),
     );
   }

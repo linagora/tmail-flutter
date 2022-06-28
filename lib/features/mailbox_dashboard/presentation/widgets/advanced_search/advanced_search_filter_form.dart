@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/drop_down_button_filter_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_auto_complete_email_adress.dart';
 
 class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     with PopupContextMenuActionMixin {
@@ -24,15 +25,17 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
       color: Colors.white,
       child: Column(
         children: [
-          _buildFilterField(
-            textEditingController: controller.fromFilterInputController,
-            context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.form,
+          _buildSuggestionFilterField(
+              listTagSelected: controller.listTagFromSelected,
+              context: context,
+              advancedSearchFilterField: AdvancedSearchFilterField.form,
+              listTagInitial: controller.searchEmailFilter.from.toList()
           ),
-          _buildFilterField(
-            textEditingController: controller.toFilterInputController,
-            context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.to,
+          _buildSuggestionFilterField(
+              listTagSelected: controller.listTagToSelected,
+              context: context,
+              advancedSearchFilterField: AdvancedSearchFilterField.to,
+              listTagInitial: controller.searchEmailFilter.to.toList()
           ),
           _buildFilterField(
             textEditingController: controller.subjectFilterInputController,
@@ -50,14 +53,13 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             advancedSearchFilterField: AdvancedSearchFilterField.notKeyword,
           ),
           _buildFilterField(
-            textEditingController: controller.mailBoxFilterInputController,
-            context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
-            isSelectFormList: true,
-            onTap: () async {
-             await controller.selectedMailBox();
-            }
-          ),
+              textEditingController: controller.mailBoxFilterInputController,
+              context: context,
+              advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
+              isSelectFormList: true,
+              onTap: () async {
+                await controller.selectedMailBox();
+              }),
           _buildFilterField(
             textEditingController: controller.dateFilterInputController,
             context: context,
@@ -70,7 +72,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               );
             },
           ),
-         const AdvancedSearchFilterFormBottomView()
+          const AdvancedSearchFilterFormBottomView()
         ],
       ),
     );
@@ -177,6 +179,57 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     }
   }
 
+  Widget _buildSuggestionFilterField({
+    required AdvancedSearchFilterField advancedSearchFilterField,
+    required BuildContext context,
+    required List<String> listTagSelected,
+    required List<String> listTagInitial,
+  }) {
+    final child = [
+      SizedBox(
+        width: _responsiveUtils.isMobile(context) ? null : 112,
+        child: Text(
+          advancedSearchFilterField.getTitle(context),
+          style: const TextStyle(
+            fontSize: 14,
+            color: AppColor.colorContentEmail,
+          ),
+        ),
+      ),
+      const Padding(padding: EdgeInsets.all(4)),
+      _responsiveUtils.isMobile(context)
+          ? TextFieldAutoCompleteEmailAddress(
+              optionsBuilder: (word) async {
+                return controller.getAutoCompleteSuggestion(word: word);
+              },
+              advancedSearchFilterField: advancedSearchFilterField,
+              initialTags: listTagInitial,
+              listTagSelected: listTagSelected,
+            )
+          : Expanded(
+              child: TextFieldAutoCompleteEmailAddress(
+                optionsBuilder: (word) async {
+                  return controller.getAutoCompleteSuggestion(word: word);
+                },
+                advancedSearchFilterField: advancedSearchFilterField,
+                initialTags: listTagInitial,
+                listTagSelected: listTagSelected,
+              ),
+            )
+    ];
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: _responsiveUtils.isMobile(context)
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: child,
+            )
+          : SizedBox(height: 44, child: Row(children: child)),
+    );
+  }
+
   Widget _buildTextField({
     required BuildContext context,
     required AdvancedSearchFilterField advancedSearchFilterField,
@@ -194,6 +247,15 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         contentPadding: const EdgeInsets.only(
           right: 8,
           left: 12,
+        ),
+        enabledBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(10),
+          ),
+          borderSide: BorderSide(
+            width: 0.5,
+            color: AppColor.colorInputBorderCreateMailbox,
+          ),
         ),
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(

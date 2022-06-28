@@ -98,7 +98,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               tabletLarge: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeDrawer),
+                  SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
                   Expanded(child: _wrapContainerForThreadAndEmail(context))
                 ],
               ),
@@ -423,8 +423,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 target: Alignment.bottomLeft,
                 widthFactor: 1,
                 backup: Aligned(
-                  follower: Alignment.bottomLeft,
-                  target: Alignment.topLeft,
+                  follower: Alignment.topLeft,
+                  target: Alignment.bottomLeft,
                   widthFactor: 1,
                 ),
               ),

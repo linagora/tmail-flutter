@@ -1545,4 +1545,11 @@ class AppLocalizations {
       name: 'selectMailbox',
     );
   }
+
+  String get messageDuplicateTagFilterMail {
+    return Intl.message(
+      'you already entered that',
+      name: 'selectMailbox',
+    );
+  }
 }
