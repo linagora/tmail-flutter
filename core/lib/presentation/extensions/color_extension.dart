@@ -120,6 +120,7 @@ extension AppColor on Color {
   static const colorBgMenuItemDropDownSelected = Color(0x80DEE2E7);
   static const colorButtonCancelDialog = Color(0x0D000000);
   static const colorShadowComposerButton = Color(0x99007AFF);
+  static const colorBackgroundTagFilter = Color(0x6D7885);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

@@ -69,6 +69,8 @@ dependencies:
 
   built_collection: 5.1.1
 
+  textfield_tags: ^2.0.1
+
   # jmap_dart_client
   jmap_dart_client:
     git:
