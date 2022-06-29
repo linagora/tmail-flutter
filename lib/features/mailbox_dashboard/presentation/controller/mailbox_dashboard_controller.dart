@@ -272,7 +272,6 @@ class MailboxDashBoardController extends ReloadableController {
       _closeEmailDetailedView();
     }
     if (value.isEmpty){
-      searchController.disableSearch();
       searchController.setEmailReceiveTimeType(null);
     }
   }

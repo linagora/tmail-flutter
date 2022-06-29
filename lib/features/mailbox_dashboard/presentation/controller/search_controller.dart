@@ -147,7 +147,7 @@ class SearchController extends BaseController {
       if (!hasFocus && (query == null || query.isEmpty) && isAdvancedSearchHasApply.isFalse) {
         updateFilterEmail(text: SearchQuery.initial());
         searchInputController.clear();
-          cleanSearchFilter();
+        cleanSearchFilter();
         searchFocus.unfocus();
       }
     });

@@ -36,6 +36,8 @@ class AdvancedSearchFilterFormBottomView
                 colorButton: Colors.transparent,
                 colorText: AppColor.colorMessageConfirmDialog,
                 text: AppLocalizations.of(context).clearFilter,
+                context: context,
+                responsiveUtils: _responsiveUtils,
               ),
               const SizedBox(width: 12),
               _buildButton(
@@ -46,6 +48,8 @@ class AdvancedSearchFilterFormBottomView
                 colorButton: AppColor.primaryColor,
                 colorText: AppColor.primaryLightColor,
                 text: AppLocalizations.of(context).search,
+                context: context,
+                responsiveUtils: _responsiveUtils,
               ),
             ],
           ),
@@ -73,6 +77,8 @@ class AdvancedSearchFilterFormBottomView
     required Color colorText,
     required String text,
     required VoidCallback onAction,
+    required BuildContext context,
+    required ResponsiveUtils responsiveUtils,
   }) {
     return InkWell(
       onTap: onAction,
@@ -81,7 +87,8 @@ class AdvancedSearchFilterFormBottomView
       },
       child: Container(
         height: 44,
-        constraints: const BoxConstraints(maxWidth: 144),
+        padding: const EdgeInsets.symmetric(horizontal: 26),
+        constraints: BoxConstraints(maxWidth: responsiveUtils.isMobile(context) ? double.infinity : 144),
         alignment: Alignment.center,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), color: colorButton),
