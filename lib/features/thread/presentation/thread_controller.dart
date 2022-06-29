@@ -866,7 +866,7 @@ class ThreadController extends BaseController {
         limit: ThreadConstants.defaultLimit,
         sort: _sortOrder,
         filter: EmailFilterCondition(
-            text: searchQuery!.value,
+            text: searchQuery?.value,
             before: emailList.last.receivedAt),
         properties: ThreadConstants.propertiesDefault,
         lastEmailId: emailList.last.id

@@ -202,12 +202,6 @@ class AdvancedFilterController extends GetxController {
   }
 
   @override
-  void onDone() {}
-
-  @override
-  void onError(error) {}
-
-  @override
   void onClose() {
     subjectFilterInputController.dispose();
     hasKeyWordFilterInputController.dispose();
