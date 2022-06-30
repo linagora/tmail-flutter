@@ -167,6 +167,14 @@ dependencies:
     git:
       url: https://github.com/CarlosPacheco/flutter_appauth_web.git
 
+  percent_indicator: 4.2.2
+
+  # Isolate
+  worker_manager:
+    git:
+      url: https://github.com/dab246/worker_manager.git
+      ref: improvement
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
