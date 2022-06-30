@@ -1,7 +1,13 @@
+import 'dart:async';
+
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
@@ -63,6 +69,15 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
 
   @override
   Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Email>> markAsMailboxRead(
+      AccountId accountId,
+      MailboxId mailboxId,
+      int totalEmailUnread,
+      StreamController<dartz.Either<Failure, Success>> onProgressController) {
     throw UnimplementedError();
   }
 }
