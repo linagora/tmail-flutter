@@ -16,8 +16,10 @@ import 'package:tmail_ui_user/features/login/data/network/config/authorization_i
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
+import 'package:worker_manager/worker_manager.dart';
 
 class NetworkBindings extends Bindings {
 
@@ -25,6 +27,7 @@ class NetworkBindings extends Bindings {
   void dependencies() {
     _bindingDio();
     _bindingApi();
+    _bindingIsolateWorker();
     _bindingConnection();
     _bindingException();
   }
@@ -82,5 +85,13 @@ class NetworkBindings extends Bindings {
 
   void _bindingException() {
     Get.put(RemoteExceptionThrower());
+  }
+
+  void _bindingIsolateWorker() {
+    Get.put(Executor());
+    Get.put(MailboxIsolateWorker(
+        Get.find<ThreadAPI>(),
+        Get.find<EmailAPI>(),
+        Get.find<Executor>()));
   }
 }

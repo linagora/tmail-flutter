@@ -7,6 +7,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -102,6 +103,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                           return const SizedBox.shrink();
                         }
                       }),
+                      if (!_responsiveUtils.isDesktop(context))
+                        _buildMarkAsMailboxReadLoading(context),
                       Expanded(child: Container(
                           alignment: Alignment.center,
                           margin: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
@@ -803,6 +806,35 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
               style: filter.getTextStyle(quickSearchFilterSelected: quickSearchFilterSelected),
             )
           ]));
+    });
+  }
+
+  Widget _buildMarkAsMailboxReadLoading(BuildContext context) {
+    return Obx(() {
+      final viewState = controller.mailboxDashBoardController.viewStateMarkAsReadMailbox.value;
+      return viewState.fold(
+        (failure) => const SizedBox.shrink(),
+        (success) {
+          if (success is MarkAsMailboxReadLoading) {
+            return Padding(
+                padding: EdgeInsets.only(
+                    top: _responsiveUtils.isDesktop(context) ? 16 : 0,
+                    left: 16,
+                    right: 16,
+                    bottom: _responsiveUtils.isDesktop(context) ? 0 : 16),
+                child: horizontalLoadingWidget);
+          } else if (success is UpdatingMarkAsMailboxReadState) {
+            final percent = success.countRead / success.totalUnread;
+            return Padding(
+                padding: EdgeInsets.only(
+                    top: _responsiveUtils.isDesktop(context) ? 16 : 0,
+                    left: 16,
+                    right: 16,
+                    bottom: _responsiveUtils.isDesktop(context) ? 0 : 16),
+                child: horizontalPercentLoadingWidget(percent));
+          }
+          return const SizedBox.shrink();
+          });
     });
   }
 }

@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_data
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
@@ -53,7 +54,7 @@ class DestinationPickerBindings extends BaseBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
+    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>(), Get.find<MailboxIsolateWorker>()));
     Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
@@ -79,8 +80,6 @@ class DestinationPickerBindings extends BaseBindings {
           DataSourceType.local: Get.find<MailboxCacheDataSourceImpl>()
         },
         Get.find<StateDataSource>(),
-        Get.find<ThreadDataSource>(),
-        Get.find<EmailDataSource>()
     ));
   }
 }

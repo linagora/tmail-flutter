@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -55,46 +56,53 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         child: Stack(children: [
           ResponsiveWidget(
               responsiveUtils: responsiveUtils,
-              desktop: Column(children: [
-                Row(children: [
-                  Container(
-                    width: responsiveUtils.defaultSizeMenu,
-                    color: Colors.white,
-                    padding: const EdgeInsets.only(top: 25, bottom: 25, left: 28),
-                    child: Row(children: [
-                      (SloganBuilder(arrangedByHorizontal: true)
-                          ..setSloganText(AppLocalizations.of(context).app_name)
-                          ..setSloganTextAlign(TextAlign.center)
-                          ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold))
-                          ..setSizeLogo(24)
-                          ..setLogo(imagePaths.icLogoTMail))
-                        .build(),
-                      Obx(() {
-                        if (controller.appInformation.value != null) {
-                          return Padding(padding: const EdgeInsets.only(top: 6),
-                            child: Text(
-                              'v.${controller.appInformation.value!.version}',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
-                            ));
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
-                    ])
-                  ),
-                  Expanded(child: Padding(
-                    padding: const EdgeInsets.only(right: 10, top: 16, bottom: 10),
-                    child: _buildRightHeader(context)))
+              desktop: Container(
+                color: AppColor.colorBgDesktop,
+                child: Column(children: [
+                  Row(children: [
+                    Container(
+                      width: responsiveUtils.defaultSizeMenu,
+                      color: Colors.white,
+                      padding: const EdgeInsets.only(top: 25, bottom: 25, left: 28),
+                      child: Row(children: [
+                        (SloganBuilder(arrangedByHorizontal: true)
+                            ..setSloganText(AppLocalizations.of(context).app_name)
+                            ..setSloganTextAlign(TextAlign.center)
+                            ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold))
+                            ..setSizeLogo(24)
+                            ..setLogo(imagePaths.icLogoTMail))
+                          .build(),
+                        Obx(() {
+                          if (controller.appInformation.value != null) {
+                            return Padding(padding: const EdgeInsets.only(top: 6),
+                              child: Text(
+                                'v.${controller.appInformation.value!.version}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
+                              ));
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
+                      ])
+                    ),
+                    Expanded(child: Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.only(right: 10, top: 16, bottom: 10),
+                      child: _buildRightHeader(context)))
+                  ]),
+                  Expanded(child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
+                      Expanded(child: Column(children: [
+                        _buildMarkAsMailboxReadLoading(context),
+                        Expanded(child: _wrapContainerForThreadAndEmail(context))
+                      ]))
+                    ],
+                  ))
                 ]),
-                Expanded(child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
-                    Expanded(child: _wrapContainerForThreadAndEmail(context))
-                  ],
-                ))
-              ]),
+              ),
               tabletLarge: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -601,5 +609,34 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           const SizedBox(width: 16),
         ]
     );
+  }
+
+  Widget _buildMarkAsMailboxReadLoading(BuildContext context) {
+    return Obx(() {
+      final viewState = controller.viewStateMarkAsReadMailbox.value;
+      return viewState.fold(
+          (failure) => const SizedBox.shrink(),
+          (success) {
+            if (success is MarkAsMailboxReadLoading) {
+              return Padding(
+                  padding: EdgeInsets.only(
+                      top: responsiveUtils.isDesktop(context) ? 16 : 0,
+                      left: 16,
+                      right: 16,
+                      bottom: responsiveUtils.isDesktop(context) ? 0 : 16),
+                  child: horizontalLoadingWidget);
+            } else if (success is UpdatingMarkAsMailboxReadState) {
+              final percent = success.countRead / success.totalUnread;
+              return Padding(
+                  padding: EdgeInsets.only(
+                      top: responsiveUtils.isDesktop(context) ? 16 : 0,
+                      left: 16,
+                      right: 16,
+                      bottom: responsiveUtils.isDesktop(context) ? 0 : 16),
+                  child: horizontalPercentLoadingWidget(percent));
+            }
+            return const SizedBox.shrink();
+          });
+    });
   }
 }

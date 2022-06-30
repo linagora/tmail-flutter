@@ -1420,6 +1420,13 @@ class AppLocalizations {
         args: [mailboxName]);
   }
 
+  String toastMessageMarkAsMailboxReadHasSomeEmailFailure(String mailboxName, int count) {
+    return Intl.message(
+        'You’ve marked $count messages in "$mailboxName" as read',
+        name: 'toastMessageMarkAsMailboxReadHasSomeEmailFailure',
+        args: [mailboxName, count]);
+  }
+
   String get allMailboxes {
     return Intl.message(
         'All mailboxes',
