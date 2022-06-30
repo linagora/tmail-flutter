@@ -44,8 +44,14 @@ class BottomBarSelectionMailboxWidget {
         Expanded(child: (ButtonBuilder(_imagePaths.icMove)
             ..key(const Key('button_move_all_mailbox'))
             ..paddingIcon(const EdgeInsets.all(8))
-            ..textStyle(TextStyle(fontSize: 12, color: AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(AppColor.colorTextButton.withOpacity(0.3))
+            ..textStyle(TextStyle(
+                fontSize: 12,
+                color: _isMoveMailboxValid
+                    ? AppColor.colorTextButton
+                    : AppColor.colorTextButton.withOpacity(0.3)))
+            ..iconColor(_isMoveMailboxValid
+                ? AppColor.colorTextButton
+                : AppColor.colorTextButton.withOpacity(0.3))
             ..onPressActionClick(() {
               if (_isMoveMailboxValid) {
                 _onMailboxActionsClick?.call(MailboxActions.move, _listSelectionMailbox);
@@ -76,10 +82,10 @@ class BottomBarSelectionMailboxWidget {
             ..paddingIcon(const EdgeInsets.all(8))
             ..textStyle(TextStyle(
                 fontSize: 12,
-                color: _isDeleteMailboxValid
+                color: _isMarkAsReadMailboxValid
                     ? AppColor.colorTextButton
                     : AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(_isDeleteMailboxValid
+            ..iconColor(_isMarkAsReadMailboxValid
                 ? AppColor.colorTextButton
                 : AppColor.colorTextButton.withOpacity(0.3))
             ..onPressActionClick(() {
