@@ -7,15 +7,19 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class AdvancedSearchFilterFormBottomView
     extends GetWidget<AdvancedFilterController> {
-  const AdvancedSearchFilterFormBottomView({Key? key}) : super(key: key);
+  const AdvancedSearchFilterFormBottomView({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
 
     return Padding(
-      padding: EdgeInsets.only(top: _responsiveUtils.isMobile(context) ? 8 : 20),
+      padding:
+          EdgeInsets.only(top: _responsiveUtils.isMobile(context) ? 8 : 20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (_responsiveUtils.isMobile(context))
             _buildCheckboxHasAttachment(context),
@@ -26,31 +30,11 @@ class AdvancedSearchFilterFormBottomView
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisSize: MainAxisSize.max,
             children: [
-              if (!_responsiveUtils.isMobile(context))
-                Expanded(child: _buildCheckboxHasAttachment(context)),
-              _buildButton(
-                onAction: () {
-                  controller.cleanSearchFilter(context);
-                  popBack();
-                },
-                colorButton: Colors.transparent,
-                colorText: AppColor.colorMessageConfirmDialog,
-                text: AppLocalizations.of(context).clearFilter,
-                context: context,
-                responsiveUtils: _responsiveUtils,
-              ),
-              const SizedBox(width: 12),
-              _buildButton(
-                onAction: () {
-                  controller.applyAdvancedSearchFilter(context);
-                  popBack();
-                },
-                colorButton: AppColor.primaryColor,
-                colorText: AppColor.primaryLightColor,
-                text: AppLocalizations.of(context).search,
-                context: context,
-                responsiveUtils: _responsiveUtils,
-              ),
+              if (!_responsiveUtils.isMobile(context))...[
+                _buildCheckboxHasAttachment(context),
+                const Spacer(),
+              ],
+              ..._buildListButton(context, _responsiveUtils),
             ],
           ),
         ],
@@ -58,16 +42,80 @@ class AdvancedSearchFilterFormBottomView
     );
   }
 
+  List<Widget> _buildListButton(
+      BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isMobile(context)) {
+      return [
+        Expanded(
+          child: _buildButton(
+            onAction: () {
+              controller.cleanSearchFilter(context);
+              popBack();
+            },
+            colorButton: AppColor.primaryColor.withOpacity(0.06),
+            colorText: AppColor.primaryColor,
+            text: AppLocalizations.of(context).clearFilter,
+            context: context,
+            responsiveUtils: responsiveUtils,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildButton(
+            onAction: () {
+              controller.applyAdvancedSearchFilter(context);
+              popBack();
+            },
+            colorButton: AppColor.primaryColor,
+            colorText: AppColor.primaryLightColor,
+            text: AppLocalizations.of(context).search,
+            context: context,
+            responsiveUtils: responsiveUtils,
+          ),
+        ),
+      ];
+    } else {
+      return [
+        _buildButton(
+          onAction: () {
+            controller.cleanSearchFilter(context);
+            popBack();
+          },
+          colorButton: AppColor.primaryColor.withOpacity(0.06),
+          colorText: AppColor.primaryColor,
+          text: AppLocalizations.of(context).clearFilter,
+          context: context,
+          responsiveUtils: responsiveUtils,
+        ),
+        const SizedBox(width: 12),
+        _buildButton(
+          onAction: () {
+            controller.applyAdvancedSearchFilter(context);
+            popBack();
+          },
+          colorButton: AppColor.primaryColor,
+          colorText: AppColor.primaryLightColor,
+          text: AppLocalizations.of(context).search,
+          context: context,
+          responsiveUtils: responsiveUtils,
+        ),
+      ];
+    }
+  }
+
   Widget _buildCheckboxHasAttachment(BuildContext context) {
     return Obx(
-      () => CheckboxListTile(
-        contentPadding: EdgeInsets.zero,
-        controlAffinity: ListTileControlAffinity.leading,
-        value: controller.hasAttachment.value,
-        onChanged: (value) {
-          controller.hasAttachment.value = value ?? false;
-        },
-        title: Text(AppLocalizations.of(context).hasAttachment),
+      () => SizedBox(
+        width: 220,
+        child: CheckboxListTile(
+          contentPadding: EdgeInsets.zero,
+          controlAffinity: ListTileControlAffinity.leading,
+          value: controller.hasAttachment.value,
+          onChanged: (value) {
+            controller.hasAttachment.value = value ?? false;
+          },
+          title: Text(AppLocalizations.of(context).hasAttachment),
+        ),
       ),
     );
   }
@@ -87,8 +135,11 @@ class AdvancedSearchFilterFormBottomView
       },
       child: Container(
         height: 44,
-        padding: const EdgeInsets.symmetric(horizontal: 26),
-        constraints: BoxConstraints(maxWidth: responsiveUtils.isMobile(context) ? double.infinity : 144),
+        padding: EdgeInsets.symmetric(
+            horizontal: responsiveUtils.isMobile(context) ? 0 : 26),
+        constraints: BoxConstraints(
+            maxWidth:
+                responsiveUtils.isMobile(context) ? double.infinity : 144),
         alignment: Alignment.center,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), color: colorButton),

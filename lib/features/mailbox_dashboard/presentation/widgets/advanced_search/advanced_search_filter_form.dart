@@ -26,16 +26,16 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
       child: Column(
         children: [
           _buildSuggestionFilterField(
-              listTagSelected: controller.listTagFromSelected,
-              context: context,
-              advancedSearchFilterField: AdvancedSearchFilterField.form,
-              listTagInitial: controller.searchEmailFilter.from.toList()
+            listTagSelected: controller.searchEmailFilter.from,
+            context: context,
+            advancedSearchFilterField: AdvancedSearchFilterField.form,
+            listTagInitial: controller.searchEmailFilter.from,
           ),
           _buildSuggestionFilterField(
-              listTagSelected: controller.listTagToSelected,
-              context: context,
-              advancedSearchFilterField: AdvancedSearchFilterField.to,
-              listTagInitial: controller.searchEmailFilter.to.toList()
+            listTagSelected: controller.searchEmailFilter.to,
+            context: context,
+            advancedSearchFilterField: AdvancedSearchFilterField.to,
+            listTagInitial: controller.searchEmailFilter.to,
           ),
           _buildFilterField(
             textEditingController: controller.subjectFilterInputController,
@@ -91,11 +91,15 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
                             fontSize: 15,
                             color: Colors.black,
                             fontWeight: FontWeight.w500))),
-                if (e ==
-                    controller.dateFilterSelectedFormAdvancedSearch.value) ...[
+                if (e == controller.dateFilterSelectedFormAdvancedSearch.value)
+                ...[
                   const SizedBox(width: 12),
-                  SvgPicture.asset(_imagePaths.icFilterSelected,
-                      width: 16, height: 16, fit: BoxFit.fill),
+                  SvgPicture.asset(
+                    _imagePaths.icFilterSelected,
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.fill,
+                  ),
                 ]
               ]),
               onTap: () {
@@ -182,8 +186,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   Widget _buildSuggestionFilterField({
     required AdvancedSearchFilterField advancedSearchFilterField,
     required BuildContext context,
-    required List<String> listTagSelected,
-    required List<String> listTagInitial,
+    required Set<String> listTagSelected,
+    required Set<String> listTagInitial,
   }) {
     final child = [
       SizedBox(
@@ -204,7 +208,32 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               },
               advancedSearchFilterField: advancedSearchFilterField,
               initialTags: listTagInitial,
-              listTagSelected: listTagSelected,
+              onAddTag: (value) {
+                if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
+                  controller.searchEmailFilter.from.add(value);
+                }
+                if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
+                  controller.searchEmailFilter.to.add(value);
+                }
+              },
+              onDeleteTag: (tag) {
+                if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
+                  controller.searchEmailFilter.from.remove(tag);
+                  controller.lastTextForm.value = '';
+                }
+                if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
+                  controller.searchEmailFilter.to.remove(tag);
+                  controller.lastTextTo.value = '';
+                }
+              },
+              onChange: (value) {
+                if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
+                  controller.lastTextForm.value = value;
+                }
+                if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
+                  controller.lastTextTo.value = value;
+                }
+              },
             )
           : Expanded(
               child: TextFieldAutoCompleteEmailAddress(
@@ -213,7 +242,33 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
                 },
                 advancedSearchFilterField: advancedSearchFilterField,
                 initialTags: listTagInitial,
-                listTagSelected: listTagSelected,
+                onAddTag: (value) {
+                  if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
+                    controller.searchEmailFilter.from.add(value.trim());
+                  }
+                  if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
+                    controller.searchEmailFilter.to.add(value.trim());
+                  }
+                },
+                onChange: (value) {
+                  if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
+                    controller.lastTextForm.value = value.trim();
+                  }
+                  if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
+                    controller.lastTextTo.value = value.trim();
+                  }
+                },
+                onDeleteTag: (tag) {
+                  if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
+                    controller.searchEmailFilter.from.remove(tag);
+                    controller.lastTextForm.value = '';
+                  }
+                  if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
+                    controller.searchEmailFilter.to.remove(tag);
+                    controller.lastTextTo.value = '';
+
+                  }
+                },
               ),
             )
     ];
@@ -267,8 +322,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           fontSize: 14,
           color: AppColor.colorHintSearchBar,
         ),
-        suffixIconConstraints:
-            const BoxConstraints(minHeight: 24, minWidth: 24),
+        suffixIconConstraints: const BoxConstraints(minHeight: 24, minWidth: 24),
         suffixIcon: isSelectFormList
             ? buildIconWeb(
                 icon: SvgPicture.asset(

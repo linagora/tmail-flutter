@@ -167,11 +167,26 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       Obx(() => !searchController.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
       Obx(() => searchController.isSearchActive()
           ? Expanded(child: _buildSearchForm(context))
-          : (SearchBarView(imagePaths)
-              ..hintTextSearch(AppLocalizations.of(context).search_emails)
-              ..maxSizeWidth(240)
-              ..addOnOpenSearchViewAction(() => searchController.enableSearch()))
-            .build()),
+          : PortalTarget(
+              visible: controller.searchController.isAdvancedSearchViewOpen.isTrue,
+              anchor: const Aligned(
+                follower: Alignment.topRight,
+                target: Alignment.bottomRight,
+                widthFactor: 3,
+                backup: Aligned(
+                  follower: Alignment.topRight,
+                  target: Alignment.bottomRight,
+                  widthFactor: 3,
+                ),
+              ),
+              portalFollower: responsiveUtils.isMobile(context) ? const SizedBox.shrink() : const AdvancedSearchFilterOverlay(),
+              child: (SearchBarView(imagePaths)
+                  ..hintTextSearch(AppLocalizations.of(context).search_emails)
+                  ..maxSizeWidth(240)
+                  ..addOnOpenSearchViewAction(() => searchController.enableSearch())
+                  ..addRightButton(IconOpenAdvancedSearchWidget(context)))
+                .build(),
+          )),
       Obx(() => !searchController.isSearchActive() ? const SizedBox(width: 16) : const SizedBox.shrink()),
       Obx(() => (AvatarBuilder()
           ..text(controller.userProfile.value?.getAvatarText() ?? '')
