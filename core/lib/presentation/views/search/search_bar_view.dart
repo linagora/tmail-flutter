@@ -2,23 +2,24 @@
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnOpenSearchViewAction = Function();
 
 class SearchBarView {
- OnOpenSearchViewAction? _onOpenSearchViewAction;
+  OnOpenSearchViewAction? _onOpenSearchViewAction;
 
- final ImagePaths _imagePaths;
+  final ImagePaths _imagePaths;
 
   double? _heightSearchBar;
   EdgeInsets? _padding;
   EdgeInsets? _margin;
   String? _hintTextSearch;
   double? _maxSizeWidth;
+  Widget? _rightButton;
 
- SearchBarView(this._imagePaths);
+
+  SearchBarView(this._imagePaths);
 
   void addOnOpenSearchViewAction(OnOpenSearchViewAction onOpenSearchViewAction) {
     _onOpenSearchViewAction = onOpenSearchViewAction;
@@ -30,6 +31,10 @@ class SearchBarView {
 
   void addPadding(EdgeInsets padding) {
     _padding = padding;
+  }
+
+  void addRightButton(Widget rightButton) {
+    _rightButton = rightButton;
   }
 
   void addMargin(EdgeInsets margin) {
@@ -55,26 +60,29 @@ class SearchBarView {
             color: AppColor.colorBgSearchBar),
         padding: _padding ?? EdgeInsets.zero,
         margin: _margin ?? EdgeInsets.zero,
-        child: InkWell(
-            onTap: () => _onOpenSearchViewAction?.call(),
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(width: 8),
-                buildIconWeb(
-                    splashRadius: 15,
-                    minSize: 40,
-                    iconPadding: EdgeInsets.zero,
-                    icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
-                    onTap: () => _onOpenSearchViewAction?.call()),
-                Expanded(child:
-                  Text(
-                      _hintTextSearch ?? '',
-                      maxLines: 1,
-                      style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar)))
-              ]
-            )),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(width: 8),
+            buildIconWeb(
+                splashRadius: 15,
+                minSize: 40,
+                iconPadding: EdgeInsets.zero,
+                icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
+                onTap: () => _onOpenSearchViewAction?.call()),
+            Expanded(
+              child: InkWell(
+                onTap: () => _onOpenSearchViewAction?.call(),
+                child: Text(
+                    _hintTextSearch ?? '',
+                    maxLines: 1,
+                    style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar)),
+              ),
+            ),
+            if(_rightButton != null)
+              _rightButton!
+          ]
+        ),
     );
   }
 }

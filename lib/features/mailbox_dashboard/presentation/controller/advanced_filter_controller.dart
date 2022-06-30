@@ -27,9 +27,8 @@ class AdvancedFilterController extends GetxController {
   final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
   final hasAttachment = false.obs;
   final listEmailAddressInit = RxList<EmailAddress>();
-  final listTagFromSelected = RxList<String>();
-  final listTagToSelected = RxList<String>();
-
+  final lastTextForm = ''.obs;
+  final lastTextTo = ''.obs;
   TextEditingController subjectFilterInputController = TextEditingController();
   TextEditingController hasKeyWordFilterInputController =
       TextEditingController();
@@ -40,7 +39,7 @@ class AdvancedFilterController extends GetxController {
   ContactSuggestionSource _contactSuggestionSource =
       ContactSuggestionSource.tMailContact;
 
-  final SearchController _searchController = Get.find<SearchController>();
+  final SearchController searchController = Get.find<SearchController>();
   final MailboxDashBoardController _mailboxDashBoardController =
       Get.find<MailboxDashBoardController>();
 
@@ -52,7 +51,7 @@ class AdvancedFilterController extends GetxController {
   }
 
   SearchEmailFilter get searchEmailFilter =>
-      _searchController.searchEmailFilter.value;
+      searchController.searchEmailFilter.value;
 
   @override
   void onReady() async {
@@ -64,52 +63,55 @@ class AdvancedFilterController extends GetxController {
   }
 
   void selectOpenAdvanceSearch() {
-    _searchController.isAdvancedSearchViewOpen.toggle();
+    searchController.isAdvancedSearchViewOpen.toggle();
   }
 
   void cleanSearchFilter(BuildContext context) {
-    _searchController.cleanSearchFilter();
+    searchController.cleanSearchFilter();
     dateFilterSelectedFormAdvancedSearch.value = EmailReceiveTimeType.allTime;
-    listTagFromSelected.clear();
-    listTagToSelected.clear();
     subjectFilterInputController.text = '';
     hasKeyWordFilterInputController.text = '';
     notKeyWordFilterInputController.text = '';
     dateFilterInputController.text = '';
     hasAttachment.value = false;
-    _searchController.isAdvancedSearchHasApply.value = false;
-    _searchController.isAdvancedSearchViewOpen.toggle();
+    searchController.isAdvancedSearchHasApply.value = false;
+    searchController.isAdvancedSearchViewOpen.toggle();
     _mailboxDashBoardController.searchEmail(
         context, StringConvert.writeNullToEmpty(searchEmailFilter.text?.value));
   }
 
   void _updateFilterEmailFromAdvancedSearchView() {
-    if (listTagFromSelected.isNotEmpty) {
-      _searchController.updateFilterEmail(
-          from: listTagFromSelected.toSet());
-    } else {
-      _searchController.updateFilterEmail(from: {});
-    }
-    if (listTagToSelected.isNotEmpty) {
-      _searchController.updateFilterEmail(
-          to: listTagToSelected.toSet());
-    } else {
-      _searchController.updateFilterEmail(to: {});
-    }
     if (hasKeyWordFilterInputController.text.isNotEmpty) {
-      _searchController.updateFilterEmail(
-          hasKeyword: hasKeyWordFilterInputController.text.split(',').toSet());
+      searchController.updateFilterEmail(hasKeyword: hasKeyWordFilterInputController.text.split(',').toSet());
     } else {
-      _searchController.updateFilterEmail(hasKeyword: {});
-    }
-    if (notKeyWordFilterInputController.text.isNotEmpty) {
-      _searchController.updateFilterEmail(
-          notKeyword: notKeyWordFilterInputController.text.split(',').toSet());
-    } else {
-      _searchController.updateFilterEmail(notKeyword: {});
+      searchController.updateFilterEmail(hasKeyword: {});
     }
 
-    _searchController.updateFilterEmail(
+    if (notKeyWordFilterInputController.text.isNotEmpty) {
+      searchController.updateFilterEmail(notKeyword: notKeyWordFilterInputController.text.split(',').toSet());
+    } else {
+      searchController.updateFilterEmail(notKeyword: {});
+    }
+
+    if(lastTextForm.isNotEmpty && !searchController.searchEmailFilter.value.from.contains(lastTextForm.value)){
+      print(lastTextForm);
+      searchController.updateFilterEmail(
+        from: searchController.searchEmailFilter.value.from..add(lastTextForm.value),
+      );
+
+      lastTextForm.value = '';
+    }
+
+    if(lastTextTo.isNotEmpty &&  !searchController.searchEmailFilter.value.to.contains(lastTextTo.value)){
+      searchController.updateFilterEmail(
+        to: searchController.searchEmailFilter.value.to..add(lastTextTo.value),
+      );
+
+      lastTextTo.value = '';
+
+    }
+
+    searchController.updateFilterEmail(
       subject:
           StringConvert.writeEmptyToNull(subjectFilterInputController.text),
       emailReceiveTimeType: dateFilterSelectedFormAdvancedSearch.value,
@@ -123,7 +125,7 @@ class AdvancedFilterController extends GetxController {
         arguments: DestinationPickerArguments(
             _mailboxDashBoardController.accountId.value!,
             MailboxActions.moveEmail));
-    _searchController.updateFilterEmail(mailbox: destinationMailbox);
+    searchController.updateFilterEmail(mailbox: destinationMailbox);
     mailBoxFilterInputController.text =
         StringConvert.writeNullToEmpty(destinationMailbox.name?.name);
   }
@@ -132,9 +134,8 @@ class AdvancedFilterController extends GetxController {
     _updateFilterEmailFromAdvancedSearchView();
     _mailboxDashBoardController.searchEmail(
         context, StringConvert.writeNullToEmpty(searchEmailFilter.text?.value));
-    _searchController.isAdvancedSearchViewOpen.toggle();
-    _searchController.isAdvancedSearchHasApply.value =
-        _checkAdvancedSearchHasApply();
+    searchController.isAdvancedSearchViewOpen.toggle();
+    searchController.isAdvancedSearchHasApply.value = _checkAdvancedSearchHasApply();
   }
 
   void _checkContactPermission() async {
@@ -173,18 +174,18 @@ class AdvancedFilterController extends GetxController {
   }
 
   bool _checkAdvancedSearchHasApply() {
-    return listTagFromSelected.isNotEmpty ||
-        listTagToSelected.isNotEmpty ||
+    return searchEmailFilter.from.isNotEmpty ||
+        searchEmailFilter.to.isNotEmpty ||
         subjectFilterInputController.text.isNotEmpty ||
         hasKeyWordFilterInputController.text.isNotEmpty ||
         notKeyWordFilterInputController.text.isNotEmpty ||
-        dateFilterInputController.text.isNotEmpty ||
-        mailBoxFilterInputController.text.isNotEmpty ||
+        searchEmailFilter.emailReceiveTimeType != EmailReceiveTimeType.allTime ||
+        searchEmailFilter.mailbox != _mailboxDashBoardController.selectedMailbox.value ||
         hasAttachment.isTrue;
   }
 
   void initSearchFilterField(BuildContext context) {
-    _searchController.updateFilterEmail(
+    searchController.updateFilterEmail(
         mailbox: _mailboxDashBoardController.selectedMailbox.value);
     subjectFilterInputController.text =
         StringConvert.writeNullToEmpty(searchEmailFilter.subject);
