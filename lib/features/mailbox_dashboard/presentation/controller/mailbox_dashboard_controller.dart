@@ -32,9 +32,9 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/mark_as_mailbox_read_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
@@ -50,6 +50,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
+import 'package:worker_manager/worker_manager.dart';
 
 class MailboxDashBoardController extends ReloadableController {
 
@@ -60,6 +61,7 @@ class MailboxDashBoardController extends ReloadableController {
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
   final SearchController searchController = Get.find<SearchController>();
+  final Executor _isolateExecutor = Get.find<Executor>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
@@ -77,6 +79,7 @@ class MailboxDashBoardController extends ReloadableController {
   final filterMessageOption = FilterMessageOption.all.obs;
   final listEmailSelected = <PresentationEmail>[].obs;
   final composerOverlayState = ComposerOverlayState.inActive.obs;
+  final viewStateMarkAsReadMailbox = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxId = {};
@@ -84,6 +87,10 @@ class MailboxDashBoardController extends ReloadableController {
   RouterArguments? routerArguments;
   late StreamSubscription _connectivityStreamSubscription;
   late StreamSubscription _emailReceiveManagerStreamSubscription;
+
+  final StreamController<Either<Failure, Success>> _progressStateController =
+    StreamController<Either<Failure, Success>>.broadcast();
+  Stream<Either<Failure, Success>> get progressState => _progressStateController.stream;
 
   MailboxDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
@@ -100,6 +107,7 @@ class MailboxDashBoardController extends ReloadableController {
   void onInit() {
     _registerNetworkConnectivityState();
     _registerPendingEmailAddress();
+    _initializeIsolateExecutor();
     super.onInit();
   }
 
@@ -145,6 +153,9 @@ class MailboxDashBoardController extends ReloadableController {
             || failure is RemoveEmailDraftsFailure
             || failure is UpdateEmailDraftsFailure) {
           clearState();
+        } else if (failure is MarkAsMailboxReadAllFailure ||
+            failure is MarkAsMailboxReadFailure) {
+          _markAsReadMailboxFailure(failure);
         }
       },
       (success) {
@@ -163,7 +174,8 @@ class MailboxDashBoardController extends ReloadableController {
           _moveToMailboxSuccess(success);
         } else if (success is DeleteEmailPermanentlySuccess) {
           _deleteEmailPermanentlySuccess(success);
-        } else if (success is MarkAsMailboxReadAllSuccess) {
+        } else if (success is MarkAsMailboxReadAllSuccess ||
+            success is MarkAsMailboxReadHasSomeEmailFailure) {
           _markAsReadMailboxSuccess(success);
         }
       }
@@ -197,6 +209,14 @@ class MailboxDashBoardController extends ReloadableController {
             goToComposer(arguments);
           }
         });
+  }
+
+  void _initializeIsolateExecutor() async {
+    await _isolateExecutor.warmUp(log: BuildUtils.isDebugMode);
+
+    progressState.listen((state) {
+      viewStateMarkAsReadMailbox.value = state;
+    });
   }
 
   void _getUserProfile() async {
@@ -411,24 +431,52 @@ class MailboxDashBoardController extends ReloadableController {
     final currentAccountId = accountId.value;
     final mailboxId = selectedMailbox.value?.id;
     final mailboxName = selectedMailbox.value?.name;
+    final countEmailsUnread = selectedMailbox.value?.unreadEmails?.value.value ?? 0;
     if (currentAccountId != null && mailboxId != null && mailboxName != null) {
-      markAsReadMailbox(currentAccountId, mailboxId, mailboxName);
+      markAsReadMailbox(currentAccountId, mailboxId, mailboxName, countEmailsUnread.toInt());
     }
   }
 
-  void markAsReadMailbox(AccountId accountId, MailboxId mailboxId, MailboxName mailboxName) {
-    consumeState(_markAsMailboxReadInteractor.execute(accountId, mailboxId, mailboxName));
+  void markAsReadMailbox(
+      AccountId accountId,
+      MailboxId mailboxId,
+      MailboxName mailboxName,
+      int totalEmailsUnread
+  ) {
+    consumeState(_markAsMailboxReadInteractor.execute(
+        accountId,
+        mailboxId,
+        mailboxName,
+        totalEmailsUnread,
+        _progressStateController));
   }
 
-  void _markAsReadMailboxSuccess(MarkAsMailboxReadAllSuccess success) {
-    if (currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
-          message: AppLocalizations.of(currentContext!)
-              .toastMessageMarkAsMailboxReadSuccess(success.mailboxName.name),
-          icon: _imagePaths.icReadToast);
+  void _markAsReadMailboxSuccess(Success success) {
+    viewStateMarkAsReadMailbox.value = Right(UIState.idle);
+
+    if (success is MarkAsMailboxReadAllSuccess) {
+      if (currentContext != null && currentOverlayContext != null) {
+        _appToast.showToastWithIcon(
+            currentOverlayContext!,
+            widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
+            message: AppLocalizations.of(currentContext!)
+                .toastMessageMarkAsMailboxReadSuccess(success.mailboxName.name),
+            icon: _imagePaths.icReadToast);
+      }
+    } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
+      if (currentContext != null && currentOverlayContext != null) {
+        _appToast.showToastWithIcon(
+            currentOverlayContext!,
+            widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
+            message: AppLocalizations.of(currentContext!)
+                .toastMessageMarkAsMailboxReadHasSomeEmailFailure(success.mailboxName.name, success.countEmailsRead),
+            icon: _imagePaths.icReadToast);
+      }
     }
+  }
+
+  void _markAsReadMailboxFailure(Failure failure) {
+    viewStateMarkAsReadMailbox.value = Right(UIState.idle);
   }
 
   void goToComposer(ComposerArguments arguments) {
@@ -479,6 +527,8 @@ class MailboxDashBoardController extends ReloadableController {
     _emailReceiveManager.closeEmailReceiveManagerStream();
     _emailReceiveManagerStreamSubscription.cancel();
     _connectivityStreamSubscription.cancel();
+    _progressStateController.close();
+    _isolateExecutor.dispose();
     super.onClose();
   }
 }
