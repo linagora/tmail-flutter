@@ -46,6 +46,7 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_data
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
@@ -55,7 +56,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/search_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/search_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/mark_as_mailbox_read_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
@@ -123,7 +124,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => ThreadDataSourceImpl(Get.find<ThreadAPI>()));
     Get.lazyPut(() => LocalThreadDataSourceImpl(Get.find<EmailCacheManager>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
-    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
+    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>(), Get.find<MailboxIsolateWorker>()));
     Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
     Get.lazyPut(() => HiveAccountDatasourceImpl(Get.find<AccountCacheManager>()));
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
@@ -200,8 +201,6 @@ class MailboxDashBoardBindings extends BaseBindings {
         DataSourceType.local: Get.find<MailboxCacheDataSourceImpl>()
       },
       Get.find<StateDataSource>(),
-      Get.find<ThreadDataSource>(),
-      Get.find<EmailDataSource>(),
     ));
     Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));
     Get.lazyPut(() => AuthenticationOIDCRepositoryImpl(Get.find<AuthenticationOIDCDataSource>()));
