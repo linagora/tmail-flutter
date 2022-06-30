@@ -8,20 +8,25 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/custom_tf_tag_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class TextFieldAutoCompleteEmailAddress extends StatefulWidget {
-  const TextFieldAutoCompleteEmailAddress({
+ const TextFieldAutoCompleteEmailAddress({
     Key? key,
     required this.advancedSearchFilterField,
-    required this.listTagSelected,
     required this.initialTags,
     required this.optionsBuilder,
+    required this.onChange,
+    required this.onDeleteTag,
+    required this.onAddTag,
   }) : super(key: key);
   final AdvancedSearchFilterField advancedSearchFilterField;
-  final List<String> listTagSelected;
-  final List<String> initialTags;
+  final Set<String> initialTags;
   final Future<List<EmailAddress>> Function(String) optionsBuilder;
+  final Function(String) onChange;
+  final Function(String) onDeleteTag;
+  final Function(String) onAddTag;
 
   @override
   State<TextFieldAutoCompleteEmailAddress> createState() =>
@@ -32,19 +37,22 @@ class _TextFieldAutoCompleteEmailAddressState
     extends State<TextFieldAutoCompleteEmailAddress> {
   final double _distanceToField = 380;
   final ImagePaths _imagePaths = Get.find<ImagePaths>();
-  late TextfieldTagsController _controller;
+  late CustomController _controller;
 
   @override
   void initState() {
-    _controller = TextfieldTagsController();
-    _controller.addListener(() {
-      if(_controller.hasTags){
-        widget.listTagSelected.addAll(_controller.getTags!);
-      }
+    _controller = CustomController();
+    _controller.setActionRemoveTag((tag) {
+      widget.onDeleteTag.call(tag);
+    });
+    _controller.setActionAddTag((tag) {
+      widget.onAddTag.call(tag);
+    });
+    _controller.setActionChangeText((tag) {
+      widget.onChange.call(tag);
     });
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +93,7 @@ class _TextFieldAutoCompleteEmailAddressState
       },
       fieldViewBuilder: (context, ttec, tfn, onFieldSubmitted) {
         return TextFieldTags(
-          initialTags: widget.initialTags,
+          initialTags: widget.initialTags.toList(),
           textEditingController: ttec,
           focusNode: tfn,
           textfieldTagsController: _controller,
@@ -123,28 +131,27 @@ class _TextFieldAutoCompleteEmailAddressState
                       Radius.circular(10),
                     ),
                   ),
-                  hintText:
-                      widget.advancedSearchFilterField.getHintText(context),
+                  hintText: widget.advancedSearchFilterField.getHintText(context),
                   hintStyle: const TextStyle(
                     fontSize: 14,
                     color: AppColor.colorHintSearchBar,
                   ),
-                  prefixIconConstraints:
-                      BoxConstraints(maxWidth: _distanceToField * 0.74),
-                  prefixIcon: tags.isNotEmpty
-                      ? SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          controller: sc,
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                              children: tags.map((String tag) {
-                            return _buildTagItem(context, tag, onTagDelete);
-                          }).toList()),
-                        )
+                  prefixIconConstraints: BoxConstraints(maxWidth: _distanceToField * 0.74),
+                  prefixIcon: tags.isNotEmpty ? SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    controller: sc,
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                        children: tags.map((String tag) {
+                          return _buildTagItem(context, tag, onTagDelete);
+                        }).toList()),
+                  )
                       : null,
                 ),
-                onChanged: onChanged,
-                onSubmitted: (tag){
+                onChanged: (value) {
+                  onChanged?.call(value);
+                },
+                onSubmitted: (tag) {
                   onSubmitted?.call(tag);
                 },
               );
@@ -250,9 +257,8 @@ class _TextFieldAutoCompleteEmailAddressState
                   fontWeight: FontWeight.normal)),
           const SizedBox(width: 4),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               onTagDelete.call(tag);
-              widget.listTagSelected.remove(tag);
             },
             child: SvgPicture.asset(
               _imagePaths.icClose,
@@ -281,6 +287,5 @@ class _TextFieldAutoCompleteEmailAddressState
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
   }
 }

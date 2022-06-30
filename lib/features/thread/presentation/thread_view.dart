@@ -165,10 +165,25 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   }
 
   Widget _buildSearchFormInActive(BuildContext context) {
-    return (SearchBarView(_imagePaths)
-        ..hintTextSearch(AppLocalizations.of(context).search_emails)
-        ..addOnOpenSearchViewAction(() => controller.enableSearch(context)))
-      .build();
+    return PortalTarget(
+      visible: controller.searchController.isAdvancedSearchViewOpen.isTrue,
+      anchor: const Aligned(
+        follower: Alignment.topLeft,
+        target: Alignment.bottomLeft,
+        widthFactor: 1,
+        backup: Aligned(
+          follower: Alignment.topLeft,
+          target: Alignment.bottomLeft,
+          widthFactor: 1,
+        ),
+      ),
+      portalFollower: _responsiveUtils.isMobile(context) ? const SizedBox.shrink() : const AdvancedSearchFilterOverlay(),
+      child: (SearchBarView(_imagePaths)
+          ..hintTextSearch(AppLocalizations.of(context).search_emails)
+          ..addOnOpenSearchViewAction(() => controller.enableSearch(context))
+          ..addRightButton(IconOpenAdvancedSearchWidget(context)))
+        .build(),
+    );
   }
 
   Widget _buildSearchFormActive(BuildContext context) {
