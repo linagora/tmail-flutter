@@ -1,11 +1,18 @@
+import 'dart:async';
+
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
@@ -14,8 +21,9 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_reque
 class MailboxDataSourceImpl extends MailboxDataSource {
 
   final MailboxAPI mailboxAPI;
+  final MailboxIsolateWorker _mailboxIsolateWorker;
 
-  MailboxDataSourceImpl(this.mailboxAPI);
+  MailboxDataSourceImpl(this.mailboxAPI, this._mailboxIsolateWorker);
 
   @override
   Future<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties}) {
@@ -76,6 +84,23 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) {
     return Future.sync(() async {
       return await mailboxAPI.moveMailbox(accountId, request);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<List<Email>> markAsMailboxRead(
+      AccountId accountId,
+      MailboxId mailboxId,
+      int totalEmailUnread,
+      StreamController<dartz.Either<Failure, Success>> onProgressController) {
+    return Future.sync(() async {
+      return await _mailboxIsolateWorker.markAsMailboxRead(
+          accountId,
+          mailboxId,
+          totalEmailUnread,
+          onProgressController);
     }).catchError((error) {
       throw error;
     });
