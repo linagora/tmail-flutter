@@ -344,7 +344,7 @@ class MailboxController extends BaseMailboxController {
       mailboxDashBoardController.searchController.disableSearch();
     }
 
-    if (!_responsiveUtils.isDesktop(context) && !_responsiveUtils.isTabletLarge(context)) {
+    if (_responsiveUtils.hasLeftMenuDrawerActive(context)) {
       mailboxDashBoardController.closeMailboxMenuDrawer();
     } else {
       mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);

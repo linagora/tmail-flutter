@@ -101,9 +101,9 @@ class MailboxView extends GetWidget<MailboxController> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _responsiveUtils.isMobile(context) || _responsiveUtils.isTablet(context)
-                  ? Padding(padding: const EdgeInsets.only(left: 10), child: _buildCloseScreenButton(context))
-                  : const SizedBox(width: 50),
+              Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: _buildCloseScreenButton(context)),
               Obx(() {
                 if (controller.isSearchActive()) {
                   return controller.listMailboxSearched.isNotEmpty

@@ -459,11 +459,7 @@ class ThreadController extends BaseController {
 
   void previewEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
     mailboxDashBoardController.setSelectedEmail(presentationEmailSelected);
-    if (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) {
-      mailboxDashBoardController.dispatchRoute(AppRoutes.EMAIL);
-    } else {
-      goToEmail(context);
-    }
+    mailboxDashBoardController.dispatchRoute(AppRoutes.EMAIL);
   }
 
   void selectEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
@@ -1253,10 +1249,6 @@ class ThreadController extends BaseController {
 
   void openMailboxLeftMenu() {
     mailboxDashBoardController.openMailboxMenuDrawer();
-  }
-
-  void goToEmail(BuildContext context) {
-    push(AppRoutes.EMAIL);
   }
 
   void editEmail(PresentationEmail presentationEmail) {

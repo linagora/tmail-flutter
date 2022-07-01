@@ -3,8 +3,6 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/reading_pane.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnBackActionClick = void Function();
@@ -53,8 +51,10 @@ class AppBarMailWidgetBuilder {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (_conditionShow(_context)) _buildBackButton(),
-            if (_conditionShow(_context)) Expanded(child: _buildMailboxName()),
+            if (_mailboxDashboardOnlyHasEmailView(_context))
+              _buildBackButton(),
+            if (_mailboxDashboardOnlyHasEmailView(_context))
+              Expanded(child: _buildMailboxName()),
             if (_presentationEmail != null) _buildListOptionButton(),
           ]
         )
@@ -62,12 +62,13 @@ class AppBarMailWidgetBuilder {
     );
   }
 
-  bool _conditionShow(BuildContext context) {
-    if (AppSetting.readingPane == ReadingPane.rightOfInbox
-        && (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context))) {
-      return false;
+  bool _mailboxDashboardOnlyHasEmailView(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return _responsiveUtils.isDesktop(context);
     } else {
-      return true;
+      return _responsiveUtils.isPortraitMobile(context) || 
+        _responsiveUtils.isLandscapeMobile(context) ||
+        _responsiveUtils.isTablet(context);
     }
   }
 
