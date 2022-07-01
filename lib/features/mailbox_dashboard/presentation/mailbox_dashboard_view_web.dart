@@ -46,8 +46,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       backgroundColor: Colors.white,
       drawer: ResponsiveWidget(
           responsiveUtils: responsiveUtils,
-          mobile: SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeDrawer),
-          tablet: SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeDrawer),
+          mobile: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
+          tablet: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
           tabletLarge: const SizedBox.shrink(),
           desktop: const SizedBox.shrink(),
       ),

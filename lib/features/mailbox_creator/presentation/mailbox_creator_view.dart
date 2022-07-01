@@ -28,15 +28,15 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
               mobile: SizedBox(child: _buildBody(context), width: double.infinity),
               landscapeMobile: SizedBox(child: _buildBody(context), width: double.infinity),
               tablet: Row(children: [
-                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawer),
+                SizedBox(child: _buildBody(context), width: ResponsiveUtils.defaultSizeDrawer),
                 Expanded(child: Container(color: Colors.transparent)),
               ]),
               tabletLarge: Row(children: [
-                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawer),
+                SizedBox(child: _buildBody(context), width: ResponsiveUtils.defaultSizeDrawer),
                 Expanded(child: Container(color: Colors.transparent)),
               ]),
               desktop: Row(children: [
-                SizedBox(child: _buildBody(context), width: _responsiveUtils.defaultSizeDrawer),
+                SizedBox(child: _buildBody(context), width: ResponsiveUtils.defaultSizeDrawer),
                 Expanded(child: Container(color: Colors.transparent)),
               ])
           ),
