@@ -520,10 +520,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     }
                   },
                   listActionPadding: const EdgeInsets.only(
-                      left: 24,
-                      top: 24,
-                      right: 24,
-                      bottom: 16),
+                      left: 24, right: 24, top: 20, bottom: 12),
                   titleHeaderRecent: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     child: Text(AppLocalizations.of(context).recent,

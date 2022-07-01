@@ -294,10 +294,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                     }
                   },
                   listActionPadding: const EdgeInsets.only(
-                      left: 24,
-                      top: 24,
-                      right: 24,
-                      bottom: 16),
+                    left: 24, right: 24, top: 20, bottom: 12),
                   titleHeaderRecent: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                       child: Text(AppLocalizations.of(context).recent,
@@ -787,25 +784,26 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
         quickSearchFilter: filter,
       );
 
-      return Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: filter.getBackgroundColor(quickSearchFilterSelected: quickSearchFilterSelected)),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            SvgPicture.asset(
-                filter.getIcon(_imagePaths, quickSearchFilterSelected: quickSearchFilterSelected),
-                width: 16,
-                height: 16,
-                fit: BoxFit.fill),
-            const SizedBox(width: 4),
-            Text(
-              filter.getTitle(context),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: filter.getTextStyle(quickSearchFilterSelected: quickSearchFilterSelected),
-            )
-          ]));
+      return Chip(
+        labelPadding: const EdgeInsets.only(top: 2, bottom: 2, right: 10),
+        label: Text(
+          filter.getTitle(context),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: filter.getTextStyle(quickSearchFilterSelected: quickSearchFilterSelected),
+        ),
+        avatar: SvgPicture.asset(
+            filter.getIcon(_imagePaths, quickSearchFilterSelected: quickSearchFilterSelected),
+            width: 16,
+            height: 16,
+            fit: BoxFit.fill),
+        labelStyle: filter.getTextStyle(quickSearchFilterSelected: quickSearchFilterSelected),
+        backgroundColor: filter.getBackgroundColor(quickSearchFilterSelected: quickSearchFilterSelected),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: filter.getBackgroundColor(quickSearchFilterSelected: quickSearchFilterSelected)),
+        ),
+      );
     });
   }
 

@@ -37,7 +37,7 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
             ? AppColor.colorBgDesktop
             : Colors.white,
         body: Row(children: [
-          if (_isMailboxDashboardSplitView(context))
+          if (responsiveUtils.isMailboxDashboardSplitView(context))
             const VerticalDivider(color: AppColor.lineItemListColor, width: 1, thickness: 0.2),
           Expanded(child: SafeArea(
               right: responsiveUtils.isLandscapeMobile(context),
@@ -77,15 +77,6 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
         ])
       )
     );
-  }
-
-  bool _isMailboxDashboardSplitView(BuildContext context) {
-    if (BuildUtils.isWeb) {
-      return responsiveUtils.isTabletLarge(context);
-    } else {
-      return responsiveUtils.isLandscapeTablet(context)
-       || responsiveUtils.isDesktop(context);
-    }
   }
 
   Widget _buildDivider({EdgeInsets? edgeInsets}){
@@ -138,31 +129,34 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
   }
 
   Widget _buildEmailBody(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      margin: EdgeInsets.zero,
-      alignment: Alignment.topCenter,
-      child: Obx(() {
-        if (controller.currentEmail != null) {
-          if (kIsWeb) {
-            return _buildEmailMessage(context);
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Container(
+        color: Colors.white,
+        margin: EdgeInsets.zero,
+        alignment: Alignment.topCenter,
+        child: Obx(() {
+          if (controller.currentEmail != null) {
+            if (kIsWeb) {
+              return _buildEmailMessage(context);
+            } else {
+              return SingleChildScrollView(
+                  physics : const ClampingScrollPhysics(),
+                  child: Container(
+                      margin: EdgeInsets.zero,
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.zero,
+                      color: Colors.white,
+                      child: _buildEmailMessage(context)
+                  )
+              );
+            }
           } else {
-            return SingleChildScrollView(
-                physics : const ClampingScrollPhysics(),
-                child: Container(
-                    margin: EdgeInsets.zero,
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.zero,
-                    color: Colors.white,
-                    child: _buildEmailMessage(context)
-                )
-            );
+            return Center(child: _buildEmailEmpty(context));
           }
-        } else {
-          return Center(child: _buildEmailEmpty(context));
-        }
-      })
+        })
+      ),
     );
   }
 
