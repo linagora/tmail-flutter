@@ -1,7 +1,11 @@
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 class ResponsiveUtils {
+
+  static const double defaultSizeLeftMenuMobile = 375;
+  static const double defaultSizeDrawer = 320;
 
   final int heightShortest = 600;
 
@@ -9,7 +13,6 @@ class ResponsiveUtils {
   final int minTabletWidth = 600;
   final int minTabletLargeWidth = 900;
 
-  final double defaultSizeDrawer = 320;
   final double defaultSizeMenu = 256;
 
   final double _loginTextFieldWidthSmallScreen = 280.0;
@@ -47,7 +50,19 @@ class ResponsiveUtils {
 
   bool isLandscapeMobile(BuildContext context) => isScreenWithShortestSide(context) && isLandscape(context);
 
+  bool isLandscapeTablet(BuildContext context) {
+    return context.mediaQueryShortestSide >= minTabletWidth &&
+        context.mediaQueryShortestSide < minDesktopWidth &&
+        isLandscape(context);
+  }
+
   bool isPortraitMobile(BuildContext context) => isScreenWithShortestSide(context) && isPortrait(context);
+
+  bool isPortraitTablet(BuildContext context) {
+    return context.mediaQueryShortestSide >= minTabletWidth &&
+        context.mediaQueryShortestSide < minDesktopWidth &&
+        isPortrait(context);
+  }
 
   double getWidthLoginTextField(BuildContext context) =>
       isMobile(context) ? _loginTextFieldWidthSmallScreen : _loginTextFieldWidthLargeScreen;
@@ -67,7 +82,16 @@ class ResponsiveUtils {
     }
   }
 
-  bool isSmallScreen(BuildContext context) {
-    return isPortraitMobile(context) || isLandscapeMobile(context) || isTablet(context);
+  bool hasLeftMenuDrawerActive(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return isMobile(context) &&
+          isTablet(context) &&
+          isTabletLarge(context);
+    } else {
+      return true;
+    }
   }
+
+  bool isWebDesktop(BuildContext context) =>
+      BuildUtils.isWeb && isDesktop(context);
 }
