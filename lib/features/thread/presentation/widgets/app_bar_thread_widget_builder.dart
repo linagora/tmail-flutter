@@ -362,12 +362,12 @@ class AppBarThreadWidgetBuilder {
       children: [
         InkWell(
           onTap: () {
-            if (_responsiveUtils.isSmallScreen(_context)) {
+            if (_responsiveUtils.hasLeftMenuDrawerActive(_context)) {
               _onOpenMailboxMenuActionClick?.call();
             }
           },
           child: Padding(
-            padding: (_responsiveUtils.isSmallScreen(_context))
+            padding: (_responsiveUtils.hasLeftMenuDrawerActive(_context))
                 ? EdgeInsets.zero
                 : const EdgeInsets.only(bottom: 8, top: 8),
             child: Container(
@@ -383,7 +383,7 @@ class AppBarThreadWidgetBuilder {
                     color: AppColor.colorNameEmail,
                     fontWeight: FontWeight.w700))
             ))),
-        if (_responsiveUtils.isSmallScreen(_context))
+        if (_responsiveUtils.hasLeftMenuDrawerActive(_context))
           Transform(
             transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
             child: IconButton(
