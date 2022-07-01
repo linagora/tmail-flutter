@@ -51,25 +51,15 @@ class AppBarMailWidgetBuilder {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (_mailboxDashboardOnlyHasEmailView(_context))
+            if (_responsiveUtils.mailboxDashboardHasMailboxAndEmailView(_context))
               _buildBackButton(),
-            if (_mailboxDashboardOnlyHasEmailView(_context))
+            if (_responsiveUtils.mailboxDashboardHasMailboxAndEmailView(_context))
               Expanded(child: _buildMailboxName()),
             if (_presentationEmail != null) _buildListOptionButton(),
           ]
         )
       )
     );
-  }
-
-  bool _mailboxDashboardOnlyHasEmailView(BuildContext context) {
-    if (BuildUtils.isWeb) {
-      return _responsiveUtils.isDesktop(context);
-    } else {
-      return _responsiveUtils.isPortraitMobile(context) || 
-        _responsiveUtils.isLandscapeMobile(context) ||
-        _responsiveUtils.isTablet(context);
-    }
   }
 
   Widget _buildBackButton() {
