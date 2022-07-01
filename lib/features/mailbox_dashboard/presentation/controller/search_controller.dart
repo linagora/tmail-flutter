@@ -149,6 +149,7 @@ class SearchController extends BaseController {
         searchInputController.clear();
         cleanSearchFilter();
         searchFocus.unfocus();
+        searchState.value = searchState.value.disableSearchState();
       }
     });
   }

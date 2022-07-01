@@ -24,25 +24,26 @@ abstract class BaseMailboxDashBoardView extends GetWidget<MailboxDashBoardContro
         quickSearchFilter: filter,
       );
 
-      return Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: filter.getBackgroundColor(quickSearchFilterSelected: isQuickSearchFilterSelected)),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            SvgPicture.asset(
-                filter.getIcon(imagePaths, quickSearchFilterSelected: isQuickSearchFilterSelected),
-                width: 16,
-                height: 16,
-                fit: BoxFit.fill),
-            const SizedBox(width: 4),
-            Text(
-              filter.getTitle(context, receiveTimeType: controller.searchController.emailReceiveTimeType.value),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: filter.getTextStyle(quickSearchFilterSelected: isQuickSearchFilterSelected),
-            )
-          ]));
+      return Chip(
+        labelPadding: const EdgeInsets.only(top: 2, bottom: 2, right: 10),
+        label: Text(
+          filter.getTitle(context, receiveTimeType: controller.searchController.emailReceiveTimeType.value),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: filter.getTextStyle(quickSearchFilterSelected: isQuickSearchFilterSelected),
+        ),
+        avatar: SvgPicture.asset(
+            filter.getIcon(imagePaths, quickSearchFilterSelected: isQuickSearchFilterSelected),
+            width: 16,
+            height: 16,
+            fit: BoxFit.fill),
+        labelStyle: filter.getTextStyle(quickSearchFilterSelected: isQuickSearchFilterSelected),
+        backgroundColor: filter.getBackgroundColor(quickSearchFilterSelected: isQuickSearchFilterSelected),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: filter.getBackgroundColor(quickSearchFilterSelected: isQuickSearchFilterSelected)),
+        ),
+      );
     });
   }
 }

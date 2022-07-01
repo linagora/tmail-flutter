@@ -116,4 +116,12 @@ class ResponsiveUtils {
           isTablet(context);
     }
   }
+
+  bool isMailboxDashboardSplitView(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return isTabletLarge(context);
+    } else {
+      return isLandscapeTablet(context) || isDesktop(context);
+    }
+  }
 }

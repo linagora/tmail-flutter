@@ -1120,19 +1120,18 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
     final loadingWidget = widget.loadingBuilder != null
         ? widget.loadingBuilder!(context)
         : Align(
-      alignment: Alignment.center,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: CircularProgressIndicator(),
-      ),
-    );
+            alignment: Alignment.center,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: CircularProgressIndicator(),
+            ),
+          );
 
-    final listAction = Row(
-        mainAxisSize: MainAxisSize.min,
+    final listAction = Wrap(
         children: widget.listActionButton!.map((dynamic action) {
           if (widget.actionButtonBuilder != null) {
             return Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.only(right: 8, bottom: kIsWeb ? 8 : 0),
               child: InkWell(
                 child: widget.actionButtonBuilder!(context, action),
                 borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -1202,19 +1201,18 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
     final loadingWidget = widget.loadingBuilder != null
         ? widget.loadingBuilder!(context)
         : Align(
-      alignment: Alignment.center,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: CircularProgressIndicator(),
-      ),
-    );
+            alignment: Alignment.center,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: CircularProgressIndicator(),
+            ),
+          );
 
-    final listAction = Row(
-        mainAxisSize: MainAxisSize.min,
+    final listAction = Wrap(
         children: widget.listActionButton!.map((dynamic action) {
           if (widget.actionButtonBuilder != null) {
             return Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: EdgeInsets.only(right: 8, bottom: kIsWeb ? 8 : 0),
               child: InkWell(
                 child: widget.actionButtonBuilder!(context, action),
                 borderRadius: BorderRadius.all(Radius.circular(10)),
