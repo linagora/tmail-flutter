@@ -84,8 +84,8 @@ class ResponsiveUtils {
 
   bool hasLeftMenuDrawerActive(BuildContext context) {
     if (BuildUtils.isWeb) {
-      return isMobile(context) &&
-          isTablet(context) &&
+      return isMobile(context) ||
+          isTablet(context) ||
           isTabletLarge(context);
     } else {
       return true;
@@ -94,4 +94,26 @@ class ResponsiveUtils {
 
   bool isWebDesktop(BuildContext context) =>
       BuildUtils.isWeb && isDesktop(context);
+
+  bool mailboxDashboardHasMailboxAndEmailView(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return isDesktop(context) ||
+          isMobile(context) ||
+          isTablet(context);
+    } else {
+      return isPortraitMobile(context) ||
+          isLandscapeMobile(context) ||
+          isTablet(context);
+    }
+  }
+
+  bool mailboxDashboardOnlyHasEmailView(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return isMobile(context) || isTablet(context);
+    } else {
+      return isPortraitMobile(context) ||
+          isLandscapeMobile(context) ||
+          isTablet(context);
+    }
+  }
 }

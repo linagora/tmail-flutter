@@ -18,8 +18,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/app_setting.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/reading_pane.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -34,8 +32,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   @override
   Widget build(BuildContext context) {
-    if (controller.isDrawerOpen && (responsiveUtils.isDesktop(context)
-        || responsiveUtils.isTabletLarge(context))) {
+    if (controller.isDrawerOpen && responsiveUtils.isDesktop(context)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         controller.closeMailboxMenuDrawer();
       });
@@ -48,10 +45,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           responsiveUtils: responsiveUtils,
           mobile: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
           tablet: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
-          tabletLarge: const SizedBox.shrink(),
-          desktop: const SizedBox.shrink(),
-      ),
-      drawerEnableOpenDragGesture: responsiveUtils.isMobile(context) || responsiveUtils.isTablet(context),
+          tabletLarge: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeLeftMenuMobile),
+          desktop: const SizedBox.shrink()),
+      drawerEnableOpenDragGesture: !responsiveUtils.isDesktop(context),
       body: Portal(
         child: Stack(children: [
           ResponsiveWidget(
@@ -97,7 +93,16 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
                       Expanded(child: Column(children: [
                         _buildMarkAsMailboxReadLoading(context),
-                        Expanded(child: _wrapContainerForThreadAndEmail(context))
+                        Expanded(child: Obx(() {
+                          switch(controller.routePath.value) {
+                            case AppRoutes.THREAD:
+                              return ThreadView();
+                            case AppRoutes.EMAIL:
+                              return EmailView();
+                            default:
+                              return const SizedBox.shrink();
+                          }
+                        }))
                       ]))
                     ],
                   ))
@@ -106,58 +111,38 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               tabletLarge: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
-                  Expanded(child: _wrapContainerForThreadAndEmail(context))
+                  SizedBox(
+                      width: ResponsiveUtils.defaultSizeLeftMenuMobile,
+                      child: ThreadView()),
+                  Expanded(child: EmailView()),
                 ],
               ),
-              tablet: ThreadView(),
-              mobile: ThreadView(),
+              mobile: Obx(() {
+                switch(controller.routePath.value) {
+                  case AppRoutes.THREAD:
+                    return ThreadView();
+                  case AppRoutes.EMAIL:
+                    return EmailView();
+                  default:
+                    return ThreadView();
+                }
+              }),
           ),
           Obx(() => controller.composerOverlayState.value == ComposerOverlayState.active
               ? ComposerView()
               : const SizedBox.shrink()),
-          Obx(() => controller.isNetworkConnectionAvailable()
-              ? const SizedBox.shrink()
-              : Align(alignment: Alignment.bottomCenter, child: buildNetworkConnectionWidget(context))),
+          Obx(() {
+            if (controller.isNetworkConnectionAvailable()) {
+              return const SizedBox.shrink();
+            } else {
+              return Align(
+                  alignment: Alignment.bottomCenter,
+                  child: buildNetworkConnectionWidget(context));
+            }
+          }),
         ]),
       ),
     );
-  }
-
-  Widget _wrapContainerForThreadAndEmail(BuildContext context) {
-    switch(AppSetting.readingPane) {
-      case ReadingPane.noSplit:
-        return Obx(() {
-          switch(controller.routePath.value) {
-            case AppRoutes.THREAD:
-              return ThreadView();
-            case AppRoutes.EMAIL:
-              return EmailView();
-            default:
-              return const SizedBox.shrink();
-          }
-        });
-      case ReadingPane.rightOfInbox:
-        if (responsiveUtils.isDesktop(context)) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(flex: 1, child: ThreadView()),
-              Expanded(flex: 2, child: EmailView()),
-            ],
-          );
-        } else {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(flex: 1, child: ThreadView()),
-              Expanded(flex: 1, child: EmailView()),
-            ],
-          );
-        }
-      default:
-        return const SizedBox.shrink();
-    }
   }
 
   Widget _buildRightHeader(BuildContext context) {

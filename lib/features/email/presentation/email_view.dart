@@ -122,11 +122,11 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
   }
 
   Widget _buildBottomBar(BuildContext context) {
-    bool isMobileDevice = responsiveUtils.isPortraitMobile(context) &&
+    bool isMobileDevice = responsiveUtils.isPortraitMobile(context) ||
         responsiveUtils.isLandscapeMobile(context);
     return Padding(
       padding: EdgeInsets.only(
-          bottom: !BuildUtils.isWeb && isMobileDevice ? 16 : 0),
+          bottom: isMobileDevice ? 16 : 0),
       child: Obx(() => (BottomBarMailWidgetBuilder(
               context,
               imagePaths,

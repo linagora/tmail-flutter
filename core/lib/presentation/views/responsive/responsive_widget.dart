@@ -26,30 +26,51 @@ class ResponsiveWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     log('ResponsiveWidget::build(): WIDTH_SIZE: ${responsiveUtils.getDeviceWidth(context)}');
 
-    if (responsiveUtils.isLandscapeMobile(context)) {
-      return landscapeMobile ?? mobile;
-    }
+    if (BuildUtils.isWeb) {
 
-    if (responsiveUtils.isLandscapeTablet(context)) {
-      return landscapeTablet ?? tablet ?? mobile;
-    }
+      if (responsiveUtils.isMobile(context)) {
+        return tablet ?? mobile;
+      }
 
-    if (responsiveUtils.isMobile(context)) {
-      return tablet ?? mobile;
-    }
+      if (responsiveUtils.isTablet(context)) {
+        return tablet ?? mobile;
+      }
 
-    if (responsiveUtils.isTablet(context)) {
-      return tablet ?? mobile;
-    }
+      if (responsiveUtils.isTabletLarge(context)) {
+        return tabletLarge ?? tablet ?? mobile;
+      }
 
-    if (responsiveUtils.isTabletLarge(context)) {
-      return tabletLarge ?? tablet ?? mobile;
-    }
+      if (responsiveUtils.isDesktop(context)) {
+        return desktop ?? tablet ?? mobile;
+      }
 
-    if (responsiveUtils.isDesktop(context)) {
-      return desktop ?? tablet ?? mobile;
-    }
+      return mobile;
+    } else {
+      if (responsiveUtils.isLandscapeMobile(context)) {
+        return landscapeMobile ?? mobile;
+      }
 
-    return mobile;
+      if (responsiveUtils.isLandscapeTablet(context)) {
+        return landscapeTablet ?? tablet ?? mobile;
+      }
+
+      if (responsiveUtils.isMobile(context)) {
+        return tablet ?? mobile;
+      }
+
+      if (responsiveUtils.isTablet(context)) {
+        return tablet ?? mobile;
+      }
+
+      if (responsiveUtils.isTabletLarge(context)) {
+        return tabletLarge ?? tablet ?? mobile;
+      }
+
+      if (responsiveUtils.isDesktop(context)) {
+        return desktop ?? tablet ?? mobile;
+      }
+
+      return mobile;
+    }
   }
 }
