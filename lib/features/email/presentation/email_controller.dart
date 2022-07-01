@@ -204,7 +204,7 @@ class EmailController extends BaseController {
     if (success is MarkAsEmailReadSuccess
         && success.readActions == ReadActions.markAsUnread
         && currentContext != null) {
-      backToThreadView(currentContext!);
+      closeEmailView(currentContext!);
     }
   }
 
@@ -212,7 +212,7 @@ class EmailController extends BaseController {
     if (failure is MarkAsEmailReadFailure
         && failure.readActions == ReadActions.markAsUnread
         && currentContext != null) {
-      backToThreadView(currentContext!);
+      closeEmailView(currentContext!);
     }
   }
 
@@ -453,7 +453,7 @@ class EmailController extends BaseController {
   }
 
   void _moveToTrashAction(BuildContext context, AccountId accountId, MoveToMailboxRequest moveRequest) {
-    backToThreadView(context);
+    closeEmailView(context);
     mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
   }
 
@@ -489,7 +489,7 @@ class EmailController extends BaseController {
   }
 
   void _moveToSpamAction(BuildContext context, AccountId accountId, MoveToMailboxRequest moveRequest) {
-    backToThreadView(context);
+    closeEmailView(context);
     mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
   }
 
@@ -632,17 +632,13 @@ class EmailController extends BaseController {
 
   void _deleteEmailPermanentlyAction(BuildContext context, PresentationEmail email) {
     popBack();
-    backToThreadView(context);
+    closeEmailView(context);
     mailboxDashBoardController.deleteEmailPermanently(email);
   }
 
-  void backToThreadView(BuildContext context) {
+  void closeEmailView(BuildContext context) {
     mailboxDashBoardController.clearSelectedEmail();
-    if (responsiveUtils.isDesktop(context) || responsiveUtils.isTabletLarge(context)) {
-      mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
-    } else {
-      popBack();
-    }
+    mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
   }
 
   void pressEmailAction(EmailActionType emailActionType) {

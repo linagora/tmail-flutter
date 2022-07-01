@@ -74,7 +74,7 @@ class ButtonBuilder {
     _paddingIcon = paddingIcon;
   }
 
-  void text(String text, {required bool isVertical}) {
+  void text(String? text, {required bool isVertical}) {
     _text = text;
     _isVertical = isVertical;
   }

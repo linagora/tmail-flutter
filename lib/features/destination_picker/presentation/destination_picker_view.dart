@@ -44,26 +44,26 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 responsiveUtils: _responsiveUtils,
                 mobile: SizedBox(child: _buildBodyMailboxLocation(context, actions), width: double.infinity),
                 landscapeMobile: Row(children: [
-                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.defaultSizeDrawer),
+                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: ResponsiveUtils.defaultSizeDrawer),
                   Expanded(child: Container(color: Colors.transparent)),
                 ]),
                 tablet: Row(children: [
                   Expanded(child: Container(color: Colors.transparent)),
                   SizedBox(
                       child: _buildBodyMailboxLocation(context, actions),
-                      width: _responsiveUtils.getSizeScreenWidth(context) - _responsiveUtils.defaultSizeDrawer),
+                      width: _responsiveUtils.getSizeScreenWidth(context) - ResponsiveUtils.defaultSizeDrawer),
                 ]),
                 tabletLarge: Row(children: [
                   Expanded(child: Container(color: Colors.transparent)),
                   SizedBox(
                       child: _buildBodyMailboxLocation(context, actions),
-                      width: _responsiveUtils.getSizeScreenWidth(context) - _responsiveUtils.defaultSizeDrawer),
+                      width: _responsiveUtils.getSizeScreenWidth(context) - ResponsiveUtils.defaultSizeDrawer),
                 ]),
                 desktop: Row(children: [
                   Expanded(child: Container(color: Colors.transparent)),
                   SizedBox(
                       child: _buildBodyMailboxLocation(context, actions),
-                      width: _responsiveUtils.getSizeScreenWidth(context) - _responsiveUtils.defaultSizeDrawer),
+                      width: _responsiveUtils.getSizeScreenWidth(context) - ResponsiveUtils.defaultSizeDrawer),
                 ]),
             ),
           )
@@ -79,19 +79,19 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 responsiveUtils: _responsiveUtils,
                 mobile: SizedBox(child: _buildBodyMailboxLocation(context, actions), width: double.infinity),
                 landscapeMobile: Row(children: [
-                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.defaultSizeDrawer),
+                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: ResponsiveUtils.defaultSizeDrawer),
                   Expanded(child: Container(color: Colors.transparent)),
                 ]),
                 tablet: Row(children: [
-                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.defaultSizeDrawer),
+                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: ResponsiveUtils.defaultSizeDrawer),
                   Expanded(child: Container(color: Colors.transparent)),
                 ]),
                 tabletLarge: Row(children: [
-                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.defaultSizeDrawer),
+                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: ResponsiveUtils.defaultSizeDrawer),
                   Expanded(child: Container(color: Colors.transparent)),
                 ]),
                 desktop: Row(children: [
-                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: _responsiveUtils.defaultSizeDrawer),
+                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: ResponsiveUtils.defaultSizeDrawer),
                   Expanded(child: Container(color: Colors.transparent)),
                 ]),
             ),

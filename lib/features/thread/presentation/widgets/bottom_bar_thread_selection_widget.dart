@@ -46,7 +46,7 @@ class BottomBarThreadSelectionWidget {
       children: [
         Expanded(child: (ButtonBuilder(_listSelectionEmail.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead)
             ..key(const Key('button_mark_read_email'))
-            ..paddingIcon(const EdgeInsets.all(8))
+            ..paddingIcon(const EdgeInsets.symmetric(horizontal: 8, vertical: 4))
             ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailSelectionActionClick != null) {
@@ -54,13 +54,11 @@ class BottomBarThreadSelectionWidget {
                     _listSelectionEmail.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
                     _listSelectionEmail);
               }})
-            ..text(
-                _listSelectionEmail.isAllEmailRead ? AppLocalizations.of(_context).unread : AppLocalizations.of(_context).read,
-                isVertical: _responsiveUtils.isMobile(_context)))
+            ..text(_textButtonMarkAsRead, isVertical: _responsiveUtils.isMobile(_context)))
           .build()),
         Expanded(child: (ButtonBuilder(_listSelectionEmail.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar)
             ..key(const Key('button_mark_as_star_email'))
-            ..paddingIcon(const EdgeInsets.all(8))
+            ..paddingIcon(const EdgeInsets.symmetric(horizontal: 8, vertical: 4))
             ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_onPressEmailSelectionActionClick != null) {
@@ -68,24 +66,23 @@ class BottomBarThreadSelectionWidget {
                     _listSelectionEmail.isAllEmailStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred,
                     _listSelectionEmail);
               }})
-            ..text(_listSelectionEmail.isAllEmailStarred ? AppLocalizations.of(_context).un_star : AppLocalizations.of(_context).star,
-                isVertical: _responsiveUtils.isMobile(_context)))
+            ..text(_textButtonMarkAsStar, isVertical: _responsiveUtils.isMobile(_context)))
           .build()),
         if (_currentMailbox?.isDrafts == false)
           Expanded(child: (ButtonBuilder(_imagePaths.icMove)
               ..key(const Key('button_move_to_mailbox'))
-              ..paddingIcon(const EdgeInsets.all(8))
+              ..paddingIcon(const EdgeInsets.symmetric(horizontal: 8, vertical: 4))
               ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
               ..onPressActionClick(() {
                 if (_onPressEmailSelectionActionClick != null) {
                   _onPressEmailSelectionActionClick!(EmailActionType.moveToMailbox, _listSelectionEmail);
                 }})
-              ..text(AppLocalizations.of(_context).move, isVertical: _responsiveUtils.isMobile(_context)))
+              ..text(_textButtonMove, isVertical: _responsiveUtils.isMobile(_context)))
             .build()),
         if (_currentMailbox?.isDrafts == false)
           Expanded(child: (ButtonBuilder(_currentMailbox?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam)
               ..key(const Key('button_move_to_spam'))
-              ..paddingIcon(const EdgeInsets.all(8))
+              ..paddingIcon(const EdgeInsets.symmetric(horizontal: 8, vertical: 4))
               ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
               ..onPressActionClick(() {
                 if (_currentMailbox?.isSpam == true) {
@@ -94,14 +91,11 @@ class BottomBarThreadSelectionWidget {
                   _onPressEmailSelectionActionClick?.call(EmailActionType.moveToSpam, _listSelectionEmail);
                 }
               })
-              ..text(_currentMailbox?.isSpam == true
-                    ? AppLocalizations.of(_context).un_spam
-                    : AppLocalizations.of(_context).spam,
-                  isVertical: _responsiveUtils.isMobile(_context)))
+              ..text(_textButtonSpam, isVertical: _responsiveUtils.isMobile(_context)))
             .build()),
         Expanded(child: (ButtonBuilder(_imagePaths.icDelete)
             ..key(const Key('button_delete_email'))
-            ..paddingIcon(const EdgeInsets.all(8))
+            ..paddingIcon(const EdgeInsets.symmetric(horizontal: 8, vertical: 4))
             ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
             ..onPressActionClick(() {
               if (_currentMailbox?.isTrash == true) {
@@ -110,9 +104,60 @@ class BottomBarThreadSelectionWidget {
                 _onPressEmailSelectionActionClick?.call(EmailActionType.moveToTrash, _listSelectionEmail);
               }
             })
-            ..text(AppLocalizations.of(_context).delete, isVertical: _responsiveUtils.isMobile(_context)))
+            ..text(_textButtonDelete, isVertical: _responsiveUtils.isMobile(_context)))
           .build())
       ]
     );
+  }
+
+  String? get _textButtonMarkAsRead {
+    if (!_isMailboxDashboardSplitView(_context)) {
+      return _listSelectionEmail.isAllEmailRead
+          ? AppLocalizations.of(_context).unread
+          : AppLocalizations.of(_context).read;
+    }
+    return null;
+  }
+
+  String? get _textButtonMarkAsStar {
+    if (!_isMailboxDashboardSplitView(_context)) {
+      return _listSelectionEmail.isAllEmailStarred
+          ? AppLocalizations.of(_context).un_star
+          : AppLocalizations.of(_context).star;
+    }
+    return null;
+  }
+
+  String? get _textButtonMove {
+    if (!_isMailboxDashboardSplitView(_context)) {
+      return AppLocalizations.of(_context).move;
+    }
+    return null;
+  }
+
+  String? get _textButtonSpam {
+    if (!_isMailboxDashboardSplitView(_context)) {
+      return _currentMailbox?.isSpam == true
+          ? AppLocalizations.of(_context).un_spam
+          : AppLocalizations.of(_context).spam;
+    }
+    return null;
+  }
+
+  String? get _textButtonDelete {
+    if (!_isMailboxDashboardSplitView(_context)) {
+      return AppLocalizations.of(_context).delete;
+    }
+    return null;
+  }
+
+  bool _isMailboxDashboardSplitView(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return _responsiveUtils.isTabletLarge(context);
+    } else {
+      return _responsiveUtils.isLandscapeTablet(context) ||
+          _responsiveUtils.isTabletLarge(context) ||
+          _responsiveUtils.isDesktop(context);
+    }
   }
 }
