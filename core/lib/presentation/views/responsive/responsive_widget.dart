@@ -5,6 +5,7 @@ class ResponsiveWidget extends StatelessWidget {
   final Widget mobile;
   final Widget? landscapeMobile;
   final Widget? tablet;
+  final Widget? landscapeTablet;
   final Widget? tabletLarge;
   final Widget? desktop;
 
@@ -16,17 +17,39 @@ class ResponsiveWidget extends StatelessWidget {
     required this.mobile,
     this.landscapeMobile,
     this.tablet,
-    this.desktop,
+    this.landscapeTablet,
     this.tabletLarge,
+    this.desktop,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     log('ResponsiveWidget::build(): WIDTH_SIZE: ${responsiveUtils.getDeviceWidth(context)}');
-    if (landscapeMobile != null && responsiveUtils.isLandscapeMobile(context)) return landscapeMobile!;
-    if (tablet != null && responsiveUtils.isTablet(context)) return tablet!;
-    if (tabletLarge != null && responsiveUtils.isTabletLarge(context)) return tabletLarge!;
-    if (desktop != null && responsiveUtils.isDesktop(context)) return desktop!;
+
+    if (responsiveUtils.isLandscapeMobile(context)) {
+      return landscapeMobile ?? mobile;
+    }
+
+    if (responsiveUtils.isLandscapeTablet(context)) {
+      return landscapeTablet ?? tablet ?? mobile;
+    }
+
+    if (responsiveUtils.isMobile(context)) {
+      return tablet ?? mobile;
+    }
+
+    if (responsiveUtils.isTablet(context)) {
+      return tablet ?? mobile;
+    }
+
+    if (responsiveUtils.isTabletLarge(context)) {
+      return tabletLarge ?? tablet ?? mobile;
+    }
+
+    if (responsiveUtils.isDesktop(context)) {
+      return desktop ?? tablet ?? mobile;
+    }
+
     return mobile;
   }
 }
