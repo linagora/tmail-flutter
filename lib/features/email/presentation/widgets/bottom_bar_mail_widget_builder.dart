@@ -7,6 +7,8 @@ typedef OnPressEmailActionClick = void Function(EmailActionType emailActionType)
 
 class BottomBarMailWidgetBuilder {
 
+  static const double maxWidthBottomBar = 540;
+
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
@@ -32,7 +34,9 @@ class BottomBarMailWidgetBuilder {
       color: Colors.white,
       child: MediaQuery(
         data: const MediaQueryData(padding: EdgeInsets.zero),
-        child: _presentationEmail != null ? _buildListOptionButton(_presentationEmail!) : const SizedBox.shrink()
+        child: _presentationEmail != null
+            ? _buildListOptionButton(_presentationEmail!)
+            : const SizedBox.shrink()
       )
     );
   }
@@ -91,7 +95,7 @@ class BottomBarMailWidgetBuilder {
                 }})
               ..text(AppLocalizations.of(_context).forward, isVertical: _responsiveUtils.isMobile(_context)))
             .build()),
-        if (!_responsiveUtils.isDesktop(_context))
+        if (_responsiveUtils.mailboxDashboardOnlyHasEmailView(_context))
           Expanded(child: (ButtonBuilder(_imagePaths.icNewMessage)
               ..key(const Key('button_new_message'))
               ..size(20)

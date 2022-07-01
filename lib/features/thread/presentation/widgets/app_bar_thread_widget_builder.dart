@@ -88,8 +88,10 @@ class AppBarThreadWidgetBuilder {
 
   Widget _buildBodyAppBarForWeb() {
     return Row(children: [
-      if (!_responsiveUtils.isTabletLarge(_context)) _buildMenuButton(),
-      if (_responsiveUtils.isTabletLarge(_context)) const SizedBox(width: 16),
+      if (_responsiveUtils.hasLeftMenuDrawerActive(_context))
+        _buildMenuButton(),
+      if (_responsiveUtils.hasLeftMenuDrawerActive(_context))
+        const SizedBox(width: 16),
       Expanded(child: Text(
           _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
           maxLines: 1,
