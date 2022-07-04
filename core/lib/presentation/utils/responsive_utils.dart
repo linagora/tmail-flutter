@@ -124,4 +124,12 @@ class ResponsiveUtils {
       return isLandscapeTablet(context) || isDesktop(context);
     }
   }
+
+  bool landscapeTabletSupported(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return isTabletLarge(context);
+    } else {
+      return isLandscapeTablet(context);
+    }
+  }
 }

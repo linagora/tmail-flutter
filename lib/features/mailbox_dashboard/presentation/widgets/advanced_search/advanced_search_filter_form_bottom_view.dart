@@ -16,24 +16,25 @@ class AdvancedSearchFilterFormBottomView
     final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
 
     return Padding(
-      padding:
-          EdgeInsets.only(top: _responsiveUtils.isMobile(context) ? 8 : 20),
+      padding: EdgeInsets.only(
+          top: _responsiveUtils.isMobile(context) ||
+              _responsiveUtils.landscapeTabletSupported(context) ? 8 : 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (_responsiveUtils.isMobile(context))
-            _buildCheckboxHasAttachment(context),
+          if (_responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context))
+            ...[
+              _buildCheckboxHasAttachment(context),
+              const SizedBox(height: 24)
+            ],
           Row(
-            mainAxisAlignment: _responsiveUtils.isMobile(context)
+            mainAxisAlignment: _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
                 ? MainAxisAlignment.spaceEvenly
-                : MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.max,
+                : MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (!_responsiveUtils.isMobile(context))...[
-                _buildCheckboxHasAttachment(context),
-                const Spacer(),
-              ],
+              if (!_responsiveUtils.isMobile(context) && !_responsiveUtils.landscapeTabletSupported(context))
+                Expanded(child: _buildCheckboxHasAttachment(context)),
               ..._buildListButton(context, _responsiveUtils),
             ],
           ),
@@ -44,7 +45,7 @@ class AdvancedSearchFilterFormBottomView
 
   List<Widget> _buildListButton(
       BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (responsiveUtils.isMobile(context)) {
+    if (responsiveUtils.isMobile(context) || responsiveUtils.landscapeTabletSupported(context)) {
       return [
         Expanded(
           child: _buildButton(
@@ -130,16 +131,14 @@ class AdvancedSearchFilterFormBottomView
   }) {
     return InkWell(
       onTap: onAction,
-      onTapDown: (_) {
-        onAction.call();
-      },
       child: Container(
         height: 44,
         padding: EdgeInsets.symmetric(
-            horizontal: responsiveUtils.isMobile(context) ? 0 : 26),
+            horizontal: responsiveUtils.isMobile(context) || responsiveUtils.landscapeTabletSupported(context)
+                ? 0 : 26),
         constraints: BoxConstraints(
-            maxWidth:
-                responsiveUtils.isMobile(context) ? double.infinity : 144),
+            maxWidth: responsiveUtils.isMobile(context) || responsiveUtils.landscapeTabletSupported(context)
+                ? double.infinity : 144),
         alignment: Alignment.center,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), color: colorButton),

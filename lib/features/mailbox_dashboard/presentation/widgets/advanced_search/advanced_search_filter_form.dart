@@ -121,7 +121,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   }) {
     final child = [
       SizedBox(
-        width: _responsiveUtils.isMobile(context) ? null : 112,
+        width: _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
+            ? null : 112,
         child: Text(
           advancedSearchFilterField.getTitle(context),
           style: const TextStyle(
@@ -131,27 +132,39 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         ),
       ),
       const Padding(padding: EdgeInsets.all(4)),
-      _responsiveUtils.isMobile(context)
-          ? _buildTextField(
-              isSelectFormList: isSelectFormList,
-              onTap: onTap,
-              context: context,
-              advancedSearchFilterField: advancedSearchFilterField,
-              textEditingController: textEditingController,
-            )
-          : Expanded(
-              child: _buildTextFieldFilterForWeb(
-                isSelectFormList: isSelectFormList,
-                onTap: onTap,
-                context: context,
-                advancedSearchFilterField: advancedSearchFilterField,
-                textEditingController: textEditingController,
-              ),
-            )
+      if (_responsiveUtils.isMobile(context))
+        _buildTextField(
+          isSelectFormList: isSelectFormList,
+          onTap: onTap,
+          context: context,
+          advancedSearchFilterField: advancedSearchFilterField,
+          textEditingController: textEditingController,
+        )
+      else if (_responsiveUtils.landscapeTabletSupported(context))
+        if (advancedSearchFilterField == AdvancedSearchFilterField.date)
+          const DateDropDownButton()
+        else
+          _buildTextField(
+            isSelectFormList: isSelectFormList,
+            onTap: onTap,
+            context: context,
+            advancedSearchFilterField: advancedSearchFilterField,
+            textEditingController: textEditingController,
+          )
+      else
+        Expanded(
+          child: _buildTextFieldFilterForWeb(
+            isSelectFormList: isSelectFormList,
+            onTap: onTap,
+            context: context,
+            advancedSearchFilterField: advancedSearchFilterField,
+            textEditingController: textEditingController,
+          ),
+        )
     ];
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: _responsiveUtils.isMobile(context)
+      child: _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
           ? Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,7 +204,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   }) {
     final child = [
       SizedBox(
-        width: _responsiveUtils.isMobile(context) ? null : 112,
+        width: _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
+            ? null : 112,
         child: Text(
           advancedSearchFilterField.getTitle(context),
           style: const TextStyle(
@@ -201,7 +215,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         ),
       ),
       const Padding(padding: EdgeInsets.all(4)),
-      _responsiveUtils.isMobile(context)
+      _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
           ? TextFieldAutoCompleteEmailAddress(
               optionsBuilder: (word) async {
                 return controller.getAutoCompleteSuggestion(word: word);
@@ -274,7 +288,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     ];
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: _responsiveUtils.isMobile(context)
+      child: _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
           ? Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
