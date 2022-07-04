@@ -21,21 +21,25 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => buildIconWeb(
-          minSize: 0,
-          iconPadding: const EdgeInsets.only(right: 8),
-          icon: SvgPicture.asset(_imagePaths.icFilterAdvanced,
-              color: searchController.isAdvancedSearchViewOpen.isTrue || searchController.isAdvancedSearchHasApply.isTrue
-                  ? AppColor.colorFilterMessageEnabled
-                  : AppColor.colorFilterMessageDisabled,
-              width: 16,
-              height: 16),
-          onTap: () {
-            if(searchController.isAdvancedSearchViewOpen.isFalse && searchController.isAdvancedSearchHasApply.isFalse){
-              advancedFilterController.initSearchFilterField(context);
-            }
-            searchController.showAdvancedFilterView(_parentContext);
-          }),
+      () => Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: buildIconWeb(
+            splashRadius: 15,
+            minSize: 40,
+            iconPadding: const EdgeInsets.only(right: 2),
+            icon: SvgPicture.asset(_imagePaths.icFilterAdvanced,
+                color: searchController.isAdvancedSearchViewOpen.isTrue || searchController.isAdvancedSearchHasApply.isTrue
+                    ? AppColor.colorFilterMessageEnabled
+                    : AppColor.colorFilterMessageDisabled,
+                width: 16,
+                height: 16),
+            onTap: () {
+              if(searchController.isAdvancedSearchViewOpen.isFalse && searchController.isAdvancedSearchHasApply.isFalse){
+                advancedFilterController.initSearchFilterField(context);
+              }
+              searchController.showAdvancedFilterView(_parentContext);
+            }),
+      ),
     );
   }
 }

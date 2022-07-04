@@ -436,7 +436,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   widthFactor: 1,
                 ),
               ),
-              portalFollower:const AdvancedSearchFilterOverlay(),
+              portalFollower: const AdvancedSearchFilterOverlay(),
               child: QuickSearchInputForm<PresentationEmail, RecentSearch>(
                   textFieldConfiguration: QuickSearchTextFieldConfiguration(
                       controller: searchController.searchInputController,
