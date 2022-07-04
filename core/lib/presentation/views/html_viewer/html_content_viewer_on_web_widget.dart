@@ -104,8 +104,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
            } else if (textContent && isValidUrl(textContent)) {
               window.parent.postMessage(JSON.stringify({"view": "$createdViewId", "type": "toDart: OpenLink", "url": "" + textContent}), "*");
               e.preventDefault();
-           } else {
-              e.preventDefault();
            }
         }
         
