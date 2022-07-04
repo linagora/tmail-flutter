@@ -94,7 +94,6 @@ class AdvancedFilterController extends GetxController {
     }
 
     if(lastTextForm.isNotEmpty && !searchController.searchEmailFilter.value.from.contains(lastTextForm.value)){
-      print(lastTextForm);
       searchController.updateFilterEmail(
         from: searchController.searchEmailFilter.value.from..add(lastTextForm.value),
       );
@@ -108,7 +107,6 @@ class AdvancedFilterController extends GetxController {
       );
 
       lastTextTo.value = '';
-
     }
 
     searchController.updateFilterEmail(

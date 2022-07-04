@@ -281,7 +281,6 @@ class MailboxDashBoardController extends ReloadableController {
 
   bool get isDrawerOpen => scaffoldKey.currentState?.isDrawerOpen == true;
 
-
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
   void searchEmail(BuildContext context, String value) {

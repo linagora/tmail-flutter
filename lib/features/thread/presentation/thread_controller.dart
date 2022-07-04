@@ -802,6 +802,9 @@ class ThreadController extends BaseController {
 
   bool isSearchActive() => searchController.isSearchActive();
 
+  bool get isAllSearchInActive => !searchController.isSearchActive() &&
+    searchController.isAdvancedSearchViewOpen.isFalse;
+
   void enableSearch(BuildContext context) {
     searchController.enableSearch();
   }

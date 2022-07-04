@@ -401,9 +401,12 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   }
 
   Widget _buildFloatingButtonCompose(BuildContext context) {
+    if (_responsiveUtils.isWebDesktop(context)) {
+      return const SizedBox.shrink();
+    }
+
     return Obx(() {
-      if (!controller.isSearchActive()
-          && (!BuildUtils.isWeb || (BuildUtils.isWeb && !_responsiveUtils.isDesktop(context)))) {
+      if (controller.isAllSearchInActive) {
         return Container(
           padding: BuildUtils.isWeb
               ? EdgeInsets.zero
