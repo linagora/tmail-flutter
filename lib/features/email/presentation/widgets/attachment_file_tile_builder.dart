@@ -82,8 +82,8 @@ class AttachmentFileTileBuilder {
                   padding: const EdgeInsets.only(left: 8, bottom: BuildUtils.isWeb ? 6 : 14),
                   child: SvgPicture.asset(
                       _attachment.getIcon(_imagePaths),
-                      width: 44,
-                      height: 44,
+                      width: 40,
+                      height: 40,
                       fit: BoxFit.fill),
                 ),
                 title: Transform(

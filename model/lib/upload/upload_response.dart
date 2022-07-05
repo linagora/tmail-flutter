@@ -34,7 +34,7 @@ class UploadResponse with EquatableMixin  {
 }
 
 extension UploadResponseExtension on UploadResponse {
-  Attachment toAttachmentFile(String nameFile, {MediaType? mediaType}) {
-    return Attachment(blobId: blobId, size: UnsignedInt(size), name: nameFile, type: mediaType ?? type);
+  Attachment toAttachment(String nameFile) {
+    return Attachment(blobId: blobId, size: UnsignedInt(size), name: nameFile, type: type);
   }
 }

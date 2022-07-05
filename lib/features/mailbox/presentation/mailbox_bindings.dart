@@ -31,7 +31,6 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
-import 'package:uuid/uuid.dart';
 
 class MailboxBindings extends BaseBindings {
 
@@ -43,7 +42,6 @@ class MailboxBindings extends BaseBindings {
 
   void _bindingsUtils() {
     Get.lazyPut(() => TreeBuilder());
-    Get.lazyPut(() => const Uuid());
   }
 
   @override
@@ -57,7 +55,6 @@ class MailboxBindings extends BaseBindings {
         Get.find<VerifyNameInteractor>(),
         Get.find<RenameMailboxInteractor>(),
         Get.find<MoveMailboxInteractor>(),
-        Get.find<Uuid>(),
         Get.find<TreeBuilder>(),
     ));
   }
