@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/upload/domain/model/upload_attachment.dart';
 
 abstract class ComposerRepository {
-  Future<Attachment> uploadAttachment(UploadRequest uploadRequest);
+  UploadAttachment uploadAttachment(FileInfo fileInfo, Uri uploadUri, {CancelToken? cancelToken});
 }

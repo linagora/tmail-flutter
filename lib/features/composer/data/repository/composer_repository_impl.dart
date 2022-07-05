@@ -1,17 +1,18 @@
 
-import 'package:model/email/attachment.dart';
-import 'package:model/upload/upload_request.dart';
-import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
+import 'package:dio/dio.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
+import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_datasource.dart';
+import 'package:tmail_ui_user/features/upload/domain/model/upload_attachment.dart';
 
 class ComposerRepositoryImpl extends ComposerRepository {
 
-  final ComposerDataSource composerDataSource;
+  final AttachmentUploadDataSource _attachmentUploadDataSource;
 
-  ComposerRepositoryImpl(this.composerDataSource);
+  ComposerRepositoryImpl(this._attachmentUploadDataSource);
 
   @override
-  Future<Attachment> uploadAttachment(UploadRequest uploadRequest) {
-    return composerDataSource.uploadAttachment(uploadRequest);
+  UploadAttachment uploadAttachment(FileInfo fileInfo, Uri uploadUri, {CancelToken? cancelToken}) {
+    return _attachmentUploadDataSource.uploadAttachment(fileInfo, uploadUri, cancelToken: cancelToken);
   }
 }
