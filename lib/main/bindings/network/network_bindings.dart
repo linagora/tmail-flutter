@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart' as JmapHttpClient;
-import 'package:tmail_ui_user/features/composer/data/network/composer_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
@@ -77,7 +76,6 @@ class NetworkBindings extends Bindings {
     Get.put(EmailAPI(
       Get.find<JmapHttpClient.HttpClient>(),
       Get.find<DownloadManager>()));
-    Get.put(ComposerAPI(Get.find<DioClient>()));
     Get.put(ManageAccountAPI(Get.find<JmapHttpClient.HttpClient>()));
   }
 

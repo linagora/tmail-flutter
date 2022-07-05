@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_draft
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -384,7 +383,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void closeComposerOverlay() {
     routerArguments = null;
-    Get.delete<ComposerController>();
+    ComposerBindings().dispose();
     composerOverlayState.value = ComposerOverlayState.inActive;
   }
 

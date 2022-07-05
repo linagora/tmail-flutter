@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-07-08T15:25:15.196374",
+  "@@last_modified": "2022-07-05T19:24:56.876056",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1558,6 +1558,12 @@
   },
   "languageRussian": "Russian",
   "@languageRussian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogSendEmailUploadingAttachment": "Your message could not be sent because it uploading attachment",
+  "@messageDialogSendEmailUploadingAttachment": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

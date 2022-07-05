@@ -1601,4 +1601,11 @@ class AppLocalizations {
         'Russian',
         name: 'languageRussian');
   }
+
+  String get messageDialogSendEmailUploadingAttachment {
+    return Intl.message(
+        'Your message could not be sent because it uploading attachment',
+        name: 'messageDialogSendEmailUploadingAttachment'
+    );
+  }
 }
