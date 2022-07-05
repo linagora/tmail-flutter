@@ -74,6 +74,7 @@ class MailboxController extends BaseMailboxController {
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _uuid = Get.find<Uuid>();
 
   final GetAllMailboxInteractor _getAllMailboxInteractor;
   final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
@@ -83,7 +84,6 @@ class MailboxController extends BaseMailboxController {
   final VerifyNameInteractor _verifyNameInteractor;
   final RenameMailboxInteractor _renameMailboxInteractor;
   final MoveMailboxInteractor _moveMailboxInteractor;
-  final Uuid _uuid;
 
   final listMailboxSearched = <PresentationMailbox>[].obs;
   final searchState = SearchState.initial().obs;
@@ -110,7 +110,6 @@ class MailboxController extends BaseMailboxController {
     this._verifyNameInteractor,
     this._renameMailboxInteractor,
     this._moveMailboxInteractor,
-    this._uuid,
     treeBuilder,
   ) : super(treeBuilder);
 

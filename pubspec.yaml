@@ -172,6 +172,8 @@ dependencies:
   # Isolate
   worker_manager: 4.4.0
 
+  async: 2.8.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

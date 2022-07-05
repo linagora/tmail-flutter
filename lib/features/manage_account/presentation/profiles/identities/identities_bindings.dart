@@ -6,15 +6,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_ide
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
-import 'package:uuid/uuid.dart';
 
 class IdentitiesBindings extends BaseBindings {
-
-  @override
-  void dependencies() {
-    Get.lazyPut(() => const Uuid());
-    super.dependencies();
-  }
 
   @override
   void bindingsController() {
@@ -22,7 +15,6 @@ class IdentitiesBindings extends BaseBindings {
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<DeleteIdentityInteractor>(),
       Get.find<CreateNewIdentityInteractor>(),
-      Get.find<Uuid>(),
       Get.find<EditIdentityInteractor>(),
     ));
   }
