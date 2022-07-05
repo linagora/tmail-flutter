@@ -31,11 +31,9 @@ import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart'
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/upload_mutiple_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
@@ -44,8 +42,10 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
+import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
@@ -56,12 +56,12 @@ class ComposerController extends BaseController {
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _uuid = Get.find<Uuid>();
 
   final expandModeAttachments = ExpandMode.COLLAPSE.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
   final isInitialRecipient = false.obs;
-  final attachments = <Attachment>[].obs;
   final emailContents = Rxn<List<EmailContent>>();
   final listEmailAddressType = <PrefixEmailAddress>[].obs;
   final subjectEmail = Rxn<String>();
@@ -75,14 +75,13 @@ class ComposerController extends BaseController {
   final SendEmailInteractor _sendEmailInteractor;
   final GetAutoCompleteInteractor _getAutoCompleteInteractor;
   final GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
-  final Uuid _uuid;
   final LocalFilePickerInteractor _localFilePickerInteractor;
-  final UploadMultipleAttachmentInteractor _uploadMultipleAttachmentInteractor;
   final DeviceInfoPlugin _deviceInfoPlugin;
   final SaveEmailAsDraftsInteractor _saveEmailAsDraftsInteractor;
   final GetEmailContentInteractor _getEmailContentInteractor;
   final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
+  final UploadController uploadController;
 
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
@@ -129,14 +128,13 @@ class ComposerController extends BaseController {
     this._sendEmailInteractor,
     this._getAutoCompleteInteractor,
     this._getAutoCompleteWithDeviceContactInteractor,
-    this._uuid,
     this._deviceInfoPlugin,
     this._localFilePickerInteractor,
-    this._uploadMultipleAttachmentInteractor,
     this._saveEmailAsDraftsInteractor,
     this._getEmailContentInteractor,
     this._updateEmailDraftsInteractor,
     this._getAllIdentitiesInteractor,
+    this.uploadController,
   );
 
   @override
@@ -183,18 +181,11 @@ class ComposerController extends BaseController {
       (failure) {
         if (failure is LocalFilePickerFailure || failure is LocalFilePickerCancel) {
           _pickFileFailure(failure);
-        } else if (failure is UploadAttachmentFailure
-          || failure is UploadMultipleAttachmentAllFailure) {
-          _uploadAttachmentsFailure(failure);
         }
       },
       (success) {
         if (success is LocalFilePickerSuccess) {
           _pickFileSuccess(success);
-        } else if (success is UploadAttachmentSuccess
-          || success is UploadMultipleAttachmentAllSuccess
-          || success is UploadMultipleAttachmentHasSomeFailure) {
-          _uploadAttachmentsSuccess(success);
         } else if (success is GetEmailContentSuccess) {
           _getEmailContentSuccess(success);
         } if (success is GetAllIdentitiesSuccess) {
@@ -219,7 +210,7 @@ class ComposerController extends BaseController {
     }
     popBack();
   }
-  
+
   void _initEmail() {
     final arguments = kIsWeb ? mailboxDashBoardController.routerArguments : Get.arguments;
     if (arguments is ComposerArguments) {
@@ -243,8 +234,13 @@ class ComposerController extends BaseController {
   }
 
   void _initAttachments(ComposerArguments arguments) {
-    attachments.value = arguments.attachments ?? [];
-    initialAttachments = arguments.attachments ?? [];
+    if (arguments.attachments?.isNotEmpty == true) {
+      initialAttachments = arguments.attachments!;
+      uploadController.initializeUploadAttachments(arguments.attachments!);
+    }
+    if (BuildUtils.isWeb) {
+      expandModeAttachments.value = ExpandMode.EXPAND;
+    }
   }
 
   void _getAllIdentities() {
@@ -466,7 +462,7 @@ class ComposerController extends BaseController {
         generatePartId: EmailBodyValue(emailBodyText, false, false)
       },
       headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgent},
-      attachments: attachments.isNotEmpty ? _generateAttachments() : null,
+      attachments: uploadController.generateAttachments(),
     );
   }
 
@@ -483,11 +479,6 @@ class ComposerController extends BaseController {
       userAgent = '';
     }
     return userAgent;
-  }
-
-  Set<EmailBodyPart> _generateAttachments() {
-    return attachments.map((attachment) =>
-      attachment.toEmailBodyPart(ContentDisposition.attachment.value)).toSet();
   }
 
   void sendEmailAction(BuildContext context) async {
@@ -534,7 +525,19 @@ class ComposerController extends BaseController {
       return;
     }
 
-    if (!_validateAttachmentsSize()) {
+    if (!uploadController.allUploadAttachmentsCompleted) {
+      showConfirmDialogAction(
+          context,
+          AppLocalizations.of(context).messageDialogSendEmailUploadingAttachment,
+          AppLocalizations.of(context).got_it,
+              () => {},
+          title: AppLocalizations.of(context).sending_failed,
+          icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
+          hasCancelButton: false);
+      return;
+    }
+
+    if (!uploadController.hasEnoughMaxAttachmentSize()) {
       showConfirmDialogAction(
           context,
           AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(
@@ -561,7 +564,7 @@ class ComposerController extends BaseController {
       final email = await _generateEmail(mapDefaultMailboxId, userProfile);
       final accountId = session.accounts.keys.first;
       final sentMailboxId = mapDefaultMailboxId[PresentationMailbox.roleSent];
-      final submissionCreateId = Id(_uuid.v1());
+      final submissionCreateId = Id(const Uuid().v1());
 
       mailboxDashBoardController.consumeState(_sendEmailInteractor.execute(
         accountId,
@@ -633,88 +636,34 @@ class ComposerController extends BaseController {
     }
   }
 
-  void _pickFileSuccess(Success success) {
-    if (success is LocalFilePickerSuccess) {
-      if (_validateAttachmentsSize(listFiles: success.pickedFiles)) {
-        _uploadAttachmentsAction(success.pickedFiles);
-      } else {
-        if (currentContext != null) {
-          showConfirmDialogAction(
-              currentContext!,
-              AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
-                  filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-              AppLocalizations.of(currentContext!).got_it,
-              () => {},
-              title: AppLocalizations.of(currentContext!).maximum_files_size,
-              hasCancelButton: false);
-        }
-      }
-    }
-  }
-
-  bool _validateAttachmentsSize({List<FileInfo>? listFiles}) {
-    final currentTotalAttachmentsSize = attachments.totalSize();
-    log('ComposerController::_validateAttachmentsSize(): $currentTotalAttachmentsSize');
-    num uploadedTotalSize = 0;
-    if (listFiles != null && listFiles.isNotEmpty) {
-      final uploadedListSize = listFiles.map((file) => file.fileSize).toList();
-      uploadedTotalSize = uploadedListSize.reduce((sum, size) => sum + size);
-      log('ComposerController::_validateAttachmentsSize(): uploadedTotalSize: $uploadedTotalSize');
-    }
-
-    final totalSizeReadyToUpload = currentTotalAttachmentsSize + uploadedTotalSize;
-    log('ComposerController::_validateAttachmentsSize(): totalSizeReadyToUpload: $totalSizeReadyToUpload');
-
-    final maxSizeAttachmentsPerEmail = mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value;
-    if (maxSizeAttachmentsPerEmail != null) {
-      return totalSizeReadyToUpload <= maxSizeAttachmentsPerEmail;
+  void _pickFileSuccess(LocalFilePickerSuccess success) {
+    if (uploadController.hasEnoughMaxAttachmentSize(listFiles: success.pickedFiles)) {
+      _uploadAttachmentsAction(success.pickedFiles);
     } else {
-      return false;
+      if (currentContext != null) {
+        showConfirmDialogAction(
+            currentContext!,
+            AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
+                filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
+            AppLocalizations.of(currentContext!).got_it,
+            () => {},
+            title: AppLocalizations.of(currentContext!).maximum_files_size,
+            hasCancelButton: false);
+      }
     }
   }
 
   void _uploadAttachmentsAction(List<FileInfo> pickedFiles) async {
     final session = mailboxDashBoardController.sessionCurrent;
-    if (session != null) {
-      final accountId = session.accounts.keys.first;
-      final uploadUrl = session.getUploadUrl(accountId);
-      consumeState(_uploadMultipleAttachmentInteractor.execute(pickedFiles, accountId, uploadUrl));
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (session != null && accountId != null) {
+      final uploadUri = session.getUploadUri(accountId);
+      uploadController.justUploadAttachmentsAction(pickedFiles, uploadUri);
     }
   }
 
-  void _uploadAttachmentsFailure(Failure failure) {
-    if (currentContext != null) {
-      _appToast.showErrorToast(AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments);
-    }
-  }
-
-  void _uploadAttachmentsSuccess(Success success) {
-    if (success is UploadAttachmentSuccess) {
-      attachments.add(success.attachment);
-    } else if (success is UploadMultipleAttachmentAllSuccess) {
-      final listAttachment = success.listResults.where((either) => either.isRight())
-        .map((either) => either
-          .map((result) => (result as UploadAttachmentSuccess).attachment)
-          .toIterable().first)
-        .toList();
-
-      attachments.addAll(listAttachment);
-    } else if (success is UploadMultipleAttachmentHasSomeFailure) {
-      final listAttachment = success.listResults
-        .map((either) => either
-        .map((result) => (result as UploadAttachmentSuccess).attachment)
-        .toIterable().first)
-        .toList();
-
-      attachments.addAll(listAttachment);
-    }
-    if (currentContext != null) {
-      _appToast.showSuccessToast(AppLocalizations.of(currentContext!).attachments_uploaded_successfully);
-    }
-  }
-
-  void removeAttachmentAction(Attachment attachmentRemoved) {
-    attachments.removeWhere((attachment) => attachment == attachmentRemoved);
+  void deleteAttachmentUploaded(UploadTaskId uploadId) {
+    uploadController.deleteFileUploaded(uploadId);
   }
 
   Future<bool> _isEmailChanged(BuildContext context, ComposerArguments arguments) async {
@@ -759,7 +708,7 @@ class ComposerController extends BaseController {
     final oldBccEmailAddress = recipients.value1;
     final isBccEmailAddressChanged = !oldBccEmailAddress.isSame(newBccEmailAddress);
 
-    final isAttachmentsChanged = !initialAttachments.isSame(attachments.toList());
+    final isAttachmentsChanged = !initialAttachments.isSame(uploadController.attachmentsUploaded.toList());
 
     if (isEmailBodyChanged || isEmailSubjectChanged
         || isToEmailAddressChanged || isCcEmailAddressChanged
@@ -816,8 +765,10 @@ class ComposerController extends BaseController {
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
     emailContents.value = success.emailContents;
-    attachments.value = success.attachments;
-    initialAttachments = success.attachments;
+    if (success.attachments.isNotEmpty) {
+      initialAttachments = success.attachments;
+      uploadController.initializeUploadAttachments(success.attachments);
+    }
   }
 
   String? getEmailContentDraftsAsHtml() {

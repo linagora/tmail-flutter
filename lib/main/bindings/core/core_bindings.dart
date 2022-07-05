@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
+import 'package:uuid/uuid.dart';
 
 class CoreBindings extends Bindings {
 
@@ -18,6 +19,7 @@ class CoreBindings extends Bindings {
     _bindingToast();
     _bindingDeviceManager();
     _bindingReceivingSharingStream();
+    _bindingUtils();
   }
 
   void _bindingAppImagePaths() {
@@ -52,5 +54,9 @@ class CoreBindings extends Bindings {
 
   void _bindingReceivingSharingStream() {
     Get.put(EmailReceiveManager());
+  }
+
+  void _bindingUtils() {
+    Get.put(const Uuid());
   }
 }

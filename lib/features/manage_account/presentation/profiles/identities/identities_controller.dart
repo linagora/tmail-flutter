@@ -32,10 +32,10 @@ class IdentitiesController extends BaseController {
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _uuid = Get.find<Uuid>();
 
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final CreateNewIdentityInteractor _createNewIdentityInteractor;
-  final Uuid _uuid;
   final DeleteIdentityInteractor _deleteIdentityInteractor;
   final EditIdentityInteractor _editIdentityInteractor;
 
@@ -51,7 +51,6 @@ class IdentitiesController extends BaseController {
     this._getAllIdentitiesInteractor,
     this._deleteIdentityInteractor,
     this._createNewIdentityInteractor,
-    this._uuid,
     this._editIdentityInteractor,
   );
 

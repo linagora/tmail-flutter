@@ -406,9 +406,11 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
   }
 
   int _getAttachmentLimitDisplayed(BuildContext context) {
-    if (responsiveUtils.isScreenWithShortestSide(context)) {
+    if (responsiveUtils.isMobile(context)
+        || responsiveUtils.isLandscapeMobile(context)) {
       return 2;
-    } else if (responsiveUtils.isTablet(context)) {
+    } else if (responsiveUtils.isTablet(context) ||
+        responsiveUtils.isLandscapeTablet(context)) {
       return 3;
     } else {
       return 4;

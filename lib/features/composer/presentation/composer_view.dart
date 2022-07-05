@@ -14,6 +14,8 @@ import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_s
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
+import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
+import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
@@ -29,10 +31,7 @@ class ComposerView extends GetWidget<ComposerController> {
     return ResponsiveWidget(
       responsiveUtils: responsiveUtils,
       mobile: _buildComposerViewForMobile(context),
-      landscapeMobile: _buildComposerViewForMobile(context),
       tablet: _buildComposerViewForTablet(context),
-      tabletLarge: _buildComposerViewForTablet(context),
-      desktop: _buildComposerViewForTablet(context),
     );
   }
 
@@ -398,19 +397,26 @@ class ComposerView extends GetWidget<ComposerController> {
         const Divider(color: AppColor.colorDividerComposer, height: 1),
         Padding(padding: const EdgeInsets.symmetric(horizontal: 16),  child: _buildListButton(context)),
         const Divider(color: AppColor.colorDividerComposer, height: 1),
-        Obx(() => controller.attachments.isNotEmpty
-            ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _buildAttachmentsTitle(context, controller.attachments, controller.expandModeAttachments.value))
-            : const SizedBox.shrink()),
-        Obx(() => controller.attachments.isEmpty
-            ? _buildAttachmentsLoadingView()
-            : const SizedBox.shrink()),
-        Obx(() => controller.attachments.isNotEmpty
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
-                child: _buildAttachmentsList(context, controller.attachments, controller.expandModeAttachments.value))
-            : const SizedBox.shrink()),
+        Obx(() {
+          final uploadAttachments = controller.uploadController.listUploadAttachments;
+          if (uploadAttachments.isEmpty) {
+            return const SizedBox.shrink();
+          } else {
+            return Column(children: [
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _buildAttachmentsTitle(context,
+                      uploadAttachments,
+                      controller.expandModeAttachments.value)),
+              _buildAttachmentsLoadingView(),
+              Padding(
+                  padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
+                  child: _buildAttachmentsList(context,
+                      uploadAttachments,
+                      controller.expandModeAttachments.value))
+            ]);
+          }
+        }),
         Padding(
             padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
             child: _buildComposerEditor(context)),
@@ -453,19 +459,26 @@ class ComposerView extends GetWidget<ComposerController> {
         Padding(
             padding: const EdgeInsets.only(left: 60, right: 25),
             child: Column(children: [
-              Obx(() => controller.attachments.isNotEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: _buildAttachmentsTitle(context, controller.attachments, controller.expandModeAttachments.value))
-                  : const SizedBox.shrink()),
-              Obx(() => controller.attachments.isEmpty
-                  ? _buildAttachmentsLoadingView()
-                  : const SizedBox.shrink()),
-              Obx(() => controller.attachments.isNotEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
-                      child: _buildAttachmentsList(context, controller.attachments, controller.expandModeAttachments.value))
-                  : const SizedBox.shrink()),
+              Obx(() {
+                final uploadAttachments = controller.uploadController.listUploadAttachments;
+                if (uploadAttachments.isEmpty) {
+                  return const SizedBox.shrink();
+                } else {
+                  return Column(children: [
+                    Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _buildAttachmentsTitle(context,
+                            uploadAttachments,
+                            controller.expandModeAttachments.value)),
+                    _buildAttachmentsLoadingView(),
+                    Padding(
+                        padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
+                        child: _buildAttachmentsList(context,
+                            uploadAttachments,
+                            controller.expandModeAttachments.value))
+                  ]);
+                }
+              }),
               Padding(
                   padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20, top: 10),
                   child: _buildComposerEditor(context)),
@@ -509,11 +522,15 @@ class ComposerView extends GetWidget<ComposerController> {
           : const SizedBox.shrink()));
   }
 
-  Widget _buildAttachmentsTitle(BuildContext context, List<Attachment> attachments, ExpandMode expandModeAttachment) {
+  Widget _buildAttachmentsTitle(
+      BuildContext context,
+      List<UploadFileState> uploadFilesState,
+      ExpandMode expandModeAttachment
+  ) {
     return Row(
       children: [
         Text(
-            '${AppLocalizations.of(context).attachments} (${filesize(attachments.totalSize(), 0)}):',
+            '${AppLocalizations.of(context).attachments} (${filesize(uploadFilesState.totalSize, 0)}):',
             style: const TextStyle(fontSize: 12, color: AppColor.colorHintEmailAddressInput, fontWeight: FontWeight.normal)),
         _buildAttachmentsLoadingView(padding: const EdgeInsets.only(left: 16), size: 16),
         const Spacer(),
@@ -524,7 +541,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 child: Text(
                     expandModeAttachment == ExpandMode.EXPAND
                         ? AppLocalizations.of(context).hide
-                        : '${AppLocalizations.of(context).show_all} (${attachments.length})',
+                        : '${AppLocalizations.of(context).show_all} (${uploadFilesState.length})',
                     style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12, color: AppColor.colorTextButton)),
                 onPressed: () => controller.toggleDisplayAttachments()
             )
@@ -533,23 +550,28 @@ class ComposerView extends GetWidget<ComposerController> {
     );
   }
 
-  Widget _buildAttachmentsList(BuildContext context, List<Attachment> attachments, ExpandMode expandMode) {
+  Widget _buildAttachmentsList(
+      BuildContext context,
+      List<UploadFileState> uploadFilesState,
+      ExpandMode expandMode
+  ) {
+    const double maxHeightItem = 60;
     if (expandMode == ExpandMode.EXPAND) {
       return LayoutBuilder(builder: (context, constraints) {
         return GridView.builder(
             key: const Key('list_attachment_full'),
             primary: false,
             shrinkWrap: true,
-            itemCount: attachments.length,
+            itemCount: uploadFilesState.length,
             gridDelegate: SliverGridDelegateFixedHeight(
-                height: 60,
+                height: maxHeightItem,
                 crossAxisCount: _getMaxItemRowListAttachment(context, constraints),
                 crossAxisSpacing: 8.0,
                 mainAxisSpacing: 8.0),
-            itemBuilder: (context, index) =>
-                (AttachmentFileComposerBuilder(context, imagePaths, attachments[index])
-                  ..addOnDeleteAttachmentAction((attachment) => controller.removeAttachmentAction(attachment)))
-              .build()
+            itemBuilder: (context, index) => AttachmentFileComposerBuilder(
+                uploadFilesState[index],
+                onDeleteAttachmentAction: (attachment) =>
+                    controller.deleteAttachmentUploaded(attachment.uploadTaskId))
         );
       });
     } else {
@@ -557,20 +579,19 @@ class ComposerView extends GetWidget<ComposerController> {
         return Align(
             alignment: Alignment.centerLeft,
             child: SizedBox(
-                height: 60,
+                height: maxHeightItem,
                 child: ListView.builder(
                     key: const Key('list_attachment_minimize'),
                     shrinkWrap: true,
                     physics: const ClampingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
-                    itemCount: attachments.length,
-                    itemBuilder: (context, index) =>
-                          (AttachmentFileComposerBuilder(context, imagePaths, attachments[index],
-                                itemMargin: const EdgeInsets.only(right: 8),
-                                maxWidth: _getMaxWidthItemListAttachment(context, constraints),
-                                maxHeight: 60)
-                            ..addOnDeleteAttachmentAction((attachment) => controller.removeAttachmentAction(attachment)))
-                        .build()
+                    itemCount: uploadFilesState.length,
+                    itemBuilder: (context, index) => AttachmentFileComposerBuilder(
+                        uploadFilesState[index],
+                      itemMargin: const EdgeInsets.only(right: 8),
+                      maxWidth: _getMaxWidthItemListAttachment(context, constraints),
+                      onDeleteAttachmentAction: (attachment) =>
+                          controller.deleteAttachmentUploaded(attachment.uploadTaskId))
                 )
             )
         );
