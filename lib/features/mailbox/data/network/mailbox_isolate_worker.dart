@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -38,26 +39,31 @@ class MailboxIsolateWorker {
       int totalEmailUnread,
       StreamController<Either<Failure, Success>> onProgressController
   ) async {
-    final result = await _isolateExecutor.execute(
-        arg1: MailboxMarkAsReadArguments(
-            _threadApi,
-            _emailApi,
-            accountId,
-            mailboxId),
-        fun1: _handleMarkAsMailboxReadAction,
-        notification: (value) {
-          if (value is List<Email>) {
-            log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: COUNT ${value.length}');
-            log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: TOTAL $totalEmailUnread');
-            log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: PERCENT ${value.length / totalEmailUnread}');
-            log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: ${((value.length / totalEmailUnread) * 100).toInt()}%');
-            onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
-                mailboxId: mailboxId,
-                totalUnread: totalEmailUnread,
-                countRead: value.length)));
-          }
-        });
-    return result;
+    if (BuildUtils.isWeb) {
+      return _handleMarkAsMailboxReadActionOnWeb(
+          accountId,
+          mailboxId,
+          totalEmailUnread,
+          onProgressController);
+    } else {
+      final result = await _isolateExecutor.execute(
+          arg1: MailboxMarkAsReadArguments(
+              _threadApi,
+              _emailApi,
+              accountId,
+              mailboxId),
+          fun1: _handleMarkAsMailboxReadAction,
+          notification: (value) {
+            if (value is List<Email>) {
+              log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: PERCENT ${value.length / totalEmailUnread}');
+              onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
+                  mailboxId: mailboxId,
+                  totalUnread: totalEmailUnread,
+                  countRead: value.length)));
+            }
+          });
+      return result;
+    }
   }
 
   static Future<List<Email>> _handleMarkAsMailboxReadAction(
@@ -65,7 +71,6 @@ class MailboxIsolateWorker {
       TypeSendPort sendPort
   ) async {
     List<Email> emailListCompleted = List.empty(growable: true);
-
     try {
       bool mailboxHasEmails = true;
       UTCDate? lastReceivedDate;
@@ -120,6 +125,71 @@ class MailboxIsolateWorker {
       log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): ERROR: $e');
     }
     log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): TOTAL_READ: ${emailListCompleted.length}');
+    return emailListCompleted;
+  }
+
+  Future<List<Email>> _handleMarkAsMailboxReadActionOnWeb(
+      AccountId accountId,
+      MailboxId mailboxId,
+      int totalEmailUnread,
+      StreamController<Either<Failure, Success>> onProgressController
+  ) async {
+    List<Email> emailListCompleted = List.empty(growable: true);
+    try {
+      bool mailboxHasEmails = true;
+      UTCDate? lastReceivedDate;
+      EmailId? lastEmailId;
+
+      while (mailboxHasEmails) {
+        final emailResponse = await _threadApi
+            .getAllEmail(accountId,
+                limit: UnsignedInt(30),
+                filter: EmailFilterCondition(
+                    inMailbox: mailboxId,
+                    notKeyword: KeyWordIdentifier.emailSeen.value,
+                    before: lastReceivedDate),
+                sort: <Comparator>{}..add(
+                    EmailComparator(EmailComparatorProperty.receivedAt)
+                      ..setIsAscending(false)),
+                properties: Properties({
+                  EmailProperty.id,
+                  EmailProperty.keywords,
+                  EmailProperty.receivedAt,
+                }))
+            .then((response) {
+                var listEmails = response.emailList;
+                if (listEmails != null && listEmails.isNotEmpty && lastEmailId != null) {
+                  listEmails = listEmails
+                      .where((email) => email.id != lastEmailId)
+                      .toList();
+                }
+                return EmailsResponse(emailList: listEmails, state: response.state);
+            });
+        final listEmailUnread = emailResponse.emailList;
+
+        log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): listEmailUnread: ${listEmailUnread?.length}');
+
+        if (listEmailUnread == null || listEmailUnread.isEmpty) {
+          mailboxHasEmails = false;
+        } else {
+          lastEmailId = listEmailUnread.last.id;
+          lastReceivedDate = listEmailUnread.last.receivedAt;
+
+          final result = await _emailApi.markAsRead(
+              accountId, listEmailUnread, ReadActions.markAsRead);
+          log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): MARK_READ: ${result.length}');
+          emailListCompleted.addAll(result);
+
+          onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
+              mailboxId: mailboxId,
+              totalUnread: totalEmailUnread,
+              countRead: emailListCompleted.length)));
+        }
+      }
+    } catch (e) {
+      log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): ERROR: $e');
+    }
+    log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): TOTAL_READ: ${emailListCompleted.length}');
     return emailListCompleted;
   }
 }
