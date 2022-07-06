@@ -9,4 +9,5 @@ class CachingConstants {
   static const int RECENT_SEARCH_HIVE_CACHE_IDENTIFY = 7;
   static const int TOKEN_OIDC_HIVE_CACHE_IDENTIFY = 8;
   static const int ACCOUNT_HIVE_CACHE_IDENTIFY = 9;
+  static const int COMPOSER_HIVE_CACHE_IDENTIFY = 10;
 }

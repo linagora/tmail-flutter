@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:tmail_ui_user/features/composer/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/token_oidc_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
@@ -41,6 +42,8 @@ class HiveCacheConfig {
     Hive.registerAdapter(RecentSearchCacheAdapter());
     Hive.registerAdapter(TokenOidcCacheAdapter());
     Hive.registerAdapter(AccountCacheAdapter());
+    Hive.registerAdapter(ComposerCacheAdapter());
+
   }
 
   Future closeHive() async {

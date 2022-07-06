@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasou
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/composer_datasource_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/contact_datasource_impl.dart';
+import 'package:tmail_ui_user/features/composer/data/local/composer_cache_manager.dart';
 import 'package:tmail_ui_user/features/composer/data/network/composer_api.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/auto_complete_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/composer_repository_impl.dart';
@@ -15,7 +16,10 @@ import 'package:tmail_ui_user/features/composer/domain/repository/auto_complete_
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_composer_as_draft_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/remove_composer_as_draft_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_as_draft_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
@@ -68,7 +72,10 @@ class ComposerBindings extends BaseBindings {
       dataSources.add(Get.find<TMailContactDataSourceImpl>());
     }
 
-    Get.lazyPut(() => ComposerDataSourceImpl(Get.find<ComposerAPI>()));
+    Get.lazyPut(() => ComposerDataSourceImpl(
+        Get.find<ComposerAPI>(),
+        Get.find<ComposerCacheManager>(),
+    ));
     Get.lazyPut(() => ContactDataSourceImpl());
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
@@ -124,6 +131,9 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => UpdateEmailDraftsInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => GetAllIdentitiesInteractor(Get.find<ManageAccountRepository>()));
+    Get.lazyPut(() => SaveComposerAsDraftsInteractor(Get.find<ComposerRepository>()));
+    Get.lazyPut(() => GetComposerAsDraftsInteractor(Get.find<ComposerRepository>()));
+    Get.lazyPut(() => RemoveComposerAsDraftsInteractor(Get.find<ComposerRepository>()));
   }
 
   @override
@@ -140,6 +150,9 @@ class ComposerBindings extends BaseBindings {
         Get.find<GetEmailContentInteractor>(),
         Get.find<UpdateEmailDraftsInteractor>(),
         Get.find<GetAllIdentitiesInteractor>(),
+        Get.find<SaveComposerAsDraftsInteractor>(),
+        Get.find<GetComposerAsDraftsInteractor>(),
+        Get.find<RemoveComposerAsDraftsInteractor>(),
     ));
   }
 }

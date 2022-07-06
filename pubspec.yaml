@@ -155,6 +155,8 @@ dependencies:
 
   open_file: 3.2.1
 
+  universal_html: ^2.0.8
+
   # OIDC Mobile
   flutter_appauth: 4.0.0
 
