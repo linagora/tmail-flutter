@@ -1,4 +1,3 @@
-import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
@@ -12,8 +11,8 @@ class SearchEmailFilter {
   final Set<String> to;
   final SearchQuery? text;
   final String? subject;
-  final String? hasKeyword;
-  final String? notKeyword;
+  final Set<String> hasKeyword;
+  final Set<String> notKeyword;
   final PresentationMailbox? mailbox;
   final EmailReceiveTimeType emailReceiveTimeType;
   final bool hasAttachment;
@@ -25,11 +24,13 @@ class SearchEmailFilter {
     bool? hasAttachment,
     this.text,
     this.subject,
-    this.hasKeyword,
-    this.notKeyword,
+    Set<String>? hasKeyword,
+    Set<String>? notKeyword,
     this.mailbox,
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
+        hasKeyword = hasKeyword ?? <String>{},
+        notKeyword = notKeyword ?? <String>{},
         hasAttachment = hasAttachment ?? false,
         emailReceiveTimeType =
             emailReceiveTimeType ?? EmailReceiveTimeType.allTime;
@@ -39,8 +40,8 @@ class SearchEmailFilter {
     Set<String>? to,
     SearchQuery? text,
     String? subject,
-    Wrapped<String?>? hasKeyword,
-    Wrapped<String?>? notKeyword,
+    Set<String>? hasKeyword,
+    Set<String>? notKeyword,
     PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
@@ -50,21 +51,19 @@ class SearchEmailFilter {
       to: to ?? this.to,
       text: text ?? this.text,
       subject: subject ?? this.subject,
-      hasKeyword: hasKeyword != null ? hasKeyword.value : this.hasKeyword,
-      notKeyword: notKeyword !=null ? notKeyword.value : this.notKeyword,
+      hasKeyword: hasKeyword ?? this.hasKeyword,
+      notKeyword: notKeyword ?? this.notKeyword,
       mailbox: mailbox ?? this.mailbox,
       emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
       hasAttachment: hasAttachment ?? this.hasAttachment,
     );
   }
 
-  Filter? mappingToEmailFilterCondition() {
+  Filter? mappingToEmailFilterCondition({Filter? moreFilterCondition}) {
     final emailEmailFilterConditionShared = EmailFilterCondition(
       text: text?.value,
       inMailbox: mailbox?.id,
       after: emailReceiveTimeType.toUTCDate(),
-      hasKeyword: hasKeyword,
-      notKeyword: notKeyword,
       hasAttachment: hasAttachment == false ? null : hasAttachment,
       subject: subject,
     );
@@ -74,6 +73,11 @@ class SearchEmailFilter {
           Operator.AND, to.map((e) => EmailFilterCondition(to: e)).toSet()),
       LogicFilterOperator(
           Operator.AND, from.map((e) => EmailFilterCondition(from: e)).toSet()),
+      LogicFilterOperator(
+          Operator.AND, hasKeyword.map((e) => EmailFilterCondition(hasKeyword: e)).toSet()),
+      LogicFilterOperator(
+          Operator.AND, notKeyword.map((e) => EmailFilterCondition(notKeyword: e)).toSet()),
+      if(moreFilterCondition !=null) moreFilterCondition
     });
   }
 }

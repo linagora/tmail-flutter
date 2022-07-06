@@ -54,7 +54,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -227,6 +227,7 @@ class MailboxController extends BaseMailboxController {
               success is RemoveEmailDraftsSuccess ||
               success is SendEmailSuccess ||
               success is MarkAsMailboxReadAllSuccess ||
+              success is MarkAsMailboxReadHasSomeEmailFailure ||
               success is UpdateEmailDraftsSuccess) {
             refreshMailboxChanges();
           }
@@ -343,7 +344,7 @@ class MailboxController extends BaseMailboxController {
       mailboxDashBoardController.searchController.disableSearch();
     }
 
-    if (!_responsiveUtils.isDesktop(context) && !_responsiveUtils.isTabletLarge(context)) {
+    if (_responsiveUtils.hasLeftMenuDrawerActive(context)) {
       mailboxDashBoardController.closeMailboxMenuDrawer();
     } else {
       mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
@@ -502,7 +503,7 @@ class MailboxController extends BaseMailboxController {
         _openDialogRenameMailboxAction(context, selectionMailbox.first);
         break;
       case MailboxActions.markAsRead:
-        _markAsReadMailboxAction(selectionMailbox.first);
+        _markAsReadMailboxAction(context, selectionMailbox.first);
         break;
       case MailboxActions.move:
         _moveMailboxAction(selectionMailbox.first);
@@ -679,12 +680,19 @@ class MailboxController extends BaseMailboxController {
     _cancelSelectMailbox();
   }
 
-  void _markAsReadMailboxAction(PresentationMailbox presentationMailbox) {
+  void _markAsReadMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
     final accountId = mailboxDashBoardController.accountId.value;
     final mailboxId = presentationMailbox.id;
     final mailboxName = presentationMailbox.name;
+    final countEmailsUnread = presentationMailbox.unreadEmails?.value.value ?? 0;
     if (accountId != null && mailboxName != null) {
-      mailboxDashBoardController.markAsReadMailbox(accountId, mailboxId, mailboxName);
+      mailboxDashBoardController.markAsReadMailbox(
+          accountId,
+          mailboxId,
+          mailboxName,
+          countEmailsUnread.toInt());
+
+      closeMailboxScreen(context);
     }
   }
 
@@ -809,7 +817,7 @@ class MailboxController extends BaseMailboxController {
         _moveMailboxAction(mailbox);
         break;
       case MailboxActions.markAsRead:
-        _markAsReadMailboxAction(mailbox);
+        _markAsReadMailboxAction(context, mailbox);
         break;
       default:
         break;

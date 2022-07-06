@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-06-24T14:16:53.170960",
+  "@@last_modified": "2022-07-07T11:00:32.546280",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1324,12 +1324,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "anyTime": "Any time",
-  "@anyTime": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "last30Days": "Last 30 days",
   "@last30Days": {
     "type": "text",
@@ -1392,6 +1386,18 @@
     ],
     "placeholders": {
       "mailboxName": {}
+    }
+  },
+  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "You’ve marked {count} messages in \"{mailboxName}\" as read",
+  "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName",
+      "count"
+    ],
+    "placeholders": {
+      "mailboxName": {},
+      "count": {}
     }
   },
   "allMailboxes": "All mailboxes",
@@ -1492,6 +1498,18 @@
   },
   "clearFilter": "Clear filter",
   "@clearFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "advancedSearch": "Advanced search",
+  "@advancedSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectMailbox": "Select Mailbox",
+  "@selectMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

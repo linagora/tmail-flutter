@@ -88,8 +88,10 @@ class AppBarThreadWidgetBuilder {
 
   Widget _buildBodyAppBarForWeb() {
     return Row(children: [
-      if (!_responsiveUtils.isTabletLarge(_context)) _buildMenuButton(),
-      if (_responsiveUtils.isTabletLarge(_context)) const SizedBox(width: 16),
+      if (_responsiveUtils.hasLeftMenuDrawerActive(_context))
+        _buildMenuButton(),
+      if (_responsiveUtils.hasLeftMenuDrawerActive(_context))
+        const SizedBox(width: 16),
       Expanded(child: Text(
           _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
           maxLines: 1,
@@ -362,12 +364,12 @@ class AppBarThreadWidgetBuilder {
       children: [
         InkWell(
           onTap: () {
-            if (_responsiveUtils.isSmallScreen(_context)) {
+            if (_responsiveUtils.hasLeftMenuDrawerActive(_context)) {
               _onOpenMailboxMenuActionClick?.call();
             }
           },
           child: Padding(
-            padding: (_responsiveUtils.isSmallScreen(_context))
+            padding: (_responsiveUtils.hasLeftMenuDrawerActive(_context))
                 ? EdgeInsets.zero
                 : const EdgeInsets.only(bottom: 8, top: 8),
             child: Container(
@@ -383,7 +385,7 @@ class AppBarThreadWidgetBuilder {
                     color: AppColor.colorNameEmail,
                     fontWeight: FontWeight.w700))
             ))),
-        if (_responsiveUtils.isSmallScreen(_context))
+        if (_responsiveUtils.hasLeftMenuDrawerActive(_context))
           Transform(
             transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
             child: IconButton(

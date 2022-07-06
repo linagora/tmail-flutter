@@ -33,6 +33,7 @@ export 'utils/benchmark.dart';
 export 'utils/fps_manager.dart';
 export 'utils/build_utils.dart';
 export 'utils/wrapper.dart';
+export 'utils/string_convert.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
@@ -69,6 +70,7 @@ export 'presentation/views/tab_bar/custom_tab_indicator.dart';
 export 'presentation/views/quick_search/quick_search_input_form.dart';
 export 'presentation/views/toast/toast_position.dart';
 export 'presentation/views/toast/tmail_toast.dart';
+export 'presentation/views/bottom_popup/full_screen_action_sheet_builder.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';

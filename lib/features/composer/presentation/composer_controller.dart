@@ -235,14 +235,14 @@ class ComposerController extends BaseController {
 
   _listenBrowserTabRefresh() {
     html.window.onBeforeUnload.listen((event) async {
+      print(222222);
+      print(event);
       final userProfile = mailboxDashBoardController.userProfile.value;
       if (userProfile != null) {
         final currentEmail = await _generateEmail(
           mailboxDashBoardController.mapDefaultMailboxId,
           userProfile,
         );
-        print(22222);
-        print(currentEmail.to);
         final PresentationEmail presentationEmail = PresentationEmail(
           currentEmail.id,
           hasAttachment: currentEmail.hasAttachment,
@@ -252,8 +252,6 @@ class ComposerController extends BaseController {
           cc: currentEmail.cc,
           bcc: currentEmail.bcc,
         );
-        print(333333);
-        print(presentationEmail.to);
         _saveComposerAsDraftsInteractor.execute(Composer(
           emailActionType: EmailActionType.compose,
           presentationEmail: presentationEmail,
@@ -611,8 +609,6 @@ class ComposerController extends BaseController {
       final accountId = session.accounts.keys.first;
       final sentMailboxId = mapDefaultMailboxId[PresentationMailbox.roleSent];
       final submissionCreateId = Id(_uuid.v1());
-      print(11111);
-      print(email.to);
       mailboxDashBoardController.consumeState(_sendEmailInteractor.execute(
         accountId,
         EmailRequest(email, submissionCreateId, mailboxIdSaved: sentMailboxId,

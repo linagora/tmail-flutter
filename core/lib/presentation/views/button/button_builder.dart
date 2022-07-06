@@ -74,7 +74,7 @@ class ButtonBuilder {
     _paddingIcon = paddingIcon;
   }
 
-  void text(String text, {required bool isVertical}) {
+  void text(String? text, {required bool isVertical}) {
     _text = text;
     _isVertical = isVertical;
   }
@@ -122,6 +122,7 @@ class ButtonBuilder {
     if (_text != null) {
       return _isVertical!
         ? Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildIcon(),
@@ -129,6 +130,7 @@ class ButtonBuilder {
               if (_iconAction != null) _iconAction!
             ])
         : Row(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildIcon(),
@@ -148,7 +150,7 @@ class ButtonBuilder {
     return Text(
       '${_text ?? ''}',
       maxLines: 1,
-      overflow: TextOverflow.ellipsis,
+      overflow: CommonTextStyle.defaultTextOverFlow,
       style: _textStyle ?? TextStyle(fontSize: 12, color: AppColor.colorTextButton),
     );
   }

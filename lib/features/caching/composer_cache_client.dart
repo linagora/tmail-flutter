@@ -65,6 +65,7 @@ class ComposerCacheClient extends HiveCacheClient<ComposerCache> {
       final boxComposer = await openBox();
       return boxComposer.put(key, newObject);
     }).catchError((error) {
+      log('ComposerCacheClient::insertItem(): $error');
       throw error;
     });
   }

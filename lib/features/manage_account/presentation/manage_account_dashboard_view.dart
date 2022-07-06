@@ -32,7 +32,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
       backgroundColor: Colors.white,
       drawer: ResponsiveWidget(
           responsiveUtils: _responsiveUtils,
-          mobile: SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeDrawer),
+          mobile: SizedBox(child: ManageAccountMenuView(), width: ResponsiveUtils.defaultSizeDrawer),
           desktop: const SizedBox.shrink()
       ),
       drawerEnableOpenDragGesture: !_responsiveUtils.isDesktop(context),

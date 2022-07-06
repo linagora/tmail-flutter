@@ -9,19 +9,23 @@ class ComposerCacheManager {
 
   ComposerCacheManager(this._composerCacheClient);
 
-  Future<Composer> getDraftComposer() async {
+  Future<Composer?> getDraftComposer() async {
     try {
-      final allComposers = await _composerCacheClient.getAll();
-      return allComposers.first.toComposer();
+      final composer = await _composerCacheClient.getItem('composerDraft');
+      return composer?.toComposer();
     } catch (e) {
       logError('ComposerCacheManager::getSelectedComposer(): $e');
       rethrow;
     }
   }
 
-  Future<void> setDraftComposer(Composer composer) {
+  Future<void> setDraftComposer(Composer composer) async {
     log('ComposerCacheManager::setSelectedComposer(): $_composerCacheClient');
-    return _composerCacheClient.insertItem(composer.emailActionType.name, composer.toCache());
+    final composerCacheExist = await _composerCacheClient.isExistTable();
+    if (composerCacheExist) {
+      await _composerCacheClient.clearAllData();
+    }
+    await _composerCacheClient.insertItem('composerDraft', composer.toCache());
   }
 
   Future<void> clearAllDataDraftComposer() {

@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_re
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_bottom_sheet.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -29,10 +30,13 @@ class SearchController extends BaseController {
   final SaveRecentSearchInteractor _saveRecentSearchInteractor;
   final GetAllRecentSearchLatestInteractor _getAllRecentSearchLatestInteractor;
 
+  final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
+
   final searchInputController = TextEditingController();
   final searchEmailFilter = SearchEmailFilter().obs;
   final searchState = SearchState.initial().obs;
   final isAdvancedSearchViewOpen = false.obs;
+  final isAdvancedSearchHasApply = false.obs;
   final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
   final mailboxFilterSelectedFormAdvancedSearch = Rxn<PresentationMailbox>();
   final hasAttachment = false.obs;
@@ -88,7 +92,7 @@ class SearchController extends BaseController {
         return;
       case QuickSearchFilter.fromMe:
         quickSearchFilterSelected
-            ? searchEmailFilter.value.from.remove(userProfile.email)
+            ? searchEmailFilter.value.from.removeWhere((e) => e == userProfile.email)
             : searchEmailFilter.value.from.add(userProfile.email);
         updateFilterEmail(from: searchEmailFilter.value.from);
         return;
@@ -116,8 +120,8 @@ class SearchController extends BaseController {
     Set<String>? to,
     SearchQuery? text,
     String? subject,
-    Wrapped<String?>? hasKeyword,
-    Wrapped<String?>? notKeyword,
+    Set<String>? hasKeyword,
+    Set<String>? notKeyword,
     PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
@@ -139,12 +143,13 @@ class SearchController extends BaseController {
     searchFocus.addListener(() {
       final hasFocus = searchFocus.hasFocus;
       final query = searchEmailFilter.value.text?.value;
-      log('MailboxDashBoardController::_registerSearchFocusListener(): hasFocus: $hasFocus | query: $query');
-      if (!hasFocus && (query == null || query.isEmpty)) {
+      log('SearchController::_registerSearchFocusListener(): hasFocus: $hasFocus | query: $query');
+      if (!hasFocus && (query == null || query.isEmpty) && isAdvancedSearchHasApply.isFalse) {
         updateFilterEmail(text: SearchQuery.initial());
         searchInputController.clear();
         cleanSearchFilter();
         searchFocus.unfocus();
+        searchState.value = searchState.value.disableSearchState();
       }
     });
   }
@@ -160,7 +165,6 @@ class SearchController extends BaseController {
     searchState.value = searchState.value.disableSearchState();
     updateFilterEmail(text: SearchQuery.initial());
     searchInputController.clear();
-    cleanSearchFilter();
     searchFocus.unfocus();
   }
 
@@ -192,7 +196,7 @@ class SearchController extends BaseController {
         }
         return searchEmailFilter.value.emailReceiveTimeType == EmailReceiveTimeType.last7Days;
       case QuickSearchFilter.fromMe:
-        return searchEmailFilter.value.from.contains(userProfile.email) && searchEmailFilter.value.from.length == 1;
+        return searchEmailFilter.value.from.contains( userProfile.email) && searchEmailFilter.value.from.length == 1;
     }
   }
 
@@ -212,6 +216,14 @@ class SearchController extends BaseController {
 
   void setEmailReceiveTimeType(EmailReceiveTimeType? receiveTimeType) {
     emailReceiveTimeType.value = receiveTimeType;
+  }
+
+  showAdvancedFilterView(BuildContext context) async {
+    selectOpenAdvanceSearch();
+    if (_responsiveUtils.isMobile(context)) {
+      await showAdvancedSearchFilterBottomSheet(context);
+      selectOpenAdvanceSearch();
+    }
   }
 
   @override

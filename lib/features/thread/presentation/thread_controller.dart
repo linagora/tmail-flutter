@@ -34,7 +34,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -103,7 +103,8 @@ class ThreadController extends BaseController {
   MailboxId? _currentMailboxId;
   jmap.State? _currentEmailState;
   final ScrollController listEmailController = ScrollController();
-  late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker;
+  late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker, advancedSearchFilterWorker;
+
 
   Set<Comparator>? get _sortOrder => <Comparator>{}
     ..add(EmailComparator(EmailComparatorProperty.receivedAt)
@@ -251,6 +252,12 @@ class ThreadController extends BaseController {
       }
     });
 
+    advancedSearchFilterWorker = ever(searchController.isAdvancedSearchViewOpen, (hasOpen) {
+      if (hasOpen == true) {
+        mailboxDashBoardController.filterMessageOption.value = FilterMessageOption.all;
+      }
+    });
+
     dashboardActionWorker = ever(mailboxDashBoardController.dashBoardAction, (action) {
       if (action is DashBoardAction) {
         if (action is RefreshAllEmailAction) {
@@ -292,6 +299,7 @@ class ThreadController extends BaseController {
               || success is RemoveEmailDraftsSuccess
               || success is SendEmailSuccess
               || success is MarkAsMailboxReadAllSuccess
+              || success is MarkAsMailboxReadHasSomeEmailFailure
               || success is UpdateEmailDraftsSuccess) {
             _refreshEmailChanges();
           }
@@ -304,6 +312,7 @@ class ThreadController extends BaseController {
     mailboxWorker.call();
     dashboardActionWorker.call();
     searchWorker.call();
+    advancedSearchFilterWorker.call();
     viewStateWorker.call();
   }
 
@@ -450,11 +459,7 @@ class ThreadController extends BaseController {
 
   void previewEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
     mailboxDashBoardController.setSelectedEmail(presentationEmailSelected);
-    if (_responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)) {
-      mailboxDashBoardController.dispatchRoute(AppRoutes.EMAIL);
-    } else {
-      goToEmail(context);
-    }
+    mailboxDashBoardController.dispatchRoute(AppRoutes.EMAIL);
   }
 
   void selectEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
@@ -571,8 +576,8 @@ class ThreadController extends BaseController {
         message: newFilterOption.getMessageToast(context),
         icon: newFilterOption.getIconToast(_imagePaths));
 
-    if (isSearchActive()) {
-      _searchEmail();
+    if (isSearchActive() || searchController.isAdvancedSearchHasApply.isTrue) {
+      _searchEmail(filterMessageOption: _getFilterCondition());
     } else {
       refreshAllEmail();
     }
@@ -797,6 +802,9 @@ class ThreadController extends BaseController {
 
   bool isSearchActive() => searchController.isSearchActive();
 
+  bool get isAllSearchInActive => !searchController.isSearchActive() &&
+    searchController.isAdvancedSearchViewOpen.isFalse;
+
   void enableSearch(BuildContext context) {
     searchController.enableSearch();
   }
@@ -816,17 +824,25 @@ class ThreadController extends BaseController {
     searchController.clearTextSearch();
   }
 
-  void _searchEmail({UnsignedInt? limit}) {
+  void _searchEmail({UnsignedInt? limit, EmailFilterCondition? filterMessageOption}) {
     if (_accountId != null && searchQuery != null) {
       searchIsActive.value = true;
 
-      searchController.updateFilterEmail(mailbox: currentMailbox);
+      if(searchController.isAdvancedSearchHasApply.isFalse){
+        searchController.updateFilterEmail(mailbox: currentMailbox);
+      }
+
+      filterMessageOption = EmailFilterCondition(
+        notKeyword: filterMessageOption?.notKeyword,
+        hasKeyword: filterMessageOption?.hasKeyword,
+        hasAttachment: filterMessageOption?.hasAttachment,
+      );
 
       consumeState(_searchEmailInteractor.execute(
         _accountId!,
         limit: limit ?? ThreadConstants.defaultLimit,
         sort: _sortOrder,
-        filter: _searchEmailFilter.mappingToEmailFilterCondition(),
+        filter: _searchEmailFilter.mappingToEmailFilterCondition(moreFilterCondition: filterMessageOption),
         properties: ThreadConstants.propertiesDefault,
       ));
     }
@@ -850,7 +866,7 @@ class ThreadController extends BaseController {
         limit: ThreadConstants.defaultLimit,
         sort: _sortOrder,
         filter: EmailFilterCondition(
-            text: searchQuery!.value,
+            text: searchQuery?.value,
             before: emailList.last.receivedAt),
         properties: ThreadConstants.propertiesDefault,
         lastEmailId: emailList.last.id
@@ -1236,10 +1252,6 @@ class ThreadController extends BaseController {
 
   void openMailboxLeftMenu() {
     mailboxDashBoardController.openMailboxMenuDrawer();
-  }
-
-  void goToEmail(BuildContext context) {
-    push(AppRoutes.EMAIL);
   }
 
   void editEmail(PresentationEmail presentationEmail) {

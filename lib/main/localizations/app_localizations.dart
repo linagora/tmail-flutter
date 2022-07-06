@@ -1357,12 +1357,6 @@ class AppLocalizations {
         name: 'showingResultsFor');
   }
 
-  String get anyTime {
-    return Intl.message(
-        'Any time',
-        name: 'anyTime');
-  }
-
   String get last30Days {
     return Intl.message(
         'Last 30 days',
@@ -1424,6 +1418,13 @@ class AppLocalizations {
         'You’ve marked all messages in "$mailboxName" as read',
         name: 'toastMessageMarkAsMailboxReadSuccess',
         args: [mailboxName]);
+  }
+
+  String toastMessageMarkAsMailboxReadHasSomeEmailFailure(String mailboxName, int count) {
+    return Intl.message(
+        'You’ve marked $count messages in "$mailboxName" as read',
+        name: 'toastMessageMarkAsMailboxReadHasSomeEmailFailure',
+        args: [mailboxName, count]);
   }
 
   String get allMailboxes {
@@ -1535,6 +1536,27 @@ class AppLocalizations {
     return Intl.message(
       'Clear filter',
       name: 'clearFilter',
+    );
+  }
+
+  String get advancedSearch {
+    return Intl.message(
+      'Advanced search',
+      name: 'advancedSearch',
+    );
+  }
+
+  String get selectMailbox {
+    return Intl.message(
+      'Select Mailbox',
+      name: 'selectMailbox',
+    );
+  }
+
+  String get messageDuplicateTagFilterMail {
+    return Intl.message(
+      'you already entered that',
+      name: 'selectMailbox',
     );
   }
 }

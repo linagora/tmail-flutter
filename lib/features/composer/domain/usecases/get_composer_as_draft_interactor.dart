@@ -7,6 +7,10 @@ class GetComposerAsDraftsInteractor {
   GetComposerAsDraftsInteractor(this.composerRepository);
 
   Future<Composer?> execute() async {
-    return composerRepository.getDraftComposer();
+    try {
+      return composerRepository.getDraftComposer();
+    } catch (e) {
+      return null;
+    }
   }
 }

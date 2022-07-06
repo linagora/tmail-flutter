@@ -3,6 +3,20 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
+import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
+import 'package:tmail_ui_user/features/composer/data/datasource_impl/composer_datasource_impl.dart';
+import 'package:tmail_ui_user/features/composer/data/local/composer_cache_manager.dart';
+import 'package:tmail_ui_user/features/composer/data/network/composer_api.dart';
+import 'package:tmail_ui_user/features/composer/data/repository/auto_complete_repository_impl.dart';
+import 'package:tmail_ui_user/features/composer/data/repository/composer_repository_impl.dart';
+import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
+import 'package:tmail_ui_user/features/composer/domain/repository/auto_complete_repository.dart';
+import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
+import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_composer_as_draft_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
@@ -39,6 +53,7 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_data
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
@@ -48,10 +63,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/search_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/search_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/mark_as_mailbox_read_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
@@ -88,7 +104,9 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MoveToMailboxInteractor>(),
       Get.find<DeleteEmailPermanentlyInteractor>(),
       Get.find<MarkAsMailboxReadInteractor>(),
+      Get.find<GetComposerAsDraftsInteractor>(),
     ));
+    Get.put(AdvancedFilterController());
   }
 
   @override
@@ -101,6 +119,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<AccountDatasource>(() => Get.find<HiveAccountDatasourceImpl>());
     Get.lazyPut<AuthenticationOIDCDataSource>(() => Get.find<AuthenticationOIDCDataSourceImpl>());
+    Get.lazyPut<ComposerDataSource>(() => Get.find<ComposerDataSourceImpl>());
   }
 
   @override
@@ -114,7 +133,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => ThreadDataSourceImpl(Get.find<ThreadAPI>()));
     Get.lazyPut(() => LocalThreadDataSourceImpl(Get.find<EmailCacheManager>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
-    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>()));
+    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>(), Get.find<MailboxIsolateWorker>()));
     Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
     Get.lazyPut(() => HiveAccountDatasourceImpl(Get.find<AccountCacheManager>()));
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
@@ -123,10 +142,20 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<TokenOidcCacheManager>(),
         Get.find<OidcConfigurationCacheManager>()
     ));
+    Get.lazyPut(() => ComposerDataSourceImpl(
+      Get.find<ComposerAPI>(),
+      Get.find<ComposerCacheManager>(),
+    ));
   }
 
   @override
   void bindingsInteractor() {
+    Get.lazyPut(() => GetAutoCompleteInteractor(Get.find<AutoCompleteRepository>()));
+    Get.lazyPut(() => GetDeviceContactSuggestionsInteractor(Get.find<ContactRepository>()));
+    Get.lazyPut(() => GetAutoCompleteWithDeviceContactInteractor(
+        Get.find<GetAutoCompleteInteractor>(),
+        Get.find<GetDeviceContactSuggestionsInteractor>()
+    ));
     Get.lazyPut(() => GetUserProfileInteractor(Get.find<CredentialRepository>()));
     Get.lazyPut(() => RemoveEmailDraftsInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
@@ -150,16 +179,20 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<GetCredentialInteractor>(),
         Get.find<GetStoredTokenOidcInteractor>(),
     ));
+    Get.lazyPut(() => GetComposerAsDraftsInteractor(Get.find<ComposerRepository>()));
   }
 
   @override
   void bindingsRepository() {
+    Get.lazyPut<AutoCompleteRepository>(() => Get.find<AutoCompleteRepositoryImpl>());
+    Get.lazyPut<ContactRepository>(() => Get.find<ContactRepositoryImpl>());
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
     Get.lazyPut<SearchRepository>(() => Get.find<SearchRepositoryImpl>());
     Get.lazyPut<ThreadRepository>(() => Get.find<ThreadRepositoryImpl>());
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut<AccountRepository>(() => Get.find<AccountRepositoryImpl>());
     Get.lazyPut<AuthenticationOIDCRepository>(() => Get.find<AuthenticationOIDCRepositoryImpl>());
+    Get.lazyPut<ComposerRepository>(() => Get.find<ComposerRepositoryImpl>());
   }
 
   @override
@@ -183,10 +216,9 @@ class MailboxDashBoardBindings extends BaseBindings {
         DataSourceType.local: Get.find<MailboxCacheDataSourceImpl>()
       },
       Get.find<StateDataSource>(),
-      Get.find<ThreadDataSource>(),
-      Get.find<EmailDataSource>(),
     ));
     Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));
     Get.lazyPut(() => AuthenticationOIDCRepositoryImpl(Get.find<AuthenticationOIDCDataSource>()));
+    Get.lazyPut(() => ComposerRepositoryImpl(Get.find<ComposerDataSource>()));
   }
 }

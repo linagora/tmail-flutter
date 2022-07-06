@@ -20,7 +20,7 @@ class ComposerRepositoryImpl extends ComposerRepository {
   }
 
   @override
-  Future<Composer> getDraftComposer() {
+  Future<Composer?> getDraftComposer() {
     return composerDataSource.getDraftComposer();
   }
 

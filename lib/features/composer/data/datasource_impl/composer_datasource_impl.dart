@@ -27,7 +27,7 @@ class ComposerDataSourceImpl extends ComposerDataSource {
   }
 
   @override
-  Future<Composer> getDraftComposer() {
+  Future<Composer?> getDraftComposer() {
     return _composerCacheManager.getDraftComposer();
   }
 
