@@ -39,13 +39,13 @@ class MailboxIsolateWorker {
       StreamController<Either<Failure, Success>> onProgressController
   ) async {
     final result = await _isolateExecutor.execute(
-        arg1: ArgumentsSendPort(MailboxMarkAsReadArguments(
+        arg1: MailboxMarkAsReadArguments(
             _threadApi,
             _emailApi,
             accountId,
-            mailboxId)),
-        fun1: (arguments) => _handleMarkAsMailboxReadAction(arguments),
-        onUpdateProgress: (value) {
+            mailboxId),
+        fun1: _handleMarkAsMailboxReadAction,
+        notification: (value) {
           if (value is List<Email>) {
             log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: COUNT ${value.length}');
             log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: TOTAL $totalEmailUnread');
@@ -60,21 +60,10 @@ class MailboxIsolateWorker {
     return result;
   }
 
-  static Future<List<Email>> _handleMarkAsMailboxReadAction(dynamic argumentsAction) async {
-    if (argumentsAction is! ArgumentsSendPort) {
-      log('MailboxIsolateWorker::_handleMarkAsMailboxReadAction(): argumentsAction NOT ArgumentsSendPort');
-      return List.empty();
-    }
-
-    final args = argumentsAction.argument as MailboxMarkAsReadArguments;
-    final sendPort = argumentsAction.sendPort;
-
-    if (sendPort != null) {
-      log('MailboxIsolateWorker::_handleMarkAsMailboxReadAction(): SEND_PORT NOT NULL');
-    } else {
-      log('MailboxIsolateWorker::_handleMarkAsMailboxReadAction(): SEND_PORT NULL');
-    }
-
+  static Future<List<Email>> _handleMarkAsMailboxReadAction(
+      MailboxMarkAsReadArguments args,
+      TypeSendPort sendPort
+  ) async {
     List<Email> emailListCompleted = List.empty(growable: true);
 
     try {
@@ -124,9 +113,7 @@ class MailboxIsolateWorker {
 
           log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): MARK_READ: ${result.length}');
           emailListCompleted.addAll(result);
-          if (sendPort != null) {
-            sendPort.send(ValueUpdate(emailListCompleted));
-          }
+          sendPort.send(emailListCompleted);
         }
       }
     } catch (e) {

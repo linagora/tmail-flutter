@@ -170,10 +170,7 @@ dependencies:
   percent_indicator: 4.2.2
 
   # Isolate
-  worker_manager:
-    git:
-      url: https://github.com/dab246/worker_manager.git
-      ref: improvement
+  worker_manager: 4.4.0
 
 dev_dependencies:
   flutter_test:
