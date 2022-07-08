@@ -49,7 +49,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                       ..setSloganTextAlign(TextAlign.center)
                       ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold))
                       ..setSizeLogo(24)
-                      ..addOnTapCallback(() => controller.backToMailboxDashBoard())
+                      ..addOnTapCallback(() => controller.backToMailboxDashBoard(context))
                       ..setLogo(_imagePaths.icLogoTMail))
                     .build(),
                     Obx(() {
