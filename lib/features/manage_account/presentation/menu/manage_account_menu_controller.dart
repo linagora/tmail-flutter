@@ -9,7 +9,8 @@ class ManageAccountMenuController extends BaseController {
   final dashBoardController = Get.find<ManageAccountDashBoardController>();
 
   final listAccountMenuItem = <AccountMenuItem>[
-    AccountMenuItem.profiles
+    AccountMenuItem.profiles,
+    AccountMenuItem.languageAndRegion,
   ];
 
   @override
