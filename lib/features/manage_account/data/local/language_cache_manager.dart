@@ -1,6 +1,7 @@
 
 import 'dart:ui';
 
+import 'package:core/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguageCacheManager {
@@ -26,5 +27,17 @@ class LanguageCacheManager {
       return Locale(languageCode!, countryCode);
     }
     return null;
+  }
+
+  Future<void> removeLanguage() async {
+    return Future.sync(() async {
+      await Future.wait([
+        _sharedPreferences.remove(keyLanguageCode),
+        _sharedPreferences.remove(keyCountryCode)
+      ]);
+    }).catchError((error) {
+      log('LanguageCacheManager::removeLanguage(): error: $error');
+      return null;
+    });
   }
 }

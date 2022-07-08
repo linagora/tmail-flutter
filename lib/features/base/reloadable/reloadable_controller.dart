@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_i
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
@@ -31,6 +32,7 @@ abstract class ReloadableController extends BaseController {
   final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
   final DeleteCredentialInteractor _deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
   final CachingManager _cachingManager = Get.find<CachingManager>();
+  final _languageCacheManager = Get.find<LanguageCacheManager>();
 
   final LogoutOidcInteractor _logoutOidcInteractor;
   final DeleteAuthorityOidcInteractor _deleteAuthorityOidcInteractor;
@@ -108,6 +110,7 @@ abstract class ReloadableController extends BaseController {
       _deleteCredentialInteractor.execute(),
       _deleteAuthorityOidcInteractor.execute(),
       _cachingManager.clearAll(),
+      _languageCacheManager.removeLanguage(),
     ]);
     final authenticationType = _authorizationInterceptors.authenticationType;
     if (authenticationType == AuthenticationType.oidc) {
@@ -131,6 +134,7 @@ abstract class ReloadableController extends BaseController {
       await Future.wait([
         _deleteCredentialInteractor.execute(),
         _cachingManager.clearAll(),
+        _languageCacheManager.removeLanguage(),
       ]);
       _authorizationInterceptors.clear();
       await HiveCacheConfig().closeHive();
@@ -144,6 +148,7 @@ abstract class ReloadableController extends BaseController {
       _deleteCredentialInteractor.execute(),
       _deleteAuthorityOidcInteractor.execute(),
       _cachingManager.clearAll(),
+      _languageCacheManager.removeLanguage(),
     ]);
     _authorizationInterceptors.clear();
     await HiveCacheConfig().closeHive();
