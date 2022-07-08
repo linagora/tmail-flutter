@@ -18,6 +18,10 @@ void popBack({dynamic result}) {
   Get.back(result: result);
 }
 
+bool canBack(BuildContext context) {
+  return Navigator.of(context).canPop();
+}
+
 BuildContext? get currentContext => Get.context;
 
 BuildContext? get currentOverlayContext => Get.overlayContext;
