@@ -20,6 +20,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
     return PointerInterceptor(child: Card(
         margin: EdgeInsets.zero,
         borderOnForeground: false,
+        elevation: 10,
         color: Colors.transparent,
         child: GestureDetector(
           onTap: () => controller.closeMailboxCreator(context),
@@ -98,7 +99,11 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
           ..onChange((value) => controller.setNewNameMailbox(value))
           ..keyboardType(TextInputType.visiblePassword)
           ..cursorColor(AppColor.colorTextButton)
-          ..textStyle(const TextStyle(color: AppColor.colorNameEmail, fontSize: 16))
+          ..maxLines(1)
+          ..textStyle(TextStyle(
+              color: AppColor.colorNameEmail,
+              fontSize: 16,
+              overflow: CommonTextStyle.defaultTextOverFlow))
           ..addFocusNode(controller.nameInputFocusNode)
           ..textDecoration((CreateMailboxNameInputDecorationBuilder()
                 ..setHintText(AppLocalizations.of(context).hint_input_create_new_mailbox)
@@ -142,7 +147,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                       Expanded(child: Obx(() => Text(
                         controller.selectedMailbox.value?.name?.name ?? AppLocalizations.of(context).default_mailbox,
                         maxLines: 1,
-                        overflow:TextOverflow.ellipsis,
+                        overflow: CommonTextStyle.defaultTextOverFlow,
                         style: TextStyle(
                             fontSize: 15,
                             color: controller.selectedMailbox.value == null

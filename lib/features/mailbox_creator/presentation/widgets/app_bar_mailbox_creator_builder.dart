@@ -86,6 +86,11 @@ class AppBarMailboxCreatorBuilder {
       child: Text(
         title ?? '',
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.bold)));
+        maxLines: 1,
+        overflow: CommonTextStyle.defaultTextOverFlow,
+        style: const TextStyle(
+            fontSize: 20,
+            color: AppColor.colorNameEmail,
+            fontWeight: FontWeight.bold)));
   }
 }
