@@ -126,6 +126,8 @@ class ImagePaths {
   String get icFilePptx => _getImagePath('ic_file_pptx.svg');
   String get icFileEPup => _getImagePath('ic_file_epup.svg');
   String get icCloseAdvancedSearch => _getImagePath('ic_close_advanced_search.svg');
+  String get icLanguage => _getImagePath('ic_language.svg');
+  String get icChecked => _getImagePath('ic_checked.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
