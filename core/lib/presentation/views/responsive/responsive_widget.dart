@@ -29,7 +29,7 @@ class ResponsiveWidget extends StatelessWidget {
     if (BuildUtils.isWeb) {
 
       if (responsiveUtils.isMobile(context)) {
-        return tablet ?? mobile;
+        return mobile;
       }
 
       if (responsiveUtils.isTablet(context)) {
@@ -55,7 +55,7 @@ class ResponsiveWidget extends StatelessWidget {
       }
 
       if (responsiveUtils.isMobile(context)) {
-        return tablet ?? mobile;
+        return mobile;
       }
 
       if (responsiveUtils.isTablet(context)) {

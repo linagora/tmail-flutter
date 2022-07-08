@@ -1556,7 +1556,7 @@ class AppLocalizations {
   String get messageDuplicateTagFilterMail {
     return Intl.message(
       'you already entered that',
-      name: 'selectMailbox',
+      name: 'messageDuplicateTagFilterMail',
     );
   }
 
