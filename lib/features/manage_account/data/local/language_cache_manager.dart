@@ -17,4 +17,14 @@ class LanguageCacheManager {
       _sharedPreferences.setString(keyCountryCode, localeCurrent.countryCode ?? '')
     ]);
   }
+
+  Locale? getStoredLanguage() {
+    final languageCode = _sharedPreferences.getString(keyLanguageCode);
+    final countryCode = _sharedPreferences.getString(keyCountryCode);
+
+    if (languageCode?.isNotEmpty == true) {
+      return Locale(languageCode!, countryCode);
+    }
+    return null;
+  }
 }
