@@ -4,7 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum AccountMenuItem {
-  profiles
+  profiles,
+  languageAndRegion
 }
 
 extension AccountMenuItemExtension on AccountMenuItem {
@@ -13,6 +14,8 @@ extension AccountMenuItemExtension on AccountMenuItem {
     switch(this) {
       case AccountMenuItem.profiles:
         return imagePaths.icProfiles;
+      case AccountMenuItem.languageAndRegion:
+        return imagePaths.icLanguage;
     }
   }
 
@@ -20,6 +23,8 @@ extension AccountMenuItemExtension on AccountMenuItem {
     switch(this) {
       case AccountMenuItem.profiles:
         return AppLocalizations.of(context).profiles;
+      case AccountMenuItem.languageAndRegion:
+        return AppLocalizations.of(context).languageAndRegion;
     }
   }
 }

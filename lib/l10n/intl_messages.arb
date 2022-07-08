@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-06-28T17:58:17.546714",
+  "@@last_modified": "2022-07-08T13:29:01.231528",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1510,6 +1510,48 @@
   },
   "selectMailbox": "Select Mailbox",
   "@selectMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageAndRegion": "Language & Region",
+  "@languageAndRegion": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageAndRegionSubtitle": "Set the language, time zone, time format you use on TeamMail.",
+  "@languageAndRegionSubtitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "language": "Language",
+  "@language": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageVietnamese": "Vietnamese",
+  "@languageVietnamese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageFrench": "French",
+  "@languageFrench": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageRussian": "Russian",
+  "@languageRussian": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
