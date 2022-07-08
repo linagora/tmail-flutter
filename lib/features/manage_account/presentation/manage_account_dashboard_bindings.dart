@@ -19,6 +19,12 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
+import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/manage_account_datasource_impl.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
+import 'package:tmail_ui_user/features/manage_account/data/repository/manage_account_repository_impl.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
@@ -48,6 +54,7 @@ class ManageAccountDashBoardBindings extends BaseBindings {
   void bindingsDataSource() {
     Get.lazyPut<AccountDatasource>(() => Get.find<HiveAccountDatasourceImpl>());
     Get.lazyPut<AuthenticationOIDCDataSource>(() => Get.find<AuthenticationOIDCDataSourceImpl>());
+    Get.lazyPut<ManageAccountDataSource>(() => Get.find<ManageAccountDataSourceImpl>());
   }
 
   @override
@@ -59,6 +66,9 @@ class ManageAccountDashBoardBindings extends BaseBindings {
         Get.find<TokenOidcCacheManager>(),
         Get.find<OidcConfigurationCacheManager>()
     ));
+    Get.lazyPut(() => ManageAccountDataSourceImpl(
+        Get.find<ManageAccountAPI>(),
+        Get.find<LanguageCacheManager>()));
   }
 
   @override
@@ -85,11 +95,13 @@ class ManageAccountDashBoardBindings extends BaseBindings {
   void bindingsRepository() {
     Get.lazyPut<AccountRepository>(() => Get.find<AccountRepositoryImpl>());
     Get.lazyPut<AuthenticationOIDCRepository>(() => Get.find<AuthenticationOIDCRepositoryImpl>());
+    Get.lazyPut<ManageAccountRepository>(() => Get.find<ManageAccountRepositoryImpl>());
   }
 
   @override
   void bindingsRepositoryImpl() {
     Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));
     Get.lazyPut(() => AuthenticationOIDCRepositoryImpl(Get.find<AuthenticationOIDCDataSource>()));
+    Get.lazyPut(() => ManageAccountRepositoryImpl(Get.find<ManageAccountDataSource>()));
   }
 }

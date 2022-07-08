@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
@@ -13,4 +15,6 @@ abstract class ManageAccountRepository {
   Future<bool> deleteIdentity(AccountId accountId, IdentityId identityId);
 
   Future<bool> editIdentity(AccountId accountId, EditIdentityRequest editIdentityRequest);
+
+  Future<void> persistLanguage(Locale localeCurrent);
 }
