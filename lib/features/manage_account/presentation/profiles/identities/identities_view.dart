@@ -1,6 +1,5 @@
 
 import 'package:core/core.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_info_tile_builder.dart';
@@ -23,49 +23,11 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
   @override
   Widget build(BuildContext context) {
     final buttonSelectIdentity = Row(children: [
-      Expanded(child: Obx(() => DropdownButtonHideUnderline(
-        child: DropdownButton2<Identity>(
-          isExpanded: true,
-          hint: Row(
-            children: [
-              Expanded(child: Text(
-                controller.identitySelected.value?.name ?? '',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
-                maxLines: 1,
-                overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
-              )),
-            ],
-          ),
-          items: controller.listAllIdentities.map((item) => DropdownMenuItem<Identity>(
-            value: item,
-            child: Text(
-              item.name ?? '',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
-              maxLines: 1,
-              overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
-            ),
-          )).toList(),
-          value: controller.identitySelected.value,
+      Expanded(child: Obx(() => DropDownButtonWidget<Identity>(
+          items: controller.listAllIdentities,
+          itemSelected: controller.identitySelected.value,
           onChanged: (newIdentity) => controller.selectIdentity(newIdentity),
-          icon: SvgPicture.asset(_imagePaths.icDropDown),
-          buttonPadding: const EdgeInsets.symmetric(horizontal: 12),
-          buttonDecoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColor.colorInputBorderCreateMailbox, width: 0.5),
-              color: AppColor.colorInputBackgroundCreateMailbox),
-          itemHeight: 44,
-          buttonHeight: 44,
-          selectedItemHighlightColor: Colors.black12,
-          itemPadding: const EdgeInsets.symmetric(horizontal: 12),
-          dropdownMaxHeight: 200,
-          dropdownDecoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.white),
-          dropdownElevation: 4,
-          scrollbarRadius: const Radius.circular(40),
-          scrollbarThickness: 6,
-        ),
-      ))),
+          supportSelectionIcon: true))),
       if (!_responsiveUtils.isMobile(context)) const SizedBox(width: 12),
       if (!_responsiveUtils.isMobile(context))
         (ButtonBuilder(_imagePaths.icAddIdentity)
