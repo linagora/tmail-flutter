@@ -114,10 +114,15 @@ class ManageAccountDashBoardController extends ReloadableController {
         arguments: ManageAccountArguments(sessionCurrent));
   }
 
-  void backToMailboxDashBoard() {
-    if (currentContext != null && !_responsiveUtils.isDesktop(currentContext!)) {
+  void backToMailboxDashBoard(BuildContext context) {
+    if (!_responsiveUtils.isDesktop(context)) {
       closeMenuDrawer();
     }
-    popBack();
+    if (canBack(context)) {
+      popBack();
+    } else {
+      log('ManageAccountDashBoardController::backToMailboxDashBoard(): canBack: FALSE');
+      pushAndPopAll(AppRoutes.MAILBOX_DASHBOARD, arguments: sessionCurrent);
+    }
   }
 }

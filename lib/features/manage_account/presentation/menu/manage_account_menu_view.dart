@@ -68,7 +68,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                             ..radiusSplash(10)
                             ..padding(const EdgeInsets.symmetric(vertical: 10))
                             ..textStyle(const TextStyle(fontSize: 15, color: AppColor.colorTextButton, fontWeight: FontWeight.normal))
-                            ..onPressActionClick(() => controller.backToMailboxDashBoard())
+                            ..onPressActionClick(() => controller.backToMailboxDashBoard(context))
                             ..text(AppLocalizations.of(context).back, isVertical: false))
                           .build()),
                         Padding(
