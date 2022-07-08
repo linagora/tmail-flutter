@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_inte
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_bindings.dart';
@@ -31,6 +32,7 @@ class ManageAccountDashBoardBindings extends BaseBindings {
     super.dependencies();
     ManageAccountMenuBindings().dependencies();
     ProfileBindings().dependencies();
+    LanguageAndRegionBindings().dependencies();
   }
 
   @override
