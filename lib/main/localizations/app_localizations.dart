@@ -1559,4 +1559,46 @@ class AppLocalizations {
       name: 'selectMailbox',
     );
   }
+
+  String get languageAndRegion {
+    return Intl.message(
+        'Language & Region',
+        name: 'languageAndRegion');
+  }
+
+  String get languageAndRegionSubtitle {
+    return Intl.message(
+        'Set the language, time zone, time format you use on TeamMail.',
+        name: 'languageAndRegionSubtitle');
+  }
+
+  String get language {
+    return Intl.message(
+        'Language',
+        name: 'language');
+  }
+
+  String get languageEnglish {
+    return Intl.message(
+        'English',
+        name: 'languageEnglish');
+  }
+
+  String get languageVietnamese {
+    return Intl.message(
+        'Vietnamese',
+        name: 'languageVietnamese');
+  }
+
+  String get languageFrench {
+    return Intl.message(
+        'French',
+        name: 'languageFrench');
+  }
+
+  String get languageRussian {
+    return Intl.message(
+        'Russian',
+        name: 'languageRussian');
+  }
 }
