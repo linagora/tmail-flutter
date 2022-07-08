@@ -1,7 +1,10 @@
+import 'dart:ui';
+
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
@@ -10,8 +13,9 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/identities_re
 class ManageAccountDataSourceImpl extends ManageAccountDataSource {
 
   final ManageAccountAPI manageAccountAPI;
+  final LanguageCacheManager _languageCacheManager;
 
-  ManageAccountDataSourceImpl(this.manageAccountAPI);
+  ManageAccountDataSourceImpl(this.manageAccountAPI, this._languageCacheManager);
 
   @override
   Future<IdentitiesResponse> getAllIdentities(AccountId accountId, {Properties? properties}) {
@@ -44,6 +48,15 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   Future<bool> editIdentity(AccountId accountId, EditIdentityRequest editIdentityRequest) {
     return Future.sync(() async {
       return await manageAccountAPI.editIdentity(accountId, editIdentityRequest);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<void> persistLanguage(Locale localeCurrent) {
+    return Future.sync(() async {
+      return await _languageCacheManager.persistLanguage(localeCurrent);
     }).catchError((error) {
       throw error;
     });

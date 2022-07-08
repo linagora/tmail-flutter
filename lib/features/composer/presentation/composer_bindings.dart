@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/manage_account_datasource_impl.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/repository/manage_account_repository_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
@@ -57,7 +58,6 @@ class ComposerBindings extends BaseBindings {
 
   void _bindingsUtils() {
     Get.lazyPut(() => const Uuid());
-    Get.lazyPut(() => ManageAccountAPI(Get.find<jmap_http_client.HttpClient>()));
   }
 
   @override
@@ -75,7 +75,9 @@ class ComposerBindings extends BaseBindings {
         Get.find<HtmlAnalyzer>(),
         Get.find<DioClient>()
     ));
-    Get.lazyPut(() => ManageAccountDataSourceImpl(Get.find<ManageAccountAPI>()));
+    Get.lazyPut(() => ManageAccountDataSourceImpl(
+        Get.find<ManageAccountAPI>(),
+        Get.find<LanguageCacheManager>()));
   }
 
   @override
