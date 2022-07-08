@@ -63,7 +63,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                             ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorBgMailboxSelected))
                             ..paddingIcon(const EdgeInsets.only(right: 8))
                             ..iconColor(AppColor.colorTextButton)
-                            ..maxWidth(85)
+                            ..maxWidth(100)
                             ..size(16)
                             ..radiusSplash(10)
                             ..padding(const EdgeInsets.symmetric(vertical: 10))
