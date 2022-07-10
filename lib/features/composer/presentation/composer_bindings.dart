@@ -29,6 +29,8 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_cache_on_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_email_cache_on_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/manage_account_datasource_impl.dart';
@@ -141,6 +143,8 @@ class ComposerBindings extends BaseBindings {
         Get.find<UpdateEmailDraftsInteractor>(),
         Get.find<GetAllIdentitiesInteractor>(),
         Get.find<UploadController>(),
+        Get.find<RemoveEmailCacheOnWebInteractor>(),
+        Get.find<SaveEmailCacheOnWebInteractor>(),
     ));
   }
 
