@@ -39,6 +39,8 @@ import 'package:tmail_ui_user/features/composer/presentation/model/screen_displa
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_cache_on_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_email_cache_on_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -49,6 +51,7 @@ import 'package:tmail_ui_user/features/upload/presentation/controller/upload_con
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
+import 'package:universal_html/html.dart' as html;
 
 class ComposerController extends BaseController {
 
@@ -82,6 +85,8 @@ class ComposerController extends BaseController {
   final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final UploadController uploadController;
+  final RemoveEmailCacheOnWebInteractor _removeEmailCacheOnWebInteractor;
+  final SaveEmailCacheOnWebInteractor _saveEmailCacheOnWebInteractor;
 
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
@@ -135,6 +140,8 @@ class ComposerController extends BaseController {
     this._updateEmailDraftsInteractor,
     this._getAllIdentitiesInteractor,
     this.uploadController,
+    this._removeEmailCacheOnWebInteractor,
+    this._saveEmailCacheOnWebInteractor,
   );
 
   @override
@@ -144,6 +151,8 @@ class ComposerController extends BaseController {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
         await FkUserAgent.init();
       });
+    } else {
+      _listenBrowserTabRefresh();
     }
   }
 
@@ -211,6 +220,20 @@ class ComposerController extends BaseController {
     popBack();
   }
 
+  void _listenBrowserTabRefresh() {
+    html.window.onBeforeUnload.listen((event) async {
+      final userProfile = mailboxDashBoardController.userProfile.value;
+      _removeEmailCacheOnWebInteractor.execute();
+      if (userProfile != null) {
+        final draftEmail = await _generateEmail(
+          mailboxDashBoardController.mapDefaultMailboxId,
+          userProfile,
+        );
+        _saveEmailCacheOnWebInteractor.execute(draftEmail);
+      }
+    });
+  }
+  
   void _initEmail() {
     final arguments = kIsWeb ? mailboxDashBoardController.routerArguments : Get.arguments;
     if (arguments is ComposerArguments) {
