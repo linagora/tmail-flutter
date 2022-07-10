@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
@@ -23,7 +24,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/composer/composer.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -33,9 +33,6 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_st
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/get_composer_as_draft_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/remove_composer_as_draft_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_as_draft_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
@@ -88,9 +85,6 @@ class ComposerController extends BaseController {
   final GetEmailContentInteractor _getEmailContentInteractor;
   final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
-  final SaveComposerAsDraftsInteractor _saveComposerAsDraftsInteractor;
-  final GetComposerAsDraftsInteractor _getComposerAsDraftsInteractor;
-  final RemoveComposerAsDraftsInteractor _removeComposerAsDraftsInteractor;
 
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
@@ -145,9 +139,6 @@ class ComposerController extends BaseController {
     this._getEmailContentInteractor,
     this._updateEmailDraftsInteractor,
     this._getAllIdentitiesInteractor,
-    this._saveComposerAsDraftsInteractor,
-    this._getComposerAsDraftsInteractor,
-    this._removeComposerAsDraftsInteractor,
   );
 
   @override
@@ -169,6 +160,11 @@ class ComposerController extends BaseController {
     if (!BuildUtils.isWeb) {
       Future.delayed(const Duration(milliseconds: 500), () =>
           _checkContactPermission());
+    } else {
+      html.window.localStorage.forEach((key, value) {
+        log('ComposerCacheClient: local value');
+        log(value);
+      });
     }
     super.onReady();
   }
@@ -235,33 +231,15 @@ class ComposerController extends BaseController {
 
   _listenBrowserTabRefresh() {
     html.window.onBeforeUnload.listen((event) async {
-      print(222222);
-      print(event);
       final userProfile = mailboxDashBoardController.userProfile.value;
+      html.window.localStorage.removeWhere((key, value) => key == EmailActionType.compose.name);
       if (userProfile != null) {
-        final currentEmail = await _generateEmail(
+        final draftEmail = await _generateEmail(
           mailboxDashBoardController.mapDefaultMailboxId,
           userProfile,
         );
-        final PresentationEmail presentationEmail = PresentationEmail(
-          currentEmail.id,
-          hasAttachment: currentEmail.hasAttachment,
-          subject: currentEmail.subject,
-          from: currentEmail.from,
-          to: currentEmail.to,
-          cc: currentEmail.cc,
-          bcc: currentEmail.bcc,
-        );
-        _saveComposerAsDraftsInteractor.execute(Composer(
-          emailActionType: EmailActionType.compose,
-          presentationEmail: presentationEmail,
-          emailContents: currentEmail.emailContentList,
-          attachments: attachments,
-          emailAddress: EmailAddress(
-            null,
-            userProfile.email,
-          ),
-        ));
+        Map<String,String> entries = { EmailActionType.compose.name: json.encode(draftEmail.toJson()) };
+        html.window.localStorage.addAll(entries);
       }
     });
   }
@@ -852,11 +830,15 @@ class ComposerController extends BaseController {
   }
 
   void _getEmailContentAction(ComposerArguments arguments) async {
-    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
-    final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
-    final emailId = arguments.presentationEmail?.id;
-    if (emailId != null && baseDownloadUrl != null && accountId != null) {
-      consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
+    if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty){
+      emailContents.value = arguments.emailContents;
+    } else {
+      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
+      final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
+      final emailId = arguments.presentationEmail?.id;
+      if (emailId != null && baseDownloadUrl != null && accountId != null) {
+        consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
+      }
     }
   }
 
