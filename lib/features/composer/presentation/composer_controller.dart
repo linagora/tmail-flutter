@@ -12,7 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
+import 'package:html_editor_enhanced/html_editor.dart' as editor_web;
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
@@ -62,7 +62,6 @@ class ComposerController extends BaseController {
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
   final isInitialRecipient = false.obs;
-  final emailContents = Rxn<List<EmailContent>>();
   final listEmailAddressType = <PrefixEmailAddress>[].obs;
   final subjectEmail = Rxn<String>();
   final screenDisplayMode = ScreenDisplayMode.normal.obs;
@@ -71,6 +70,7 @@ class ComposerController extends BaseController {
   final bccAddressExpandMode = ExpandMode.EXPAND.obs;
   final identitySelected = Rxn<Identity>();
   final listIdentities = <Identity>[].obs;
+  final emailContentsViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   final SendEmailInteractor _sendEmailInteractor;
   final GetAutoCompleteInteractor _getAutoCompleteInteractor;
@@ -88,8 +88,7 @@ class ComposerController extends BaseController {
   List<EmailAddress> listBccEmailAddress = <EmailAddress>[];
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
   HtmlEditorApi? htmlEditorApi;
-  final html_editor_browser.HtmlEditorController htmlControllerBrowser =
-    html_editor_browser.HtmlEditorController(processNewLineAsBr: true);
+  final htmlControllerBrowser = editor_web.HtmlEditorController(processNewLineAsBr: true);
 
   final subjectEmailInputController = TextEditingController();
   final toEmailAddressController = TextEditingController();
@@ -98,6 +97,7 @@ class ComposerController extends BaseController {
 
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
+  List<EmailContent>? _emailContents;
 
   void setTextEditorWeb(String? text) => _textEditorWeb = text;
 
@@ -105,21 +105,34 @@ class ComposerController extends BaseController {
 
   void setSubjectEmail(String subject) => subjectEmail.value = subject;
 
-  Future<String> _getEmailBodyText({bool changedEmail = false}) async {
-    if (kIsWeb) {
-      return await htmlControllerBrowser.getText();
-    } else {
-      if (changedEmail) {
-        return await htmlEditorApi?.getText() ?? '';
+  Future<String> _getEmailBodyText(BuildContext context, {
+    bool changedEmail = false
+  }) async {
+    if (BuildUtils.isWeb) {
+      var contentHtml = '';
+      if (_responsiveUtils.isWebDesktop(context) &&
+          screenDisplayMode.value == ScreenDisplayMode.minimize) {
+        contentHtml = textEditorWeb ?? '';
       } else {
-        final content = await htmlEditorApi?.getText() ?? '';
-        if (_isMobileApp && identitySelected.value?.textSignature?.value.isNotEmpty == true) {
-          final newContent = '$content${identitySelected.value?.textSignature?.value.toSignatureBlock()}';
-          log('ComposerController::_generateEmail()_MOBILE: $newContent');
-          return newContent;
-        } else {
-          return content;
-        }
+        contentHtml = await htmlControllerBrowser.getText();
+      }
+      log('ComposerController::_getEmailBodyText():WEB: contentHtml: $contentHtml');
+      final newContentHtml = contentHtml.removeEditorStartTag();
+      log('ComposerController::_getEmailBodyText():WEB: newContentHtml: $newContentHtml');
+      return newContentHtml;
+    } else {
+      final contentHtml = await htmlEditorApi?.getText() ?? '';
+      log('ComposerController::_getEmailBodyText():MOBILE: $contentHtml');
+      final newContentHtml = contentHtml.removeEditorStartTag();
+      if (changedEmail) {
+        return newContentHtml;
+      } else if (_isMobileApp && identitySelected.value?.textSignature?.value.isNotEmpty == true) {
+        final contentHtmlWithSignature =
+            '$newContentHtml${identitySelected.value?.textSignature?.value.toSignatureBlock()}';
+        log('ComposerController::_getEmailBodyText():MOBILE:SIGNATURE: $contentHtmlWithSignature');
+        return contentHtmlWithSignature;
+      } else {
+        return newContentHtml;
       }
     }
   }
@@ -176,11 +189,23 @@ class ComposerController extends BaseController {
   }
 
   @override
+  void onData(Either<Failure, Success> newState) {
+    super.onData(newState);
+    newState.map((success) async {
+      if (success is GetEmailContentLoading) {
+        emailContentsViewState.value = Right(success);
+      }
+    });
+  }
+
+  @override
   void onDone() {
     viewState.value.fold(
       (failure) {
         if (failure is LocalFilePickerFailure || failure is LocalFilePickerCancel) {
           _pickFileFailure(failure);
+        } else if (failure is GetEmailContentFailure) {
+          emailContentsViewState.value = Left(failure);
         }
       },
       (success) {
@@ -218,7 +243,7 @@ class ComposerController extends BaseController {
       if (arguments.emailActionType == EmailActionType.edit) {
         _getEmailContentAction(arguments);
       }
-      _initToEmailAddress(arguments);
+      _initEmailAddress(arguments);
       _initSubjectEmail(arguments);
       _initAttachments(arguments);
     }
@@ -338,7 +363,7 @@ class ComposerController extends BaseController {
     return null;
   }
 
-  void _initToEmailAddress(ComposerArguments arguments) {
+  void _initEmailAddress(ComposerArguments arguments) {
     final userProfile =  mailboxDashBoardController.userProfile.value;
     if (arguments.presentationEmail != null && userProfile != null) {
       final userEmailAddress = EmailAddress(null, userProfile.email);
@@ -419,8 +444,12 @@ class ComposerController extends BaseController {
     return emailQuotedHtml;
   }
 
-  Future<Email> _generateEmail(Map<Role, MailboxId> mapDefaultMailboxId,
-      UserProfile userProfile, {bool asDrafts = false}) async {
+  Future<Email> _generateEmail(
+      BuildContext context,
+      Map<Role, MailboxId> mapDefaultMailboxId,
+      UserProfile userProfile,
+      {bool asDrafts = false}
+  ) async {
     final generateEmailId = EmailId(Id(_uuid.v1()));
     final outboxMailboxId = mapDefaultMailboxId[PresentationMailbox.roleOutbox];
     final draftMailboxId = mapDefaultMailboxId[PresentationMailbox.roleDrafts];
@@ -437,7 +466,7 @@ class ComposerController extends BaseController {
     final generatePartId = PartId(_uuid.v1());
     final generateBlobId = Id(_uuid.v1());
 
-    var emailBodyText = await _getEmailBodyText();
+    var emailBodyText = await _getEmailBodyText(context);
     log('ComposerController::_generateEmail(): $emailBodyText');
     final userAgent = await userAgentPlatform;
     log('ComposerController::_generateEmail(): userAgent: $userAgent');
@@ -561,7 +590,7 @@ class ComposerController extends BaseController {
     if (arguments != null && session != null && mapDefaultMailboxId.isNotEmpty
         && userProfile != null) {
 
-      final email = await _generateEmail(mapDefaultMailboxId, userProfile);
+      final email = await _generateEmail(context, mapDefaultMailboxId, userProfile);
       final accountId = session.accounts.keys.first;
       final sentMailboxId = mapDefaultMailboxId[PresentationMailbox.roleSent];
       final submissionCreateId = Id(const Uuid().v1());
@@ -666,14 +695,17 @@ class ComposerController extends BaseController {
     uploadController.deleteFileUploaded(uploadId);
   }
 
-  Future<bool> _isEmailChanged(BuildContext context, ComposerArguments arguments) async {
-    final currentTextInComposer = await _getEmailBodyText(changedEmail: true);
-    final newEmailBody = currentTextInComposer.removeEditorDefaultSpace();
+  Future<bool> _isEmailChanged(
+      BuildContext context,
+      ComposerArguments arguments,
+  ) async {
+    final newEmailBody = await _getEmailBodyText(context, changedEmail: true);
     log('ComposerController::_isEmailChanged(): newEmailBody: $newEmailBody');
-    var oldEmailBody = '';
-    final contentEmail = getContentEmail(context);
-    if (arguments.emailActionType != EmailActionType.compose && contentEmail != null && contentEmail.isNotEmpty) {
-      oldEmailBody = kIsWeb ? contentEmail : '\n$contentEmail\n';
+    var oldEmailBody = getContentEmail(context) ?? '';
+    log('ComposerController::_isEmailChanged(): getContentEmail: $oldEmailBody');
+    if (arguments.emailActionType != EmailActionType.compose &&
+        oldEmailBody.isNotEmpty) {
+      oldEmailBody = BuildUtils.isWeb ? oldEmailBody : '\n$oldEmailBody\n';
     }
     if (BuildUtils.isWeb) {
       if (identitySelected.value?.htmlSignature?.value.isNotEmpty == true) {
@@ -733,7 +765,11 @@ class ComposerController extends BaseController {
       final isChanged = await _isEmailChanged(context, arguments);
       log('ComposerController::saveEmailAsDrafts(): saveEmailAsDrafts isChanged: $isChanged');
       if (isChanged) {
-        final newEmail = await _generateEmail(mapDefaultMailboxId, userProfile, asDrafts: true);
+        final newEmail = await _generateEmail(
+            context,
+            mapDefaultMailboxId,
+            userProfile,
+            asDrafts: true);
         final accountId = session.accounts.keys.first;
         final oldEmail = arguments.presentationEmail;
 
@@ -764,21 +800,15 @@ class ComposerController extends BaseController {
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
-    emailContents.value = success.emailContents;
     if (success.attachments.isNotEmpty) {
       initialAttachments = success.attachments;
       uploadController.initializeUploadAttachments(success.attachments);
     }
+    emailContentsViewState.value = Right(success);
+    _emailContents = success.emailContents;
   }
 
-  String? getEmailContentDraftsAsHtml() {
-    final listContents = emailContents.value;
-    if (listContents != null) {
-      return listContents.asHtmlString;
-    } else {
-      return null;
-    }
-  }
+  String? getEmailContentDraftsAsHtml() => _emailContents?.asHtmlString;
 
   String getEmailAddressSender() {
     final arguments = composerArguments.value;

@@ -1608,4 +1608,10 @@ class AppLocalizations {
         name: 'messageDialogSendEmailUploadingAttachment'
     );
   }
+
+  String get saveAndClose {
+    return Intl.message(
+        'Save & close',
+        name: 'saveAndClose');
+  }
 }

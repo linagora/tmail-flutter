@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-07-05T19:24:56.876056",
+  "@@last_modified": "2022-07-11T12:17:57.489417",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1564,6 +1564,12 @@
   },
   "messageDialogSendEmailUploadingAttachment": "Your message could not be sent because it uploading attachment",
   "@messageDialogSendEmailUploadingAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAndClose": "Save & close",
+  "@saveAndClose": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
