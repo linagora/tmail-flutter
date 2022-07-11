@@ -110,9 +110,14 @@ class UploadController extends GetxController {
   }
 
   void initializeUploadAttachments(List<Attachment> attachments) {
-    listUploadAttachments.value = attachments
-        .map((attachment) => UploadFileState(UploadTaskId(attachment.blobId!.value)))
+    final listUploadFilesState = attachments
+        .map((attachment) => UploadFileState(
+            UploadTaskId(attachment.blobId!.value),
+            uploadStatus: UploadFileStatus.succeed,
+            attachment: attachment))
         .toList();
+    _uploadingStateFiles.addAll(listUploadFilesState);
+    _refreshListUploadAttachmentState();
   }
 
   void deleteFileUploaded(UploadTaskId uploadId) {

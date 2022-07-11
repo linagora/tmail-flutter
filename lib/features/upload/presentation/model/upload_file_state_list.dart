@@ -18,6 +18,11 @@ class UploadFileStateList {
     return this;
   }
 
+  UploadFileStateList addAll(List<UploadFileState> elements) {
+    _uploadingStateFiles.addAll(elements);
+    return this;
+  }
+
   UploadFileStateList updateElementBy(
     MatchedState matchedState,
     UpdateFileUploadingState updateFileUploadingState,
