@@ -12,6 +12,7 @@ class UpdateEmailDraftsInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, Email newEmail, EmailId oldEmailId) async* {
     try {
+      yield Right<Failure, Success>(UpdatingEmailDrafts());
       final newEmailDrafts = await emailRepository.updateEmailDrafts(accountId, newEmail, oldEmailId);
       if (newEmailDrafts != null) {
         yield Right<Failure, Success>(UpdateEmailDraftsSuccess(newEmailDrafts));

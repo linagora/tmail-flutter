@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/network_connection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
@@ -226,7 +227,7 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
         return controller.viewState.value.fold(
           (failure) => const SizedBox.shrink(),
           (success) {
-            if (success is LoadingState) {
+            if (success is GetEmailContentLoading) {
               return const Align(alignment: Alignment.topCenter, child: Padding(
                   padding: EdgeInsets.all(16),
                   child: SizedBox(
