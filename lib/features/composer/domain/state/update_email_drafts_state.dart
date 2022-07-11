@@ -1,6 +1,14 @@
 import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 
+class UpdatingEmailDrafts extends UIState {
+
+  UpdatingEmailDrafts();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class UpdateEmailDraftsSuccess extends UIState {
 
   final Email emailAsDrafts;

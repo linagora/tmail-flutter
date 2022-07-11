@@ -1,6 +1,14 @@
 import 'package:core/core.dart';
 import 'package:model/model.dart';
 
+class GetEmailContentLoading extends UIState {
+
+  GetEmailContentLoading();
+
+  @override
+  List<Object> get props => [];
+}
+
 class GetEmailContentSuccess extends UIState {
   final List<EmailContent> emailContents;
   final List<EmailContent> emailContentsDisplayed;
@@ -13,7 +21,7 @@ class GetEmailContentSuccess extends UIState {
 }
 
 class GetEmailContentFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   GetEmailContentFailure(this.exception);
 
