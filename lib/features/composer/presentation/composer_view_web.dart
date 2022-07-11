@@ -6,10 +6,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
+import 'package:html_editor_enhanced/html_editor.dart' as editor_web;
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
@@ -17,9 +18,10 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class ComposerView extends GetWidget<ComposerController> {
+class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin {
 
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
@@ -53,7 +55,12 @@ class ComposerView extends GetWidget<ComposerController> {
                     const Divider(color: AppColor.colorDividerComposer, height: 1),
                     Padding(padding: const EdgeInsets.symmetric(horizontal: 16),  child: _buildListButton(context)),
                     const Divider(color: AppColor.colorDividerComposer, height: 1),
-                    Expanded(child: _buildEditorAndAttachments(context)),
+                    Expanded(child: Column(
+                        children: [
+                          _buildAttachmentsWidget(context),
+                          _buildEditorForm(context)
+                        ]
+                    )),
                   ]
               )))
           )
@@ -92,7 +99,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 padding: const EdgeInsets.only(left: 10),
                                 child: buildIconWeb(
                                     icon: SvgPicture.asset(imagePaths.icCloseMailbox, fit: BoxFit.fill),
-                                    tooltip: AppLocalizations.of(context).close,
+                                    tooltip: AppLocalizations.of(context).saveAndClose,
                                     onTap: () => controller.saveEmailAsDrafts(context)
                                 )),
                             buildIconWeb(
@@ -147,23 +154,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   )
               )
           ))
-      ),
-      tabletLarge: Scaffold(
-          backgroundColor: Colors.black38,
-          body: Align(alignment: Alignment.center, child: Card(
-              color: Colors.transparent,
-              shadowColor: Colors.transparent,
-              child: Container(
-                  decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(24))),
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                  child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(24)),
-                      child: LayoutBuilder(builder: (context, constraints) =>
-                          PointerInterceptor(child: _buildBodyForDesktop(context, constraints)))
-                  )
-              )
-          ))
-      ),
+      )
     );
   }
 
@@ -172,7 +163,7 @@ class ComposerView extends GetWidget<ComposerController> {
       children: [
         buildIconWeb(
             icon: SvgPicture.asset(imagePaths.icCloseMailbox, fit: BoxFit.fill),
-            tooltip: AppLocalizations.of(context).close,
+            tooltip: AppLocalizations.of(context).saveAndClose,
             onTap: () => controller.saveEmailAsDrafts(context)),
         if (responsiveUtils.isDesktop(context))
           Obx(() => buildIconWeb(
@@ -204,7 +195,7 @@ class ComposerView extends GetWidget<ComposerController> {
           children: [
             buildIconWeb(
                 icon: SvgPicture.asset(imagePaths.icClose, width: 30, height: 30, fit: BoxFit.fill),
-                tooltip: AppLocalizations.of(context).close,
+                tooltip: AppLocalizations.of(context).saveAndClose,
                 iconPadding: EdgeInsets.zero,
                 onTap: () => controller.saveEmailAsDrafts(context)),
             Expanded(child: _buildTitleComposer(context)),
@@ -287,8 +278,15 @@ class ComposerView extends GetWidget<ComposerController> {
             ])),
         const Divider(color: AppColor.colorDividerComposer, height: 1),
         Expanded(child: Padding(
-            padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 60, right: responsiveUtils.isMobile(context) ? 16 : 25),
-            child: _buildEditorAndAttachments(context))),
+            padding: EdgeInsets.only(
+                left: responsiveUtils.isMobile(context) ? 16 : 60,
+                right: responsiveUtils.isMobile(context) ? 16 : 25),
+            child: Column(
+                children: [
+                  _buildAttachmentsWidget(context),
+                  _buildEditorForm(context)
+                ]
+            ))),
         const Divider(color: AppColor.colorDividerComposer, height: 1),
         Obx(() => _buildBottomBar(context, controller.isEnableEmailSendButton.value)),
     ]);
@@ -489,105 +487,137 @@ class ComposerView extends GetWidget<ComposerController> {
     );
   }
 
-  Widget _buildEditorAndAttachments(BuildContext context) {
+  Widget _buildEditorForm(BuildContext context) {
     return Obx(() {
-      final uploadAttachments = controller.uploadController.listUploadAttachments;
+      final argsComposer = controller.composerArguments.value;
 
-      return Column(
-          children: [
-            if (uploadAttachments.isNotEmpty)
-              ...[
-                Padding(
-                    padding: EdgeInsets.only(
-                        top: 4,
-                        bottom: 4,
-                        left: responsiveUtils.isMobile(context) ? 16 : 20,
-                        right: responsiveUtils.isMobile(context) ? 16: 0),
-                    child: _buildAttachmentsTitle(context,
-                        uploadAttachments,
-                        controller.expandModeAttachments.value)),
-                _buildAttachmentsLoadingView(),
-                Padding(
-                    padding: EdgeInsets.only(
-                        bottom: 8,
-                        left: responsiveUtils.isMobile(context) ? 16 : 10,
-                        right: responsiveUtils.isMobile(context) ? 16 : 10),
-                    child: _buildAttachmentsList(context,
-                        uploadAttachments,
-                        controller.expandModeAttachments.value))
-              ],
-          if (controller.composerArguments.value != null)
-            _buildComposeEditor(context)
-        ]
-      );
+      if (argsComposer == null) {
+        return const SizedBox.shrink();
+      }
+
+      final currentTextEditor = controller.textEditorWeb;
+
+      switch(argsComposer.emailActionType) {
+        case EmailActionType.compose:
+        case EmailActionType.composeFromEmailAddress:
+          return _buildHtmlEditor(
+              context,
+              currentTextEditor ?? HtmlExtension.editorStartTags);
+        case EmailActionType.edit:
+          return controller.emailContentsViewState.value.fold(
+            (failure) => _buildHtmlEditor(
+                context,
+                currentTextEditor ?? HtmlExtension.editorStartTags),
+            (success) {
+              if (success is GetEmailContentLoading) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: loadingWidget,
+                );
+              } else if (success is GetEmailContentSuccess) {
+                var contentHtml = success.emailContents.asHtmlString;
+                if (contentHtml.isEmpty == true) {
+                  contentHtml = HtmlExtension.editorStartTags;
+                }
+                return _buildHtmlEditor(context, currentTextEditor ?? contentHtml);
+              } else {
+                return _buildHtmlEditor(
+                  context,
+                  currentTextEditor ?? HtmlExtension.editorStartTags);
+              }
+            });
+        case EmailActionType.reply:
+        case EmailActionType.replyAll:
+        case EmailActionType.forward:
+          var contentHtml = controller.getEmailContentQuotedAsHtml(
+              context,
+              argsComposer);
+          if (contentHtml.isEmpty == true) {
+            contentHtml = HtmlExtension.editorStartTags;
+          }
+          return _buildHtmlEditor(context, currentTextEditor ?? contentHtml);
+        default:
+          return _buildHtmlEditor(
+              context,
+              currentTextEditor ?? HtmlExtension.editorStartTags);
+      }
     });
   }
 
-  Widget _buildComposeEditor(BuildContext context) {
-    if (controller.composerArguments.value?.emailActionType == EmailActionType.compose) {
-      final initContent = controller.textEditorWeb ?? ''.addEditorDefaultSpace();
-      return Expanded(child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: responsiveUtils.isMobile(context) ? 8 : 10),
-          child: _buildEditor(context, initContent)));
-    } else if (controller.composerArguments.value?.emailActionType == EmailActionType.edit) {
-      final initContent = controller.textEditorWeb ?? controller.getEmailContentDraftsAsHtml();
-      if (initContent != null) {
-        return Expanded(child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: responsiveUtils.isMobile(context) ? 8 : 10),
-            child: _buildEditor(context, initContent)));
-      } else {
-        return const Padding(
-            padding: EdgeInsets.all(16),
-            child: SizedBox(
-                width: 30,
-                height: 30,
-                child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
-      }
-    } else {
-      final initContent = controller.textEditorWeb ?? controller.getEmailContentQuotedAsHtml(context, controller.composerArguments.value!);
-      return Expanded(child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: responsiveUtils.isMobile(context) ? 8 : 10),
-          child: _buildEditor(context, initContent)));
-    }
+  Widget _buildHtmlEditor(BuildContext context, String initContent) {
+    log('ComposerView::_buildHtmlEditor(): initContent: $initContent');
+
+    return Expanded(
+        child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: responsiveUtils.isMobile(context) ? 8 : 10),
+            child: editor_web.HtmlEditor(
+              key: const Key('composer_editor_web'),
+              controller: controller.htmlControllerBrowser,
+              htmlEditorOptions: const editor_web.HtmlEditorOptions(
+                hint: '',
+                darkMode: false,
+              ),
+              blockQuotedContent: initContent,
+              htmlToolbarOptions: const editor_web.HtmlToolbarOptions(
+                  toolbarPosition: editor_web.ToolbarPosition.custom),
+              otherOptions: const editor_web.OtherOptions(height: 550),
+              callbacks: editor_web.Callbacks(
+                  onBeforeCommand: (String? currentHtml) {
+                log('ComposerView::_buildComposerEditor(): onBeforeCommand : $currentHtml');
+                controller.setTextEditorWeb(currentHtml);
+              }, onChangeContent: (String? changed) {
+                log('ComposerView::_buildComposerEditor(): onChangeContent : $changed');
+                controller.setTextEditorWeb(changed);
+              }, onInit: () {
+                log('ComposerView::_buildComposerEditor(): onInit');
+                controller.setTextEditorWeb(initContent);
+                controller.setFullScreenEditor();
+              }, onFocus: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  controller.htmlControllerBrowser.setFocus();
+                });
+              }, onBlur: () {
+                controller.onEditorFocusChange(false);
+              }, onMouseDown: () {
+                controller.onEditorFocusChange(true);
+              }),
+            )
+        )
+    );
   }
 
-  Widget _buildEditor(BuildContext context, String initContent) {
-    log('ComposerView::_buildEditor(): initContent: $initContent');
-
-    return html_editor_browser.HtmlEditor(
-      key: const Key('composer_editor_web'),
-      controller: controller.htmlControllerBrowser,
-      htmlEditorOptions: const html_editor_browser.HtmlEditorOptions(
-        hint: '',
-        darkMode: false,
-      ),
-      blockQuotedContent: initContent,
-      htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
-        toolbarPosition: html_editor_browser.ToolbarPosition.custom
-      ),
-      otherOptions: const html_editor_browser.OtherOptions(height: 550),
-      callbacks: html_editor_browser.Callbacks(
-          onBeforeCommand: (String? currentHtml) {
-            log('ComposerView::_buildComposerEditor(): onBeforeCommand : $currentHtml');
-            controller.setTextEditorWeb(currentHtml);
-          }, onChangeContent: (String? changed) {
-            log('ComposerView::_buildComposerEditor(): onChangeContent : $changed');
-            controller.setTextEditorWeb(changed);
-          }, onInit: () {
-            log('ComposerView::_buildComposerEditor(): onInit');
-            controller.setFullScreenEditor();
-          }, onFocus: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-            Future.delayed(const Duration(milliseconds: 500), () {
-              controller.htmlControllerBrowser.setFocus();
-            });
-          }, onBlur: () {
-            controller.onEditorFocusChange(false);
-          }, onMouseDown: () {
-            controller.onEditorFocusChange(true);
-          }
-      ),
-    );
+  Widget _buildAttachmentsWidget(BuildContext context) {
+    return Obx(() {
+      final attachments = controller.uploadController.listUploadAttachments;
+      if (attachments.isNotEmpty) {
+        return Column(children: [
+          Padding(
+              padding: EdgeInsets.only(
+                  top: 4,
+                  bottom: 4,
+                  left: responsiveUtils.isMobile(context) ? 16 : 20,
+                  right: responsiveUtils.isMobile(context) ? 16: 0),
+              child: _buildAttachmentsTitle(
+                  context,
+                  attachments,
+                  controller.expandModeAttachments.value)),
+          _buildAttachmentsLoadingView(),
+          Padding(
+              padding: EdgeInsets.only(
+                  bottom: 8,
+                  left: responsiveUtils.isMobile(context) ? 16 : 10,
+                  right: responsiveUtils.isMobile(context) ? 16 : 10),
+              child: _buildAttachmentsList(
+                  context,
+                  attachments,
+                  controller.expandModeAttachments.value))
+        ]);
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 
   Widget _buildAttachmentsLoadingView({EdgeInsets? padding, double? size}) {

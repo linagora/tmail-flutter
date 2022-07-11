@@ -10,15 +10,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class ComposerView extends GetWidget<ComposerController> {
+class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin {
 
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
@@ -490,23 +492,57 @@ class ComposerView extends GetWidget<ComposerController> {
 
   Widget _buildComposerEditor(BuildContext context) {
     return Obx(() {
-      if (controller.composerArguments.value?.emailActionType == EmailActionType.compose) {
-        return HtmlEditor(
-          key: const Key('composer_editor'),
-          minHeight: 550,
-          initialContent: ''.addEditorDefaultSpace(),
-          onCreated: (editorApi) => controller.htmlEditorApi = editorApi);
-      } else {
-        final message = controller.getContentEmail(context);
-        return message != null && message.isNotEmpty
-            ? HtmlEditor(
-                key: const Key('composer_editor'),
-                minHeight: 550,
-                onCreated: (editorApi) => controller.htmlEditorApi = editorApi,
-                initialContent: message)
-            : const SizedBox.shrink();
+      final argsComposer = controller.composerArguments.value;
+
+      if (argsComposer == null) {
+        return const SizedBox.shrink();
+      }
+
+      switch(argsComposer.emailActionType) {
+        case EmailActionType.compose:
+        case EmailActionType.composeFromEmailAddress:
+          return _buildHtmlEditor(HtmlExtension.editorStartTags);
+        case EmailActionType.edit:
+          return controller.emailContentsViewState.value.fold(
+            (failure) => _buildHtmlEditor(HtmlExtension.editorStartTags),
+            (success) {
+                if (success is GetEmailContentLoading) {
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: loadingWidget,
+                  );
+                } else if (success is GetEmailContentSuccess) {
+                  var contentHtml = success.emailContents.asHtmlString;
+                  if (contentHtml.isEmpty == true) {
+                    contentHtml = HtmlExtension.editorStartTags;
+                  }
+                  return _buildHtmlEditor(contentHtml);
+                } else {
+                  return _buildHtmlEditor(HtmlExtension.editorStartTags);
+                }
+              });
+        case EmailActionType.reply:
+        case EmailActionType.replyAll:
+        case EmailActionType.forward:
+          var contentHtml = controller.getEmailContentQuotedAsHtml(
+              context,
+              argsComposer);
+          if (contentHtml.isEmpty == true) {
+            contentHtml = HtmlExtension.editorStartTags;
+          }
+          return _buildHtmlEditor(contentHtml);
+        default:
+          return _buildHtmlEditor(HtmlExtension.editorStartTags);
       }
     });
+  }
+
+  Widget _buildHtmlEditor(String initialContent) {
+    return HtmlEditor(
+        key: const Key('composer_editor'),
+        minHeight: 550,
+        initialContent: initialContent,
+        onCreated: (editorApi) => controller.htmlEditorApi = editorApi);
   }
 
   Widget _buildAttachmentsLoadingView({EdgeInsets? padding, double? size}) {
