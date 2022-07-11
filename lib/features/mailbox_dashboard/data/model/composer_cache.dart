@@ -10,7 +10,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/extensions/media_type_extension.dart';
 
-class EmailCache with EquatableMixin {
+class ComposerCache with EquatableMixin {
 
   final EmailId id;
   final Map<MailboxId, bool>? mailboxIds;
@@ -24,7 +24,7 @@ class EmailCache with EquatableMixin {
   final Set<EmailBodyPart>? htmlBody;
   final Map<PartId, EmailBodyValue>? bodyValues;
 
-  EmailCache(
+  ComposerCache(
       this.id,
       {
         this.mailboxIds,
@@ -39,8 +39,8 @@ class EmailCache with EquatableMixin {
         this.bodyValues,
       });
 
-  factory EmailCache.fromJson(Map<String, dynamic> json) {
-    return EmailCache(
+  factory ComposerCache.fromJson(Map<String, dynamic> json) {
+    return ComposerCache(
       EmailId(Id(json['id'])),
       mailboxIds: (json['mailboxIds'] as Map<String, dynamic>?)?.map((key, value) => EmailMailboxIdsConverter().parseEntry(key, value)),
       subject: json['subject'] as String?,
