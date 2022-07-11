@@ -1,6 +1,8 @@
 
 extension HtmlExtension on String {
 
+  static const String editorStartTags = '<p><br></p>';
+
   String removeFontSizeZeroPixel() => replaceAll(RegExp('font-size:0px;'), '');
 
   String removeHeightZeroPixel() => replaceAll(RegExp('height:0px;'), '');
@@ -38,11 +40,10 @@ extension HtmlExtension on String {
   String toSignatureBlock() =>
       '<br class="tmail-break-tag"><div class="tmail-signature">${asSignatureHtml()}</div><br class="tmail-break-tag">';
 
-  String removeEditorDefaultSpace() {
-    return replaceAll('<p><br><br><br></p>', '');
-  }
-
-  String addEditorDefaultSpace() {
-    return '<p><br><br><br></p>';
+  String removeEditorStartTag() {
+    if (trim() == editorStartTags) {
+      return '';
+    }
+    return this;
   }
 }
