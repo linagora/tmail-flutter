@@ -19,11 +19,11 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/email_cache_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/email_cache_datasoure_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/email_cache_repository_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/email_cache_repository.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_email_cache_on_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/composer_cache_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/composer_cache_datasoure_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
@@ -63,9 +63,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_cache_on_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_email_cache_on_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -104,7 +104,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MoveToMailboxInteractor>(),
       Get.find<DeleteEmailPermanentlyInteractor>(),
       Get.find<MarkAsMailboxReadInteractor>(),
-      Get.find<GetEmailCacheOnWebInteractor>(),
+      Get.find<GetComposerCacheOnWebInteractor>(),
     ));
     Get.put(AdvancedFilterController());
   }
@@ -119,7 +119,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<AccountDatasource>(() => Get.find<HiveAccountDatasourceImpl>());
     Get.lazyPut<AuthenticationOIDCDataSource>(() => Get.find<AuthenticationOIDCDataSourceImpl>());
-    Get.lazyPut<EmailCacheDataSource>(() => Get.find<EmailCacheDataSourceImpl>());
+    Get.lazyPut<ComposerCacheDataSource>(() => Get.find<ComposerCacheDataSourceImpl>());
   }
 
   @override
@@ -142,7 +142,7 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<TokenOidcCacheManager>(),
         Get.find<OidcConfigurationCacheManager>()
     ));
-    Get.lazyPut(() => EmailCacheDataSourceImpl());
+    Get.lazyPut(() => ComposerCacheDataSourceImpl());
   }
 
   @override
@@ -176,9 +176,9 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<GetCredentialInteractor>(),
         Get.find<GetStoredTokenOidcInteractor>(),
     ));
-    Get.lazyPut(() => GetEmailCacheOnWebInteractor(Get.find<EmailCacheRepository>()));
-    Get.lazyPut(() => SaveEmailCacheOnWebInteractor(Get.find<EmailCacheRepository>()));
-    Get.lazyPut(() => RemoveEmailCacheOnWebInteractor(Get.find<EmailCacheRepository>()));
+    Get.lazyPut(() => GetComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
+    Get.lazyPut(() => SaveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
+    Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
   }
 
   @override
@@ -191,7 +191,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut<AccountRepository>(() => Get.find<AccountRepositoryImpl>());
     Get.lazyPut<AuthenticationOIDCRepository>(() => Get.find<AuthenticationOIDCRepositoryImpl>());
-    Get.lazyPut<EmailCacheRepository>(() => Get.find<EmailCacheRepositoryImpl>());
+    Get.lazyPut<ComposerCacheRepository>(() => Get.find<ComposerCacheRepositoryImpl>());
   }
 
   @override
@@ -218,6 +218,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     ));
     Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));
     Get.lazyPut(() => AuthenticationOIDCRepositoryImpl(Get.find<AuthenticationOIDCDataSource>()));
-    Get.lazyPut(() => EmailCacheRepositoryImpl(Get.find<EmailCacheDataSource>()));
+    Get.lazyPut(() => ComposerCacheRepositoryImpl(Get.find<ComposerCacheDataSource>()));
   }
 }
