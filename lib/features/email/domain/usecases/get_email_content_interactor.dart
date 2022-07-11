@@ -14,7 +14,7 @@ class GetEmailContentInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, EmailId emailId, String? baseDownloadUrl) async* {
     try {
-      yield Right<Failure, Success>(LoadingState());
+      yield Right<Failure, Success>(GetEmailContentLoading());
       final email = await emailRepository.getEmailContent(accountId, emailId);
 
       if (email.emailContentList.isNotEmpty) {
