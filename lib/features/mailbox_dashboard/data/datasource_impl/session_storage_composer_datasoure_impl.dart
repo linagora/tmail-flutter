@@ -6,7 +6,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cac
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
 import 'package:universal_html/html.dart' as html;
 
-class SessionStorageComposerDatasourceImpl extends SessionStorageComposerDatasource {
+class SessionStorageComposerDatasourceImpl
+    extends SessionStorageComposerDatasource {
   @override
   ComposerCache getComposerCacheOnWeb() {
     try {
@@ -14,14 +15,15 @@ class SessionStorageComposerDatasourceImpl extends SessionStorageComposerDatasou
           .where((e) => e.key == EmailActionType.edit.name)
           .toList();
       if (result.isNotEmpty) {
-        final jsonHandle = json.decode(result.first.value) as Map<String, dynamic>;
+        final jsonHandle =
+            json.decode(result.first.value) as Map<String, dynamic>;
         final emailCache = ComposerCache.fromJson(jsonHandle);
         return emailCache;
       } else {
-        throw SessionWebException();
+        throw NotFoundInWebSessionException();
       }
     } catch (e) {
-      throw SessionWebException(errorMessage: e.toString());
+      throw NotFoundInWebSessionException(errorMessage: e.toString());
     }
   }
 
@@ -31,7 +33,7 @@ class SessionStorageComposerDatasourceImpl extends SessionStorageComposerDatasou
       html.window.sessionStorage
           .removeWhere((key, value) => key == EmailActionType.edit.name);
     } catch (e) {
-      throw SessionWebException(errorMessage: e.toString());
+      throw NotFoundInWebSessionException(errorMessage: e.toString());
     }
   }
 
@@ -43,7 +45,7 @@ class SessionStorageComposerDatasourceImpl extends SessionStorageComposerDatasou
       };
       html.window.sessionStorage.addAll(entries);
     } catch (e) {
-      throw SessionWebException(errorMessage: e.toString());
+      throw SaveToWebSessionFailException(errorMessage: e.toString());
     }
   }
 }
