@@ -88,6 +88,7 @@ export 'data/network/download/download_client.dart';
 export 'data/network/download/download_manager.dart';
 export 'data/network/download/downloaded_response.dart';
 export 'data/network/download/download_client.dart';
+export 'data/model/exception/session_web_exception.dart';
 
 // State
 export 'presentation/state/success.dart';
