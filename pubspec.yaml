@@ -85,11 +85,8 @@ dependencies:
   # file_size
   filesize: 2.0.1
 
-  # material_tag_editor
-  material_tag_editor:
-    git:
-      url: https://github.com/dab246/material_tag_editor.git
-      ref: feature/support_suggestion_box
+  # super_tag_editor
+  super_tag_editor: 0.0.1
 
   # uuid
   uuid: 3.0.4
