@@ -27,7 +27,8 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -123,23 +124,27 @@ class MailboxDashBoardController extends ReloadableController {
     super.onReady();
   }
 
-  void _handleEmailCache() async {
-    final emailCache = _getEmailCacheOnWebInteractor.execute();
-    if (emailCache !=null) {
-      final ComposerArguments composerArguments = ComposerArguments(
-        emailActionType: EmailActionType.edit,
-        presentationEmail: PresentationEmail(
-          emailCache.id,
-          subject: emailCache.subject,
-          from: emailCache.from,
-          to: emailCache.to,
-          cc: emailCache.cc,
-          bcc: emailCache.bcc,
-        ),
-        emailContents: emailCache.emailContentList,
-      );
-      openComposerOverlay(composerArguments);
-    }
+  void _handleComposerCache() async {
+    _getEmailCacheOnWebInteractor.execute().fold(
+            (failure) {},
+            (success) {
+              if(success is GetComposerCacheSuccess){
+                final ComposerArguments composerArguments = ComposerArguments(
+                  emailActionType: EmailActionType.edit,
+                  presentationEmail: PresentationEmail(
+                    success.composerCache.id,
+                    subject: success.composerCache.subject,
+                    from: success.composerCache.from,
+                    to: success.composerCache.to,
+                    cc: success.composerCache.cc,
+                    bcc: success.composerCache.bcc,
+                  ),
+                  emailContents: success.composerCache.emailContentList,
+                );
+                openComposerOverlay(composerArguments);
+              }
+            }
+    );
   }
 
   @override
@@ -243,7 +248,7 @@ class MailboxDashBoardController extends ReloadableController {
   void _getUserProfile() async {
     userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
     if (kIsWeb && userProfile.value != null) {
-      _handleEmailCache();
+      _handleComposerCache();
     }
   }
 
