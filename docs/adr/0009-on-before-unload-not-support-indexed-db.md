@@ -16,7 +16,7 @@ Accepted
 
 ## Consequences
 
-- Using local storage to save data in onBeforeUnload state of web
+- Using session storage to save data in onBeforeUnload state of web
 
 ## Reference
 
