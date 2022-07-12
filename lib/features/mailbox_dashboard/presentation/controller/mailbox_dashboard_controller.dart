@@ -125,26 +125,28 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleComposerCache() async {
-    _getEmailCacheOnWebInteractor.execute().fold(
-      (failure) {},
-      (success) {
-        if(success is GetComposerCacheSuccess){
-          final ComposerArguments composerArguments = ComposerArguments(
-            emailActionType: EmailActionType.edit,
-            presentationEmail: PresentationEmail(
-              success.composerCache.id,
-              subject: success.composerCache.subject,
-              from: success.composerCache.from,
-              to: success.composerCache.to,
-              cc: success.composerCache.cc,
-              bcc: success.composerCache.bcc,
-            ),
-            emailContents: success.composerCache.emailContentList,
-          );
-          openComposerOverlay(composerArguments);
-        }
-      },
-    );
+    if (kIsWeb && userProfile.value != null) {
+      _getEmailCacheOnWebInteractor.execute().fold(
+        (failure) {},
+        (success) {
+          if(success is GetComposerCacheSuccess){
+            final ComposerArguments composerArguments = ComposerArguments(
+              emailActionType: EmailActionType.edit,
+              presentationEmail: PresentationEmail(
+                success.composerCache.id,
+                subject: success.composerCache.subject,
+                from: success.composerCache.from,
+                to: success.composerCache.to,
+                cc: success.composerCache.cc,
+                bcc: success.composerCache.bcc,
+              ),
+              emailContents: success.composerCache.emailContentList,
+            );
+            openComposerOverlay(composerArguments);
+          }
+        },
+      );    
+    }
   }
 
   @override
@@ -247,9 +249,6 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _getUserProfile() async {
     userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
-    if (kIsWeb && userProfile.value != null) {
-      _handleComposerCache();
-    }
   }
 
   void _setSessionCurrent() {
@@ -427,6 +426,7 @@ class MailboxDashBoardController extends ReloadableController {
     sessionCurrent = session;
     accountId.value = sessionCurrent?.accounts.keys.first;
     _getUserProfile();
+    _handleComposerCache();
   }
 
   UnsignedInt? get maxSizeAttachmentsPerEmail {

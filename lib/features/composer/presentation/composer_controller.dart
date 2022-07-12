@@ -228,6 +228,7 @@ class ComposerController extends BaseController {
         final draftEmail = await _generateEmail(
           mailboxDashBoardController.mapDefaultMailboxId,
           userProfile,
+          asDrafts: false,
         );
         _saveComposerCacheOnWebInteractor.execute(draftEmail);
       }
