@@ -126,24 +126,24 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleComposerCache() async {
     _getEmailCacheOnWebInteractor.execute().fold(
-            (failure) {},
-            (success) {
-              if(success is GetComposerCacheSuccess){
-                final ComposerArguments composerArguments = ComposerArguments(
-                  emailActionType: EmailActionType.edit,
-                  presentationEmail: PresentationEmail(
-                    success.composerCache.id,
-                    subject: success.composerCache.subject,
-                    from: success.composerCache.from,
-                    to: success.composerCache.to,
-                    cc: success.composerCache.cc,
-                    bcc: success.composerCache.bcc,
-                  ),
-                  emailContents: success.composerCache.emailContentList,
-                );
-                openComposerOverlay(composerArguments);
-              }
-            }
+      (failure) {},
+      (success) {
+        if(success is GetComposerCacheSuccess){
+          final ComposerArguments composerArguments = ComposerArguments(
+            emailActionType: EmailActionType.edit,
+            presentationEmail: PresentationEmail(
+              success.composerCache.id,
+              subject: success.composerCache.subject,
+              from: success.composerCache.from,
+              to: success.composerCache.to,
+              cc: success.composerCache.cc,
+              bcc: success.composerCache.bcc,
+            ),
+            emailContents: success.composerCache.emailContentList,
+          );
+          openComposerOverlay(composerArguments);
+        }
+      },
     );
   }
 

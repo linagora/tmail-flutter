@@ -52,7 +52,6 @@ class ComposerCache with EquatableMixin {
       replyTo: (json['replyTo'] as List<dynamic>?)?.map((json) => EmailAddress.fromJson(json)).toSet(),
       textBody: (json['textBody'] as List<dynamic>?)?.map((json) => EmailBodyPart.fromJson(json)).toSet(),
       htmlBody: (json['htmlBody'] as List<dynamic>?)?.map((json) => EmailBodyPart.fromJson(json)).toSet(),
-
     );
   }
 
@@ -65,7 +64,6 @@ class ComposerCache with EquatableMixin {
     cc,
     bcc,
     replyTo,
-
   ];
 
   List<EmailContent> get emailContentList {

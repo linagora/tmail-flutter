@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
@@ -8,10 +9,10 @@ class SaveComposerCacheOnWebInteractor {
 
   SaveComposerCacheOnWebInteractor(this.composerCacheRepository);
 
-  execute(Email email) {
+  Either<Failure, Success> execute(Email email) {
     try {
       composerCacheRepository.saveComposerCacheOnWeb(email);
-      return const Right(SaveComposerCacheSuccess);
+      return Right(SaveComposerCacheSuccess());
     } catch (exception) {
       return Left(SaveComposerCacheFailure(exception));
     }
