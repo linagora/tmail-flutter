@@ -19,8 +19,8 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/composer_cache_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/composer_cache_datasoure_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/session_storage_composer_datasoure_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
@@ -119,7 +119,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<AccountDatasource>(() => Get.find<HiveAccountDatasourceImpl>());
     Get.lazyPut<AuthenticationOIDCDataSource>(() => Get.find<AuthenticationOIDCDataSourceImpl>());
-    Get.lazyPut<ComposerCacheDataSource>(() => Get.find<ComposerCacheDataSourceImpl>());
+    Get.lazyPut<SessionStorageComposerDatasource>(() => Get.find<SessionStorageComposerDatasourceImpl>());
   }
 
   @override
@@ -142,7 +142,7 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<TokenOidcCacheManager>(),
         Get.find<OidcConfigurationCacheManager>()
     ));
-    Get.lazyPut(() => ComposerCacheDataSourceImpl());
+    Get.lazyPut(() => SessionStorageComposerDatasourceImpl());
   }
 
   @override
@@ -218,6 +218,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     ));
     Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));
     Get.lazyPut(() => AuthenticationOIDCRepositoryImpl(Get.find<AuthenticationOIDCDataSource>()));
-    Get.lazyPut(() => ComposerCacheRepositoryImpl(Get.find<ComposerCacheDataSource>()));
+    Get.lazyPut(() => ComposerCacheRepositoryImpl(Get.find<SessionStorageComposerDatasource>()));
   }
 }
