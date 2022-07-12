@@ -39,8 +39,8 @@ import 'package:tmail_ui_user/features/composer/presentation/model/screen_displa
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -778,11 +778,15 @@ class ComposerController extends BaseController {
   }
 
   void _getEmailContentAction(ComposerArguments arguments) async {
-    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
-    final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
-    final emailId = arguments.presentationEmail?.id;
-    if (emailId != null && baseDownloadUrl != null && accountId != null) {
-      consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
+    if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty){
+      emailContents.value = arguments.emailContents;
+    } else {
+      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
+      final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
+      final emailId = arguments.presentationEmail?.id;
+      if (emailId != null && baseDownloadUrl != null && accountId != null) {
+        consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
+      }
     }
   }
 
