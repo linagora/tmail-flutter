@@ -16,6 +16,7 @@ export 'domain/exceptions/download_file_exception.dart';
 export 'data/extensions/options_extensions.dart';
 export 'domain/exceptions/remote_exception.dart';
 export 'data/network/remote_exception_thrower.dart';
+export 'domain/exceptions/web_session_exception.dart';
 
 // Utils
 export 'presentation/utils/theme_utils.dart';
@@ -88,7 +89,7 @@ export 'data/network/download/download_client.dart';
 export 'data/network/download/download_manager.dart';
 export 'data/network/download/downloaded_response.dart';
 export 'data/network/download/download_client.dart';
-export 'data/model/exception/session_web_exception.dart';
+export 'domain/exceptions/web_session_exception.dart';
 
 // State
 export 'presentation/state/success.dart';
