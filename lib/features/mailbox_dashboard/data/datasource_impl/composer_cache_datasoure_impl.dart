@@ -6,29 +6,43 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/compose
 import 'package:universal_html/html.dart' as html;
 
 class ComposerCacheDataSourceImpl extends ComposerCacheDataSource {
-
   @override
-  ComposerCache? getComposerCacheOnWeb() {
-    final result = html.window.localStorage.entries
-        .where((e) => e.key == EmailActionType.edit.name)
-        .toList();
-    if (result.isNotEmpty) {
-      final jsonHandle = json.decode(result.first.value) as Map<String, dynamic>;
-      final emailCache = ComposerCache.fromJson(jsonHandle);
-      return emailCache;
-    } else {
-      return null;
+  ComposerCache getComposerCacheOnWeb() {
+    try {
+      final result = html.window.sessionStorage.entries
+          .where((e) => e.key == EmailActionType.edit.name)
+          .toList();
+      if (result.isNotEmpty) {
+        final jsonHandle = json.decode(result.first.value) as Map<String, dynamic>;
+        final emailCache = ComposerCache.fromJson(jsonHandle);
+        return emailCache;
+      } else {
+        throw UnimplementedError();
+      }
+    } catch (e) {
+      throw UnimplementedError(e.toString());
     }
   }
 
   @override
   void removeComposerCacheOnWeb() {
-    html.window.localStorage.removeWhere((key, value) => key == EmailActionType.edit.name);
+    try {
+      html.window.sessionStorage
+          .removeWhere((key, value) => key == EmailActionType.edit.name);
+    } catch (e) {
+      throw UnimplementedError(e.toString());
+    }
   }
 
   @override
   void saveComposerCacheOnWeb(Email email) {
-    Map<String,String> entries = { EmailActionType.edit.name: json.encode(email.toJson()) };
-    html.window.localStorage.addAll(entries);
+    try {
+      Map<String, String> entries = {
+        EmailActionType.edit.name: json.encode(email.toJson())
+      };
+      html.window.sessionStorage.addAll(entries);
+    } catch (e) {
+      throw UnimplementedError(e.toString());
+    }
   }
 }
