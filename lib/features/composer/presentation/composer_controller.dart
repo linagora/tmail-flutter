@@ -165,7 +165,9 @@ class ComposerController extends BaseController {
         await FkUserAgent.init();
       });
     } else {
-      _listenBrowserTabRefresh();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _listenBrowserTabRefresh();
+      });
     }
   }
 
@@ -251,6 +253,7 @@ class ComposerController extends BaseController {
       _removeComposerCacheOnWebInteractor.execute();
       if (userProfile != null) {
         final draftEmail = await _generateEmail(
+          currentContext!,
           mailboxDashBoardController.mapDefaultMailboxId,
           userProfile,
         );
@@ -258,7 +261,7 @@ class ComposerController extends BaseController {
       }
     });
   }
-  
+
   void _initEmail() {
     final arguments = kIsWeb ? mailboxDashBoardController.routerArguments : Get.arguments;
     if (arguments is ComposerArguments) {
@@ -815,7 +818,8 @@ class ComposerController extends BaseController {
 
   void _getEmailContentAction(ComposerArguments arguments) async {
     if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty){
-      emailContents.value = arguments.emailContents;
+      _emailContents = arguments.emailContents;
+      emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!,[],[]));
     } else {
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
       final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
