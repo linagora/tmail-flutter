@@ -10,7 +10,7 @@ class ComposerCacheRepositoryImpl extends ComposerCacheRepository {
   ComposerCacheRepositoryImpl(this.composerCacheDataSource);
 
   @override
-  ComposerCache? getComposerCacheOnWeb() {
+  ComposerCache getComposerCacheOnWeb() {
     return composerCacheDataSource.getComposerCacheOnWeb();
   }
 

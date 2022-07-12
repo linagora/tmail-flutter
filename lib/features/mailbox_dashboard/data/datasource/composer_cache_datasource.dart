@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cac
 abstract class ComposerCacheDataSource {
   void saveComposerCacheOnWeb(Email email);
 
-  ComposerCache? getComposerCacheOnWeb();
+  ComposerCache getComposerCacheOnWeb();
 
   void removeComposerCacheOnWeb();
 }
