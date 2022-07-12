@@ -221,14 +221,14 @@ class ComposerController extends BaseController {
   }
 
   void _listenBrowserTabRefresh() {
+    final mapDefaultMailboxId = mailboxDashBoardController.mapDefaultMailboxId;
     html.window.onBeforeUnload.listen((event) async {
       final userProfile = mailboxDashBoardController.userProfile.value;
       _removeComposerCacheOnWebInteractor.execute();
       if (userProfile != null) {
         final draftEmail = await _generateEmail(
-          mailboxDashBoardController.mapDefaultMailboxId,
+          mapDefaultMailboxId,
           userProfile,
-          asDrafts: false,
         );
         _saveComposerCacheOnWebInteractor.execute(draftEmail);
       }
@@ -779,16 +779,16 @@ class ComposerController extends BaseController {
   }
 
   void _getEmailContentAction(ComposerArguments arguments) async {
-    if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty){
-      emailContents.value = arguments.emailContents;
-    } else {
+    // if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty){
+    //   emailContents.value = arguments.emailContents;
+    // } else {
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
       final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
       final emailId = arguments.presentationEmail?.id;
       if (emailId != null && baseDownloadUrl != null && accountId != null) {
         consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
       }
-    }
+    // }
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
