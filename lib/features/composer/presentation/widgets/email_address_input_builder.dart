@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:material_tag_editor/tag_editor.dart';
+import 'package:super_tag_editor/tag_editor.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
