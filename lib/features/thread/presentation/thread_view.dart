@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
@@ -348,6 +349,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                     controller.mailboxDashBoardController.searchEmail(context, recent.value);
                   },
                   suggestionsCallback: (pattern) async {
+                    controller.searchController.updateFilterEmail(text: SearchQuery(pattern));
                     return controller.mailboxDashBoardController.quickSearchEmails();
                   },
                   itemBuilder: (context, email) {
