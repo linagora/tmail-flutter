@@ -42,8 +42,17 @@ String generateHtml(String content, {
         resize: ${resize ?? 'both'};
         min-height: ${minHeight ?? 0}px;
         min-width: ${minWidth ?? 0}px;
-        overflow: ${hideScrollBar == true ? 'hidden' : 'auto'};
+        overflow: auto;
       }
+      ${hideScrollBar == true ? '''
+        .tmail-content::-webkit-scrollbar {
+          display: none;
+        }
+        .tmail-content {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+      ''' : ''}
       ${styleCSS ?? ''}
     </style>
     ${javaScripts ?? ''}
