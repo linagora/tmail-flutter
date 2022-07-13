@@ -157,6 +157,8 @@ class SearchController extends BaseController {
   bool isSearchActive() =>
       searchState.value.searchStatus == SearchStatus.ACTIVE;
 
+  bool isAdvanceSearchActive() => isAdvancedSearchHasApply.isTrue;
+
   void enableSearch() {
     searchState.value = searchState.value.enableSearchState();
   }
