@@ -473,7 +473,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) {
-        if (controller.isSearchActive()) {
+        if (controller.isSearchActive() || controller.isAdvanceSearchActive()) {
           return success is SearchingState
               ? Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: loadingWidget)
               : const SizedBox.shrink();
