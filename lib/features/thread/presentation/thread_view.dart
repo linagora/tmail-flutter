@@ -540,7 +540,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
             && !controller.isLoadingMore
             && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent
         ) {
-          if (controller.isSearchActive()) {
+          if (controller.isSearchActive() || controller.isAdvanceSearchActive()) {
             controller.searchMoreEmails();
           } else {
             controller.loadMoreEmails();

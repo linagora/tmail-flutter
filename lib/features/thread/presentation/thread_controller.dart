@@ -865,13 +865,12 @@ class ThreadController extends BaseController {
 
   void searchMoreEmails() {
     if (canSearchMore && _accountId != null) {
+      searchController.updateFilterEmail(before: emailList.last.receivedAt);
       consumeState(_searchMoreEmailInteractor.execute(
         _accountId!,
         limit: ThreadConstants.defaultLimit,
         sort: _sortOrder,
-        filter: EmailFilterCondition(
-            text: searchQuery?.value,
-            before: emailList.last.receivedAt),
+        filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(),
         properties: ThreadConstants.propertiesDefault,
         lastEmailId: emailList.last.id
       ));
