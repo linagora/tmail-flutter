@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:model/model.dart';
@@ -125,6 +126,7 @@ class SearchController extends BaseController {
     PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
+    UTCDate? before,
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       from: from,
@@ -136,6 +138,7 @@ class SearchController extends BaseController {
       mailbox: mailbox,
       emailReceiveTimeType: emailReceiveTimeType,
       hasAttachment: hasAttachment,
+      before: before,
     );
   }
 
