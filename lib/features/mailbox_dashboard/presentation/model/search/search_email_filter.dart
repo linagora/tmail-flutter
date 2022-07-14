@@ -1,6 +1,7 @@
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -16,6 +17,7 @@ class SearchEmailFilter {
   final PresentationMailbox? mailbox;
   final EmailReceiveTimeType emailReceiveTimeType;
   final bool hasAttachment;
+  final UTCDate? before;
 
   SearchEmailFilter({
     Set<String>? from,
@@ -27,6 +29,7 @@ class SearchEmailFilter {
     Set<String>? hasKeyword,
     Set<String>? notKeyword,
     this.mailbox,
+    this.before,
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
         hasKeyword = hasKeyword ?? <String>{},
@@ -45,6 +48,7 @@ class SearchEmailFilter {
     PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
+    UTCDate? before,
   }) {
     return SearchEmailFilter(
       from: from ?? this.from,
@@ -56,16 +60,18 @@ class SearchEmailFilter {
       mailbox: mailbox ?? this.mailbox,
       emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
       hasAttachment: hasAttachment ?? this.hasAttachment,
+      before: before ?? this.before,
     );
   }
 
-  Filter? mappingToEmailFilterCondition({Filter? moreFilterCondition}) {
+  Filter mappingToEmailFilterCondition({Filter? moreFilterCondition}) {
     final emailEmailFilterConditionShared = EmailFilterCondition(
       text: text?.value,
       inMailbox: mailbox?.id,
       after: emailReceiveTimeType.toUTCDate(),
       hasAttachment: hasAttachment == false ? null : hasAttachment,
       subject: subject,
+      before: before,
     );
     return LogicFilterOperator(Operator.AND, {
       emailEmailFilterConditionShared,
