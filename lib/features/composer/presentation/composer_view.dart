@@ -13,6 +13,8 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
@@ -20,7 +22,7 @@ import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_sta
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin {
+class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, RichTextButtonMixin {
 
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
@@ -461,6 +463,11 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin {
         Padding(
             padding: const EdgeInsets.only(left: 60, right: 25),
             child: Column(children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 22, top: 15),
+                child: Obx(() => _buildRowIconStyleText()),
+              ),
+              const SizedBox(height: 8),
               Obx(() {
                 final uploadAttachments = controller.uploadController.listUploadAttachments;
                 if (uploadAttachments.isEmpty) {
@@ -487,6 +494,40 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin {
             ])
         )
       ])
+    );
+  }
+
+  Widget _buildRowIconStyleText() {
+    return Row(
+      children: [
+        buildIconStyleText(
+            path: RichTextStyleType.bold.getIcon(imagePaths),
+            isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.bold),
+            onTap: () async {
+             await controller.htmlEditorApi?.formatBold().then((value) {
+               controller.richTextMobileTabletController.selectTextStyleType(RichTextStyleType.bold);
+             });
+            }
+        ),
+        buildIconStyleText(
+            path: RichTextStyleType.italic.getIcon(imagePaths),
+            isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.italic),
+            onTap: () async {
+              await controller.htmlEditorApi?.formatItalic().then((value) {
+                controller.richTextMobileTabletController.selectTextStyleType(RichTextStyleType.italic);
+              });
+            }
+        ),
+        buildIconStyleText(
+            path: RichTextStyleType.underline.getIcon(imagePaths),
+            isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.underline),
+            onTap: () async {
+              await controller.htmlEditorApi?.formatUnderline().then((value) {
+                controller.richTextMobileTabletController.selectTextStyleType(RichTextStyleType.underline);
+              });
+            }
+        ),
+      ],
     );
   }
 
@@ -542,7 +583,10 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin {
         key: const Key('composer_editor'),
         minHeight: 550,
         initialContent: initialContent,
-        onCreated: (editorApi) => controller.htmlEditorApi = editorApi);
+        onCreated: (editorApi) {
+          controller.richTextMobileTabletController.htmlEditorApi = editorApi;
+          controller.richTextMobileTabletController.listenHtmlEditorApi();
+        });
   }
 
   Widget _buildAttachmentsLoadingView({EdgeInsets? padding, double? size}) {
