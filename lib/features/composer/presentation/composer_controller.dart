@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_dr
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
@@ -56,6 +57,7 @@ import 'package:universal_html/html.dart' as html;
 class ComposerController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+  final richTextMobileTabletController = Get.find<RichTextMobileTabletController>();
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -93,7 +95,6 @@ class ComposerController extends BaseController {
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
   List<EmailAddress> listBccEmailAddress = <EmailAddress>[];
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
-  HtmlEditorApi? htmlEditorApi;
 
   final subjectEmailInputController = TextEditingController();
   final toEmailAddressController = TextEditingController();
@@ -107,6 +108,8 @@ class ComposerController extends BaseController {
   void setTextEditorWeb(String? text) => _textEditorWeb = text;
 
   String? get textEditorWeb => _textEditorWeb;
+
+  HtmlEditorApi? get htmlEditorApi => richTextMobileTabletController.htmlEditorApi;
 
   void setSubjectEmail(String subject) => subjectEmail.value = subject;
 
