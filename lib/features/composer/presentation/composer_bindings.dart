@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachmen
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
@@ -135,6 +136,7 @@ class ComposerBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.lazyPut(() => UploadController(Get.find<UploadAttachmentInteractor>()));
+    Get.lazyPut(() => RichTextWebController());
     Get.lazyPut(() => ComposerController(
         Get.find<SendEmailInteractor>(),
         Get.find<GetAutoCompleteInteractor>(),
@@ -148,11 +150,13 @@ class ComposerBindings extends BaseBindings {
         Get.find<UploadController>(),
         Get.find<RemoveComposerCacheOnWebInteractor>(),
         Get.find<SaveComposerCacheOnWebInteractor>(),
+        Get.find<RichTextWebController>(),
     ));
   }
 
   void dispose() {
     Get.delete<UploadController>();
+    Get.delete<RichTextWebController>();
     Get.delete<ComposerController>();
   }
 }

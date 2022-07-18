@@ -128,6 +128,9 @@ class ImagePaths {
   String get icCloseAdvancedSearch => _getImagePath('ic_close_advanced_search.svg');
   String get icLanguage => _getImagePath('ic_language.svg');
   String get icChecked => _getImagePath('ic_checked.svg');
+  String get icStyleBold => _getImagePath('ic_style_bold.svg');
+  String get icStyleItalic => _getImagePath('ic_style_italic.svg');
+  String get icStyleUnderline => _getImagePath('ic_style_underline.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
