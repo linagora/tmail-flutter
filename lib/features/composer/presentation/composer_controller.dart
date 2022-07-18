@@ -12,7 +12,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart' as editor_web;
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
@@ -34,6 +33,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
@@ -87,13 +87,13 @@ class ComposerController extends BaseController {
   final UploadController uploadController;
   final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
   final SaveComposerCacheOnWebInteractor _saveComposerCacheOnWebInteractor;
+  final RichTextWebController richTextWebController;
 
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
   List<EmailAddress> listBccEmailAddress = <EmailAddress>[];
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
   HtmlEditorApi? htmlEditorApi;
-  final htmlControllerBrowser = editor_web.HtmlEditorController(processNewLineAsBr: true);
 
   final subjectEmailInputController = TextEditingController();
   final toEmailAddressController = TextEditingController();
@@ -119,7 +119,7 @@ class ComposerController extends BaseController {
           screenDisplayMode.value == ScreenDisplayMode.minimize) {
         contentHtml = textEditorWeb ?? '';
       } else {
-        contentHtml = await htmlControllerBrowser.getText();
+        contentHtml = await richTextWebController.editorController.getText();
       }
       log('ComposerController::_getEmailBodyText():WEB: contentHtml: $contentHtml');
       final newContentHtml = contentHtml.removeEditorStartTag();
@@ -155,6 +155,7 @@ class ComposerController extends BaseController {
     this.uploadController,
     this._removeComposerCacheOnWebInteractor,
     this._saveComposerCacheOnWebInteractor,
+    this.richTextWebController,
   );
 
   @override
@@ -318,7 +319,7 @@ class ComposerController extends BaseController {
   }
 
   void setFullScreenEditor() {
-    htmlControllerBrowser.setFullScreen();
+    richTextWebController.editorController.setFullScreen();
   }
 
   String? _getHeaderEmailQuoted(BuildContext context, ComposerArguments arguments) {
@@ -872,8 +873,8 @@ class ComposerController extends BaseController {
   }
 
   void _updateTextForEditor() async {
-    final textCurrent = await htmlControllerBrowser.getText();
-    htmlControllerBrowser.setText(textCurrent);
+    final textCurrent = await richTextWebController.editorController.getText();
+    richTextWebController.editorController.setText(textCurrent);
   }
 
   void deleteComposer() {
@@ -1036,7 +1037,7 @@ class ComposerController extends BaseController {
     final signatureAsHtml = '--<br><br>${signature.value}';
     log('ComposerController::_applySignature(): $signatureAsHtml');
     if (BuildUtils.isWeb) {
-      htmlControllerBrowser.insertSignature(signatureAsHtml);
+      richTextWebController.editorController.insertSignature(signatureAsHtml);
     } else {
       htmlEditorApi?.insertSignature(signatureAsHtml);
     }
@@ -1045,7 +1046,7 @@ class ComposerController extends BaseController {
   void _removeSignature() {
     log('ComposerController::_removeSignature():');
     if (BuildUtils.isWeb) {
-      htmlControllerBrowser.removeSignature();
+      richTextWebController.editorController.removeSignature();
     } else {
       htmlEditorApi?.removeSignature();
     }

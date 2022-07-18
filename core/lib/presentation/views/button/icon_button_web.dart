@@ -13,12 +13,16 @@ Widget buildIconWeb({
   double? iconSize,
   double? splashRadius,
   double? minSize,
+  Color? colorSelected,
+  Color? colorFocus,
+  ShapeBorder? shapeBorder,
 }) {
   return Material(
-      color: Colors.transparent,
-      shape: CircleBorder(),
+      color: colorSelected ?? Colors.transparent,
+      shape: shapeBorder ?? CircleBorder(),
       child: IconButton(
           icon: icon,
+          focusColor: colorFocus,
           iconSize: iconSize,
           constraints: minSize != null ? BoxConstraints(minWidth: minSize, minHeight: minSize) : null,
           padding: iconPadding ?? EdgeInsets.all(8.0),
