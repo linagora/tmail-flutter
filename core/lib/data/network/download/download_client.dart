@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:core/core.dart';
@@ -25,5 +26,16 @@ class DownloadClient {
       cancelToken: cancelToken);
 
     return (responseBody as ResponseBody);
+  }
+
+  Future<String?> downloadImageAsBase64(String url) async {
+    try {
+      final response = await _dioClient.get(
+          url,
+          options: Options(responseType: ResponseType.bytes));
+      return base64Encode(response);
+    } catch (e) {
+      return url;
+    }
   }
 }
