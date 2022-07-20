@@ -3,7 +3,6 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,7 +10,6 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
@@ -412,7 +410,6 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
                   child: _buildAttachmentsTitle(context,
                       uploadAttachments,
                       controller.expandModeAttachments.value)),
-              _buildAttachmentsLoadingView(),
               Padding(
                   padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
                   child: _buildAttachmentsList(context,
@@ -479,7 +476,6 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
                         child: _buildAttachmentsTitle(context,
                             uploadAttachments,
                             controller.expandModeAttachments.value)),
-                    _buildAttachmentsLoadingView(),
                     Padding(
                         padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
                         child: _buildAttachmentsList(context,
@@ -589,19 +585,6 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
         });
   }
 
-  Widget _buildAttachmentsLoadingView({EdgeInsets? padding, double? size}) {
-    return Obx(() => controller.viewState.value.fold(
-      (failure) => const SizedBox.shrink(),
-      (success) => success is UploadingAttachmentState
-          ? Center(child: Padding(
-              padding: padding ?? const EdgeInsets.all(10),
-              child: SizedBox(
-                  width: size ?? 20,
-                  height: size ??  20,
-                  child: const CupertinoActivityIndicator(color: AppColor.colorTextButton))))
-          : const SizedBox.shrink()));
-  }
-
   Widget _buildAttachmentsTitle(
       BuildContext context,
       List<UploadFileState> uploadFilesState,
@@ -612,7 +595,6 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
         Text(
             '${AppLocalizations.of(context).attachments} (${filesize(uploadFilesState.totalSize, 0)}):',
             style: const TextStyle(fontSize: 12, color: AppColor.colorHintEmailAddressInput, fontWeight: FontWeight.normal)),
-        _buildAttachmentsLoadingView(padding: const EdgeInsets.only(left: 16), size: 16),
         const Spacer(),
         Material(
             type: MaterialType.circle,
