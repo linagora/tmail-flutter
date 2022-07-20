@@ -31,6 +31,10 @@ class RichTextWebController extends GetxController {
     if (settings.isUnderline) {
       listTextStyleApply.add(RichTextStyleType.underline);
     }
+
+    if (settings.isStrikethrough) {
+      listTextStyleApply.add(RichTextStyleType.strikeThrough);
+    }
   }
 
   void applyRichTextStyle(RichTextStyleType textStyleType) {
