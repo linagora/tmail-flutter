@@ -46,4 +46,30 @@ extension HtmlExtension on String {
     }
     return this;
   }
+
+  String generateImageBase64(
+      String cid,
+      String extension,
+      String fileName, {
+      double? maxWithEditor
+  }) {
+    var newExtension = extension;
+    if (newExtension == 'svg') {
+      newExtension = 'svg+xml';
+    }
+    var base64Data = this;
+    if (!base64Data.endsWith('==')) {
+      base64Data.append('==');
+    }
+    var newFileName = fileName;
+    if (newFileName.contains('.')) {
+      newFileName = newFileName.split('.').first;
+    }
+    final style = maxWithEditor != null && maxWithEditor > 0
+        ? 'style="max-width: ${maxWithEditor}px;"'
+        : '';
+    final src = 'data:image/$newExtension;base64,$base64Data';
+
+    return '<img src="$src" alt="$newFileName" id="$cid" $style />';
+  }
 }
