@@ -15,6 +15,8 @@ class FileInfo with EquatableMixin {
     return FileInfo('', '', 0);
   }
 
+  String get fileExtension => fileName.split('.').last;
+
   String get mimeType => lookupMimeType(kIsWeb ? fileName : filePath) ?? 'application/json; charset=UTF-8';
 
   @override

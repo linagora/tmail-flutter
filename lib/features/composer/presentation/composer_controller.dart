@@ -27,7 +27,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
@@ -36,7 +38,10 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_dra
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/insert_image_dialog_builder.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -46,6 +51,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
+import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
@@ -90,6 +96,7 @@ class ComposerController extends BaseController {
   final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
   final SaveComposerCacheOnWebInteractor _saveComposerCacheOnWebInteractor;
   final RichTextWebController richTextWebController;
+  final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
 
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
@@ -104,6 +111,8 @@ class ComposerController extends BaseController {
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
   List<EmailContent>? _emailContents;
+  double? maxWithEditor;
+  late Worker uploadInlineImageWorker;
 
   void setTextEditorWeb(String? text) => _textEditorWeb = text;
 
@@ -159,11 +168,13 @@ class ComposerController extends BaseController {
     this._removeComposerCacheOnWebInteractor,
     this._saveComposerCacheOnWebInteractor,
     this.richTextWebController,
+    this._downloadImageAsBase64Interactor,
   );
 
   @override
   void onInit() {
     super.onInit();
+    _listenWorker();
     if (!BuildUtils.isWeb) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
         await FkUserAgent.init();
@@ -200,6 +211,7 @@ class ComposerController extends BaseController {
     toEmailAddressController.dispose();
     ccEmailAddressController.dispose();
     bccEmailAddressController.dispose();
+    uploadInlineImageWorker.dispose();
     super.dispose();
   }
 
@@ -228,13 +240,22 @@ class ComposerController extends BaseController {
           _pickFileSuccess(success);
         } else if (success is GetEmailContentSuccess) {
           _getEmailContentSuccess(success);
-        } if (success is GetAllIdentitiesSuccess) {
+        } else if (success is GetAllIdentitiesSuccess) {
           if (success.identities?.isNotEmpty == true) {
             listIdentities.value = success.identities!
                 .where((identity) => identity.mayDelete == true)
                 .toList();
             selectIdentity(listIdentities.first);
           }
+        } else if (success is DownloadImageAsBase64Success) {
+          richTextWebController.insertImage(
+              InlineImage(
+                  ImageSource.local,
+                  fileInfo: success.fileInfo,
+                  cid: success.cid,
+                  base64: success.imageAsBase64),
+              maxWithEditor: maxWithEditor);
+          maxWithEditor = null;
         }
       });
   }
@@ -249,6 +270,19 @@ class ComposerController extends BaseController {
           icon: _imagePaths.icSendToast);
     }
     popBack();
+  }
+
+  void _listenWorker() {
+    uploadInlineImageWorker = ever(uploadController.uploadInlineViewState, (state) {
+      log('ComposerController::_listenWorker(): $state');
+      if (state is Either) {
+        state.fold((failure) => null, (success) {
+          if (success is SuccessAttachmentUploadState) {
+            _handleUploadInlineSuccess(success);
+          }
+        });
+      }
+    });
   }
 
   void _listenBrowserTabRefresh() {
@@ -497,7 +531,21 @@ class ComposerController extends BaseController {
     final generateBlobId = Id(_uuid.v1());
 
     var emailBodyText = await _getEmailBodyText(context);
-    log('ComposerController::_generateEmail(): $emailBodyText');
+    final mapContents = await richTextWebController.refactorContentHasInlineImage(
+        emailBodyText,
+        uploadController.mapInlineAttachments);
+    log('ComposerController::_generateEmail(): mapContents: $mapContents');
+    emailBodyText = mapContents.value1;
+    final listInlineAttachment = mapContents.value2;
+    final listInlineEmailBodyPart = listInlineAttachment
+        .map((attachment) => attachment.toEmailBodyPart(charset: 'base64'))
+        .toSet();
+
+    final attachments = <EmailBodyPart>{};
+    attachments.addAll(uploadController.generateAttachments() ?? []);
+    attachments.addAll(listInlineEmailBodyPart);
+    log('ComposerController::_generateEmail(): listInlineEmailBodyPart: $listInlineEmailBodyPart');
+
     final userAgent = await userAgentPlatform;
     log('ComposerController::_generateEmail(): userAgent: $userAgent');
 
@@ -521,7 +569,7 @@ class ComposerController extends BaseController {
         generatePartId: EmailBodyValue(emailBodyText, false, false)
       },
       headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgent},
-      attachments: uploadController.generateAttachments(),
+      attachments: attachments.isNotEmpty ? attachments : null,
     );
   }
 
@@ -623,7 +671,7 @@ class ComposerController extends BaseController {
       final email = await _generateEmail(context, mapDefaultMailboxId, userProfile);
       final accountId = session.accounts.keys.first;
       final sentMailboxId = mapDefaultMailboxId[PresentationMailbox.roleSent];
-      final submissionCreateId = Id(const Uuid().v1());
+      final submissionCreateId = Id(_uuid.v1());
 
       mailboxDashBoardController.consumeState(_sendEmailInteractor.execute(
         accountId,
@@ -631,6 +679,8 @@ class ComposerController extends BaseController {
           emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
             ? arguments.presentationEmail?.id
             : null)));
+
+      uploadController.clearInlineFileUploaded();
     }
 
     if (kIsWeb) {
@@ -1052,6 +1102,65 @@ class ComposerController extends BaseController {
       richTextWebController.editorController.removeSignature();
     } else {
       htmlEditorApi?.removeSignature();
+    }
+  }
+
+  void insertImage(BuildContext context, {double? maxWithEditor}) async {
+    await InsertImageDialogBuilder(
+        context,
+        insertActionCallback: (inlineImage) {
+          log('ComposerController::insertImage(): ${inlineImage.source}|$maxWithEditor');
+          if (BuildUtils.isWeb) {
+            this.maxWithEditor = maxWithEditor;
+            _insertImageOnWeb(inlineImage);
+          }
+        }
+    ).show();
+  }
+
+  void _insertImageOnWeb(InlineImage inlineImage) {
+    if (inlineImage.source == ImageSource.local) {
+      _uploadInlineAttachmentsAction(inlineImage.fileInfo!);
+    } else {
+      richTextWebController.insertImage(inlineImage);
+    }
+  }
+
+  void _uploadInlineAttachmentsAction(FileInfo pickedFile) async {
+    if (uploadController.hasEnoughMaxAttachmentSize(listFiles: [pickedFile])) {
+      final session = mailboxDashBoardController.sessionCurrent;
+      final accountId = mailboxDashBoardController.accountId.value;
+      if (session != null && accountId != null) {
+        final uploadUri = session.getUploadUri(accountId);
+        uploadController.uploadInlineImage(pickedFile, uploadUri);
+      }
+    } else {
+      if (currentContext != null) {
+        showConfirmDialogAction(
+            currentContext!,
+            AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
+                filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
+            AppLocalizations.of(currentContext!).got_it,
+                () => {},
+            title: AppLocalizations.of(currentContext!).maximum_files_size,
+            hasCancelButton: false);
+      }
+    }
+  }
+
+  void _handleUploadInlineSuccess(SuccessAttachmentUploadState uploadState) {
+    uploadController.clearUploadInlineViewState();
+
+    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (baseDownloadUrl != null && accountId != null) {
+      final imageUrl = uploadState.attachment.getDownloadUrl(baseDownloadUrl, accountId);
+      log('ComposerController::_handleUploadInlineSuccess(): imageUrl: $imageUrl');
+      consumeState(_downloadImageAsBase64Interactor.execute(
+          imageUrl,
+          uploadState.attachment.cid!,
+          uploadState.fileInfo));
     }
   }
 

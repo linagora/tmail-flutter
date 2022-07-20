@@ -31,4 +31,12 @@ mixin AppLoaderMixin {
           progressColor: AppColor.primaryColor,
         ));
   }
+
+  Widget loadingWidgetWithSizeColor({double? size, Color? color}) {
+    return Center(child: SizedBox(
+        width: size ?? 24,
+        height: size ?? 24,
+        child: CircularProgressIndicator(
+            color: color ?? AppColor.colorLoading)));
+  }
 }

@@ -1614,4 +1614,49 @@ class AppLocalizations {
         'Save & close',
         name: 'saveAndClose');
   }
+
+  String get insertImage {
+    return Intl.message(
+        'Insert image',
+        name: 'insertImage');
+  }
+
+  String get selectFromFile {
+    return Intl.message(
+      'Select from file',
+      name: 'selectFromFile',
+    );
+  }
+
+  String get chooseImage {
+    return Intl.message(
+      'Choose image',
+      name: 'chooseImage',
+    );
+  }
+
+  String get urlLink {
+    return Intl.message(
+      'URL',
+      name: 'urlLink',
+    );
+  }
+
+  String get insert {
+    return Intl.message(
+        'Insert',
+        name: 'insert');
+  }
+
+  String get insertImageErrorFileEmpty {
+    return Intl.message(
+        'Please either choose an image or enter an image URL',
+        name: 'insertImageErrorFileEmpty');
+  }
+
+  String get insertImageErrorDuplicate {
+    return Intl.message(
+        'Please input either an image or an image URL, not both',
+        name: 'insertImageErrorDuplicate');
+  }
 }

@@ -171,6 +171,9 @@ dependencies:
 
   async: 2.8.2
 
+  # HTML5 parser
+  html: 0.15.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
