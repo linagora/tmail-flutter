@@ -53,7 +53,7 @@ class UploadAttachment extends Equatable {
     }
 
     if (attachment != null) {
-      _updateEvent(Right(SuccessAttachmentUploadState(uploadTaskId, attachment)));
+      _updateEvent(Right(SuccessAttachmentUploadState(uploadTaskId, attachment, fileInfo)));
     } else {
       _updateEvent(Left(ErrorAttachmentUploadState(uploadTaskId)));
     }
