@@ -115,7 +115,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void backToMailboxDashBoard(BuildContext context) {
-    if (!_responsiveUtils.isDesktop(context)) {
+    if (isMenuDrawerOpen) {
       closeMenuDrawer();
     }
     if (canBack(context)) {
