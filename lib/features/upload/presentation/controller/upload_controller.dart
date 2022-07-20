@@ -24,21 +24,27 @@ import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_sta
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:uuid/uuid.dart';
 
 class UploadController extends GetxController {
 
   final _imagePaths = Get.find<ImagePaths>();
   final _appToast = Get.find<AppToast>();
+  final _uuid = Get.find<Uuid>();
   final _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
   final UploadAttachmentInteractor _uploadAttachmentInteractor;
 
   final listUploadAttachments = <UploadFileState>[].obs;
+  final uploadInlineViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   final StreamGroup<Either<Failure, Success>> _progressUploadStateStreamGroup
     = StreamGroup<Either<Failure, Success>>.broadcast();
+  final StreamGroup<Either<Failure, Success>> _progressUploadInlineImageStateStreamGroup
+    = StreamGroup<Either<Failure, Success>>.broadcast();
 
   final UploadFileStateList _uploadingStateFiles = UploadFileStateList();
+  final UploadFileStateList _uploadingStateInlineFiles = UploadFileStateList();
 
   UploadController(this._uploadAttachmentInteractor);
 
@@ -52,11 +58,14 @@ class UploadController extends GetxController {
   void onClose() {
     _uploadingStateFiles.clear();
     _progressUploadStateStreamGroup.close();
+    _uploadingStateInlineFiles.clear();
+    _progressUploadInlineImageStateStreamGroup.close();
     super.onClose();
   }
 
   void _registerProgressUploadStateStream() {
     _progressUploadStateStreamGroup.stream.listen(_handleProgressUploadStateStream);
+    _progressUploadInlineImageStateStreamGroup.stream.listen(_handleProgressUploadInlineImageStateStream);
   }
 
   void _handleProgressUploadStateStream(Either<Failure, Success> uploadState) {
@@ -103,9 +112,64 @@ class UploadController extends GetxController {
             );
 
             _refreshListUploadAttachmentState();
-            _handleUploadAttachmentsSuccess(success);
+            if (success.attachment.disposition == ContentDisposition.attachment) {
+              _handleUploadAttachmentsSuccess(success);
+            } else {
+              _handleUploadInlineAttachmentsSuccess(success);
+            }
           }
         }
+    );
+  }
+
+  void _handleProgressUploadInlineImageStateStream(Either<Failure, Success> uploadState) {
+    uploadState.fold(
+      (failure) {
+        log('UploadController::_handleProgressUploadInlineImageStateStream():failure: $failure');
+        if (failure is ErrorAttachmentUploadState) {
+          uploadInlineViewState.value = Left(failure);
+          _deleteInlineFileUploaded(failure.uploadId);
+        }
+      },
+      (success) {
+        if (success is UploadingAttachmentUploadState) {
+          log('UploadController::_handleProgressUploadInlineImageStateStream():uploading[${success.uploadId}]: ${success.progress}');
+          _uploadingStateInlineFiles.updateElementByUploadTaskId(
+              success.uploadId,
+              (currentState) {
+                if (currentState?.uploadStatus.completed ?? false) {
+                  return currentState;
+                } else {
+                  return currentState?.copyWith(
+                      uploadingProgress: (success.progress * 100 / success.total).floor(),
+                      uploadStatus: UploadFileStatus.uploading);
+                }
+              }
+          );
+          uploadInlineViewState.value = Right(success);
+        } else if (success is SuccessAttachmentUploadState) {
+          log('UploadController::_handleProgressUploadInlineImageStateStream():succeed[${success.uploadId}]');
+          final inlineAttachment = success.attachment.toAttachmentWithDisposition(
+              disposition: ContentDisposition.inline,
+              cid: _uuid.v1());
+          _uploadingStateInlineFiles.updateElementByUploadTaskId(
+            success.uploadId,
+            (currentState) {
+              final newState = currentState?.copyWith(
+                  uploadingProgress: 100,
+                  uploadStatus: UploadFileStatus.succeed,
+                  attachment: inlineAttachment
+              );
+              return newState;
+            },
+          );
+          final newUploadSuccess = SuccessAttachmentUploadState(
+            success.uploadId,
+            inlineAttachment,
+            success.fileInfo);
+          _handleUploadInlineAttachmentsSuccess(newUploadSuccess);
+        }
+      }
     );
   }
 
@@ -170,8 +234,9 @@ class UploadController extends GetxController {
       return null;
     }
     return attachmentsUploaded
-        .map((attachment) => attachment.toEmailBodyPart(ContentDisposition.attachment.value))
-        .toSet();
+      .map((attachment) => attachment.toEmailBodyPart(
+          disposition: ContentDisposition.attachment.value))
+      .toSet();
   }
 
   void _handleUploadAttachmentsFailure(ErrorAttachmentUploadState failure) {
@@ -185,6 +250,7 @@ class UploadController extends GetxController {
   }
 
   void _handleUploadAttachmentsSuccess(SuccessAttachmentUploadState success) {
+    log('UploadController::_handleUploadAttachmentsSuccess(): $success');
     if (currentContext != null && currentOverlayContext != null && _uploadingStateFiles.allSuccess) {
       _appToast.showToastWithIcon(currentOverlayContext!,
           message: AppLocalizations.of(currentContext!).attachments_uploaded_successfully,
@@ -217,5 +283,59 @@ class UploadController extends GetxController {
   bool get allUploadAttachmentsCompleted {
     return listUploadAttachments
         .every((uploadFile) => uploadFile.uploadStatus.completed);
+  }
+
+  Future<void> uploadInlineImage(FileInfo uploadFile, Uri uploadUri) async {
+    log('UploadAttachmentManager::uploadInlineImage(): ${uploadFile.fileName}');
+
+    final cancelToken = CancelToken();
+    final uploadAttachment = _uploadAttachmentInteractor.execute(
+        uploadFile,
+        uploadUri,
+        cancelToken: cancelToken);
+
+    _uploadingStateInlineFiles.add(UploadFileState(
+        uploadAttachment.uploadTaskId,
+        file: uploadFile,
+        cancelToken: cancelToken));
+
+    await _progressUploadInlineImageStateStreamGroup.add(uploadAttachment.progressState);
+  }
+
+  void _deleteInlineFileUploaded(UploadTaskId uploadId) {
+    _uploadingStateInlineFiles.deleteElementByUploadTaskId(uploadId);
+  }
+
+  void clearInlineFileUploaded() {
+    _uploadingStateInlineFiles.clear();
+  }
+
+  void _handleUploadInlineAttachmentsSuccess(SuccessAttachmentUploadState success) {
+    uploadInlineViewState.value = Right(success);
+  }
+
+  void clearUploadInlineViewState() {
+    uploadInlineViewState.value = Right(UIState.idle);
+  }
+
+  Map<String, Attachment> get mapInlineAttachments {
+    final inlineAttachments = _uploadingStateInlineFiles.uploadingStateFiles
+        .whereNotNull()
+        .map((fileState) => fileState.attachment)
+        .whereNotNull()
+        .where((attachment) => attachment.cid != null)
+        .toList();
+
+    log('UploadController::mapInlineAttachments(): $inlineAttachments');
+
+    if (inlineAttachments.isEmpty) {
+      return {};
+    }
+
+    final mapInlineAttachments = {
+      for (var item in inlineAttachments) item.cid!: item
+    };
+
+    return mapInlineAttachments;
   }
 }
