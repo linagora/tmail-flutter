@@ -1453,5 +1453,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "Вы отметили {count} сообщения(-ий) в \"{mailboxName}\" как прочитанные",
+  "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName",
+      "count"
+    ],
+    "placeholders": {
+      "mailboxName": {},
+      "count": {}
+    }
   }
 }
