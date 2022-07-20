@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,6 +44,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   late double actualHeight;
   double minHeight = 100;
   double minWidth = 300;
+  final double maxHeightForAndroid = 6000;
   String? _htmlData;
   late WebViewController _webViewController;
   bool _isLoading = true;
@@ -99,18 +101,23 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         widget.onCreated?.call(controller);
       },
       onPageFinished: (url) async {
-        final scrollHeightText = await _webViewController.runJavascriptReturningResult('document.body.scrollHeight');
-        final scrollHeight = double.tryParse(scrollHeightText);
-        developer.log('onPageFinished(): scrollHeightText: $scrollHeightText', name: 'HtmlContentViewer');
-        if ((scrollHeight != null) && mounted) {
-          final scrollHeightWithBuffer = scrollHeight + 30.0;
-          if (scrollHeightWithBuffer > minHeight) {
-            setState(() {
-              actualHeight = scrollHeightWithBuffer;
-              _isLoading = false;
-            });
+          final scrollHeightText = await _webViewController.runJavascriptReturningResult('document.body.scrollHeight');
+          final scrollHeight = double.tryParse(scrollHeightText);
+          developer.log('onPageFinished(): scrollHeightText: $scrollHeightText', name: 'HtmlContentViewer');
+          if ((scrollHeight != null) && mounted) {
+            final scrollHeightWithBuffer = scrollHeight + 30.0;
+            if (scrollHeightWithBuffer > minHeight) {
+              setState(() {
+                //TODO: It hotfix for web_view crash on android device and waiting lib web_view update to fix this issue
+                if(Platform.isAndroid && scrollHeightWithBuffer > maxHeightForAndroid){
+                  actualHeight = maxHeightForAndroid;
+                } else {
+                  actualHeight = scrollHeightWithBuffer;
+                }
+                _isLoading = false;
+              });
+            }
           }
-        }
         if (mounted && _isLoading) {
           setState(() {
             _isLoading = false;
