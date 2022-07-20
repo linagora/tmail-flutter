@@ -1,0 +1,5 @@
+
+enum ImageSource {
+  local,
+  network
+}
