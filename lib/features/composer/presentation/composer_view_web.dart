@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -11,13 +10,14 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
+import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
@@ -54,14 +54,19 @@ class ComposerView extends GetWidget<ComposerController>
                         : const SizedBox.shrink()),
                     _buildEmailAddress(context, constraints),
                     const Divider(color: AppColor.colorDividerComposer, height: 1),
-                    Padding(padding: const EdgeInsets.symmetric(horizontal: 16),  child: _buildSubjectEmail(context)),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _buildSubjectEmail(context)),
                     const Divider(color: AppColor.colorDividerComposer, height: 1),
-                    Padding(padding: const EdgeInsets.symmetric(horizontal: 16),  child: _buildListButton(context)),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _buildListButton(context, constraints)),
                     const Divider(color: AppColor.colorDividerComposer, height: 1),
                     Expanded(child: Column(
                         children: [
                           _buildAttachmentsWidget(context),
                           _buildToolbarRichTextWidget(),
+                          _buildInlineLoadingView(),
                           _buildEditorForm(context)
                         ]
                     )),
@@ -282,7 +287,7 @@ class ComposerView extends GetWidget<ComposerController>
                   const Divider(color: AppColor.colorDividerComposer, height: 1),
                   Padding(padding: const EdgeInsets.only(right: 16), child: _buildSubjectEmail(context)),
                   const Divider(color: AppColor.colorDividerComposer, height: 1),
-                  _buildListButton(context),
+                  _buildListButton(context, constraints),
                 ]),
               ))
             ])),
@@ -295,6 +300,7 @@ class ComposerView extends GetWidget<ComposerController>
                 children: [
                   _buildAttachmentsWidget(context),
                   _buildToolbarRichTextWidget(),
+                  _buildInlineLoadingView(),
                   _buildEditorForm(context)
                 ]
             ))),
@@ -483,7 +489,7 @@ class ComposerView extends GetWidget<ComposerController>
     );
   }
 
-  Widget _buildListButton(BuildContext context) {
+  Widget _buildListButton(BuildContext context, BoxConstraints constraints) {
     return  Transform(
         transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
         child: Padding(
@@ -499,6 +505,17 @@ class ComposerView extends GetWidget<ComposerController>
                       fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).attach_file,
                   onTap: () => controller.openFilePickerByType(context, FileType.any)),
+              const SizedBox(width: 4),
+              buildIconWeb(
+                  minSize: 40,
+                  iconPadding: EdgeInsets.zero,
+                  icon: SvgPicture.asset(imagePaths.icInsertImage,
+                      color: AppColor.colorTextButton,
+                      fit: BoxFit.fill),
+                  tooltip: AppLocalizations.of(context).insertImage,
+                  onTap: () => controller.insertImage(
+                      context,
+                      maxWithEditor: constraints.maxWidth - 120)),
             ])
         )
     );
@@ -604,7 +621,6 @@ class ComposerView extends GetWidget<ComposerController>
           )
         )
     );
-    // });
   }
 
   Widget _buildAttachmentsWidget(BuildContext context) {
@@ -622,7 +638,6 @@ class ComposerView extends GetWidget<ComposerController>
                   context,
                   attachments,
                   controller.expandModeAttachments.value)),
-          _buildAttachmentsLoadingView(),
           Padding(
               padding: EdgeInsets.only(
                   bottom: 8,
@@ -639,19 +654,6 @@ class ComposerView extends GetWidget<ComposerController>
     });
   }
 
-  Widget _buildAttachmentsLoadingView({EdgeInsets? padding, double? size}) {
-    return Obx(() => controller.viewState.value.fold(
-      (failure) => const SizedBox.shrink(),
-      (success) => success is UploadingAttachmentState
-        ? Center(child: Padding(
-            padding: padding ?? const EdgeInsets.all(10),
-            child: SizedBox(
-                width: size ?? 20,
-                height: size ??  20,
-                child: const CupertinoActivityIndicator(color: AppColor.colorTextButton))))
-        : const SizedBox.shrink()));
-  }
-
   Widget _buildAttachmentsTitle(
       BuildContext context,
       List<UploadFileState> uploadFilesState,
@@ -661,7 +663,6 @@ class ComposerView extends GetWidget<ComposerController>
         Text(
             '${AppLocalizations.of(context).attachments} (${filesize(uploadFilesState.totalSize, 0)}):',
             style: const TextStyle(fontSize: 12, color: AppColor.colorHintEmailAddressInput, fontWeight: FontWeight.normal)),
-        _buildAttachmentsLoadingView(padding: const EdgeInsets.only(left: 16), size: 16),
         const Spacer(),
         Material(
             type: MaterialType.circle,
@@ -745,5 +746,21 @@ class ComposerView extends GetWidget<ComposerController>
         })).toList()
       ),
     );
+  }
+
+  Widget _buildInlineLoadingView() {
+    return Obx(() => controller.uploadController.uploadInlineViewState.value.fold(
+      (failure) => const SizedBox.shrink(),
+      (success) {
+        if (success is UploadingAttachmentUploadState ||
+            success is DownloadingImageAsBase64) {
+          return Padding(
+            padding: const EdgeInsets.all(5),
+            child: loadingWidgetWithSizeColor(
+                size: 30,
+                color: AppColor.primaryColor));
+        }
+        return const SizedBox.shrink();
+      }));
   }
 }

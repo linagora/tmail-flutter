@@ -3,7 +3,9 @@ import 'package:core/core.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
+import 'package:tmail_ui_user/features/composer/data/datasource_impl/composer_datasource_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/contact_datasource_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/auto_complete_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/composer_repository_impl.dart';
@@ -11,6 +13,7 @@ import 'package:tmail_ui_user/features/composer/data/repository/contact_reposito
 import 'package:tmail_ui_user/features/composer/domain/repository/auto_complete_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
@@ -74,6 +77,7 @@ class ComposerBindings extends BaseBindings {
     }
 
     Get.lazyPut(() => AttachmentUploadDataSourceImpl(Get.find<FileUploader>()));
+    Get.lazyPut(() => ComposerDataSourceImpl(Get.find<DownloadClient>()));
     Get.lazyPut(() => ContactDataSourceImpl());
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
@@ -88,6 +92,7 @@ class ComposerBindings extends BaseBindings {
   @override
   void bindingsDataSource() {
     Get.lazyPut<AttachmentUploadDataSource>(() => Get.find<AttachmentUploadDataSourceImpl>());
+    Get.lazyPut<ComposerDataSource>(() => Get.find<ComposerDataSourceImpl>());
     Get.lazyPut<ContactDataSource>(() => Get.find<ContactDataSourceImpl>());
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
@@ -96,7 +101,9 @@ class ComposerBindings extends BaseBindings {
 
   @override
   void bindingsRepositoryImpl() {
-    Get.lazyPut(() => ComposerRepositoryImpl(Get.find<AttachmentUploadDataSource>()));
+    Get.lazyPut(() => ComposerRepositoryImpl(
+        Get.find<AttachmentUploadDataSource>(),
+        Get.find<ComposerDataSource>()));
     Get.lazyPut(() => AutoCompleteRepositoryImpl(dataSources));
     Get.lazyPut(() => ContactRepositoryImpl(Get.find<ContactDataSource>()));
     Get.lazyPut(() => EmailRepositoryImpl(
@@ -132,6 +139,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => GetAllIdentitiesInteractor(Get.find<ManageAccountRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => SaveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
+    Get.lazyPut(() => DownloadImageAsBase64Interactor(Get.find<ComposerRepository>()));
   }
 
   @override
@@ -153,6 +161,7 @@ class ComposerBindings extends BaseBindings {
         Get.find<RemoveComposerCacheOnWebInteractor>(),
         Get.find<SaveComposerCacheOnWebInteractor>(),
         Get.find<RichTextWebController>(),
+        Get.find<DownloadImageAsBase64Interactor>(),
     ));
   }
 

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-07-11T12:17:57.489417",
+  "@@last_modified": "2022-07-18T16:31:40.598846",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1570,6 +1570,48 @@
   },
   "saveAndClose": "Save & close",
   "@saveAndClose": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertImage": "Insert image",
+  "@insertImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectFromFile": "Select from file",
+  "@selectFromFile": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseImage": "Choose image",
+  "@chooseImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "urlLink": "URL",
+  "@urlLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insert": "Insert",
+  "@insert": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertImageErrorFileEmpty": "Please either choose an image or enter an image URL",
+  "@insertImageErrorFileEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertImageErrorDuplicate": "Please input either an image or an image URL, not both",
+  "@insertImageErrorDuplicate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

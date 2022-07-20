@@ -131,6 +131,7 @@ class ImagePaths {
   String get icStyleBold => _getImagePath('ic_style_bold.svg');
   String get icStyleItalic => _getImagePath('ic_style_italic.svg');
   String get icStyleUnderline => _getImagePath('ic_style_underline.svg');
+  String get icInsertImage => _getImagePath('ic_insert_image.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
