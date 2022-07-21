@@ -20,6 +20,7 @@ class RichTextWebController extends BaseRichTextController {
 
   final listTextStyleApply = RxList<RichTextStyleType>();
   final selectedTextColor = Colors.black.obs;
+  final selectedTextBackgroundColor = Colors.transparent.obs;
 
   void onEditorSettingsChange(EditorSettings settings) {
     log('RichTextWebController::onEditorSettingsChange():');
@@ -47,18 +48,55 @@ class RichTextWebController extends BaseRichTextController {
         openMenuSelectColor(
             context,
             selectedTextColor.value,
+            onResetToDefault: () {
+              final colorAsString = (Colors.black.value & 0xFFFFFF)
+                  .toRadixString(16)
+                  .padLeft(6, '0')
+                  .toUpperCase();
+              selectedTextColor.value = Colors.black;
+              editorController.execCommand(
+                  textStyleType.commandAction,
+                  argument: colorAsString);
+            },
             onSelectColor: (selectedColor) {
                 final newColor = selectedColor ?? Colors.black;
                 final colorAsString = (newColor.value & 0xFFFFFF)
                     .toRadixString(16)
                     .padLeft(6, '0')
                     .toUpperCase();
-                log('RichTextWebController::applyRichTextStyle(): color: $newColor');
-                log('RichTextWebController::applyRichTextStyle(): colorAsString: $colorAsString');
+                log('RichTextWebController::applyRichTextStyle():selectedTextColor: colorAsString: $colorAsString');
                 selectedTextColor.value = newColor;
                 editorController.execCommand(
                     textStyleType.commandAction,
                     argument: colorAsString);
+            }
+        );
+        break;
+      case RichTextStyleType.textBackgroundColor:
+        openMenuSelectColor(
+            context,
+            selectedTextBackgroundColor.value,
+            onResetToDefault: () {
+              final colorAsString = (Colors.transparent.value & 0xFFFFFF)
+                  .toRadixString(16)
+                  .padLeft(6, '0')
+                  .toUpperCase();
+              selectedTextBackgroundColor.value = Colors.transparent;
+              editorController.execCommand(
+                  textStyleType.commandAction,
+                  argument: colorAsString);
+            },
+            onSelectColor: (selectedColor) {
+              final newColor = selectedColor ?? Colors.transparent;
+              final colorAsString = (newColor.value & 0xFFFFFF)
+                  .toRadixString(16)
+                  .padLeft(6, '0')
+                  .toUpperCase();
+              log('RichTextWebController::applyRichTextStyle():textBackgroundColor: colorAsString: $colorAsString');
+              selectedTextBackgroundColor.value = newColor;
+              editorController.execCommand(
+                  textStyleType.commandAction,
+                  argument: colorAsString);
             }
         );
         break;

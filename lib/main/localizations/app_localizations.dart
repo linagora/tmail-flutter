@@ -1707,4 +1707,10 @@ class AppLocalizations {
         'Text Color',
         name: 'formatTextColor');
   }
+
+  String get formatTextBackgroundColor {
+    return Intl.message(
+        'Text Background Color',
+        name: 'formatTextBackgroundColor');
+  }
 }
