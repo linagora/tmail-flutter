@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum RichTextStyleType {
+  fontName,
   bold,
   italic,
   underline,
@@ -13,6 +14,8 @@ enum RichTextStyleType {
 
   String get commandAction {
     switch (this) {
+      case fontName:
+        return 'fontName';
       case bold:
         return 'bold';
       case italic:

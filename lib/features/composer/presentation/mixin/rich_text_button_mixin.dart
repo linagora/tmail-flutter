@@ -33,15 +33,34 @@ mixin RichTextButtonMixin {
     required VoidCallback onTap,
     String? tooltip
   }){
-    final newColor = colorSelected == Colors.transparent
+    return buildIconWeb(
+      icon: Icon(iconData, color: colorSelected ?? Colors.black, size: 20),
+      iconPadding: const EdgeInsets.all(4),
+      colorSelected: colorSelected == Colors.white
+        ? AppColor.colorFocusRichTextButton
+        : Colors.transparent,
+      colorFocus: Colors.white,
+      minSize: 20,
+      tooltip: tooltip,
+      onTap: onTap,
+    );
+  }
+
+  Widget buildIconColorBackgroundText({
+    required IconData? iconData,
+    required Color? colorSelected,
+    required VoidCallback onTap,
+    String? tooltip
+  }){
+    final newColor = colorSelected == Colors.white
         ? AppColor.colorDefaultRichTextButton
         : colorSelected;
     return buildIconWeb(
-      icon: Icon(iconData, color: newColor ?? Colors.black, size: 20),
+      icon: Icon(iconData, color: newColor ?? AppColor.colorDefaultRichTextButton, size: 20),
       iconPadding: const EdgeInsets.all(4),
       colorSelected: newColor == Colors.white
-        ? AppColor.colorFocusRichTextButton
-        : Colors.transparent,
+          ? AppColor.colorFocusRichTextButton
+          : Colors.transparent,
       colorFocus: Colors.white,
       minSize: 20,
       tooltip: tooltip,

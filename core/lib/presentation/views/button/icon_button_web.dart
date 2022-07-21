@@ -129,39 +129,6 @@ Widget buildTextButton(String text, {
 Widget buildButtonWrapText(String name, {
   TextStyle? textStyle,
   Color? bgColor,
-  double? radius,
-  double? height,
-  EdgeInsets? padding,
-  IconWebCallback? onTap
-}) {
-  return Container(
-    height: height ?? 40,
-    padding: padding,
-    child: ElevatedButton(
-      onPressed: () => onTap?.call(),
-      style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>(
-              (Set<MaterialState> states) => bgColor ?? AppColor.colorTextButton),
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(radius ?? 8),
-              side: BorderSide(width: 0, color: bgColor ?? AppColor.colorTextButton))),
-          padding: MaterialStateProperty.resolveWith<EdgeInsets>(
-              (Set<MaterialState> states) => const EdgeInsets.symmetric(horizontal: 16)),
-          elevation: MaterialStateProperty.resolveWith<double>(
-              (Set<MaterialState> states) => 0)),
-      child: Text(name,
-          textAlign: TextAlign.center,
-          style: textStyle ??
-              const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white)),
-    ),
-  );
-}
-Widget buildButtonWrapText(String name, {
-  TextStyle? textStyle,
-  Color? bgColor,
   Color? borderColor,
   double? radius,
   double? height,
