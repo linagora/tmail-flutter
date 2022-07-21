@@ -10,6 +10,7 @@ mixin RichTextButtonMixin {
     required String path,
     required bool? isSelected,
     required VoidCallback onTap,
+    String? tooltip
   }){
     return buildIconWeb(
       icon: SvgPicture.asset(
@@ -21,6 +22,23 @@ mixin RichTextButtonMixin {
       iconPadding: const EdgeInsets.all(4),
       colorFocus: Colors.white,
       minSize: 26,
+      tooltip: tooltip,
+      onTap: onTap,
+    );
+  }
+
+  Widget buildIconColorText({
+    required IconData? iconData,
+    required Color? colorSelected,
+    required VoidCallback onTap,
+    String? tooltip
+  }){
+    return buildIconWeb(
+      icon: Icon(iconData, color: colorSelected ?? Colors.black, size: 20),
+      iconPadding: const EdgeInsets.all(4),
+      colorFocus: Colors.white,
+      minSize: 20,
+      tooltip: tooltip,
       onTap: onTap,
     );
   }
