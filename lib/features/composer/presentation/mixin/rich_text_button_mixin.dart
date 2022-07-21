@@ -17,7 +17,7 @@ mixin RichTextButtonMixin {
           path,
           color: isSelected == true
               ? Colors.black
-              : AppColor.colorDividerMailbox,
+              : AppColor.colorDefaultRichTextButton,
           fit: BoxFit.fill),
       iconPadding: const EdgeInsets.all(4),
       colorFocus: Colors.white,
@@ -33,9 +33,15 @@ mixin RichTextButtonMixin {
     required VoidCallback onTap,
     String? tooltip
   }){
+    final newColor = colorSelected == Colors.transparent
+        ? AppColor.colorDefaultRichTextButton
+        : colorSelected;
     return buildIconWeb(
-      icon: Icon(iconData, color: colorSelected ?? Colors.black, size: 20),
+      icon: Icon(iconData, color: newColor ?? Colors.black, size: 20),
       iconPadding: const EdgeInsets.all(4),
+      colorSelected: newColor == Colors.white
+        ? AppColor.colorFocusRichTextButton
+        : Colors.transparent,
       colorFocus: Colors.white,
       minSize: 20,
       tooltip: tooltip,

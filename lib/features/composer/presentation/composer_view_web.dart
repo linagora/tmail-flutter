@@ -735,9 +735,10 @@ class ComposerView extends GetWidget<ComposerController>
   }
 
   Widget _buildToolbarRichTextWidget(BuildContext context) {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.only(left: 20, top: 4, bottom: 8),
-      child: Row(
+      alignment: Alignment.centerLeft,
+      child: Wrap(
         children: RichTextStyleType.values.map((textType) => Obx(() {
           switch(textType) {
             case RichTextStyleType.textColor:
@@ -746,6 +747,15 @@ class ComposerView extends GetWidget<ComposerController>
                   colorSelected: controller.richTextWebController.selectedTextColor.value,
                   tooltip: textType.getTooltipButton(context),
                   onTap: () => controller.richTextWebController.applyRichTextStyle(context, textType));
+            case RichTextStyleType.textBackgroundColor:
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: buildIconColorText(
+                    iconData: textType.getIconData(),
+                    colorSelected: controller.richTextWebController.selectedTextBackgroundColor.value,
+                    tooltip: textType.getTooltipButton(context),
+                    onTap: () => controller.richTextWebController.applyRichTextStyle(context, textType)),
+              );
             default:
               return buildIconStyleText(
                   path: textType.getIcon(imagePaths),

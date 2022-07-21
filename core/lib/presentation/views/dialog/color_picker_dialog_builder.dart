@@ -11,6 +11,7 @@ class ColorPickerDialogBuilder {
 
   final SelectColorActionCallback? setColorActionCallback;
   final VoidCallback? cancelActionCallback;
+  final VoidCallback? resetToDefaultActionCallback;
   final BuildContext _context;
   final Color defaultColor;
   final Color _currentColor;
@@ -31,9 +32,10 @@ class ColorPickerDialogBuilder {
       this.textActionResetDefault,
       this.defaultColor = Colors.black,
       this.setColorActionCallback,
-      this.cancelActionCallback
+      this.cancelActionCallback,
+      this.resetToDefaultActionCallback
     }
-  );
+  ) : _colorSelected = _currentColor;
 
   Future show() async {
     await showDialog(context: _context, builder: (BuildContext context) {
@@ -99,7 +101,7 @@ class ColorPickerDialogBuilder {
                     fontWeight: FontWeight.normal),
                 bgColor: Colors.white,
                 borderColor: Colors.black26,
-                onTap: () => setColorActionCallback?.call(Colors.black)),
+                onTap: () => resetToDefaultActionCallback?.call()),
             buildButtonWrapText(
                 textActionSetColor ?? '',
                 radius: 5,
