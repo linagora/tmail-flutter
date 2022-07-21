@@ -4,7 +4,8 @@ import 'package:core/presentation/resources/image_paths.dart';
 enum RichTextStyleType {
   bold,
   italic,
-  underline;
+  underline,
+  strikeThrough;
 
   String get commandAction {
     switch (this) {
@@ -14,6 +15,8 @@ enum RichTextStyleType {
         return 'italic';
       case underline:
         return 'underline';
+      case strikeThrough:
+        return 'strikeThrough';
       default:
         return '';
     }
@@ -27,6 +30,8 @@ enum RichTextStyleType {
         return imagePaths.icStyleItalic;
       case underline:
         return imagePaths.icStyleUnderline;
+      case strikeThrough:
+        return imagePaths.icStyleStrikeThrough;
       default:
         return '';
     }

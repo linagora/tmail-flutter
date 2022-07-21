@@ -20,6 +20,10 @@ class RichTextMobileTabletController extends GetxController {
       if (formatSettings.isUnderline) {
         listTextStyleApply.add(RichTextStyleType.underline);
       }
+
+      if (formatSettings.isStrikeThrough) {
+        listTextStyleApply.add(RichTextStyleType.strikeThrough);
+      }
     };
   }
 
