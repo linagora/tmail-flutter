@@ -65,7 +65,7 @@ class ComposerView extends GetWidget<ComposerController>
                     Expanded(child: Column(
                         children: [
                           _buildAttachmentsWidget(context),
-                          _buildToolbarRichTextWidget(),
+                          _buildToolbarRichTextWidget(context),
                           _buildInlineLoadingView(),
                           _buildEditorForm(context)
                         ]
@@ -299,7 +299,7 @@ class ComposerView extends GetWidget<ComposerController>
             child: Column(
                 children: [
                   _buildAttachmentsWidget(context),
-                  _buildToolbarRichTextWidget(),
+                  _buildToolbarRichTextWidget(context),
                   _buildInlineLoadingView(),
                   _buildEditorForm(context)
                 ]
@@ -734,15 +734,25 @@ class ComposerView extends GetWidget<ComposerController>
     }
   }
 
-  Widget _buildToolbarRichTextWidget() {
+  Widget _buildToolbarRichTextWidget(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 20, top: 4, bottom: 8),
       child: Row(
         children: RichTextStyleType.values.map((textType) => Obx(() {
-          return buildIconStyleText(
-            path: textType.getIcon(imagePaths),
-            isSelected: controller.richTextWebController.isTextStyleTypeSelected(textType),
-            onTap: () => controller.richTextWebController.applyRichTextStyle(textType));
+          switch(textType) {
+            case RichTextStyleType.textColor:
+              return buildIconColorText(
+                  iconData: textType.getIconData(),
+                  colorSelected: controller.richTextWebController.selectedTextColor.value,
+                  tooltip: textType.getTooltipButton(context),
+                  onTap: () => controller.richTextWebController.applyRichTextStyle(context, textType));
+            default:
+              return buildIconStyleText(
+                  path: textType.getIcon(imagePaths),
+                  isSelected: controller.richTextWebController.isTextStyleTypeSelected(textType),
+                  tooltip: textType.getTooltipButton(context),
+                  onTap: () => controller.richTextWebController.applyRichTextStyle(context, textType));
+          }
         })).toList()
       ),
     );
