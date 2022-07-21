@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-07-18T16:31:40.598846",
+  "@@last_modified": "2022-07-21T13:16:06.832687",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1612,6 +1612,54 @@
   },
   "insertImageErrorDuplicate": "Please input either an image or an image URL, not both",
   "@insertImageErrorDuplicate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseAColor": "Choose a color",
+  "@chooseAColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "resetToDefault": "Reset to default",
+  "@resetToDefault": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "setColor": "Set color",
+  "@setColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatBold": "Bold",
+  "@formatBold": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatItalic": "Italic",
+  "@formatItalic": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatUnderline": "Underline",
+  "@formatUnderline": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatStrikethrough": "Strikethrough",
+  "@formatStrikethrough": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatTextColor": "Text Color",
+  "@formatTextColor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

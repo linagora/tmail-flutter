@@ -4,18 +4,22 @@ import 'package:dartz/dartz.dart';
 import 'package:html/parser.dart' show parse;
 
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 
-class RichTextWebController extends GetxController {
+class RichTextWebController extends BaseRichTextController {
 
   final editorController = HtmlEditorController(processNewLineAsBr: true);
 
   final listTextStyleApply = RxList<RichTextStyleType>();
+  final selectedTextColor = Colors.black.obs;
 
   void onEditorSettingsChange(EditorSettings settings) {
     log('RichTextWebController::onEditorSettingsChange():');
@@ -37,9 +41,32 @@ class RichTextWebController extends GetxController {
     }
   }
 
-  void applyRichTextStyle(RichTextStyleType textStyleType) {
-    editorController.execCommand(textStyleType.commandAction);
-    _selectTextStyleType(textStyleType);
+  void applyRichTextStyle(BuildContext context, RichTextStyleType textStyleType) {
+    switch(textStyleType) {
+      case RichTextStyleType.textColor:
+        openMenuSelectColor(
+            context,
+            selectedTextColor.value,
+            onSelectColor: (selectedColor) {
+                final newColor = selectedColor ?? Colors.black;
+                final colorAsString = (newColor.value & 0xFFFFFF)
+                    .toRadixString(16)
+                    .padLeft(6, '0')
+                    .toUpperCase();
+                log('RichTextWebController::applyRichTextStyle(): color: $newColor');
+                log('RichTextWebController::applyRichTextStyle(): colorAsString: $colorAsString');
+                selectedTextColor.value = newColor;
+                editorController.execCommand(
+                    textStyleType.commandAction,
+                    argument: colorAsString);
+            }
+        );
+        break;
+      default:
+        editorController.execCommand(textStyleType.commandAction);
+        _selectTextStyleType(textStyleType);
+        break;
+    }
   }
 
   void _selectTextStyleType(RichTextStyleType textStyleType) {
