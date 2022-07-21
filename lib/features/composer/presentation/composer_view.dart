@@ -515,6 +515,15 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
             }
         ),
         buildIconStyleText(
+            path: RichTextStyleType.strikeThrough.getIcon(imagePaths),
+            isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.strikeThrough),
+            onTap: () async {
+              await controller.htmlEditorApi?.formatStrikeThrough().then((value) {
+                controller.richTextMobileTabletController.selectTextStyleType(RichTextStyleType.strikeThrough);
+              });
+            }
+        ),
+        buildIconStyleText(
             path: RichTextStyleType.underline.getIcon(imagePaths),
             isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.underline),
             onTap: () async {
