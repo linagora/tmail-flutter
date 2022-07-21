@@ -11,8 +11,10 @@ import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
+import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
@@ -736,9 +738,11 @@ class ComposerView extends GetWidget<ComposerController>
 
   Widget _buildToolbarRichTextWidget(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: 20, top: 4, bottom: 8),
+      padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
       alignment: Alignment.centerLeft,
       child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: RichTextStyleType.values.map((textType) => Obx(() {
           switch(textType) {
             case RichTextStyleType.textColor:
@@ -750,12 +754,24 @@ class ComposerView extends GetWidget<ComposerController>
             case RichTextStyleType.textBackgroundColor:
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: buildIconColorText(
+                child: buildIconColorBackgroundText(
                     iconData: textType.getIconData(),
                     colorSelected: controller.richTextWebController.selectedTextBackgroundColor.value,
                     tooltip: textType.getTooltipButton(context),
                     onTap: () => controller.richTextWebController.applyRichTextStyle(context, textType)),
               );
+            case RichTextStyleType.fontName:
+              return Container(
+                width: 200,
+                padding: const EdgeInsets.only(right: 2),
+                child: DropDownButtonWidget<FontNameType>(
+                    items: FontNameType.values,
+                    itemSelected: controller.richTextWebController.selectedFontName.value,
+                    onChanged: (newFont) => controller.richTextWebController.applyNewFontStyle(newFont),
+                    heightItem: 35,
+                    sizeIconChecked: 16,
+                    radiusButton: 5,
+                    supportSelectionIcon: true));
             default:
               return buildIconStyleText(
                   path: textType.getIcon(imagePaths),
