@@ -1659,4 +1659,52 @@ class AppLocalizations {
         'Please input either an image or an image URL, not both',
         name: 'insertImageErrorDuplicate');
   }
+
+  String get chooseAColor {
+    return Intl.message(
+        'Choose a color',
+        name: 'chooseAColor');
+  }
+
+  String get resetToDefault {
+    return Intl.message(
+        'Reset to default',
+        name: 'resetToDefault');
+  }
+
+  String get setColor {
+    return Intl.message(
+        'Set color',
+        name: 'setColor');
+  }
+
+  String get formatBold {
+    return Intl.message(
+        'Bold',
+        name: 'formatBold');
+  }
+
+  String get formatItalic {
+    return Intl.message(
+        'Italic',
+        name: 'formatItalic');
+  }
+
+  String get formatUnderline {
+    return Intl.message(
+        'Underline',
+        name: 'formatUnderline');
+  }
+
+  String get formatStrikethrough {
+    return Intl.message(
+        'Strikethrough',
+        name: 'formatStrikethrough');
+  }
+
+  String get formatTextColor {
+    return Intl.message(
+        'Text Color',
+        name: 'formatTextColor');
+  }
 }
