@@ -5,13 +5,13 @@ import 'package:html/parser.dart' show parse;
 
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 
 class RichTextWebController extends BaseRichTextController {
@@ -20,7 +20,8 @@ class RichTextWebController extends BaseRichTextController {
 
   final listTextStyleApply = RxList<RichTextStyleType>();
   final selectedTextColor = Colors.black.obs;
-  final selectedTextBackgroundColor = Colors.transparent.obs;
+  final selectedTextBackgroundColor = Colors.white.obs;
+  final selectedFontName = FontNameType.sansSerif.obs;
 
   void onEditorSettingsChange(EditorSettings settings) {
     log('RichTextWebController::onEditorSettingsChange():');
@@ -77,17 +78,18 @@ class RichTextWebController extends BaseRichTextController {
             context,
             selectedTextBackgroundColor.value,
             onResetToDefault: () {
-              final colorAsString = (Colors.transparent.value & 0xFFFFFF)
+              final colorAsString = (Colors.white.value & 0xFFFFFF)
                   .toRadixString(16)
                   .padLeft(6, '0')
                   .toUpperCase();
-              selectedTextBackgroundColor.value = Colors.transparent;
+              log('RichTextWebController::applyRichTextStyle():onResetToDefault: colorAsString: $colorAsString');
+              selectedTextBackgroundColor.value = Colors.white;
               editorController.execCommand(
                   textStyleType.commandAction,
                   argument: colorAsString);
             },
             onSelectColor: (selectedColor) {
-              final newColor = selectedColor ?? Colors.transparent;
+              final newColor = selectedColor ?? Colors.white;
               final colorAsString = (newColor.value & 0xFFFFFF)
                   .toRadixString(16)
                   .padLeft(6, '0')
@@ -154,5 +156,13 @@ class RichTextWebController extends BaseRichTextController {
     log('RichTextWebController::refactorContentHasInlineImage(): $newContent');
     log('RichTextWebController::refactorContentHasInlineImage(): listInlineAttachment: $listInlineAttachment');
     return Tuple2(newContent, listInlineAttachment);
+  }
+
+  void applyNewFontStyle(FontNameType? newFont) {
+    final fontSelected = newFont ?? FontNameType.sansSerif;
+    selectedFontName.value = fontSelected;
+    editorController.execCommand(
+        RichTextStyleType.fontName.commandAction,
+        argument: fontSelected.fontFamily);
   }
 }
