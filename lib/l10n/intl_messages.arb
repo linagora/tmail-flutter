@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-07-21T13:16:06.832687",
+  "@@last_modified": "2022-07-21T14:49:43.482260",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1660,6 +1660,12 @@
   },
   "formatTextColor": "Text Color",
   "@formatTextColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatTextBackgroundColor": "Text Background Color",
+  "@formatTextBackgroundColor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

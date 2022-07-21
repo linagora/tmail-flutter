@@ -121,6 +121,8 @@ extension AppColor on Color {
   static const colorButtonCancelDialog = Color(0x0D000000);
   static const colorShadowComposerButton = Color(0x99007AFF);
   static const colorBackgroundTagFilter = Color(0x6D7885);
+  static const colorDefaultRichTextButton = Color(0xFF99A2AD);
+  static const colorFocusRichTextButton = Color(0x146D7885);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
