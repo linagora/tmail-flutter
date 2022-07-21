@@ -75,6 +75,8 @@ dependencies:
 
   flutter_keyboard_visibility: 5.2.0
 
+  flex_color_picker: 2.5.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
