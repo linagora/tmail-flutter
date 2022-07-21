@@ -10,7 +10,10 @@ abstract class BaseRichTextController extends GetxController {
   void openMenuSelectColor(
     BuildContext context,
     Color currentColor,
-    {Function(Color?)? onSelectColor}
+    {
+      Function(Color?)? onSelectColor,
+      VoidCallback? onResetToDefault,
+    }
   ) async {
     await ColorPickerDialogBuilder(
         context,
@@ -20,6 +23,10 @@ abstract class BaseRichTextController extends GetxController {
         textActionResetDefault: AppLocalizations.of(context).resetToDefault,
         textActionCancel: AppLocalizations.of(context).cancel,
         cancelActionCallback: () => popBack(),
+        resetToDefaultActionCallback: () {
+          onResetToDefault?.call();
+          popBack();
+        },
         setColorActionCallback: (selectedColor) {
           onSelectColor?.call(selectedColor);
           popBack();

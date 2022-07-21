@@ -8,7 +8,8 @@ enum RichTextStyleType {
   italic,
   underline,
   strikeThrough,
-  textColor;
+  textColor,
+  textBackgroundColor;
 
   String get commandAction {
     switch (this) {
@@ -22,6 +23,8 @@ enum RichTextStyleType {
         return 'strikeThrough';
       case textColor:
         return 'foreColor';
+      case textBackgroundColor:
+        return 'hiliteColor';
       default:
         return '';
     }
@@ -46,6 +49,8 @@ enum RichTextStyleType {
     switch (this) {
       case textColor:
         return Icons.format_color_text;
+      case textBackgroundColor:
+        return Icons.format_color_fill;
       default:
         return null;
     }
@@ -63,6 +68,8 @@ enum RichTextStyleType {
         return AppLocalizations.of(context).formatStrikethrough;
       case textColor:
         return AppLocalizations.of(context).formatTextColor;
+      case textBackgroundColor:
+        return AppLocalizations.of(context).formatTextBackgroundColor;
       default:
         return '';
     }
