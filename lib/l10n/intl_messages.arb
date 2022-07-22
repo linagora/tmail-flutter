@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-07-22T14:15:06.629292",
+  "@@last_modified": "2022-07-22T18:31:58.383010",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1672,6 +1672,12 @@
   },
   "codeView": "Code view",
   "@codeView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "headerStyle": "Style",
+  "@headerStyle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
