@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum RichTextStyleType {
+  headerStyle,
   fontName,
   bold,
   italic,
@@ -15,6 +16,8 @@ enum RichTextStyleType {
 
   String get commandAction {
     switch (this) {
+      case headerStyle:
+        return 'formatBlock';
       case fontName:
         return 'fontName';
       case bold:
@@ -46,6 +49,8 @@ enum RichTextStyleType {
         return imagePaths.icStyleStrikeThrough;
       case codeView:
         return imagePaths.icStyleCodeView;
+      case headerStyle:
+        return imagePaths.icStyleHeader;
       default:
         return '';
     }
@@ -78,6 +83,8 @@ enum RichTextStyleType {
         return AppLocalizations.of(context).formatTextBackgroundColor;
       case codeView:
         return AppLocalizations.of(context).codeView;
+      case headerStyle:
+        return AppLocalizations.of(context).headerStyle;
       default:
         return '';
     }
