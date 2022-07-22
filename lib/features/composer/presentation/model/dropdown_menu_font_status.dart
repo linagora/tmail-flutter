@@ -1,0 +1,5 @@
+
+enum DropdownMenuFontStatus {
+  open,
+  closed
+}

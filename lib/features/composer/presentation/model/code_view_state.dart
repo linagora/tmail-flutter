@@ -1,0 +1,5 @@
+
+enum CodeViewState {
+  enabled,
+  disabled
+}
