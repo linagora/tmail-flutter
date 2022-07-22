@@ -355,10 +355,6 @@ class ComposerController extends BaseController {
     return '';
   }
 
-  void setFullScreenEditor() {
-    richTextWebController.editorController.setFullScreen();
-  }
-
   String? _getHeaderEmailQuoted(BuildContext context, ComposerArguments arguments) {
     final presentationEmail = arguments.presentationEmail;
     if (presentationEmail != null) {

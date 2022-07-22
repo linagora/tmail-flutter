@@ -1713,4 +1713,10 @@ class AppLocalizations {
         'Text Background Color',
         name: 'formatTextBackgroundColor');
   }
+
+  String get codeView {
+    return Intl.message(
+        'Code view',
+        name: 'codeView');
+  }
 }
