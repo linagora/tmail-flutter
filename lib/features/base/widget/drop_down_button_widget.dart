@@ -16,22 +16,26 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   final List<T> items;
   final T? itemSelected;
   final Function(T?)? onChanged;
+  final Function(bool)? onMenuStateChange;
   final bool supportHint;
   final bool supportSelectionIcon;
   final double heightItem;
   final double sizeIconChecked;
   final double radiusButton;
+  final double opacity;
 
   const DropDownButtonWidget({
     Key? key,
     required this.items,
     required this.itemSelected,
     this.onChanged,
+    this.onMenuStateChange,
     this.supportHint = false,
     this.supportSelectionIcon = false,
     this.heightItem = 44,
     this.sizeIconChecked = 20,
     this.radiusButton = 10,
+    this.opacity = 1.0,
   }) : super(key: key);
 
   @override
@@ -46,9 +50,9 @@ class DropDownButtonWidget<T> extends StatelessWidget {
               ? Row(children: [
                   Expanded(child: Text(
                     _getTextItemDropdown(context, item: itemSelected),
-                    style: const TextStyle(fontSize: 16,
+                    style: TextStyle(fontSize: 16,
                         fontWeight: FontWeight.normal,
-                        color: Colors.black),
+                        color: Colors.black.withOpacity(opacity)),
                     maxLines: 1,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                   )),
@@ -95,9 +99,9 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                 child: Row(children: [
                   Expanded(child: Text(
                     _getTextItemDropdown(context, item: itemSelected),
-                    style: const TextStyle(fontSize: 16,
+                    style: TextStyle(fontSize: 16,
                         fontWeight: FontWeight.normal,
-                        color: Colors.black),
+                        color: Colors.black.withOpacity(opacity)),
                     maxLines: 1,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                   )),
@@ -131,6 +135,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
           dropdownElevation: 4,
           scrollbarRadius: const Radius.circular(40),
           scrollbarThickness: 6,
+          onMenuStateChange: onMenuStateChange,
         ),
       ),
     );

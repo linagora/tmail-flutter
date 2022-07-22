@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_b
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
@@ -508,16 +509,22 @@ class ComposerView extends GetWidget<ComposerController>
                   tooltip: AppLocalizations.of(context).attach_file,
                   onTap: () => controller.openFilePickerByType(context, FileType.any)),
               const SizedBox(width: 4),
-              buildIconWeb(
-                  minSize: 40,
-                  iconPadding: EdgeInsets.zero,
-                  icon: SvgPicture.asset(imagePaths.icInsertImage,
-                      color: AppColor.colorTextButton,
-                      fit: BoxFit.fill),
-                  tooltip: AppLocalizations.of(context).insertImage,
-                  onTap: () => controller.insertImage(
-                      context,
-                      maxWithEditor: constraints.maxWidth - 120)),
+              Obx(() {
+                final opacity = controller.richTextWebController.codeViewEnabled ? 0.5 : 1.0;
+                return AbsorbPointer(
+                  absorbing: controller.richTextWebController.codeViewEnabled,
+                  child: buildIconWeb(
+                      minSize: 40,
+                      iconPadding: EdgeInsets.zero,
+                      icon: SvgPicture.asset(imagePaths.icInsertImage,
+                          color: AppColor.colorTextButton.withOpacity(opacity),
+                          fit: BoxFit.fill),
+                      tooltip: AppLocalizations.of(context).insertImage,
+                      onTap: () => controller.insertImage(
+                          context,
+                          maxWithEditor: constraints.maxWidth - 120)),
+                );
+              }),
             ])
         )
     );
@@ -598,27 +605,35 @@ class ComposerView extends GetWidget<ComposerController>
                 toolbarType: ToolbarType.hide,
                 defaultToolbarButtons: []),
             otherOptions: const OtherOptions(height: 550),
-            callbacks: Callbacks(onBeforeCommand: (String? currentHtml) {
+            callbacks: Callbacks(onBeforeCommand: (currentHtml) {
               log('ComposerView::_buildHtmlEditor(): onBeforeCommand : $currentHtml');
               controller.setTextEditorWeb(currentHtml);
-            }, onChangeContent: (String? changed) {
+            }, onChangeContent: (changed) {
               log('ComposerView::_buildHtmlEditor(): onChangeContent : $changed');
               controller.setTextEditorWeb(changed);
             }, onInit: () {
               log('ComposerView::_buildHtmlEditor(): onInit');
               controller.setTextEditorWeb(initContent);
-              controller.setFullScreenEditor();
+              controller.richTextWebController.setFullScreenEditor();
+              controller.richTextWebController.setEnableCodeView();
             }, onFocus: () {
+              log('ComposerView::_buildHtmlEditor(): onFocus');
               FocusManager.instance.primaryFocus?.unfocus();
               Future.delayed(const Duration(milliseconds: 500), () {
                 controller.richTextWebController.editorController.setFocus();
               });
+              if (controller.richTextWebController.isMenuFontOpen) {
+                controller.richTextWebController.closeDropdownMenuFont();
+              }
             }, onBlur: () {
               controller.onEditorFocusChange(false);
             }, onMouseDown: () {
               controller.onEditorFocusChange(true);
             }, onChangeSelection: (settings) {
               controller.richTextWebController.onEditorSettingsChange(settings);
+            }, onChangeCodeview: (contentChanged) {
+              log('ComposerView::_buildHtmlEditor(): onChangeCodeView : $contentChanged');
+              controller.setTextEditorWeb(contentChanged);
             }),
           )
         )
@@ -744,40 +759,70 @@ class ComposerView extends GetWidget<ComposerController>
         alignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: RichTextStyleType.values.map((textType) => Obx(() {
+          final opacity = controller.richTextWebController.codeViewEnabled ? 0.5 : 1.0;
           switch(textType) {
             case RichTextStyleType.textColor:
-              return buildIconColorText(
-                  iconData: textType.getIconData(),
-                  colorSelected: controller.richTextWebController.selectedTextColor.value,
-                  tooltip: textType.getTooltipButton(context),
-                  onTap: () => controller.richTextWebController.applyRichTextStyle(context, textType));
+              return AbsorbPointer(
+                absorbing: controller.richTextWebController.codeViewEnabled,
+                child: buildIconColorText(
+                    iconData: textType.getIconData(),
+                    colorSelected: controller.richTextWebController.selectedTextColor.value,
+                    tooltip: textType.getTooltipButton(context),
+                    opacity: opacity,
+                    onTap: () => controller.richTextWebController.applyRichTextStyle(context, textType)),
+              );
             case RichTextStyleType.textBackgroundColor:
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: buildIconColorBackgroundText(
-                    iconData: textType.getIconData(),
-                    colorSelected: controller.richTextWebController.selectedTextBackgroundColor.value,
-                    tooltip: textType.getTooltipButton(context),
-                    onTap: () => controller.richTextWebController.applyRichTextStyle(context, textType)),
+                child: AbsorbPointer(
+                  absorbing: controller.richTextWebController.codeViewEnabled,
+                  child: buildIconColorBackgroundText(
+                      iconData: textType.getIconData(),
+                      colorSelected: controller.richTextWebController.selectedTextBackgroundColor.value,
+                      tooltip: textType.getTooltipButton(context),
+                      opacity: opacity,
+                      onTap: () => controller.richTextWebController.applyRichTextStyle(context, textType)),
+                ),
               );
             case RichTextStyleType.fontName:
-              return Container(
-                width: 200,
-                padding: const EdgeInsets.only(right: 2),
-                child: DropDownButtonWidget<FontNameType>(
-                    items: FontNameType.values,
-                    itemSelected: controller.richTextWebController.selectedFontName.value,
-                    onChanged: (newFont) => controller.richTextWebController.applyNewFontStyle(newFont),
-                    heightItem: 35,
-                    sizeIconChecked: 16,
-                    radiusButton: 5,
-                    supportSelectionIcon: true));
-            default:
+              return AbsorbPointer(
+                absorbing: controller.richTextWebController.codeViewEnabled,
+                child: Container(
+                  width: 200,
+                  padding: const EdgeInsets.only(right: 2),
+                  child: DropDownButtonWidget<FontNameType>(
+                      items: FontNameType.values,
+                      itemSelected: controller.richTextWebController.selectedFontName.value,
+                      onChanged: (newFont) => controller.richTextWebController.applyNewFontStyle(newFont),
+                      onMenuStateChange: (isOpen) {
+                        log('ComposerView::_buildToolbarRichTextWidget(): MenuFontStatus: $isOpen');
+                        final newStatus = isOpen
+                            ? DropdownMenuFontStatus.open
+                            : DropdownMenuFontStatus.closed;
+                        controller.richTextWebController.menuFontStatus = newStatus;
+                      },
+                      heightItem: 35,
+                      sizeIconChecked: 16,
+                      radiusButton: 5,
+                      opacity: opacity,
+                      supportSelectionIcon: true)),
+              );
+            case RichTextStyleType.codeView:
               return buildIconStyleText(
                   path: textType.getIcon(imagePaths),
                   isSelected: controller.richTextWebController.isTextStyleTypeSelected(textType),
                   tooltip: textType.getTooltipButton(context),
-                  onTap: () => controller.richTextWebController.applyRichTextStyle(context, textType));
+                  onTap: () => controller.richTextWebController.toggleCodeView());
+            default:
+              return AbsorbPointer(
+                absorbing: controller.richTextWebController.codeViewEnabled,
+                child: buildIconStyleText(
+                    path: textType.getIcon(imagePaths),
+                    isSelected: controller.richTextWebController.isTextStyleTypeSelected(textType),
+                    tooltip: textType.getTooltipButton(context),
+                    opacity: opacity,
+                    onTap: () => controller.richTextWebController.applyRichTextStyle(context, textType)),
+              );
           }
         })).toList()
       ),
