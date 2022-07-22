@@ -123,6 +123,9 @@ extension AppColor on Color {
   static const colorBackgroundTagFilter = Color(0x6D7885);
   static const colorDefaultRichTextButton = Color(0xFF99A2AD);
   static const colorFocusRichTextButton = Color(0x146D7885);
+  static const colorStyleBlockQuote = Color(0xFFEEEEEE);
+  static const colorBorderStyleCode = Color(0xFFCCCCCC);
+  static const colorBackgroundStyleCode = Color(0xFFF5F5F5);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
