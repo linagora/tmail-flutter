@@ -62,7 +62,8 @@ class DropDownButtonWidget<T> extends StatelessWidget {
               .map((item) => DropdownMenuItem<T>(
                     value: item,
                     child: PointerInterceptor(
-                      child: SizedBox(
+                      child: Container(
+                        color: Colors.transparent,
                         height: heightItem,
                         child: Row(children: [
                           Expanded(child: Text(_getTextItemDropdown(context, item: item),
