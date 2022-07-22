@@ -1719,4 +1719,10 @@ class AppLocalizations {
         'Code view',
         name: 'codeView');
   }
+
+  String get headerStyle {
+    return Intl.message(
+        'Style',
+        name: 'headerStyle');
+  }
 }

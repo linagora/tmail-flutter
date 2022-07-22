@@ -134,6 +134,7 @@ class ImagePaths {
   String get icInsertImage => _getImagePath('ic_insert_image.svg');
   String get icStyleStrikeThrough => _getImagePath('ic_style_strikethrough.svg');
   String get icStyleCodeView => _getImagePath('ic_style_code_view.svg');
+  String get icStyleHeader => _getImagePath('ic_style_header.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
