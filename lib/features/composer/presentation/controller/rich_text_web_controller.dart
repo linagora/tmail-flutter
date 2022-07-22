@@ -8,11 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:model/email/attachment.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/code_view_state.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class RichTextWebController extends BaseRichTextController {
 
@@ -22,24 +25,34 @@ class RichTextWebController extends BaseRichTextController {
   final selectedTextColor = Colors.black.obs;
   final selectedTextBackgroundColor = Colors.white.obs;
   final selectedFontName = FontNameType.sansSerif.obs;
+  final codeViewState = CodeViewState.disabled.obs;
 
-  void onEditorSettingsChange(EditorSettings settings) {
+  DropdownMenuFontStatus menuFontStatus = DropdownMenuFontStatus.closed;
+
+  void onEditorSettingsChange(EditorSettings settings) async {
     log('RichTextWebController::onEditorSettingsChange():');
-    listTextStyleApply.clear();
     if (settings.isBold) {
       listTextStyleApply.add(RichTextStyleType.bold);
+    } else {
+      listTextStyleApply.remove(RichTextStyleType.bold);
     }
 
     if (settings.isItalic) {
       listTextStyleApply.add(RichTextStyleType.italic);
+    } else {
+      listTextStyleApply.remove(RichTextStyleType.italic);
     }
 
     if (settings.isUnderline) {
       listTextStyleApply.add(RichTextStyleType.underline);
+    } else {
+      listTextStyleApply.remove(RichTextStyleType.underline);
     }
 
     if (settings.isStrikethrough) {
       listTextStyleApply.add(RichTextStyleType.strikeThrough);
+    } else {
+      listTextStyleApply.remove(RichTextStyleType.strikeThrough);
     }
   }
 
@@ -164,5 +177,38 @@ class RichTextWebController extends BaseRichTextController {
     editorController.execCommand(
         RichTextStyleType.fontName.commandAction,
         argument: fontSelected.fontFamily);
+  }
+
+  bool get isMenuFontOpen => menuFontStatus == DropdownMenuFontStatus.open;
+
+  void closeDropdownMenuFont() {
+    popBack();
+  }
+
+  bool get codeViewEnabled => codeViewState.value == CodeViewState.enabled;
+
+  Future<bool> get isActivatedCodeView => editorController.isActivatedCodeView();
+
+  void setFullScreenEditor() {
+    editorController.setFullScreen();
+  }
+
+  void setEnableCodeView() async {
+    final isActivated = await isActivatedCodeView;
+    if (codeViewEnabled && !isActivated) {
+      toggleCodeView();
+    }
+  }
+
+  void toggleCodeView() async {
+    final isActivated = await isActivatedCodeView;
+    final newCodeViewState = isActivated ? CodeViewState.disabled : CodeViewState.enabled;
+    codeViewState.value = newCodeViewState;
+    _selectTextStyleType(RichTextStyleType.codeView);
+    editorController.toggleCodeView();
+    if (isActivated) {
+      setFullScreenEditor();
+      editorController.setFullScreen();
+    }
   }
 }
