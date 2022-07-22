@@ -16,9 +16,11 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/drop_down_menu_header_style_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
@@ -596,10 +598,10 @@ class ComposerView extends GetWidget<ComposerController>
           child: HtmlEditor(
             key: const Key('composer_editor_web'),
             controller: controller.richTextWebController.editorController,
-            htmlEditorOptions: const HtmlEditorOptions(
+            htmlEditorOptions: HtmlEditorOptions(
               hint: '',
               darkMode: false,
-            ),
+              customBodyCssStyle: bodyCssStyleForEditor),
             blockQuotedContent: initContent,
             htmlToolbarOptions: const HtmlToolbarOptions(
                 toolbarType: ToolbarType.hide,
@@ -624,6 +626,9 @@ class ComposerView extends GetWidget<ComposerController>
               });
               if (controller.richTextWebController.isMenuFontOpen) {
                 controller.richTextWebController.closeDropdownMenuFont();
+              }
+              if (controller.richTextWebController.isMenuHeaderStyleOpen) {
+                controller.richTextWebController.closeDropdownMenuHeaderStyle();
               }
             }, onBlur: () {
               controller.onEditorFocusChange(false);
@@ -756,7 +761,7 @@ class ComposerView extends GetWidget<ComposerController>
       padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
       alignment: Alignment.centerLeft,
       child: Wrap(
-        alignment: WrapAlignment.center,
+        alignment: WrapAlignment.start,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: RichTextStyleType.values.map((textType) => Obx(() {
           final opacity = controller.richTextWebController.codeViewEnabled ? 0.5 : 1.0;
@@ -813,6 +818,42 @@ class ComposerView extends GetWidget<ComposerController>
                   isSelected: controller.richTextWebController.isTextStyleTypeSelected(textType),
                   tooltip: textType.getTooltipButton(context),
                   onTap: () => controller.richTextWebController.toggleCodeView());
+            case RichTextStyleType.headerStyle:
+              return AbsorbPointer(
+                absorbing: controller.richTextWebController.codeViewEnabled,
+                child: Container(
+                    width: 50,
+                    height: 35,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.only(right: 2),
+                    child: DropDownMenuHeaderStyleWidget(
+                        icon: Material(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              side: const BorderSide(
+                                  color: AppColor.colorInputBorderCreateMailbox,
+                                  width: 0.5)),
+                          color: AppColor.colorInputBackgroundCreateMailbox,
+                          child: Tooltip(
+                            message: textType.getTooltipButton(context),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10, top: 10),
+                              child: SvgPicture.asset(textType.getIcon(imagePaths),
+                                  color: AppColor.colorDefaultRichTextButton.withOpacity(opacity),
+                                  fit: BoxFit.fill),
+                            ),
+                          ),
+                        ),
+                        items: HeaderStyleType.values,
+                        onMenuStateChange: (isOpen) {
+                          log('ComposerView::_buildToolbarRichTextWidget(): MenuHeaderStyleStatus: $isOpen');
+                          final newStatus = isOpen
+                              ? DropdownMenuFontStatus.open
+                              : DropdownMenuFontStatus.closed;
+                          controller.richTextWebController.menuHeaderStyleStatus = newStatus;
+                        },
+                        onChanged: (newStyle) => controller.richTextWebController.applyHeaderStyle(newStyle))),
+              );
             default:
               return AbsorbPointer(
                 absorbing: controller.richTextWebController.codeViewEnabled,
