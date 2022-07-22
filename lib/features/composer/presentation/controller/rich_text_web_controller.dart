@@ -10,6 +10,7 @@ import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/code_view_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
@@ -28,6 +29,7 @@ class RichTextWebController extends BaseRichTextController {
   final codeViewState = CodeViewState.disabled.obs;
 
   DropdownMenuFontStatus menuFontStatus = DropdownMenuFontStatus.closed;
+  DropdownMenuFontStatus menuHeaderStyleStatus = DropdownMenuFontStatus.closed;
 
   void onEditorSettingsChange(EditorSettings settings) async {
     log('RichTextWebController::onEditorSettingsChange():');
@@ -181,7 +183,13 @@ class RichTextWebController extends BaseRichTextController {
 
   bool get isMenuFontOpen => menuFontStatus == DropdownMenuFontStatus.open;
 
+  bool get isMenuHeaderStyleOpen => menuHeaderStyleStatus == DropdownMenuFontStatus.open;
+
   void closeDropdownMenuFont() {
+    popBack();
+  }
+
+  void closeDropdownMenuHeaderStyle() {
     popBack();
   }
 
@@ -210,5 +218,12 @@ class RichTextWebController extends BaseRichTextController {
       setFullScreenEditor();
       editorController.setFullScreen();
     }
+  }
+
+  void applyHeaderStyle(HeaderStyleType? newStyle) {
+    final styleSelected = newStyle ?? HeaderStyleType.normal;
+    editorController.execCommand(
+        RichTextStyleType.headerStyle.commandAction,
+        argument: styleSelected.styleValue);
   }
 }
