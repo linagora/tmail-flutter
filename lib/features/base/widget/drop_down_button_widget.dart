@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -155,6 +156,9 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     }
     if (item is FontNameType) {
       return item.fontFamily;
+    }
+    if (item is SafeFont) {
+      return item.name;
     }
     return '';
   }
