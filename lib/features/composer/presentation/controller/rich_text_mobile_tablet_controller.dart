@@ -1,10 +1,19 @@
 import 'package:enough_html_editor/enough_html_editor.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class RichTextMobileTabletController extends GetxController {
+class RichTextMobileTabletController extends BaseRichTextController {
   HtmlEditorApi? htmlEditorApi;
   final listTextStyleApply = RxList<RichTextStyleType>();
+  final selectedTextColor = Colors.black.obs;
+  final selectedTextBackgroundColor = Colors.white.obs;
+  final selectedFontName = SafeFont.sansSerif.obs;
+
+  DropdownMenuFontStatus menuFontStatus = DropdownMenuFontStatus.closed;
 
   void listenHtmlEditorApi() {
     htmlEditorApi?.onFormatSettingsChanged = (formatSettings) {
@@ -27,7 +36,57 @@ class RichTextMobileTabletController extends GetxController {
     };
   }
 
-  selectTextStyleType(RichTextStyleType richTextStyleType) {
+  void applyRichTextStyle(
+      BuildContext context, RichTextStyleType textStyleType) async {
+    switch (textStyleType) {
+      case RichTextStyleType.textColor:
+        openMenuSelectColor(context, selectedTextColor.value,
+            onResetToDefault: () {
+          selectedTextColor.value = Colors.black;
+          htmlEditorApi?.setColorDocumentForeground(selectedTextColor.value);
+        }, onSelectColor: (selectedColor) {
+          final newColor = selectedColor ?? Colors.black;
+          selectedTextColor.value = newColor;
+          htmlEditorApi?.setColorTextForeground(selectedTextColor.value);
+        });
+        break;
+      case RichTextStyleType.textBackgroundColor:
+        openMenuSelectColor(context, selectedTextBackgroundColor.value,
+            onResetToDefault: () {
+          selectedTextBackgroundColor.value = Colors.white;
+          htmlEditorApi?.setColorTextBackground(selectedTextBackgroundColor.value);
+        }, onSelectColor: (selectedColor) {
+          final newColor = selectedColor ?? Colors.white;
+          selectedTextBackgroundColor.value = newColor;
+          htmlEditorApi?.setColorTextBackground(selectedTextBackgroundColor.value);
+        });
+        break;
+      case RichTextStyleType.bold:
+        await htmlEditorApi?.formatBold().then((value) {
+          _selectTextStyleType(RichTextStyleType.bold);
+        });
+        break;
+      case RichTextStyleType.italic:
+        await htmlEditorApi?.formatItalic().then((value) {
+          _selectTextStyleType(RichTextStyleType.italic);
+        });
+        break;
+      case RichTextStyleType.underline:
+        await htmlEditorApi?.formatUnderline().then((value) {
+          _selectTextStyleType(RichTextStyleType.underline);
+        });
+        break;
+      case RichTextStyleType.strikeThrough:
+        await htmlEditorApi?.formatStrikeThrough().then((value) {
+          _selectTextStyleType(RichTextStyleType.strikeThrough);
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
+  _selectTextStyleType(RichTextStyleType richTextStyleType) {
     if (listTextStyleApply.contains(richTextStyleType)) {
       listTextStyleApply.remove(richTextStyleType);
     } else {
@@ -37,5 +96,17 @@ class RichTextMobileTabletController extends GetxController {
 
   bool isTextStyleTypeSelected(RichTextStyleType richTextStyleType) {
     return listTextStyleApply.contains(richTextStyleType);
+  }
+
+  void applyNewFontStyle(SafeFont? newFont) {
+    final fontSelected = newFont ?? SafeFont.sansSerif;
+    selectedFontName.value = fontSelected;
+    htmlEditorApi?.setFont(selectedFontName.value);
+  }
+
+  bool get isMenuFontOpen => menuFontStatus == DropdownMenuFontStatus.open;
+
+  void closeDropdownMenuFont() {
+    popBack();
   }
 }
