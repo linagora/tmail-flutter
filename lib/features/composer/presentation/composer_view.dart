@@ -10,8 +10,10 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
@@ -460,10 +462,7 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
         Padding(
             padding: const EdgeInsets.only(left: 60, right: 25),
             child: Column(children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 22, top: 15),
-                child: Obx(() => _buildRowIconStyleText()),
-              ),
+              _buildToolbarRichTextWidget(context),
               const SizedBox(height: 8),
               Obx(() {
                 final uploadAttachments = controller.uploadController.listUploadAttachments;
@@ -493,46 +492,55 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
     );
   }
 
-  Widget _buildRowIconStyleText() {
-    return Row(
-      children: [
-        buildIconStyleText(
-            path: RichTextStyleType.bold.getIcon(imagePaths),
-            isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.bold),
-            onTap: () async {
-             await controller.htmlEditorApi?.formatBold().then((value) {
-               controller.richTextMobileTabletController.selectTextStyleType(RichTextStyleType.bold);
-             });
+  Widget _buildToolbarRichTextWidget(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(left: 20, top: 15, bottom: 8),
+      alignment: Alignment.centerLeft,
+      child: Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: RichTextStyleType.values.map((textType) => Obx(() {
+            switch(textType) {
+              case RichTextStyleType.textColor:
+                return buildIconColorText(
+                    iconData: textType.getIconData(),
+                    colorSelected: controller.richTextMobileTabletController.selectedTextColor.value,
+                    onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, textType));
+              case RichTextStyleType.textBackgroundColor:
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: buildIconColorBackgroundText(
+                      iconData: textType.getIconData(),
+                      colorSelected: controller.richTextMobileTabletController.selectedTextBackgroundColor.value,
+                      tooltip: textType.getTooltipButton(context),
+                      onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, textType)),
+                );
+              case RichTextStyleType.fontName:
+                return Container(
+                    width: 200,
+                    padding: const EdgeInsets.only(right: 2),
+                    child: DropDownButtonWidget<SafeFont>(
+                        items: SafeFont.values,
+                        itemSelected: controller.richTextMobileTabletController.selectedFontName.value,
+                        onChanged: (newFont) => controller.richTextMobileTabletController.applyNewFontStyle(newFont),
+                        onMenuStateChange: (isOpen) {
+                          final newStatus = isOpen
+                              ? DropdownMenuFontStatus.open
+                              : DropdownMenuFontStatus.closed;
+                          controller.richTextMobileTabletController.menuFontStatus = newStatus;
+                        },
+                        heightItem: 35,
+                        sizeIconChecked: 16,
+                        radiusButton: 5,
+                        supportSelectionIcon: true));
+              default:
+                return buildIconStyleText(
+                    path: textType.getIcon(imagePaths),
+                    isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(textType),
+                    onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, textType));
             }
-        ),
-        buildIconStyleText(
-            path: RichTextStyleType.italic.getIcon(imagePaths),
-            isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.italic),
-            onTap: () async {
-              await controller.htmlEditorApi?.formatItalic().then((value) {
-                controller.richTextMobileTabletController.selectTextStyleType(RichTextStyleType.italic);
-              });
-            }
-        ),
-        buildIconStyleText(
-            path: RichTextStyleType.strikeThrough.getIcon(imagePaths),
-            isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.strikeThrough),
-            onTap: () async {
-              await controller.htmlEditorApi?.formatStrikeThrough().then((value) {
-                controller.richTextMobileTabletController.selectTextStyleType(RichTextStyleType.strikeThrough);
-              });
-            }
-        ),
-        buildIconStyleText(
-            path: RichTextStyleType.underline.getIcon(imagePaths),
-            isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.underline),
-            onTap: () async {
-              await controller.htmlEditorApi?.formatUnderline().then((value) {
-                controller.richTextMobileTabletController.selectTextStyleType(RichTextStyleType.underline);
-              });
-            }
-        ),
-      ],
+          })).toList()
+      ),
     );
   }
 
