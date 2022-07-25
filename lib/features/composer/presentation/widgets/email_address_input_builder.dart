@@ -138,6 +138,7 @@ class EmailAddressInputBuilder {
             suggestionsBoxElevation: 20,
             suggestionsBoxBackgroundColor: Colors.white,
             suggestionsBoxRadius: 20,
+            suggestionsBoxMaxHeight: 300,
             iconSuggestionBox: SvgPicture.asset(_imagePaths.icAddEmailAddress, fit: BoxFit.fill),
             textStyle: const TextStyle(color: AppColor.colorEmailAddress, fontSize: 14, fontWeight: FontWeight.w500),
             onSubmitted: (value) {
@@ -227,6 +228,7 @@ class EmailAddressInputBuilder {
 
   Widget _buildSuggestionItem(StateSetter setState, BuildContext context, TagsEditorState<EmailAddress> tagEditorState, EmailAddress emailAddress) {
     return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
       leading: Container(
         width: 40,
         height: 40,
