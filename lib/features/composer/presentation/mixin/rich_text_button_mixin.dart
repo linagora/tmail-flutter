@@ -80,6 +80,33 @@ mixin RichTextButtonMixin {
     );
   }
 
+  Widget buildIcon({
+    required String path,
+    Color? color,
+    double opacity = 1.0,
+  }){
+    final newColor = color == Colors.white
+        ? AppColor.colorDefaultRichTextButton
+        : color;
+
+    return SvgPicture.asset(path,
+        color: newColor?.withOpacity(opacity),
+        fit: BoxFit.fill);
+  }
+
+  Widget buildIconColorBackgroundTextWithoutTooltip({
+    required IconData? iconData,
+    required Color? colorSelected,
+    double opacity = 1.0,
+  }){
+    final newColor = colorSelected == Colors.white
+        ? AppColor.colorDefaultRichTextButton
+        : colorSelected;
+    return Icon(iconData,
+        color: (newColor ?? AppColor.colorDefaultRichTextButton).withOpacity(opacity),
+        size: 20);
+  }
+
   Widget buildIconColorBackgroundText({
     required IconData? iconData,
     required Color? colorSelected,

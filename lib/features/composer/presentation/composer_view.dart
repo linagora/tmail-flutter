@@ -11,12 +11,14 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
+import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
@@ -401,28 +403,8 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
         const Divider(color: AppColor.colorDividerComposer, height: 1),
         Padding(padding: const EdgeInsets.symmetric(horizontal: 16),  child: _buildListButton(context)),
         const Divider(color: AppColor.colorDividerComposer, height: 1),
-        Obx(() {
-          final uploadAttachments = controller.uploadController.listUploadAttachments;
-          if (uploadAttachments.isEmpty) {
-            return const SizedBox.shrink();
-          } else {
-            return Column(children: [
-              Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _buildAttachmentsTitle(context,
-                      uploadAttachments,
-                      controller.expandModeAttachments.value)),
-              Padding(
-                  padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
-                  child: _buildAttachmentsList(context,
-                      uploadAttachments,
-                      controller.expandModeAttachments.value))
-            ]);
-          }
-        }),
-        Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
-            child: _buildComposerEditor(context)),
+        _buildAttachmentsWidget(context),
+        _buildComposerEditor(context),
       ])
     );
   }
@@ -463,83 +445,121 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
             padding: const EdgeInsets.only(left: 60, right: 25),
             child: Column(children: [
               _buildToolbarRichTextWidget(context),
-              const SizedBox(height: 8),
-              Obx(() {
-                final uploadAttachments = controller.uploadController.listUploadAttachments;
-                if (uploadAttachments.isEmpty) {
-                  return const SizedBox.shrink();
-                } else {
-                  return Column(children: [
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _buildAttachmentsTitle(context,
-                            uploadAttachments,
-                            controller.expandModeAttachments.value)),
-                    Padding(
-                        padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
-                        child: _buildAttachmentsList(context,
-                            uploadAttachments,
-                            controller.expandModeAttachments.value))
-                  ]);
-                }
-              }),
-              Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20, top: 10),
-                  child: _buildComposerEditor(context)),
+              _buildAttachmentsWidget(context),
+              _buildInlineLoadingView(),
+              _buildComposerEditor(context),
             ])
         )
       ])
     );
   }
 
+  Widget _buildAttachmentsWidget(BuildContext context) {
+    return Obx(() {
+      final uploadAttachments = controller.uploadController.listUploadAttachments;
+      if (uploadAttachments.isEmpty) {
+        return const SizedBox.shrink();
+      } else {
+        return Column(children: [
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _buildAttachmentsTitle(context,
+                  uploadAttachments,
+                  controller.expandModeAttachments.value)),
+          Padding(
+              padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
+              child: _buildAttachmentsList(context,
+                  uploadAttachments,
+                  controller.expandModeAttachments.value))
+        ]);
+      }
+    });
+  }
+
+  Widget _buildInlineLoadingView() {
+    return Obx(() => controller.uploadController.uploadInlineViewState.value.fold(
+      (failure) => const SizedBox.shrink(),
+      (success) {
+      if (success is UploadingAttachmentUploadState || success is DownloadingImageAsBase64) {
+        return Padding(
+          padding: const EdgeInsets.all(5),
+          child: loadingWidgetWithSizeColor(
+            size: 30,
+            color: AppColor.primaryColor));
+      }
+      return const SizedBox.shrink();
+    }));
+  }
+
   Widget _buildToolbarRichTextWidget(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 20, top: 15, bottom: 8),
-      alignment: Alignment.centerLeft,
-      child: Wrap(
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: RichTextStyleType.values.map((textType) => Obx(() {
-            switch(textType) {
-              case RichTextStyleType.textColor:
-                return buildIconColorText(
-                    iconData: textType.getIconData(),
-                    colorSelected: controller.richTextMobileTabletController.selectedTextColor.value,
-                    onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, textType));
-              case RichTextStyleType.textBackgroundColor:
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: buildIconColorBackgroundText(
-                      iconData: textType.getIconData(),
-                      colorSelected: controller.richTextMobileTabletController.selectedTextBackgroundColor.value,
-                      tooltip: textType.getTooltipButton(context),
-                      onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, textType)),
-                );
-              case RichTextStyleType.fontName:
-                return Container(
-                    width: 200,
-                    padding: const EdgeInsets.only(right: 2),
-                    child: DropDownButtonWidget<SafeFont>(
-                        items: SafeFont.values,
-                        itemSelected: controller.richTextMobileTabletController.selectedFontName.value,
-                        onChanged: (newFont) => controller.richTextMobileTabletController.applyNewFontStyle(newFont),
-                        onMenuStateChange: (isOpen) {
-                          final newStatus = isOpen
-                              ? DropdownMenuFontStatus.open
-                              : DropdownMenuFontStatus.closed;
-                          controller.richTextMobileTabletController.menuFontStatus = newStatus;
-                        },
-                        heightItem: 35,
-                        sizeIconChecked: 16,
-                        radiusButton: 5,
-                        supportSelectionIcon: true));
-              default:
-                return buildIconStyleText(
-                    path: textType.getIcon(imagePaths),
-                    isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(textType),
-                    onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, textType));
-            }
-          })).toList()
+    return Obx(() => Container(
+        padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
+        alignment: Alignment.centerLeft,
+        child: Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Container(
+                  width: 200,
+                  padding: const EdgeInsets.only(right: 2),
+                  child: DropDownButtonWidget<SafeFont>(
+                      items: SafeFont.values,
+                      itemSelected: controller.richTextMobileTabletController.selectedFontName.value,
+                      onChanged: (newFont) => controller.richTextMobileTabletController.applyNewFontStyle(newFont),
+                      onMenuStateChange: (isOpen) {
+                        final newStatus = isOpen
+                            ? DropdownMenuFontStatus.open
+                            : DropdownMenuFontStatus.closed;
+                        controller.richTextMobileTabletController.menuFontStatus = newStatus;
+                      },
+                      heightItem: 38,
+                      sizeIconChecked: 16,
+                      radiusButton: 5,
+                      colorButton: Colors.white,
+                      supportSelectionIcon: true)),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: buildWrapIconStyleText(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                    icon: buildIconColorBackgroundTextWithoutTooltip(
+                      iconData: RichTextStyleType.textColor.getIconData(),
+                      colorSelected: controller.richTextMobileTabletController.selectedTextColor.value,
+                    ),
+                    onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.textColor)),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: buildWrapIconStyleText(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                    icon: buildIconColorBackgroundTextWithoutTooltip(
+                        iconData: RichTextStyleType.textBackgroundColor.getIconData(),
+                        colorSelected: controller.richTextMobileTabletController.selectedTextBackgroundColor.value,
+                    ),
+                    onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.textBackgroundColor)),
+              ),
+              buildWrapIconStyleText(
+                  hasDropdown: false,
+                  padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                  icon: Wrap(children: [
+                    buildIconStyleText(
+                        path: RichTextStyleType.bold.getIcon(imagePaths),
+                        isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.bold),
+                        onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.bold)),
+                    buildIconStyleText(
+                        path: RichTextStyleType.italic.getIcon(imagePaths),
+                        isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.italic),
+                        onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.italic)),
+                    buildIconStyleText(
+                        path: RichTextStyleType.underline.getIcon(imagePaths),
+                        isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.underline),
+                        onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.underline)),
+                    buildIconStyleText(
+                        path: RichTextStyleType.strikeThrough.getIcon(imagePaths),
+                        isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.strikeThrough),
+                        onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.strikeThrough))
+                  ])),
+            ],
+        ),
       ),
     );
   }
@@ -592,14 +612,17 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
   }
 
   Widget _buildHtmlEditor(String initialContent) {
-    return HtmlEditor(
-        key: const Key('composer_editor'),
-        minHeight: 550,
-        initialContent: initialContent,
-        onCreated: (editorApi) {
-          controller.richTextMobileTabletController.htmlEditorApi = editorApi;
-          controller.richTextMobileTabletController.listenHtmlEditorApi();
-        });
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20, top: 10),
+      child: HtmlEditor(
+          key: const Key('composer_editor'),
+          minHeight: 550,
+          initialContent: initialContent,
+          onCreated: (editorApi) {
+            controller.richTextMobileTabletController.htmlEditorApi = editorApi;
+            controller.richTextMobileTabletController.listenHtmlEditorApi();
+          }),
+    );
   }
 
   Widget _buildAttachmentsTitle(
