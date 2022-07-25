@@ -1,10 +1,44 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 mixin RichTextButtonMixin {
+
+  final _imagePaths = Get.find<ImagePaths>();
+
+  Widget buildWrapIconStyleText({
+    required Widget icon,
+    VoidCallback? onTap,
+    bool isSelected = false,
+    bool hasDropdown = true,
+    double opacity = 1.0,
+    EdgeInsets? padding,
+  }){
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        decoration: BoxDecoration(
+            color: isSelected == true
+                ? AppColor.colorBackgroundWrapIconStyleCode.withOpacity(opacity)
+                : Colors.white.withOpacity(opacity),
+            border: Border.all(
+                color: AppColor.colorBorderWrapIconStyleCode,
+                width: 0.5),
+            borderRadius: BorderRadius.circular(8)),
+        child: hasDropdown
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                icon,
+                SvgPicture.asset(_imagePaths.icStyleArrowDown)
+              ])
+          : icon,
+      ),
+    );
+  }
 
   Widget buildIconStyleText({
     required String path,
@@ -28,50 +62,38 @@ mixin RichTextButtonMixin {
     );
   }
 
-  Widget buildIconColorText({
-    required IconData? iconData,
-    required Color? colorSelected,
-    required VoidCallback onTap,
+  Widget buildIconWithTooltip({
+    required String path,
+    Color? color,
     String? tooltip,
     double opacity = 1.0,
   }){
-    return buildIconWeb(
-      icon: Icon(iconData,
-          color: (colorSelected ?? Colors.black).withOpacity(opacity),
-          size: 20),
-      iconPadding: const EdgeInsets.all(4),
-      colorSelected: colorSelected == Colors.white
-        ? AppColor.colorFocusRichTextButton
-        : Colors.transparent,
-      colorFocus: Colors.white,
-      minSize: 20,
-      tooltip: tooltip,
-      onTap: onTap,
+    final newColor = color == Colors.white
+        ? AppColor.colorDefaultRichTextButton
+        : color;
+
+    return Tooltip(
+      child: SvgPicture.asset(path,
+        color: newColor?.withOpacity(opacity),
+        fit: BoxFit.fill),
+      message: tooltip,
     );
   }
 
   Widget buildIconColorBackgroundText({
     required IconData? iconData,
     required Color? colorSelected,
-    required VoidCallback onTap,
     String? tooltip,
     double opacity = 1.0,
   }){
     final newColor = colorSelected == Colors.white
         ? AppColor.colorDefaultRichTextButton
         : colorSelected;
-    return buildIconWeb(
-      icon: Icon(iconData,
+    return Tooltip(
+      child: Icon(iconData,
           color: (newColor ?? AppColor.colorDefaultRichTextButton).withOpacity(opacity),
           size: 20),
-      iconPadding: const EdgeInsets.all(4),
-      colorSelected: newColor == Colors.white
-          ? AppColor.colorFocusRichTextButton
-          : Colors.transparent,
-      colorFocus: Colors.white,
-      minSize: 20,
-      tooltip: tooltip,
-      onTap: onTap,
+      message: tooltip,
     );
   }
 }

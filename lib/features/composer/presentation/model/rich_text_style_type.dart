@@ -51,6 +51,9 @@ enum RichTextStyleType {
         return imagePaths.icStyleCodeView;
       case headerStyle:
         return imagePaths.icStyleHeader;
+      case textColor:
+      case textBackgroundColor:
+        return imagePaths.icStyleColor;
       default:
         return '';
     }
