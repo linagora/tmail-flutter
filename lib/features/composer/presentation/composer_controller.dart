@@ -84,8 +84,6 @@ class ComposerController extends BaseController {
   final emailContentsViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   final SendEmailInteractor _sendEmailInteractor;
-  final GetAutoCompleteInteractor _getAutoCompleteInteractor;
-  final GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final DeviceInfoPlugin _deviceInfoPlugin;
   final SaveEmailAsDraftsInteractor _saveEmailAsDraftsInteractor;
@@ -97,6 +95,9 @@ class ComposerController extends BaseController {
   final SaveComposerCacheOnWebInteractor _saveComposerCacheOnWebInteractor;
   final RichTextWebController richTextWebController;
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
+
+  late GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
+  late GetAutoCompleteInteractor _getAutoCompleteInteractor;
 
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
@@ -156,8 +157,6 @@ class ComposerController extends BaseController {
 
   ComposerController(
     this._sendEmailInteractor,
-    this._getAutoCompleteInteractor,
-    this._getAutoCompleteWithDeviceContactInteractor,
     this._deviceInfoPlugin,
     this._localFilePickerInteractor,
     this._saveEmailAsDraftsInteractor,
@@ -700,6 +699,16 @@ class ComposerController extends BaseController {
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion(
       {required String word}) async {
+    log('ComposerController::getAutoCompleteSuggestion(): $word | $_contactSuggestionSource');
+
+    if (!Get.isRegistered<GetAutoCompleteWithDeviceContactInteractor>() ||
+        !Get.isRegistered<GetAutoCompleteInteractor>()) {
+      mailboxDashBoardController.injectAutoCompleteBindings();
+    }
+
+    _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
+    _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
+
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
       return await _getAutoCompleteWithDeviceContactInteractor
         .execute(AutoCompletePattern(word: word, accountId: mailboxDashBoardController.accountId.value))
