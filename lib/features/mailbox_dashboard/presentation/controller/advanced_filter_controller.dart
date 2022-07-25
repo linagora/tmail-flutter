@@ -11,7 +11,6 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/advanced_filter_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -20,8 +19,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class AdvancedFilterController extends GetxController {
-  late GetAutoCompleteWithDeviceContactInteractor
-      _getAutoCompleteWithDeviceContactInteractor;
+  late GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
   late GetAutoCompleteInteractor _getAutoCompleteInteractor;
 
   final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
@@ -42,13 +40,6 @@ class AdvancedFilterController extends GetxController {
   final SearchController searchController = Get.find<SearchController>();
   final MailboxDashBoardController _mailboxDashBoardController =
       Get.find<MailboxDashBoardController>();
-
-  AdvancedFilterController() {
-    AdvancedFilterBindings().dependencies();
-    _getAutoCompleteWithDeviceContactInteractor =
-        Get.find<GetAutoCompleteWithDeviceContactInteractor>();
-    _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
-  }
 
   SearchEmailFilter get searchEmailFilter =>
       searchController.searchEmailFilter.value;
@@ -150,6 +141,15 @@ class AdvancedFilterController extends GetxController {
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion(
       {required String word}) async {
+
+    if (!Get.isRegistered<GetAutoCompleteWithDeviceContactInteractor>() ||
+      !Get.isRegistered<GetAutoCompleteInteractor>()) {
+      _mailboxDashBoardController.injectAutoCompleteBindings();
+    }
+
+    _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
+    _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
+
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
       return await _getAutoCompleteWithDeviceContactInteractor
           .execute(AutoCompletePattern(
