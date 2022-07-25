@@ -66,6 +66,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     sessionCurrent = session;
     accountId.value = session.accounts.keys.first;
     _getUserProfile();
+    injectAutoCompleteBindings();
   }
 
   void _getArguments() {
@@ -75,6 +76,7 @@ class ManageAccountDashBoardController extends ReloadableController {
       sessionCurrent = arguments.session;
       accountId.value = sessionCurrent?.accounts.keys.first;
       _getUserProfile();
+      injectAutoCompleteBindings();
     } else {
       if (kIsWeb) {
         reload();
