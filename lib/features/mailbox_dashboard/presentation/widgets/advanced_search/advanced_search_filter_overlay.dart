@@ -13,36 +13,39 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final responsiveUtils = Get.find<ResponsiveUtils>();
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 8, bottom: 16),
-      child: Container(
-        constraints: BoxConstraints(
-          minWidth: 660,
-          maxHeight: _getHeightOverlay(context, responsiveUtils),
-        ),
-        width: 660,
-        height: _getHeightOverlay(context, responsiveUtils),
-        padding: responsiveUtils.landscapeTabletSupported(context)
-          ? EdgeInsets.zero
-          : const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: const [
-              BoxShadow(
-                  color: AppColor.colorShadowBgContentEmail,
-                  spreadRadius: 1,
-                  blurRadius: 1,
-                  offset: Offset(0, 0.5)),
-            ]),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: responsiveUtils.landscapeTabletSupported(context)
-                    ? 16 : 28,
-                vertical: responsiveUtils.landscapeTabletSupported(context)
-                    ? 16 : 12),
-            child: AdvancedSearchInputForm(),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 16),
+        child: Container(
+          constraints: BoxConstraints(
+            minWidth: 660,
+            maxHeight: _getHeightOverlay(context, responsiveUtils),
+          ),
+          width: 660,
+          height: _getHeightOverlay(context, responsiveUtils),
+          padding: responsiveUtils.landscapeTabletSupported(context)
+            ? EdgeInsets.zero
+            : const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: const [
+                BoxShadow(
+                    color: AppColor.colorShadowBgContentEmail,
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    offset: Offset(0, 0.5)),
+              ]),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: responsiveUtils.landscapeTabletSupported(context)
+                      ? 16 : 28,
+                  vertical: responsiveUtils.landscapeTabletSupported(context)
+                      ? 16 : 12),
+              child: AdvancedSearchInputForm(),
+            ),
           ),
         ),
       ),

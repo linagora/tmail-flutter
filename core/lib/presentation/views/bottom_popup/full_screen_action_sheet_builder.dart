@@ -40,7 +40,7 @@ class FullScreenActionSheetBuilder {
       left: false,
       right: false,
       child: GestureDetector(
-        onTap: () => {},
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Padding(
             padding: EdgeInsets.only(top: _statusBarHeight),
             child: ClipRRect(
