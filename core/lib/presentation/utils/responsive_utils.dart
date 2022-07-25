@@ -129,7 +129,9 @@ class ResponsiveUtils {
     if (BuildUtils.isWeb) {
       return isTabletLarge(context);
     } else {
-      return isLandscapeTablet(context);
+      return !isLandscapeMobile(context) && (isLandscapeTablet(context) ||
+          isTabletLarge(context) ||
+          isDesktop(context));
     }
   }
 }
