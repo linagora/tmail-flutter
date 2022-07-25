@@ -1452,5 +1452,179 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "singleSignOn": "Accesso singolo",
+  "@singleSignOn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "Hai contrassegnato {count} messaggi in \"{mailboxName}\" come letti",
+  "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName",
+      "count"
+    ],
+    "placeholders": {
+      "mailboxName": {},
+      "count": {}
+    }
+  },
+  "ssoNotAvailable": "Accesso singolo (SSO) non è disponibile",
+  "@ssoNotAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noPreviewAvailable": "Nessuna anteprima disponibile",
+  "@noPreviewAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "wrongUrlMessage": "L'URL del server non è valido, si prega di riprovare",
+  "@wrongUrlMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "form": "Da",
+  "@form": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "to": "A",
+  "@to": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subject": "Oggetto",
+  "@subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hasTheWords": "Include le parole",
+  "@hasTheWords": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doesNotHave": "Non include",
+  "@doesNotHave": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailbox": "Cassetta postale",
+  "@mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameOrEmailAddress": "Nome o indirizzo e-mail",
+  "@nameOrEmailAddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterSearchTerm": "Inserisci il termine di ricerca",
+  "@enterSearchTerm": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allMails": "Tutte le mail",
+  "@allMails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allTime": "Durante tutto il tempo",
+  "@allTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search": "Ricerca",
+  "@search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearFilter": "Pulire i filtri",
+  "@clearFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "advancedSearch": "Ricerca avanzata",
+  "@advancedSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectMailbox": "Seleziona la casella di posta",
+  "@selectMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDuplicateTagFilterMail": "l'hai già inserito",
+  "@messageDuplicateTagFilterMail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageAndRegion": "Lingua e Regione",
+  "@languageAndRegion": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageAndRegionSubtitle": "Imposta la lingua, il fuso orario, il formato dell'ora che usi su TeamMail.",
+  "@languageAndRegionSubtitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "language": "Lingua",
+  "@language": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageEnglish": "Inglese",
+  "@languageEnglish": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageVietnamese": "Vietnamita",
+  "@languageVietnamese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageFrench": "Francese",
+  "@languageFrench": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageRussian": "Russo",
+  "@languageRussian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogSendEmailUploadingAttachment": "Impossibile inviare il messaggio perché è in corso il caricamento di un allegato",
+  "@messageDialogSendEmailUploadingAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
