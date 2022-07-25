@@ -23,6 +23,8 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   final double sizeIconChecked;
   final double radiusButton;
   final double opacity;
+  final Widget? iconArrowDown;
+  final Color? colorButton;
 
   const DropDownButtonWidget({
     Key? key,
@@ -36,6 +38,8 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     this.sizeIconChecked = 20,
     this.radiusButton = 10,
     this.opacity = 1.0,
+    this.iconArrowDown,
+    this.colorButton,
   }) : super(key: key);
 
   @override
@@ -94,7 +98,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                     color: AppColor.colorInputBorderCreateMailbox,
                     width: 0.5,
                   ),
-                  color: AppColor.colorInputBackgroundCreateMailbox,
+                  color: colorButton ?? AppColor.colorInputBackgroundCreateMailbox,
                 ),
                 padding: const EdgeInsets.only(left: 12, right: 10),
                 child: Row(children: [
@@ -106,12 +110,12 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                     maxLines: 1,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                   )),
-                  SvgPicture.asset(_imagePaths.icDropDown)
+                  iconArrowDown ?? SvgPicture.asset(_imagePaths.icDropDown)
                 ]),
               )
             : null,
           onChanged: onChanged,
-          icon: SvgPicture.asset(_imagePaths.icDropDown),
+          icon: iconArrowDown ?? SvgPicture.asset(_imagePaths.icDropDown),
           buttonPadding: const EdgeInsets.symmetric(horizontal: 12),
           buttonDecoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radiusButton),
@@ -119,7 +123,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
               color: AppColor.colorInputBorderCreateMailbox,
               width: 0.5,
             ),
-            color: AppColor.colorInputBackgroundCreateMailbox,
+            color: colorButton ?? AppColor.colorInputBackgroundCreateMailbox,
           ),
           itemHeight: heightItem,
           buttonHeight: heightItem,
