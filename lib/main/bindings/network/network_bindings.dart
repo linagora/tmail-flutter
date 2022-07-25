@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:contact/data/network/contact_api.dart';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -77,6 +78,7 @@ class NetworkBindings extends Bindings {
       Get.find<JmapHttpClient.HttpClient>(),
       Get.find<DownloadManager>()));
     Get.put(ManageAccountAPI(Get.find<JmapHttpClient.HttpClient>()));
+    Get.put(ContactAPI(Get.find<JmapHttpClient.HttpClient>()));
   }
 
   void _bindingConnection() {
