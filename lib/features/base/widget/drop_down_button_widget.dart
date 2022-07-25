@@ -3,7 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:enough_html_editor/enough_html_editor.dart';
+import 'package:enough_html_editor/enough_html_editor.dart' as enough_html_editor;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -40,7 +40,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     this.radiusButton = 10,
     this.opacity = 1.0,
     this.iconArrowDown,
-    this.colorButton,
+    this.colorButton = Colors.white,
   }) : super(key: key);
 
   @override
@@ -157,7 +157,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     if (item is FontNameType) {
       return item.fontFamily;
     }
-    if (item is SafeFont) {
+    if (item is enough_html_editor.SafeFont) {
       return item.name;
     }
     return '';
