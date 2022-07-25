@@ -37,6 +37,7 @@ class _TextFieldAutoCompleteEmailAddressState
     extends State<TextFieldAutoCompleteEmailAddress> {
   final double _distanceToField = 380;
   final ImagePaths _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
   late CustomController _controller;
 
   @override
@@ -57,26 +58,33 @@ class _TextFieldAutoCompleteEmailAddressState
   @override
   Widget build(BuildContext context) {
     return Autocomplete<EmailAddress>(
-      optionsViewBuilder: (context, onSelected, options) {
+      optionsViewBuilder: (context, onSelected, listEmailAddress) {
         return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Material(
-              elevation: 4.0,
-              child: ConstrainedBox(
-                constraints:
-                    const BoxConstraints(maxHeight: 200, maxWidth: 200),
+          margin: const EdgeInsets.only(
+              top: BuildUtils.isWeb ? 5 : 8,
+              bottom: 16),
+          height: maxHeightSuggestionBox,
+          width: maxWidthSuggestionBox,
+          alignment: Alignment.topLeft,
+          child: Card(
+            elevation: 20,
+            color: Colors.transparent,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Container(
+                alignment: Alignment.topCenter,
+                height: maxHeightSuggestionBox,
+                width: maxWidthSuggestionBox,
+                color: Colors.white,
                 child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: options.length,
+                  padding: EdgeInsets.zero,
+                  itemCount: listEmailAddress.length,
                   itemBuilder: (BuildContext context, int index) {
-                    final dynamic option = options.elementAt(index);
+                    final emailAddress = listEmailAddress.elementAt(index);
                     return GestureDetector(
-                      onTap: () {
-                        onSelected(option);
-                      },
-                      child: _buildSuggestionItem(context, option),
+                      onTap: () => onSelected(emailAddress),
+                      child: _buildSuggestionItem(context, emailAddress),
                     );
                   },
                 ),
@@ -166,9 +174,10 @@ class _TextFieldAutoCompleteEmailAddressState
     BuildContext context,
     EmailAddress emailAddress,
   ) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+      child: Row(children: [
         Container(
             width: 40,
             height: 40,
@@ -177,7 +186,8 @@ class _TextFieldAutoCompleteEmailAddressState
                 shape: BoxShape.circle,
                 color: AppColor.avatarColor,
                 border: Border.all(
-                    color: AppColor.colorShadowBgContentEmail, width: 1.0)),
+                    color: AppColor.colorShadowBgContentEmail,
+                    width: 1.0)),
             child: Text(
                 emailAddress.asString().isNotEmpty
                     ? emailAddress.asString()[0].toUpperCase()
@@ -186,28 +196,32 @@ class _TextFieldAutoCompleteEmailAddressState
                     color: Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.w600))),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(emailAddress.asString(),
-                maxLines: 1,
-                overflow: kIsWeb ? null : TextOverflow.ellipsis,
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal)),
-            if (emailAddress.displayName.isNotEmpty &&
-                emailAddress.emailAddress.isNotEmpty)
-              Text(emailAddress.emailAddress,
+        Expanded(child: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                  emailAddress.asString(),
                   maxLines: 1,
-                  overflow: kIsWeb ? null : TextOverflow.ellipsis,
+                  overflow: CommonTextStyle.defaultTextOverFlow,
                   style: const TextStyle(
-                      color: AppColor.colorHintSearchBar,
-                      fontSize: 13,
-                      fontWeight: FontWeight.normal))
-          ],
-        )
-      ],
+                      color: Colors.black,
+                      fontSize: 16, fontWeight:
+                  FontWeight.normal)),
+              if (emailAddress.displayName.isNotEmpty &&
+                  emailAddress.emailAddress.isNotEmpty)
+                Text(
+                    emailAddress.emailAddress,
+                    maxLines: 1,
+                    overflow: CommonTextStyle.defaultTextOverFlow,
+                    style: const TextStyle(
+                        color: AppColor.colorHintSearchBar,
+                        fontSize: 13,
+                        fontWeight: FontWeight.normal))
+          ]),
+        )),
+      ]),
     );
   }
 
@@ -282,6 +296,38 @@ class _TextFieldAutoCompleteEmailAddressState
       }
     }
     return 0;
+  }
+
+  double get maxHeightSuggestionBox {
+    if (BuildUtils.isWeb) {
+      return 250;
+    } else {
+      if (_responsiveUtils.isLandscapeMobile(context)) {
+        return 180;
+      } else {
+        return 250;
+      }
+    }
+  }
+
+  double get maxWidthSuggestionBox {
+    if (BuildUtils.isWeb) {
+      if (_responsiveUtils.isTabletLarge(context)) {
+        return 300;
+      } else {
+        return 400;
+      }
+    } else {
+      if (_responsiveUtils.isLandscapeMobile(context)) {
+        return 400;
+      } else if (_responsiveUtils.isLandscapeTablet(context) ||
+          _responsiveUtils.isTabletLarge(context) ||
+          _responsiveUtils.isDesktop(context)) {
+        return 300;
+      } else {
+        return 350;
+      }
+    }
   }
 
   @override
