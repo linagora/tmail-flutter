@@ -257,6 +257,7 @@ class MailboxDashBoardController extends ReloadableController {
     if (arguments is Session) {
       sessionCurrent = arguments;
       accountId.value = sessionCurrent?.accounts.keys.first;
+      injectAutoCompleteBindings();
     } else {
       if (kIsWeb) {
         reload();
@@ -427,6 +428,7 @@ class MailboxDashBoardController extends ReloadableController {
     accountId.value = sessionCurrent?.accounts.keys.first;
     _getUserProfile();
     _handleComposerCache();
+    injectAutoCompleteBindings();
   }
 
   UnsignedInt? get maxSizeAttachmentsPerEmail {
