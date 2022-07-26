@@ -137,6 +137,12 @@ class ImagePaths {
   String get icStyleHeader => _getImagePath('ic_style_header.svg');
   String get icStyleColor => _getImagePath('ic_style_color.svg');
   String get icStyleArrowDown => _getImagePath('ic_style_arrow_down.svg');
+  String get icAlignLeft => _getImagePath('ic_align_left.svg');
+  String get icAlignCenter => _getImagePath('ic_align_center.svg');
+  String get icAlignRight => _getImagePath('ic_align_right.svg');
+  String get icAlignJustify => _getImagePath('ic_align_justify.svg');
+  String get icAlignIndent => _getImagePath('ic_align_indent.svg');
+  String get icAlignOutdent => _getImagePath('ic_align_outdent.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
