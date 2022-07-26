@@ -529,6 +529,20 @@ class ComposerView extends GetWidget<ComposerController>
                           maxWithEditor: constraints.maxWidth - 120)),
                 );
               }),
+              const SizedBox(width: 4),
+              Obx(() {
+                return buildIconWeb(
+                    minSize: 40,
+                    colorSelected: controller.richTextWebController.codeViewEnabled
+                      ? AppColor.colorSelectedRichTextButton
+                      : Colors.transparent,
+                    iconPadding: EdgeInsets.zero,
+                    icon: SvgPicture.asset(imagePaths.icStyleCodeView,
+                        color: AppColor.colorTextButton,
+                        fit: BoxFit.fill),
+                    tooltip: AppLocalizations.of(context).codeView,
+                    onTap: () => controller.richTextWebController.toggleCodeView());
+              }),
             ])
         )
     );
@@ -910,17 +924,6 @@ class ComposerView extends GetWidget<ComposerController>
                           tooltip: RichTextStyleType.paragraph.getTooltipButton(context))),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: buildWrapIconStyleText(
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    isSelected: richTextController.isTextStyleTypeSelected(RichTextStyleType.codeView),
-                    icon: buildIconWithTooltip(
-                        path: RichTextStyleType.codeView.getIcon(imagePaths),
-                        color: AppColor.colorDefaultRichTextButton.withOpacity(opacity),
-                        tooltip: RichTextStyleType.codeView.getTooltipButton(context)),
-                  onTap: () => richTextController.toggleCodeView()),
               )
             ]
         ),
