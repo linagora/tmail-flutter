@@ -12,8 +12,7 @@ enum RichTextStyleType {
   strikeThrough,
   textColor,
   textBackgroundColor,
-  paragraph,
-  codeView;
+  paragraph;
 
   String get commandAction {
     switch (this) {
@@ -48,8 +47,6 @@ enum RichTextStyleType {
         return imagePaths.icStyleUnderline;
       case strikeThrough:
         return imagePaths.icStyleStrikeThrough;
-      case codeView:
-        return imagePaths.icStyleCodeView;
       case headerStyle:
         return imagePaths.icStyleHeader;
       case textColor:
@@ -85,8 +82,6 @@ enum RichTextStyleType {
         return AppLocalizations.of(context).formatTextColor;
       case textBackgroundColor:
         return AppLocalizations.of(context).formatTextBackgroundColor;
-      case codeView:
-        return AppLocalizations.of(context).codeView;
       case headerStyle:
         return AppLocalizations.of(context).headerStyle;
       case fontName:
