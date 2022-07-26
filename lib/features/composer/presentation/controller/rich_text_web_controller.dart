@@ -225,7 +225,6 @@ class RichTextWebController extends BaseRichTextController {
     final isActivated = await isActivatedCodeView;
     final newCodeViewState = isActivated ? CodeViewState.disabled : CodeViewState.enabled;
     codeViewState.value = newCodeViewState;
-    _selectTextStyleType(RichTextStyleType.codeView);
     editorController.toggleCodeView();
     if (isActivated) {
       setFullScreenEditor();
