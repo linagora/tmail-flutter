@@ -1,8 +1,11 @@
+import 'package:core/core.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -108,5 +111,16 @@ class RichTextMobileTabletController extends BaseRichTextController {
 
   void closeDropdownMenuFont() {
     popBack();
+  }
+
+  void insertImage(InlineImage image, {double? maxWithEditor}) async {
+    log('RichTextMobileTabletController::insertImage(): $image | maxWithEditor: $maxWithEditor');
+    if (image.source == ImageSource.network) {
+      htmlEditorApi?.insertImageLink(image.link!);
+    } else {
+      final htmlContent = await image.generateImgTagHtml(maxWithEditor: maxWithEditor);
+      log('RichTextMobileTabletController::insertImage(): $htmlContent');
+      htmlEditorApi?.insertHtml(htmlContent);
+    }
   }
 }
