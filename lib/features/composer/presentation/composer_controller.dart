@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
@@ -41,7 +42,6 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/email_ac
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/insert_image_dialog_builder.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -139,7 +139,10 @@ class ComposerController extends BaseController {
       log('ComposerController::_getEmailBodyText():WEB: newContentHtml: $newContentHtml');
       return newContentHtml;
     } else {
-      final contentHtml = (await htmlEditorApi?.getText() ?? '').replaceAll('&quot;', '"');
+      String contentHtml = await htmlEditorApi?.getText() ?? '';
+      if(Platform.isAndroid) {
+        contentHtml = contentHtml.replaceAll('&quot;', '"');
+      }
       log('ComposerController::_getEmailBodyText():MOBILE: $contentHtml');
       final newContentHtml = contentHtml.removeEditorStartTag();
       if (changedEmail) {
@@ -536,9 +539,7 @@ class ComposerController extends BaseController {
     final generateBlobId = Id(_uuid.v1());
 
     var emailBodyText = await _getEmailBodyText(context);
-    final mapContents = await richTextWebController.refactorContentHasInlineImage(
-        emailBodyText,
-        uploadController.mapInlineAttachments);
+    final mapContents = await _getMapContent(emailBodyText);
     log('ComposerController::_generateEmail(): mapContents: $mapContents');
     emailBodyText = mapContents.value1;
     final listInlineAttachment = mapContents.value2;
@@ -576,6 +577,18 @@ class ComposerController extends BaseController {
       headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgent},
       attachments: attachments.isNotEmpty ? attachments : null,
     );
+  }
+
+  Future<Tuple2<String, List<Attachment>>> _getMapContent(String emailBodyText) async {
+    if (kIsWeb) {
+      return await richTextWebController.refactorContentHasInlineImage(
+          emailBodyText,
+          uploadController.mapInlineAttachments);
+    } else {
+      return await richTextMobileTabletController.refactorContentHasInlineImage(
+          emailBodyText,
+          uploadController.mapInlineAttachments);
+    }
   }
 
   Future<String> get userAgentPlatform async {
@@ -1121,21 +1134,12 @@ class ComposerController extends BaseController {
   }
 
   void insertImage(BuildContext context, {double? maxWithEditor}) async {
-    if(kIsWeb) {
-      await InsertImageDialogBuilder(
-          context,
-          insertActionCallback: (inlineImage) {
-            log('ComposerController::insertImage(): ${inlineImage.source}|$maxWithEditor');
-            if (BuildUtils.isWeb) {
-              this.maxWithEditor = maxWithEditor;
-              _insertImageOnWeb(inlineImage);
-            }
-          }
-      ).show();
-    } else {
-      final inlineImage = await _selectFromFile();
-      if(inlineImage != null) {
-        this.maxWithEditor = maxWithEditor;
+    final inlineImage = await _selectFromFile();
+    if(inlineImage != null) {
+      this.maxWithEditor = maxWithEditor;
+      if(kIsWeb) {
+        _insertImageOnWeb(inlineImage);
+      } else {
         _insertImageOnMobileAndTablet(inlineImage);
       }
     }
