@@ -15,29 +15,41 @@ mixin RichTextButtonMixin {
     bool hasDropdown = true,
     double opacity = 1.0,
     EdgeInsets? padding,
+    double? spacing,
+    String tooltip = '',
   }){
-    return InkWell(
-      onTap: onTap,
+    final buttonIcon = Tooltip(
+      message: tooltip,
       child: Container(
         padding: padding ?? const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         decoration: BoxDecoration(
             color: isSelected == true
-                ? AppColor.colorBackgroundWrapIconStyleCode.withOpacity(opacity)
-                : Colors.white.withOpacity(opacity),
+                ? AppColor.colorBackgroundWrapIconStyleCode
+                : Colors.white,
             border: Border.all(
                 color: AppColor.colorBorderWrapIconStyleCode,
                 width: 0.5),
             borderRadius: BorderRadius.circular(8)),
         child: hasDropdown
-          ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                icon,
-                SvgPicture.asset(_imagePaths.icStyleArrowDown)
-              ])
-          : icon,
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  icon,
+                  if (spacing != null) SizedBox(width: spacing),
+                  SvgPicture.asset(_imagePaths.icStyleArrowDown)
+                ])
+            : icon,
       ),
     );
+
+    if (onTap != null) {
+      return InkWell(
+        onTap: onTap,
+        child: buttonIcon,
+      );
+    } else {
+      return buttonIcon;
+    }
   }
 
   Widget buildIconStyleText({
