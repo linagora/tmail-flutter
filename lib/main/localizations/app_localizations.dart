@@ -1725,4 +1725,52 @@ class AppLocalizations {
         'Style',
         name: 'headerStyle');
   }
+
+  String get fontFamily {
+    return Intl.message(
+        'Font Family',
+        name: 'fontFamily');
+  }
+
+  String get paragraph {
+    return Intl.message(
+        'Paragraph',
+        name: 'paragraph');
+  }
+
+  String get alignLeft {
+    return Intl.message(
+        'Align left',
+        name: 'alignLeft');
+  }
+
+  String get alignRight {
+    return Intl.message(
+        'Align right',
+        name: 'alignRight');
+  }
+
+  String get alignCenter {
+    return Intl.message(
+        'Align center',
+        name: 'alignCenter');
+  }
+
+  String get justifyFull {
+    return Intl.message(
+        'Justify full',
+        name: 'justifyFull');
+  }
+
+  String get outdent {
+    return Intl.message(
+        'Outdent',
+        name: 'outdent');
+  }
+
+  String get indent {
+    return Intl.message(
+        'Indent',
+        name: 'indent');
+  }
 }
