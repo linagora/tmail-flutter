@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
@@ -372,8 +373,8 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
     );
   }
 
-  Widget _buildListButton(BuildContext context) {
-    return  Transform(
+  Widget _buildListButton(BuildContext context, BoxConstraints constraints) {
+    return Transform(
         transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
         child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5),
@@ -382,6 +383,16 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
                   icon: SvgPicture.asset(imagePaths.icAttachmentsComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).attach_file,
                   onTap: () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context))),
+              buildIconWeb(
+                  minSize: 40,
+                  iconPadding: EdgeInsets.zero,
+                  icon: SvgPicture.asset(imagePaths.icInsertImage,
+                      color: AppColor.colorTextButton,
+                      fit: BoxFit.fill),
+                  tooltip: AppLocalizations.of(context).insertImage,
+                  onTap: () => controller.insertImage(
+                      context,
+                      maxWithEditor: constraints.maxWidth - 120))
             ])
         )
     );
@@ -390,67 +401,72 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
   Widget _buildBodyMobile(BuildContext context) {
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
-      child: Column(children: [
-        Obx(() => controller.identitySelected.value != null
-            ? _buildFromEmailAddress(context)
-            : const SizedBox.shrink()),
-        Obx(() => controller.identitySelected.value != null
-            ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-            : const SizedBox.shrink()),
-        _buildEmailAddress(context),
-        const Divider(color: AppColor.colorDividerComposer, height: 1),
-        Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), child: _buildSubjectEmail(context)),
-        const Divider(color: AppColor.colorDividerComposer, height: 1),
-        Padding(padding: const EdgeInsets.symmetric(horizontal: 16),  child: _buildListButton(context)),
-        const Divider(color: AppColor.colorDividerComposer, height: 1),
-        _buildAttachmentsWidget(context),
-        _buildComposerEditor(context),
-      ])
+      child: LayoutBuilder(
+        builder: (context, constraints) => Column(children: [
+          Obx(() => controller.identitySelected.value != null
+              ? _buildFromEmailAddress(context)
+              : const SizedBox.shrink()),
+          Obx(() => controller.identitySelected.value != null
+              ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+              : const SizedBox.shrink()),
+          _buildEmailAddress(context),
+          const Divider(color: AppColor.colorDividerComposer, height: 1),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), child: _buildSubjectEmail(context)),
+          const Divider(color: AppColor.colorDividerComposer, height: 1),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 16),  child: _buildListButton(context, constraints)),
+          const Divider(color: AppColor.colorDividerComposer, height: 1),
+          _buildAttachmentsWidget(context),
+          _buildInlineLoadingView(),
+          _buildComposerEditor(context),
+        ]),
+      )
     );
   }
 
   Widget _buildBodyTablet(BuildContext context) {
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
-      child: Column(children: [
-        Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(padding: const EdgeInsets.only(top: 20),
-                  child: (AvatarBuilder()
-                      ..text(controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
-                      ..size(56)
-                      ..addTextStyle(const TextStyle(fontWeight: FontWeight.w600, fontSize: 28, color: Colors.white))
-                      ..backgroundColor(AppColor.colorAvatar))
-                    .build()),
-              Expanded(child: Padding(
-                padding: const EdgeInsets.only(left: 16),
-                child: Column(children: [
-                  Obx(() => controller.identitySelected.value != null
-                      ? _buildFromEmailAddress(context)
-                      : const SizedBox.shrink()),
-                  Obx(() => controller.identitySelected.value != null
-                      ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-                      : const SizedBox.shrink()),
-                  _buildEmailAddress(context),
-                  const Divider(color: AppColor.colorDividerComposer, height: 1),
-                  Padding(padding: const EdgeInsets.only(right: 16), child: _buildSubjectEmail(context)),
-                  const Divider(color: AppColor.colorDividerComposer, height: 1),
-                  _buildListButton(context),
-                ]),
-              ))
-            ])),
-        const Divider(color: AppColor.colorDividerComposer, height: 1),
-        Padding(
-            padding: const EdgeInsets.only(left: 60, right: 25),
-            child: Column(children: [
-              _buildToolbarRichTextWidget(context),
-              _buildAttachmentsWidget(context),
-              _buildInlineLoadingView(),
-              _buildComposerEditor(context),
-            ])
-        )
-      ])
+      child: LayoutBuilder(
+        builder: (context, constraints) => Column(children: [
+          Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Padding(padding: const EdgeInsets.only(top: 20),
+                    child: (AvatarBuilder()
+                        ..text(controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
+                        ..size(56)
+                        ..addTextStyle(const TextStyle(fontWeight: FontWeight.w600, fontSize: 28, color: Colors.white))
+                        ..backgroundColor(AppColor.colorAvatar))
+                      .build()),
+                Expanded(child: Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Column(children: [
+                    Obx(() => controller.identitySelected.value != null
+                        ? _buildFromEmailAddress(context)
+                        : const SizedBox.shrink()),
+                    Obx(() => controller.identitySelected.value != null
+                        ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+                        : const SizedBox.shrink()),
+                    _buildEmailAddress(context),
+                    const Divider(color: AppColor.colorDividerComposer, height: 1),
+                    Padding(padding: const EdgeInsets.only(right: 16), child: _buildSubjectEmail(context)),
+                    const Divider(color: AppColor.colorDividerComposer, height: 1),
+                    _buildListButton(context, constraints),
+                  ]),
+                ))
+              ])),
+          const Divider(color: AppColor.colorDividerComposer, height: 1),
+          Padding(
+              padding: const EdgeInsets.only(left: 60, right: 25),
+              child: Column(children: [
+                _buildToolbarRichTextWidget(context),
+                _buildAttachmentsWidget(context),
+                _buildInlineLoadingView(),
+                _buildComposerEditor(context),
+              ])
+          )
+        ]),
+      )
     );
   }
 
