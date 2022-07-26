@@ -139,7 +139,7 @@ class ComposerController extends BaseController {
       log('ComposerController::_getEmailBodyText():WEB: newContentHtml: $newContentHtml');
       return newContentHtml;
     } else {
-      final contentHtml = await htmlEditorApi?.getText() ?? '';
+      final contentHtml = (await htmlEditorApi?.getText() ?? '').replaceAll('&quot;', '"');
       log('ComposerController::_getEmailBodyText():MOBILE: $contentHtml');
       final newContentHtml = contentHtml.removeEditorStartTag();
       if (changedEmail) {
@@ -247,13 +247,23 @@ class ComposerController extends BaseController {
             selectIdentity(listIdentities.first);
           }
         } else if (success is DownloadImageAsBase64Success) {
-          richTextWebController.insertImage(
-              InlineImage(
-                  ImageSource.local,
-                  fileInfo: success.fileInfo,
-                  cid: success.cid,
-                  base64: success.imageAsBase64),
-              maxWithEditor: maxWithEditor);
+          if(kIsWeb) {
+            richTextWebController.insertImage(
+                InlineImage(
+                    ImageSource.local,
+                    fileInfo: success.fileInfo,
+                    cid: success.cid,
+                    base64: success.imageAsBase64),
+                maxWithEditor: maxWithEditor);
+          } else {
+            richTextMobileTabletController.insertImage(
+                InlineImage(
+                    ImageSource.local,
+                    fileInfo: success.fileInfo,
+                    cid: success.cid,
+                    base64: success.imageAsBase64),
+                maxWithEditor: maxWithEditor);
+          }
           maxWithEditor = null;
         }
       });
@@ -1111,16 +1121,41 @@ class ComposerController extends BaseController {
   }
 
   void insertImage(BuildContext context, {double? maxWithEditor}) async {
-    await InsertImageDialogBuilder(
-        context,
-        insertActionCallback: (inlineImage) {
-          log('ComposerController::insertImage(): ${inlineImage.source}|$maxWithEditor');
-          if (BuildUtils.isWeb) {
-            this.maxWithEditor = maxWithEditor;
-            _insertImageOnWeb(inlineImage);
+    if(kIsWeb) {
+      await InsertImageDialogBuilder(
+          context,
+          insertActionCallback: (inlineImage) {
+            log('ComposerController::insertImage(): ${inlineImage.source}|$maxWithEditor');
+            if (BuildUtils.isWeb) {
+              this.maxWithEditor = maxWithEditor;
+              _insertImageOnWeb(inlineImage);
+            }
           }
-        }
-    ).show();
+      ).show();
+    } else {
+      final inlineImage = await _selectFromFile();
+      if(inlineImage != null) {
+        this.maxWithEditor = maxWithEditor;
+        _insertImageOnMobileAndTablet(inlineImage);
+      }
+    }
+  }
+
+  Future<InlineImage?> _selectFromFile() async {
+    final filePickerResult = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        withReadStream: true);
+    final platformFile = filePickerResult?.files.single;
+    if (platformFile != null) {
+     final fileSelected = FileInfo(
+          platformFile.name,
+          BuildUtils.isWeb ? '' : platformFile.path ?? '',
+          platformFile.size,
+          readStream: platformFile.readStream);
+     return InlineImage(ImageSource.local, fileInfo: fileSelected);
+    }
+
+    return null;
   }
 
   void _insertImageOnWeb(InlineImage inlineImage) {
@@ -1128,6 +1163,14 @@ class ComposerController extends BaseController {
       _uploadInlineAttachmentsAction(inlineImage.fileInfo!);
     } else {
       richTextWebController.insertImage(inlineImage);
+    }
+  }
+
+  void _insertImageOnMobileAndTablet(InlineImage inlineImage) {
+    if (inlineImage.source == ImageSource.local) {
+      _uploadInlineAttachmentsAction(inlineImage.fileInfo!);
+    } else {
+      richTextMobileTabletController.insertImage(inlineImage);
     }
   }
 
