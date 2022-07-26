@@ -1,5 +1,6 @@
 
 import 'package:collection/collection.dart';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:dartz/dartz.dart';
 import 'package:html/parser.dart' show parse;
 
@@ -15,6 +16,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/image_source.
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -27,9 +29,20 @@ class RichTextWebController extends BaseRichTextController {
   final selectedTextBackgroundColor = Colors.white.obs;
   final selectedFontName = FontNameType.sansSerif.obs;
   final codeViewState = CodeViewState.disabled.obs;
+  final selectedParagraph = ParagraphType.alignLeft.obs;
+  final focusMenuParagraph = RxBool(false);
+  final menuFontStatus = DropdownMenuFontStatus.closed.obs;
+  final menuHeaderStyleStatus = DropdownMenuFontStatus.closed.obs;
 
-  DropdownMenuFontStatus menuFontStatus = DropdownMenuFontStatus.closed;
-  DropdownMenuFontStatus menuHeaderStyleStatus = DropdownMenuFontStatus.closed;
+  final menuParagraphController = CustomPopupMenuController();
+
+  @override
+  void onReady() {
+    super.onReady();
+    menuParagraphController.addListener(() {
+      focusMenuParagraph.value = menuParagraphController.menuIsShowing;
+    });
+  }
 
   void onEditorSettingsChange(EditorSettings settings) async {
     log('RichTextWebController::onEditorSettingsChange():');
@@ -181,15 +194,15 @@ class RichTextWebController extends BaseRichTextController {
         argument: fontSelected.fontFamily);
   }
 
-  bool get isMenuFontOpen => menuFontStatus == DropdownMenuFontStatus.open;
+  bool get isMenuFontOpen => menuFontStatus.value == DropdownMenuFontStatus.open;
 
-  bool get isMenuHeaderStyleOpen => menuHeaderStyleStatus == DropdownMenuFontStatus.open;
+  bool get isMenuHeaderStyleOpen => menuHeaderStyleStatus.value == DropdownMenuFontStatus.open;
 
-  void closeDropdownMenuFont() {
+  void _closeDropdownMenuFont() {
     popBack();
   }
 
-  void closeDropdownMenuHeaderStyle() {
+  void _closeDropdownMenuHeaderStyle() {
     popBack();
   }
 
@@ -225,5 +238,29 @@ class RichTextWebController extends BaseRichTextController {
     editorController.execCommand(
         RichTextStyleType.headerStyle.commandAction,
         argument: styleSelected.styleValue);
+  }
+
+  void applyParagraphType(ParagraphType newParagraph) {
+    selectedParagraph.value = newParagraph;
+    editorController.execCommand(newParagraph.commandAction);
+    menuParagraphController.hideMenu();
+  }
+
+  void closeAllMenuPopup() {
+    if (isMenuFontOpen) {
+      _closeDropdownMenuFont();
+    }
+    if (isMenuHeaderStyleOpen) {
+      _closeDropdownMenuHeaderStyle();
+    }
+    if (menuParagraphController.menuIsShowing) {
+      menuParagraphController.hideMenu();
+    }
+  }
+
+  @override
+  void onClose() {
+    menuParagraphController.dispose();
+    super.onClose();
   }
 }
