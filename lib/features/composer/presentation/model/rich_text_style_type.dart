@@ -12,6 +12,7 @@ enum RichTextStyleType {
   strikeThrough,
   textColor,
   textBackgroundColor,
+  paragraph,
   codeView;
 
   String get commandAction {
@@ -88,6 +89,10 @@ enum RichTextStyleType {
         return AppLocalizations.of(context).codeView;
       case headerStyle:
         return AppLocalizations.of(context).headerStyle;
+      case fontName:
+        return AppLocalizations.of(context).fontFamily;
+      case paragraph:
+        return AppLocalizations.of(context).paragraph;
       default:
         return '';
     }
