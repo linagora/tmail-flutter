@@ -26,6 +26,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   final double opacity;
   final Widget? iconArrowDown;
   final Color? colorButton;
+  final String tooltip;
 
   const DropDownButtonWidget({
     Key? key,
@@ -41,6 +42,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     this.opacity = 1.0,
     this.iconArrowDown,
     this.colorButton = Colors.white,
+    this.tooltip = '',
   }) : super(key: key);
 
   @override
@@ -91,28 +93,31 @@ class DropDownButtonWidget<T> extends StatelessWidget {
               .toList(),
           value: itemSelected,
           customButton: supportSelectionIcon
-            ? Container(
-                height: heightItem,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(radiusButton),
-                  border: Border.all(
-                    color: AppColor.colorInputBorderCreateMailbox,
-                    width: 0.5,
+            ? Tooltip(
+                message: tooltip,
+                child: Container(
+                  height: heightItem,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(radiusButton),
+                    border: Border.all(
+                      color: AppColor.colorInputBorderCreateMailbox,
+                      width: 0.5,
+                    ),
+                    color: colorButton ?? AppColor.colorInputBackgroundCreateMailbox,
                   ),
-                  color: colorButton ?? AppColor.colorInputBackgroundCreateMailbox,
+                  padding: const EdgeInsets.only(left: 12, right: 10),
+                  child: Row(children: [
+                    Expanded(child: Text(
+                      _getTextItemDropdown(context, item: itemSelected),
+                      style: TextStyle(fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black.withOpacity(opacity)),
+                      maxLines: 1,
+                      overflow: CommonTextStyle.defaultTextOverFlow,
+                    )),
+                    iconArrowDown ?? SvgPicture.asset(_imagePaths.icDropDown)
+                  ]),
                 ),
-                padding: const EdgeInsets.only(left: 12, right: 10),
-                child: Row(children: [
-                  Expanded(child: Text(
-                    _getTextItemDropdown(context, item: itemSelected),
-                    style: TextStyle(fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black.withOpacity(opacity)),
-                    maxLines: 1,
-                    overflow: CommonTextStyle.defaultTextOverFlow,
-                  )),
-                  iconArrowDown ?? SvgPicture.asset(_imagePaths.icDropDown)
-                ]),
               )
             : null,
           onChanged: onChanged,

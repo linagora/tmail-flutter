@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-07-22T18:31:58.383010",
+  "@@last_modified": "2022-07-26T16:21:05.066657",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1678,6 +1678,54 @@
   },
   "headerStyle": "Style",
   "@headerStyle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fontFamily": "Font Family",
+  "@fontFamily": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "paragraph": "Paragraph",
+  "@paragraph": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "alignLeft": "Align left",
+  "@alignLeft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "alignRight": "Align right",
+  "@alignRight": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "alignCenter": "Align center",
+  "@alignCenter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "justifyFull": "Justify full",
+  "@justifyFull": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "outdent": "Outdent",
+  "@outdent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "indent": "Indent",
+  "@indent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

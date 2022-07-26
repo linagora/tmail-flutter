@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -17,6 +18,7 @@ import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_but
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
@@ -624,12 +626,7 @@ class ComposerView extends GetWidget<ComposerController>
               Future.delayed(const Duration(milliseconds: 500), () {
                 controller.richTextWebController.editorController.setFocus();
               });
-              if (controller.richTextWebController.isMenuFontOpen) {
-                controller.richTextWebController.closeDropdownMenuFont();
-              }
-              if (controller.richTextWebController.isMenuHeaderStyleOpen) {
-                controller.richTextWebController.closeDropdownMenuHeaderStyle();
-              }
+              controller.richTextWebController.closeAllMenuPopup();
             }, onBlur: () {
               controller.onEditorFocusChange(false);
             }, onMouseDown: () {
@@ -766,19 +763,19 @@ class ComposerView extends GetWidget<ComposerController>
         padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
         alignment: Alignment.centerLeft,
         child: Wrap(
-            alignment: WrapAlignment.start,
             crossAxisAlignment: WrapCrossAlignment.center,
+            runSpacing: 8,
             children: [
               AbsorbPointer(
                 absorbing: codeViewEnabled,
                 child: DropDownMenuHeaderStyleWidget(
                     icon: buildWrapIconStyleText(
-                        icon: Tooltip(
-                          message: RichTextStyleType.headerStyle.getTooltipButton(context),
-                          child: SvgPicture.asset(RichTextStyleType.headerStyle.getIcon(imagePaths),
-                              color: AppColor.colorDefaultRichTextButton.withOpacity(opacity),
-                              fit: BoxFit.fill),
-                        )
+                        isSelected: richTextController.isMenuHeaderStyleOpen,
+                        icon: SvgPicture.asset(RichTextStyleType.headerStyle.getIcon(imagePaths),
+                            color: AppColor.colorDefaultRichTextButton.withOpacity(opacity),
+                            fit: BoxFit.fill),
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                        tooltip: RichTextStyleType.headerStyle.getTooltipButton(context)
                     ),
                     items: HeaderStyleType.values,
                     onMenuStateChange: (isOpen) {
@@ -786,7 +783,7 @@ class ComposerView extends GetWidget<ComposerController>
                       final newStatus = isOpen
                           ? DropdownMenuFontStatus.open
                           : DropdownMenuFontStatus.closed;
-                      richTextController.menuHeaderStyleStatus = newStatus;
+                      richTextController.menuHeaderStyleStatus.value = newStatus;
                     },
                     onChanged: (newStyle) => richTextController.applyHeaderStyle(newStyle)),
               ),
@@ -804,32 +801,39 @@ class ComposerView extends GetWidget<ComposerController>
                           final newStatus = isOpen
                               ? DropdownMenuFontStatus.open
                               : DropdownMenuFontStatus.closed;
-                          richTextController.menuFontStatus = newStatus;
+                          richTextController.menuFontStatus.value = newStatus;
                         },
-                        heightItem: 38,
+                        heightItem: 40,
                         sizeIconChecked: 16,
-                        radiusButton: 5,
+                        radiusButton: 8,
                         opacity: opacity,
-                        colorButton: Colors.white,
+                        colorButton: richTextController.isMenuFontOpen
+                            ? AppColor.colorBackgroundWrapIconStyleCode
+                            : Colors.white,
                         iconArrowDown: SvgPicture.asset(imagePaths.icStyleArrowDown),
+                        tooltip: RichTextStyleType.fontName.getTooltipButton(context),
                         supportSelectionIcon: true)),
               ),
-              AbsorbPointer(
-                absorbing: codeViewEnabled,
-                child: buildWrapIconStyleText(
-                    icon: buildIconWithTooltip(
-                        path: RichTextStyleType.textColor.getIcon(imagePaths),
-                        color: richTextController.selectedTextColor.value,
-                        tooltip: RichTextStyleType.textColor.getTooltipButton(context),
-                        opacity: opacity),
-                    onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.textColor)),
-              ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.only(right: 8),
                 child: AbsorbPointer(
                   absorbing: codeViewEnabled,
                   child: buildWrapIconStyleText(
-                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                      icon: buildIconWithTooltip(
+                          path: RichTextStyleType.textColor.getIcon(imagePaths),
+                          color: richTextController.selectedTextColor.value,
+                          tooltip: RichTextStyleType.textColor.getTooltipButton(context),
+                          opacity: opacity),
+                      onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.textColor)),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: AbsorbPointer(
+                  absorbing: codeViewEnabled,
+                  child: buildWrapIconStyleText(
+                      padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 7),
+                      spacing: 3,
                       icon: buildIconColorBackgroundText(
                           iconData: RichTextStyleType.textBackgroundColor.getIconData(),
                           colorSelected: richTextController.selectedTextBackgroundColor.value,
@@ -838,52 +842,79 @@ class ComposerView extends GetWidget<ComposerController>
                       onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.textBackgroundColor)),
                 ),
               ),
-              buildWrapIconStyleText(
-                  hasDropdown: false,
-                  padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-                  icon: Wrap(children: [
-                    AbsorbPointer(
-                      absorbing: codeViewEnabled,
-                      child: buildIconStyleText(
-                          path: RichTextStyleType.bold.getIcon(imagePaths),
-                          isSelected: richTextController.isTextStyleTypeSelected(RichTextStyleType.bold),
-                          tooltip: RichTextStyleType.bold.getTooltipButton(context),
-                          opacity: opacity,
-                          onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.bold)),
-                    ),
-                    AbsorbPointer(
-                      absorbing: codeViewEnabled,
-                      child: buildIconStyleText(
-                          path: RichTextStyleType.italic.getIcon(imagePaths),
-                          isSelected: richTextController.isTextStyleTypeSelected(RichTextStyleType.italic),
-                          tooltip: RichTextStyleType.italic.getTooltipButton(context),
-                          opacity: opacity,
-                          onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.italic)),
-                    ),
-                    AbsorbPointer(
-                      absorbing: codeViewEnabled,
-                      child: buildIconStyleText(
-                          path: RichTextStyleType.underline.getIcon(imagePaths),
-                          isSelected: richTextController.isTextStyleTypeSelected(RichTextStyleType.underline),
-                          tooltip: RichTextStyleType.underline.getTooltipButton(context),
-                          opacity: opacity,
-                          onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.underline)),
-                    ),
-                    AbsorbPointer(
-                      absorbing: codeViewEnabled,
-                      child: buildIconStyleText(
-                          path: RichTextStyleType.strikeThrough.getIcon(imagePaths),
-                          isSelected: richTextController.isTextStyleTypeSelected(
-                              RichTextStyleType.strikeThrough),
-                          tooltip: RichTextStyleType.strikeThrough.getTooltipButton(context),
-                          opacity: opacity,
-                          onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.strikeThrough)),
-                    )
-                  ])),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.only(right: 8.0),
                 child: buildWrapIconStyleText(
-                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 5),
+                    hasDropdown: false,
+                    padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                    icon: Wrap(children: [
+                      AbsorbPointer(
+                        absorbing: codeViewEnabled,
+                        child: buildIconStyleText(
+                            path: RichTextStyleType.bold.getIcon(imagePaths),
+                            isSelected: richTextController.isTextStyleTypeSelected(RichTextStyleType.bold),
+                            tooltip: RichTextStyleType.bold.getTooltipButton(context),
+                            opacity: opacity,
+                            onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.bold)),
+                      ),
+                      AbsorbPointer(
+                        absorbing: codeViewEnabled,
+                        child: buildIconStyleText(
+                            path: RichTextStyleType.italic.getIcon(imagePaths),
+                            isSelected: richTextController.isTextStyleTypeSelected(RichTextStyleType.italic),
+                            tooltip: RichTextStyleType.italic.getTooltipButton(context),
+                            opacity: opacity,
+                            onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.italic)),
+                      ),
+                      AbsorbPointer(
+                        absorbing: codeViewEnabled,
+                        child: buildIconStyleText(
+                            path: RichTextStyleType.underline.getIcon(imagePaths),
+                            isSelected: richTextController.isTextStyleTypeSelected(RichTextStyleType.underline),
+                            tooltip: RichTextStyleType.underline.getTooltipButton(context),
+                            opacity: opacity,
+                            onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.underline)),
+                      ),
+                      AbsorbPointer(
+                        absorbing: codeViewEnabled,
+                        child: buildIconStyleText(
+                            path: RichTextStyleType.strikeThrough.getIcon(imagePaths),
+                            isSelected: richTextController.isTextStyleTypeSelected(
+                                RichTextStyleType.strikeThrough),
+                            tooltip: RichTextStyleType.strikeThrough.getTooltipButton(context),
+                            opacity: opacity,
+                            onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.strikeThrough)),
+                      )
+                    ])),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: AbsorbPointer(
+                  absorbing: codeViewEnabled,
+                  child: PopupMenuOverlayWidget(
+                    controller: richTextController.menuParagraphController,
+                    listButtonAction: ParagraphType.values
+                      .map((paragraph) => paragraph.buildButtonWidget(
+                          context,
+                          imagePaths,
+                          (paragraph) => richTextController.applyParagraphType(paragraph)))
+                      .toList(),
+                    iconButton: buildWrapIconStyleText(
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                        spacing: 3,
+                        opacity: opacity,
+                        isSelected: richTextController.focusMenuParagraph.value,
+                        icon: buildIconWithTooltip(
+                          path: richTextController.selectedParagraph.value.getIcon(imagePaths),
+                          color: AppColor.colorDefaultRichTextButton.withOpacity(opacity),
+                          tooltip: RichTextStyleType.paragraph.getTooltipButton(context))),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: buildWrapIconStyleText(
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     isSelected: richTextController.isTextStyleTypeSelected(RichTextStyleType.codeView),
                     icon: buildIconWithTooltip(
                         path: RichTextStyleType.codeView.getIcon(imagePaths),
