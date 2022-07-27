@@ -13,7 +13,6 @@ mixin RichTextButtonMixin {
     VoidCallback? onTap,
     bool isSelected = false,
     bool hasDropdown = true,
-    double opacity = 1.0,
     EdgeInsets? padding,
     double? spacing,
     String tooltip = '',

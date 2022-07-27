@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/image_source.
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/order_list_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -30,17 +31,23 @@ class RichTextWebController extends BaseRichTextController {
   final selectedFontName = FontNameType.sansSerif.obs;
   final codeViewState = CodeViewState.disabled.obs;
   final selectedParagraph = ParagraphType.alignLeft.obs;
+  final selectedOrderList = OrderListType.bulletedList.obs;
+  final focusMenuOrderList = RxBool(false);
   final focusMenuParagraph = RxBool(false);
   final menuFontStatus = DropdownMenuFontStatus.closed.obs;
   final menuHeaderStyleStatus = DropdownMenuFontStatus.closed.obs;
 
   final menuParagraphController = CustomPopupMenuController();
+  final menuOrderListController = CustomPopupMenuController();
 
   @override
   void onReady() {
     super.onReady();
     menuParagraphController.addListener(() {
       focusMenuParagraph.value = menuParagraphController.menuIsShowing;
+    });
+    menuOrderListController.addListener(() {
+      focusMenuOrderList.value = menuOrderListController.menuIsShowing;
     });
   }
 
@@ -255,11 +262,21 @@ class RichTextWebController extends BaseRichTextController {
     if (menuParagraphController.menuIsShowing) {
       menuParagraphController.hideMenu();
     }
+    if (menuOrderListController.menuIsShowing) {
+      menuOrderListController.hideMenu();
+    }
+  }
+
+  void applyOrderListType(OrderListType newOrderList) {
+    selectedOrderList.value = newOrderList;
+    editorController.execCommand(newOrderList.commandAction);
+    menuOrderListController.hideMenu();
   }
 
   @override
   void onClose() {
     menuParagraphController.dispose();
+    menuOrderListController.dispose();
     super.onClose();
   }
 }
