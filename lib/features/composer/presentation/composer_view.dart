@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
@@ -15,9 +14,10 @@ import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart'
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/drop_down_menu_header_style_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
@@ -508,75 +508,82 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
   }
 
   Widget _buildToolbarRichTextWidget(BuildContext context) {
-    return Obx(() => Container(
+    return Obx(() {
+      final richTextMobileTabletController = controller.richTextMobileTabletController;
+      return Container(
         padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
         alignment: Alignment.centerLeft,
         child: Wrap(
-            alignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Container(
-                  width: 200,
-                  padding: const EdgeInsets.only(right: 2),
-                  child: DropDownButtonWidget<SafeFont>(
-                      items: SafeFont.values,
-                      itemSelected: controller.richTextMobileTabletController.selectedFontName.value,
-                      onChanged: (newFont) => controller.richTextMobileTabletController.applyNewFontStyle(newFont),
-                      onMenuStateChange: (isOpen) {
-                        final newStatus = isOpen
-                            ? DropdownMenuFontStatus.open
-                            : DropdownMenuFontStatus.closed;
-                        controller.richTextMobileTabletController.menuFontStatus = newStatus;
-                      },
-                      heightItem: 38,
-                      sizeIconChecked: 16,
-                      radiusButton: 5,
-                      colorButton: Colors.white,
-                      supportSelectionIcon: true)),
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: buildWrapIconStyleText(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                    icon: buildIconColorBackgroundTextWithoutTooltip(
-                      iconData: RichTextStyleType.textColor.getIconData(),
-                      colorSelected: controller.richTextMobileTabletController.selectedTextColor.value,
-                    ),
-                    onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.textColor)),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: buildWrapIconStyleText(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                    icon: buildIconColorBackgroundTextWithoutTooltip(
-                        iconData: RichTextStyleType.textBackgroundColor.getIconData(),
-                        colorSelected: controller.richTextMobileTabletController.selectedTextBackgroundColor.value,
-                    ),
-                    onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.textBackgroundColor)),
-              ),
-              buildWrapIconStyleText(
-                  hasDropdown: false,
-                  padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-                  icon: Wrap(children: [
-                    buildIconStyleText(
-                        path: RichTextStyleType.bold.getIcon(imagePaths),
-                        isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.bold),
-                        onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.bold)),
-                    buildIconStyleText(
-                        path: RichTextStyleType.italic.getIcon(imagePaths),
-                        isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.italic),
-                        onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.italic)),
-                    buildIconStyleText(
-                        path: RichTextStyleType.underline.getIcon(imagePaths),
-                        isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.underline),
-                        onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.underline)),
-                    buildIconStyleText(
-                        path: RichTextStyleType.strikeThrough.getIcon(imagePaths),
-                        isSelected: controller.richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.strikeThrough),
-                        onTap: () => controller.richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.strikeThrough))
-                  ])),
-            ],
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            DropDownMenuHeaderStyleWidget(
+                icon: buildWrapIconStyleText(
+                    isSelected: richTextMobileTabletController.isMenuHeaderStyleOpen,
+                    icon: SvgPicture.asset(RichTextStyleType.headerStyle.getIcon(imagePaths),
+                        color: AppColor.colorDefaultRichTextButton,
+                        fit: BoxFit.fill),
+                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                ),
+                items: HeaderStyleType.values,
+                onChanged: (newStyle) => richTextMobileTabletController.applyHeaderStyle(newStyle)),
+            Container(
+                width: 200,
+                padding: const EdgeInsets.only(right: 2, left: 8),
+                child: DropDownButtonWidget<SafeFont>(
+                    items: SafeFont.values,
+                    itemSelected: richTextMobileTabletController.selectedFontName.value,
+                    onChanged: (newFont) => richTextMobileTabletController.applyNewFontStyle(newFont),
+                    heightItem: 38,
+                    sizeIconChecked: 16,
+                    radiusButton: 5,
+                    colorButton: Colors.white,
+                    supportSelectionIcon: true)),
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: buildWrapIconStyleText(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  icon: buildIconColorBackgroundTextWithoutTooltip(
+                    iconData: RichTextStyleType.textColor.getIconData(),
+                    colorSelected: richTextMobileTabletController.selectedTextColor.value,
+                  ),
+                  onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.textColor)),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: buildWrapIconStyleText(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  icon: buildIconColorBackgroundTextWithoutTooltip(
+                    iconData: RichTextStyleType.textBackgroundColor.getIconData(),
+                    colorSelected: richTextMobileTabletController.selectedTextBackgroundColor.value,
+                  ),
+                  onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.textBackgroundColor)),
+            ),
+            buildWrapIconStyleText(
+                hasDropdown: false,
+                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                icon: Wrap(children: [
+                  buildIconStyleText(
+                      path: RichTextStyleType.bold.getIcon(imagePaths),
+                      isSelected: richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.bold),
+                      onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.bold)),
+                  buildIconStyleText(
+                      path: RichTextStyleType.italic.getIcon(imagePaths),
+                      isSelected: richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.italic),
+                      onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.italic)),
+                  buildIconStyleText(
+                      path: RichTextStyleType.underline.getIcon(imagePaths),
+                      isSelected: richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.underline),
+                      onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.underline)),
+                  buildIconStyleText(
+                      path: RichTextStyleType.strikeThrough.getIcon(imagePaths),
+                      isSelected: richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.strikeThrough),
+                      onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.strikeThrough))
+                ])),
+          ],
         ),
-      ),
+      );
+    },
     );
   }
 
@@ -628,6 +635,7 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
   }
 
   Widget _buildHtmlEditor(String initialContent) {
+    final richTextMobileTabletController = controller.richTextMobileTabletController;
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20, top: 10),
       child: HtmlEditor(
@@ -635,8 +643,8 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
           minHeight: 550,
           initialContent: initialContent,
           onCreated: (editorApi) {
-            controller.richTextMobileTabletController.htmlEditorApi = editorApi;
-            controller.richTextMobileTabletController.listenHtmlEditorApi();
+            richTextMobileTabletController.htmlEditorApi = editorApi;
+            richTextMobileTabletController.listenHtmlEditorApi();
           }),
     );
   }
