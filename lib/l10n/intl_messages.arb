@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-07-26T16:21:05.066657",
+  "@@last_modified": "2022-07-27T12:01:37.344258",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1726,6 +1726,24 @@
   },
   "indent": "Indent",
   "@indent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "orderList": "Order list",
+  "@orderList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "numberedList": "Numbered list",
+  "@numberedList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bulletedList": "Bulleted list",
+  "@bulletedList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
