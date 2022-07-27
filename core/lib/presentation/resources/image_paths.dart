@@ -143,6 +143,8 @@ class ImagePaths {
   String get icAlignJustify => _getImagePath('ic_align_justify.svg');
   String get icAlignIndent => _getImagePath('ic_align_indent.svg');
   String get icAlignOutdent => _getImagePath('ic_align_outdent.svg');
+  String get icOrderNumber => _getImagePath('ic_order_number.svg');
+  String get icOrderBullet => _getImagePath('ic_order_bullet.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
