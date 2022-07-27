@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_but
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/order_list_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
@@ -804,8 +805,8 @@ class ComposerView extends GetWidget<ComposerController>
               AbsorbPointer(
                 absorbing: codeViewEnabled,
                 child: Container(
-                    width: 200,
-                    padding: const EdgeInsets.only(left: 8, right: 8),
+                    width: 130,
+                    padding: const EdgeInsets.only(left: 4.0, right: 4.0),
                     child: DropDownButtonWidget<FontNameType>(
                         items: FontNameType.values,
                         itemSelected: richTextController.selectedFontName.value,
@@ -829,7 +830,7 @@ class ComposerView extends GetWidget<ComposerController>
                         supportSelectionIcon: true)),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: 4.0),
                 child: AbsorbPointer(
                   absorbing: codeViewEnabled,
                   child: buildWrapIconStyleText(
@@ -842,7 +843,7 @@ class ComposerView extends GetWidget<ComposerController>
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: 4.0),
                 child: AbsorbPointer(
                   absorbing: codeViewEnabled,
                   child: buildWrapIconStyleText(
@@ -857,7 +858,7 @@ class ComposerView extends GetWidget<ComposerController>
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 8.0),
+                padding: const EdgeInsets.only(right: 4.0),
                 child: buildWrapIconStyleText(
                     hasDropdown: false,
                     padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
@@ -902,7 +903,7 @@ class ComposerView extends GetWidget<ComposerController>
                     ])),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 8.0),
+                padding: const EdgeInsets.only(right: 4.0),
                 child: AbsorbPointer(
                   absorbing: codeViewEnabled,
                   child: PopupMenuOverlayWidget(
@@ -916,12 +917,36 @@ class ComposerView extends GetWidget<ComposerController>
                     iconButton: buildWrapIconStyleText(
                         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                         spacing: 3,
-                        opacity: opacity,
                         isSelected: richTextController.focusMenuParagraph.value,
                         icon: buildIconWithTooltip(
                           path: richTextController.selectedParagraph.value.getIcon(imagePaths),
-                          color: AppColor.colorDefaultRichTextButton.withOpacity(opacity),
+                          color: AppColor.colorDefaultRichTextButton,
+                          opacity: opacity,
                           tooltip: RichTextStyleType.paragraph.getTooltipButton(context))),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 4.0),
+                child: AbsorbPointer(
+                  absorbing: codeViewEnabled,
+                  child: PopupMenuOverlayWidget(
+                    controller: richTextController.menuOrderListController,
+                    listButtonAction: OrderListType.values
+                      .map((orderType) => orderType.buildButtonWidget(
+                        context,
+                        imagePaths,
+                        (orderType) => richTextController.applyOrderListType(orderType)))
+                      .toList(),
+                    iconButton: buildWrapIconStyleText(
+                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                      spacing: 3,
+                      isSelected: richTextController.focusMenuOrderList.value,
+                      icon: buildIconWithTooltip(
+                        path: richTextController.selectedOrderList.value.getIcon(imagePaths),
+                        color: AppColor.colorDefaultRichTextButton,
+                        opacity: opacity,
+                        tooltip: RichTextStyleType.orderList.getTooltipButton(context))),
                   ),
                 ),
               )
