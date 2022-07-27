@@ -12,7 +12,8 @@ enum RichTextStyleType {
   strikeThrough,
   textColor,
   textBackgroundColor,
-  paragraph;
+  paragraph,
+  orderList;
 
   String get commandAction {
     switch (this) {
@@ -88,6 +89,8 @@ enum RichTextStyleType {
         return AppLocalizations.of(context).fontFamily;
       case paragraph:
         return AppLocalizations.of(context).paragraph;
+      case orderList:
+        return AppLocalizations.of(context).orderList;
       default:
         return '';
     }

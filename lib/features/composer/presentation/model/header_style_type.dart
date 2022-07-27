@@ -93,7 +93,7 @@ enum HeaderStyleType {
       case HeaderStyleType.h4:
       case HeaderStyleType.h5:
       case HeaderStyleType.h6:
-      return FontWeight.bold;
+        return FontWeight.bold;
     }
   }
 }
