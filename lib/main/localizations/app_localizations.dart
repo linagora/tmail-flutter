@@ -1773,4 +1773,22 @@ class AppLocalizations {
         'Indent',
         name: 'indent');
   }
+
+  String get orderList {
+    return Intl.message(
+        'Order list',
+        name: 'orderList');
+  }
+
+  String get numberedList {
+    return Intl.message(
+        'Numbered list',
+        name: 'numberedList');
+  }
+
+  String get bulletedList {
+    return Intl.message(
+        'Bulleted list',
+        name: 'bulletedList');
+  }
 }
