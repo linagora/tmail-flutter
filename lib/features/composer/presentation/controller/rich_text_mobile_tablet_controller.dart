@@ -8,10 +8,10 @@ import 'package:html/parser.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class RichTextMobileTabletController extends BaseRichTextController {
   HtmlEditorApi? htmlEditorApi;
@@ -19,8 +19,10 @@ class RichTextMobileTabletController extends BaseRichTextController {
   final selectedTextColor = Colors.black.obs;
   final selectedTextBackgroundColor = Colors.white.obs;
   final selectedFontName = SafeFont.sansSerif.obs;
+  
+  final  menuHeaderStyleStatus = DropdownMenuFontStatus.closed.obs;
 
-  DropdownMenuFontStatus menuFontStatus = DropdownMenuFontStatus.closed;
+  bool get isMenuHeaderStyleOpen => menuHeaderStyleStatus.value == DropdownMenuFontStatus.open;
 
   void listenHtmlEditorApi() {
     htmlEditorApi?.onFormatSettingsChanged = (formatSettings) {
@@ -138,12 +140,6 @@ class RichTextMobileTabletController extends BaseRichTextController {
     htmlEditorApi?.setFont(selectedFontName.value);
   }
 
-  bool get isMenuFontOpen => menuFontStatus == DropdownMenuFontStatus.open;
-
-  void closeDropdownMenuFont() {
-    popBack();
-  }
-
   void insertImage(InlineImage image, {double? maxWithEditor}) async {
     log('RichTextMobileTabletController::insertImage(): $image | maxWithEditor: $maxWithEditor');
     if (image.source == ImageSource.network) {
@@ -154,4 +150,10 @@ class RichTextMobileTabletController extends BaseRichTextController {
       htmlEditorApi?.insertHtml(htmlContent);
     }
   }
+
+  void applyHeaderStyle(HeaderStyleType? newStyle) {
+    final styleSelected = newStyle ?? HeaderStyleType.normal;
+    htmlEditorApi?.formatHeader(styleSelected.styleValue);
+  }
+
 }
