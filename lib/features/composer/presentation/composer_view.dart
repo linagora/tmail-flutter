@@ -416,6 +416,7 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
           Padding(padding: const EdgeInsets.symmetric(horizontal: 16),  child: _buildListButton(context, constraints)),
           const Divider(color: AppColor.colorDividerComposer, height: 1),
           _buildAttachmentsWidget(context),
+          _buildToolbarMobileWidget(context),
           _buildInlineLoadingView(),
           _buildComposerEditor(context),
         ]),
@@ -737,5 +738,57 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
 
   double _getMaxWidthItemListAttachment(BuildContext context, BoxConstraints constraints) {
     return constraints.maxWidth / _getMaxItemRowListAttachment(context, constraints);
+  }
+
+  Widget _buildToolbarMobileWidget(BuildContext context) {
+    return Obx(() {
+      final richTextController = controller.richTextMobileTabletController;
+      return Container(
+        padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
+        alignment: Alignment.centerLeft,
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            buildWrapIconStyleText(
+              hasDropdown: false,
+              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+              icon: Wrap(children: [
+                RichTextStyleType.bold,
+                RichTextStyleType.italic,
+                RichTextStyleType.underline
+              ].map((formatStyle) => buildIconStyleText(
+                  path: formatStyle.getIcon(imagePaths),
+                  isSelected: richTextController.isTextStyleTypeSelected(formatStyle),
+                  onTap: () => richTextController.applyRichTextStyle(context, formatStyle)))
+              .toList())
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: buildWrapIconStyleText(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  icon: buildIconColorBackgroundTextWithoutTooltip(
+                    iconData: RichTextStyleType.textColor.getIconData(),
+                    colorSelected: richTextController.selectedTextColor.value),
+                  onTap: () => richTextController.applyRichTextStyle(
+                      context,
+                      RichTextStyleType.textColor))),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: buildWrapIconStyleText(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  icon: buildIconColorBackgroundTextWithoutTooltip(
+                    iconData: RichTextStyleType.textBackgroundColor.getIconData(),
+                    colorSelected: richTextController.selectedTextBackgroundColor.value,
+                  ),
+                  onTap: () => richTextController.applyRichTextStyle(
+                      context,
+                      RichTextStyleType.textBackgroundColor)),
+            ),
+          ],
+        ),
+      );
+    },
+    );
   }
 }
