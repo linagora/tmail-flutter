@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
 
 class ImageTransformer extends DomTransformer {
@@ -19,6 +20,7 @@ class ImageTransformer extends DomTransformer {
         DioClient? dioClient
       }
   ) async {
+    final compressFileUtils = CompressFileUtils();
     final imageElements = document.getElementsByTagName('img');
 
     await Future.wait(imageElements.map((imageElement) async {
@@ -32,24 +34,50 @@ class ImageTransformer extends DomTransformer {
         final cid = src.replaceFirst('cid:', '').trim();
         final cidUrlDownload = mapUrlDownloadCID[cid];
         if (cidUrlDownload != null && cidUrlDownload.isNotEmpty && dioClient != null) {
-          final imgBase64 = await loadAsyncNetworkImageToBase64(dioClient, cidUrlDownload);
-          if (imgBase64 != null && imgBase64.isNotEmpty) {
-            imageElement.attributes['src'] = 'data:image/jpeg;base64,$imgBase64';
+          final imgBase64Uri = await loadAsyncNetworkImageToBase64(
+              dioClient,
+              compressFileUtils,
+              cidUrlDownload);
+          if (imgBase64Uri.isNotEmpty) {
+            imageElement.attributes['src'] = imgBase64Uri;
           }
         }
       }
     }));
   }
 
-
-  Future<String?> loadAsyncNetworkImageToBase64(DioClient dioClient, String imageUrl) async {
+  Future<String> loadAsyncNetworkImageToBase64(
+      DioClient dioClient,
+      CompressFileUtils compressFileUtils,
+      String imageUrl
+  ) async {
     try {
-      final response = await dioClient.get(
-        imageUrl,
-        options: Options(responseType: ResponseType.bytes));
-      return base64Encode(response);
+      var responseData = await dioClient.get(
+          imageUrl,
+          options: Options(responseType: ResponseType.bytes));
+
+      if (responseData != null) {
+        if (BuildUtils.isWeb) {
+          return encodeToBase64Uri(responseData);
+        } else {
+          final bytesCompressed = await compressFileUtils.compressBytesDataImage(responseData);
+          final base64Uri = await compute(encodeToBase64Uri, bytesCompressed);
+          return base64Uri;
+        }
+      } else {
+        return '';
+      }
     } catch (e) {
-      return imageUrl;
+      return '';
     }
+  }
+
+  static String encodeToBase64Uri(dynamic bytesData) {
+    final base64Data = base64Encode(bytesData);
+    if (!base64Data.endsWith('==')) {
+      base64Data.append('==');
+    }
+    final base64Uri = 'data:image/jpeg;base64,$base64Data';
+    return base64Uri;
   }
 }
