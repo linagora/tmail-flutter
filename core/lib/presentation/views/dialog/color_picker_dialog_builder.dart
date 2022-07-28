@@ -55,6 +55,7 @@ class ColorPickerDialogBuilder {
           contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
           actionsPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           actionsAlignment: MainAxisAlignment.center,
+          actionsOverflowButtonSpacing: 8,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           scrollable: true,
           elevation: 10,
