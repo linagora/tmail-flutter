@@ -256,16 +256,14 @@ class ComposerController extends BaseController {
                     ImageSource.local,
                     fileInfo: success.fileInfo,
                     cid: success.cid,
-                    base64: success.imageAsBase64),
-                maxWithEditor: maxWithEditor);
+                    base64Uri: success.base64Uri));
           } else {
             richTextMobileTabletController.insertImage(
                 InlineImage(
                     ImageSource.local,
                     fileInfo: success.fileInfo,
                     cid: success.cid,
-                    base64: success.imageAsBase64),
-                maxWithEditor: maxWithEditor);
+                    base64Uri: success.base64Uri));
           }
           maxWithEditor = null;
         }
@@ -337,7 +335,8 @@ class ComposerController extends BaseController {
   void _initAttachments(ComposerArguments arguments) {
     if (arguments.attachments?.isNotEmpty == true) {
       initialAttachments = arguments.attachments!;
-      uploadController.initializeUploadAttachments(arguments.attachments!);
+      uploadController.initializeUploadAttachments(
+          arguments.attachments!.listAttachmentsDisplayedOutSide);
     }
     if (BuildUtils.isWeb) {
       expandModeAttachments.value = ExpandMode.EXPAND;
@@ -538,19 +537,22 @@ class ComposerController extends BaseController {
     final generatePartId = PartId(_uuid.v1());
     final generateBlobId = Id(_uuid.v1());
 
-    var emailBodyText = await _getEmailBodyText(context);
-    final mapContents = await _getMapContent(emailBodyText);
-    log('ComposerController::_generateEmail(): mapContents: $mapContents');
-    emailBodyText = mapContents.value1;
-    final listInlineAttachment = mapContents.value2;
-    final listInlineEmailBodyPart = listInlineAttachment
-        .map((attachment) => attachment.toEmailBodyPart(charset: 'base64'))
-        .toSet();
-
     final attachments = <EmailBodyPart>{};
     attachments.addAll(uploadController.generateAttachments() ?? []);
-    attachments.addAll(listInlineEmailBodyPart);
-    log('ComposerController::_generateEmail(): listInlineEmailBodyPart: $listInlineEmailBodyPart');
+
+    var emailBodyText = await _getEmailBodyText(context);
+
+    if (uploadController.mapInlineAttachments.isNotEmpty) {
+      final mapContents = await _getMapContent(emailBodyText);
+      log('ComposerController::_generateEmail(): mapContents: $mapContents');
+      emailBodyText = mapContents.value1;
+      final listInlineAttachment = mapContents.value2;
+      final listInlineEmailBodyPart = listInlineAttachment
+          .map((attachment) => attachment.toEmailBodyPart(charset: 'base64'))
+          .toSet();
+      attachments.addAll(listInlineEmailBodyPart);
+      log('ComposerController::_generateEmail(): listInlineEmailBodyPart: $listInlineEmailBodyPart');
+    }
 
     final userAgent = await userAgentPlatform;
     log('ComposerController::_generateEmail(): userAgent: $userAgent');
@@ -915,7 +917,8 @@ class ComposerController extends BaseController {
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
     if (success.attachments.isNotEmpty) {
       initialAttachments = success.attachments;
-      uploadController.initializeUploadAttachments(success.attachments);
+      uploadController.initializeUploadAttachments(
+          success.attachments.listAttachmentsDisplayedOutSide);
     }
     emailContentsViewState.value = Right(success);
     _emailContents = success.emailContents;
@@ -1133,11 +1136,16 @@ class ComposerController extends BaseController {
     }
   }
 
-  void insertImage(BuildContext context, {double? maxWithEditor}) async {
+  void insertImage(BuildContext context, double maxWith) async {
+    if (_responsiveUtils.isMobile(context)) {
+      maxWithEditor = maxWith - 40;
+    } else {
+      maxWithEditor = maxWith - 120;
+    }
     final inlineImage = await _selectFromFile();
-    if(inlineImage != null) {
-      this.maxWithEditor = maxWithEditor;
-      if(kIsWeb) {
+    log('ComposerController::insertImage(): $inlineImage');
+    if (inlineImage != null) {
+      if (BuildUtils.isWeb) {
         _insertImageOnWeb(inlineImage);
       } else {
         _insertImageOnMobileAndTablet(inlineImage);
@@ -1148,15 +1156,17 @@ class ComposerController extends BaseController {
   Future<InlineImage?> _selectFromFile() async {
     final filePickerResult = await FilePicker.platform.pickFiles(
         type: FileType.image,
-        withReadStream: true);
+        withData: !BuildUtils.isWeb,
+        withReadStream: BuildUtils.isWeb);
     final platformFile = filePickerResult?.files.single;
     if (platformFile != null) {
-     final fileSelected = FileInfo(
+      final fileSelected = FileInfo(
           platformFile.name,
           BuildUtils.isWeb ? '' : platformFile.path ?? '',
           platformFile.size,
+          bytes: platformFile.bytes,
           readStream: platformFile.readStream);
-     return InlineImage(ImageSource.local, fileInfo: fileSelected);
+      return InlineImage(ImageSource.local, fileInfo: fileSelected);
     }
 
     return null;
@@ -1212,7 +1222,8 @@ class ComposerController extends BaseController {
       consumeState(_downloadImageAsBase64Interactor.execute(
           imageUrl,
           uploadState.attachment.cid!,
-          uploadState.fileInfo));
+          uploadState.fileInfo,
+          maxWidth: maxWithEditor));
     }
   }
 

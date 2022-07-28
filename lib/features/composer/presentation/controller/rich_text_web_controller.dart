@@ -155,14 +155,12 @@ class RichTextWebController extends BaseRichTextController {
   bool isTextStyleTypeSelected(RichTextStyleType richTextStyleType) =>
       listTextStyleApply.contains(richTextStyleType);
 
-  void insertImage(InlineImage image, {double? maxWithEditor}) async {
-    log('RichTextWebController::insertImage(): $image | maxWithEditor: $maxWithEditor');
+  void insertImage(InlineImage image) async {
+    log('RichTextWebController::insertImage(): $image');
     if (image.source == ImageSource.network) {
       editorController.insertNetworkImage(image.link!);
     } else {
-      final htmlContent = await image.generateImgTagHtml(maxWithEditor: maxWithEditor);
-      log('RichTextWebController::insertImage(): $htmlContent');
-      editorController.insertHtml(htmlContent);
+      editorController.insertHtml(image.base64Uri ?? '');
     }
   }
 
