@@ -112,11 +112,7 @@ class UploadController extends GetxController {
             );
 
             _refreshListUploadAttachmentState();
-            if (success.attachment.disposition == ContentDisposition.attachment) {
-              _handleUploadAttachmentsSuccess(success);
-            } else {
-              _handleUploadInlineAttachmentsSuccess(success);
-            }
+            _handleUploadAttachmentsSuccess(success);
           }
         }
     );
@@ -261,7 +257,9 @@ class UploadController extends GetxController {
 
   bool hasEnoughMaxAttachmentSize({List<FileInfo>? listFiles}) {
     final currentTotalAttachmentsSize = attachmentsUploaded.totalSize();
+    final totalInlineAttachmentsSize = inlineAttachmentsUploaded.totalSize();
     log('ComposerController::_validateAttachmentsSize(): $currentTotalAttachmentsSize');
+    log('ComposerController::_validateAttachmentsSize(): totalInlineAttachmentsSize: $totalInlineAttachmentsSize');
     num uploadedTotalSize = 0;
     if (listFiles != null && listFiles.isNotEmpty) {
       final uploadedListSize = listFiles.map((file) => file.fileSize).toList();
@@ -269,7 +267,9 @@ class UploadController extends GetxController {
       log('ComposerController::_validateAttachmentsSize(): uploadedTotalSize: $uploadedTotalSize');
     }
 
-    final totalSizeReadyToUpload = currentTotalAttachmentsSize + uploadedTotalSize;
+    final totalSizeReadyToUpload = currentTotalAttachmentsSize +
+        totalInlineAttachmentsSize +
+        uploadedTotalSize;
     log('ComposerController::_validateAttachmentsSize(): totalSizeReadyToUpload: $totalSizeReadyToUpload');
 
     final maxSizeAttachmentsPerEmail = _mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value;
@@ -316,6 +316,18 @@ class UploadController extends GetxController {
 
   void clearUploadInlineViewState() {
     uploadInlineViewState.value = Right(UIState.idle);
+  }
+
+  List<Attachment> get inlineAttachmentsUploaded {
+    if (_uploadingStateInlineFiles.uploadingStateFiles.isEmpty) {
+      return List.empty();
+    }
+    return _uploadingStateInlineFiles.uploadingStateFiles
+        .whereNotNull()
+        .map((fileState) => fileState.attachment)
+        .whereNotNull()
+        .where((attachment) => attachment.cid != null)
+        .toList();
   }
 
   Map<String, Attachment> get mapInlineAttachments {

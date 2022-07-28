@@ -11,21 +11,21 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/composer_loading_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/drop_down_menu_header_style_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
-import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, RichTextButtonMixin {
+class ComposerView extends GetWidget<ComposerController>
+    with AppLoaderMixin, RichTextButtonMixin, ComposerLoadingMixin {
 
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
@@ -390,9 +390,7 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
                       color: AppColor.colorTextButton,
                       fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).insertImage,
-                  onTap: () => controller.insertImage(
-                      context,
-                      maxWithEditor: constraints.maxWidth - 120))
+                  onTap: () => controller.insertImage(context, constraints.maxWidth))
             ])
         )
     );
@@ -417,7 +415,7 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
           const Divider(color: AppColor.colorDividerComposer, height: 1),
           _buildAttachmentsWidget(context),
           _buildToolbarMobileWidget(context),
-          _buildInlineLoadingView(),
+          buildInlineLoadingView(controller),
           _buildComposerEditor(context),
         ]),
       )
@@ -462,7 +460,7 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
               child: Column(children: [
                 _buildToolbarRichTextWidget(context),
                 _buildAttachmentsWidget(context),
-                _buildInlineLoadingView(),
+                buildInlineLoadingView(controller),
                 _buildComposerEditor(context),
               ])
           )
@@ -491,21 +489,6 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
         ]);
       }
     });
-  }
-
-  Widget _buildInlineLoadingView() {
-    return Obx(() => controller.uploadController.uploadInlineViewState.value.fold(
-      (failure) => const SizedBox.shrink(),
-      (success) {
-      if (success is UploadingAttachmentUploadState || success is DownloadingImageAsBase64) {
-        return Padding(
-          padding: const EdgeInsets.all(5),
-          child: loadingWidgetWithSizeColor(
-            size: 30,
-            color: AppColor.primaryColor));
-      }
-      return const SizedBox.shrink();
-    }));
   }
 
   Widget _buildToolbarRichTextWidget(BuildContext context) {
@@ -788,7 +771,6 @@ class ComposerView extends GetWidget<ComposerController> with AppLoaderMixin, Ri
           ],
         ),
       );
-    },
-    );
+    });
   }
 }

@@ -19,7 +19,7 @@ class RichTextMobileTabletController extends BaseRichTextController {
   final selectedTextColor = Colors.black.obs;
   final selectedTextBackgroundColor = Colors.white.obs;
   final selectedFontName = SafeFont.sansSerif.obs;
-  
+
   final  menuHeaderStyleStatus = DropdownMenuFontStatus.closed.obs;
 
   bool get isMenuHeaderStyleOpen => menuHeaderStyleStatus.value == DropdownMenuFontStatus.open;
@@ -106,7 +106,7 @@ class RichTextMobileTabletController extends BaseRichTextController {
   Future<Tuple2<String, List<Attachment>>> refactorContentHasInlineImage(
       String emailContent,
       Map<String, Attachment> mapInlineAttachments
-      ) async {
+  ) async {
     final document = parse(emailContent);
     final listImgTag = document.querySelectorAll('img[src^="data:image/"]');
     final listInlineAttachment = await Future.wait(listImgTag.map((imgTag) async {
@@ -145,9 +145,7 @@ class RichTextMobileTabletController extends BaseRichTextController {
     if (image.source == ImageSource.network) {
       htmlEditorApi?.insertImageLink(image.link!);
     } else {
-      final htmlContent = await image.generateImgTagHtml(maxWithEditor: maxWithEditor);
-      log('RichTextMobileTabletController::insertImage(): $htmlContent');
-      htmlEditorApi?.insertHtml(htmlContent);
+      htmlEditorApi?.insertHtml(image.base64Uri ?? '');
     }
   }
 
