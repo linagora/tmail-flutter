@@ -69,7 +69,7 @@ class NetworkBindings extends Bindings {
 
   void _bindingApi() {
     Get.put(JmapHttpClient.HttpClient(Get.find<Dio>()));
-    Get.put(DownloadClient(Get.find<DioClient>()));
+    Get.put(DownloadClient(Get.find<DioClient>(), Get.find<CompressFileUtils>()));
     Get.put(DownloadManager(Get.find<DownloadClient>()));
     Get.put(MailboxAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(SessionAPI(Get.find<JmapHttpClient.HttpClient>()));
