@@ -31,7 +31,7 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
     return WillPopScope(
       onWillPop: () async {
         controller.closeEmailView(context);
-        return true;
+        return false;
       },
       child: Scaffold(
         backgroundColor: responsiveUtils.isWebDesktop(context)
