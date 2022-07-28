@@ -11,10 +11,13 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/composer_loading_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/order_list_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/drop_down_menu_header_style_widget.dart';
@@ -494,6 +497,7 @@ class ComposerView extends GetWidget<ComposerController>
   Widget _buildToolbarRichTextWidget(BuildContext context) {
     return Obx(() {
       final richTextMobileTabletController = controller.richTextMobileTabletController;
+
       return Container(
         padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
         alignment: Alignment.centerLeft,
@@ -503,16 +507,16 @@ class ComposerView extends GetWidget<ComposerController>
           children: [
             DropDownMenuHeaderStyleWidget(
                 icon: buildWrapIconStyleText(
-                    isSelected: richTextMobileTabletController.isMenuHeaderStyleOpen,
-                    icon: SvgPicture.asset(RichTextStyleType.headerStyle.getIcon(imagePaths),
-                        color: AppColor.colorDefaultRichTextButton,
-                        fit: BoxFit.fill),
-                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                  isSelected: richTextMobileTabletController.isMenuHeaderStyleOpen,
+                  icon: SvgPicture.asset(RichTextStyleType.headerStyle.getIcon(imagePaths),
+                      color: AppColor.colorDefaultRichTextButton,
+                      fit: BoxFit.fill),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                 ),
                 items: HeaderStyleType.values,
                 onChanged: (newStyle) => richTextMobileTabletController.applyHeaderStyle(newStyle)),
             Container(
-                width: 200,
+                width: 120,
                 padding: const EdgeInsets.only(right: 2, left: 8),
                 child: DropDownButtonWidget<SafeFont>(
                     items: SafeFont.values,
@@ -520,6 +524,7 @@ class ComposerView extends GetWidget<ComposerController>
                     onChanged: (newFont) => richTextMobileTabletController.applyNewFontStyle(newFont),
                     heightItem: 38,
                     sizeIconChecked: 16,
+                    dropdownWidth: 200,
                     radiusButton: 5,
                     colorButton: Colors.white,
                     supportSelectionIcon: true)),
@@ -564,6 +569,46 @@ class ComposerView extends GetWidget<ComposerController>
                       isSelected: richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.strikeThrough),
                       onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.strikeThrough))
                 ])),
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: PopupMenuOverlayWidget(
+                controller: richTextMobileTabletController.menuParagraphController,
+                listButtonAction: ParagraphType.values
+                    .map((paragraph) => paragraph.buildButtonWidget(
+                        context,
+                        imagePaths,
+                        (paragraph) => richTextMobileTabletController.applyParagraphType(paragraph)))
+                    .toList(),
+                iconButton: buildWrapIconStyleText(
+                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    spacing: 3,
+                    isSelected: richTextMobileTabletController.focusMenuParagraph.value,
+                    icon: buildIcon(
+                      path: richTextMobileTabletController.selectedParagraph.value.getIcon(imagePaths),
+                      color: AppColor.colorDefaultRichTextButton,
+                    )),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: PopupMenuOverlayWidget(
+                controller: richTextMobileTabletController.menuOrderListController,
+                listButtonAction: OrderListType.values
+                    .map((orderType) => orderType.buildButtonWidget(
+                        context,
+                        imagePaths,
+                        (orderType) => richTextMobileTabletController.applyOrderListType(orderType)))
+                    .toList(),
+                iconButton: buildWrapIconStyleText(
+                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    spacing: 3,
+                    isSelected: richTextMobileTabletController.focusMenuOrderList.value,
+                    icon: buildIcon(
+                      path: richTextMobileTabletController.selectedOrderList.value.getIcon(imagePaths),
+                      color: AppColor.colorDefaultRichTextButton,
+                    )),
+              ),
+            )
           ],
         ),
       );
