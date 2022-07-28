@@ -1,9 +1,9 @@
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
-import 'package:model/model.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 
@@ -27,10 +27,13 @@ class GetEmailContentInteractor {
             ? await emailRepository.addTooltipWhenHoverOnLink(newEmailContents)
             : newEmailContents;
         yield Right<Failure, Success>(GetEmailContentSuccess(newEmailContents, newEmailContentsDisplayed, email.allAttachments));
+      } else if (email.allAttachments.isNotEmpty) {
+        yield Right<Failure, Success>(GetEmailContentSuccess([], [], email.allAttachments));
       } else {
         yield Left(GetEmailContentFailure(null));
       }
     } catch (e) {
+      log('GetEmailContentInteractor::execute(): exception = $e');
       yield Left(GetEmailContentFailure(e));
     }
   }
