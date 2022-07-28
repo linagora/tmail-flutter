@@ -21,7 +21,7 @@ class ComposerRepositoryImpl extends ComposerRepository {
   }
 
   @override
-  Future<String?> downloadImageAsBase64(String url) {
-    return _composerDataSource.downloadImageAsBase64(url);
+  Future<String?> downloadImageAsBase64(String url, String cid, FileInfo fileInfo, {double? maxWidth, bool? compress}) {
+    return _composerDataSource.downloadImageAsBase64(url, cid, fileInfo, maxWidth: maxWidth, compress: compress);
   }
 }
