@@ -71,7 +71,7 @@ class FileUploader {
       final resultJson = await argsUpload.dioClient.post(
           Uri.decodeFull(uploadUri.toString()),
           options: Options(headers: headerParam),
-          data: fileInfo.readStream,
+          data: fileInfo.readStream ?? File(fileInfo.filePath).openRead(),
           cancelToken: cancelToken,
           onSendProgress: (progress, total) {
             log('FileUploader::_handleUploadAttachmentAction():onSendProgress: [${argsUpload.uploadId.id}] = $progress');
