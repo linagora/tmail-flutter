@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:core/core.dart';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:dartz/dartz.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,8 @@ import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/order_list_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 
 class RichTextMobileTabletController extends BaseRichTextController {
@@ -23,6 +26,26 @@ class RichTextMobileTabletController extends BaseRichTextController {
   final  menuHeaderStyleStatus = DropdownMenuFontStatus.closed.obs;
 
   bool get isMenuHeaderStyleOpen => menuHeaderStyleStatus.value == DropdownMenuFontStatus.open;
+
+  final selectedParagraph = ParagraphType.alignLeft.obs;
+  final selectedOrderList = OrderListType.bulletedList.obs;
+
+  final focusMenuOrderList = RxBool(false);
+  final focusMenuParagraph = RxBool(false);
+
+  final menuParagraphController = CustomPopupMenuController();
+  final menuOrderListController = CustomPopupMenuController();
+
+  @override
+  void onReady() {
+    super.onReady();
+    menuParagraphController.addListener(() {
+      focusMenuParagraph.value = menuParagraphController.menuIsShowing;
+    });
+    menuOrderListController.addListener(() {
+      focusMenuOrderList.value = menuOrderListController.menuIsShowing;
+    });
+  }
 
   void listenHtmlEditorApi() {
     htmlEditorApi?.onFormatSettingsChanged = (formatSettings) {
@@ -63,11 +86,13 @@ class RichTextMobileTabletController extends BaseRichTextController {
         openMenuSelectColor(context, selectedTextBackgroundColor.value,
             onResetToDefault: () {
           selectedTextBackgroundColor.value = Colors.white;
-          htmlEditorApi?.setColorTextBackground(selectedTextBackgroundColor.value);
+          htmlEditorApi
+              ?.setColorTextBackground(selectedTextBackgroundColor.value);
         }, onSelectColor: (selectedColor) {
           final newColor = selectedColor ?? Colors.white;
           selectedTextBackgroundColor.value = newColor;
-          htmlEditorApi?.setColorTextBackground(selectedTextBackgroundColor.value);
+          htmlEditorApi
+              ?.setColorTextBackground(selectedTextBackgroundColor.value);
         });
         break;
       case RichTextStyleType.bold:
@@ -105,11 +130,12 @@ class RichTextMobileTabletController extends BaseRichTextController {
 
   Future<Tuple2<String, List<Attachment>>> refactorContentHasInlineImage(
       String emailContent,
-      Map<String, Attachment> mapInlineAttachments
+      Map<String, Attachment> mapInlineAttachments,
   ) async {
     final document = parse(emailContent);
     final listImgTag = document.querySelectorAll('img[src^="data:image/"]');
-    final listInlineAttachment = await Future.wait(listImgTag.map((imgTag) async {
+    final listInlineAttachment =
+        await Future.wait(listImgTag.map((imgTag) async {
       final cid = imgTag.attributes['id'];
       log('RichTextMobileTabletController::refactorContentHasInlineImage(): cid: $cid');
       imgTag.attributes['src'] = 'cid:$cid';
@@ -154,4 +180,22 @@ class RichTextMobileTabletController extends BaseRichTextController {
     htmlEditorApi?.formatHeader(styleSelected.styleValue);
   }
 
+  void applyParagraphType(ParagraphType newParagraph) {
+    selectedParagraph.value = newParagraph;
+    htmlEditorApi?.execCommand(newParagraph.commandAction);
+    menuParagraphController.hideMenu();
+  }
+
+  void applyOrderListType(OrderListType newOrderList) {
+    selectedOrderList.value = newOrderList;
+    htmlEditorApi?.execCommand(newOrderList.commandAction);
+    menuOrderListController.hideMenu();
+  }
+
+  @override
+  void onClose() {
+    menuParagraphController.dispose();
+    menuOrderListController.dispose();
+    super.onClose();
+  }
 }

@@ -27,6 +27,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   final Widget? iconArrowDown;
   final Color? colorButton;
   final String tooltip;
+  final double? dropdownWidth;
 
   const DropDownButtonWidget({
     Key? key,
@@ -41,6 +42,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     this.radiusButton = 10,
     this.opacity = 1.0,
     this.iconArrowDown,
+    this.dropdownWidth,
     this.colorButton = Colors.white,
     this.tooltip = '',
   }) : super(key: key);
@@ -147,6 +149,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
           scrollbarRadius: const Radius.circular(40),
           scrollbarThickness: 6,
           onMenuStateChange: onMenuStateChange,
+          dropdownWidth: dropdownWidth,
         ),
       ),
     );
