@@ -68,7 +68,6 @@ export 'oidc/token_id.dart';
 export 'oidc/token_oidc.dart';
 // Upload
 export 'upload/file_info.dart';
-export 'upload/upload_request.dart';
 export 'upload/upload_response.dart';
 // User
 export 'user/user_profile.dart';
