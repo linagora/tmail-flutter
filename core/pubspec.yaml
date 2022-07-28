@@ -77,6 +77,8 @@ dependencies:
 
   flex_color_picker: 2.5.0
 
+  flutter_image_compress: 1.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
