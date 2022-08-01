@@ -819,6 +819,7 @@ class ComposerView extends GetWidget<ComposerController>
                         sizeIconChecked: 16,
                         radiusButton: 8,
                         opacity: opacity,
+                        dropdownWidth: 200,
                         colorButton: richTextController.isMenuFontOpen
                             ? AppColor.colorBackgroundWrapIconStyleCode
                             : Colors.white,
