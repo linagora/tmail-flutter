@@ -185,6 +185,7 @@ class MailBoxFolderTileBuilder {
       if (isHoverItem) {
         return _buildMenuIcon();
       } else if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
+          && _mailboxNode.item.matchCountingRules()
           && mailboxDisplayed == MailboxDisplayed.mailbox) {
         return Padding(
           padding: const EdgeInsets.only(right: 10),
@@ -219,6 +220,7 @@ class MailBoxFolderTileBuilder {
           child: Row(
             children: [
               if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
+                  && _mailboxNode.item.matchCountingRules()
                   && mailboxDisplayed == MailboxDisplayed.mailbox)
                 _buildCounter(),
               buildIconWeb(
@@ -242,6 +244,7 @@ class MailBoxFolderTileBuilder {
           ),
         );
       } else if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
+          && _mailboxNode.item.matchCountingRules()
           && mailboxDisplayed == MailboxDisplayed.mailbox) {
         return Padding(
           padding: const EdgeInsets.only(right: 20),
