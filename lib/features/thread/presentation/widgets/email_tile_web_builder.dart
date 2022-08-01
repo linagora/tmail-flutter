@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +29,6 @@ class EmailTileBuilder {
 
   bool isHoverItem = false;
   bool isHoverIcon = false;
-  Timer? _debounceTimeIcon;
-  Timer? _debounceTimeItem;
 
   EmailTileBuilder(
     this._context,
@@ -51,34 +48,19 @@ class EmailTileBuilder {
   }
 
   void _onHoverIconChanged(bool isHover, StateSetter setState) {
-    if (_debounceTimeIcon?.isActive ?? false) _debounceTimeIcon?.cancel();
-    _debounceTimeIcon = Timer(const Duration(milliseconds: 100), () {
-      setState(() {
-        isHoverIcon = isHover;
-      });
-    });
+    setState(() => isHoverIcon = isHover);
   }
 
   void _onHoverItemChanged(bool isHover, StateSetter setState) {
-    if (_debounceTimeItem?.isActive ?? false) _debounceTimeItem?.cancel();
-    _debounceTimeItem = Timer(const Duration(milliseconds: 200), () {
-      setState(() {
-        isHoverItem = isHover;
-      });
-    });
+    setState(() => isHoverItem = isHover);
   }
 
   Widget build() {
-    return Theme(
-      key: const Key('thread_tile'),
-      data: ThemeData(splashColor: Colors.transparent, highlightColor: Colors.transparent),
-      child: ResponsiveWidget(
-        responsiveUtils: _responsiveUtils,
-        mobile: _wrapContainerForTile(_buildListTile()),
-        tablet: _wrapContainerForTile(_buildListTileTablet()),
-        tabletLarge: _wrapContainerForTile(_buildListTileTablet()),
-        desktop: _wrapContainerForTile(_buildListTileForDesktop()),
-      )
+    return ResponsiveWidget(
+      responsiveUtils: _responsiveUtils,
+      mobile: _wrapContainerForTile(_buildListTile()),
+      tablet: _wrapContainerForTile(_buildListTileTablet()),
+      desktop: _wrapContainerForTile(_buildListTileForDesktop()),
     );
   }
 
@@ -602,6 +584,9 @@ class EmailTileBuilder {
         || (_responsiveUtils.isMobile(_context) && _selectModeAll == SelectMode.ACTIVE)) {
         return Container(
           color: Colors.transparent,
+          width: iconSize ?? 48,
+          height: iconSize ?? 48,
+          alignment: Alignment.center,
           padding: _responsiveUtils.isDesktop(_context)
               ? const EdgeInsets.symmetric(horizontal: 4)
               : const EdgeInsets.all(12),
@@ -633,7 +618,6 @@ class EmailTileBuilder {
       );
     }
   }
-
 
   FontWeight _buildFontForReadEmail() {
     return !_presentationEmail.hasRead ? FontWeight.w600 : FontWeight.normal;
