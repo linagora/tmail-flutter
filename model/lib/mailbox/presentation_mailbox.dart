@@ -66,6 +66,18 @@ class PresentationMailbox with EquatableMixin {
 
   bool get isDrafts => role == roleDrafts;
 
+  bool get isTemplates => role == roleTemplates;
+
+  bool get isSent => role == roleSent;
+
+  bool matchCountingRules() {
+    if (isSpam || isTrash || isDrafts || isTemplates || isSent) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   @override
   List<Object?> get props => [
     id,
