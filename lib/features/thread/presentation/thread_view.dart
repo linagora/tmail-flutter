@@ -553,6 +553,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.zero,
         key: const PageStorageKey('list_presentation_email_in_threads'),
+        itemExtent: _getItemExtent(context),
         itemCount: listPresentationEmail.length,
         itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
                 context,
@@ -560,15 +561,21 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                 controller.currentMailbox?.role,
                 controller.mailboxDashBoardController.currentSelectMode.value,
                 controller.searchController.searchState.value.searchStatus,
-                controller.searchQuery,
-        )
+                controller.searchQuery)
             ..addOnPressEmailActionClick((action, email) => controller.pressEmailAction(context, action, email))
             ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
               ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
               : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email))))
-          .build()),
-      )
+          .build()))
     );
+  }
+
+  double? _getItemExtent(BuildContext context) {
+    if (BuildUtils.isWeb) {
+     return _responsiveUtils.isDesktop(context) ? 52 : 85;
+    } else {
+      return null;
+    }
   }
 
   Widget _buildEmptyEmail(BuildContext context) {
