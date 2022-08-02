@@ -129,6 +129,7 @@ extension AppColor on Color {
   static const colorBorderWrapIconStyleCode = Color(0xFFE4E4E4);
   static const colorBackgroundWrapIconStyleCode = Color(0xFFF2F3F5);
   static const colorSelectedRichTextButton = Color(0x99EBEDF0);
+  static const colorShadowDestinationPicker = Color(0x33000000);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

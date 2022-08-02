@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/app_bar_destination_picker_builder.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/top_bar_destination_picker_web_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
@@ -31,6 +32,37 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
     final arguments = Get.arguments;
     if (arguments != null && arguments is DestinationPickerArguments) {
       actions = arguments.mailboxAction;
+    }
+
+    if (BuildUtils.isWeb) {
+      return PointerInterceptor(
+        child: GestureDetector(
+          onTap: () => controller.closeDestinationPicker(),
+          child: Scaffold(
+            backgroundColor: AppColor.colorShadowDestinationPicker,
+            body: Align(
+              alignment: Alignment.center,
+              child: Card(
+                color: Colors.white,
+                margin: _getMarginDestinationPicker(context),
+                elevation: 16,
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(14))),
+                child: Container(
+                    decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(14))),
+                    width: _getWidthDestinationPicker(context),
+                    child: ClipRRect(
+                        borderRadius: const BorderRadius.all(Radius.circular(14)),
+                        child: _buildDestinationPickerWebWidget(context, actions)
+                    )
+                )
+              )
+            )
+          ),
+        ),
+      );
     }
 
     if (actions == MailboxActions.create) {
@@ -100,6 +132,22 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
     }
   }
 
+  Widget _buildDestinationPickerWebWidget(BuildContext context, MailboxActions? actions) {
+    return Column(children: [
+      Obx(() => TopBarDestinationPickerWebBuilder(
+          controller.mailboxAction.value,
+          onCloseAction: () => controller.closeDestinationPicker())),
+      Obx(() => controller.isSearchActive()
+          ? _buildInputSearchFormWidget(context)
+          : const SizedBox.shrink()),
+      Expanded(child: Container(
+          color: actions == MailboxActions.create
+              ? AppColor.colorBgMailbox
+              : Colors.white,
+          child: _buildBodyDestinationPicker(context, actions)))
+    ]);
+  }
+
   Widget _buildBodyMailboxLocation(BuildContext context, MailboxActions? actions) {
     return SafeArea(
         top: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context),
@@ -152,8 +200,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   Widget _buildSearchBarWidget(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(
-            top: _responsiveUtils.isScreenWithShortestSide(context) || BuildUtils.isWeb ? 12 : 0,
-            left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
+            top: _responsiveUtils.isScreenWithShortestSide(context) &&
+                !BuildUtils.isWeb ? 12 : 0,
+            left: _responsiveUtils.isLandscapeMobile(context) &&
+                !BuildUtils.isWeb ? 0 : 16,
             right: 16),
         child: (SearchBarView(_imagePaths)
             ..hintTextSearch(AppLocalizations.of(context).hint_search_mailboxes)
@@ -415,7 +465,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
 
   Widget _buildInputSearchFormWidget(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.only(top: 16, bottom: 16),
+        padding: const EdgeInsets.symmetric(
+            vertical: BuildUtils.isWeb ? 0 : 16),
         child: Row(
             children: [
               Padding(padding: const EdgeInsets.only(left: 5), child: buildIconWeb(
@@ -440,5 +491,29 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             ]
         )
     );
+  }
+
+  double _getWidthDestinationPicker(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      if (_responsiveUtils.isMobile(context)) {
+        return double.infinity;
+      } else {
+        return 500;
+      }
+    } else {
+      return 500;
+    }
+  }
+
+  EdgeInsets _getMarginDestinationPicker(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      if (_responsiveUtils.isMobile(context)) {
+        return EdgeInsets.zero;
+      } else {
+        return const EdgeInsets.symmetric(vertical: 50);
+      }
+    } else {
+      return EdgeInsets.zero;
+    }
   }
 }
