@@ -21,26 +21,22 @@ class ImageTransformer extends DomTransformer {
       }
   ) async {
     final compressFileUtils = CompressFileUtils();
-    final imageElements = document.getElementsByTagName('img');
-
+    final imageElements = document.querySelectorAll('img[src^="cid:"]');
+    log('ImageTransformer::process(): imageElements: ${imageElements.length}');
     await Future.wait(imageElements.map((imageElement) async {
       imageElement.attributes['style'] = 'display: inline;max-width: 100%;height: auto;';
       final src = imageElement.attributes['src'];
-      if (src != null
-          && src.isNotEmpty
-          && src.startsWith('cid:')
-          && mapUrlDownloadCID != null
-      ) {
-        final cid = src.replaceFirst('cid:', '').trim();
-        final cidUrlDownload = mapUrlDownloadCID[cid];
-        if (cidUrlDownload != null && cidUrlDownload.isNotEmpty && dioClient != null) {
-          final imgBase64Uri = await loadAsyncNetworkImageToBase64(
-              dioClient,
-              compressFileUtils,
-              cidUrlDownload);
-          if (imgBase64Uri.isNotEmpty) {
-            imageElement.attributes['src'] = imgBase64Uri;
-          }
+      log('ImageTransformer::process(): src: $src');
+      final cid = src?.replaceFirst('cid:', '').trim();
+      final urlDownloadCid = mapUrlDownloadCID?[cid];
+      log('ImageTransformer::process(): urlDownloadCid: $urlDownloadCid');
+      if (urlDownloadCid?.isNotEmpty == true && dioClient != null) {
+        final imgBase64Uri = await loadAsyncNetworkImageToBase64(
+            dioClient,
+            compressFileUtils,
+            urlDownloadCid!);
+        if (imgBase64Uri.isNotEmpty) {
+          imageElement.attributes['src'] = imgBase64Uri;
         }
       }
     }));
