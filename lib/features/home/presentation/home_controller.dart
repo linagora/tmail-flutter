@@ -3,9 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/account/account.dart';
-import 'package:model/oidc/request/oidc_request.dart';
-import 'package:model/oidc/token_oidc.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/cleanup_rule.dart';
@@ -99,6 +97,11 @@ class HomeController extends BaseController {
         log('HomeController::onReady(): Address: ${uri.path}');
         _emailReceiveManager.setPendingEmailAddress(EmailAddress(null, uri.path));
       }
+    });
+
+    _emailReceiveManager.receivingFileSharingStream.listen((listFile) {
+      log('HomeController::onInit(): SharedMediaFile: ${listFile.toString()}');
+      _emailReceiveManager.setPendingFileInfo(listFile);
     });
   }
 
