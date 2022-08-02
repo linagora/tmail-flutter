@@ -1,14 +1,9 @@
 
-import 'package:collection/collection.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
-import 'package:dartz/dartz.dart';
-import 'package:html/parser.dart' show parse;
-
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/code_view_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
@@ -162,33 +157,6 @@ class RichTextWebController extends BaseRichTextController {
     } else {
       editorController.insertHtml(image.base64Uri ?? '');
     }
-  }
-
-  Future<Tuple2<String, List<Attachment>>> refactorContentHasInlineImage(
-      String emailContent,
-      Map<String, Attachment> mapInlineAttachments
-  ) async {
-    final document = parse(emailContent);
-    final listImgTag = document.querySelectorAll('img[src^="data:image/"]');
-    final listInlineAttachment = await Future.wait(listImgTag.map((imgTag) async {
-      final cid = imgTag.attributes['id'];
-      log('RichTextWebController::refactorContentHasInlineImage(): cid: $cid');
-      imgTag.attributes['src'] = 'cid:$cid';
-      imgTag.attributes.remove('id');
-      return cid;
-    })).then((listCid) {
-      log('RichTextWebController::refactorContentHasInlineImage(): $listCid');
-      final listInlineAttachment = listCid
-          .whereNotNull()
-          .map((cid) => mapInlineAttachments[cid])
-          .whereNotNull()
-          .toList();
-      return listInlineAttachment;
-    });
-    final newContent = document.body?.innerHtml ?? emailContent;
-    log('RichTextWebController::refactorContentHasInlineImage(): $newContent');
-    log('RichTextWebController::refactorContentHasInlineImage(): listInlineAttachment: $listInlineAttachment');
-    return Tuple2(newContent, listInlineAttachment);
   }
 
   void applyNewFontStyle(FontNameType? newFont) {
