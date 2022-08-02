@@ -145,9 +145,11 @@ class EmailTileBuilder {
                                   fontWeight: _buildFontForReadEmail())).build()
                           : Text(
                               _getInformationSender(),
+                              softWrap: false,
                               maxLines: 1,
                               style: TextStyle(
                                   fontSize: 15,
+                                  overflow: TextOverflow.fade,
                                   color: _buildTextColorForReadEmail(),
                                   fontWeight: _buildFontForReadEmail()))
                   ),
@@ -316,9 +318,11 @@ class EmailTileBuilder {
                                     fontWeight: _buildFontForReadEmail())).build()
                             : Text(
                                 _getInformationSender(),
+                                softWrap: false,
                                 maxLines: 1,
                                 style: TextStyle(
                                     fontSize: 15,
+                                    overflow: TextOverflow.fade,
                                     color: _buildTextColorForReadEmail(),
                                     fontWeight: _buildFontForReadEmail()))
                       ),
@@ -500,9 +504,11 @@ class EmailTileBuilder {
                            backgroundColor: AppColor.bgWordSearch)).build()
                   : Text(_getInformationSender(),
                       maxLines: 1,
+                      softWrap: false,
                       style: TextStyle(
                           fontSize: 15,
                           color: _buildTextColorForReadEmail(),
+                          overflow: TextOverflow.fade,
                           fontWeight: _buildFontForReadEmail())),
             ),
             const SizedBox(width: 24),
