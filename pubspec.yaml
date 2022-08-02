@@ -144,7 +144,10 @@ dependencies:
 
   package_info_plus: 1.4.1
 
-  receive_sharing_intent: 1.4.5
+  receive_sharing_intent:
+    git:
+      url: https://github.com/ManhNTX/receive_sharing_intent.git
+      ref: master
 
   dropdown_button2: 1.4.0
 
