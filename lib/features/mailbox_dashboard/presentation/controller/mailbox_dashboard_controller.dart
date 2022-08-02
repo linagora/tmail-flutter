@@ -89,6 +89,7 @@ class MailboxDashBoardController extends ReloadableController {
   RouterArguments? routerArguments;
   late StreamSubscription _connectivityStreamSubscription;
   late StreamSubscription _emailReceiveManagerStreamSubscription;
+  late StreamSubscription _fileReceiveManagerStreamSubscription;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -110,6 +111,7 @@ class MailboxDashBoardController extends ReloadableController {
   void onInit() {
     _registerNetworkConnectivityState();
     _registerPendingEmailAddress();
+    _registerPendingFileInfo();
     _initializeIsolateExecutor();
     super.onInit();
   }
@@ -234,6 +236,22 @@ class MailboxDashBoardController extends ReloadableController {
                 emailActionType: EmailActionType.composeFromEmailAddress,
                 emailAddress: emailAddress,
                 mailboxRole: selectedMailbox.value?.role);
+            goToComposer(arguments);
+          }
+        });
+  }
+
+  void _registerPendingFileInfo() {
+    _fileReceiveManagerStreamSubscription =
+        _emailReceiveManager.pendingFileInfo.stream.listen((listFile) {
+          log('MailboxDashBoardController::_registerPendingFileInfo(): ${listFile.length}');
+          if (listFile.isNotEmpty) {
+            _emailReceiveManager.clearPendingFileInfo();
+            final arguments = ComposerArguments(
+              emailActionType: EmailActionType.edit,
+              mailboxRole: selectedMailbox.value?.role,
+              listSharedMediaFile: listFile,
+            );
             goToComposer(arguments);
           }
         });
@@ -556,6 +574,7 @@ class MailboxDashBoardController extends ReloadableController {
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
     _emailReceiveManagerStreamSubscription.cancel();
+    _fileReceiveManagerStreamSubscription.cancel();
     _connectivityStreamSubscription.cancel();
     _progressStateController.close();
     _isolateExecutor.dispose();

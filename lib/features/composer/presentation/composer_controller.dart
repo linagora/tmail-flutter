@@ -25,6 +25,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -317,6 +318,7 @@ class ComposerController extends BaseController {
       if (arguments.emailActionType == EmailActionType.edit) {
         _getEmailContentAction(arguments);
       }
+
       _initEmailAddress(arguments);
       _initSubjectEmail(arguments);
       _initAttachments(arguments);
@@ -900,7 +902,40 @@ class ComposerController extends BaseController {
     }
   }
 
+  List<InlineImage> covertListSharedMediaFileToFile(List<SharedMediaFile> value) {
+    List<File> newFiles = List.empty(growable: true);
+    if (value.isNotEmpty) {
+      for (var element in value) {
+        newFiles.add(File(
+          Platform.isIOS
+              ? element.type == SharedMediaType.FILE
+              ? element.path.toString().replaceAll('file:/', '')
+              : element.path
+              : element.path,
+        ));
+      }
+    }
+
+    final List<InlineImage> listInlineImage = newFiles.map(
+            (e) => InlineImage(
+                ImageSource.local,
+                fileInfo: FileInfo(
+                    e.path.split('/').last,
+                    e.path,
+                    e.existsSync() ? e.lengthSync() : 0,
+                )
+            )
+    ).toList();
+    return listInlineImage;
+  }
+
   void _getEmailContentAction(ComposerArguments arguments) async {
+    if(arguments.listSharedMediaFile != null && arguments.listSharedMediaFile!.isNotEmpty){
+      final listInlineImage = covertListSharedMediaFileToFile(arguments.listSharedMediaFile!);
+      for (var e in listInlineImage) {
+        _uploadInlineAttachmentsAction(e.fileInfo!);
+      }
+    }
     if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty){
       _emailContents = arguments.emailContents;
       emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!,[],[]));
