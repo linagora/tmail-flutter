@@ -146,7 +146,7 @@ dependencies:
 
   receive_sharing_intent:
     git:
-      url: https://github.com/ManhNTX/receive_sharing_intent.git
+      url: https://github.com/KasemJaffer/receive_sharing_intent.git
       ref: master
 
   dropdown_button2: 1.4.0
