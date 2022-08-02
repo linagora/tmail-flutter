@@ -572,7 +572,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
 
   double? _getItemExtent(BuildContext context) {
     if (BuildUtils.isWeb) {
-     return _responsiveUtils.isDesktop(context) ? 52 : 85;
+     return _responsiveUtils.isDesktop(context) ? 52 : 90;
     } else {
       return null;
     }
