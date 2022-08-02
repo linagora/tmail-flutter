@@ -1,12 +1,8 @@
-import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
-import 'package:dartz/dartz.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:html/parser.dart';
-import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
@@ -126,34 +122,6 @@ class RichTextMobileTabletController extends BaseRichTextController {
     } else {
       listTextStyleApply.add(richTextStyleType);
     }
-  }
-
-  Future<Tuple2<String, List<Attachment>>> refactorContentHasInlineImage(
-      String emailContent,
-      Map<String, Attachment> mapInlineAttachments,
-  ) async {
-    final document = parse(emailContent);
-    final listImgTag = document.querySelectorAll('img[src^="data:image/"]');
-    final listInlineAttachment =
-        await Future.wait(listImgTag.map((imgTag) async {
-      final cid = imgTag.attributes['id'];
-      log('RichTextMobileTabletController::refactorContentHasInlineImage(): cid: $cid');
-      imgTag.attributes['src'] = 'cid:$cid';
-      imgTag.attributes.remove('id');
-      return cid;
-    })).then((listCid) {
-      log('RichTextMobileTabletController::refactorContentHasInlineImage(): $listCid');
-      final listInlineAttachment = listCid
-          .whereNotNull()
-          .map((cid) => mapInlineAttachments[cid])
-          .whereNotNull()
-          .toList();
-      return listInlineAttachment;
-    });
-    final newContent = document.body?.innerHtml ?? emailContent;
-    log('RichTextMobileTabletController::refactorContentHasInlineImage(): $newContent');
-    log('RichTextMobileTabletController::refactorContentHasInlineImage(): listInlineAttachment: $listInlineAttachment');
-    return Tuple2(newContent, listInlineAttachment);
   }
 
   bool isTextStyleTypeSelected(RichTextStyleType richTextStyleType) {

@@ -890,6 +890,8 @@ class ComposerController extends BaseController {
           mailboxDashBoardController.consumeState(
               _saveEmailAsDraftsInteractor.execute(accountId, newEmail));
         }
+
+        uploadController.clearInlineFileUploaded();
       }
     }
 
