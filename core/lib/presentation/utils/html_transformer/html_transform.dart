@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/message_content_transformer.dart';
-import 'package:html/dom.dart';
 
 class HtmlTransform {
 
@@ -18,14 +17,20 @@ class HtmlTransform {
 
   /// Transforms this message to HTML code.
   Future<String> transformToHtml({TransformConfiguration? transformConfiguration}) async {
-    final document = await transformToDocument(transformConfiguration: transformConfiguration);
+    transformConfiguration ??= TransformConfiguration.create();
+    final transformer = MessageContentTransformer(transformConfiguration);
+    final document = await transformer.toDocument(
+        _contentHtml,
+        mapUrlDownloadCID: mapUrlDownloadCID,
+        dioClient: dioClient);
     return document.outerHtml;
   }
 
-  /// Transforms this message to Document.
-  Future<Document> transformToDocument({TransformConfiguration? transformConfiguration}) async {
+  /// Transforms this message to Text Plain.
+  String transformToTextPlain({TransformConfiguration? transformConfiguration}) {
     transformConfiguration ??= TransformConfiguration.create();
     final transformer = MessageContentTransformer(transformConfiguration);
-    return await transformer.toDocument(_contentHtml, mapUrlDownloadCID: mapUrlDownloadCID, dioClient: dioClient);
+    final message = transformer.toMessage(_contentHtml);
+    return message;
   }
 }
