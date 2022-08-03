@@ -148,6 +148,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   Widget _buildRightHeader(BuildContext context) {
     return Row(children: [
       Obx(() {
+        if (controller.routePath.value != AppRoutes.THREAD) {
+          return const SizedBox.shrink();
+        }
         if (controller.isSelectionEnabled()) {
           return _buildListButtonTopBarSelection(context);
         } else {
