@@ -9,26 +9,48 @@ class MessageContentTransformer {
 
   MessageContentTransformer(this.configuration);
 
-  Future<void> transformDocument(
+  Future<void> _transformDocument(
       Document document,
-      String message,
       {
         Map<String, String>? mapUrlDownloadCID,
         DioClient? dioClient
       }
   ) async {
     await Future.wait([
-      if (configuration.domTransformers.isNotEmpty) ...configuration.domTransformers.map((domTransformer) async =>
-          domTransformer.process(document, message, mapUrlDownloadCID: mapUrlDownloadCID, dioClient: dioClient)),
-      if (configuration.textTransformers.isNotEmpty) ...configuration.textTransformers.map((textTransformer) async =>
-          textTransformer.process(message))
+      if (configuration.domTransformers.isNotEmpty)
+        ...configuration.domTransformers.map((domTransformer) async =>
+            domTransformer.process(
+                document,
+                mapUrlDownloadCID: mapUrlDownloadCID,
+                dioClient: dioClient))
     ]);
   }
 
-  Future<Document> toDocument(String message, {Map<String, String>? mapUrlDownloadCID, DioClient? dioClient}) async {
-    var html = message;
-    final document = parse(html);
-    await transformDocument(document, message, mapUrlDownloadCID: mapUrlDownloadCID, dioClient: dioClient);
+  Future<Document> toDocument(
+      String message,
+      {
+        Map<String, String>? mapUrlDownloadCID,
+        DioClient? dioClient
+      }
+  ) async {
+    final document = parse(message);
+    await _transformDocument(
+        document,
+        mapUrlDownloadCID: mapUrlDownloadCID,
+        dioClient: dioClient);
     return document;
+  }
+
+  String _transformMessage(String message) {
+    if (configuration.textTransformers.isNotEmpty) {
+      configuration.textTransformers.forEach((transformer) {
+        message = transformer.process(message);
+      });
+    }
+    return message;
+  }
+
+  String toMessage(String message) {
+    return _transformMessage(message);
   }
 }

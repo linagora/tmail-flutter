@@ -14,7 +14,6 @@ class ImageTransformer extends DomTransformer {
   @override
   Future<void> process(
       Document document,
-      String message,
       {
         Map<String, String>? mapUrlDownloadCID,
         DioClient? dioClient
