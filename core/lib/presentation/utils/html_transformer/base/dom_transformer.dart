@@ -7,12 +7,11 @@ abstract class DomTransformer {
 
   const DomTransformer();
 
-  /// Uses the `DOM` [document] and specified [message] to transform the `document`.
+  /// Uses the `DOM` [document] to transform the `document`.
   ///
   /// All changes will be visible to subsequent transformers.
   Future<void> process(
       Document document,
-      String message,
       {
         Map<String, String>? mapUrlDownloadCID,
         DioClient? dioClient,
