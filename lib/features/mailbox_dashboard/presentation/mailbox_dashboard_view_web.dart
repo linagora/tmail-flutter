@@ -161,10 +161,17 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       }),
       const SizedBox(width: 16),
       Obx(() => !searchController.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
-      Obx(() => searchController.isSearchActive()
-          ? Expanded(child: _buildSearchForm(context))
-          : PortalTarget(
-              visible: controller.searchController.isAdvancedSearchViewOpen.isTrue,
+      Obx(() {
+        if (searchController.isSearchActive()) {
+          return Expanded(child: _buildSearchForm(context));
+        } else {
+          return PortalTarget(
+            visible: searchController.isAdvancedSearchViewOpen.isTrue,
+            portalFollower: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => searchController.selectOpenAdvanceSearch()),
+            child: PortalTarget(
+              visible: searchController.isAdvancedSearchViewOpen.isTrue,
               anchor: const Aligned(
                 follower: Alignment.topRight,
                 target: Alignment.bottomRight,
@@ -175,14 +182,19 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   widthFactor: 3,
                 ),
               ),
-              portalFollower: responsiveUtils.isMobile(context) ? const SizedBox.shrink() : const AdvancedSearchFilterOverlay(),
+              portalFollower: responsiveUtils.isMobile(context)
+                  ? const SizedBox.shrink()
+                  : const AdvancedSearchFilterOverlay(),
               child: (SearchBarView(imagePaths)
                   ..hintTextSearch(AppLocalizations.of(context).search_emails)
                   ..maxSizeWidth(240)
                   ..addOnOpenSearchViewAction(() => searchController.enableSearch())
                   ..addRightButton(IconOpenAdvancedSearchWidget(context)))
                 .build(),
-          )),
+            ),
+          );
+        }
+      }),
       Obx(() => !searchController.isSearchActive() ? const SizedBox(width: 16) : const SizedBox.shrink()),
       Obx(() => (AvatarBuilder()
           ..text(controller.userProfile.value?.getAvatarText() ?? '')
@@ -429,166 +441,174 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             height: 45,
             child: PortalTarget(
               visible: searchController.isAdvancedSearchViewOpen.isTrue,
-              anchor: const Aligned(
-                follower: Alignment.topLeft,
-                target: Alignment.bottomLeft,
-                widthFactor: 1,
-                backup: Aligned(
+              portalFollower: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => searchController.selectOpenAdvanceSearch()),
+              child: PortalTarget(
+                visible: searchController.isAdvancedSearchViewOpen.isTrue,
+                anchor: const Aligned(
                   follower: Alignment.topLeft,
                   target: Alignment.bottomLeft,
                   widthFactor: 1,
+                  backup: Aligned(
+                    follower: Alignment.topLeft,
+                    target: Alignment.bottomLeft,
+                    widthFactor: 1,
+                  ),
                 ),
-              ),
-              portalFollower: const AdvancedSearchFilterOverlay(),
-              child: QuickSearchInputForm<PresentationEmail, RecentSearch>(
-                  textFieldConfiguration: QuickSearchTextFieldConfiguration(
-                      controller: searchController.searchInputController,
-                      autofocus: true,
-                      enabled: searchController.isAdvancedSearchViewOpen.isFalse,
-                      focusNode: searchController.searchFocus,
-                      textInputAction: TextInputAction.done,
-                      onSubmitted: (keyword) {
-                        if (keyword.trim().isNotEmpty) {
-                          searchController.saveRecentSearch(RecentSearch.now(keyword));
-                        }
-                        controller.searchEmail(context, keyword);
-                      },
-                      onChanged: (query) {
-                        log('MailboxDashBoardView::_buildSearchForm(): onChanged: $query');
-                        searchController.onChangeTextSearch(query);
-                      },
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
-                          hintText: AppLocalizations.of(context).search_mail,
-                          hintStyle: const TextStyle(
-                              color: AppColor.colorHintSearchBar,
-                              fontSize: 17.0),
-                          labelStyle: const TextStyle(
-                              color: AppColor.colorHintSearchBar,
-                              fontSize: 17.0)
-                      ),
-                      leftButton: buildIconWeb(
-                          icon: SvgPicture.asset(
-                              imagePaths.icSearchBar,
-                              width: 16,
-                              height: 16,
-                              fit: BoxFit.fill),
-                          onTap: () {
-                            final keyword = searchController.searchInputController.text;
-                            if (keyword.trim().isNotEmpty) {
-                              searchController.saveRecentSearch(RecentSearch.now(keyword));
-                            }
-                            controller.searchEmail(context, keyword);
-                          }),
-                      clearTextButton: buildIconWeb(
-                          icon: SvgPicture.asset(
-                              imagePaths.icClearTextSearch,
-                              width: 16,
-                              height: 16,
-                              fit: BoxFit.fill),
-                          onTap: () {
-                            searchController.clearTextSearch();
-                          }),
-                      rightButton: IconOpenAdvancedSearchWidget(context)
-                  ),
-                  suggestionsBoxDecoration: QuickSearchSuggestionsBoxDecoration(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.all(Radius.circular(16)),
-                    constraints: BoxConstraints(
-                        maxWidth: responsiveUtils.isDesktop(context)
-                            ? 556
-                            : double.infinity),
-                  ),
-                  debounceDuration: const Duration(milliseconds: 500),
-                  listActionButton: const [
-                    QuickSearchFilter.hasAttachment,
-                    QuickSearchFilter.last7Days,
-                    QuickSearchFilter.fromMe,
-                  ],
-                  actionButtonBuilder: (context, filterAction) {
-                    if (filterAction is QuickSearchFilter) {
-                      return buildQuickSearchFilterButton(context, filterAction);
-                    }
-                    return const SizedBox.shrink();
-                  },
-                  buttonActionCallback: (filterAction) {
-                    if (filterAction is QuickSearchFilter) {
-                      controller.selectQuickSearchFilter(
-                          quickSearchFilter: filterAction,
-                          fromSuggestionBox: true,
-                      );
-                    }
-                  },
-                  listActionPadding: const EdgeInsets.only(
-                      left: 24, right: 24, top: 20, bottom: 12),
-                  titleHeaderRecent: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                    child: Text(AppLocalizations.of(context).recent,
-                        style: const TextStyle(fontSize: 13.0,
-                            color: AppColor.colorTextButtonHeaderThread,
-                            fontWeight: FontWeight.w500)
-                    )
-                  ),
-                  buttonShowAllResult: (context, keyword) {
-                    if (keyword is String) {
-                      return InkWell(
-                        onTap: () {
+                portalFollower: responsiveUtils.isMobile(context)
+                    ? const SizedBox.shrink()
+                    : const AdvancedSearchFilterOverlay(),
+                child: QuickSearchInputForm<PresentationEmail, RecentSearch>(
+                    textFieldConfiguration: QuickSearchTextFieldConfiguration(
+                        controller: searchController.searchInputController,
+                        autofocus: true,
+                        enabled: searchController.isAdvancedSearchViewOpen.isFalse,
+                        focusNode: searchController.searchFocus,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (keyword) {
                           if (keyword.trim().isNotEmpty) {
                             searchController.saveRecentSearch(RecentSearch.now(keyword));
                           }
                           controller.searchEmail(context, keyword);
                         },
-                        child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 14),
-                            child: Row(children: [
-                              Text(AppLocalizations.of(context).showingResultsFor,
-                                  style: const TextStyle(fontSize: 13.0,
-                                      color: AppColor.colorTextButtonHeaderThread,
-                                      fontWeight: FontWeight.w500)
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(child: Text('"$keyword"',
-                                  style: const TextStyle(
-                                      fontSize: 13.0,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500)))
-                            ])
+                        onChanged: (query) {
+                          log('MailboxDashBoardView::_buildSearchForm(): onChanged: $query');
+                          searchController.onChangeTextSearch(query);
+                        },
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                            hintText: AppLocalizations.of(context).search_mail,
+                            hintStyle: const TextStyle(
+                                color: AppColor.colorHintSearchBar,
+                                fontSize: 17.0),
+                            labelStyle: const TextStyle(
+                                color: AppColor.colorHintSearchBar,
+                                fontSize: 17.0)
                         ),
-                      );
-                    } else {
+                        leftButton: buildIconWeb(
+                            icon: SvgPicture.asset(
+                                imagePaths.icSearchBar,
+                                width: 16,
+                                height: 16,
+                                fit: BoxFit.fill),
+                            onTap: () {
+                              final keyword = searchController.searchInputController.text;
+                              if (keyword.trim().isNotEmpty) {
+                                searchController.saveRecentSearch(RecentSearch.now(keyword));
+                              }
+                              controller.searchEmail(context, keyword);
+                            }),
+                        clearTextButton: buildIconWeb(
+                            icon: SvgPicture.asset(
+                                imagePaths.icClearTextSearch,
+                                width: 16,
+                                height: 16,
+                                fit: BoxFit.fill),
+                            onTap: () {
+                              searchController.clearTextSearch();
+                            }),
+                        rightButton: IconOpenAdvancedSearchWidget(context)
+                    ),
+                    suggestionsBoxDecoration: QuickSearchSuggestionsBoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.all(Radius.circular(16)),
+                      constraints: BoxConstraints(
+                          maxWidth: responsiveUtils.isDesktop(context)
+                              ? 556
+                              : double.infinity),
+                    ),
+                    debounceDuration: const Duration(milliseconds: 500),
+                    listActionButton: const [
+                      QuickSearchFilter.hasAttachment,
+                      QuickSearchFilter.last7Days,
+                      QuickSearchFilter.fromMe,
+                    ],
+                    actionButtonBuilder: (context, filterAction) {
+                      if (filterAction is QuickSearchFilter) {
+                        return buildQuickSearchFilterButton(context, filterAction);
+                      }
                       return const SizedBox.shrink();
-                    }
-                  },
-                  loadingBuilder: (context) => Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: loadingWidget,
-                  ),
-                  fetchRecentActionCallback: (pattern) async {
-                    return searchController.getAllRecentSearchAction(pattern);
-                  },
-                  itemRecentBuilder: (context, recent) {
-                    return RecentSearchItemTileWidget(recent);
-                  },
-                  onRecentSelected: (recent) {
-                    searchController.searchInputController.text = recent.value;
-                    controller.searchEmail(context, recent.value);
-                  },
-                  suggestionsCallback: (pattern) async {
-                    return controller.quickSearchEmails();
-                  },
-                  itemBuilder: (context, email) {
-                    return EmailQuickSearchItemTileWidget(
-                        email, controller.selectedMailbox.value);
-                  },
-                  onSuggestionSelected: (presentationEmail) async {
-                    controller.dispatchAction(
-                        OpenEmailDetailedAction(context, presentationEmail));
-                  }),
+                    },
+                    buttonActionCallback: (filterAction) {
+                      if (filterAction is QuickSearchFilter) {
+                        controller.selectQuickSearchFilter(
+                            quickSearchFilter: filterAction,
+                            fromSuggestionBox: true,
+                        );
+                      }
+                    },
+                    listActionPadding: const EdgeInsets.only(
+                        left: 24, right: 24, top: 20, bottom: 12),
+                    titleHeaderRecent: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      child: Text(AppLocalizations.of(context).recent,
+                          style: const TextStyle(fontSize: 13.0,
+                              color: AppColor.colorTextButtonHeaderThread,
+                              fontWeight: FontWeight.w500)
+                      )
+                    ),
+                    buttonShowAllResult: (context, keyword) {
+                      if (keyword is String) {
+                        return InkWell(
+                          onTap: () {
+                            if (keyword.trim().isNotEmpty) {
+                              searchController.saveRecentSearch(RecentSearch.now(keyword));
+                            }
+                            controller.searchEmail(context, keyword);
+                          },
+                          child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 14),
+                              child: Row(children: [
+                                Text(AppLocalizations.of(context).showingResultsFor,
+                                    style: const TextStyle(fontSize: 13.0,
+                                        color: AppColor.colorTextButtonHeaderThread,
+                                        fontWeight: FontWeight.w500)
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(child: Text('"$keyword"',
+                                    style: const TextStyle(
+                                        fontSize: 13.0,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500)))
+                              ])
+                          ),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                    loadingBuilder: (context) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: loadingWidget,
+                    ),
+                    fetchRecentActionCallback: (pattern) async {
+                      return searchController.getAllRecentSearchAction(pattern);
+                    },
+                    itemRecentBuilder: (context, recent) {
+                      return RecentSearchItemTileWidget(recent);
+                    },
+                    onRecentSelected: (recent) {
+                      searchController.searchInputController.text = recent.value;
+                      controller.searchEmail(context, recent.value);
+                    },
+                    suggestionsCallback: (pattern) async {
+                      return controller.quickSearchEmails();
+                    },
+                    itemBuilder: (context, email) {
+                      return EmailQuickSearchItemTileWidget(
+                          email, controller.selectedMailbox.value);
+                    },
+                    onSuggestionSelected: (presentationEmail) async {
+                      controller.dispatchAction(
+                          OpenEmailDetailedAction(context, presentationEmail));
+                    }),
+              ),
             ),
           )),
           const SizedBox(width: 16),
