@@ -60,28 +60,29 @@ class SearchBarView {
             color: AppColor.colorBgSearchBar),
         padding: _padding ?? EdgeInsets.zero,
         margin: _margin ?? EdgeInsets.zero,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(width: 8),
-            buildIconWeb(
-                splashRadius: 15,
-                minSize: 40,
-                iconPadding: EdgeInsets.zero,
-                icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
-                onTap: () => _onOpenSearchViewAction?.call()),
-            Expanded(
-              child: InkWell(
-                onTap: () => _onOpenSearchViewAction?.call(),
+        child: InkWell(
+          onTap: () => _onOpenSearchViewAction?.call(),
+          mouseCursor: SystemMouseCursors.text,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(width: 8),
+              buildIconWeb(
+                  splashRadius: 15,
+                  minSize: 40,
+                  iconPadding: EdgeInsets.zero,
+                  icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
+                  onTap: () => _onOpenSearchViewAction?.call()),
+              Expanded(
                 child: Text(
                     _hintTextSearch ?? '',
                     maxLines: 1,
                     style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar)),
               ),
-            ),
-            if(_rightButton != null)
-              _rightButton!
-          ]
+              if(_rightButton != null)
+                _rightButton!
+            ]
+          ),
         ),
     );
   }
