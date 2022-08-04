@@ -63,6 +63,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                         fontWeight: FontWeight.normal,
                         color: Colors.black.withOpacity(opacity)),
                     maxLines: 1,
+                    softWrap: CommonTextStyle.defaultSoftWrap,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                   )),
                 ])
@@ -81,6 +82,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                                 fontWeight: FontWeight.normal,
                                 color: Colors.black),
                             maxLines: 1,
+                            softWrap: CommonTextStyle.defaultSoftWrap,
                             overflow: CommonTextStyle.defaultTextOverFlow,
                           )),
                           if (supportSelectionIcon && item == itemSelected)
@@ -115,6 +117,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                           fontWeight: FontWeight.normal,
                           color: Colors.black.withOpacity(opacity)),
                       maxLines: 1,
+                      softWrap: CommonTextStyle.defaultSoftWrap,
                       overflow: CommonTextStyle.defaultTextOverFlow,
                     )),
                     iconArrowDown ?? SvgPicture.asset(_imagePaths.icDropDown)

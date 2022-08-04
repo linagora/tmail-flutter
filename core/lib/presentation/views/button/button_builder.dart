@@ -150,6 +150,7 @@ class ButtonBuilder {
     return Text(
       '${_text ?? ''}',
       maxLines: 1,
+      softWrap: CommonTextStyle.defaultSoftWrap,
       overflow: CommonTextStyle.defaultTextOverFlow,
       style: _textStyle ?? TextStyle(fontSize: 12, color: AppColor.colorTextButton),
     );

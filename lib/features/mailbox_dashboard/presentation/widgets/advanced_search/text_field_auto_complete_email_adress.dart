@@ -82,7 +82,7 @@ class _TextFieldAutoCompleteEmailAddressState
                   itemCount: listEmailAddress.length,
                   itemBuilder: (BuildContext context, int index) {
                     final emailAddress = listEmailAddress.elementAt(index);
-                    return GestureDetector(
+                    return InkWell(
                       onTap: () => onSelected(emailAddress),
                       child: _buildSuggestionItem(context, emailAddress),
                     );
@@ -204,6 +204,7 @@ class _TextFieldAutoCompleteEmailAddressState
               Text(
                   emailAddress.asString(),
                   maxLines: 1,
+                  softWrap: CommonTextStyle.defaultSoftWrap,
                   overflow: CommonTextStyle.defaultTextOverFlow,
                   style: const TextStyle(
                       color: Colors.black,
@@ -214,6 +215,7 @@ class _TextFieldAutoCompleteEmailAddressState
                 Text(
                     emailAddress.emailAddress,
                     maxLines: 1,
+                    softWrap: CommonTextStyle.defaultSoftWrap,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     style: const TextStyle(
                         color: AppColor.colorHintSearchBar,
