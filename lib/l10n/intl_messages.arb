@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-03T00:27:26.944930",
+  "@@last_modified": "2022-08-04T11:25:19.254781",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1744,6 +1744,12 @@
   },
   "bulletedList": "Bulleted list",
   "@bulletedList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveTo": "Move To",
+  "@moveTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

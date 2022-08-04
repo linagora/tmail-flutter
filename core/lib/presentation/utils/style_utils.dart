@@ -9,5 +9,7 @@ class CommonTextStyle {
     fontWeight: FontWeight.normal,
   );
 
-  static final defaultTextOverFlow = BuildUtils.isWeb ? null : TextOverflow.ellipsis;
+  static final defaultTextOverFlow = BuildUtils.isWeb
+      ? TextOverflow.fade
+      : TextOverflow.ellipsis;
 }
