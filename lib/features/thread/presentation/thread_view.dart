@@ -577,7 +577,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                 controller.currentMailbox?.role,
                 controller.mailboxDashBoardController.currentSelectMode.value,
                 controller.searchController.searchState.value.searchStatus,
-                controller.searchQuery)
+                controller.searchQuery,
+                advancedSearchActivated: controller.searchController.isAdvancedSearchHasApply.isTrue)
             ..addOnPressEmailActionClick((action, email) => controller.pressEmailAction(context, action, email))
             ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
               ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
