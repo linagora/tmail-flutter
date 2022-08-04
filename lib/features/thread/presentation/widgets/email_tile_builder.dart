@@ -20,6 +20,7 @@ class EmailTileBuilder {
   final Role? _mailboxRole;
   final SearchStatus _searchStatus;
   final SearchQuery? _searchQuery;
+  final bool advancedSearchActivated;
 
   OnPressEmailActionClick? _emailActionClick;
 
@@ -30,6 +31,9 @@ class EmailTileBuilder {
     this._selectModeAll,
     this._searchStatus,
     this._searchQuery,
+    {
+      this.advancedSearchActivated = false
+    }
   );
 
   void addOnPressEmailActionClick(OnPressEmailActionClick actionClick) {
@@ -159,8 +163,7 @@ class EmailTileBuilder {
                                     color: _buildTextColorForReadEmail(),
                                     fontWeight: _buildFontForReadEmail()))
                         ),
-                        if (_searchStatus == SearchStatus.ACTIVE &&
-                            _presentationEmail.mailboxName.isNotEmpty)
+                        if (_hasMailboxLabel)
                           Container(
                               margin: const EdgeInsets.only(left: 8),
                               padding: const EdgeInsets.symmetric(
@@ -283,5 +286,11 @@ class EmailTileBuilder {
       return _presentationEmail.recipientsName();
     }
     return _presentationEmail.getSenderName();
+  }
+
+  bool get _hasMailboxLabel {
+    return (_searchStatus == SearchStatus.ACTIVE ||
+        advancedSearchActivated) &&
+        _presentationEmail.mailboxName.isNotEmpty;
   }
 }

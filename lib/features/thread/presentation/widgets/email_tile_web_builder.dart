@@ -23,6 +23,7 @@ class EmailTileBuilder {
   final Role? _mailboxRole;
   final SearchStatus _searchStatus;
   final SearchQuery? _searchQuery;
+  final bool advancedSearchActivated;
 
   OnPressEmailActionClick? _emailActionClick;
   OnMoreActionClick? _onMoreActionClick;
@@ -37,6 +38,9 @@ class EmailTileBuilder {
     this._selectModeAll,
     this._searchStatus,
     this._searchQuery,
+    {
+      this.advancedSearchActivated = false
+    }
   );
 
   void addOnPressEmailActionClick(OnPressEmailActionClick actionClick) {
@@ -206,8 +210,7 @@ class EmailTileBuilder {
                                 fontSize: 13,
                                 color: _buildTextColorForReadEmail()))
                     ),
-                    if (_searchStatus == SearchStatus.ACTIVE &&
-                        _presentationEmail.mailboxName.isNotEmpty)
+                    if (_hasMailboxLabel)
                       Container(
                           margin: const EdgeInsets.only(left: 8),
                           padding: const EdgeInsets.symmetric(
@@ -368,8 +371,7 @@ class EmailTileBuilder {
                                     fontSize: 13,
                                     color: _buildTextColorForReadEmail()))
                         ),
-                        if (_searchStatus == SearchStatus.ACTIVE &&
-                            _presentationEmail.mailboxName.isNotEmpty)
+                        if (_hasMailboxLabel)
                           Container(
                               margin: const EdgeInsets.only(left: 8),
                               padding: const EdgeInsets.symmetric(
@@ -640,8 +642,7 @@ class EmailTileBuilder {
 
   Widget _buildDateTimeForDesktopScreen() {
     return Row(children: [
-      if (_searchStatus == SearchStatus.ACTIVE &&
-          _presentationEmail.mailboxName.isNotEmpty)
+      if (_hasMailboxLabel)
         Container(
             margin: const EdgeInsets.only(left: 8),
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -839,4 +840,10 @@ class EmailTileBuilder {
   bool get _isSearchEnabled => _searchStatus == SearchStatus.ACTIVE
       && _searchQuery != null
       && _searchQuery!.value.isNotEmpty;
+
+  bool get _hasMailboxLabel {
+    return (_searchStatus == SearchStatus.ACTIVE ||
+        advancedSearchActivated) &&
+        _presentationEmail.mailboxName.isNotEmpty;
+  }
 }
