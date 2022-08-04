@@ -105,6 +105,7 @@ class DropDownMenuHeaderStyleWidget extends StatelessWidget {
             fontWeight: fontWeight,
             color: Colors.black),
         maxLines: 1,
+        softWrap: CommonTextStyle.defaultSoftWrap,
         overflow: CommonTextStyle.defaultTextOverFlow);
   }
 }

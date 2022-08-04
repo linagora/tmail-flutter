@@ -379,6 +379,7 @@ class AppBarThreadWidgetBuilder {
               child: Text(
                 _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
                 maxLines: 1,
+                softWrap: CommonTextStyle.defaultSoftWrap,
                 overflow: CommonTextStyle.defaultTextOverFlow,
                 style: const TextStyle(
                     fontSize: 21,
