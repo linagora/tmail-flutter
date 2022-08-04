@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -20,6 +21,8 @@ class TextFieldAutoCompleteEmailAddress extends StatefulWidget {
     required this.onChange,
     required this.onDeleteTag,
     required this.onAddTag,
+    this.currentFocusNode,
+    this.nextFocusNode,
   }) : super(key: key);
   final AdvancedSearchFilterField advancedSearchFilterField;
   final Set<String> initialTags;
@@ -27,6 +30,8 @@ class TextFieldAutoCompleteEmailAddress extends StatefulWidget {
   final Function(String) onChange;
   final Function(String) onDeleteTag;
   final Function(String) onAddTag;
+  final FocusNode? currentFocusNode;
+  final FocusNode? nextFocusNode;
 
   @override
   State<TextFieldAutoCompleteEmailAddress> createState() =>
@@ -63,7 +68,7 @@ class _TextFieldAutoCompleteEmailAddressState
           margin: const EdgeInsets.only(
               top: BuildUtils.isWeb ? 5 : 8,
               bottom: 16),
-          height: maxHeightSuggestionBox,
+          height: _getHeightSuggestionBox(listEmailAddress.length, 65),
           width: maxWidthSuggestionBox,
           alignment: Alignment.topLeft,
           child: Card(
@@ -73,12 +78,13 @@ class _TextFieldAutoCompleteEmailAddressState
               borderRadius: BorderRadius.circular(20.0),
               child: Container(
                 alignment: Alignment.topCenter,
-                height: maxHeightSuggestionBox,
+                height: _getHeightSuggestionBox(listEmailAddress.length, 65),
                 width: maxWidthSuggestionBox,
                 color: Colors.white,
                 child: ListView.builder(
                   shrinkWrap: true,
                   padding: EdgeInsets.zero,
+                  itemExtent: 65,
                   itemCount: listEmailAddress.length,
                   itemBuilder: (BuildContext context, int index) {
                     final emailAddress = listEmailAddress.elementAt(index);
@@ -94,7 +100,10 @@ class _TextFieldAutoCompleteEmailAddressState
         );
       },
       optionsBuilder: (TextEditingValue textEditingValue) {
-        return widget.optionsBuilder.call(textEditingValue.text);
+        if (textEditingValue.text == '') {
+          return const Iterable<EmailAddress>.empty();
+        }
+        return widget.optionsBuilder.call(textEditingValue.text.toLowerCase());
       },
       onSelected: (EmailAddress selectedTag) {
         _controller.addTag = selectedTag.asString();
@@ -115,53 +124,65 @@ class _TextFieldAutoCompleteEmailAddressState
           },
           inputfieldBuilder: (context, tec, fn, error, onChanged, onSubmitted) {
             return ((context, sc, tags, onTagDelete) {
-              return TextField(
-                controller: tec,
-                focusNode: fn,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: AppColor.loginTextFieldBackgroundColor,
-                  contentPadding: const EdgeInsets.only(
-                    right: 8,
-                    left: 12,
-                  ),
-                  enabledBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10),
+              return RawKeyboardListener(
+                focusNode: widget.currentFocusNode ?? FocusNode(),
+                onKey: (event) {
+                  log('_TextFieldAutoCompleteEmailAddressState::inputfieldBuilder(): Event runtimeType is ${event.runtimeType}');
+                  if (event is RawKeyDownEvent &&
+                      event.logicalKey == LogicalKeyboardKey.tab) {
+                    log('_TextFieldAutoCompleteEmailAddressState::inputfieldBuilder(): PRESS TAB');
+                    widget.nextFocusNode?.requestFocus();
+                  }
+                },
+                child: TextField(
+                  controller: tec,
+                  focusNode: fn,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: AppColor.loginTextFieldBackgroundColor,
+                    contentPadding: const EdgeInsets.only(
+                      right: 8,
+                      left: 12,
                     ),
-                    borderSide: BorderSide(
-                      width: 0.5,
-                      color: AppColor.colorInputBorderCreateMailbox,
+                    enabledBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                      borderSide: BorderSide(
+                        width: 0.5,
+                        color: AppColor.colorInputBorderCreateMailbox,
+                      ),
                     ),
-                  ),
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
                     ),
+                    hintText: widget.advancedSearchFilterField.getHintText(context),
+                    hintStyle: const TextStyle(
+                      fontSize: 14,
+                      color: AppColor.colorHintSearchBar,
+                    ),
+                    prefixIconConstraints: BoxConstraints(maxWidth: _distanceToField * 0.74),
+                    prefixIcon: tags.isNotEmpty ? SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      controller: sc,
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                          children: tags.map((String tag) {
+                            return _buildTagItem(context, tag, onTagDelete);
+                          }).toList()),
+                    )
+                        : null,
                   ),
-                  hintText: widget.advancedSearchFilterField.getHintText(context),
-                  hintStyle: const TextStyle(
-                    fontSize: 14,
-                    color: AppColor.colorHintSearchBar,
-                  ),
-                  prefixIconConstraints: BoxConstraints(maxWidth: _distanceToField * 0.74),
-                  prefixIcon: tags.isNotEmpty ? SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    controller: sc,
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                        children: tags.map((String tag) {
-                          return _buildTagItem(context, tag, onTagDelete);
-                        }).toList()),
-                  )
-                      : null,
+                  onChanged: (value) {
+                    onChanged?.call(value);
+                  },
+                  onSubmitted: (tag) {
+                    onSubmitted?.call(tag);
+                  },
                 ),
-                onChanged: (value) {
-                  onChanged?.call(value);
-                },
-                onSubmitted: (tag) {
-                  onSubmitted?.call(tag);
-                },
               );
             });
           },
@@ -177,7 +198,7 @@ class _TextFieldAutoCompleteEmailAddressState
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-      child: Row(children: [
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         Container(
             width: 40,
             height: 40,
@@ -200,6 +221,7 @@ class _TextFieldAutoCompleteEmailAddressState
           padding: const EdgeInsets.only(left: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                   emailAddress.asString(),
@@ -272,10 +294,8 @@ class _TextFieldAutoCompleteEmailAddressState
                   fontSize: 17,
                   fontWeight: FontWeight.normal)),
           const SizedBox(width: 4),
-          GestureDetector(
-            onTap: () {
-              onTagDelete.call(tag);
-            },
+          InkWell(
+            onTap: () => onTagDelete.call(tag),
             child: SvgPicture.asset(
               _imagePaths.icClose,
               width: 28,
@@ -300,14 +320,16 @@ class _TextFieldAutoCompleteEmailAddressState
     return 0;
   }
 
-  double get maxHeightSuggestionBox {
+  double _getHeightSuggestionBox(int countItem, double heightItem) {
+    final maxHeightList = countItem * heightItem;
+
     if (BuildUtils.isWeb) {
-      return 250;
+      return maxHeightList > 250 ? 250 : maxHeightList;
     } else {
       if (_responsiveUtils.isLandscapeMobile(context)) {
-        return 180;
+        return maxHeightList > 180 ? 180 : maxHeightList;
       } else {
-        return 250;
+        return maxHeightList > 250 ? 250 : maxHeightList;
       }
     }
   }

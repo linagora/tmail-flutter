@@ -1,40 +1,50 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class AdvancedSearchFilterFormBottomView
-    extends GetWidget<AdvancedFilterController> {
+class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterController> {
+
+  final InputFieldFocusManager? focusManager;
+
   const AdvancedSearchFilterFormBottomView({
     Key? key,
+    this.focusManager,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
+    final _responsiveUtils = Get.find<ResponsiveUtils>();
 
     return Padding(
       padding: EdgeInsets.only(
-          top: _responsiveUtils.isMobile(context) ||
-              _responsiveUtils.landscapeTabletSupported(context) ? 8 : 20),
+          top: _isMobileAndLandscapeTablet(context, _responsiveUtils) ? 8 : 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (_responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context))
+          if (_isMobileAndLandscapeTablet(context, _responsiveUtils))
             ...[
-              _buildCheckboxHasAttachment(context),
+              _buildCheckboxHasAttachment(
+                  context,
+                  currentFocusNode: focusManager?.attachmentCheckboxFocusNode,
+                  nextFocusNode: focusManager?.searchButtonFocusNode),
               const SizedBox(height: 24)
             ],
           Row(
-            mainAxisAlignment: _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
+            mainAxisAlignment: _isMobileAndLandscapeTablet(context, _responsiveUtils)
                 ? MainAxisAlignment.spaceEvenly
                 : MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (!_responsiveUtils.isMobile(context) && !_responsiveUtils.landscapeTabletSupported(context))
-                Expanded(child: _buildCheckboxHasAttachment(context)),
+              if (!_isMobileAndLandscapeTablet(context, _responsiveUtils))
+                Expanded(child: _buildCheckboxHasAttachment(
+                    context,
+                    currentFocusNode: focusManager?.attachmentCheckboxFocusNode,
+                    nextFocusNode: focusManager?.searchButtonFocusNode)),
               ..._buildListButton(context, _responsiveUtils),
             ],
           ),
@@ -44,8 +54,10 @@ class AdvancedSearchFilterFormBottomView
   }
 
   List<Widget> _buildListButton(
-      BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (responsiveUtils.isMobile(context) || responsiveUtils.landscapeTabletSupported(context)) {
+      BuildContext context,
+      ResponsiveUtils responsiveUtils
+  ) {
+    if (_isMobileAndLandscapeTablet(context, responsiveUtils)) {
       return [
         Expanded(
           child: _buildButton(
@@ -72,6 +84,8 @@ class AdvancedSearchFilterFormBottomView
             text: AppLocalizations.of(context).search,
             context: context,
             responsiveUtils: responsiveUtils,
+            currentFocusNode: focusManager?.searchButtonFocusNode,
+            nextFocusNode: focusManager?.fromFieldFocusNode
           ),
         ),
       ];
@@ -99,23 +113,43 @@ class AdvancedSearchFilterFormBottomView
           text: AppLocalizations.of(context).search,
           context: context,
           responsiveUtils: responsiveUtils,
+          currentFocusNode: focusManager?.searchButtonFocusNode,
+          nextFocusNode: focusManager?.fromFieldFocusNode
         ),
       ];
     }
   }
 
-  Widget _buildCheckboxHasAttachment(BuildContext context) {
+  Widget _buildCheckboxHasAttachment(
+      BuildContext context,
+      {
+        FocusNode? currentFocusNode,
+        FocusNode? nextFocusNode,
+      }
+  ) {
     return Obx(
       () => SizedBox(
         width: 220,
-        child: CheckboxListTile(
-          contentPadding: EdgeInsets.zero,
-          controlAffinity: ListTileControlAffinity.leading,
-          value: controller.hasAttachment.value,
-          onChanged: (value) {
-            controller.hasAttachment.value = value ?? false;
+        child: RawKeyboardListener(
+          focusNode: FocusNode(),
+          onKey: (event) {
+            log('AdvancedSearchFilterFormBottomView::_buildCheckboxHasAttachment(): Event runtimeType is ${event.runtimeType}');
+            if (event is RawKeyDownEvent &&
+                event.logicalKey == LogicalKeyboardKey.tab) {
+              log('AdvancedSearchFilterFormBottomView::_buildCheckboxHasAttachment(): PRESS TAB');
+              nextFocusNode?.requestFocus();
+            }
           },
-          title: Text(AppLocalizations.of(context).hasAttachment),
+          child: CheckboxListTile(
+            focusNode: currentFocusNode,
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+            value: controller.hasAttachment.value,
+            onChanged: (value) {
+              controller.hasAttachment.value = value ?? false;
+            },
+            title: Text(AppLocalizations.of(context).hasAttachment),
+          ),
         ),
       ),
     );
@@ -128,25 +162,42 @@ class AdvancedSearchFilterFormBottomView
     required VoidCallback onAction,
     required BuildContext context,
     required ResponsiveUtils responsiveUtils,
+    FocusNode? currentFocusNode,
+    FocusNode? nextFocusNode,
   }) {
-    return InkWell(
-      onTap: onAction,
-      child: Container(
-        height: 44,
-        padding: EdgeInsets.symmetric(
-            horizontal: responsiveUtils.isMobile(context) || responsiveUtils.landscapeTabletSupported(context)
-                ? 0 : 26),
-        constraints: BoxConstraints(
-            maxWidth: responsiveUtils.isMobile(context) || responsiveUtils.landscapeTabletSupported(context)
-                ? double.infinity : 144),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10), color: colorButton),
-        child: Text(
+    return RawKeyboardListener(
+      focusNode: FocusNode(),
+      onKey: (event) {
+        log('AdvancedSearchFilterFormBottomView::_buildButton(): Event runtimeType is ${event.runtimeType}');
+        if (event is RawKeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.tab) {
+          log('AdvancedSearchFilterFormBottomView::_buildButton(): PRESS TAB');
+          nextFocusNode?.requestFocus();
+        }
+      },
+      child: buildTextButton(
           text,
-          style: TextStyle(fontSize: 17, color: colorText),
-        ),
-      ),
+          focusNode: currentFocusNode,
+          width: _isMobileAndLandscapeTablet(context, responsiveUtils)
+              ? double.infinity
+              : 144,
+          height: 44,
+          radius: 10,
+          textStyle: TextStyle(fontSize: 17, color: colorText),
+          backgroundColor: colorButton,
+          padding: EdgeInsets.symmetric(
+              horizontal: _isMobileAndLandscapeTablet(context, responsiveUtils)
+                  ? 0
+                  : 26),
+          onTap: onAction),
     );
+  }
+
+  bool _isMobileAndLandscapeTablet(
+      BuildContext context,
+      ResponsiveUtils responsive
+  ) {
+    return responsive.isMobile(context) ||
+        responsive.landscapeTabletSupported(context);
   }
 }

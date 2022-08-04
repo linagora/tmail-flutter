@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
@@ -30,33 +31,45 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             context: context,
             advancedSearchFilterField: AdvancedSearchFilterField.form,
             listTagInitial: controller.searchEmailFilter.from,
+            currentFocusNode: controller.focusManager.fromFieldFocusNode,
+            nextFocusNode: controller.focusManager.toFieldFocusNode
           ),
           _buildSuggestionFilterField(
             listTagSelected: controller.searchEmailFilter.to,
             context: context,
             advancedSearchFilterField: AdvancedSearchFilterField.to,
             listTagInitial: controller.searchEmailFilter.to,
+            currentFocusNode: controller.focusManager.toFieldFocusNode,
+            nextFocusNode: controller.focusManager.subjectFieldFocusNode
           ),
           _buildFilterField(
             textEditingController: controller.subjectFilterInputController,
             context: context,
             advancedSearchFilterField: AdvancedSearchFilterField.subject,
+            currentFocusNode: controller.focusManager.subjectFieldFocusNode,
+            nextFocusNode: controller.focusManager.hasKeywordFieldFocusNode
           ),
           _buildFilterField(
             textEditingController: controller.hasKeyWordFilterInputController,
             context: context,
             advancedSearchFilterField: AdvancedSearchFilterField.hasKeyword,
+            currentFocusNode: controller.focusManager.hasKeywordFieldFocusNode,
+            nextFocusNode: controller.focusManager.notKeywordFieldFocusNode
           ),
           _buildFilterField(
             textEditingController: controller.notKeyWordFilterInputController,
             context: context,
             advancedSearchFilterField: AdvancedSearchFilterField.notKeyword,
+            currentFocusNode: controller.focusManager.notKeywordFieldFocusNode,
+            nextFocusNode: controller.focusManager.mailboxFieldFocusNode,
           ),
           _buildFilterField(
               textEditingController: controller.mailBoxFilterInputController,
               context: context,
               advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
               isSelectFormList: true,
+              currentFocusNode: controller.focusManager.mailboxFieldFocusNode,
+              nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
               mouseCursor: SystemMouseCursors.click,
               onTap: () async {
                 await controller.selectedMailBox();
@@ -73,7 +86,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               );
             },
           ),
-          const AdvancedSearchFilterFormBottomView()
+          AdvancedSearchFilterFormBottomView(focusManager: controller.focusManager)
         ],
       ),
     );
@@ -120,6 +133,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     VoidCallback? onTap,
     bool isSelectFormList = false,
     MouseCursor? mouseCursor,
+    FocusNode? currentFocusNode,
+    FocusNode? nextFocusNode,
   }) {
     final child = [
       SizedBox(
@@ -140,6 +155,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           onTap: onTap,
           context: context,
           mouseCursor: mouseCursor,
+          currentFocusNode: currentFocusNode,
+          nextFocusNode: nextFocusNode,
           advancedSearchFilterField: advancedSearchFilterField,
           textEditingController: textEditingController,
         )
@@ -152,6 +169,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onTap: onTap,
             context: context,
             mouseCursor: mouseCursor,
+            currentFocusNode: currentFocusNode,
+            nextFocusNode: nextFocusNode,
             advancedSearchFilterField: advancedSearchFilterField,
             textEditingController: textEditingController,
           )
@@ -162,6 +181,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onTap: onTap,
             context: context,
             mouseCursor: mouseCursor,
+            currentFocusNode: currentFocusNode,
+            nextFocusNode: nextFocusNode,
             advancedSearchFilterField: advancedSearchFilterField,
             textEditingController: textEditingController,
           ),
@@ -187,6 +208,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     VoidCallback? onTap,
     bool isSelectFormList = false,
     MouseCursor? mouseCursor,
+    FocusNode? currentFocusNode,
+    FocusNode? nextFocusNode,
   }) {
     switch (advancedSearchFilterField) {
       case AdvancedSearchFilterField.date:
@@ -197,6 +220,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           onTap: onTap,
           context: context,
           mouseCursor: mouseCursor,
+          currentFocusNode: currentFocusNode,
+          nextFocusNode: nextFocusNode,
           advancedSearchFilterField: advancedSearchFilterField,
           textEditingController: textEditingController,
         );
@@ -208,6 +233,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     required BuildContext context,
     required Set<String> listTagSelected,
     required Set<String> listTagInitial,
+    FocusNode? currentFocusNode,
+    FocusNode? nextFocusNode,
   }) {
     final child = [
       SizedBox(
@@ -229,6 +256,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               },
               advancedSearchFilterField: advancedSearchFilterField,
               initialTags: listTagInitial,
+              currentFocusNode: currentFocusNode,
+              nextFocusNode: nextFocusNode,
               onAddTag: (value) {
                 if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
                   controller.searchEmailFilter.from.add(value.trim());
@@ -263,6 +292,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
                 },
                 advancedSearchFilterField: advancedSearchFilterField,
                 initialTags: listTagInitial,
+                currentFocusNode: currentFocusNode,
+                nextFocusNode: nextFocusNode,
                 onAddTag: (value) {
                   if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
                     controller.searchEmailFilter.from.add(value.trim());
@@ -312,46 +343,60 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     VoidCallback? onTap,
     bool isSelectFormList = false,
     MouseCursor? mouseCursor,
+    FocusNode? currentFocusNode,
+    FocusNode? nextFocusNode,
   }) {
-    return TextField(
-      controller: textEditingController,
-      readOnly: isSelectFormList,
-      mouseCursor: mouseCursor,
-      onTap: onTap,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: AppColor.loginTextFieldBackgroundColor,
-        contentPadding: const EdgeInsets.only(
-          right: 8,
-          left: 12,
-        ),
-        enabledBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(10),
+    return RawKeyboardListener(
+      focusNode: currentFocusNode ?? FocusNode(),
+      onKey: (event) {
+        log('AdvancedSearchInputForm::_buildTextField(): Event runtimeType is ${event.runtimeType}');
+        if (event is RawKeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.tab) {
+          log('AdvancedSearchInputForm::_buildTextField(): PRESS TAB');
+          nextFocusNode?.requestFocus();
+        }
+      },
+      child: TextField(
+        controller: textEditingController,
+        readOnly: isSelectFormList,
+        mouseCursor: mouseCursor,
+        textInputAction: TextInputAction.next,
+        onTap: onTap,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: AppColor.loginTextFieldBackgroundColor,
+          contentPadding: const EdgeInsets.only(
+            right: 8,
+            left: 12,
           ),
-          borderSide: BorderSide(
-            width: 0.5,
-            color: AppColor.colorInputBorderCreateMailbox,
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+            borderSide: BorderSide(
+              width: 0.5,
+              color: AppColor.colorInputBorderCreateMailbox,
+            ),
           ),
-        ),
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(10),
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
           ),
+          hintText: advancedSearchFilterField.getHintText(context),
+          hintStyle: const TextStyle(
+            fontSize: 14,
+            color: AppColor.colorHintSearchBar,
+          ),
+          suffixIconConstraints: const BoxConstraints(minHeight: 24, minWidth: 24),
+          suffixIcon: isSelectFormList
+              ? buildIconWeb(
+                  icon: SvgPicture.asset(
+                    _imagePaths.icDropDown,
+                  ),
+                )
+              : null,
         ),
-        hintText: advancedSearchFilterField.getHintText(context),
-        hintStyle: const TextStyle(
-          fontSize: 14,
-          color: AppColor.colorHintSearchBar,
-        ),
-        suffixIconConstraints: const BoxConstraints(minHeight: 24, minWidth: 24),
-        suffixIcon: isSelectFormList
-            ? buildIconWeb(
-                icon: SvgPicture.asset(
-                  _imagePaths.icDropDown,
-                ),
-              )
-            : null,
       ),
     );
   }
