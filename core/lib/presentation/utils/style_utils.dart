@@ -12,4 +12,6 @@ class CommonTextStyle {
   static final defaultTextOverFlow = BuildUtils.isWeb
       ? TextOverflow.fade
       : TextOverflow.ellipsis;
+
+  static final defaultSoftWrap = BuildUtils.isWeb ? false : true;
 }

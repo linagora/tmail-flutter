@@ -280,6 +280,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         child: Row(children: [
           Expanded(child: Text(categories.getTitle(context),
               maxLines: 1,
+              softWrap: CommonTextStyle.defaultSoftWrap,
               overflow: CommonTextStyle.defaultTextOverFlow,
               style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold))),
           buildIconWeb(
@@ -406,6 +407,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 Expanded(child: Text(
                   AppLocalizations.of(context).allMailboxes,
                   maxLines: 1,
+                  softWrap: CommonTextStyle.defaultSoftWrap,
                   overflow: CommonTextStyle.defaultTextOverFlow,
                   style: const TextStyle(
                       fontSize: 15,

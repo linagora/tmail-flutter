@@ -79,6 +79,7 @@ class AppBarDestinationPickerBuilder {
     return Text(
         _mailboxAction?.getTitle(_context) ?? '',
         maxLines: 1,
+        softWrap: CommonTextStyle.defaultSoftWrap,
         overflow: CommonTextStyle.defaultTextOverFlow,
         textAlign: TextAlign.center,
         style: const TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700));

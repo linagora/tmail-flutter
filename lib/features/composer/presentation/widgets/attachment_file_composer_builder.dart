@@ -70,6 +70,7 @@ class AttachmentFileComposerBuilder extends StatelessWidget with AppLoaderMixin 
                     child: Text(
                       fileState.fileName,
                       maxLines: 1,
+                      softWrap: CommonTextStyle.defaultSoftWrap,
                       overflow: CommonTextStyle.defaultTextOverFlow,
                       style: const TextStyle(
                           fontSize: 14,
@@ -87,6 +88,7 @@ class AttachmentFileComposerBuilder extends StatelessWidget with AppLoaderMixin 
                       child: Text(
                           filesize(fileState.fileSize),
                           maxLines: 1,
+                          softWrap: CommonTextStyle.defaultSoftWrap,
                           overflow: CommonTextStyle.defaultTextOverFlow,
                           style: const TextStyle(
                               fontSize: 12,

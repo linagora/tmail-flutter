@@ -34,6 +34,7 @@ class TopBarDestinationPickerWebBuilder extends StatelessWidget {
               child: Text(
                 _mailboxAction?.getTitle(context) ?? '',
                 maxLines: 1,
+                  softWrap: CommonTextStyle.defaultSoftWrap,
                 overflow: CommonTextStyle.defaultTextOverFlow,
                 textAlign: TextAlign.center,
                 style: const TextStyle(

@@ -87,6 +87,7 @@ class AppBarMailboxCreatorBuilder {
         title ?? '',
         textAlign: TextAlign.center,
         maxLines: 1,
+        softWrap: CommonTextStyle.defaultSoftWrap,
         overflow: CommonTextStyle.defaultTextOverFlow,
         style: const TextStyle(
             fontSize: 20,
