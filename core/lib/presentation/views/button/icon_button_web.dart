@@ -109,11 +109,13 @@ Widget buildTextButton(String text, {
   EdgeInsets? padding,
   double? radius,
   IconWebCallback? onTap,
+  FocusNode? focusNode,
 }) {
   return SizedBox(
     width: width ?? double.infinity,
     height: height ?? 40,
     child: ElevatedButton(
+        focusNode: focusNode,
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.resolveWith((states) => backgroundColor ?? AppColor.colorTextButton),
             elevation: MaterialStateProperty.resolveWith((states) => 0),
