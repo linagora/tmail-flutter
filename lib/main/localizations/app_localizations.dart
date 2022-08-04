@@ -1791,4 +1791,11 @@ class AppLocalizations {
         'Bulleted list',
         name: 'bulletedList');
   }
+
+  String get moveTo {
+    return Intl.message(
+      'Move To',
+      name: 'moveTo',
+    );
+  }
 }

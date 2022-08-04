@@ -113,7 +113,7 @@ class AdvancedFilterController extends GetxController {
         AppRoutes.DESTINATION_PICKER,
         arguments: DestinationPickerArguments(
             _mailboxDashBoardController.accountId.value!,
-            MailboxActions.moveEmail));
+            MailboxActions.select));
     searchController.updateFilterEmail(mailbox: destinationMailbox);
     mailBoxFilterInputController.text =
         StringConvert.writeNullToEmpty(destinationMailbox.name?.name);
