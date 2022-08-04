@@ -4,6 +4,7 @@ import 'package:contact/contact/autocomplete/autocomplete_tmail_contact_response
 import 'package:contact/contact/model/contact_filter.dart';
 import 'package:contact/contact/model/tmail_contact.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:model/autocomplete/auto_complete_pattern.dart';
 
@@ -20,6 +21,8 @@ class ContactAPI {
     final autoCompleteMethod = AutoCompleteTMailContactMethod(
         autoCompletePattern.accountId!,
         ContactFilter(autoCompletePattern.word));
+
+    autoCompleteMethod.addLimit(UnsignedInt(autoCompletePattern.limit ?? 5));
 
     final autoCompleteInvocation = requestBuilder.invocation(autoCompleteMethod);
     final response = await (requestBuilder
