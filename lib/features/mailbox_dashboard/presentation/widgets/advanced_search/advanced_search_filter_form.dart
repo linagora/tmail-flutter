@@ -57,6 +57,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               context: context,
               advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
               isSelectFormList: true,
+              mouseCursor: SystemMouseCursors.click,
               onTap: () async {
                 await controller.selectedMailBox();
               }),
@@ -118,6 +119,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     required TextEditingController textEditingController,
     VoidCallback? onTap,
     bool isSelectFormList = false,
+    MouseCursor? mouseCursor,
   }) {
     final child = [
       SizedBox(
@@ -137,6 +139,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           isSelectFormList: isSelectFormList,
           onTap: onTap,
           context: context,
+          mouseCursor: mouseCursor,
           advancedSearchFilterField: advancedSearchFilterField,
           textEditingController: textEditingController,
         )
@@ -148,6 +151,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             isSelectFormList: isSelectFormList,
             onTap: onTap,
             context: context,
+            mouseCursor: mouseCursor,
             advancedSearchFilterField: advancedSearchFilterField,
             textEditingController: textEditingController,
           )
@@ -157,6 +161,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             isSelectFormList: isSelectFormList,
             onTap: onTap,
             context: context,
+            mouseCursor: mouseCursor,
             advancedSearchFilterField: advancedSearchFilterField,
             textEditingController: textEditingController,
           ),
@@ -181,6 +186,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     required TextEditingController textEditingController,
     VoidCallback? onTap,
     bool isSelectFormList = false,
+    MouseCursor? mouseCursor,
   }) {
     switch (advancedSearchFilterField) {
       case AdvancedSearchFilterField.date:
@@ -190,6 +196,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           isSelectFormList: isSelectFormList,
           onTap: onTap,
           context: context,
+          mouseCursor: mouseCursor,
           advancedSearchFilterField: advancedSearchFilterField,
           textEditingController: textEditingController,
         );
@@ -304,10 +311,12 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     required TextEditingController textEditingController,
     VoidCallback? onTap,
     bool isSelectFormList = false,
+    MouseCursor? mouseCursor,
   }) {
     return TextField(
       controller: textEditingController,
       readOnly: isSelectFormList,
+      mouseCursor: mouseCursor,
       onTap: onTap,
       decoration: InputDecoration(
         filled: true,

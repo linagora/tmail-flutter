@@ -1,6 +1,5 @@
 
 import 'package:core/core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -21,11 +20,10 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.create:
         return AppLocalizations.of(context).mailbox_location;
       case MailboxActions.moveEmail:
-        return AppLocalizations.of(context).move_message;
+      case MailboxActions.move:
+        return AppLocalizations.of(context).moveTo;
       case MailboxActions.select:
         return AppLocalizations.of(context).selectMailbox;
-      case MailboxActions.move:
-        return AppLocalizations.of(context).allMailboxes;
       default:
         return '';
     }
@@ -67,6 +65,48 @@ extension MailboxActionsExtension on MailboxActions {
         return AppColor.colorActionDeleteConfirmDialog;
       default:
         return Colors.black;
+    }
+  }
+
+  Color getBackgroundColor() {
+    switch(this) {
+      case MailboxActions.create:
+        return AppColor.colorBgMailbox;
+      default:
+        return Colors.white;
+    }
+  }
+
+  bool hasSearchActive() {
+    switch(this) {
+      case MailboxActions.moveEmail:
+      case MailboxActions.move:
+      case MailboxActions.select:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  bool hasAllMailboxDefault() {
+    switch(this) {
+      case MailboxActions.create:
+      case MailboxActions.move:
+      case MailboxActions.select:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  bool canCollapseMailboxGroup() {
+    switch(this) {
+      case MailboxActions.moveEmail:
+      case MailboxActions.move:
+      case MailboxActions.select:
+        return false;
+      default:
+        return true;
     }
   }
 }
