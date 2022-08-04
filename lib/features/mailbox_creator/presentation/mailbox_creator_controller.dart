@@ -140,8 +140,14 @@ class MailboxCreatorController extends BaseController {
           arguments: DestinationPickerArguments(accountId!, MailboxActions.create)
       );
 
-      selectedMailbox.value = destinationMailbox;
-      _createListMailboxNameAsStringInMailboxLocation();
+      if (destinationMailbox is PresentationMailbox) {
+        final mailboxDestination = destinationMailbox == PresentationMailbox.unifiedMailbox
+            ? null
+            : destinationMailbox;
+
+        selectedMailbox.value = mailboxDestination;
+        _createListMailboxNameAsStringInMailboxLocation();
+      }
     }
   }
 

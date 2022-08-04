@@ -76,28 +76,35 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             onTap: () => controller.closeDestinationPicker(),
             child: ResponsiveWidget(
                 responsiveUtils: _responsiveUtils,
-                mobile: SizedBox(child: _buildBodyMailboxLocation(context, actions), width: double.infinity),
+                mobile: SizedBox(
+                    child: _buildBodyMailboxLocation(context, actions),
+                    width: double.infinity),
                 landscapeMobile: Row(children: [
-                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: ResponsiveUtils.defaultSizeDrawer),
+                  SizedBox(
+                      child: _buildBodyMailboxLocation(context, actions),
+                      width: ResponsiveUtils.defaultSizeDrawer),
                   Expanded(child: Container(color: Colors.transparent)),
                 ]),
                 tablet: Row(children: [
                   Expanded(child: Container(color: Colors.transparent)),
                   SizedBox(
                       child: _buildBodyMailboxLocation(context, actions),
-                      width: _responsiveUtils.getSizeScreenWidth(context) - ResponsiveUtils.defaultSizeDrawer),
+                      width: _responsiveUtils.getSizeScreenWidth(context) -
+                          ResponsiveUtils.defaultSizeDrawer),
+                ]),
+                landscapeTablet: Row(children: [
+                  Expanded(child: Container(color: Colors.transparent)),
+                  SizedBox(
+                      child: _buildBodyMailboxLocation(context, actions),
+                      width: _responsiveUtils.getSizeScreenWidth(context) -
+                          ResponsiveUtils.defaultSizeLeftMenuMobile),
                 ]),
                 tabletLarge: Row(children: [
                   Expanded(child: Container(color: Colors.transparent)),
                   SizedBox(
                       child: _buildBodyMailboxLocation(context, actions),
-                      width: _responsiveUtils.getSizeScreenWidth(context) - ResponsiveUtils.defaultSizeDrawer),
-                ]),
-                desktop: Row(children: [
-                  Expanded(child: Container(color: Colors.transparent)),
-                  SizedBox(
-                      child: _buildBodyMailboxLocation(context, actions),
-                      width: _responsiveUtils.getSizeScreenWidth(context) - ResponsiveUtils.defaultSizeDrawer),
+                      width: _responsiveUtils.getSizeScreenWidth(context) -
+                          ResponsiveUtils.defaultSizeLeftMenuMobile),
                 ]),
             ),
           )
@@ -111,21 +118,31 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             onTap: () => controller.closeDestinationPicker(),
             child: ResponsiveWidget(
                 responsiveUtils: _responsiveUtils,
-                mobile: SizedBox(child: _buildBodyMailboxLocation(context, actions), width: double.infinity),
+                mobile: SizedBox(
+                    child: _buildBodyMailboxLocation(context, actions),
+                    width: double.infinity),
                 landscapeMobile: Row(children: [
-                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: ResponsiveUtils.defaultSizeDrawer),
+                  SizedBox(
+                      child: _buildBodyMailboxLocation(context, actions),
+                      width: ResponsiveUtils.defaultSizeDrawer),
                   Expanded(child: Container(color: Colors.transparent)),
                 ]),
                 tablet: Row(children: [
-                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: ResponsiveUtils.defaultSizeDrawer),
+                  SizedBox(
+                      child: _buildBodyMailboxLocation(context, actions),
+                      width: ResponsiveUtils.defaultSizeDrawer),
+                  Expanded(child: Container(color: Colors.transparent)),
+                ]),
+                landscapeTablet: Row(children: [
+                  SizedBox(
+                      child: _buildBodyMailboxLocation(context, actions),
+                      width: ResponsiveUtils.defaultSizeLeftMenuMobile),
                   Expanded(child: Container(color: Colors.transparent)),
                 ]),
                 tabletLarge: Row(children: [
-                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: ResponsiveUtils.defaultSizeDrawer),
-                  Expanded(child: Container(color: Colors.transparent)),
-                ]),
-                desktop: Row(children: [
-                  SizedBox(child: _buildBodyMailboxLocation(context, actions), width: ResponsiveUtils.defaultSizeDrawer),
+                  SizedBox(
+                      child: _buildBodyMailboxLocation(context, actions),
+                      width: ResponsiveUtils.defaultSizeLeftMenuMobile),
                   Expanded(child: Container(color: Colors.transparent)),
                 ]),
             ),
@@ -158,30 +175,41 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           onTap: () => {},
           child: ClipRRect(
               borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(
-                      !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
-                          ? 14 : 0),
-                  topLeft: Radius.circular(
-                      !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
-                          ? 14 : 0)),
+                  topRight: Radius.circular(!BuildUtils.isWeb &&
+                      _responsiveUtils.isPortraitMobile(context)
+                          ? 14
+                          : 0),
+                  topLeft: Radius.circular(!BuildUtils.isWeb &&
+                      _responsiveUtils.isPortraitMobile(context)
+                          ? 14
+                          : 0)),
               child: Container(
                   color: Colors.white,
                   child: Column(children: [
                       SafeArea(
-                          left: !BuildUtils.isWeb && _responsiveUtils.isLandscapeMobile(context),
+                          left: !BuildUtils.isWeb &&
+                              _responsiveUtils.isLandscapeMobile(context),
                           right: false,
                           bottom: false,
                           child: _buildAppBar(context)),
-                      const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+                      const Divider(
+                          color: AppColor.colorDividerMailbox,
+                          height: 0.5,
+                          thickness: 0.2),
                       Obx(() => controller.isSearchActive()
-                          ? SafeArea(bottom: false, top: false, right: false, child: _buildInputSearchFormWidget(context))
+                          ? SafeArea(
+                              bottom: false,
+                              top: false,
+                              right: false,
+                              child: _buildInputSearchFormWidget(context))
                           : const SizedBox.shrink()),
                       Expanded(child: Container(
-                          color: actions == MailboxActions.create ? AppColor.colorBgMailbox : Colors.white,
+                          color: actions?.getBackgroundColor(),
                           child: SafeArea(
                               top: false,
                               bottom: false,
-                              left: !BuildUtils.isWeb && _responsiveUtils.isLandscapeMobile(context),
+                              left: !BuildUtils.isWeb &&
+                                  _responsiveUtils.isLandscapeMobile(context),
                               right: false,
                               child: _buildBodyDestinationPicker(context, actions))))
                   ])
@@ -192,16 +220,15 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   Widget _buildAppBar(BuildContext context) {
-    return Obx(() => (AppBarDestinationPickerBuilder(context, _imagePaths, controller.mailboxAction.value)
-        ..addCloseActionClick(() => controller.closeDestinationPicker()))
-      .build());
+    return Obx(() => AppBarDestinationPickerBuilder(
+        controller.mailboxAction.value,
+        onCloseAction: () => controller.closeDestinationPicker()));
   }
 
   Widget _buildSearchBarWidget(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(
-            top: _responsiveUtils.isScreenWithShortestSide(context) &&
-                !BuildUtils.isWeb ? 12 : 0,
+            top: !BuildUtils.isWeb ? 12 : 0,
             left: _responsiveUtils.isLandscapeMobile(context) &&
                 !BuildUtils.isWeb ? 0 : 16,
             right: 16),
@@ -237,11 +264,31 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           if (actions?.hasSearchActive() == true)
             _buildSearchBarWidget(context),
           _buildLoadingView(),
-          if (actions == MailboxActions.create && !BuildUtils.isWeb && _responsiveUtils.isScreenWithShortestSide(context))
+          if (actions == MailboxActions.create && !BuildUtils.isWeb)
             const SizedBox(height: 12),
           if (actions?.hasAllMailboxDefault() == true)
-            _buildUnifiedMailbox(context, actions),
-          const SizedBox(height: 12),
+            ...[
+              _buildUnifiedMailbox(context, actions),
+              const SizedBox(height: 12),
+              if (actions != MailboxActions.create &&
+                  (
+                    _responsiveUtils.isLandscapeMobile(context) ||
+                    _responsiveUtils.isPortraitMobile(context) ||
+                    _responsiveUtils.isTablet(context) ||
+                    _responsiveUtils.isLandscapeTablet(context) ||
+                    _responsiveUtils.isTabletLarge(context)
+                  )
+                && !BuildUtils.isWeb
+              )
+                 Padding(
+                    padding: EdgeInsets.only(
+                        left: _responsiveUtils.isLandscapeMobile(context) ? 40 : 55,
+                        right: 20),
+                    child: const Divider(
+                        color: AppColor.lineItemListColor,
+                        height: 0.5,
+                        thickness: 0.2)),
+            ],
           Obx(() => controller.defaultMailboxHasChild
               ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultRootNode, actions)
               : const SizedBox.shrink()),
@@ -393,10 +440,21 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           borderRadius: const BorderRadius.all(Radius.circular(14)),
           child: Container(
               color: Colors.white,
-              margin: const EdgeInsets.only(
-                  left: BuildUtils.isWeb ? 8 : 0,
+              margin: EdgeInsets.only(
+                  left: BuildUtils.isWeb ||
+                    _responsiveUtils.isTablet(context) ||
+                    _responsiveUtils.isLandscapeTablet(context) ||
+                    _responsiveUtils.isTabletLarge(context) ||
+                    _responsiveUtils.isPortraitMobile(context)
+                      ? 8
+                      : 0,
                   top: 8),
-              padding: const EdgeInsets.only(left: 16, top: 16),
+              padding: EdgeInsets.only(
+                  left: !BuildUtils.isWeb &&
+                      _responsiveUtils.isLandscapeMobile(context)
+                        ? 8
+                        : 16,
+                  top: 16),
               child: Row(children: [
                 SvgPicture.asset(
                     _imagePaths.icFolderMailbox,

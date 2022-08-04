@@ -32,8 +32,12 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                 SizedBox(child: _buildBody(context), width: ResponsiveUtils.defaultSizeDrawer),
                 Expanded(child: Container(color: Colors.transparent)),
               ]),
+              landscapeTablet: Row(children: [
+                SizedBox(child: _buildBody(context), width: ResponsiveUtils.defaultSizeLeftMenuMobile),
+                Expanded(child: Container(color: Colors.transparent)),
+              ]),
               tabletLarge: Row(children: [
-                SizedBox(child: _buildBody(context), width: ResponsiveUtils.defaultSizeDrawer),
+                SizedBox(child: _buildBody(context), width: ResponsiveUtils.defaultSizeLeftMenuMobile),
                 Expanded(child: Container(color: Colors.transparent)),
               ]),
               desktop: Row(children: [
