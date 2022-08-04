@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -43,6 +44,8 @@ class AdvancedFilterController extends GetxController {
 
   SearchEmailFilter get searchEmailFilter =>
       searchController.searchEmailFilter.value;
+
+  final focusManager = InputFieldFocusManager.initial();
 
   @override
   void onReady() async {
@@ -202,6 +205,7 @@ class AdvancedFilterController extends GetxController {
 
   @override
   void onClose() {
+    focusManager.dispose();
     subjectFilterInputController.dispose();
     hasKeyWordFilterInputController.dispose();
     notKeyWordFilterInputController.dispose();
