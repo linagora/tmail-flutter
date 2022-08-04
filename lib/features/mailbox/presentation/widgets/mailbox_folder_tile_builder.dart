@@ -270,6 +270,7 @@ class MailBoxFolderTileBuilder {
     return Text(
       _mailboxNode.item.name?.name ?? '',
       maxLines: 1,
+      softWrap: CommonTextStyle.defaultSoftWrap,
       overflow: CommonTextStyle.defaultTextOverFlow,
       style: const TextStyle(
           fontSize: 15,

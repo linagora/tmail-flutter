@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
 
 class RichTextBuilder {
@@ -34,7 +35,8 @@ class RichTextBuilder {
     return RichText(
       key: _key,
       maxLines: _maxLines ?? 1,
-      overflow: _overflow ?? TextOverflow.ellipsis,
+      softWrap: CommonTextStyle.defaultSoftWrap,
+      overflow: _overflow ?? CommonTextStyle.defaultTextOverFlow,
       text: TextSpan(
         style: _styleOrigin,
         children: _getSpans(_textOrigin, _wordToStyle, _styleWord)));

@@ -145,11 +145,12 @@ class EmailTileBuilder {
                                   fontWeight: _buildFontForReadEmail())).build()
                           : Text(
                               _getInformationSender(),
-                              softWrap: false,
+                              softWrap: CommonTextStyle.defaultSoftWrap,
+                              overflow: CommonTextStyle.defaultTextOverFlow,
                               maxLines: 1,
                               style: TextStyle(
                                   fontSize: 15,
-                                  overflow: TextOverflow.fade,
+                                  overflow: CommonTextStyle.defaultTextOverFlow,
                                   color: _buildTextColorForReadEmail(),
                                   fontWeight: _buildFontForReadEmail()))
                   ),
@@ -168,6 +169,8 @@ class EmailTileBuilder {
                               .getReceivedAt(Localizations.localeOf(_context)
                               .toLanguageTag()),
                           maxLines: 1,
+                          softWrap: CommonTextStyle.defaultSoftWrap,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
                           style: const TextStyle(
                               fontSize: 13,
                               color: AppColor.colorContentEmail))),
@@ -197,6 +200,8 @@ class EmailTileBuilder {
                         : Text(
                             _presentationEmail.getEmailTitle(),
                             maxLines: 1,
+                            softWrap: CommonTextStyle.defaultSoftWrap,
+                            overflow: CommonTextStyle.defaultTextOverFlow,
                             style: TextStyle(
                                 fontSize: 13,
                                 color: _buildTextColorForReadEmail()))
@@ -215,6 +220,8 @@ class EmailTileBuilder {
                           child: Text(
                             _presentationEmail.mailboxName,
                             maxLines: 1,
+                            softWrap: CommonTextStyle.defaultSoftWrap,
+                            overflow: CommonTextStyle.defaultTextOverFlow,
                             style: const TextStyle(
                                 fontSize: 10,
                                 color: AppColor.mailboxTextColor,
@@ -247,6 +254,8 @@ class EmailTileBuilder {
                       : Text(
                           _presentationEmail.getPartialContent(),
                           maxLines: 1,
+                          softWrap: CommonTextStyle.defaultSoftWrap,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
                           style: const TextStyle(
                               fontSize: 13,
                               color: AppColor.colorContentEmail))
@@ -318,11 +327,12 @@ class EmailTileBuilder {
                                     fontWeight: _buildFontForReadEmail())).build()
                             : Text(
                                 _getInformationSender(),
-                                softWrap: false,
+                                softWrap: CommonTextStyle.defaultSoftWrap,
+                                overflow: CommonTextStyle.defaultTextOverFlow,
                                 maxLines: 1,
                                 style: TextStyle(
                                     fontSize: 15,
-                                    overflow: TextOverflow.fade,
+                                    overflow: CommonTextStyle.defaultTextOverFlow,
                                     color: _buildTextColorForReadEmail(),
                                     fontWeight: _buildFontForReadEmail()))
                       ),
@@ -352,6 +362,8 @@ class EmailTileBuilder {
                             : Text(
                                 _presentationEmail.getEmailTitle(),
                                 maxLines: 1,
+                                softWrap: CommonTextStyle.defaultSoftWrap,
+                                overflow: CommonTextStyle.defaultTextOverFlow,
                                 style: TextStyle(
                                     fontSize: 13,
                                     color: _buildTextColorForReadEmail()))
@@ -370,6 +382,8 @@ class EmailTileBuilder {
                               child: Text(
                                 _presentationEmail.mailboxName,
                                 maxLines: 1,
+                                softWrap: CommonTextStyle.defaultSoftWrap,
+                                overflow: CommonTextStyle.defaultTextOverFlow,
                                 style: const TextStyle(
                                     fontSize: 10,
                                     color: AppColor.mailboxTextColor,
@@ -402,6 +416,8 @@ class EmailTileBuilder {
                           : Text(
                               _presentationEmail.getPartialContent(),
                               maxLines: 1,
+                              softWrap: CommonTextStyle.defaultSoftWrap,
+                              overflow: CommonTextStyle.defaultTextOverFlow,
                               style: const TextStyle(
                                   fontSize: 13,
                                   color: AppColor.colorContentEmail))
@@ -504,11 +520,12 @@ class EmailTileBuilder {
                            backgroundColor: AppColor.bgWordSearch)).build()
                   : Text(_getInformationSender(),
                       maxLines: 1,
-                      softWrap: false,
+                      softWrap: CommonTextStyle.defaultSoftWrap,
+                      overflow: CommonTextStyle.defaultTextOverFlow,
                       style: TextStyle(
                           fontSize: 15,
                           color: _buildTextColorForReadEmail(),
-                          overflow: TextOverflow.fade,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
                           fontWeight: _buildFontForReadEmail())),
             ),
             const SizedBox(width: 24),
@@ -634,6 +651,8 @@ class EmailTileBuilder {
                 color: AppColor.backgroundCounterMailboxColor),
             child: Text(_presentationEmail.mailboxName,
               maxLines: 1,
+              softWrap: CommonTextStyle.defaultSoftWrap,
+              overflow: CommonTextStyle.defaultTextOverFlow,
               style: const TextStyle(
                   fontSize: 10,
                   color: AppColor.mailboxTextColor,
@@ -653,6 +672,8 @@ class EmailTileBuilder {
                   .getReceivedAt(Localizations.localeOf(_context)
                   .toLanguageTag()),
               maxLines: 1,
+              softWrap: CommonTextStyle.defaultSoftWrap,
+              overflow: CommonTextStyle.defaultTextOverFlow,
               style:  TextStyle(
                   fontSize: 13,
                   color: _buildTextColorForReadEmail(),
@@ -677,6 +698,8 @@ class EmailTileBuilder {
                 .getReceivedAt(Localizations.localeOf(_context)
                 .toLanguageTag()),
               maxLines: 1,
+              softWrap: CommonTextStyle.defaultSoftWrap,
+              overflow: CommonTextStyle.defaultTextOverFlow,
               style: const TextStyle(
                   fontSize: 13,
                   color: AppColor.colorContentEmail))),
@@ -708,6 +731,8 @@ class EmailTileBuilder {
                          fontWeight: _buildFontForReadEmail())).build()
                 : Text(_presentationEmail.getEmailTitle(),
                     maxLines: 1,
+                    softWrap: CommonTextStyle.defaultSoftWrap,
+                    overflow: CommonTextStyle.defaultTextOverFlow,
                     style:  TextStyle(
                         fontSize: 13,
                         color: _buildTextColorForReadEmail(),
@@ -731,6 +756,8 @@ class EmailTileBuilder {
                             backgroundColor: AppColor.bgWordSearch)).build()
                     : Text(_presentationEmail.getPartialContent(),
                         maxLines: 1,
+                        softWrap: CommonTextStyle.defaultSoftWrap,
+                        overflow: CommonTextStyle.defaultTextOverFlow,
                         style: const TextStyle(
                             fontSize: 13,
                             color: AppColor.colorContentEmail,

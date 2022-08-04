@@ -147,6 +147,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                       Expanded(child: Obx(() => Text(
                         controller.selectedMailbox.value?.name?.name ?? AppLocalizations.of(context).default_mailbox,
                         maxLines: 1,
+                        softWrap: CommonTextStyle.defaultSoftWrap,
                         overflow: CommonTextStyle.defaultTextOverFlow,
                         style: TextStyle(
                             fontSize: 15,
