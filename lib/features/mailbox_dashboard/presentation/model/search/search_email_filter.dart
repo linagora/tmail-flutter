@@ -67,7 +67,9 @@ class SearchEmailFilter {
   Filter mappingToEmailFilterCondition({Filter? moreFilterCondition}) {
     final emailEmailFilterConditionShared = EmailFilterCondition(
       text: text?.value,
-      inMailbox: mailbox?.id,
+      inMailbox: mailbox == PresentationMailbox.unifiedMailbox
+          ? null
+          : mailbox?.id,
       after: emailReceiveTimeType.toUTCDate(),
       hasAttachment: hasAttachment == false ? null : hasAttachment,
       subject: subject,

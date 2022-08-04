@@ -111,23 +111,26 @@ class AdvancedFilterController extends GetxController {
     );
   }
 
-  Future<void> selectedMailBox() async {
-    final PresentationMailbox destinationMailbox = await push(
+  void selectedMailBox() async {
+    final destinationMailbox = await push(
         AppRoutes.DESTINATION_PICKER,
         arguments: DestinationPickerArguments(
             _mailboxDashBoardController.accountId.value!,
             MailboxActions.select));
-    searchController.updateFilterEmail(mailbox: destinationMailbox);
-    mailBoxFilterInputController.text =
-        StringConvert.writeNullToEmpty(destinationMailbox.name?.name);
+
+    if (destinationMailbox is PresentationMailbox) {
+      searchController.updateFilterEmail(mailbox: destinationMailbox);
+      mailBoxFilterInputController.text =
+          StringConvert.writeNullToEmpty(destinationMailbox.name?.name);
+    }
   }
 
   void applyAdvancedSearchFilter(BuildContext context) {
     _updateFilterEmailFromAdvancedSearchView();
+    searchController.isAdvancedSearchHasApply.value = _checkAdvancedSearchHasApply();
+    searchController.isAdvancedSearchViewOpen.toggle();
     _mailboxDashBoardController.searchEmail(
         context, StringConvert.writeNullToEmpty(searchEmailFilter.text?.value));
-    searchController.isAdvancedSearchViewOpen.toggle();
-    searchController.isAdvancedSearchHasApply.value = _checkAdvancedSearchHasApply();
   }
 
   void _checkContactPermission() async {
