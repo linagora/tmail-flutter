@@ -2,31 +2,27 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-typedef OnCloseActionClick = void Function();
+class AppBarDestinationPickerBuilder extends StatelessWidget {
 
-class AppBarDestinationPickerBuilder {
-  OnCloseActionClick? _onCloseActionClick;
-
-  final BuildContext _context;
-  final ImagePaths _imagePaths;
   final MailboxActions? _mailboxAction;
+  final VoidCallback? onCloseAction;
 
-  AppBarDestinationPickerBuilder(
-      this._context,
-      this._imagePaths,
-      this._mailboxAction,
-  );
+  const AppBarDestinationPickerBuilder(
+    this._mailboxAction,
+    {
+      Key? key,
+      this.onCloseAction
+    }
+  ) : super(key: key);
 
-  void addCloseActionClick(OnCloseActionClick onCloseActionClick) {
-    _onCloseActionClick = onCloseActionClick;
-  }
-
-  Widget build() {
+  @override
+  Widget build(BuildContext context) {
+    final imagePaths = Get.find<ImagePaths>();
     return Container(
-        key: const Key('app_bar_destination_picker'),
         alignment: Alignment.center,
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
@@ -37,17 +33,28 @@ class AppBarDestinationPickerBuilder {
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  _buildBackButton(),
-                  Expanded(child: _buildTitle()),
-                   _buildCancelButton(),
+                  _buildBackButton(context, imagePaths),
+                  Expanded(child: Text(
+                      _mailboxAction?.getTitle(context) ?? '',
+                      maxLines: 1,
+                      softWrap: CommonTextStyle.defaultSoftWrap,
+                      overflow: CommonTextStyle.defaultTextOverFlow,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 20,
+                          color: AppColor.colorNameEmail,
+                          fontWeight: FontWeight.w700))),
+                   _buildCancelButton(context),
                 ]
             )
         )
     );
   }
 
-  Widget _buildCancelButton() {
-    if (_mailboxAction == MailboxActions.moveEmail || _mailboxAction == MailboxActions.move) {
+  Widget _buildCancelButton(BuildContext context) {
+    if (_mailboxAction == MailboxActions.moveEmail ||
+        _mailboxAction == MailboxActions.move ||
+        _mailboxAction == MailboxActions.select) {
       return Padding(
         padding: const EdgeInsets.only(right: 12),
         child: Material(
@@ -55,9 +62,11 @@ class AppBarDestinationPickerBuilder {
             color: Colors.transparent,
             child: TextButton(
                 child: Text(
-                    AppLocalizations.of(_context).cancel,
-                    style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton)),
-                onPressed: () => _onCloseActionClick?.call()
+                    AppLocalizations.of(context).cancel,
+                    style: const TextStyle(
+                        fontSize: 17,
+                        color: AppColor.colorTextButton)),
+                onPressed: () => onCloseAction?.call()
             )
         ));
     } else {
@@ -65,23 +74,16 @@ class AppBarDestinationPickerBuilder {
     }
   }
 
-  Widget _buildBackButton() {
+  Widget _buildBackButton(BuildContext context, ImagePaths imagePaths) {
     if (_mailboxAction == MailboxActions.create) {
       return buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
-          onTap: () => _onCloseActionClick?.call());
+          icon: SvgPicture.asset(
+              imagePaths.icBack,
+              color: AppColor.colorTextButton,
+              fit: BoxFit.fill),
+          onTap: () => onCloseAction?.call());
     } else {
-      return const SizedBox(width: 100, height: 40);
+      return const SizedBox(width: 70, height: 40);
     }
-  }
-
-  Widget _buildTitle() {
-    return Text(
-        _mailboxAction?.getTitle(_context) ?? '',
-        maxLines: 1,
-        softWrap: CommonTextStyle.defaultSoftWrap,
-        overflow: CommonTextStyle.defaultTextOverFlow,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700));
   }
 }
