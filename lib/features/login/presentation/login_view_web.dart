@@ -15,14 +15,24 @@ class LoginView extends BaseLoginView {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.primaryLightColor,
-      body: SafeArea(
-        child: Center(child: SingleChildScrollView(
-          child: ResponsiveWidget(
-            responsiveUtils: responsiveUtils,
-            mobile: _buildMobileForm(context),
-            desktop: _buildWebForm(context),
-        )))
-      ),
+      body: Stack(children: [
+        SafeArea(
+            child: Center(child: SingleChildScrollView(
+                child: ResponsiveWidget(
+                  responsiveUtils: responsiveUtils,
+                  mobile: _buildMobileForm(context),
+                  desktop: _buildWebForm(context),
+                )))
+        ),
+        Obx(() {
+          if (controller.isNetworkConnectionAvailable()) {
+            return const SizedBox.shrink();
+          }
+          return Align(
+              alignment: Alignment.bottomCenter,
+              child: buildNetworkConnectionWidget(context));
+        }),
+      ]),
     );
   }
 
@@ -269,22 +279,27 @@ class LoginView extends BaseLoginView {
     return Container(
         margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
         width: responsiveUtils.getDeviceWidth(context),height: 48,
-        child: ElevatedButton(
-            key: const Key('ssoSubmitForm'),
-            style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
-                backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.primaryColor),
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: const BorderSide(width: 0, color: AppColor.primaryColor)
-                ))
-            ),
-            child: Text(AppLocalizations.of(context).singleSignOn,
-                style: const TextStyle(fontSize: 16, color: Colors.white)
-            ),
-            onPressed: () {
-              loginController.handleSSOPressed();
-            }
+        child: AbsorbPointer(
+          absorbing: !controller.isNetworkConnectionAvailable(),
+          child: ElevatedButton(
+              key: const Key('ssoSubmitForm'),
+              style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) => AppColor.primaryColor.withOpacity(
+                        controller.isNetworkConnectionAvailable() ? 1 : 0.5)),
+                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: const BorderSide(width: 0, color: AppColor.primaryColor)
+                  ))
+              ),
+              child: Text(AppLocalizations.of(context).singleSignOn,
+                  style: const TextStyle(fontSize: 16, color: Colors.white)
+              ),
+              onPressed: () {
+                loginController.handleSSOPressed();
+              }
+          ),
         )
     );
   }
