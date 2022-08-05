@@ -15,11 +15,11 @@ mixin NetworkConnectionMixin {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16)),
         width: 320,
-        margin: const EdgeInsets.only(bottom: 100),
+        margin: const EdgeInsets.only(bottom: 150),
         child: Material(
-            elevation: 8,
+            elevation: 2,
             shape:  const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16.0)),
+              borderRadius: BorderRadius.all(Radius.circular(10.0)),
             ),
             child: ListTile(
                 leading: SvgPicture.asset(_imagePaths.icNotConnection),
