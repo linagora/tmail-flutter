@@ -3,9 +3,9 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/text/text_builder.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/mixin/network_connection_mixin.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
@@ -15,7 +15,7 @@ import 'package:tmail_ui_user/features/login/presentation/widgets/login_input_de
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_text_input_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-abstract class BaseLoginView extends GetWidget<LoginController> {
+abstract class BaseLoginView extends GetWidget<LoginController> with NetworkConnectionMixin {
   BaseLoginView({Key? key}) : super(key: key);
 
   final loginController = Get.find<LoginController>();
@@ -71,22 +71,27 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
     return Container(
         margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
         width: responsiveUtils.getDeviceWidth(context),height: 48,
-        child: ElevatedButton(
-            key: const Key('loginSubmitForm'),
-            style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
-                backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.primaryColor),
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: const BorderSide(width: 0, color: AppColor.primaryColor)
-                ))
-            ),
-            child: Text(AppLocalizations.of(context).signIn,
-                style: const TextStyle(fontSize: 16, color: Colors.white)
-            ),
-            onPressed: () {
-              loginController.handleLoginPressed();
-            }
+        child: AbsorbPointer(
+          absorbing: !controller.isNetworkConnectionAvailable(),
+          child: ElevatedButton(
+              key: const Key('loginSubmitForm'),
+              style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) => AppColor.primaryColor.withOpacity(
+                          controller.isNetworkConnectionAvailable() ? 1 : 0.5)),
+                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: const BorderSide(width: 0, color: AppColor.primaryColor)
+                  ))
+              ),
+              child: Text(AppLocalizations.of(context).signIn,
+                  style: const TextStyle(fontSize: 16, color: Colors.white)
+              ),
+              onPressed: () {
+                loginController.handleLoginPressed();
+              }
+          ),
         )
     );
   }
