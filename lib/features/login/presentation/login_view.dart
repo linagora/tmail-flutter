@@ -18,23 +18,24 @@ class LoginView extends BaseLoginView {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.primaryLightColor,
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SafeArea(
-          child: _supportScrollForm(context)
-            ? Stack(
+      body: Stack(children: [
+        GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SafeArea(
+            child: _supportScrollForm(context)
+                ? Stack(
                 children: [
                   Center(child: SingleChildScrollView(child: _buildCenterForm(context), scrollDirection: Axis.vertical)),
                   Obx(() {
                     if (loginController.loginFormType.value == LoginFormType.credentialForm
-                      || loginController.loginFormType.value == LoginFormType.ssoForm) {
+                        || loginController.loginFormType.value == LoginFormType.ssoForm) {
                       return _buildBackButton(context);
                     }
                     return const SizedBox.shrink();
                   })
                 ]
-              )
-            : Stack(
+            )
+                : Stack(
                 children: [
                   _buildCenterForm(context),
                   Obx(() {
@@ -46,8 +47,17 @@ class LoginView extends BaseLoginView {
                   })
                 ]
             ),
+          ),
         ),
-    ));
+        Obx(() {
+          if (controller.isNetworkConnectionAvailable()) {
+            return const SizedBox.shrink();
+          }
+          return Align(
+              alignment: Alignment.bottomCenter,
+              child: buildNetworkConnectionWidget(context));
+        }),
+      ]));
   }
 
   Widget _buildCenterForm(BuildContext context) {
@@ -158,22 +168,27 @@ class LoginView extends BaseLoginView {
     return Container(
       margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
       width: responsiveUtils.getDeviceWidth(context),height: 48,
-      child: ElevatedButton(
-        key: const Key('nextToCredentialForm'),
-        style: ButtonStyle(
-          foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.primaryColor),
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: const BorderSide(width: 0, color: AppColor.primaryColor)
-          ))
+      child: AbsorbPointer(
+        absorbing: !controller.isNetworkConnectionAvailable(),
+        child: ElevatedButton(
+          key: const Key('nextToCredentialForm'),
+          style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
+            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+              (Set<MaterialState> states) => AppColor.primaryColor.withOpacity(
+                  controller.isNetworkConnectionAvailable() ? 1 : 0.5)),
+            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: const BorderSide(width: 0, color: AppColor.primaryColor)
+            ))
+          ),
+          child: Text(AppLocalizations.of(context).next,
+            style: const TextStyle(fontSize: 16, color: Colors.white)
+          ),
+          onPressed: () {
+            loginController.handleNextInUrlInputFormPress();
+          }
         ),
-        child: Text(AppLocalizations.of(context).next,
-          style: const TextStyle(fontSize: 16, color: Colors.white)
-        ),
-        onPressed: () {
-          loginController.handleNextInUrlInputFormPress();
-        }
       )
     );
   }
