@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -36,14 +38,16 @@ import 'package:model/oidc/token.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 
 class EmailAPI {
 
   final HttpClient _httpClient;
   final DownloadManager _downloadManager;
+  final DioClient _dioClient;
 
-  EmailAPI(this._httpClient, this._downloadManager);
+  EmailAPI(this._httpClient, this._downloadManager, this._dioClient);
 
   Future<Email> getEmailContent(AccountId accountId, EmailId emailId) async {
     final processingInvocation = ProcessingInvocation();
@@ -226,21 +230,42 @@ class EmailAPI {
       cancelToken: cancelToken);
   }
 
-  Future<bool> downloadAttachmentForWeb(
+  Future<Uint8List> downloadAttachmentForWeb(
+      DownloadTaskId taskId,
       Attachment attachment,
       AccountId accountId,
       String baseDownloadUrl,
       AccountRequest accountRequest,
+      StreamController<Either<Failure, Success>> onReceiveController,
   ) async {
     final authentication = accountRequest.authenticationType == AuthenticationType.oidc
         ? accountRequest.bearerToken
         : accountRequest.basicAuth;
+    final downloadUrl = attachment.getDownloadUrl(baseDownloadUrl, accountId);
+    log('EmailAPI::downloadAttachmentForWeb(): downloadUrl: $downloadUrl');
 
-    return _downloadManager.downloadFileForWeb(
-        attachment.getDownloadUrl(baseDownloadUrl, accountId),
-        attachment.name ?? '',
-        authentication,
+    final headerParam = _dioClient.getHeaders();
+    headerParam[HttpHeaders.authorizationHeader] = authentication;
+    headerParam[HttpHeaders.acceptHeader] = DioClient.jmapHeader;
+
+    final bytesDownloaded = await _dioClient.get(
+        downloadUrl,
+        options: Options(
+            headers: headerParam,
+            responseType: ResponseType.bytes),
+        onReceiveProgress: (downloaded, total) {
+          final progress = (downloaded / total) * 100;
+          log('DownloadClient::downloadFileForWeb(): progress = ${progress.round()}%');
+          onReceiveController.add(Right(DownloadingAttachmentForWeb(
+              taskId,
+              attachment,
+              progress,
+              downloaded,
+              total)));
+        }
     );
+
+    return bytesDownloaded;
   }
 
   Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) async {
