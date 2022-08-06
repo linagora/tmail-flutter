@@ -38,8 +38,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_ema
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
@@ -63,6 +65,7 @@ class MailboxDashBoardController extends ReloadableController {
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
   final SearchController searchController = Get.find<SearchController>();
   final Executor _isolateExecutor = Get.find<Executor>();
+  final DownloadController downloadController = Get.find<DownloadController>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
@@ -570,6 +573,23 @@ class MailboxDashBoardController extends ReloadableController {
 
   Future<List<PresentationEmail>> quickSearchEmails() => searchController.quickSearchEmails(accountId: accountId.value!);
 
+  void addDownloadTask(DownloadTaskState task) {
+    downloadController.addDownloadTask(task);
+  }
+
+  void updateDownloadTask(
+      DownloadTaskId taskId,
+      UpdateDownloadTaskStateCallback updateDownloadTaskCallback
+  ) {
+    downloadController.updateDownloadTaskByTaskId(
+        taskId,
+        updateDownloadTaskCallback);
+  }
+
+  void deleteDownloadTask(DownloadTaskId taskId) {
+    downloadController.deleteDownloadTask(taskId);
+  }
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
@@ -578,6 +598,7 @@ class MailboxDashBoardController extends ReloadableController {
     _connectivityStreamSubscription.cancel();
     _progressStateController.close();
     _isolateExecutor.dispose();
+    Get.delete<DownloadController>();
     super.onClose();
   }
 }
