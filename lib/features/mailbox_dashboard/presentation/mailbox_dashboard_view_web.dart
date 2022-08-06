@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/comp
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_overlay.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -140,6 +141,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   child: buildNetworkConnectionWidget(context));
             }
           }),
+          _buildDownloadTaskStateWidget(),
         ]),
       ),
     );
@@ -642,6 +644,40 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             }
             return const SizedBox.shrink();
           });
+    });
+  }
+
+  Widget _buildDownloadTaskStateWidget() {
+    return Obx(() {
+      if (controller.downloadController.notEmptyListDownloadTask) {
+        final downloadTasks = controller.downloadController.listDownloadTaskState;
+
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            color: AppColor.colorBackgroundSnackBar,
+            height: 60,
+            width: double.infinity,
+            child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.zero,
+                itemCount: downloadTasks.length,
+                separatorBuilder: (context, index) =>
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    child: VerticalDivider(
+                      color: Colors.grey,
+                      width: 2.5,
+                      thickness: 0.2),
+                  ),
+                itemBuilder: (context, index) =>
+                    DownloadTaskItemWidget(downloadTasks[index])
+            ),
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
     });
   }
 }
