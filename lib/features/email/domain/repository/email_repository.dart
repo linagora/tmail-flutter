@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -28,11 +32,13 @@ abstract class EmailRepository {
     CancelToken cancelToken
   );
 
-  Future<bool> downloadAttachmentForWeb(
+  Future<Uint8List> downloadAttachmentForWeb(
+    DownloadTaskId taskId,
     Attachment attachment,
     AccountId accountId,
     String baseDownloadUrl,
     AccountRequest accountRequest,
+    StreamController<Either<Failure, Success>> onReceiveController
   );
 
   Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest);

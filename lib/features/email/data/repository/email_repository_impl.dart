@@ -1,5 +1,9 @@
 
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -106,8 +110,21 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<bool> downloadAttachmentForWeb(Attachment attachment, AccountId accountId, String baseDownloadUrl, AccountRequest accountRequest) {
-    return emailDataSource.downloadAttachmentForWeb(attachment, accountId, baseDownloadUrl, accountRequest);
+  Future<Uint8List> downloadAttachmentForWeb(
+      DownloadTaskId taskId,
+      Attachment attachment,
+      AccountId accountId,
+      String baseDownloadUrl,
+      AccountRequest accountRequest,
+      StreamController<Either<Failure, Success>> onReceiveController
+  ) {
+    return emailDataSource.downloadAttachmentForWeb(
+        taskId,
+        attachment,
+        accountId,
+        baseDownloadUrl,
+        accountRequest,
+        onReceiveController);
   }
 
   @override
