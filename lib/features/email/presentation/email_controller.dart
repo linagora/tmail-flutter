@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:core/core.dart';
@@ -17,6 +18,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:share/share.dart' as share_library;
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -40,17 +42,21 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:uuid/uuid.dart';
 
-class EmailController extends BaseController {
+class EmailController extends BaseController with AppLoaderMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
   final _appToast = Get.find<AppToast>();
+  final _uuid = Get.find<Uuid>();
+  final _downloadManager = Get.find<DownloadManager>();
 
   final GetEmailContentInteractor _getEmailContentInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -71,6 +77,10 @@ class EmailController extends BaseController {
 
   late Worker emailWorker;
 
+  final StreamController<Either<Failure, Success>> _downloadProgressStateController =
+      StreamController<Either<Failure, Success>>.broadcast();
+  Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
+
   PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
 
   PresentationEmail? get currentEmail => mailboxDashBoardController.selectedEmail.value;
@@ -89,11 +99,13 @@ class EmailController extends BaseController {
   @override
   void onInit() {
     _initWorker();
+    _listenDownloadAttachmentProgressState();
     super.onInit();
   }
 
   @override
   void onClose() {
+    _downloadProgressStateController.close();
     _clearWorker();
     super.onClose();
   }
@@ -115,6 +127,43 @@ class EmailController extends BaseController {
 
   void _clearWorker() {
     emailWorker.call();
+  }
+
+  void _listenDownloadAttachmentProgressState() {
+    downloadProgressState.listen((state) {
+        log('EmailController::_listenDownloadAttachmentProgressState(): $state');
+        state.fold(
+          (failure) => null,
+          (success) {
+            if (success is StartDownloadAttachmentForWeb) {
+              mailboxDashBoardController.addDownloadTask(
+                  DownloadTaskState(
+                    taskId: success.taskId,
+                    attachment: success.attachment));
+
+              if (currentOverlayContext != null &&  currentContext != null) {
+                _appToast.showToastWithIcon(currentOverlayContext!,
+                    message: AppLocalizations.of(currentContext!).your_download_has_started,
+                    iconColor: AppColor.primaryColor,
+                    icon: imagePaths.icDownload);
+              }
+            } else if (success is DownloadingAttachmentForWeb) {
+              final percent = success.progress.round();
+              log('EmailController::DownloadingAttachmentForWeb(): $percent%');
+
+              mailboxDashBoardController.updateDownloadTask(
+                  success.taskId,
+                  (currentTask) {
+                      final newTask = currentTask.copyWith(
+                        progress: success.progress,
+                        downloaded: success.downloaded,
+                        total: success.total);
+
+                      return newTask;
+                  });
+            }
+          });
+    });
   }
 
   void _getEmailContentAction(EmailId emailId) async {
@@ -150,6 +199,8 @@ class EmailController extends BaseController {
           _moveToMailboxSuccess(success);
         } else if (success is MarkAsStarEmailSuccess) {
           _markAsEmailStarSuccess(success);
+        } else if (success is DownloadAttachmentForWebSuccess) {
+          _downloadAttachmentForWebSuccessAction(success);
         }
       });
   }
@@ -346,17 +397,30 @@ class EmailController extends BaseController {
   void _downloadAttachmentForWebAction(BuildContext context, Attachment attachment) async {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
-      _appToast.showToastWithIcon(context,
-          message: AppLocalizations.of(currentContext!).your_download_has_started,
-          iconColor: AppColor.primaryColor,
-          icon: imagePaths.icDownload);
-
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl();
-      consumeState(_downloadAttachmentForWebInteractor.execute(attachment, accountId, baseDownloadUrl));
+      final generateTaskId = DownloadTaskId(_uuid.v4());
+      consumeState(_downloadAttachmentForWebInteractor.execute(
+          generateTaskId,
+          attachment,
+          accountId,
+          baseDownloadUrl,
+          _downloadProgressStateController));
     }
   }
 
+  void _downloadAttachmentForWebSuccessAction(DownloadAttachmentForWebSuccess success) {
+    log('EmailController::_downloadAttachmentForWebSuccessAction():');
+    mailboxDashBoardController.deleteDownloadTask(success.taskId);
+
+    _downloadManager.createAnchorElementDownloadFileWeb(
+        success.bytes,
+        success.attachment.generateFileName());
+  }
+
   void _downloadAttachmentForWebFailureAction(DownloadAttachmentForWebFailure failure) {
+    log('EmailController::_downloadAttachmentForWebFailureAction(): $failure');
+    mailboxDashBoardController.deleteDownloadTask(failure.taskId);
+
     if (currentOverlayContext != null &&  currentContext != null) {
       _appToast.showToastWithIcon(currentOverlayContext!,
           message: AppLocalizations.of(currentContext!).attachment_download_failed,

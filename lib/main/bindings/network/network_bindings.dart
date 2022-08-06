@@ -76,7 +76,8 @@ class NetworkBindings extends Bindings {
     Get.put(ThreadAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(EmailAPI(
       Get.find<JmapHttpClient.HttpClient>(),
-      Get.find<DownloadManager>()));
+      Get.find<DownloadManager>(),
+      Get.find<DioClient>()));
     Get.put(ManageAccountAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(ContactAPI(Get.find<JmapHttpClient.HttpClient>()));
   }
