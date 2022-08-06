@@ -63,6 +63,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
@@ -87,6 +88,7 @@ class MailboxDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsController() {
+    Get.put(DownloadController());
     Get.put(SearchController(
       Get.find<QuickSearchEmailInteractor>(),
       Get.find<SaveRecentSearchInteractor>(),
