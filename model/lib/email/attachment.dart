@@ -42,6 +42,14 @@ class Attachment with EquatableMixin {
     return Uri.decodeFull(downloadUri);
   }
 
+  String generateFileName() {
+    if (name?.isNotEmpty == true) {
+      return name!;
+    } else {
+      return '${blobId?.value}.${type?.subtype}';
+    }
+  }
+
   @override
   List<Object?> get props => [partId, blobId, size, name, type, cid, disposition];
 }
