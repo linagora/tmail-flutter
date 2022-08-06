@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:core/data/network/dio_client.dart';
 import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/domain/exceptions/download_file_exception.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -82,38 +81,25 @@ class DownloadManager {
     return streamController.stream.first;
   }
 
-  Future<bool> downloadFileForWeb(
-      String downloadUrl,
-      String filename,
-      String authentication) async {
+  void createAnchorElementDownloadFileWeb(
+      Uint8List bytes,
+      String filename
+  ) {
     try {
-      final headerParam = Map<String, String>();
-      headerParam[HttpHeaders.authorizationHeader] = authentication;
-      headerParam[HttpHeaders.acceptHeader] = DioClient.jmapHeader;
+      final blob = html.Blob([bytes]);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      final anchor = html.document.createElement('a') as html.AnchorElement
+        ..href = url
+        ..style.display = 'none'
+        ..download = filename;
+      html.document.body?.children.add(anchor);
 
-      http.Response res = await http.get(
-          Uri.parse(downloadUrl),
-          headers: headerParam);
+      anchor.click();
 
-      if (res.statusCode == 200) {
-        final blob = html.Blob([res.bodyBytes]);
-        final url = html.Url.createObjectUrlFromBlob(blob);
-        final anchor = html.document.createElement('a') as html.AnchorElement
-          ..href = url
-          ..style.display = 'none'
-          ..download = filename;
-        html.document.body?.children.add(anchor);
-
-        anchor.click();
-
-        html.document.body?.children.remove(anchor);
-        html.Url.revokeObjectUrl(url);
-
-        return true;
-      }
-
-      return false;
+      html.document.body?.children.remove(anchor);
+      html.Url.revokeObjectUrl(url);
     } catch (exception) {
+      log('DownloadManager::createAnchorElementDownloadFileWeb(): ERROR: $exception');
       throw exception;
     }
   }
