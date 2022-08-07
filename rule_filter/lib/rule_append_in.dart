@@ -10,7 +10,9 @@ part 'rule_append_in.g.dart';
 class RuleAppendIn with EquatableMixin {
   final List<MailboxId> mailboxIds;
 
-  RuleAppendIn(this.mailboxIds);
+  RuleAppendIn({
+    required this.mailboxIds,
+  });
 
   @override
   List<Object?> get props => [
@@ -21,5 +23,4 @@ class RuleAppendIn with EquatableMixin {
       _$RuleAppendInFromJson(json);
 
   Map<String, dynamic> toJson() => _$RuleAppendInToJson(this);
-
 }

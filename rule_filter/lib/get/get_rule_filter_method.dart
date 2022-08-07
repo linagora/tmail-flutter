@@ -8,10 +8,13 @@ import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 import 'package:jmap_dart_client/jmap/core/request/result_reference.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:rule_filter/capability_rule_filter.dart';
+import 'package:rule_filter/converter/rule_id_converter.dart';
+import 'package:rule_filter/rule_id.dart';
 
 part 'get_rule_filter_method.g.dart';
 
 @IdConverter()
+@RuleIdConverter()
 @AccountIdConverter()
 @PropertiesConverter()
 @JsonSerializable(explicitToJson: true)

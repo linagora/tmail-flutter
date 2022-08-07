@@ -4,11 +4,13 @@ import 'package:rule_filter/rule_append_in.dart';
 
 part 'rule_action.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class RuleAction with EquatableMixin {
   final RuleAppendIn appendIn;
 
-  RuleAction(this.appendIn);
+  RuleAction({
+    required this.appendIn,
+  });
 
   @override
   List<Object?> get props => [
