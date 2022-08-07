@@ -4,19 +4,16 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/identities/identity.dart';
-import 'package:jmap_dart_client/jmap/identities/set/set_identity_method.dart';
-import 'package:jmap_dart_client/jmap/identities/set/set_identity_response.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:rule_filter/rule_action.dart';
-import 'package:rule_filter/rule_append_in.dart';
-import 'package:rule_filter/rule_condition.dart';
-import 'package:rule_filter/rule_filter.dart';
-import 'package:rule_filter/rule_id.dart';
-import 'package:rule_filter/set/set_rule_filter_method.dart';
-import 'package:rule_filter/set/set_rule_filter_response.dart';
-import 'package:rule_filter/tmail_rule.dart';
+import 'package:rule_filter/rule_filter/rule_action.dart';
+import 'package:rule_filter/rule_filter/rule_append_in.dart';
+import 'package:rule_filter/rule_filter/rule_condition.dart';
+import 'package:rule_filter/rule_filter/rule_filter_id.dart';
+import 'package:rule_filter/rule_filter/rule_id.dart';
+import 'package:rule_filter/rule_filter/set/set_rule_filter_method.dart';
+import 'package:rule_filter/rule_filter/set/set_rule_filter_response.dart';
+import 'package:rule_filter/rule_filter/tmail_rule.dart';
 
 void main() {
   group('test to json set identity method', () {
@@ -114,7 +111,7 @@ void main() {
       final setRuleFilterMethod = SetRuleFilterMethod(AccountId(Id(
           '29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')))
         ..addUpdateRuleFilter({
-          Id('singleton'): [
+          Id(RuleFilterIdType.singleton.value): [
             TMailRule(
               id: RuleId(id: Id('1')),
               name: 'My first rule',

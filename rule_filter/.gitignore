@@ -8,7 +8,6 @@
 .buildlog/
 .history
 .svn/
-migrate_working_dir/
 
 # IntelliJ related
 *.iml
@@ -28,3 +27,7 @@ migrate_working_dir/
 .dart_tool/
 .packages
 build/
+
+#generated file
+*.g.dart
+*.mocks.dart
