@@ -1,11 +1,10 @@
 import 'package:jmap_dart_client/http/converter/id_converter.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:rule_filter/converter/rule_id_converter.dart';
-import 'package:rule_filter/converter/rule_id_nullable_converter.dart';
-import 'package:rule_filter/rule.dart';
-import 'package:rule_filter/rule_action.dart';
-import 'package:rule_filter/rule_condition.dart';
-import 'package:rule_filter/rule_id.dart';
+import 'package:rule_filter/rule_filter/converter/rule_id_nullable_converter.dart';
+import 'package:rule_filter/rule_filter/rule.dart';
+import 'package:rule_filter/rule_filter/rule_action.dart';
+import 'package:rule_filter/rule_filter/rule_condition.dart';
+import 'package:rule_filter/rule_filter/rule_id.dart';
 
 part 'tmail_rule.g.dart';
 
@@ -32,7 +31,6 @@ class TMailRule extends Rule {
 
   @override
   List<Object?> get props => [
-        id,
         name,
         condition,
         action,

@@ -7,7 +7,7 @@ import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/method/response/set_response.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
-import 'package:rule_filter/tmail_rule.dart';
+import 'package:rule_filter/rule_filter/tmail_rule.dart';
 
 class SetRuleFilterResponse extends SetResponse<TMailRule> {
   SetRuleFilterResponse(
