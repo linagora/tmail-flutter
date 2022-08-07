@@ -1,8 +1,8 @@
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:rule_filter/converter/rule_filter_id_coverter.dart';
-import 'package:rule_filter/rule_filter_id.dart';
-import 'package:rule_filter/tmail_rule.dart';
+import 'package:rule_filter/rule_filter/converter/rule_filter_id_coverter.dart';
+import 'package:rule_filter/rule_filter/rule_filter_id.dart';
+import 'package:rule_filter/rule_filter/tmail_rule.dart';
 
 part 'rule_filter.g.dart';
 

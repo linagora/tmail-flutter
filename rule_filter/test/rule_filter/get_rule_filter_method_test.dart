@@ -6,14 +6,14 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:rule_filter/get/get_rule_filter_method.dart';
-import 'package:rule_filter/get/get_rule_filter_response.dart';
-import 'package:rule_filter/rule_action.dart';
-import 'package:rule_filter/rule_append_in.dart';
-import 'package:rule_filter/rule_condition.dart';
-import 'package:rule_filter/rule_filter.dart';
-import 'package:rule_filter/rule_filter_id.dart';
-import 'package:rule_filter/tmail_rule.dart';
+import 'package:rule_filter/rule_filter/get/get_rule_filter_method.dart';
+import 'package:rule_filter/rule_filter/get/get_rule_filter_response.dart';
+import 'package:rule_filter/rule_filter/rule_action.dart';
+import 'package:rule_filter/rule_filter/rule_append_in.dart';
+import 'package:rule_filter/rule_filter/rule_condition.dart';
+import 'package:rule_filter/rule_filter/rule_filter.dart';
+import 'package:rule_filter/rule_filter/rule_filter_id.dart';
+import 'package:rule_filter/rule_filter/tmail_rule.dart';
 
 void main() {
   group('test to json get rule filter method', () {

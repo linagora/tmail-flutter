@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:rule_filter/rule_append_in.dart';
+import 'package:rule_filter/rule_filter/rule_append_in.dart';
 
 part 'rule_action.g.dart';
 
