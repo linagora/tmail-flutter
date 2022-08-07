@@ -6,8 +6,8 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/method/request/set_method.dart';
 import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:rule_filter/capability_rule_filter.dart';
-import 'package:rule_filter/tmail_rule.dart';
+import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
+import 'package:rule_filter/rule_filter/tmail_rule.dart';
 
 class SetRuleFilterMethod extends SetMethod<List<TMailRule>> with OptionalUpdateRuleFilter<List<TMailRule>>{
   SetRuleFilterMethod(AccountId accountId) : super(accountId);
