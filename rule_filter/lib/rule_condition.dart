@@ -3,7 +3,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'rule_condition.g.dart';
 
-@JsonEnum()
 enum Field {
   @JsonValue('from')
   from,
@@ -17,7 +16,6 @@ enum Field {
   subject,
 }
 
-@JsonEnum()
 enum Comparator {
   @JsonValue('contains')
   contains,
@@ -37,11 +35,11 @@ class RuleCondition extends FilterCondition {
 
   final String value;
 
-  RuleCondition(
-    this.field,
-    this.comparator,
-    this.value,
-  );
+  RuleCondition({
+    required this.field,
+    required this.comparator,
+    required this.value,
+  });
 
   @override
   List<Object?> get props => [
@@ -55,5 +53,4 @@ class RuleCondition extends FilterCondition {
 
   @override
   Map<String, dynamic> toJson() => _$RuleConditionToJson(this);
-
 }

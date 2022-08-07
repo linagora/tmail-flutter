@@ -6,7 +6,7 @@ class RuleIdConverter implements JsonConverter<RuleId, String> {
   const RuleIdConverter();
 
   @override
-  RuleId fromJson(String json) => RuleId(Id(json));
+  RuleId fromJson(String json) => RuleId(id: Id(json));
 
   @override
   String toJson(RuleId object) => object.id.value;
