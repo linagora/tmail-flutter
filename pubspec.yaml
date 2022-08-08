@@ -101,7 +101,7 @@ dependencies:
   path_provider: 2.0.3
 
   # device_info_plus
-  device_info_plus: 3.2.2
+  device_info_plus: 4.0.2
 
   # permission_handler
   permission_handler: 8.1.6
@@ -116,7 +116,7 @@ dependencies:
       ref: master
 
   # file_picker
-  file_picker: 4.6.0
+  file_picker: 5.0.1
 
   # hive
   hive: 2.0.4
@@ -142,7 +142,7 @@ dependencies:
 
   connectivity_plus: 2.2.1
 
-  package_info_plus: 1.4.1
+  package_info_plus: 1.4.3
 
   receive_sharing_intent:
     git:
@@ -157,7 +157,7 @@ dependencies:
 
   timeago: 3.2.2
 
-  open_file: 3.2.1
+  better_open_file: 3.6.3
 
   # OIDC Mobile
   flutter_appauth: 4.0.0
