@@ -124,8 +124,8 @@ dependencies:
   # enough_html_editor: Compose email for Mobile & Tablet
   enough_html_editor:
     git:
-      url: https://github.com/ManhNTX/enough_html_editor.git
-      ref: improvements_for_use_tmail
+      url: https://github.com/linagora/enough_html_editor.git
+      ref: email_supported
 
   # html_editor_enhanced: Compose email for Web Browser
   html_editor_enhanced:

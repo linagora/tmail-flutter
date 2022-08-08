@@ -670,6 +670,7 @@ class ComposerView extends GetWidget<ComposerController>
       child: HtmlEditor(
           key: const Key('composer_editor'),
           minHeight: 550,
+          addDefaultSelectionMenuItems: false,
           initialContent: initialContent,
           onCreated: (editorApi) {
             richTextMobileTabletController.htmlEditorApi = editorApi;
