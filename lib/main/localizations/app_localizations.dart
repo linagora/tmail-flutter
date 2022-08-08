@@ -1798,4 +1798,32 @@ class AppLocalizations {
       name: 'moveTo',
     );
   }
+
+  String get emailRules {
+    return Intl.message(
+      'Email Rules',
+      name: 'emailRules',
+    );
+  }
+
+  String get emailRulesSubtitle {
+    return Intl.message(
+      'Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.',
+      name: 'emailRulesSubtitle',
+    );
+  }
+
+  String get addNewRule {
+    return Intl.message(
+      'Add rule',
+      name: 'addNewRule',
+    );
+  }
+
+  String get headerNameOfRules {
+    return Intl.message(
+      'Name of Rules',
+      name: 'headerNameOfRules',
+    );
+  }
 }

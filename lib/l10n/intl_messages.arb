@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-04T11:25:19.254781",
+  "@@last_modified": "2022-08-08T08:50:15.957543",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1750,6 +1750,30 @@
   },
   "moveTo": "Move To",
   "@moveTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailRules": "Email Rules",
+  "@emailRules": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailRulesSubtitle": "Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.",
+  "@emailRulesSubtitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addNewRule": "Add rule",
+  "@addNewRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "headerNameOfRules": "Name of Rules",
+  "@headerNameOfRules": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

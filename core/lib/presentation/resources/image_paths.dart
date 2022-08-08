@@ -145,6 +145,10 @@ class ImagePaths {
   String get icAlignOutdent => _getImagePath('ic_align_outdent.svg');
   String get icOrderNumber => _getImagePath('ic_order_number.svg');
   String get icOrderBullet => _getImagePath('ic_order_bullet.svg');
+  String get icEmailRules => _getImagePath('ic_email_rules.svg');
+  String get icAddNewRules => _getImagePath('ic_add_new_rule.svg');
+  String get icEditRule => _getImagePath('ic_edit_rule.svg');
+  String get icDeleteRule => _getImagePath('ic_delete_rule.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
