@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-08T08:50:15.957543",
+  "@@last_modified": "2022-08-08T14:35:21.345792",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1774,6 +1774,18 @@
   },
   "headerNameOfRules": "Name of Rules",
   "@headerNameOfRules": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editRule": "Edit rule",
+  "@editRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteRule": "Delete rule",
+  "@deleteRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

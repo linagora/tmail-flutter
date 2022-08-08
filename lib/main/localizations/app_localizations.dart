@@ -1826,4 +1826,18 @@ class AppLocalizations {
       name: 'headerNameOfRules',
     );
   }
+
+  String get editRule {
+    return Intl.message(
+      'Edit rule',
+      name: 'editRule',
+    );
+  }
+
+  String get deleteRule {
+    return Intl.message(
+      'Delete rule',
+      name: 'deleteRule',
+    );
+  }
 }
