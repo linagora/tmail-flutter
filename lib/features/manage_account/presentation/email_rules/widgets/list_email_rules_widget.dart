@@ -44,12 +44,6 @@ class ListEmailRulesWidget extends GetWidget<EmailRulesController> {
                     final rule = controller.listEmailRule[index];
                     return EmailRulesItemWidget(
                       rule: rule,
-                      editRule: (rule) {
-                        controller.editEmailRule(rule);
-                      },
-                      deleteRule: (rule) {
-                        controller.editEmailRule(rule);
-                      },
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) =>
