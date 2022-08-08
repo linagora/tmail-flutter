@@ -148,15 +148,41 @@ class RichTextMobileTabletController extends BaseRichTextController {
     htmlEditorApi?.formatHeader(styleSelected.styleValue);
   }
 
-  void applyParagraphType(ParagraphType newParagraph) {
+  void applyParagraphType(ParagraphType newParagraph) async {
     selectedParagraph.value = newParagraph;
-    htmlEditorApi?.execCommand(newParagraph.commandAction);
+    switch(newParagraph) {
+      case ParagraphType.alignLeft:
+        await htmlEditorApi?.formatAlignLeft();
+        break;
+      case ParagraphType.alignRight:
+        await htmlEditorApi?.formatAlignRight();
+        break;
+      case ParagraphType.alignCenter:
+        await htmlEditorApi?.formatAlignCenter();
+        break;
+      case ParagraphType.justify:
+        await htmlEditorApi?.formatAlignJustify();
+        break;
+      case ParagraphType.indent:
+        await htmlEditorApi?.formatIndent();
+        break;
+      case ParagraphType.outdent:
+        await htmlEditorApi?.formatOutent();
+        break;
+    }
     menuParagraphController.hideMenu();
   }
 
-  void applyOrderListType(OrderListType newOrderList) {
+  void applyOrderListType(OrderListType newOrderList) async {
     selectedOrderList.value = newOrderList;
-    htmlEditorApi?.execCommand(newOrderList.commandAction);
+    switch(newOrderList) {
+      case OrderListType.bulletedList:
+        await htmlEditorApi?.insertUnorderedList();
+        break;
+      case OrderListType.numberedList:
+        await htmlEditorApi?.insertOrderedList();
+        break;
+    }
     menuOrderListController.hideMenu();
   }
 
