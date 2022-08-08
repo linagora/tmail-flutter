@@ -130,8 +130,8 @@ dependencies:
   # html_editor_enhanced: Compose email for Web Browser
   html_editor_enhanced:
     git:
-      url: https://github.com/dab246/html-editor-enhanced.git
-      ref: improvements_for_use_tmail
+      url: https://github.com/linagora/html-editor-enhanced.git
+      ref: email_supported
 
   # fk_user_agent
   fk_user_agent: 2.1.0
