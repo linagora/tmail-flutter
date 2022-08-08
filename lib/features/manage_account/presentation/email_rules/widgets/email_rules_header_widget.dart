@@ -21,31 +21,6 @@ class EmailRulesHeaderWidget extends GetWidget<EmailRulesController> {
 
   @override
   Widget build(BuildContext context) {
-    final buttonAddNewRule = Row(children: [
-      if (!responsiveUtils.isMobile(context))
-        (ButtonBuilder(imagePaths.icAddNewRules)
-              ..key(const Key('button_new_rule'))
-              ..decoration(BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: AppColor.colorTextButton))
-              ..paddingIcon(const EdgeInsets.only(right: 8))
-              ..iconColor(Colors.white)
-              ..maxWidth(170)
-              ..size(20)
-              ..radiusSplash(10)
-              ..padding(const EdgeInsets.symmetric(vertical: 12))
-              ..textStyle(const TextStyle(
-                fontSize: 17,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ))
-              ..onPressActionClick(() => controller.goToCreateNewRule())
-              ..text(
-                AppLocalizations.of(context).addNewRule,
-                isVertical: false,
-              ))
-            .build()
-    ]);
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -65,8 +40,57 @@ class EmailRulesHeaderWidget extends GetWidget<EmailRulesController> {
                 fontWeight: FontWeight.normal,
                 color: AppColor.colorTextButtonHeaderThread)),
         const SizedBox(height: 24),
-        buttonAddNewRule,
+        _buildButtonAddNewRule(context),
       ]),
     );
+  }
+
+  Widget _buildButtonAddNewRule(BuildContext context) {
+    if (!responsiveUtils.isMobile(context)) {
+      return (ButtonBuilder(imagePaths.icAddNewRules)
+            ..key(const Key('button_new_rule'))
+            ..decoration(BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: AppColor.colorTextButton))
+            ..paddingIcon(const EdgeInsets.only(right: 8))
+            ..iconColor(Colors.white)
+            ..maxWidth(130)
+            ..size(20)
+            ..radiusSplash(10)
+            ..padding(const EdgeInsets.symmetric(vertical: 12))
+            ..textStyle(const TextStyle(
+              fontSize: 17,
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ))
+            ..onPressActionClick(() => controller.goToCreateNewRule())
+            ..text(
+              AppLocalizations.of(context).addNewRule,
+              isVertical: false,
+            ))
+          .build();
+    } else {
+      return (ButtonBuilder(imagePaths.icAddNewRules)
+            ..key(const Key('button_new_rule'))
+            ..decoration(BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: AppColor.colorTextButton))
+            ..paddingIcon(const EdgeInsets.only(right: 8))
+            ..iconColor(Colors.white)
+            ..size(20)
+            ..radiusSplash(10)
+            ..padding(const EdgeInsets.symmetric(vertical: 12))
+            ..textStyle(const TextStyle(
+              fontSize: 17,
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ))
+            ..onPressActionClick(() => controller.goToCreateNewRule())
+            ..text(
+              AppLocalizations.of(context).addNewRule,
+              isVertical: false,
+            ))
+          .build();
+    }
   }
 }

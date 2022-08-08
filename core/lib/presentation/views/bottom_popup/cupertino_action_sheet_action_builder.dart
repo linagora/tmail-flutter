@@ -6,23 +6,24 @@ import 'package:flutter_svg/flutter_svg.dart';
 typedef OnCupertinoActionSheetActionClick<T> = void Function(T data);
 
 abstract class CupertinoActionSheetActionBuilder<T> {
-  @protected final Key key;
-  @protected final SvgPicture actionIcon;
-  @protected final String actionName;
-  @protected OnCupertinoActionSheetActionClick<T>? onCupertinoActionSheetActionClick;
+  @protected
+  final Key key;
+  @protected
+  final SvgPicture actionIcon;
+  @protected
+  final String actionName;
+  @protected
+  OnCupertinoActionSheetActionClick<T>? onCupertinoActionSheetActionClick;
 
-  CupertinoActionSheetActionBuilder(
-    this.key,
-    this.actionIcon,
-    this.actionName
-  );
+  CupertinoActionSheetActionBuilder(this.key, this.actionIcon, this.actionName);
 
-  void onActionClick(OnCupertinoActionSheetActionClick<T> onCupertinoActionSheetActionClick) {
+  void onActionClick(
+      OnCupertinoActionSheetActionClick<T> onCupertinoActionSheetActionClick) {
     this.onCupertinoActionSheetActionClick = onCupertinoActionSheetActionClick;
   }
 
-  TextStyle actionTextStyle() {
-    return TextStyle(fontSize: 17, color: AppColor.colorNameEmail);
+  TextStyle actionTextStyle({TextStyle? textStyle}) {
+    return textStyle ?? TextStyle(fontSize: 17, color: AppColor.colorNameEmail);
   }
 
   Widget build();
