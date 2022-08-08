@@ -141,9 +141,6 @@ class ComposerController extends BaseController {
       return newContentHtml;
     } else {
       String contentHtml = await htmlEditorApi?.getText() ?? '';
-      if(Platform.isAndroid) {
-        contentHtml = contentHtml.replaceAll('&quot;', '"');
-      }
       log('ComposerController::_getEmailBodyText():MOBILE: $contentHtml');
       final newContentHtml = contentHtml.removeEditorStartTag();
       if (changedEmail) {
