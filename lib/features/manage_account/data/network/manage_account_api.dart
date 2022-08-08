@@ -10,6 +10,9 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/identities/set/set_identity_method.dart';
 import 'package:jmap_dart_client/jmap/identities/set/set_identity_response.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
+import 'package:rule_filter/rule_filter/get/get_rule_filter_method.dart';
+import 'package:rule_filter/rule_filter/get/get_rule_filter_response.dart';
+import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
@@ -113,5 +116,32 @@ class ManageAccountAPI {
     }).catchError((error) {
       throw error;
     });
+  }
+
+  Future<List<TMailRule>> getListTMailRule(AccountId accountId) async {
+    final processingInvocation = ProcessingInvocation();
+    final requestBuilder =
+    JmapRequestBuilder(_httpClient, processingInvocation);
+
+    final getRuleFilterMethod = GetRuleFilterMethod(
+      accountId,
+    );
+
+    final getRuleFilterInvocation =
+    requestBuilder.invocation(getRuleFilterMethod);
+    final response = await (requestBuilder
+      ..usings(getRuleFilterMethod.requiredCapabilities))
+        .build()
+        .execute();
+
+    final result = response.parse<GetRuleFilterResponse>(
+        getRuleFilterInvocation.methodCallId,
+        GetRuleFilterResponse.deserialize);
+
+    if (result?.list.isEmpty == true) {
+      return <TMailRule>[];
+    }
+
+    return result?.list.first.rules ?? <TMailRule>[];
   }
 }
