@@ -24,7 +24,7 @@ class EmailRulesItemWidget extends GetWidget<EmailRulesController> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
       color: Colors.white,
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
         Text(rule.name,
             style: const TextStyle(
                 fontSize: 16,
@@ -41,7 +41,7 @@ class EmailRulesItemWidget extends GetWidget<EmailRulesController> {
             }),
         buildIconWeb(
             icon: SvgPicture.asset(
-              _imagePaths.icDeleteAttachment,
+              _imagePaths.icDeleteRule,
               fit: BoxFit.fill,
             ),
             onTap: () {
