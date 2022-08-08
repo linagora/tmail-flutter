@@ -56,7 +56,7 @@ dependencies:
   get: 4.6.5
 
   # device_info_plus
-  device_info_plus: 3.2.2
+  device_info_plus: 4.0.2
 
   # webview_flutter
   webview_flutter: 3.0.0
