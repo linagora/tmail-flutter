@@ -11,6 +11,7 @@ class ManageAccountMenuController extends BaseController {
 
   final listAccountMenuItem = <AccountMenuItem>[
     AccountMenuItem.profiles,
+    AccountMenuItem.emailRules,
     AccountMenuItem.languageAndRegion,
   ];
 
