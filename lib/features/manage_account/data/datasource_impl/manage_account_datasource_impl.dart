@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
@@ -57,6 +58,15 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   Future<void> persistLanguage(Locale localeCurrent) {
     return Future.sync(() async {
       return await _languageCacheManager.persistLanguage(localeCurrent);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<List<TMailRule>> getAllTMailRule(AccountId accountId) {
+    return Future.sync(() async {
+      return await manageAccountAPI.getListTMailRule(accountId);
     }).catchError((error) {
       throw error;
     });

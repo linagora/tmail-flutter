@@ -1,11 +1,12 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/email_rules_header_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/list_email_rules_widget.dart';
 
-class EmailRulesView extends GetWidget<EmailRulesController> {
+class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
 
@@ -41,6 +42,7 @@ class EmailRulesView extends GetWidget<EmailRulesController> {
                   },
                 ),
                 const SizedBox(height: 22),
+                _buildLoadingView(),
                 const Expanded(child: ListEmailRulesWidget())
               ],
             ),
@@ -48,5 +50,16 @@ class EmailRulesView extends GetWidget<EmailRulesController> {
         ),
       ),
     );
+  }
+
+  Widget _buildLoadingView() {
+    return Obx(() => controller.viewState.value.fold(
+            (failure) => const SizedBox.shrink(),
+            (success) => success is LoadingState
+            ? Padding(
+            padding: const EdgeInsets.only(bottom: 24),
+            child: loadingWidget)
+            : const SizedBox.shrink()
+    ));
   }
 }
