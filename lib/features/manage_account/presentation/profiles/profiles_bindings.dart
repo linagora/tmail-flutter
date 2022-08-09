@@ -10,7 +10,6 @@ class ProfileBindings extends BaseBindings {
   void dependencies() {
     super.dependencies();
     IdentitiesBindings().dependencies();
-    EmailRulesBindings().dependencies();
   }
 
   @override

@@ -15,10 +15,13 @@ abstract class CupertinoActionSheetActionBuilder<T> {
   @protected
   OnCupertinoActionSheetActionClick<T>? onCupertinoActionSheetActionClick;
 
-  CupertinoActionSheetActionBuilder(this.key, this.actionIcon, this.actionName);
+  CupertinoActionSheetActionBuilder(
+    this.key,
+    this.actionIcon,
+    this.actionName,
+  );
 
-  void onActionClick(
-      OnCupertinoActionSheetActionClick<T> onCupertinoActionSheetActionClick) {
+  void onActionClick(OnCupertinoActionSheetActionClick<T> onCupertinoActionSheetActionClick) {
     this.onCupertinoActionSheetActionClick = onCupertinoActionSheetActionClick;
   }
 
