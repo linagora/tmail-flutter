@@ -18,13 +18,8 @@ class EmailRulesController extends BaseController {
       Get.find<ManageAccountDashBoardController>();
   final GetAllRulesInteractor _getAllRulesInteractor;
   final _imagePaths = Get.find<ImagePaths>();
-  late Worker accountIdWorker;
 
   EmailRulesController(this._getAllRulesInteractor);
-
-  void _clearWorker() {
-    accountIdWorker.call();
-  }
 
   @override
   void onDone() {
@@ -44,12 +39,6 @@ class EmailRulesController extends BaseController {
   void onInit() {
     _getAllRules(_accountDashBoardController.accountId.value!);
     super.onInit();
-  }
-
-  @override
-  void onClose() {
-    _clearWorker();
-    super.onClose();
   }
 
   void goToCreateNewRule() {

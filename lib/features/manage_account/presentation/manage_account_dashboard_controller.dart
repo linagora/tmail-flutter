@@ -7,11 +7,13 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -28,7 +30,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
 
-  Session? sessionCurrent;
+  final sessionCurrent = Rxn<Session>();
 
   ManageAccountDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
@@ -63,7 +65,7 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
-    sessionCurrent = session;
+    sessionCurrent.value = session;
     accountId.value = session.accounts.keys.first;
     _getUserProfile();
     injectAutoCompleteBindings();
@@ -73,8 +75,8 @@ class ManageAccountDashBoardController extends ReloadableController {
     final arguments = Get.arguments;
     log('ManageAccountDashBoardController::_getAccountIdAndUserProfile(): $arguments');
     if (arguments is ManageAccountArguments) {
-      sessionCurrent = arguments.session;
-      accountId.value = sessionCurrent?.accounts.keys.first;
+      sessionCurrent.value = arguments.session;
+      accountId.value = sessionCurrent.value?.accounts.keys.first;
       _getUserProfile();
       injectAutoCompleteBindings();
     } else {
@@ -91,7 +93,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void _getUserProfile() async {
-    userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
+    userProfile.value = sessionCurrent.value != null ? UserProfile(sessionCurrent.value!.username.value) : null;
   }
 
   void openMenuDrawer() {
@@ -105,6 +107,9 @@ class ManageAccountDashBoardController extends ReloadableController {
   bool get isMenuDrawerOpen => menuDrawerKey.currentState?.isDrawerOpen == true;
 
   void selectAccountMenuItem(AccountMenuItem newAccountMenuItem) {
+    if(newAccountMenuItem == AccountMenuItem.emailRules) {
+      EmailRulesBindings().dependencies();
+    }
     accountMenuItemSelected.value = newAccountMenuItem;
     if (currentContext != null && !_responsiveUtils.isDesktop(currentContext!)) {
       closeMenuDrawer();
@@ -113,7 +118,7 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   void goToSettings() {
     pushAndPop(AppRoutes.MANAGE_ACCOUNT,
-        arguments: ManageAccountArguments(sessionCurrent));
+        arguments: ManageAccountArguments(sessionCurrent.value));
   }
 
   void backToMailboxDashBoard(BuildContext context) {
@@ -127,4 +132,7 @@ class ManageAccountDashBoardController extends ReloadableController {
       pushAndPopAll(AppRoutes.MAILBOX_DASHBOARD, arguments: sessionCurrent);
     }
   }
+
+  bool checkAvailableRuleFilterInSession() => sessionCurrent.value?.capabilities.containsKey(capabilityRuleFilter) ?? false;
+
 }

@@ -120,19 +120,17 @@ class ManageAccountAPI {
 
   Future<List<TMailRule>> getListTMailRule(AccountId accountId) async {
     final processingInvocation = ProcessingInvocation();
-    final requestBuilder =
-    JmapRequestBuilder(_httpClient, processingInvocation);
+    final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
 
     final getRuleFilterMethod = GetRuleFilterMethod(
       accountId,
     );
 
-    final getRuleFilterInvocation =
-    requestBuilder.invocation(getRuleFilterMethod);
+    final getRuleFilterInvocation = requestBuilder.invocation(getRuleFilterMethod);
     final response = await (requestBuilder
-      ..usings(getRuleFilterMethod.requiredCapabilities))
-        .build()
-        .execute();
+        ..usings(getRuleFilterMethod.requiredCapabilities))
+      .build()
+      .execute();
 
     final result = response.parse<GetRuleFilterResponse>(
         getRuleFilterInvocation.methodCallId,
