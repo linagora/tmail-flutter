@@ -67,9 +67,6 @@ class _ScrollingFloatingButtonAnimatedState
   /// Boolean value to indicate when scroll view is on top
   bool _onTop = true;
 
-  /// Value to indicate when to show the child widget
-  bool _visibleText = false;
-
   /// Controller for icon animation
   late AnimationController _animationController;
 
@@ -135,13 +132,6 @@ class _ScrollingFloatingButtonAnimatedState
         duration: widget.duration!,
         height: widget.height,
         width: _onTop ? widget.width : widget.height,
-        onEnd: () {
-          if (mounted) {
-            setState(() {
-              _visibleText = !_visibleText;
-            });
-          }
-        },
         decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(widget.height! / 2))),
         child: InkWell(
           borderRadius: BorderRadius.all(Radius.circular(widget.height! / 2)),
@@ -167,13 +157,7 @@ class _ScrollingFloatingButtonAnimatedState
                 ),
                 ...(_onTop
                     ? [
-                        Expanded(
-                          child: AnimatedOpacity(
-                            opacity: !_visibleText ? 1 : 0,
-                            duration: const Duration(milliseconds: 100),
-                            child: widget.text!,
-                          ),
-                        )
+                        Expanded(child: widget.text!)
                       ]
                     : []),
               ],

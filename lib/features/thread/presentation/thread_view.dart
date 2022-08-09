@@ -433,9 +433,15 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
             alignment: Alignment.bottomRight,
             child: ScrollingFloatingButtonAnimated(
               icon: SvgPicture.asset(_imagePaths.icCompose, width: 20, height: 20, fit: BoxFit.fill),
-              text: Padding(padding: const EdgeInsets.only(right: 10),
+              text: Padding(
+                padding: const EdgeInsets.only(right: 16),
                 child: Text(AppLocalizations.of(context).compose,
-                  style: const TextStyle(color: AppColor.colorTextButton, fontSize: 15.0, fontWeight: FontWeight.w500))),
+                  overflow: CommonTextStyle.defaultTextOverFlow,
+                  softWrap: CommonTextStyle.defaultSoftWrap,
+                  style: const TextStyle(
+                      color: AppColor.colorTextButton,
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.w500))),
               onPress: () => controller.mailboxDashBoardController.goToComposer(ComposerArguments()),
               scrollController: controller.listEmailController,
               color: Colors.white,
