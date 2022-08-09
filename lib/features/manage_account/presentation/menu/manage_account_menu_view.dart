@@ -77,19 +77,21 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                                 AppLocalizations.of(context).manage_account,
                                 style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 17))),
                         const SizedBox(height: 12),
-                        ListView.builder(
-                            padding: const EdgeInsets.only(left: 16, right: 8),
-                            key: const Key('list_manage_account_property'),
-                            shrinkWrap: true,
-                            itemCount: controller.listAccountMenuItem.length,
-                            itemBuilder: (context, index) => Obx(() => AccountMenuItemTileBuilder(
-                                context,
-                                _imagePaths,
-                                _responsiveUtils,
-                                controller.listAccountMenuItem[index],
-                                controller.dashBoardController.accountMenuItemSelected.value,
-                                onSelectAccountMenuItemAction: (newAccountMenuItem) =>
-                                    controller.selectAccountMenuItem(newAccountMenuItem)))),
+                        Obx(
+                          () => ListView.builder(
+                              padding: const EdgeInsets.only(left: 16, right: 8),
+                              key: const Key('list_manage_account_property'),
+                              shrinkWrap: true,
+                              itemCount: controller.listAccountMenuItem.length,
+                              itemBuilder: (context, index) => Obx(() => AccountMenuItemTileBuilder(
+                                  context,
+                                  _imagePaths,
+                                  _responsiveUtils,
+                                  controller.listAccountMenuItem[index],
+                                  controller.dashBoardController.accountMenuItemSelected.value,
+                                  onSelectAccountMenuItemAction: (newAccountMenuItem) =>
+                                      controller.selectAccountMenuItem(newAccountMenuItem)))),
+                        ),
                         const Padding(
                             padding: EdgeInsets.symmetric(vertical: 16),
                             child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
