@@ -1,15 +1,17 @@
 
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:super_tag_editor/tag_editor.dart';
 import 'package:model/model.dart';
+import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/suggestion_email_address.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word);
@@ -22,6 +24,7 @@ typedef OnOpenSuggestionBoxEmailAddress = Future<List<EmailAddress>> Function();
 
 class EmailAddressInputBuilder {
 
+  static const _suggestionBoxRadius = 20.0;
   final BuildContext _context;
   final ImagePaths _imagePaths;
   final ExpandMode expandMode;
@@ -39,6 +42,8 @@ class EmailAddressInputBuilder {
   OnShowFullListEmailAddressAction? _onShowFullListEmailAddressAction;
   OnFocusEmailAddressChangeAction? _onFocusEmailAddressChangeAction;
   OnOpenSuggestionBoxEmailAddress? _onOpenSuggestionBoxEmailAddress;
+
+  Timer? _gapBetweenTagChangedAndFindSuggestion;
 
   void addOnUpdateListEmailAddressAction(OnUpdateListEmailAddressAction onUpdateListEmailAddressAction) {
     _onUpdateListEmailAddressAction = onUpdateListEmailAddressAction;
@@ -124,7 +129,7 @@ class EmailAddressInputBuilder {
       final newListEmailAddress = _isCollapse ? listEmailAddress.sublist(0, 1) : listEmailAddress;
       return FocusScope(child: Focus(
           onFocusChange: (focus) => _onFocusEmailAddressChangeAction?.call(_prefixEmailAddress, focus),
-          child: TagEditor<EmailAddress>(
+          child: TagEditor<SuggestionEmailAddress>(
             length: newListEmailAddress.length,
             controller: controller,
             keyboardType: TextInputType.emailAddress,
@@ -135,15 +140,18 @@ class EmailAddressInputBuilder {
             autofocus: _prefixEmailAddress != PrefixEmailAddress.to,
             minTextFieldWidth: 20,
             resetTextOnSubmitted: true,
-            suggestionsBoxElevation: 20,
+            suggestionsBoxElevation: _suggestionBoxRadius,
             suggestionsBoxBackgroundColor: Colors.white,
             suggestionsBoxRadius: 20,
             suggestionsBoxMaxHeight: 300,
             iconSuggestionBox: SvgPicture.asset(_imagePaths.icAddEmailAddress, fit: BoxFit.fill),
             textStyle: const TextStyle(color: AppColor.colorEmailAddress, fontSize: 14, fontWeight: FontWeight.w500),
             onSubmitted: (value) {
-              setState(() => listEmailAddress.add(EmailAddress(null, value)));
-              _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
+              log('EmailAddressInputBuilder::_buildTagEditor(): onSubmitted: $value');
+              if (!_isDuplicatedRecipient(value)) {
+                setState(() => listEmailAddress.add(EmailAddress(null, value)));
+                _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
+              }
             },
             inputDecoration: const InputDecoration(border: InputBorder.none),
             tagBuilder: (context, index) => Stack(alignment: Alignment.centerRight, children: [
@@ -180,23 +188,31 @@ class EmailAddressInputBuilder {
               if (_isCollapse) _buildCounter(context, listEmailAddress.length - newListEmailAddress.length),
             ]),
             onTagChanged: (String value) {
-              setState(() => listEmailAddress.add(EmailAddress(null, value)));
-              _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
-            },
-            findSuggestions: (String query) {
-              if (query.trim().isNotEmpty && _onSuggestionEmailAddress != null) {
-                return _onSuggestionEmailAddress!(query.trim());
+              log('EmailAddressInputBuilder::_buildTagEditor(): onTagChanged: $value');
+              if (!_isDuplicatedRecipient(value)) {
+                setState(() => listEmailAddress.add(EmailAddress(null, value)));
+                _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
               }
-              return [];
+              _gapBetweenTagChangedAndFindSuggestion = Timer(
+                const Duration(seconds: 1),
+                _handleGapBetweenTagChangedAndFindSuggestion);
             },
-            searchAllSuggestions: () {
+            findSuggestions: _findSuggestions,
+            searchAllSuggestions: () async {
               if (_onOpenSuggestionBoxEmailAddress != null) {
-                return _onOpenSuggestionBoxEmailAddress!();
+                return (await _onOpenSuggestionBoxEmailAddress!())
+                  .map((emailAddress) => _toSuggestionEmailAddress(emailAddress, listEmailAddress))
+                  .toList();
               }
               return [];
             },
-            suggestionBuilder: (context, tagEditorState, emailAddress) {
-              return _buildSuggestionItem(setState, context, tagEditorState, emailAddress);
+            suggestionBuilder: (context, tagEditorState, suggestionEmailAddress) {
+              switch (suggestionEmailAddress.state) {
+                case SuggestionEmailState.duplicated:
+                  return _buildExistedSuggestionItem(setState, context, suggestionEmailAddress);
+                default:
+                  return _buildSuggestionItem(setState, context, tagEditorState, suggestionEmailAddress);
+              }
             },
           )
       ));
@@ -226,9 +242,57 @@ class EmailAddressInputBuilder {
     return listEmailAddress.length > 1 && expandMode == ExpandMode.COLLAPSE;
   }
 
-  Widget _buildSuggestionItem(StateSetter setState, BuildContext context, TagsEditorState<EmailAddress> tagEditorState, EmailAddress emailAddress) {
+
+  Widget _buildExistedSuggestionItem(
+    StateSetter setState,
+    BuildContext context,
+    SuggestionEmailAddress suggestionEmailAddress,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(_suggestionBoxRadius))),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: AppColor.colorBgMenuItemDropDownSelected,
+          borderRadius: BorderRadius.all(Radius.circular(_suggestionBoxRadius))),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
+          leading: Container(
+            width: 40,
+            height: 40,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColor.avatarColor,
+              border: Border.all(color: AppColor.colorShadowBgContentEmail, width: 1.0)),
+            child: Text(
+              suggestionEmailAddress.emailAddress.asString().isNotEmpty ? suggestionEmailAddress.emailAddress.asString()[0].toUpperCase() : '',
+              style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600))),
+          title: Text(
+            suggestionEmailAddress.emailAddress.asString(),
+            maxLines: 1,
+            overflow: kIsWeb ? null : TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal)),
+          subtitle: suggestionEmailAddress.emailAddress.displayName.isNotEmpty && suggestionEmailAddress.emailAddress.emailAddress.isNotEmpty
+            ? Text(
+                suggestionEmailAddress.emailAddress.emailAddress,
+                maxLines: 1,
+                overflow: kIsWeb ? null : TextOverflow.ellipsis,
+                style: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 13, fontWeight: FontWeight.normal))
+            : null,
+          trailing: SvgPicture.asset(_imagePaths.icFilterSelected,
+            width: 24,
+            height: 24,
+            fit: BoxFit.fill),
+        )
+      )
+    );
+  }
+
+  Widget _buildSuggestionItem(StateSetter setState, BuildContext context, TagsEditorState<SuggestionEmailAddress> tagEditorState, SuggestionEmailAddress suggestionEmailAddress) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       leading: Container(
         width: 40,
         height: 40,
@@ -238,27 +302,79 @@ class EmailAddressInputBuilder {
           color: AppColor.avatarColor,
           border: Border.all(color: AppColor.colorShadowBgContentEmail, width: 1.0)),
         child: Text(
-            emailAddress.asString().isNotEmpty ? emailAddress.asString()[0].toUpperCase() : '',
+            suggestionEmailAddress.emailAddress.asString().isNotEmpty ? suggestionEmailAddress.emailAddress.asString()[0].toUpperCase() : '',
             style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600))),
       title: Text(
-          emailAddress.asString(),
+          suggestionEmailAddress.emailAddress.asString(),
           maxLines: 1,
           overflow: kIsWeb ? null : TextOverflow.ellipsis,
           style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal)),
-      subtitle: emailAddress.displayName.isNotEmpty && emailAddress.emailAddress.isNotEmpty
+      subtitle: suggestionEmailAddress.emailAddress.displayName.isNotEmpty && suggestionEmailAddress.emailAddress.emailAddress.isNotEmpty
           ? Text(
-              emailAddress.emailAddress,
+              suggestionEmailAddress.emailAddress.emailAddress,
               maxLines: 1,
               overflow: kIsWeb ? null : TextOverflow.ellipsis,
               style: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 13, fontWeight: FontWeight.normal))
           : null,
       onTap: () {
-        setState(() => listEmailAddress.add(emailAddress));
+        log('EmailAddressInputBuilder::_buildSuggestionItem(): onTap: $suggestionEmailAddress');
+        setState(() => listEmailAddress.add(suggestionEmailAddress.emailAddress));
         _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
-        tagEditorState.selectSuggestion(emailAddress);
+        tagEditorState.selectSuggestion(suggestionEmailAddress);
       },
     );
   }
 
+  FutureOr<List<SuggestionEmailAddress>> _findSuggestions(String query) async {
+    log('EmailAddressInputBuilder::_buildTagEditor(): findSuggestions: $query');
+    if (_gapBetweenTagChangedAndFindSuggestion?.isActive ?? true) {
+      return [];
+    }
+
+    final processedQuery = query.trim();
+
+    if (processedQuery.isEmpty) {
+      return [];
+    }
+
+    final tmailSuggestion = List<SuggestionEmailAddress>.empty(growable: true);
+    if (processedQuery.isNotEmpty && _onSuggestionEmailAddress != null) {
+      tmailSuggestion.addAll(
+        (await _onSuggestionEmailAddress!(processedQuery))
+          .map((emailAddress) => _toSuggestionEmailAddress(emailAddress, listEmailAddress)));
+    }
+
+    tmailSuggestion.addAll(_matchedSuggestionEmailAddress(processedQuery, listEmailAddress));
+
+    return tmailSuggestion;
+  }
+
   bool _isEmailAddressValid(String emailAddress) => GetUtils.isEmail(emailAddress);
+
+  bool _isDuplicatedRecipient(String inputEmail) {
+    if (inputEmail.isEmpty) {
+      return false;
+    }
+    return listEmailAddress
+      .map((emailAddress) => emailAddress.email)
+      .whereNotNull()
+      .contains(inputEmail);
+  }
+
+  SuggestionEmailAddress _toSuggestionEmailAddress(EmailAddress item, List<EmailAddress> addedEmailAddresses) {
+    if (addedEmailAddresses.contains(item)) {
+      return SuggestionEmailAddress(item, state: SuggestionEmailState.duplicated);
+    } else {
+      return SuggestionEmailAddress(item);
+    }
+  }
+
+  Iterable<SuggestionEmailAddress> _matchedSuggestionEmailAddress(String query, List<EmailAddress> addedEmailAddress) {
+    return addedEmailAddress.where((addedMail) => addedMail.emailAddress.contains(query))
+      .map((emailAddress) => SuggestionEmailAddress(emailAddress, state: SuggestionEmailState.duplicated));
+  }
+
+  void _handleGapBetweenTagChangedAndFindSuggestion() {
+    log('EmailAddressInputBuilder::_handleGapBetweenTagChangedAndFindSuggestion(): Timeout');
+  }
 }
