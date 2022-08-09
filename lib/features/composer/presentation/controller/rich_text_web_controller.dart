@@ -88,6 +88,7 @@ class RichTextWebController extends BaseRichTextController {
               editorController.execCommand(
                   textStyleType.commandAction,
                   argument: colorAsString);
+              editorController.setFocus();
             },
             onSelectColor: (selectedColor) {
                 final newColor = selectedColor ?? Colors.black;
@@ -100,6 +101,7 @@ class RichTextWebController extends BaseRichTextController {
                 editorController.execCommand(
                     textStyleType.commandAction,
                     argument: colorAsString);
+                editorController.setFocus();
             }
         );
         break;
@@ -117,6 +119,7 @@ class RichTextWebController extends BaseRichTextController {
               editorController.execCommand(
                   textStyleType.commandAction,
                   argument: colorAsString);
+              editorController.setFocus();
             },
             onSelectColor: (selectedColor) {
               final newColor = selectedColor ?? Colors.white;
@@ -129,12 +132,14 @@ class RichTextWebController extends BaseRichTextController {
               editorController.execCommand(
                   textStyleType.commandAction,
                   argument: colorAsString);
+              editorController.setFocus();
             }
         );
         break;
       default:
         editorController.execCommand(textStyleType.commandAction);
         _selectTextStyleType(textStyleType);
+        editorController.setFocus();
         break;
     }
   }
@@ -165,6 +170,7 @@ class RichTextWebController extends BaseRichTextController {
     editorController.execCommand(
         RichTextStyleType.fontName.commandAction,
         argument: fontSelected.fontFamily);
+    editorController.setFocus();
   }
 
   bool get isMenuFontOpen => menuFontStatus.value == DropdownMenuFontStatus.open;
@@ -210,12 +216,14 @@ class RichTextWebController extends BaseRichTextController {
     editorController.execCommand(
         RichTextStyleType.headerStyle.commandAction,
         argument: styleSelected.styleValue);
+    editorController.setFocus();
   }
 
   void applyParagraphType(ParagraphType newParagraph) {
     selectedParagraph.value = newParagraph;
     editorController.execCommand(newParagraph.commandAction);
     menuParagraphController.hideMenu();
+    editorController.setFocus();
   }
 
   void closeAllMenuPopup() {
@@ -237,6 +245,7 @@ class RichTextWebController extends BaseRichTextController {
     selectedOrderList.value = newOrderList;
     editorController.execCommand(newOrderList.commandAction);
     menuOrderListController.hideMenu();
+    editorController.setFocus();
   }
 
   @override
