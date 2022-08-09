@@ -48,29 +48,25 @@ class RichTextWebController extends BaseRichTextController {
 
   void onEditorSettingsChange(EditorSettings settings) async {
     log('RichTextWebController::onEditorSettingsChange():');
+    listTextStyleApply.clear();
+
     if (settings.isBold) {
       listTextStyleApply.add(RichTextStyleType.bold);
-    } else {
-      listTextStyleApply.remove(RichTextStyleType.bold);
     }
 
     if (settings.isItalic) {
       listTextStyleApply.add(RichTextStyleType.italic);
-    } else {
-      listTextStyleApply.remove(RichTextStyleType.italic);
     }
 
     if (settings.isUnderline) {
       listTextStyleApply.add(RichTextStyleType.underline);
-    } else {
-      listTextStyleApply.remove(RichTextStyleType.underline);
     }
 
     if (settings.isStrikethrough) {
       listTextStyleApply.add(RichTextStyleType.strikeThrough);
-    } else {
-      listTextStyleApply.remove(RichTextStyleType.strikeThrough);
     }
+
+    log('RichTextWebController::onEditorSettingsChange(): $listTextStyleApply');
   }
 
   void applyRichTextStyle(BuildContext context, RichTextStyleType textStyleType) {
