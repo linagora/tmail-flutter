@@ -57,8 +57,8 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
             (failure) => const SizedBox.shrink(),
             (success) => success is LoadingState
             ? Padding(
-            padding: const EdgeInsets.only(bottom: 24),
-            child: loadingWidget)
+                padding: const EdgeInsets.only(bottom: 24),
+                child: loadingWidget)
             : const SizedBox.shrink()
     ));
   }

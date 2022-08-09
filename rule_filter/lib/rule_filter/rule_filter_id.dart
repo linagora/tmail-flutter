@@ -14,7 +14,6 @@ enum RuleFilterIdType {
 
 @RuleFilterIdConverter()
 @IdConverter()
-@JsonSerializable()
 class RuleFilterId with EquatableMixin {
   final Id id;
 
