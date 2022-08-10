@@ -14,9 +14,9 @@ import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:rule_filter/rule_filter/get/get_rule_filter_method.dart';
 import 'package:rule_filter/rule_filter/get/get_rule_filter_response.dart';
 import 'package:rule_filter/rule_filter/rule_filter_id.dart';
-import 'package:rule_filter/rule_filter/rule_id.dart';
 import 'package:rule_filter/rule_filter/set/set_rule_filter_method.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
+import 'package:tmail_ui_user/features/manage_account/data/extensions/list_tmail_rule_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
@@ -149,17 +149,13 @@ class ManageAccountAPI {
 
   Future<List<TMailRule>> updateListTMailRule(AccountId accountId, List<TMailRule> listTMailRule) async {
 
-    final List<TMailRule> listTMailRuleWithId = listTMailRule
-        .asMap()
-        .map((key, value) => MapEntry(key, value.copyWith(id: RuleId(id: Id(key.toString())))))
-        .values
-        .toList();
+    final newListTMailRuleWithIds = listTMailRule.withIds;
 
     final processingInvocation = ProcessingInvocation();
     final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
 
     final setRuleFilterMethod = SetRuleFilterMethod(accountId)
-      ..addUpdateRuleFilter({Id(RuleFilterIdType.singleton.value): listTMailRuleWithId});
+      ..addUpdateRuleFilter({Id(RuleFilterIdType.singleton.value): newListTMailRuleWithIds});
 
     requestBuilder.invocation(setRuleFilterMethod);
 
