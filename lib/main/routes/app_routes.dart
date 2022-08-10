@@ -11,4 +11,5 @@ abstract class AppRoutes {
   static const MAILBOX_CREATOR = '/mailboxCreator';
   static const MANAGE_ACCOUNT = '$MAILBOX_DASHBOARD/manage_account';
   static const IDENTITY_CREATOR = '/identity_creator';
+  static const RULES_FILTER_CREATOR = '/rules_filter_creator';
 }
