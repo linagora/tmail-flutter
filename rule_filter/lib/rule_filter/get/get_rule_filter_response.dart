@@ -7,7 +7,6 @@ import 'package:jmap_dart_client/jmap/core/method/response/get_response.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:rule_filter/rule_filter/rule_filter.dart';
-import 'package:rule_filter/rule_filter/tmail_rule.dart';
 
 part 'get_rule_filter_response.g.dart';
 

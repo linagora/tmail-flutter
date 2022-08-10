@@ -42,9 +42,7 @@ class ListEmailRulesWidget extends GetWidget<EmailRulesController> {
                   itemCount: controller.listEmailRule.length,
                   itemBuilder: (context, index) {
                     final rule = controller.listEmailRule[index];
-                    return EmailRulesItemWidget(
-                      rule: rule,
-                    );
+                    return EmailRulesItemWidget(rule: rule);
                   },
                   separatorBuilder: (BuildContext context, int index) =>
                       const Divider(
