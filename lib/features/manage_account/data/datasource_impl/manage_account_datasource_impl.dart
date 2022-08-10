@@ -8,29 +8,34 @@ import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_acc
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/delete_email_rule_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
 
 class ManageAccountDataSourceImpl extends ManageAccountDataSource {
-
   final ManageAccountAPI manageAccountAPI;
   final LanguageCacheManager _languageCacheManager;
 
-  ManageAccountDataSourceImpl(this.manageAccountAPI, this._languageCacheManager);
+  ManageAccountDataSourceImpl(
+      this.manageAccountAPI, this._languageCacheManager);
 
   @override
-  Future<IdentitiesResponse> getAllIdentities(AccountId accountId, {Properties? properties}) {
+  Future<IdentitiesResponse> getAllIdentities(AccountId accountId,
+      {Properties? properties}) {
     return Future.sync(() async {
-      return await manageAccountAPI.getAllIdentities(accountId, properties: properties);
+      return await manageAccountAPI.getAllIdentities(accountId,
+          properties: properties);
     }).catchError((error) {
       throw error;
     });
   }
 
   @override
-  Future<Identity> createNewIdentity(AccountId accountId, CreateNewIdentityRequest identityRequest) {
+  Future<Identity> createNewIdentity(
+      AccountId accountId, CreateNewIdentityRequest identityRequest) {
     return Future.sync(() async {
-      return await manageAccountAPI.createNewIdentity(accountId, identityRequest);
+      return await manageAccountAPI.createNewIdentity(
+          accountId, identityRequest);
     }).catchError((error) {
       throw error;
     });
@@ -46,9 +51,11 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   }
 
   @override
-  Future<bool> editIdentity(AccountId accountId, EditIdentityRequest editIdentityRequest) {
+  Future<bool> editIdentity(
+      AccountId accountId, EditIdentityRequest editIdentityRequest) {
     return Future.sync(() async {
-      return await manageAccountAPI.editIdentity(accountId, editIdentityRequest);
+      return await manageAccountAPI.editIdentity(
+          accountId, editIdentityRequest);
     }).catchError((error) {
       throw error;
     });
@@ -67,6 +74,18 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   Future<List<TMailRule>> getAllTMailRule(AccountId accountId) {
     return Future.sync(() async {
       return await manageAccountAPI.getListTMailRule(accountId);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<List<TMailRule>> deleteTMailRule(AccountId accountId, DeleteEmailRuleRequest deleteEmailRuleRequest) {
+
+    deleteEmailRuleRequest.currentEmailRules.remove(deleteEmailRuleRequest.emailRuleDelete);
+
+    return Future.sync(() async {
+      return await manageAccountAPI.updateListTMailRule(accountId, deleteEmailRuleRequest.currentEmailRules);
     }).catchError((error) {
       throw error;
     });
