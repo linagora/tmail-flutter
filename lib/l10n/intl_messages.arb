@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-10T18:05:32.066682",
+  "@@last_modified": "2022-08-11T11:23:27.430951",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1844,7 +1844,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionTitleRulesFilter": "Perform the following actions:",
+  "actionTitleRulesFilter": "Perform the following action:",
   "@actionTitleRulesFilter": {
     "type": "text",
     "placeholders_order": [],

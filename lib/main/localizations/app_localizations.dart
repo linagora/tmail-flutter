@@ -1897,7 +1897,7 @@ class AppLocalizations {
 
   String get actionTitleRulesFilter {
     return Intl.message(
-        'Perform the following actions:',
+        'Perform the following action:',
         name: 'actionTitleRulesFilter');
   }
 
