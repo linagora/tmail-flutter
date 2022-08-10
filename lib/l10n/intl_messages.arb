@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-09T16:48:03.746319",
+  "@@last_modified": "2022-08-10T18:05:32.066682",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1786,6 +1786,96 @@
   },
   "deleteRule": "Delete rule",
   "@deleteRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewRule": "Create new rule",
+  "@createNewRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rulesNameHintTextInput": "Enter the rule name",
+  "@rulesNameHintTextInput": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionValueHintTextInput": "Value",
+  "@conditionValueHintTextInput": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionTitleRulesFilter": "If all of the following conditions are met:",
+  "@conditionTitleRulesFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recipient": "Recipient",
+  "@recipient": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "contains": "Contains",
+  "@contains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notContains": "Not contains",
+  "@notContains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exactlyEquals": "Exactly equals",
+  "@exactlyEquals": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notExactlyEquals": "Not exactly equals",
+  "@notExactlyEquals": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionTitleRulesFilter": "Perform the following actions:",
+  "@actionTitleRulesFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toMailbox": "To mailbox:",
+  "@toMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveMessage": "Move message",
+  "@moveMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterAddressFromField": "From",
+  "@ruleFilterAddressFromField": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterAddressToField": "To",
+  "@ruleFilterAddressToField": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterAddressCcField": "Cc",
+  "@ruleFilterAddressCcField": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -64,6 +64,7 @@ export 'presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 export 'presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 export 'presentation/views/floating_button/scrolling_floating_button_animated.dart';
 export 'presentation/views/bottom_popup/cupertino_action_sheet_action_builder.dart';
+export 'presentation/views/bottom_popup/cupertino_action_sheet_no_icon_builder.dart';
 export 'presentation/views/bottom_popup/cupertino_action_sheet_builder.dart';
 export 'presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 export 'presentation/views/modal_sheets/edit_text_modal_sheet_builder.dart';
