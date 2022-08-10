@@ -11,6 +11,7 @@ enum MailboxActions {
   rename,
   move,
   markAsRead,
+  selectFromRuleFilter,
 }
 
 extension MailboxActionsExtension on MailboxActions {
@@ -23,6 +24,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.move:
         return AppLocalizations.of(context).moveTo;
       case MailboxActions.select:
+      case MailboxActions.selectFromRuleFilter:
         return AppLocalizations.of(context).selectMailbox;
       default:
         return '';
@@ -82,6 +84,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.moveEmail:
       case MailboxActions.move:
       case MailboxActions.select:
+      case MailboxActions.selectFromRuleFilter:
         return true;
       default:
         return false;
@@ -104,6 +107,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.moveEmail:
       case MailboxActions.move:
       case MailboxActions.select:
+      case MailboxActions.selectFromRuleFilter:
         return false;
       default:
         return true;

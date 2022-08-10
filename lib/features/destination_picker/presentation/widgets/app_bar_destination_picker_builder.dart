@@ -54,6 +54,7 @@ class AppBarDestinationPickerBuilder extends StatelessWidget {
   Widget _buildCancelButton(BuildContext context) {
     if (_mailboxAction == MailboxActions.moveEmail ||
         _mailboxAction == MailboxActions.move ||
+        _mailboxAction == MailboxActions.selectFromRuleFilter ||
         _mailboxAction == MailboxActions.select) {
       return Padding(
         padding: const EdgeInsets.only(right: 12),

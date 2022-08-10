@@ -32,11 +32,11 @@ class AppLocalizations {
   String get loginInputUrlMessage {
     return Intl.message('To login and access your message please connect to your JMAP server', name: 'loginInputUrlMessage');
   }
-  
+
   String get loginInputCredentialMessage {
     return Intl.message('Enter your credentials to sign in', name: 'loginInputCredentialMessage');
   }
-  
+
   String get next {
     return Intl.message('Next', name: 'next');
   }
@@ -1838,6 +1838,99 @@ class AppLocalizations {
     return Intl.message(
       'Delete rule',
       name: 'deleteRule',
+    );
+  }
+
+  String get createNewRule {
+    return Intl.message(
+        'Create new rule',
+        name: 'createNewRule');
+  }
+
+  String get rulesNameHintTextInput {
+    return Intl.message(
+        'Enter the rule name',
+        name: 'rulesNameHintTextInput');
+  }
+
+  String get conditionValueHintTextInput {
+    return Intl.message(
+        'Value',
+        name: 'conditionValueHintTextInput');
+  }
+
+  String get conditionTitleRulesFilter {
+    return Intl.message(
+        'If all of the following conditions are met:',
+        name: 'conditionTitleRulesFilter');
+  }
+
+  String get recipient {
+    return Intl.message(
+        'Recipient',
+        name: 'recipient');
+  }
+
+  String get contains {
+    return Intl.message(
+        'Contains',
+        name: 'contains');
+  }
+
+  String get notContains {
+    return Intl.message(
+        'Not contains',
+        name: 'notContains');
+  }
+
+  String get exactlyEquals {
+    return Intl.message(
+        'Exactly equals',
+        name: 'exactlyEquals');
+  }
+
+  String get notExactlyEquals {
+    return Intl.message(
+        'Not exactly equals',
+        name: 'notExactlyEquals');
+  }
+
+  String get actionTitleRulesFilter {
+    return Intl.message(
+        'Perform the following actions:',
+        name: 'actionTitleRulesFilter');
+  }
+
+  String get toMailbox {
+    return Intl.message(
+        'To mailbox:',
+        name: 'toMailbox');
+  }
+
+  String get moveMessage {
+    return Intl.message(
+        'Move message',
+        name: 'moveMessage');
+  }
+
+  String get ruleFilterAddressFromField {
+    return Intl.message(
+      'From',
+      name: 'ruleFilterAddressFromField',
+    );
+  }
+
+  String get ruleFilterAddressToField {
+    return Intl.message(
+      'To',
+      name: 'ruleFilterAddressToField',
+    );
+  }
+
+  String get ruleFilterAddressCcField {
+    return Intl.message(
+      'Cc',
+      name: 'ruleFilterAddressCcField',
     );
   }
 }

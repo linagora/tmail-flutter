@@ -9,8 +9,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/extensions/locale_extension.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 
 class DropDownButtonWidget<T> extends StatelessWidget {
 
@@ -28,6 +31,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   final Color? colorButton;
   final String tooltip;
   final double? dropdownWidth;
+  final double? dropdownMaxHeight;
 
   const DropDownButtonWidget({
     Key? key,
@@ -43,6 +47,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     this.opacity = 1.0,
     this.iconArrowDown,
     this.dropdownWidth,
+    this.dropdownMaxHeight,
     this.colorButton = Colors.white,
     this.tooltip = '',
   }) : super(key: key);
@@ -105,7 +110,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                     borderRadius: BorderRadius.circular(radiusButton),
                     border: Border.all(
                       color: AppColor.colorInputBorderCreateMailbox,
-                      width: 0.5,
+                      width: 1,
                     ),
                     color: colorButton ?? AppColor.colorInputBackgroundCreateMailbox,
                   ),
@@ -132,7 +137,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
             borderRadius: BorderRadius.circular(radiusButton),
             border: Border.all(
               color: AppColor.colorInputBorderCreateMailbox,
-              width: 0.5,
+              width: 1,
             ),
             color: colorButton ?? AppColor.colorInputBackgroundCreateMailbox,
           ),
@@ -142,7 +147,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
               ? Colors.white
               : Colors.black12,
           itemPadding: const EdgeInsets.symmetric(horizontal: 12),
-          dropdownMaxHeight: 200,
+          dropdownMaxHeight: dropdownMaxHeight ?? 200,
           dropdownDecoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radiusButton),
             color: Colors.white,
@@ -170,6 +175,15 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     }
     if (item is enough_html_editor.SafeFont) {
       return item.name;
+    }
+    if (item is rule_condition.Field) {
+      return item.getTitle(context);
+    }
+    if (item is rule_condition.Comparator) {
+      return item.getTitle(context);
+    }
+    if (item is EmailRuleFilterAction) {
+      return item.getTitle(context);
     }
     return '';
   }
