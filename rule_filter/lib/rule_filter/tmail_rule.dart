@@ -35,4 +35,18 @@ class TMailRule extends Rule {
         condition,
         action,
       ];
+
+  TMailRule copyWith({
+    RuleId? id,
+    String? name,
+    RuleCondition? condition,
+    RuleAction? action,
+  }) {
+    return TMailRule(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      condition: condition ?? this.condition,
+      action: action ?? this.action,
+    );
+  }
 }

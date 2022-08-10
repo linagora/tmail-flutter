@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/get/get_identity_method.dart';
@@ -12,6 +13,9 @@ import 'package:jmap_dart_client/jmap/identities/set/set_identity_response.dart'
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:rule_filter/rule_filter/get/get_rule_filter_method.dart';
 import 'package:rule_filter/rule_filter/get/get_rule_filter_response.dart';
+import 'package:rule_filter/rule_filter/rule_filter_id.dart';
+import 'package:rule_filter/rule_filter/rule_id.dart';
+import 'package:rule_filter/rule_filter/set/set_rule_filter_method.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
@@ -123,8 +127,8 @@ class ManageAccountAPI {
     final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
 
     final getRuleFilterMethod = GetRuleFilterMethod(
-      accountId,
-    );
+        accountId,
+    )..addIds({RuleFilterIdSingleton.ruleFilterIdSingleton.id});
 
     final getRuleFilterInvocation = requestBuilder.invocation(getRuleFilterMethod);
     final response = await (requestBuilder
@@ -134,6 +138,44 @@ class ManageAccountAPI {
 
     final result = response.parse<GetRuleFilterResponse>(
         getRuleFilterInvocation.methodCallId,
+        GetRuleFilterResponse.deserialize);
+
+    if (result?.list.isEmpty == true) {
+      return <TMailRule>[];
+    }
+
+    return result?.list.first.rules ?? <TMailRule>[];
+  }
+
+  Future<List<TMailRule>> updateListTMailRule(AccountId accountId, List<TMailRule> listTMailRule) async {
+
+    final List<TMailRule> listTMailRuleWithId = listTMailRule
+        .asMap()
+        .map((key, value) => MapEntry(key, value.copyWith(id: RuleId(id: Id(key.toString())))))
+        .values
+        .toList();
+
+    final processingInvocation = ProcessingInvocation();
+    final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
+
+    final setRuleFilterMethod = SetRuleFilterMethod(accountId)
+      ..addUpdateRuleFilter({Id(RuleFilterIdType.singleton.value): listTMailRuleWithId});
+
+    requestBuilder.invocation(setRuleFilterMethod);
+
+    final getListTMailRuleUpdated = GetRuleFilterMethod(accountId)
+      ..addIds({RuleFilterIdSingleton.ruleFilterIdSingleton.id});
+
+    final getListTMailRuleUpdatedInvocation = requestBuilder.invocation(getListTMailRuleUpdated);
+
+    final response = await (requestBuilder
+        ..usings(getListTMailRuleUpdated.requiredCapabilities))
+      .build()
+      .execute();
+
+
+    final result = response.parse<GetRuleFilterResponse>(
+        getListTMailRuleUpdatedInvocation.methodCallId,
         GetRuleFilterResponse.deserialize);
 
     if (result?.list.isEmpty == true) {
