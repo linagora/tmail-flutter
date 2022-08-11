@@ -1,5 +1,8 @@
 
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -8,8 +11,10 @@ import 'package:rule_filter/rule_filter/rule_action.dart';
 import 'package:rule_filter/rule_filter/rule_append_in.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
-import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
@@ -21,9 +26,10 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/r
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class RulesFilterCreatorController extends BaseController {
+class RulesFilterCreatorController extends BaseMailboxController {
 
   final VerifyNameInteractor _verifyNameInteractor;
+  final GetAllMailboxInteractor _getAllMailboxInteractor;
 
   final actionType = CreatorActionType.create.obs;
   final errorRuleName = Rxn<String>();
@@ -40,8 +46,13 @@ class RulesFilterCreatorController extends BaseController {
   AccountId? _accountId;
   String? _newRuleName;
   String? _newConditionValue;
+  TMailRule? _currentTMailRule;
 
-  RulesFilterCreatorController(this._verifyNameInteractor);
+  RulesFilterCreatorController(
+    this._verifyNameInteractor,
+    this._getAllMailboxInteractor,
+    treeBuilder
+  ) : super(treeBuilder);
 
   @override
   void onReady() {
@@ -61,6 +72,24 @@ class RulesFilterCreatorController extends BaseController {
   void onDone() {}
 
   @override
+  void onData(Either<Failure, Success> newState) {
+    super.onData(newState);
+    newState.fold(
+      (failure) {
+        if (failure is GetAllMailboxFailure) {
+          _updateStateCreatorButton();
+        }
+      },
+      (success) async {
+        if (success is GetAllMailboxSuccess) {
+          await buildTree(success.mailboxList);
+          _setUpMailboxSelected();
+          _updateStateCreatorButton();
+        }
+      });
+  }
+
+  @override
   void onError(error) {}
 
   void _getArguments() {
@@ -68,17 +97,52 @@ class RulesFilterCreatorController extends BaseController {
     if (arguments is RulesFilterCreatorArguments) {
       _accountId = arguments.accountId;
       actionType.value = arguments.actionType;
+      _currentTMailRule = arguments.tMailRule;
     }
   }
 
   void _setUpDefaultValueRuleFilter() {
-    if (actionType.value == CreatorActionType.create) {
-      ruleConditionFieldSelected.value = rule_condition.Field.from;
-      ruleConditionComparatorSelected.value = rule_condition.Comparator.exactlyEquals;
-      emailRuleFilterActionSelected.value = EmailRuleFilterAction.moveMessage;
+    switch(actionType.value) {
+      case CreatorActionType.create:
+        ruleConditionFieldSelected.value = rule_condition.Field.from;
+        ruleConditionComparatorSelected.value = rule_condition.Comparator.contains;
+        emailRuleFilterActionSelected.value = EmailRuleFilterAction.moveMessage;
+        break;
+      case CreatorActionType.edit:
+        if (_currentTMailRule != null) {
+          ruleConditionFieldSelected.value = _currentTMailRule!.condition.field;
+          ruleConditionComparatorSelected.value = _currentTMailRule!.condition.comparator;
+          emailRuleFilterActionSelected.value = EmailRuleFilterAction.moveMessage;
+          _newConditionValue = _currentTMailRule!.condition.value;
+          _setValueInputField(inputConditionValueController, _newConditionValue ?? '');
+          _newRuleName = _currentTMailRule!.name;
+          _setValueInputField(inputRuleNameController, _newRuleName ?? '');
+          _getAllMailboxAction();
+        }
+        break;
     }
 
     _updateStateCreatorButton();
+  }
+
+  void _setValueInputField(TextEditingController controller, String value) {
+    controller.value = controller.value.copyWith(
+        text: value,
+        selection: TextSelection.collapsed(offset: value.length));
+  }
+
+  void _setUpMailboxSelected() {
+    if (_currentTMailRule != null) {
+      final mailboxIdOfRule = _currentTMailRule!.action.appendIn.mailboxIds.first;
+      final mailboxNode = findMailboxNodeById(mailboxIdOfRule);
+      mailboxSelected.value = mailboxNode?.item;
+    }
+  }
+
+  void _getAllMailboxAction() {
+    if (_accountId != null) {
+      consumeState(_getAllMailboxInteractor.execute(_accountId!));
+    }
   }
 
   void updateRuleName(BuildContext context, String? value) {
@@ -161,6 +225,7 @@ class RulesFilterCreatorController extends BaseController {
     }
 
     final newTMailRule = TMailRule(
+        id: _currentTMailRule?.id,
         name: _newRuleName!,
         action: RuleAction(
           appendIn: RuleAppendIn(
