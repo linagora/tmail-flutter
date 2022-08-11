@@ -1933,4 +1933,16 @@ class AppLocalizations {
       name: 'ruleFilterAddressCcField',
     );
   }
+
+  String get newFilterWasCreated {
+    return Intl.message(
+        'New filter was created',
+        name: 'newFilterWasCreated');
+  }
+
+  String get yourFilterHasBeenUpdated {
+    return Intl.message(
+        'Your filter has been updated',
+        name: 'yourFilterHasBeenUpdated');
+  }
 }
