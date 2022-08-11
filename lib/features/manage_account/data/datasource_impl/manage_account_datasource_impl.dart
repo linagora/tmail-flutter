@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/manage_account/data/network/manage_accoun
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_email_rule_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
 
@@ -92,6 +93,15 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   Future<List<TMailRule>> createNewEmailRuleFilter(AccountId accountId, CreateNewEmailRuleFilterRequest ruleFilterRequest) {
     return Future.sync(() async {
       return await manageAccountAPI.updateListTMailRule(accountId, ruleFilterRequest.newListTMailRules);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<List<TMailRule>> editEmailRuleFilter(AccountId accountId, EditEmailRuleFilterRequest ruleFilterRequest) {
+    return Future.sync(() async {
+      return await manageAccountAPI.updateListTMailRule(accountId, ruleFilterRequest.listTMailRulesUpdated);
     }).catchError((error) {
       throw error;
     });
