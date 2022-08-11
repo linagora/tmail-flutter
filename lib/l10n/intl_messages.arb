@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-11T11:23:27.430951",
+  "@@last_modified": "2022-08-12T09:07:20.482325",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1876,6 +1876,18 @@
   },
   "ruleFilterAddressCcField": "Cc",
   "@ruleFilterAddressCcField": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newFilterWasCreated": "New filter was created",
+  "@newFilterWasCreated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourFilterHasBeenUpdated": "Your filter has been updated",
+  "@yourFilterHasBeenUpdated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

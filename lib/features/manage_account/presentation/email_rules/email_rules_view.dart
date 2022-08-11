@@ -37,9 +37,7 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
                 EmailRulesHeaderWidget(
                   imagePaths: _imagePaths,
                   responsiveUtils: _responsiveUtils,
-                  createRule: () {
-                    //TODO: createRule
-                  },
+                  createRule: () => controller.goToCreateNewRule(),
                 ),
                 const SizedBox(height: 22),
                 _buildLoadingView(),

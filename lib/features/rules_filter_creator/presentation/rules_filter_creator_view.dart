@@ -415,8 +415,8 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         height: 44,
                         backgroundColor: AppColor.colorTextButton
                             .withOpacity(controller.isCreateRuleFilterValid.value
-                            ? 1.0
-                            : 0.4),
+                              ? 1.0
+                              : 0.4),
                         radius: 10,
                         onTap: () {
                           if (controller.isCreateRuleFilterValid.value) {
@@ -599,8 +599,8 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         height: 44,
                         backgroundColor: AppColor.colorTextButton
                             .withOpacity(controller.isCreateRuleFilterValid.value
-                            ? 1.0
-                            : 0.4),
+                              ? 1.0
+                              : 0.4),
                         radius: 10,
                         onTap: () {
                           if (controller.isCreateRuleFilterValid.value) {

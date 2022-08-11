@@ -1,6 +1,9 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:rule_filter/rule_filter/rule_id.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/email_rule_item_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -36,22 +39,24 @@ class ListEmailRulesWidget extends GetWidget<EmailRulesController> {
               thickness: 0.2,
             ),
             Expanded(
-              child: Obx(
-                () => ListView.separated(
+              child: Obx(() {
+                log('ListEmailRulesWidget::build(): ${controller.listEmailRule}');
+                return ListView.separated(
                   shrinkWrap: true,
                   itemCount: controller.listEmailRule.length,
                   itemBuilder: (context, index) {
-                    final rule = controller.listEmailRule[index];
-                    return EmailRulesItemWidget(rule: rule);
+                    final ruleWithId = controller.listEmailRule[index]
+                        .copyWith(id: RuleId(id: Id(index.toString())));
+                    log('ListEmailRulesWidget::build(): $ruleWithId');
+                    return EmailRulesItemWidget(rule: ruleWithId);
                   },
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(
-                    color: AppColor.lineItemListColor,
-                    height: 1,
-                    thickness: 0.2,
-                  ),
-                ),
-              ),
+                  separatorBuilder: (context, index) => const Divider(
+                      color: AppColor.lineItemListColor,
+                      height: 1,
+                      thickness: 0.2,
+                    ),
+                );
+              }),
             ),
           ]),
     );
