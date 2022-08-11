@@ -17,48 +17,61 @@ class ListEmailRulesWidget extends GetWidget<EmailRulesController> {
       decoration: BoxDecoration(
         color: AppColor.colorBackgroundWrapIconStyleCode,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            width: 1,
+            color: AppColor.colorBorderListRuleFilter)
       ),
-      child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 28,
-                horizontal: 24,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: AppColor.colorBackgroundHeaderListRuleFilter,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16)),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 28,
+                  horizontal: 24,
+                ),
+                child: Text(AppLocalizations.of(context).headerNameOfRules,
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: AppColor.colorTextButtonHeaderThread)),
               ),
-              child: Text(AppLocalizations.of(context).headerNameOfRules,
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColor.colorTextButtonHeaderThread)),
-            ),
-            const Divider(
-              color: AppColor.lineItemListColor,
-              height: 1,
-              thickness: 0.2,
-            ),
-            Expanded(
-              child: Obx(() {
-                log('ListEmailRulesWidget::build(): ${controller.listEmailRule}');
-                return ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: controller.listEmailRule.length,
-                  itemBuilder: (context, index) {
-                    final ruleWithId = controller.listEmailRule[index]
-                        .copyWith(id: RuleId(id: Id(index.toString())));
-                    log('ListEmailRulesWidget::build(): $ruleWithId');
-                    return EmailRulesItemWidget(rule: ruleWithId);
-                  },
-                  separatorBuilder: (context, index) => const Divider(
-                      color: AppColor.lineItemListColor,
-                      height: 1,
-                      thickness: 0.2,
-                    ),
-                );
-              }),
-            ),
-          ]),
+              const Divider(
+                color: AppColor.lineItemListColor,
+                height: 1,
+                thickness: 0.2,
+              ),
+              Expanded(
+                child: Obx(() {
+                  log('ListEmailRulesWidget::build(): ${controller.listEmailRule}');
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: controller.listEmailRule.length,
+                    itemBuilder: (context, index) {
+                      final ruleWithId = controller.listEmailRule[index]
+                          .copyWith(id: RuleId(id: Id(index.toString())));
+                      log('ListEmailRulesWidget::build(): $ruleWithId');
+                      return EmailRulesItemWidget(rule: ruleWithId);
+                    },
+                    separatorBuilder: (context, index) => const Divider(
+                        color: AppColor.lineItemListColor,
+                        height: 1,
+                        thickness: 0.2,
+                      ),
+                  );
+                }),
+              ),
+            ]),
+      ),
     );
   }
 }
