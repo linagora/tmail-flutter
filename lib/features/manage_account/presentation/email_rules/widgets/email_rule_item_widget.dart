@@ -5,16 +5,17 @@ import 'package:get/get.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_controller.dart';
 
-class EmailRulesItemWidget extends GetWidget<EmailRulesController> {
+class EmailRulesItemWidget extends StatelessWidget {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
+  final _emailRuleController = Get.find<EmailRulesController>();
+
+  final TMailRule rule;
 
   EmailRulesItemWidget({
     Key? key,
     required this.rule,
   }) : super(key: key);
-
-  final TMailRule rule;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +41,7 @@ class EmailRulesItemWidget extends GetWidget<EmailRulesController> {
                 fit: BoxFit.fill,
               ),
               onTap: () {
-                controller.editEmailRule(rule);
+                _emailRuleController.editEmailRule(rule);
               }),
         if (!_responsiveUtils.isMobile(context))
           buildIconWeb(
@@ -49,7 +50,7 @@ class EmailRulesItemWidget extends GetWidget<EmailRulesController> {
                 fit: BoxFit.fill,
               ),
               onTap: () {
-                controller.deleteEmailRule(rule);
+                _emailRuleController.deleteEmailRule(rule);
               }),
         if (_responsiveUtils.isMobile(context))
           buildIconWeb(
@@ -59,7 +60,7 @@ class EmailRulesItemWidget extends GetWidget<EmailRulesController> {
               ),
               iconPadding: const EdgeInsets.all(0),
               onTap: () {
-                controller.openEditRuleMenuAction(context, rule);
+                _emailRuleController.openEditRuleMenuAction(context, rule);
               }),
       ]),
     );

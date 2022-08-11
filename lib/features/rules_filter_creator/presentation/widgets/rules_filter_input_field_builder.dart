@@ -11,14 +11,12 @@ class RulesFilterInputField extends StatelessWidget {
   final String? errorText;
   final String? hintText;
   final TextEditingController? editingController;
-  final bool isMandatory;
   final OnChangeFilterInputAction? onChangeAction;
 
   const RulesFilterInputField({
     Key? key,
     this.hintText,
     this.errorText,
-    this.isMandatory = false,
     this.editingController,
     this.onChangeAction
   }) : super(key: key);

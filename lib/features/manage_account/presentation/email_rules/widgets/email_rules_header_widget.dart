@@ -3,11 +3,9 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/button_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class EmailRulesHeaderWidget extends GetWidget<EmailRulesController> {
+class EmailRulesHeaderWidget extends StatelessWidget {
   const EmailRulesHeaderWidget({
     Key? key,
     required this.createRule,
@@ -63,7 +61,7 @@ class EmailRulesHeaderWidget extends GetWidget<EmailRulesController> {
               color: Colors.white,
               fontWeight: FontWeight.w500,
             ))
-            ..onPressActionClick(() => controller.goToCreateNewRule())
+            ..onPressActionClick(() => createRule.call())
             ..text(
               AppLocalizations.of(context).addNewRule,
               isVertical: false,
@@ -85,7 +83,7 @@ class EmailRulesHeaderWidget extends GetWidget<EmailRulesController> {
               color: Colors.white,
               fontWeight: FontWeight.w500,
             ))
-            ..onPressActionClick(() => controller.goToCreateNewRule())
+            ..onPressActionClick(() => createRule.call())
             ..text(
               AppLocalizations.of(context).addNewRule,
               isVertical: false,
