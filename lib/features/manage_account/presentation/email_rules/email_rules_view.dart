@@ -20,34 +20,44 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
           : Colors.white,
       body: Container(
         width: double.infinity,
-        margin: _responsiveUtils.isWebDesktop(context)
-            ? const EdgeInsets.only(left: 48, right: 24, top: 24, bottom: 24)
-            : EdgeInsets.zero,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(
-              _responsiveUtils.isWebDesktop(context) ? 20 : 0),
-          child: Padding(
-            padding: EdgeInsets.only(
-                left: _responsiveUtils.isWebDesktop(context) ? 24 : 10,
-                top: 24,
-                right: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                EmailRulesHeaderWidget(
-                  imagePaths: _imagePaths,
-                  responsiveUtils: _responsiveUtils,
-                  createRule: () => controller.goToCreateNewRule(),
-                ),
-                const SizedBox(height: 22),
-                _buildLoadingView(),
-                const Expanded(child: ListEmailRulesWidget())
-              ],
+        margin: _getMarginView(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            EmailRulesHeaderWidget(
+              imagePaths: _imagePaths,
+              responsiveUtils: _responsiveUtils,
+              createRule: () => controller.goToCreateNewRule(),
             ),
-          ),
+            SizedBox(height: _responsiveUtils.isWebDesktop(context) ? 24 : 16),
+            _buildLoadingView(),
+            const Expanded(child: ListEmailRulesWidget())
+          ],
         ),
       ),
     );
+  }
+
+  EdgeInsets _getMarginView(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      if (_responsiveUtils.isDesktop(context)) {
+        return const EdgeInsets.only(left: 16, top: 16, right: 24, bottom: 24);
+      } else if (_responsiveUtils.isTabletLarge(context) ||
+          _responsiveUtils.isTablet(context)) {
+        return const EdgeInsets.only(right: 32, top: 16, bottom: 16);
+      } else {
+        return const EdgeInsets.only(right: 32, top: 16, bottom: 16);
+      }
+    } else {
+      if (_responsiveUtils.isDesktop(context) ||
+          _responsiveUtils.isLandscapeTablet(context) ||
+          _responsiveUtils.isTabletLarge(context) ||
+          _responsiveUtils.isTablet(context)) {
+        return const EdgeInsets.only(right: 32, top: 16, bottom: 16);
+      } else {
+        return const EdgeInsets.only(right: 32, top: 16, bottom: 16);
+      }
+    }
   }
 
   Widget _buildLoadingView() {
