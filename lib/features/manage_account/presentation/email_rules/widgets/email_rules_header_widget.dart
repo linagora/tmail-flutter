@@ -20,6 +20,7 @@ class EmailRulesHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: AppColor.colorBackgroundWrapIconStyleCode,
