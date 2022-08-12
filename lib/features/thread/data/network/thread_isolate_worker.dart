@@ -1,10 +1,7 @@
 import 'dart:async';
 
-import 'package:core/presentation/state/failure.dart';
-import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
-import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
@@ -18,7 +15,6 @@ import 'package:model/email/email_property.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/thread/data/model/empty_trash_folder_arguments.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 class ThreadIsolateWorker {
@@ -31,28 +27,22 @@ class ThreadIsolateWorker {
   Future<List<EmailId>> emptyTrashFolder(
     AccountId accountId,
     MailboxId mailboxId,
-    int totalEmailUnread,
     Future<void> Function(State state) updateState,
-    Future<void> Function({
-      List<Email>? newUpdated,
-      List<Email>? newCreated,
-      List<EmailId>? newDestroyed,
-    }) updateEmailCache,
-    StreamController<dartz.Either<Failure, Success>> onProgressController,
+    Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache,
   ) async {
     if (BuildUtils.isWeb) {
-      return _emptyTrashFolderOnWeb(accountId, mailboxId, updateState, updateEmailCache, onProgressController);
+      return _emptyTrashFolderOnWeb(accountId, mailboxId, updateState, updateDestroyedEmailCache);
     } else {
       final result = await _isolateExecutor.execute(
-          arg1: EmptyTrashFolderArguments(_threadAPI, _emailAPI, accountId, mailboxId, updateEmailCache, updateState),
+          arg1: EmptyTrashFolderArguments(_threadAPI, _emailAPI, accountId, mailboxId),
           fun1: _emptyTrashFolderAction,
           notification: (value) {
-            if (value is List<Email>) {
-              log('ThreadIsolateWorker::markAsThreadRead(): onUpdateProgress: PERCENT ${value.length / totalEmailUnread}');
-              onProgressController.add(dartz.Right(UpdatingEmptyTrashFolderState(
-                mailboxId: mailboxId,
-                countRemove: value.length,
-              )));
+            if(value is State) {
+              updateState.call(value);
+            }
+            if (value is List<EmailId>) {
+              updateDestroyedEmailCache.call(value);
+              log('ThreadIsolateWorker::emptyTrashFolder(): onUpdateProgress: PERCENT ${value.length}');
             }
           });
       return result;
@@ -75,7 +65,7 @@ class ThreadIsolateWorker {
             properties: Properties({EmailProperty.id}));
 
         if (emailsResponse.state != null) {
-          await args.updateState.call(emailsResponse.state!);
+          sendPort.send(emailsResponse.state!);
         }
 
         var newEmailList = emailsResponse.emailList ?? <Email>[];
@@ -83,7 +73,7 @@ class ThreadIsolateWorker {
           newEmailList = newEmailList.where((email) => email.id != lastEmail!.id).toList();
         }
 
-        log('ThreadRepositoryImpl::emptyTrashFolder(): ${newEmailList.length}');
+        log('ThreadIsolateWorker::_emptyTrashFolderAction(): ${newEmailList.length}');
 
         if (newEmailList.isNotEmpty == true) {
           lastEmail = newEmailList.last;
@@ -93,7 +83,7 @@ class ThreadIsolateWorker {
           final listEmailIdDeleted = await args.emailAPI.deleteMultipleEmailsPermanently(args.accountId, emailIds);
 
           if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == emailIds.length) {
-            await args.updateEmailCache(newDestroyed: listEmailIdDeleted);
+            sendPort.send(listEmailIdDeleted);
           }
           emailListCompleted.addAll(listEmailIdDeleted);
 
@@ -103,9 +93,9 @@ class ThreadIsolateWorker {
         }
       }
     } catch (e) {
-      log('ThreadIsolateWorker::_emptyTrashFolderOnWeb(): ERROR: $e');
+      log('ThreadIsolateWorker::_emptyTrashFolderAction(): ERROR: $e');
     }
-    log('ThreadIsolateWorker::_emptyTrashFolderOnWeb(): TOTAL_REMOVE: ${emailListCompleted.length}');
+    log('ThreadIsolateWorker::_emptyTrashFolderAction(): TOTAL_REMOVE: ${emailListCompleted.length}');
     return emailListCompleted;
   }
 
@@ -113,12 +103,7 @@ class ThreadIsolateWorker {
     AccountId accountId,
     MailboxId trashMailboxId,
     Future<void> Function(State state) updateState,
-    Future<void> Function({
-      List<Email>? newUpdated,
-      List<Email>? newCreated,
-      List<EmailId>? newDestroyed,
-    }) updateEmailCache,
-    StreamController<dartz.Either<Failure, Success>> onProgressController,
+    Future<void> Function(List<EmailId> newDestroyed) updateDestroyedEmailCache,
   ) async {
     List<EmailId> emailListCompleted = List.empty(growable: true);
     try {
@@ -143,7 +128,7 @@ class ThreadIsolateWorker {
           newEmailList = newEmailList.where((email) => email.id != lastEmail!.id).toList();
         }
 
-        log('ThreadRepositoryImpl::emptyTrashFolder(): ${newEmailList.length}');
+        log('ThreadIsolateWorker::_emptyTrashFolderOnWeb(): ${newEmailList.length}');
 
         if (newEmailList.isNotEmpty == true) {
           lastEmail = newEmailList.last;
@@ -153,13 +138,10 @@ class ThreadIsolateWorker {
           final listEmailIdDeleted = await _emailAPI.deleteMultipleEmailsPermanently(accountId, emailIds);
 
           if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == emailIds.length) {
-            await updateEmailCache(newDestroyed: listEmailIdDeleted);
+            await updateDestroyedEmailCache(listEmailIdDeleted);
           }
           emailListCompleted.addAll(listEmailIdDeleted);
 
-          onProgressController.add(dartz.Right(UpdatingEmptyTrashFolderState(
-              mailboxId: trashMailboxId,
-              countRemove: emailListCompleted.length)));
         } else {
           hasEmails = false;
         }
