@@ -4,7 +4,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
@@ -27,19 +26,15 @@ class ThreadIsolateWorker {
   Future<List<EmailId>> emptyTrashFolder(
     AccountId accountId,
     MailboxId mailboxId,
-    Future<void> Function(State state) updateState,
     Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache,
   ) async {
     if (BuildUtils.isWeb) {
-      return _emptyTrashFolderOnWeb(accountId, mailboxId, updateState, updateDestroyedEmailCache);
+      return _emptyTrashFolderOnWeb(accountId, mailboxId, updateDestroyedEmailCache);
     } else {
       final result = await _isolateExecutor.execute(
           arg1: EmptyTrashFolderArguments(_threadAPI, _emailAPI, accountId, mailboxId),
           fun1: _emptyTrashFolderAction,
           notification: (value) {
-            if(value is State) {
-              updateState.call(value);
-            }
             if (value is List<EmailId>) {
               updateDestroyedEmailCache.call(value);
               log('ThreadIsolateWorker::emptyTrashFolder(): onUpdateProgress: PERCENT ${value.length}');
@@ -63,10 +58,6 @@ class ThreadIsolateWorker {
                   ..setIsAscending(false)),
             filter: EmailFilterCondition(inMailbox: args.trashMailboxId, before: lastEmail?.receivedAt),
             properties: Properties({EmailProperty.id}));
-
-        if (emailsResponse.state != null) {
-          sendPort.send(emailsResponse.state!);
-        }
 
         var newEmailList = emailsResponse.emailList ?? <Email>[];
         if (lastEmail != null) {
@@ -102,7 +93,6 @@ class ThreadIsolateWorker {
   Future<List<EmailId>> _emptyTrashFolderOnWeb(
     AccountId accountId,
     MailboxId trashMailboxId,
-    Future<void> Function(State state) updateState,
     Future<void> Function(List<EmailId> newDestroyed) updateDestroyedEmailCache,
   ) async {
     List<EmailId> emailListCompleted = List.empty(growable: true);
@@ -118,10 +108,6 @@ class ThreadIsolateWorker {
                   ..setIsAscending(false)),
             filter: EmailFilterCondition(inMailbox: trashMailboxId, before: lastEmail?.receivedAt),
             properties: Properties({EmailProperty.id}));
-
-        if (emailsResponse.state != null) {
-          await updateState.call(emailsResponse.state!);
-        }
 
         var newEmailList = emailsResponse.emailList ?? <Email>[];
         if (lastEmail != null) {

@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:core/presentation/state/failure.dart';
-import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -13,7 +11,6 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
-import 'package:dartz/dartz.dart' as dartz;
 
 abstract class ThreadDataSource {
   Future<EmailsResponse> getAllEmail(
@@ -42,7 +39,6 @@ abstract class ThreadDataSource {
   Future<List<EmailId>> emptyTrashFolder(
       AccountId accountId,
       MailboxId mailboxId,
-      Future<void> Function(State state) updateState,
       Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache,
   );
 }

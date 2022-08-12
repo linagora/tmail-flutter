@@ -9,9 +9,6 @@ import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
@@ -299,46 +296,13 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Future<bool> emptyTrashFolder(AccountId accountId, MailboxId trashMailboxId) async {
-    var finalResult = true;
-    var hasEmails = true;
-
-    while (hasEmails) {
-      Email? lastEmail;
-
-      final emailsResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
-          accountId,
-          sort: <Comparator>{}
-            ..add(EmailComparator(EmailComparatorProperty.receivedAt)
-              ..setIsAscending(false)),
-          filter: EmailFilterCondition(inMailbox: trashMailboxId, before: lastEmail?.receivedAt),
-          properties: Properties({EmailProperty.id}));
-
-      var newEmailList =  emailsResponse.emailList ?? <Email>[];
-      if (lastEmail != null) {
-        newEmailList = newEmailList.where((email) => email.id != lastEmail!.id).toList();
-      }
-
-      log('ThreadRepositoryImpl::emptyTrashFolder(): ${newEmailList.length}');
-
-      if (newEmailList.isNotEmpty == true) {
-        lastEmail = newEmailList.last;
-        hasEmails = true;
-        final emailIds = newEmailList.map((email) => email.id).toList();
-
-        final listEmailIdDeleted = await emailDataSource.deleteMultipleEmailsPermanently(accountId, emailIds);
-
-        if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == emailIds.length) {
-          await _updateEmailCache(newDestroyed: listEmailIdDeleted);
-          finalResult = true;
-        } else {
-          finalResult = false;
-        }
-      } else {
-        hasEmails = false;
-      }
-    }
-
-    return finalResult;
+  Future<List<EmailId>> emptyTrashFolder(AccountId accountId, MailboxId trashMailboxId) async {
+    return mapDataSource[DataSourceType.network]!.emptyTrashFolder(
+      accountId,
+      trashMailboxId,
+      (listEmailIdDeleted) async {
+        await _updateEmailCache(newDestroyed: listEmailIdDeleted);
+      },
+    );
   }
 }
