@@ -108,6 +108,7 @@ class ThreadController extends BaseController {
   final ScrollController listEmailController = ScrollController();
   late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker, advancedSearchFilterWorker;
 
+
   Set<Comparator>? get _sortOrder => <Comparator>{}
     ..add(EmailComparator(EmailComparatorProperty.receivedAt)
       ..setIsAscending(false));
@@ -320,7 +321,11 @@ class ThreadController extends BaseController {
   }
 
   void _initializeIsolateExecutor() async {
-      await _isolateExecutor.warmUp(log: BuildUtils.isDebugMode);
+    try {
+      await _isolateExecutor.warmUp();
+    } catch(e) {
+      log('ThreadController::_initializeIsolateExecutor(): exception: $e');
+    }
   }
 
   void _clearWorker() {
