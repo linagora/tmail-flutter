@@ -71,8 +71,6 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_status.d
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/binding_tag.dart';
-import 'package:worker_manager/worker_manager.dart';
 
 class ThreadController extends BaseController {
 
@@ -80,7 +78,6 @@ class ThreadController extends BaseController {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _appToast = Get.find<AppToast>();
-  final Executor _isolateExecutor = Get.find<Executor>(tag: BindingTag.threadExecutor);
 
   final GetEmailsInMailboxInteractor _getEmailsInMailboxInteractor;
   final MarkAsMultipleEmailReadInteractor _markAsMultipleEmailReadInteractor;
@@ -144,7 +141,6 @@ class ThreadController extends BaseController {
   @override
   void onInit() {
     _initWorker();
-    _initializeIsolateExecutor();
     super.onInit();
   }
 
@@ -157,7 +153,6 @@ class ThreadController extends BaseController {
   @override
   void onClose() {
     listEmailController.dispose();
-    _isolateExecutor.dispose();
     _clearWorker();
     super.onClose();
   }
@@ -318,14 +313,6 @@ class ThreadController extends BaseController {
         });
       }
     });
-  }
-
-  void _initializeIsolateExecutor() async {
-    try {
-      await _isolateExecutor.warmUp();
-    } catch(e) {
-      log('ThreadController::_initializeIsolateExecutor(): exception: $e');
-    }
   }
 
   void _clearWorker() {

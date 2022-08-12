@@ -31,7 +31,7 @@ class EmptyTrashFolderInteractor {
       final currentEmailState = listState.last;
 
       final result = await threadRepository.emptyTrashFolder(accountId, trashMailboxId);
-      if (result) {
+      if (result.isNotEmpty) {
         yield Right<Failure, Success>(EmptyTrashFolderSuccess(
           currentMailboxState: currentMailboxState,
           currentEmailState: currentEmailState,
