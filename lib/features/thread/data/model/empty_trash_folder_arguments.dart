@@ -9,17 +9,10 @@ import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 class EmptyTrashFolderArguments with EquatableMixin {
   AccountId accountId;
   MailboxId trashMailboxId;
-  Future<void> Function(State state) updateState;
-  Future<void> Function({
-    List<Email>? newUpdated,
-    List<Email>? newCreated,
-    List<EmailId>? newDestroyed,
-  }) updateEmailCache;
   final ThreadAPI threadAPI;
   final EmailAPI emailAPI;
 
-  EmptyTrashFolderArguments(this.threadAPI, this.emailAPI, this.accountId,
-      this.trashMailboxId, this.updateEmailCache, this.updateState);
+  EmptyTrashFolderArguments(this.threadAPI, this.emailAPI, this.accountId, this.trashMailboxId);
 
   @override
   List<Object?> get props => [accountId, trashMailboxId];

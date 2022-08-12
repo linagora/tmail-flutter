@@ -1,3 +1,8 @@
+import 'dart:async';
+
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -8,6 +13,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
+import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -15,8 +21,9 @@ import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option
 class ThreadDataSourceImpl extends ThreadDataSource {
 
   final ThreadAPI threadAPI;
+  final ThreadIsolateWorker _threadIsolateWorker;
 
-  ThreadDataSourceImpl(this.threadAPI);
+  ThreadDataSourceImpl(this.threadAPI, this._threadIsolateWorker);
 
   @override
   Future<EmailsResponse> getAllEmail(
@@ -68,5 +75,19 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   @override
   Future<void> update({List<Email>? updated, List<Email>? created, List<EmailId>? destroyed}) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<List<EmailId>> emptyTrashFolder(AccountId accountId, MailboxId mailboxId, Future<void> Function(State state) updateState, Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache) {
+    return Future.sync(() async {
+      return await _threadIsolateWorker.emptyTrashFolder(
+          accountId,
+          mailboxId,
+          updateState,
+          updateDestroyedEmailCache,
+      );
+    }).catchError((error) {
+      throw error;
+    });
   }
 }
