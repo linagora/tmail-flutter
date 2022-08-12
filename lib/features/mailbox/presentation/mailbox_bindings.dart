@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
+import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 
 class MailboxBindings extends BaseBindings {
 
@@ -73,7 +74,7 @@ class MailboxBindings extends BaseBindings {
     Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
-    Get.lazyPut(() => ThreadDataSourceImpl(Get.find<ThreadAPI>()));
+    Get.lazyPut(() => ThreadDataSourceImpl(Get.find<ThreadAPI>(), Get.find<ThreadIsolateWorker>()));
   }
 
   @override

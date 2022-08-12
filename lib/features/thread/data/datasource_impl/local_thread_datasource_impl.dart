@@ -1,3 +1,8 @@
+import 'dart:async';
+
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -59,5 +64,10 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
     }).catchError((error) {
       throw error;
     });
+  }
+
+  @override
+  Future<List<EmailId>> emptyTrashFolder(AccountId accountId, MailboxId mailboxId, Future<void> Function(State state) updateState, Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache) {
+    throw UnimplementedError();
   }
 }

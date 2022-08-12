@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -10,6 +14,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
+import 'package:dartz/dartz.dart' as dartz;
 
 abstract class ThreadRepository {
   Stream<EmailsResponse> getAllEmail(
@@ -47,5 +52,8 @@ abstract class ThreadRepository {
     }
   );
 
-  Future<bool> emptyTrashFolder(AccountId accountId, MailboxId trashMailboxId);
+  Future<List<EmailId>> emptyTrashFolder(
+      AccountId accountId,
+      MailboxId trashMailboxId,
+  );
 }
