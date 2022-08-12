@@ -1,8 +1,5 @@
 import 'dart:async';
 
-import 'package:core/presentation/state/failure.dart';
-import 'package:core/presentation/state/success.dart';
-import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -78,12 +75,11 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<List<EmailId>> emptyTrashFolder(AccountId accountId, MailboxId mailboxId, Future<void> Function(State state) updateState, Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache) {
+  Future<List<EmailId>> emptyTrashFolder(AccountId accountId, MailboxId mailboxId, Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache) {
     return Future.sync(() async {
       return await _threadIsolateWorker.emptyTrashFolder(
           accountId,
           mailboxId,
-          updateState,
           updateDestroyedEmailCache,
       );
     }).catchError((error) {
