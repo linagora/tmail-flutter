@@ -29,6 +29,8 @@ RUN cd core \
   && flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs \
   && cd ../contact \
   && flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs \
+  && cd ../rule_filter \
+  && flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs \
   && cd .. \
   && flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs \
   && flutter pub get && flutter pub run intl_generator:extract_to_arb --output-dir=./lib/l10n lib/main/localizations/app_localizations.dart \
