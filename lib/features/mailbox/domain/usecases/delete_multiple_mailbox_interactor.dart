@@ -7,15 +7,18 @@ import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_reposit
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 
 class DeleteMultipleMailboxInteractor {
-  final MailboxRepository mailboxRepository;
+  final MailboxRepository _mailboxRepository;
 
-  DeleteMultipleMailboxInteractor(this.mailboxRepository);
+  DeleteMultipleMailboxInteractor(this._mailboxRepository);
 
   Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, List<MailboxId> mailboxIds, MailboxId mailboxIdDeleted) async* {
     try {
-      final result = await mailboxRepository.deleteMultipleMailbox(session, accountId, mailboxIds);
+      final currentMailboxState = await _mailboxRepository.getMailboxState();
+      final result = await _mailboxRepository.deleteMultipleMailbox(session, accountId, mailboxIds);
       if (result) {
-        yield Right<Failure, Success>(DeleteMultipleMailboxSuccess(mailboxIdDeleted));
+        yield Right<Failure, Success>(DeleteMultipleMailboxSuccess(
+            mailboxIdDeleted,
+            currentMailboxState: currentMailboxState));
       } else {
         yield Left<Failure, Success>(DeleteMultipleMailboxFailure(null));
       }

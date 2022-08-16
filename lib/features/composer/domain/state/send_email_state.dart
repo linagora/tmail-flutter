@@ -1,4 +1,6 @@
 import 'package:core/core.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
 class SendingEmailState extends UIState {
   SendingEmailState();
@@ -7,9 +9,12 @@ class SendingEmailState extends UIState {
   List<Object?> get props => [];
 }
 
-class SendEmailSuccess extends UIState {
+class SendEmailSuccess extends UIActionState {
 
-  SendEmailSuccess();
+  SendEmailSuccess({
+    jmap.State? currentEmailState,
+    jmap.State? currentMailboxState,
+  }) : super(currentEmailState, currentMailboxState);
 
   @override
   List<Object?> get props => [];
