@@ -77,7 +77,7 @@ void main() {
 
       final getForwardMethod = GetForwardMethod(accountId)
         ..addIds({ForwardIdSingleton.forwardIdSingleton.id});
-      final getRuleFilterInvocation =
+      final getForwardInvocation =
           requestBuilder.invocation(getForwardMethod);
       final response = await (requestBuilder
             ..usings(getForwardMethod.requiredCapabilities))
@@ -85,7 +85,7 @@ void main() {
           .execute();
 
       final resultList = response.parse<GetForwardResponse>(
-          getRuleFilterInvocation.methodCallId,
+          getForwardInvocation.methodCallId,
           GetForwardResponse.deserialize);
 
       expect(resultList?.list.length, equals(1));
