@@ -6,15 +6,18 @@ import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_reposit
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 
 class CreateNewMailboxInteractor {
-  final MailboxRepository mailboxRepository;
+  final MailboxRepository _mailboxRepository;
 
-  CreateNewMailboxInteractor(this.mailboxRepository);
+  CreateNewMailboxInteractor(this._mailboxRepository);
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, CreateNewMailboxRequest newMailboxRequest) async* {
     try {
-      final newMailbox = await mailboxRepository.createNewMailbox(accountId, newMailboxRequest);
+      final currentMailboxState = await _mailboxRepository.getMailboxState();
+      final newMailbox = await _mailboxRepository.createNewMailbox(accountId, newMailboxRequest);
       if (newMailbox != null) {
-        yield Right<Failure, Success>(CreateNewMailboxSuccess(newMailbox));
+        yield Right<Failure, Success>(CreateNewMailboxSuccess(
+            newMailbox,
+            currentMailboxState: currentMailboxState));
       } else {
         yield Left<Failure, Success>(CreateNewMailboxFailure(null));
       }

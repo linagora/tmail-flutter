@@ -1,10 +1,12 @@
 import 'package:core/core.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 
-class MoveMultipleEmailToMailboxAllSuccess extends UIState {
+class MoveMultipleEmailToMailboxAllSuccess extends UIActionState {
   final List<EmailId> movedListEmailId;
   final MailboxId currentMailboxId;
   final MailboxId destinationMailboxId;
@@ -18,8 +20,12 @@ class MoveMultipleEmailToMailboxAllSuccess extends UIState {
     this.destinationMailboxId,
     this.moveAction,
     this.emailActionType,
-    {this.destinationPath}
-  );
+    {
+      this.destinationPath,
+      jmap.State? currentEmailState,
+      jmap.State? currentMailboxState,
+    }
+  ) : super(currentEmailState, currentMailboxState);
 
   @override
   List<Object?> get props => [
@@ -42,7 +48,7 @@ class MoveMultipleEmailToMailboxAllFailure extends FeatureFailure {
   List<Object> get props => [moveAction, emailActionType];
 }
 
-class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
+class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIActionState {
   final List<EmailId> movedListEmailId;
   final MailboxId currentMailboxId;
   final MailboxId destinationMailboxId;
@@ -56,8 +62,12 @@ class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
     this.destinationMailboxId,
     this.moveAction,
     this.emailActionType,
-    {this.destinationPath}
-  );
+    {
+      this.destinationPath,
+      jmap.State? currentEmailState,
+      jmap.State? currentMailboxState,
+    }
+  ) : super(currentEmailState, currentMailboxState);
 
   @override
   List<Object?> get props => [
