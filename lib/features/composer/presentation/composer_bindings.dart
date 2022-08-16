@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/composer_datasource_impl.dart';
@@ -27,6 +28,16 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
+import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
@@ -61,11 +72,14 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => AttachmentUploadDataSourceImpl(Get.find<FileUploader>()));
     Get.lazyPut(() => ComposerDataSourceImpl(Get.find<DownloadClient>()));
     Get.lazyPut(() => ContactDataSourceImpl());
+    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>(), Get.find<MailboxIsolateWorker>()));
+    Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
         Get.find<HtmlAnalyzer>(),
         Get.find<DioClient>()
     ));
+    Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
     Get.lazyPut(() => ManageAccountDataSourceImpl(
         Get.find<ManageAccountAPI>(),
         Get.find<LanguageCacheManager>()));
@@ -76,8 +90,10 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut<AttachmentUploadDataSource>(() => Get.find<AttachmentUploadDataSourceImpl>());
     Get.lazyPut<ComposerDataSource>(() => Get.find<ComposerDataSourceImpl>());
     Get.lazyPut<ContactDataSource>(() => Get.find<ContactDataSourceImpl>());
+    Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
+    Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
     Get.lazyPut<ManageAccountDataSource>(() => Get.find<ManageAccountDataSourceImpl>());
   }
 
@@ -87,9 +103,17 @@ class ComposerBindings extends BaseBindings {
         Get.find<AttachmentUploadDataSource>(),
         Get.find<ComposerDataSource>()));
     Get.lazyPut(() => ContactRepositoryImpl(Get.find<ContactDataSource>()));
+    Get.lazyPut(() => MailboxRepositoryImpl(
+      {
+        DataSourceType.network: Get.find<MailboxDataSource>(),
+        DataSourceType.local: Get.find<MailboxCacheDataSourceImpl>()
+      },
+      Get.find<StateDataSource>(),
+    ));
     Get.lazyPut(() => EmailRepositoryImpl(
         Get.find<EmailDataSource>(),
-        Get.find<HtmlDataSource>()
+        Get.find<HtmlDataSource>(),
+        Get.find<StateDataSource>(),
     ));
     Get.lazyPut(() => ManageAccountRepositoryImpl(Get.find<ManageAccountDataSource>()));
   }
@@ -98,6 +122,7 @@ class ComposerBindings extends BaseBindings {
   void bindingsRepository() {
     Get.lazyPut<ComposerRepository>(() => Get.find<ComposerRepositoryImpl>());
     Get.lazyPut<ContactRepository>(() => Get.find<ContactRepositoryImpl>());
+    Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
     Get.lazyPut<ManageAccountRepository>(() => Get.find<ManageAccountRepositoryImpl>());
   }
@@ -106,10 +131,16 @@ class ComposerBindings extends BaseBindings {
   void bindingsInteractor() {
     Get.lazyPut(() => LocalFilePickerInteractor());
     Get.lazyPut(() => UploadAttachmentInteractor(Get.find<ComposerRepository>()));
-    Get.lazyPut(() => SendEmailInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => SaveEmailAsDraftsInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => SendEmailInteractor(
+        Get.find<EmailRepository>(),
+        Get.find<MailboxRepository>()));
+    Get.lazyPut(() => SaveEmailAsDraftsInteractor(
+        Get.find<EmailRepository>(),
+        Get.find<MailboxRepository>()));
     Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => UpdateEmailDraftsInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => UpdateEmailDraftsInteractor(
+        Get.find<EmailRepository>(),
+        Get.find<MailboxRepository>()));
     Get.lazyPut(() => GetAllIdentitiesInteractor(Get.find<ManageAccountRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => SaveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
