@@ -145,13 +145,22 @@ class MailboxDashBoardBindings extends BaseBindings {
   @override
   void bindingsInteractor() {
     Get.lazyPut(() => GetUserProfileInteractor(Get.find<CredentialRepository>()));
-    Get.lazyPut(() => RemoveEmailDraftsInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => DeleteEmailPermanentlyInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => RemoveEmailDraftsInteractor(
+        Get.find<EmailRepository>(),
+        Get.find<MailboxRepository>()));
+    Get.lazyPut(() => MoveToMailboxInteractor(
+        Get.find<EmailRepository>(),
+        Get.find<MailboxRepository>()));
+    Get.lazyPut(() => DeleteEmailPermanentlyInteractor(
+        Get.find<EmailRepository>(),
+        Get.find<MailboxRepository>()));
     Get.lazyPut(() => SaveRecentSearchInteractor(Get.find<SearchRepository>()));
     Get.lazyPut(() => GetAllRecentSearchLatestInteractor(Get.find<SearchRepository>()));
     Get.lazyPut(() => QuickSearchEmailInteractor(Get.find<ThreadRepository>()));
-    Get.lazyPut(() => MarkAsMailboxReadInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => MarkAsMailboxReadInteractor(
+      Get.find<MailboxRepository>(),
+      Get.find<EmailRepository>())
+    );
     Get.lazyPut(() => LogoutOidcInteractor(
       Get.find<AccountRepository>(),
       Get.find<AuthenticationOIDCRepository>(),
@@ -188,7 +197,8 @@ class MailboxDashBoardBindings extends BaseBindings {
   void bindingsRepositoryImpl() {
     Get.lazyPut(() => EmailRepositoryImpl(
         Get.find<EmailDataSource>(),
-        Get.find<HtmlDataSource>()
+        Get.find<HtmlDataSource>(),
+        Get.find<StateDataSource>(),
     ));
     Get.lazyPut(() => SearchRepositoryImpl(Get.find<SearchDataSource>()));
     Get.lazyPut(() => ThreadRepositoryImpl(
