@@ -74,10 +74,10 @@ workflows:
             cd ../contact
             flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
 
-            cd ../rule_filter
+            cd ../forward
             flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
 
-            cd ../forward
+            cd ../rule_filter
             flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
 
             cd ..
@@ -106,6 +106,12 @@ workflows:
     - flutter-test@1:
         inputs:
         - additional_params: contact
+    - flutter-test@1:
+        inputs:
+        - additional_params: forward
+    - flutter-test@1:
+        inputs:
+        - additional_params: rule_filter
     - certificate-and-profile-installer@1:
         is_always_run: true
     - set-xcode-build-number@1:

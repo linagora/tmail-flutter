@@ -1,4 +1,4 @@
-import 'package:forward/forward/converter/rule_filter_id_coverter.dart';
+import 'package:forward/forward/converter/forward_id_coverter.dart';
 import 'package:forward/forward/forward.dart';
 import 'package:forward/forward/forward_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
