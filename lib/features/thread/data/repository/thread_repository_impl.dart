@@ -314,10 +314,6 @@ class ThreadRepositoryImpl extends ThreadRepository {
           filter: EmailFilterCondition(inMailbox: trashMailboxId, before: lastEmail?.receivedAt),
           properties: Properties({EmailProperty.id}));
 
-      if (emailsResponse.state != null) {
-        await _updateState(emailsResponse.state!);
-      }
-
       var newEmailList =  emailsResponse.emailList ?? <Email>[];
       if (lastEmail != null) {
         newEmailList = newEmailList.where((email) => email.id != lastEmail!.id).toList();
