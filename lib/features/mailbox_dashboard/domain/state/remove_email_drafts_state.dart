@@ -1,8 +1,13 @@
 import 'package:core/core.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
-class RemoveEmailDraftsSuccess extends UIState {
+class RemoveEmailDraftsSuccess extends UIActionState {
 
-  RemoveEmailDraftsSuccess();
+  RemoveEmailDraftsSuccess({
+    jmap.State? currentEmailState,
+    jmap.State? currentMailboxState,
+  }) : super(currentEmailState, currentMailboxState);
 
   @override
   List<Object?> get props => [];

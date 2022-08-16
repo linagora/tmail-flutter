@@ -6,15 +6,17 @@ import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_reposit
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
 
 class RenameMailboxInteractor {
-  final MailboxRepository mailboxRepository;
+  final MailboxRepository _mailboxRepository;
 
-  RenameMailboxInteractor(this.mailboxRepository);
+  RenameMailboxInteractor(this._mailboxRepository);
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, RenameMailboxRequest request) async* {
     try {
-      final result = await mailboxRepository.renameMailbox(accountId, request);
+      final currentMailboxState = await _mailboxRepository.getMailboxState();
+
+      final result = await _mailboxRepository.renameMailbox(accountId, request);
       if (result) {
-        yield Right<Failure, Success>(RenameMailboxSuccess());
+        yield Right<Failure, Success>(RenameMailboxSuccess(currentMailboxState: currentMailboxState));
       } else {
         yield Left<Failure, Success>(RenameMailboxFailure(null));
       }
