@@ -11,9 +11,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  model:
-    path: ../model
-
   equatable: 2.0.3
 
   json_annotation: 4.5.0

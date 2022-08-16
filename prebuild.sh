@@ -17,6 +17,9 @@ flutter pub get && flutter pub run build_runner build --delete-conflicting-outpu
 cd ../rule_filter
 flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
 
+cd ../forward
+flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
+
 cd ..
 flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
 
