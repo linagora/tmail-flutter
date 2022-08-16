@@ -181,4 +181,9 @@ class MailboxRepositoryImpl extends MailboxRepository {
   Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) {
     return mapDataSource[DataSourceType.network]!.moveMailbox(accountId, request);
   }
+
+  @override
+  Future<State?> getMailboxState() {
+    return stateDataSource.getState(StateType.mailbox);
+  }
 }
