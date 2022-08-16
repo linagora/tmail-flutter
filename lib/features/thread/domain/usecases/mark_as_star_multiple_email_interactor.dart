@@ -17,6 +17,8 @@ class MarkAsStarMultipleEmailInteractor {
       MarkStarAction markStarAction
   ) async* {
     try {
+      final currentEmailState = await _emailRepository.getEmailState();
+
       final listEmailNeedMarkStar = emails
           .where((email) => markStarAction == MarkStarAction.unMarkStar ? email.hasStarred : !email.hasStarred)
           .toList();
@@ -25,12 +27,18 @@ class MarkAsStarMultipleEmailInteractor {
 
       if (listEmailNeedMarkStar.length == result.length) {
         final countMarkStarSuccess = emails.length;
-        yield Right(MarkAsStarMultipleEmailAllSuccess(countMarkStarSuccess, markStarAction));
+        yield Right(MarkAsStarMultipleEmailAllSuccess(
+            countMarkStarSuccess,
+            markStarAction,
+            currentEmailState: currentEmailState));
       } else if (result.isEmpty) {
         yield Left(MarkAsStarMultipleEmailAllFailure(markStarAction));
       } else {
         final countMarkStarSuccess = emails.length - (listEmailNeedMarkStar.length - result.length);
-        yield Right(MarkAsStarMultipleEmailHasSomeEmailFailure(countMarkStarSuccess, markStarAction));
+        yield Right(MarkAsStarMultipleEmailHasSomeEmailFailure(
+            countMarkStarSuccess,
+            markStarAction,
+            currentEmailState: currentEmailState));
       }
     } catch (e) {
       yield Left(MarkAsStarMultipleEmailFailure(e, markStarAction));
