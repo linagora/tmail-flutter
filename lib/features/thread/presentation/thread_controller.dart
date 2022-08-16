@@ -196,8 +196,6 @@ class ThreadController extends BaseController {
         } else if (failure is MarkAsStarMultipleEmailAllFailure
             || failure is MarkAsStarMultipleEmailFailure) {
           _markAsStarMultipleEmailFailure(failure);
-        } else if (failure is EmptyTrashFolderFailure) {
-          _emptyTrashFolderFailure(failure);
         } else if (failure is LoadMoreEmailsFailure) {
           stopFpsMeter();
         }
@@ -291,17 +289,26 @@ class ThreadController extends BaseController {
           if (success is SearchEmailNewQuery){
             mailboxDashBoardController.clearState();
             _searchEmail();
-          } else if (success is MarkAsEmailReadSuccess
-              || success is MoveToMailboxSuccess
-              || success is MarkAsStarEmailSuccess
-              || success is DeleteEmailPermanentlySuccess
-              || success is SaveEmailAsDraftsSuccess
-              || success is RemoveEmailDraftsSuccess
-              || success is SendEmailSuccess
-              || success is MarkAsMailboxReadAllSuccess
-              || success is MarkAsMailboxReadHasSomeEmailFailure
-              || success is UpdateEmailDraftsSuccess) {
-            _refreshEmailChanges();
+          } else if (success is MarkAsEmailReadSuccess) {
+            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+          } else if (success is MoveToMailboxSuccess) {
+            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+          } else if (success is MarkAsStarEmailSuccess) {
+            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+          } else if (success is DeleteEmailPermanentlySuccess) {
+            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+          } else if (success is SaveEmailAsDraftsSuccess) {
+            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+          } else if (success is RemoveEmailDraftsSuccess) {
+            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+          } else if (success is SendEmailSuccess) {
+            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+          } else if (success is UpdateEmailDraftsSuccess) {
+            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+          } else if (success is MarkAsMailboxReadAllSuccess) {
+            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+          } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
+            _refreshEmailChanges(currentEmailState: success.currentEmailState);
           }
         });
       }
@@ -405,7 +412,8 @@ class ThreadController extends BaseController {
     }
   }
 
-  void _refreshEmailChanges() {
+  void _refreshEmailChanges({jmap.State? currentEmailState}) {
+    log('ThreadController::_refreshEmailChanges(): currentEmailState: $currentEmailState');
     if (isSearchActive()) {
       if (_accountId != null && searchQuery != null) {
         final limit = emailList.isNotEmpty
@@ -414,10 +422,12 @@ class ThreadController extends BaseController {
         _searchEmail(limit: limit);
       }
     } else {
-      if (_accountId != null && _currentEmailState != null) {
+      final newEmailState = currentEmailState ?? _currentEmailState;
+      log('ThreadController::_refreshEmailChanges(): newEmailState: $newEmailState');
+      if (_accountId != null && newEmailState != null) {
         consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
             _accountId!,
-            _currentEmailState!,
+            newEmailState,
             sort: _sortOrder,
             propertiesCreated: ThreadConstants.propertiesDefault,
             propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
@@ -517,11 +527,14 @@ class ThreadController extends BaseController {
     mailboxDashBoardController.dispatchState(Right(success));
 
     ReadActions? readActions;
+    jmap.State? currentEmailState;
 
     if (success is MarkAsMultipleEmailReadAllSuccess) {
       readActions = success.readActions;
+      currentEmailState = success.currentEmailState;
     } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
       readActions = success.readActions;
+      currentEmailState = success.currentEmailState;
     }
 
     if (currentContext != null && readActions != null && currentOverlayContext != null) {
@@ -533,7 +546,7 @@ class ThreadController extends BaseController {
           message: message,
           icon: readActions == ReadActions.markAsUnread ? _imagePaths.icUnreadToast : _imagePaths.icReadToast);
     }
-    _refreshEmailChanges();
+    _refreshEmailChanges(currentEmailState: currentEmailState);
   }
 
   void _markAsReadSelectedMultipleEmailFailure(Failure failure) {
@@ -635,6 +648,7 @@ class ThreadController extends BaseController {
     MailboxId? destinationMailboxId;
     MoveAction? moveAction;
     EmailActionType? emailActionType;
+    jmap.State? currentEmailState;
 
     if (success is MoveMultipleEmailToMailboxAllSuccess) {
       destinationPath = success.destinationPath;
@@ -643,6 +657,7 @@ class ThreadController extends BaseController {
       destinationMailboxId = success.destinationMailboxId;
       moveAction = success.moveAction;
       emailActionType = success.emailActionType;
+      currentEmailState = success.currentEmailState;
     } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
       destinationPath = success.destinationPath;
       movedEmailIds = success.movedListEmailId;
@@ -650,6 +665,7 @@ class ThreadController extends BaseController {
       destinationMailboxId = success.destinationMailboxId;
       moveAction = success.moveAction;
       emailActionType = success.emailActionType;
+      currentEmailState = success.currentEmailState;
     }
 
     if (currentContext != null && currentOverlayContext != null
@@ -674,7 +690,7 @@ class ThreadController extends BaseController {
       );
     }
 
-    _refreshEmailChanges();
+    _refreshEmailChanges(currentEmailState: currentEmailState);
   }
 
   void moveSelectedMultipleEmailToTrash(List<PresentationEmail> listEmail) async {
@@ -757,8 +773,8 @@ class ThreadController extends BaseController {
     }
   }
 
-  void _markAsStarEmailSuccess(Success success) {
-    _refreshEmailChanges();
+  void _markAsStarEmailSuccess(MarkAsStarEmailSuccess success) {
+    _refreshEmailChanges(currentEmailState: success.currentEmailState);
   }
 
   void markAsStarSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail) {
@@ -773,13 +789,16 @@ class ThreadController extends BaseController {
   void _markAsStarMultipleEmailSuccess(Success success) {
     MarkStarAction? markStarAction;
     int countMarkStarSuccess = 0;
+    jmap.State? currentEmailState;
 
     if (success is MarkAsStarMultipleEmailAllSuccess) {
       markStarAction = success.markStarAction;
       countMarkStarSuccess = success.countMarkStarSuccess;
+      currentEmailState = success.currentEmailState;
     } else if (success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
       markStarAction = success.markStarAction;
       countMarkStarSuccess = success.countMarkStarSuccess;
+      currentEmailState = success.currentEmailState;
     }
 
     if (currentContext != null && markStarAction != null && currentOverlayContext != null) {
@@ -792,7 +811,7 @@ class ThreadController extends BaseController {
           icon: markStarAction == MarkStarAction.unMarkStar ? _imagePaths.icUnStar : _imagePaths.icStar);
     }
 
-    _refreshEmailChanges();
+    _refreshEmailChanges(currentEmailState: currentEmailState);
   }
 
   void _markAsStarMultipleEmailFailure(Failure failure) {
@@ -1176,11 +1195,14 @@ class ThreadController extends BaseController {
   void _deleteMultipleEmailsPermanentlySuccess(Success success) {
     mailboxDashBoardController.dispatchState(Right(success));
 
+    jmap.State? currentEmailState;
     List<EmailId> listEmailIdResult = <EmailId>[];
     if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
       listEmailIdResult = success.emailIds;
+      currentEmailState = success.currentEmailState;
     } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
       listEmailIdResult = success.emailIds;
+      currentEmailState = success.currentEmailState;
     }
 
     if (currentContext != null && currentOverlayContext != null && listEmailIdResult.isNotEmpty) {
@@ -1191,7 +1213,7 @@ class ThreadController extends BaseController {
           icon: _imagePaths.icDeleteToast);
     }
 
-    _refreshEmailChanges();
+    _refreshEmailChanges(currentEmailState: currentEmailState);
   }
 
   void _emptyTrashFolderAction() {
@@ -1215,11 +1237,6 @@ class ThreadController extends BaseController {
           icon: _imagePaths.icDeleteToast);
     }
 
-    refreshAllEmail();
-  }
-
-  void _emptyTrashFolderFailure(EmptyTrashFolderFailure failure) {
-    mailboxDashBoardController.dispatchState(Left(failure));
     refreshAllEmail();
   }
 
