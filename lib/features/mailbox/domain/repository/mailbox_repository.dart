@@ -32,4 +32,6 @@ abstract class MailboxRepository {
       StreamController<dartz.Either<Failure, Success>> onProgressController);
 
   Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request);
+
+  Future<State?> getMailboxState();
 }
