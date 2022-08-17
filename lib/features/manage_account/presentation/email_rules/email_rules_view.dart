@@ -44,9 +44,9 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
         return const EdgeInsets.only(left: 16, top: 16, right: 24, bottom: 24);
       } else if (_responsiveUtils.isTabletLarge(context) ||
           _responsiveUtils.isTablet(context)) {
-        return const EdgeInsets.only(right: 32, top: 16, bottom: 16);
+        return const EdgeInsets.only(right: 24, top: 16, bottom: 16);
       } else {
-        return const EdgeInsets.only(right: 32, top: 16, bottom: 16);
+        return const EdgeInsets.only(right: 24, top: 16, bottom: 16);
       }
     } else {
       if (_responsiveUtils.isDesktop(context) ||
@@ -55,7 +55,7 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
           _responsiveUtils.isTablet(context)) {
         return const EdgeInsets.only(right: 32, top: 16, bottom: 16);
       } else {
-        return const EdgeInsets.only(top: 16, bottom: 16, right: 28, left: 20);
+        return const EdgeInsets.only(right: 18, top: 16, bottom: 16, left: 10);
       }
     }
   }

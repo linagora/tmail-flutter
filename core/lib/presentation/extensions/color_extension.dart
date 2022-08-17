@@ -137,6 +137,7 @@ extension AppColor on Color {
   static const colorBorderListForwardsFilter = Color(0xFFE7E8EC);
   static const colorBackgroundFieldConditionRulesFilter = Color(0xFFF2F3F5);
   static const colorDividerRuleFilter = Color(0xFFE7E8EC);
+  static const colorIconTextField = Color(0xFFB8C1CC);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

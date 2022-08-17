@@ -51,7 +51,10 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
         responsiveUtils: _responsiveUtils,
         mobile: Scaffold(
           body: Container(
-              margin: const EdgeInsets.only(top: 16, bottom: 16, right: 24),
+              margin: const EdgeInsets.only(
+                  top: 16,
+                  bottom: 16,
+                  right: BuildUtils.isWeb ? 24 : 10),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

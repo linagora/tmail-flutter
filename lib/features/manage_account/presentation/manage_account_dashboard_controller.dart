@@ -23,15 +23,12 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ManageAccountDashBoardController extends ReloadableController {
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-
   final menuDrawerKey = GlobalKey<ScaffoldState>(debugLabel: 'manage_account');
 
   final appInformation = Rxn<PackageInfo>();
   final userProfile = Rxn<UserProfile>();
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
-
   final sessionCurrent = Rxn<Session>();
 
   ManageAccountDashBoardController(
@@ -116,7 +113,7 @@ class ManageAccountDashBoardController extends ReloadableController {
       ForwardBindings().dependencies();
     }
     accountMenuItemSelected.value = newAccountMenuItem;
-    if (currentContext != null && !_responsiveUtils.isDesktop(currentContext!)) {
+    if (isMenuDrawerOpen) {
       closeMenuDrawer();
     }
   }

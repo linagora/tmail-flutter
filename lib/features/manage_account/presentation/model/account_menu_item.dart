@@ -8,9 +8,7 @@ enum AccountMenuItem {
   languageAndRegion,
   emailRules,
   forward,
-}
-
-extension AccountMenuItemExtension on AccountMenuItem {
+  vacation;
 
   String getIcon(ImagePaths imagePaths) {
     switch(this) {
@@ -22,6 +20,8 @@ extension AccountMenuItemExtension on AccountMenuItem {
         return imagePaths.icEmailRules;
       case AccountMenuItem.forward:
         return imagePaths.icForward;
+      case AccountMenuItem.configuration:
+        return imagePaths.icConfiguration;
     }
   }
 
@@ -35,6 +35,8 @@ extension AccountMenuItemExtension on AccountMenuItem {
         return AppLocalizations.of(context).emailRules;
       case AccountMenuItem.forward:
         return AppLocalizations.of(context).forwarding;
+      case AccountMenuItem.configuration:
+        return AppLocalizations.of(context).configuration;
     }
   }
 }

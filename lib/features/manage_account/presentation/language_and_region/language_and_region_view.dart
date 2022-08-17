@@ -21,7 +21,7 @@ class LanguageAndRegionView extends GetWidget<LanguageAndRegionController> {
       body: Container(
         width: double.infinity,
         margin: _responsiveUtils.isWebDesktop(context)
-          ? const EdgeInsets.only(left: 48, right: 24, top: 24, bottom: 24)
+          ? const EdgeInsets.all(24)
           : EdgeInsets.zero,
         color: _responsiveUtils.isWebDesktop(context) ? null : Colors.white,
         decoration: _responsiveUtils.isWebDesktop(context)
@@ -37,7 +37,7 @@ class LanguageAndRegionView extends GetWidget<LanguageAndRegionController> {
             padding: EdgeInsets.only(
                 left: _responsiveUtils.isWebDesktop(context) ? 24 : 10,
                 top: 24,
-                right: 24),
+                right: BuildUtils.isWeb ? 24 : 18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
