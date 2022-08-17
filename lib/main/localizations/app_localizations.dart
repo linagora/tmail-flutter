@@ -1959,4 +1959,95 @@ class AppLocalizations {
       name: 'forwarding',
     );
   }
+
+  String get vacation {
+    return Intl.message(
+      'Vacation',
+      name: 'vacation',
+    );
+  }
+
+  String get configuration {
+    return Intl.message(
+      'Configuration',
+      name: 'configuration',
+    );
+  }
+
+  String get vacationResponder {
+    return Intl.message(
+      'Vacation responder',
+      name: 'vacationResponder',
+    );
+  }
+
+  String get activated {
+    return Intl.message(
+      'Activated',
+      name: 'activated',
+    );
+  }
+
+  String get deactivated {
+    return Intl.message(
+      'Deactivated',
+      name: 'deactivated',
+    );
+  }
+
+  String get startDate {
+    return Intl.message(
+      'Start date',
+      name: 'startDate',
+    );
+  }
+
+  String get endDate {
+    return Intl.message(
+      'End date',
+      name: 'endDate',
+    );
+  }
+
+  String get vacationStopsAt {
+    return Intl.message(
+      'Vacation stops at',
+      name: 'vacationStopsAt',
+    );
+  }
+
+  String get messageBody {
+    return Intl.message(
+      'Message body',
+      name: 'messageBody',
+    );
+  }
+
+  String get hintMessageBodyVacation {
+    return Intl.message(
+      'Start writing your vacation message here',
+      name: 'hintMessageBodyVacation',
+    );
+  }
+
+  String get noStartTime {
+    return Intl.message(
+      'No start time',
+      name: 'noStartTime',
+    );
+  }
+
+  String get noEndTime {
+    return Intl.message(
+      'No end time',
+      name: 'noEndTime',
+    );
+  }
+
+  String get noEndDate {
+    return Intl.message(
+      'No end date',
+      name: 'noEndDate',
+    );
+  }
 }

@@ -99,7 +99,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                             child: InkWell(
                                 onTap: () => controller.dashBoardController.logoutAction(),
                                 child: Row(children: [
-                                  SvgPicture.asset(_imagePaths.icLogout, fit: BoxFit.fill),
+                                  SvgPicture.asset(_imagePaths.icSignOut, fit: BoxFit.fill),
                                   const SizedBox(width: 12),
                                   Expanded(child: Text(AppLocalizations.of(context).sign_out,
                                       style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: Colors.black)))
