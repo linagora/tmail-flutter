@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-17T17:27:40.386002",
+  "@@last_modified": "2022-08-17T20:19:48.796318",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1978,6 +1978,30 @@
   },
   "noEndDate": "No end date",
   "@noEndDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenStartDateVacationIsEmpty": "Please enter a valid start date",
+  "@errorMessageWhenStartDateVacationIsEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenEndDateVacationIsInValid": "End date must be greater than start date",
+  "@errorMessageWhenEndDateVacationIsInValid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenMessageVacationIsEmpty": "Message body cannot be blank",
+  "@errorMessageWhenMessageVacationIsEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingSaved": "Vacation settings saved",
+  "@vacationSettingSaved": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

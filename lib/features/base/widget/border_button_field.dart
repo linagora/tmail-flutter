@@ -17,6 +17,7 @@ class BorderButtonField<T> extends StatelessWidget {
   final TextStyle? textStyle;
   final MouseCursor? mouseCursor;
   final String? hintText;
+  final bool isEmpty;
 
   const BorderButtonField({
     super.key,
@@ -26,6 +27,7 @@ class BorderButtonField<T> extends StatelessWidget {
     this.textStyle,
     this.mouseCursor,
     this.hintText,
+    this.isEmpty = false,
   });
 
   @override
@@ -40,7 +42,7 @@ class BorderButtonField<T> extends StatelessWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-                color: AppColor.colorInputBorderCreateMailbox,
+                color: _getBorderColor(),
                 width: 1),
             color: Colors.white),
         padding: const EdgeInsets.only(left: 12, right: 10),
@@ -79,5 +81,12 @@ class BorderButtonField<T> extends StatelessWidget {
       return value.formatTime(context);
     }
     return hintText ?? '';
+  }
+
+  Color _getBorderColor() {
+    if (!isEmpty) {
+      return AppColor.colorInputBorderCreateMailbox;
+    }
+    return AppColor.colorInputBorderErrorVerifyName;
   }
 }

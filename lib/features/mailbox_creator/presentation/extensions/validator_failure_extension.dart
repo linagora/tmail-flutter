@@ -42,4 +42,12 @@ extension ValicatorFailureExtension on VerifyNameFailure {
       return '';
     }
   }
+
+  String getMessageVacation(BuildContext context) {
+    if (exception is EmptyNameException) {
+      return AppLocalizations.of(context).this_field_cannot_be_blank;
+    } else {
+      return '';
+    }
+  }
 }
