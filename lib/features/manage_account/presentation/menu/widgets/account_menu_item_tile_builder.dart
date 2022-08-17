@@ -51,6 +51,8 @@ class AccountMenuItemTileBuilder extends StatelessWidget {
     if (_menuItemSelected == _menuItem) {
       return AppColor.colorBgMailboxSelected;
     }
-    return _responsiveUtils.isDesktop(_context) ? AppColor.colorBgDesktop : Colors.white;
+    return _responsiveUtils.isWebDesktop(_context)
+        ? AppColor.colorBgDesktop
+        : Colors.white;
   }
 }

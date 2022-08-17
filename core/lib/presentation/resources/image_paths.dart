@@ -155,6 +155,10 @@ class ImagePaths {
   String get icDeleteEmailForward => _getImagePath('ic_delete_email_forward.svg');
   String get icVacation => _getImagePath('ic_vacation.svg');
   String get icSignOut => _getImagePath('ic_sign_out.svg');
+  String get icSwitchOn => _getImagePath('ic_switch_on.svg');
+  String get icSwitchOff => _getImagePath('ic_switch_off.svg');
+  String get icClock => _getImagePath('ic_clock.svg');
+  String get icCalendar => _getImagePath('ic_calendar.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

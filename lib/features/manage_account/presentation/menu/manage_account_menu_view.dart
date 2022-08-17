@@ -23,7 +23,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
           body: SafeArea(right: false, bottom: false,
               child: Column(
                   children: [
-                    if (!_responsiveUtils.isDesktop(context))
+                    if (!_responsiveUtils.isWebDesktop(context))
                       Container(
                           color: Colors.white,
                           padding: const EdgeInsets.only(top: 16, bottom: 16, left: 16),
@@ -51,10 +51,10 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                             }),
                           ])
                       ),
-                    if (!_responsiveUtils.isDesktop(context))
+                    if (!_responsiveUtils.isWebDesktop(context))
                       const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
                     Expanded(child: Container(
-                      color: _responsiveUtils.isDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
+                      color: _responsiveUtils.isWebDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Padding(
                           padding: const EdgeInsets.only(left: 20, top: 24),
