@@ -35,4 +35,6 @@ abstract class ManageAccountDataSource {
   Future<TMailForward> getForward(AccountId accountId);
 
   Future<List<VacationResponse>> getAllVacationResponse(AccountId accountId);
+
+  Future<List<VacationResponse>> updateVacation(AccountId accountId, VacationResponse vacationResponse);
 }
