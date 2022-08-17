@@ -1,28 +1,44 @@
-import 'package:core/utils/app_logger.dart';
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/date_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_presentation.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class VacationController extends BaseController {
 
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
+  final _appToast = Get.find<AppToast>();
+  final _imagePaths = Get.find<ImagePaths>();
 
   final GetAllVacationInteractor _getAllVacationInteractor;
+  final UpdateVacationInteractor _updateVacationInteractor;
+  final VerifyNameInteractor _verifyNameInteractor;
 
   final vacationPresentation = VacationPresentation.initialize().obs;
+  final errorMessageBody = Rxn<String>();
 
   final TextEditingController messageBodyEditorController = TextEditingController();
 
-  VacationResponse? currentVacation;
-
-  VacationController(this._getAllVacationInteractor);
+  VacationController(
+    this._getAllVacationInteractor,
+    this._updateVacationInteractor,
+    this._verifyNameInteractor
+  );
 
   @override
   void onReady() {
@@ -37,6 +53,8 @@ class VacationController extends BaseController {
       (success) {
         if (success is GetAllVacationSuccess) {
           _handleGetAllVacationSuccess(success);
+        } else if (success is UpdateVacationSuccess) {
+          _handleUpdateVacationSuccess(success);
         }
       }
     );
@@ -53,41 +71,17 @@ class VacationController extends BaseController {
   }
 
   void _handleGetAllVacationSuccess(GetAllVacationSuccess success) {
-    if (success.listVacationResponse?.isNotEmpty == true) {
-      currentVacation = success.listVacationResponse!.first;
+    if (success.listVacationResponse.isNotEmpty) {
+      final currentVacation = success.listVacationResponse.first;
       log('VacationController::_handleGetAllVacationSuccess(): $currentVacation');
 
-      final vacationStatus = currentVacation?.isEnabled;
-      final startDate = currentVacation?.fromDate?.value;
-      final endDate = currentVacation?.toDate?.value;
-      final messageBody = currentVacation?.htmlBody ?? currentVacation?.textBody;
-      final startTime = startDate != null
-        ? TimeOfDay.fromDateTime(startDate)
-        : null;
-      final endTime = endDate != null
-          ? TimeOfDay.fromDateTime(endDate)
-          : null;
-      final vacationStopEnabled = endDate != null;
-
-      if (messageBody != null) {
-        messageBodyEditorController.text = messageBody;
-      }
-
-      updateVacationPresentation(
-        newStatus: vacationStatus == true
-            ? VacationResponderStatus.activated
-            : VacationResponderStatus.deactivated,
-        startDate: startDate,
-        startTime: startTime,
-        endDate: endDate,
-        endTime: endTime,
-        vacationStopEnabled: vacationStopEnabled,
-      );
+      final newVacationPresentation = currentVacation.toVacationPresentation();
+      vacationPresentation.value = newVacationPresentation;
+      messageBodyEditorController.text = newVacationPresentation.messageBody ?? '';
     }
   }
 
-  bool get isVacationDeactivated =>
-      vacationPresentation.value.status == VacationResponderStatus.deactivated;
+  bool get isVacationDeactivated => !vacationPresentation.value.isEnabled;
 
   bool get isVacationStopEnabled => vacationPresentation.value.vacationStopEnabled;
 
@@ -100,6 +94,7 @@ class VacationController extends BaseController {
     DateTime? endDate,
     TimeOfDay? endTime,
     bool? vacationStopEnabled,
+    String? messageBody
   }) {
     final currentVacation = vacationPresentation.value;
     final newVacation = currentVacation.copyWidth(
@@ -108,7 +103,9 @@ class VacationController extends BaseController {
         startTime: startTime,
         endDate: endDate,
         endTime: endTime,
-        vacationStopEnabled: vacationStopEnabled);
+        vacationStopEnabled: vacationStopEnabled,
+        messageBody: messageBody);
+    log('VacationController::updateVacationPresentation():newVacation: $newVacation');
     vacationPresentation.value = newVacation;
   }
 
@@ -137,6 +134,11 @@ class VacationController extends BaseController {
     final timePicked = await showTimePicker(
       context: context,
       initialTime: currentTime ?? TimeOfDay.now(),
+      builder: (context, child) {
+        return MediaQuery(
+            data: const MediaQueryData(alwaysUse24HourFormat: true),
+            child: child!);
+      }
     );
 
     if (timePicked == null) {
@@ -150,8 +152,88 @@ class VacationController extends BaseController {
     }
   }
 
-  void saveVacation(BuildContext context) {
+  String? _getErrorStringByInputValue(BuildContext context, String? inputValue) {
+    return _verifyNameInteractor.execute(inputValue, [EmptyNameValidator()]).fold(
+      (failure) {
+        if (failure is VerifyNameFailure) {
+          return failure.getMessageVacation(context);
+        } else {
+          return null;
+        }
+      },
+      (success) => null
+    );
+  }
 
+  void updateMessageBody(BuildContext context, String? value) {
+    errorMessageBody.value = _getErrorStringByInputValue(context, value);
+  }
+
+  void saveVacation(BuildContext context) {
+    FocusScope.of(context).unfocus();
+
+    if (vacationPresentation.value.isEnabled) {
+      final fromDate = vacationPresentation.value.fromDate;
+      if (fromDate == null) {
+          _appToast.showToastWithIcon(
+              context,
+              bgColor: AppColor.toastErrorBackgroundColor,
+              textColor: Colors.white,
+              message: AppLocalizations.of(context).errorMessageWhenStartDateVacationIsEmpty);
+        return;
+      }
+
+      final vacationStopEnabled = vacationPresentation.value.vacationStopEnabled;
+      final toDate = vacationPresentation.value.toDate;
+      if (vacationStopEnabled && toDate != null && toDate.isBefore(fromDate)) {
+        _appToast.showToastWithIcon(
+            context,
+            bgColor: AppColor.toastErrorBackgroundColor,
+            textColor: Colors.white,
+            message: AppLocalizations.of(context).errorMessageWhenEndDateVacationIsInValid);
+        return;
+      }
+
+      final messageBody = messageBodyEditorController.text;
+      if (messageBody.isEmpty) {
+        _appToast.showToastWithIcon(
+            context,
+            bgColor: AppColor.toastErrorBackgroundColor,
+            textColor: Colors.white,
+            message: AppLocalizations.of(context).errorMessageWhenMessageVacationIsEmpty);
+        return;
+      }
+
+      final newVacationPresentation = vacationPresentation.value.copyWidth(messageBody: messageBody);
+      log('VacationController::saveVacation(): newVacationPresentation: $newVacationPresentation');
+      final newVacationResponse = newVacationPresentation.toVacationResponse();
+      log('VacationController::saveVacation(): newVacationResponse: $newVacationResponse');
+      _updateVacationAction(newVacationResponse);
+    }
+  }
+
+  void _updateVacationAction(VacationResponse vacationResponse) {
+    final accountId = _accountDashBoardController.accountId.value;
+    if (accountId != null) {
+      consumeState(_updateVacationInteractor.execute(accountId, vacationResponse));
+    }
+  }
+
+  void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
+    if (success.listVacationResponse.isNotEmpty) {
+      if (currentContext != null && currentOverlayContext != null) {
+        _appToast.showToastWithIcon(
+            currentOverlayContext!,
+            message: AppLocalizations.of(currentContext!).vacationSettingSaved,
+            icon: _imagePaths.icChecked);
+      }
+      final currentVacation = success.listVacationResponse.first;
+      log('VacationController::_handleUpdateVacationSuccess(): $currentVacation');
+
+      final newVacationPresentation = currentVacation.toVacationPresentation();
+      vacationPresentation.value = newVacationPresentation;
+      messageBodyEditorController.text = newVacationPresentation.messageBody ?? '';
+    }
   }
 
   @override
