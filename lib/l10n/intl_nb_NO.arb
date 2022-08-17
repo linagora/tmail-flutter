@@ -4016,5 +4016,11 @@
     "placeholders": {
       "destinationMailboxPath": {}
     }
+  },
+  "initializing_data": "",
+  "@initializing_data": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
