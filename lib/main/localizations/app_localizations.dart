@@ -2050,4 +2050,32 @@ class AppLocalizations {
       name: 'noEndDate',
     );
   }
+
+  String get errorMessageWhenStartDateVacationIsEmpty {
+    return Intl.message(
+      'Please enter a valid start date',
+      name: 'errorMessageWhenStartDateVacationIsEmpty',
+    );
+  }
+
+  String get errorMessageWhenEndDateVacationIsInValid {
+    return Intl.message(
+      'End date must be greater than start date',
+      name: 'errorMessageWhenEndDateVacationIsInValid',
+    );
+  }
+
+  String get errorMessageWhenMessageVacationIsEmpty {
+    return Intl.message(
+      'Message body cannot be blank',
+      name: 'errorMessageWhenMessageVacationIsEmpty',
+    );
+  }
+
+  String get vacationSettingSaved {
+    return Intl.message(
+      'Vacation settings saved',
+      name: 'vacationSettingSaved',
+    );
+  }
 }
