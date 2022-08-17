@@ -21,18 +21,21 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
       body: Container(
         width: double.infinity,
         margin: _getMarginView(context),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            EmailRulesHeaderWidget(
-              imagePaths: _imagePaths,
-              responsiveUtils: _responsiveUtils,
-              createRule: () => controller.goToCreateNewRule(),
-            ),
-            SizedBox(height: _responsiveUtils.isWebDesktop(context) ? 24 : 16),
-            _buildLoadingView(),
-            const Expanded(child: ListEmailRulesWidget())
-          ],
+        child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              EmailRulesHeaderWidget(
+                imagePaths: _imagePaths,
+                responsiveUtils: _responsiveUtils,
+                createRule: () => controller.goToCreateNewRule(),
+              ),
+              SizedBox(height: _responsiveUtils.isWebDesktop(context) ? 24 : 16),
+              _buildLoadingView(),
+              const ListEmailRulesWidget()
+            ],
+          ),
         ),
       ),
     );
