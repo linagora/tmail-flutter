@@ -15,6 +15,9 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/identities/set/set_identity_method.dart';
 import 'package:jmap_dart_client/jmap/identities/set/set_identity_response.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
+import 'package:jmap_dart_client/jmap/mail/vacation/get/get_vacation_method.dart';
+import 'package:jmap_dart_client/jmap/mail/vacation/get/get_vacation_response.dart';
+import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:rule_filter/rule_filter/get/get_rule_filter_method.dart';
 import 'package:rule_filter/rule_filter/get/get_rule_filter_response.dart';
 import 'package:rule_filter/rule_filter/rule_filter_id.dart';
@@ -212,4 +215,22 @@ class ManageAccountAPI {
     return tMailForwardResult;
   }
 
+
+  Future<List<VacationResponse>> getAllVacationResponse(AccountId accountId) async {
+    final processingInvocation = ProcessingInvocation();
+    final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
+
+    final getVacationMethod = GetVacationMethod(accountId);
+    final getVacationInvocation = requestBuilder.invocation(getVacationMethod);
+    final response = await (requestBuilder
+        ..usings(getVacationMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final resultList = response.parse<GetVacationResponse>(
+        getVacationInvocation.methodCallId,
+        GetVacationResponse.deserialize);
+
+    return resultList?.list ?? <VacationResponse>[];
+  }
 }

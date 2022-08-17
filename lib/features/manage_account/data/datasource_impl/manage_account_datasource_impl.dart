@@ -4,6 +4,7 @@ import 'package:forward/forward/tmail_forward.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -112,6 +113,15 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   Future<TMailForward> getForward(AccountId accountId) {
     return Future.sync(() async {
       return await manageAccountAPI.getForward(accountId);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<List<VacationResponse>> getAllVacationResponse(AccountId accountId) {
+    return Future.sync(() async {
+      return await manageAccountAPI.getAllVacationResponse(accountId);
     }).catchError((error) {
       throw error;
     });
