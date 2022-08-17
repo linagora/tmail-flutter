@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-17T20:19:48.796318",
+  "@@last_modified": "2022-08-18T14:30:25.186365",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1910,12 +1910,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "configuration": "Configuration",
-  "@configuration": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "vacationResponder": "Vacation responder",
   "@vacationResponder": {
     "type": "text",
@@ -2002,6 +1996,18 @@
   },
   "vacationSettingSaved": "Vacation settings saved",
   "@vacationSettingSaved": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourVacationResponderIsEnabled": "Your vacation responder is enabled.",
+  "@yourVacationResponderIsEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "disable": "Disable",
+  "@disable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
