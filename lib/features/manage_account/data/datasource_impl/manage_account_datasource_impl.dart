@@ -126,4 +126,13 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
       throw error;
     });
   }
+
+  @override
+  Future<List<VacationResponse>> updateVacation(AccountId accountId, VacationResponse vacationResponse) {
+    return Future.sync(() async {
+      return await manageAccountAPI.updateVacation(accountId, vacationResponse);
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }

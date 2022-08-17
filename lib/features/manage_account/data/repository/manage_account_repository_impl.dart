@@ -75,4 +75,9 @@ class ManageAccountRepositoryImpl extends ManageAccountRepository {
   Future<List<VacationResponse>> getAllVacationResponse(AccountId accountId) {
     return dataSource.getAllVacationResponse(accountId);
   }
+
+  @override
+  Future<List<VacationResponse>> updateVacation(AccountId accountId, VacationResponse vacationResponse) {
+    return dataSource.updateVacation(accountId, vacationResponse);
+  }
 }
