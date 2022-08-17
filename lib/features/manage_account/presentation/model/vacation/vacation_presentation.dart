@@ -1,8 +1,12 @@
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
+import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
 
-class VacationPresentation {
+class VacationPresentation with EquatableMixin {
   final VacationResponderStatus status;
   final DateTime? startDate;
   final TimeOfDay? startTime;
@@ -42,6 +46,42 @@ class VacationPresentation {
       endTime: endTime ?? this.endTime,
       messageBody: messageBody ?? this.messageBody,
       vacationStopEnabled: vacationStopEnabled ?? this.vacationStopEnabled
+    );
+  }
+
+  bool get startDateIsNull => startDate == null;
+
+  bool get starTimeIsNull => startTime == null;
+
+  bool get endDateIsNull => endDate == null;
+
+  bool get endTimeIsNull => endTime == null;
+
+  DateTime? get fromDate => startDate.applied(startTime);
+
+  DateTime? get toDate => endDate.applied(endTime);
+
+  bool get isEnabled => status == VacationResponderStatus.activated;
+
+  @override
+  List<Object?> get props => [
+    status,
+    startDate,
+    startTime,
+    endDate,
+    endTime,
+    vacationStopEnabled,
+    messageBody
+  ];
+}
+
+extension VacationPresentationExtension on VacationPresentation {
+  VacationResponse toVacationResponse() {
+    return VacationResponse(
+      isEnabled: isEnabled,
+      fromDate: fromDate != null ? UTCDate(fromDate!) : null,
+      toDate: toDate != null ? UTCDate(toDate!) : null,
+      textBody: messageBody
     );
   }
 }
