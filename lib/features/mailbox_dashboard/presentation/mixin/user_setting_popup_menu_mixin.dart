@@ -44,7 +44,7 @@ mixin UserSettingPopupMenuMixin {
   Widget _settingAction(BuildContext context, Function? onCallBack) {
     return PopupMenuItemWidget(
         _imagePaths.icSetting,
-        AppLocalizations.of(context).settings,
+        AppLocalizations.of(context).manage_account,
         () => onCallBack?.call());
   }
 

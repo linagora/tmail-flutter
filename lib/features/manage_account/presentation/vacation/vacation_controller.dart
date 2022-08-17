@@ -116,7 +116,18 @@ class VacationController extends BaseController {
         initialDatePickerMode: DatePickerMode.day,
         firstDate: DateTime(1900),
         lastDate: DateTime(2100),
-        locale: Localizations.localeOf(context)
+        locale: Localizations.localeOf(context),
+        builder: (context, child) {
+          return Theme(
+              data: Theme.of(context).copyWith(
+                  colorScheme: const ColorScheme.light(
+                      primary: AppColor.primaryColor,
+                      onPrimary: Colors.white,
+                      onSurface: Colors.black),
+                  textButtonTheme: TextButtonThemeData(
+                      style: TextButton.styleFrom(primary: AppColor.primaryColor))),
+              child: child!);
+        }
     );
 
     if (datePicked == null) {
@@ -135,9 +146,18 @@ class VacationController extends BaseController {
       context: context,
       initialTime: currentTime ?? TimeOfDay.now(),
       builder: (context, child) {
-        return MediaQuery(
-            data: const MediaQueryData(alwaysUse24HourFormat: true),
-            child: child!);
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColor.primaryColor,
+              onPrimary: Colors.white,
+              onSurface: Colors.black),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(primary: AppColor.primaryColor))),
+          child: MediaQuery(
+              data: const MediaQueryData(alwaysUse24HourFormat: true),
+              child: child!),
+        );
       }
     );
 
@@ -233,6 +253,8 @@ class VacationController extends BaseController {
       final newVacationPresentation = currentVacation.toVacationPresentation();
       vacationPresentation.value = newVacationPresentation;
       messageBodyEditorController.text = newVacationPresentation.messageBody ?? '';
+
+      _accountDashBoardController.updateVacationResponse(currentVacation);
     }
   }
 

@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/configuration/vacation/vacation_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller.dart';
 
 class VacationBindings extends BaseBindings {
 

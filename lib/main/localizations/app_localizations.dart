@@ -1967,13 +1967,6 @@ class AppLocalizations {
     );
   }
 
-  String get configuration {
-    return Intl.message(
-      'Configuration',
-      name: 'configuration',
-    );
-  }
-
   String get vacationResponder {
     return Intl.message(
       'Vacation responder',
@@ -2076,6 +2069,20 @@ class AppLocalizations {
     return Intl.message(
       'Vacation settings saved',
       name: 'vacationSettingSaved',
+    );
+  }
+
+  String get yourVacationResponderIsEnabled {
+    return Intl.message(
+      'Your vacation responder is enabled.',
+      name: 'yourVacationResponderIsEnabled',
+    );
+  }
+
+  String get disable {
+    return Intl.message(
+      'Disable',
+      name: 'disable',
     );
   }
 }

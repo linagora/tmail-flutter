@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
@@ -43,6 +44,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -71,6 +74,7 @@ class MailboxDashBoardController extends ReloadableController {
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
   final MarkAsMailboxReadInteractor _markAsMailboxReadInteractor;
   final GetComposerCacheOnWebInteractor _getEmailCacheOnWebInteractor;
+  final GetAllVacationInteractor _getAllVacationInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -85,6 +89,7 @@ class MailboxDashBoardController extends ReloadableController {
   final listEmailSelected = <PresentationEmail>[].obs;
   final composerOverlayState = ComposerOverlayState.inActive.obs;
   final viewStateMarkAsReadMailbox = Rx<Either<Failure, Success>>(Right(UIState.idle));
+  final vacationResponse = Rxn<VacationResponse>();
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxId = {};
@@ -106,6 +111,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._deleteEmailPermanentlyInteractor,
     this._markAsMailboxReadInteractor,
     this._getEmailCacheOnWebInteractor,
+    this._getAllVacationInteractor,
   ) : super(logoutOidcInteractor,
       deleteAuthorityOidcInteractor,
       getAuthenticatedAccountInteractor);
@@ -125,6 +131,7 @@ class MailboxDashBoardController extends ReloadableController {
     dispatchRoute(AppRoutes.THREAD);
     _setSessionCurrent();
     _getUserProfile();
+    _getVacationResponse();
     _getAppVersion();
     super.onReady();
   }
@@ -210,6 +217,10 @@ class MailboxDashBoardController extends ReloadableController {
         } else if (success is MarkAsMailboxReadAllSuccess ||
             success is MarkAsMailboxReadHasSomeEmailFailure) {
           _markAsReadMailboxSuccess(success);
+        } else if (success is GetAllVacationSuccess) {
+          if (success.listVacationResponse.isNotEmpty) {
+            vacationResponse.value = success.listVacationResponse.first;
+          }
         }
       }
     );
@@ -290,6 +301,12 @@ class MailboxDashBoardController extends ReloadableController {
     final info = await PackageInfo.fromPlatform();
     log('MailboxDashBoardController::_getAppVersion(): ${info.version}');
     appInformation.value = info;
+  }
+
+  void _getVacationResponse() {
+    if (accountId.value != null) {
+      consumeState(_getAllVacationInteractor.execute(accountId.value!));
+    }
   }
 
   MailboxId? getMailboxIdByRole(Role role) {
@@ -448,6 +465,7 @@ class MailboxDashBoardController extends ReloadableController {
     sessionCurrent = session;
     accountId.value = sessionCurrent?.accounts.keys.first;
     _getUserProfile();
+    _getVacationResponse();
     _handleComposerCache();
     injectAutoCompleteBindings();
   }
@@ -544,13 +562,16 @@ class MailboxDashBoardController extends ReloadableController {
     dashBoardAction.value = DashBoardAction.idle;
   }
 
-  void goToSettings() {
-    if (currentContext != null && (_responsiveUtils.isMobile(currentContext!)
-        || _responsiveUtils.isTablet(currentContext!))) {
+  void goToSettings() async {
+    if (isDrawerOpen) {
       closeMailboxMenuDrawer();
     }
-    push(AppRoutes.MANAGE_ACCOUNT,
+    final result = await push(AppRoutes.MANAGE_ACCOUNT,
         arguments: ManageAccountArguments(sessionCurrent));
+
+    if (result is VacationResponse) {
+      vacationResponse.value = result;
+    }
   }
 
   void selectQuickSearchFilter({

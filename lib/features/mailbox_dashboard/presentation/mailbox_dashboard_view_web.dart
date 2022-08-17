@@ -19,6 +19,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -93,6 +95,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     children: [
                       SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
                       Expanded(child: Column(children: [
+                        Obx(() {
+                          if (controller.vacationResponse.value?.vacationResponderIsReady == true) {
+                            return VacationNotificationMessageWidget(
+                                margin: const EdgeInsets.only(top: 16, right: 16),
+                                vacationResponse: controller.vacationResponse.value!);
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
                         _buildMarkAsMailboxReadLoading(context),
                         Expanded(child: Obx(() {
                           switch(controller.routePath.value) {

@@ -20,8 +20,8 @@ enum AccountMenuItem {
         return imagePaths.icEmailRules;
       case AccountMenuItem.forward:
         return imagePaths.icForward;
-      case AccountMenuItem.configuration:
-        return imagePaths.icConfiguration;
+      case AccountMenuItem.vacation:
+        return imagePaths.icVacation;
     }
   }
 
@@ -35,8 +35,8 @@ enum AccountMenuItem {
         return AppLocalizations.of(context).emailRules;
       case AccountMenuItem.forward:
         return AppLocalizations.of(context).forwarding;
-      case AccountMenuItem.configuration:
-        return AppLocalizations.of(context).configuration;
+      case AccountMenuItem.vacation:
+        return AppLocalizations.of(context).vacation;
     }
   }
 }
