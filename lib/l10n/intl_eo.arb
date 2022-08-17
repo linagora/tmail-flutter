@@ -4100,5 +4100,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "initializing_data": "",
+  "@initializing_data": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
