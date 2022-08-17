@@ -16,6 +16,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
@@ -60,6 +62,17 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                       if ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)
                         ... [
                           _buildAppBarNormal(context),
+                          Obx(() {
+                            if (controller.mailboxDashBoardController.vacationResponse.value?.vacationResponderIsReady == true) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: VacationNotificationMessageWidget(
+                                    vacationResponse: controller.mailboxDashBoardController.vacationResponse.value!),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
                           Obx(() {
                             return Stack(children: [
                               if (!controller.isSearchActive())

@@ -1,4 +1,5 @@
 
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_presentation.dart';
@@ -22,5 +23,21 @@ extension VacationResponseExtension on VacationResponse {
       messageBody: textBody ?? htmlBody,
       vacationStopEnabled: toDate != null
     );
+  }
+
+  bool get vacationResponderIsReady {
+    if (isEnabled == true) {
+      final currentDate = DateTime.now().toUtc();
+      log('VacationResponseExtension::vacationResponderEnabled(): currentDate: $currentDate');
+      final startDate = fromDate?.value.toUtc();
+      log('VacationResponseExtension::vacationResponderEnabled(): startDate: $startDate');
+      if (startDate?.isBefore(currentDate) == true ||
+          startDate?.isAtSameMomentAs(currentDate) == true) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 }

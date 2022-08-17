@@ -15,6 +15,8 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_w
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
@@ -58,6 +60,22 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
                       : EdgeInsets.zero,
                   child: Column(children: [
                     _buildAppBar(context),
+                    Obx(() {
+                      if (controller.mailboxDashBoardController.vacationResponse.value?.vacationResponderIsReady == true &&
+                          (responsiveUtils.isMobile(context) || 
+                              responsiveUtils.isTablet(context) ||
+                              responsiveUtils.isLandscapeMobile(context))) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 5),
+                          child: VacationNotificationMessageWidget(
+                              radius: 0,
+                              margin: EdgeInsets.zero,
+                              vacationResponse: controller.mailboxDashBoardController.vacationResponse.value!),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    }),
                     if (responsiveUtils.isWebDesktop(context))
                       const SizedBox(height: 5),
                     Obx(() {

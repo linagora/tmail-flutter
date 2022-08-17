@@ -6,6 +6,7 @@ import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
@@ -13,6 +14,8 @@ import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dar
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_bindings.dart';
@@ -23,6 +26,8 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ManageAccountDashBoardController extends ReloadableController {
 
+  final GetAllVacationInteractor _getAllVacationInteractor;
+
   final menuDrawerKey = GlobalKey<ScaffoldState>(debugLabel: 'manage_account');
 
   final appInformation = Rxn<PackageInfo>();
@@ -30,11 +35,13 @@ class ManageAccountDashBoardController extends ReloadableController {
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
   final sessionCurrent = Rxn<Session>();
+  final vacationResponse = Rxn<VacationResponse>();
 
   ManageAccountDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
     DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
     GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
+    this._getAllVacationInteractor,
   ) : super(logoutOidcInteractor,
       deleteAuthorityOidcInteractor,
       getAuthenticatedAccountInteractor);
@@ -53,6 +60,10 @@ class ManageAccountDashBoardController extends ReloadableController {
       (success) {
         if (success is GetUserProfileSuccess) {
           userProfile.value = success.userProfile;
+        } else if (success is GetAllVacationSuccess) {
+          if (success.listVacationResponse.isNotEmpty) {
+            vacationResponse.value = success.listVacationResponse.first;
+          }
         }
       }
     );
@@ -67,6 +78,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     sessionCurrent.value = session;
     accountId.value = session.accounts.keys.first;
     _getUserProfile();
+    _getVacationResponse();
     injectAutoCompleteBindings();
   }
 
@@ -77,6 +89,7 @@ class ManageAccountDashBoardController extends ReloadableController {
       sessionCurrent.value = arguments.session;
       accountId.value = sessionCurrent.value?.accounts.keys.first;
       _getUserProfile();
+      _getVacationResponse();
       injectAutoCompleteBindings();
     } else {
       if (kIsWeb) {
@@ -93,6 +106,16 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   void _getUserProfile() async {
     userProfile.value = sessionCurrent.value != null ? UserProfile(sessionCurrent.value!.username.value) : null;
+  }
+
+  void _getVacationResponse() {
+    if (accountId.value != null) {
+      consumeState(_getAllVacationInteractor.execute(accountId.value!));
+    }
+  }
+
+  void updateVacationResponse(VacationResponse? newVacation) {
+    vacationResponse.value = newVacation;
   }
 
   void openMenuDrawer() {
@@ -128,7 +151,7 @@ class ManageAccountDashBoardController extends ReloadableController {
       closeMenuDrawer();
     }
     if (canBack(context)) {
-      popBack();
+      popBack(result: vacationResponse.value);
     } else {
       log('ManageAccountDashBoardController::backToMailboxDashBoard(): canBack: FALSE');
       pushAndPopAll(AppRoutes.MAILBOX_DASHBOARD, arguments: sessionCurrent);

@@ -1,31 +1,43 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/border_button_field.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/configuration/vacation/vacation_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/configuration/vacation/widgets/vacation_input_decoration_builder.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_input_decoration_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/date_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 class VacationView extends GetWidget<VacationController> {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _imagePaths = Get.find<ImagePaths>();
 
   VacationView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: _responsiveUtils.isWebDesktop(context)
+          ? AppColor.colorBgDesktop
+          : Colors.white,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Container(
           width: double.infinity,
-          color: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+          height: double.infinity,
+          margin: _responsiveUtils.isWebDesktop(context)
+              ? const EdgeInsets.all(24)
+              : EdgeInsets.zero,
+          decoration: _responsiveUtils.isWebDesktop(context)
+              ? BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
+                  color: Colors.white)
+              : null,
+          padding: _getPaddingView(context),
           child: ResponsiveWidget(
             responsiveUtils: _responsiveUtils,
             desktop: SingleChildScrollView(
@@ -43,28 +55,58 @@ class VacationView extends GetWidget<VacationController> {
                               fontWeight: FontWeight.normal,
                               color: Colors.black))),
                       const SizedBox(width: 16),
-                      Obx(() => ToggleSwitch(
-                        minWidth: 150.0,
-                        cornerRadius: 20.0,
-                        activeBgColors: const [[Colors.green], [Colors.redAccent]],
-                        activeFgColor: Colors.white,
-                        inactiveBgColor: Colors.grey,
-                        inactiveFgColor: Colors.white,
-                        initialLabelIndex: controller.isVacationDeactivated ? 1 : 0,
-                        totalSwitches: VacationResponderStatus.values.length,
-                        labels: VacationResponderStatus.values
-                            .map((status) => status.getTitle(context))
-                            .toList(),
-                        radiusStyle: true,
-                        onToggle: (index) {
-                          final newStatus = index == 0
-                              ? VacationResponderStatus.activated
-                              : VacationResponderStatus.deactivated;
-                          controller.updateVacationPresentation(newStatus: newStatus);
-                        },
-                      )),
+                      Obx(() {
+                        return Row(
+                          children: [
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  controller.updateVacationPresentation(newStatus: VacationResponderStatus.deactivated);
+                                },
+                                child: Text(AppLocalizations.of(context).deactivated,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black.withOpacity(
+                                          controller.isVacationDeactivated ? 1.0 : 0.3))),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 3, right: 16, left: 16),
+                              child: InkWell(
+                                onTap: () {
+                                  final newStatus = controller.isVacationDeactivated
+                                      ? VacationResponderStatus.activated
+                                      : VacationResponderStatus.deactivated;
+                                  controller.updateVacationPresentation(newStatus: newStatus);
+                                },
+                                child: SvgPicture.asset(
+                                    controller.isVacationDeactivated
+                                        ? _imagePaths.icSwitchOff
+                                        : _imagePaths.icSwitchOn,
+                                    fit: BoxFit.fill,
+                                    width: 24,
+                                    height: 24)),
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  controller.updateVacationPresentation(newStatus: VacationResponderStatus.activated);
+                                },
+                                child: Text(AppLocalizations.of(context).activated,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black.withOpacity(
+                                          controller.isVacationDeactivated ? 0.3 : 1.0))),
+                              ),
+                            )
+                          ]);
+                      })
                     ]),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     Obx(() => AbsorbPointer(
                       absorbing: controller.isVacationDeactivated,
                       child: Row(children: [
@@ -90,10 +132,7 @@ class VacationView extends GetWidget<VacationController> {
                                 color: Colors.black.withOpacity(
                                     controller.isVacationDeactivated ? 0.5 : 1.0)),
                             hintText: AppLocalizations.of(context).startDate,
-                            icon: const Icon(
-                                Icons.date_range,
-                                color: AppColor.colorIconTextField,
-                                size: 20),
+                            icon: SvgPicture.asset(_imagePaths.icCalendar),
                             tapActionCallback: (value) =>
                                 controller.selectDate(context, DateType.start, value)))),
                         const SizedBox(width: 16),
@@ -108,15 +147,12 @@ class VacationView extends GetWidget<VacationController> {
                                 color: Colors.black.withOpacity(
                                     controller.isVacationDeactivated ? 0.5 : 1.0)),
                             hintText: AppLocalizations.of(context).noStartTime,
-                            icon: const Icon(
-                                Icons.timer,
-                                color: AppColor.colorIconTextField,
-                                size: 20),
+                            icon: SvgPicture.asset(_imagePaths.icClock),
                             tapActionCallback: (value) =>
                                 controller.selectTime(context, DateType.start, value)))),
                       ]),
                     )),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     Obx(() => AbsorbPointer(
                       absorbing: controller.isVacationDeactivated,
                       child: Container(
@@ -164,10 +200,7 @@ class VacationView extends GetWidget<VacationController> {
                                 color: Colors.black.withOpacity(
                                     !controller.canChangeEndDate ? 0.5 : 1.0)),
                             hintText: AppLocalizations.of(context).noEndDate,
-                            icon: const Icon(
-                                Icons.date_range,
-                                color: AppColor.colorIconTextField,
-                                size: 20),
+                            icon: SvgPicture.asset(_imagePaths.icCalendar),
                             tapActionCallback: (value) =>
                                 controller.selectDate(context, DateType.end, value)))),
                         const SizedBox(width: 16),
@@ -182,15 +215,12 @@ class VacationView extends GetWidget<VacationController> {
                                 color: Colors.black.withOpacity(
                                     !controller.canChangeEndDate ? 0.5 : 1.0)),
                             hintText: AppLocalizations.of(context).noEndTime,
-                            icon: const Icon(
-                                Icons.timer,
-                                color: AppColor.colorIconTextField,
-                                size: 20),
+                            icon: SvgPicture.asset(_imagePaths.icClock),
                             tapActionCallback: (value) =>
                                 controller.selectTime(context, DateType.end, value)))),
                       ])
                     )),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     Obx(() => AbsorbPointer(
                       absorbing: controller.isVacationDeactivated,
                       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -210,7 +240,7 @@ class VacationView extends GetWidget<VacationController> {
                             controller.isVacationDeactivated ? 0.5 : 1.0))
                       ]),
                     )),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     Align(
                       alignment: Alignment.centerRight,
                       child: buildTextButton(
@@ -227,69 +257,66 @@ class VacationView extends GetWidget<VacationController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (_responsiveUtils.isPortraitMobile(context))
-                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(
-                          AppLocalizations.of(context).vacationResponder,
-                          style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black)),
-                      const SizedBox(height: 16),
-                      Obx(() => ToggleSwitch(
-                        minWidth: 150.0,
-                        cornerRadius: 20.0,
-                        activeBgColors: const [[Colors.green], [Colors.redAccent]],
-                        activeFgColor: Colors.white,
-                        inactiveBgColor: Colors.grey,
-                        inactiveFgColor: Colors.white,
-                        initialLabelIndex: controller.isVacationDeactivated ? 1 : 0,
-                        totalSwitches: VacationResponderStatus.values.length,
-                        labels: VacationResponderStatus.values
-                            .map((status) => status.getTitle(context))
-                            .toList(),
-                        radiusStyle: true,
-                        onToggle: (index) {
-                          final newStatus = index == 0
-                              ? VacationResponderStatus.activated
-                              : VacationResponderStatus.deactivated;
-                          controller.updateVacationPresentation(newStatus: newStatus);
-                        },
-                      ))
-                    ])
-                  else
-                    Row(children: [
-                      Expanded(
-                        child: Text(
-                            AppLocalizations.of(context).vacationResponder,
-                            style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black)),
-                      ),
-                      const SizedBox(width: 16),
-                      Obx(() => ToggleSwitch(
-                        minWidth: 150.0,
-                        cornerRadius: 20.0,
-                        activeBgColors: const [[Colors.green], [Colors.redAccent]],
-                        activeFgColor: Colors.white,
-                        inactiveBgColor: Colors.grey,
-                        inactiveFgColor: Colors.white,
-                        initialLabelIndex: controller.isVacationDeactivated ? 1 : 0,
-                        totalSwitches: VacationResponderStatus.values.length,
-                        labels: VacationResponderStatus.values
-                            .map((status) => status.getTitle(context))
-                            .toList(),
-                        radiusStyle: true,
-                        onToggle: (index) {
-                          final newStatus = index == 0
-                              ? VacationResponderStatus.activated
-                              : VacationResponderStatus.deactivated;
-                          controller.updateVacationPresentation(newStatus: newStatus);
-                        },
-                      ))
-                    ]),
-                  const SizedBox(height: 20),
+                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(
+                        AppLocalizations.of(context).vacationResponder,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black)),
+                    const SizedBox(height: 10),
+                    Obx(() {
+                      return Row(
+                        children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                controller.updateVacationPresentation(newStatus: VacationResponderStatus.deactivated);
+                              },
+                              child: Text(AppLocalizations.of(context).deactivated,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black.withOpacity(
+                                          controller.isVacationDeactivated ? 1.0 : 0.3))),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 3, right: 16, left: 16),
+                            child: InkWell(
+                                onTap: () {
+                                  final newStatus = controller.isVacationDeactivated
+                                      ? VacationResponderStatus.activated
+                                      : VacationResponderStatus.deactivated;
+                                  controller.updateVacationPresentation(newStatus: newStatus);
+                                },
+                                child: SvgPicture.asset(
+                                    controller.isVacationDeactivated
+                                        ? _imagePaths.icSwitchOff
+                                        : _imagePaths.icSwitchOn,
+                                    fit: BoxFit.fill,
+                                    width: 24,
+                                    height: 24)),
+                          ),
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                controller.updateVacationPresentation(newStatus: VacationResponderStatus.activated);
+                              },
+                              child: Text(AppLocalizations.of(context).activated,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black.withOpacity(
+                                          controller.isVacationDeactivated ? 0.3 : 1.0))),
+                            ),
+                          )
+                        ]);
+                    })
+                  ]),
+                  const SizedBox(height: 16),
                   Obx(() => AbsorbPointer(
                     absorbing: controller.isVacationDeactivated,
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -311,10 +338,7 @@ class VacationView extends GetWidget<VacationController> {
                                 color: Colors.black.withOpacity(
                                     controller.isVacationDeactivated ? 0.5 : 1.0)),
                             hintText: AppLocalizations.of(context).startDate,
-                            icon: const Icon(
-                                Icons.date_range,
-                                color: AppColor.colorIconTextField,
-                                size: 20),
+                            icon: SvgPicture.asset(_imagePaths.icCalendar),
                             tapActionCallback: (value) =>
                                 controller.selectDate(context, DateType.start, value)))),
                         const SizedBox(width: 16),
@@ -327,16 +351,13 @@ class VacationView extends GetWidget<VacationController> {
                                 color: Colors.black.withOpacity(
                                     controller.isVacationDeactivated ? 0.5 : 1.0)),
                             hintText: AppLocalizations.of(context).noStartTime,
-                            icon: const Icon(
-                                Icons.timer,
-                                color: AppColor.colorIconTextField,
-                                size: 20),
+                            icon: SvgPicture.asset(_imagePaths.icClock),
                             tapActionCallback: (value) =>
                                 controller.selectTime(context, DateType.start, value))))
                       ]),
                     ]),
                   )),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   Obx(() => AbsorbPointer(
                     absorbing: controller.isVacationDeactivated,
                     child: CheckboxListTile(
@@ -376,10 +397,7 @@ class VacationView extends GetWidget<VacationController> {
                                   color: Colors.black.withOpacity(
                                       !controller.canChangeEndDate ? 0.5 : 1.0)),
                               hintText: AppLocalizations.of(context).noEndDate,
-                              icon: const Icon(
-                                  Icons.date_range,
-                                  color: AppColor.colorIconTextField,
-                                  size: 20),
+                              icon: SvgPicture.asset(_imagePaths.icCalendar),
                               tapActionCallback: (value) =>
                                   controller.selectDate(context, DateType.end, value)))),
                           const SizedBox(width: 16),
@@ -392,16 +410,13 @@ class VacationView extends GetWidget<VacationController> {
                                   color: Colors.black.withOpacity(
                                       !controller.canChangeEndDate ? 0.5 : 1.0)),
                               hintText: AppLocalizations.of(context).noEndTime,
-                              icon: const Icon(
-                                  Icons.timer,
-                                  color: AppColor.colorIconTextField,
-                                  size: 20),
+                              icon: SvgPicture.asset(_imagePaths.icClock),
                               tapActionCallback: (value) =>
                                   controller.selectTime(context, DateType.end, value))))
                         ]),
                       ])
                   )),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   Obx(() => AbsorbPointer(
                     absorbing: controller.isVacationDeactivated,
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -418,7 +433,7 @@ class VacationView extends GetWidget<VacationController> {
                           controller.isVacationDeactivated ? 0.5 : 1.0)
                     ]),
                   )),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   Align(
                     alignment: Alignment.centerRight,
                     child: buildTextButton(
@@ -462,9 +477,25 @@ class VacationView extends GetWidget<VacationController> {
                   .hintMessageBodyVacation))
             .build())
           ..onChange((value) => controller.updateMessageBody(context, value))
-          ..minLines(8)
+          ..minLines(10)
           ..maxLines(null))
         .build();
     });
+  }
+  
+  EdgeInsets _getPaddingView(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      if (_responsiveUtils.isDesktop(context)) {
+        return const EdgeInsets.all(16);
+      } else {
+        return const EdgeInsets.only(top: 16, bottom: 16, left: 0, right: 24);
+      }
+    } else {
+      if (_responsiveUtils.isPortraitMobile(context)) {
+        return const EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 24);
+      } else {
+        return const EdgeInsets.only(top: 16, bottom: 16, left: 0, right: 24);
+      }
+    }
   }
 }

@@ -34,27 +34,17 @@ class ManageAccountMenuController extends BaseController {
     super.onInit();
   }
 
-  _createListAccountMenu(){
+  void _createListAccountMenu(){
     listAccountMenuItem.clear();
-    listAccountMenuItem.add(
-      AccountMenuItem.profiles,
-    );
+    listAccountMenuItem.add(AccountMenuItem.profiles);
     if (dashBoardController.checkAvailableRuleFilterInSession()) {
-      listAccountMenuItem.add(
-        AccountMenuItem.emailRules,
-      );
+      listAccountMenuItem.add(AccountMenuItem.emailRules);
     }
     if (dashBoardController.checkAvailableForwardInSession()) {
-      listAccountMenuItem.add(
-        AccountMenuItem.forward,
-      );
+      listAccountMenuItem.add(AccountMenuItem.forward);
     }
-    listAccountMenuItem.add(
-      AccountMenuItem.languageAndRegion,
-    );
-    listAccountMenuItem.add(
-      AccountMenuItem.vacation,
-    );
+    listAccountMenuItem.add(AccountMenuItem.languageAndRegion);
+    listAccountMenuItem.add(AccountMenuItem.vacation);
   }
 
   @override
