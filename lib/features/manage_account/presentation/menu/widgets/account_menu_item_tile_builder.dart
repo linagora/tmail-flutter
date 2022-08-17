@@ -25,31 +25,26 @@ class AccountMenuItemTileBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => onSelectAccountMenuItemAction?.call(_menuItem),
-      child: Theme(
-        data: ThemeData(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent),
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: InkWell(
+        onTap: () => onSelectAccountMenuItemAction?.call(_menuItem),
         child: Container(
             key: const Key('account_menu_item_tile'),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: backgroundColorItem),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: MediaQuery(
-                data: const MediaQueryData(padding: EdgeInsets.zero),
-                child: Column(children: [
-                  Row(children: [
-                    SvgPicture.asset(_menuItem.getIcon(_imagePaths), width: 28, height: 28, fit: BoxFit.fill),
-                    const SizedBox(width: 12),
-                    Expanded(child: Text(_menuItem.getName(context),
-                        style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: Colors.black)))
-                  ]),
-                ])
-            )
-        )
-    ));
+            child: Column(children: [
+              Row(children: [
+                SvgPicture.asset(_menuItem.getIcon(_imagePaths)),
+                const SizedBox(width: 12),
+                Expanded(child: Text(_menuItem.getName(context),
+                    style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: Colors.black)))
+              ]),
+            ])
+        )),
+    );
   }
 
   Color get backgroundColorItem {

@@ -187,6 +187,8 @@ dependencies:
 
   byte_converter: 1.3.0
 
+  toggle_switch: 2.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
