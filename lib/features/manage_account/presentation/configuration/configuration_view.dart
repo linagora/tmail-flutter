@@ -2,15 +2,15 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/profiles_tab_type.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_view.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/configuration/configuration_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/configuration/vacation/vacation_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/configuration_tab_type.dart';
 
-class ProfilesView extends GetWidget<ProfilesController> {
+class ConfigurationView extends GetWidget<ConfigurationController> {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  ProfilesView({Key? key}) : super(key: key);
+  ConfigurationView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,10 @@ class ProfilesView extends GetWidget<ProfilesController> {
           borderRadius: BorderRadius.circular(
               _responsiveUtils.isWebDesktop(context) ? 20 : 0),
           child: Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+            padding: const EdgeInsets.only(
+                left: BuildUtils.isWeb ? 10 : 0,
+                right: 10,
+                bottom: 10),
             child: DefaultTabController(
                 initialIndex: 0,
                 length: 1,
@@ -56,14 +59,15 @@ class ProfilesView extends GetWidget<ProfilesController> {
                         indicatorColor: AppColor.primaryColor,
                         indicatorSize: CustomIndicatorSize.full),
                       onTap: (index) {},
-                      tabs: [
-                        Tab(text: ProfilesTabType.identities.getName(context)),
-                      ]),
+                      tabs: ConfigurationTabType.values
+                        .map((tab) => Tab(text: tab.getTitle(context)))
+                        .toList()
+                  ),
                   body: Column(children: [
                     const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
                     Expanded(child: TabBarView(
                       children: [
-                        IdentitiesView(),
+                        VacationView(),
                       ],
                     ))
                   ]),

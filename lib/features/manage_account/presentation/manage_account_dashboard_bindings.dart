@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/manage_account/data/network/manage_accoun
 import 'package:tmail_ui_user/features/manage_account/data/repository/manage_account_repository_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/configuration/configuration_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_bindings.dart';
@@ -39,6 +40,7 @@ class ManageAccountDashBoardBindings extends BaseBindings {
     ManageAccountMenuBindings().dependencies();
     ProfileBindings().dependencies();
     LanguageAndRegionBindings().dependencies();
+    ConfigurationBindings().dependencies();
   }
 
   @override
