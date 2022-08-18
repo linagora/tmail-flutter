@@ -2133,4 +2133,11 @@ class AppLocalizations {
         name: 'messageConfirmationDialogDeleteAllRecipientForward'
     );
   }
+
+  String get addEmailForward {
+    return Intl.message(
+      'Add Email',
+      name: 'addEmailForward',
+    );
+  }
 }
