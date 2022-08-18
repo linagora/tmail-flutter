@@ -2,15 +2,13 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/email_rules_header_widget.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/list_email_rules_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/list_email_forward_widget.dart';
 
-class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin {
+class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
 
-  EmailRulesView({Key? key}) : super(key: key);
+  ForwardView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +22,9 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            EmailRulesHeaderWidget(
-              imagePaths: _imagePaths,
-              responsiveUtils: _responsiveUtils,
-              createRule: () => controller.goToCreateNewRule(),
-            ),
             SizedBox(height: _responsiveUtils.isWebDesktop(context) ? 24 : 16),
             _buildLoadingView(),
-            const Expanded(child: ListEmailRulesWidget())
+            const Expanded(child: ListEmailForwardsWidget())
           ],
         ),
       ),
@@ -62,12 +55,12 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
 
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
-            (failure) => const SizedBox.shrink(),
-            (success) => success is LoadingState
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: loadingWidget)
-            : const SizedBox.shrink()
+      (failure) => const SizedBox.shrink(),
+      (success) => success is LoadingState
+      ? Padding(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: loadingWidget)
+      : const SizedBox.shrink()
     ));
   }
 }

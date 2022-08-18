@@ -12,7 +12,7 @@ import 'package:jmap_dart_client/jmap/jmap_request.dart';
 
 void main() {
   group('test to json get forward method', () {
-    final expectRuleFilter1 = TmailForward(
+    final expectRuleFilter1 = TMailForward(
       id: ForwardIdSingleton.forwardIdSingleton,
       localCopy: true,
       forwards: {"bob@domain.org", "alice@domain.org"},
