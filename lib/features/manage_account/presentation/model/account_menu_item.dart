@@ -7,6 +7,7 @@ enum AccountMenuItem {
   profiles,
   languageAndRegion,
   emailRules,
+  forward,
 }
 
 extension AccountMenuItemExtension on AccountMenuItem {
@@ -19,6 +20,8 @@ extension AccountMenuItemExtension on AccountMenuItem {
         return imagePaths.icLanguage;
       case AccountMenuItem.emailRules:
         return imagePaths.icEmailRules;
+      case AccountMenuItem.forward:
+        return imagePaths.icForward;
     }
   }
 
@@ -30,6 +33,8 @@ extension AccountMenuItemExtension on AccountMenuItem {
         return AppLocalizations.of(context).languageAndRegion;
       case AccountMenuItem.emailRules:
         return AppLocalizations.of(context).emailRules;
+      case AccountMenuItem.forward:
+        return AppLocalizations.of(context).forwarding;
     }
   }
 }

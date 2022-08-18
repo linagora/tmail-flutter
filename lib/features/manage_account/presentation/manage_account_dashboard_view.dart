@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_view.dart';
@@ -151,6 +151,12 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         case AccountMenuItem.emailRules:
           if(controller.checkAvailableRuleFilterInSession()){
             return EmailRulesView();
+          } else {
+            return const SizedBox.shrink();
+          }
+        case AccountMenuItem.forward:
+          if(controller.checkAvailableForwardInSession()){
+            return ForwardView();
           } else {
             return const SizedBox.shrink();
           }
