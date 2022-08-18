@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/manage_account/data/repository/manage_acc
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_bindings.dart';
@@ -50,7 +51,8 @@ class ManageAccountDashBoardBindings extends BaseBindings {
         Get.find<LogoutOidcInteractor>(),
         Get.find<DeleteAuthorityOidcInteractor>(),
         Get.find<GetAuthenticatedAccountInteractor>(),
-        Get.find<GetAllVacationInteractor>()
+        Get.find<GetAllVacationInteractor>(),
+        Get.find<UpdateVacationInteractor>()
     ));
   }
 
@@ -94,6 +96,7 @@ class ManageAccountDashBoardBindings extends BaseBindings {
       Get.find<GetStoredTokenOidcInteractor>(),
     ));
     Get.lazyPut(() => GetAllVacationInteractor(Get.find<ManageAccountRepository>()));
+    Get.lazyPut(() => UpdateVacationInteractor(Get.find<ManageAccountRepository>()));
   }
 
   @override

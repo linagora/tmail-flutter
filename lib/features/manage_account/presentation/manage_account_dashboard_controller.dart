@@ -15,18 +15,26 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oi
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ManageAccountDashBoardController extends ReloadableController {
 
+  final _appToast = Get.find<AppToast>();
+  final _imagePaths = Get.find<ImagePaths>();
+
   final GetAllVacationInteractor _getAllVacationInteractor;
+  final UpdateVacationInteractor _updateVacationInteractor;
 
   final menuDrawerKey = GlobalKey<ScaffoldState>(debugLabel: 'manage_account');
 
@@ -42,6 +50,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
     GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
     this._getAllVacationInteractor,
+    this._updateVacationInteractor,
   ) : super(logoutOidcInteractor,
       deleteAuthorityOidcInteractor,
       getAuthenticatedAccountInteractor);
@@ -64,6 +73,8 @@ class ManageAccountDashBoardController extends ReloadableController {
           if (success.listVacationResponse.isNotEmpty) {
             vacationResponse.value = success.listVacationResponse.first;
           }
+        } else if (success is UpdateVacationSuccess) {
+          _handleUpdateVacationSuccess(success);
         }
       }
     );
@@ -162,4 +173,25 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   bool checkAvailableForwardInSession() => sessionCurrent.value?.capabilities.containsKey(capabilityForward) ?? false;
 
+  void disableVacationResponder() {
+    if (accountId.value != null) {
+      final vacationDisabled = vacationResponse.value != null
+          ? vacationResponse.value!.copyWith(isEnabled: false)
+          : VacationResponse(isEnabled: false);
+      consumeState(_updateVacationInteractor.execute(accountId.value!, vacationDisabled));
+    }
+  }
+
+  void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
+    if (success.listVacationResponse.isNotEmpty) {
+      if (currentContext != null && currentOverlayContext != null) {
+        _appToast.showToastWithIcon(
+            currentOverlayContext!,
+            message: AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully,
+            icon: _imagePaths.icChecked);
+      }
+      vacationResponse.value = success.listVacationResponse.first;
+      log('ManageAccountDashBoardController::_handleUpdateVacationSuccess(): $vacationResponse');
+    }
+  }
 }
