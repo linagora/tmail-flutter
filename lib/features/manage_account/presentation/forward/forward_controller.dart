@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/tm
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/recipient_forward.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ForwardController extends BaseController {
@@ -210,5 +211,23 @@ class ForwardController extends BaseController {
     listRecipientForward.value = listRecipientForward
         .map((recipient) => recipient.enableSelection())
         .toList();
+  }
+
+  void goToAddEmailsForward() async {
+    final accountId = _accountDashBoardController.accountId.value;
+    if (accountId != null) {
+      // final newEmailRuleFilter = await push(
+      //     AppRoutes.EMAILS_FORWARD_CREATOR,
+      //     arguments: RulesFilterCreatorArguments(accountId));
+      //
+      // if (newEmailRuleFilter is TMailRule) {
+      //   _createNewRuleFilterAction(
+      //       accountId,
+      //       CreateNewEmailRuleFilterRequest(
+      //           listEmailRule,
+      //           newEmailRuleFilter)
+      //   );
+      // }
+    }
   }
 }

@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/forward_header_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/list_email_forward_widget.dart';
 
 class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _imagePaths = Get.find<ImagePaths>();
 
   ForwardView({Key? key}) : super(key: key);
 
@@ -22,6 +24,12 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            ForwardHeaderWidget(
+              imagePaths: _imagePaths,
+              responsiveUtils: _responsiveUtils,
+              addEmailForward: () => controller.goToAddEmailsForward(),
+            ),
+            SizedBox(height: _responsiveUtils.isWebDesktop(context) ? 24 : 16),
             _buildLoadingView(),
             Expanded(child: ListEmailForwardsWidget())
           ],
