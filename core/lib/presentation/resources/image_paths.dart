@@ -152,6 +152,7 @@ class ImagePaths {
   String get icOpenEditRule => _getImagePath('ic_open_edit_rule.svg');
   String get icEditRuleMobile => _getImagePath('ic_edit_rule_mobile.svg');
   String get icDeleteRuleMobile => _getImagePath('ic_delete_rule_mobile.svg');
+  String get icDeleteEmailForward => _getImagePath('ic_delete_email_forward.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

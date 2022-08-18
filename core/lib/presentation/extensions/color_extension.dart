@@ -133,6 +133,8 @@ extension AppColor on Color {
   static const colorBackgroundSnackBar = Color(0xFF343438);
   static const colorBackgroundHeaderListRuleFilter = Color(0xFFFAF7F7);
   static const colorBorderListRuleFilter = Color(0xFFE7E8EC);
+  static const colorBackgroundHeaderListForwards = Color(0xFFFAF7F7);
+  static const colorBorderListForwardsFilter = Color(0xFFE7E8EC);
   static const colorBackgroundFieldConditionRulesFilter = Color(0xFFF2F3F5);
   static const colorDividerRuleFilter = Color(0xFFE7E8EC);
 

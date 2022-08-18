@@ -2,6 +2,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -14,6 +15,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -110,6 +112,9 @@ class ManageAccountDashBoardController extends ReloadableController {
     if(newAccountMenuItem == AccountMenuItem.emailRules) {
       EmailRulesBindings().dependencies();
     }
+    if(newAccountMenuItem == AccountMenuItem.forward) {
+      ForwardBindings().dependencies();
+    }
     accountMenuItemSelected.value = newAccountMenuItem;
     if (currentContext != null && !_responsiveUtils.isDesktop(currentContext!)) {
       closeMenuDrawer();
@@ -134,5 +139,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   bool checkAvailableRuleFilterInSession() => sessionCurrent.value?.capabilities.containsKey(capabilityRuleFilter) ?? false;
+
+  bool checkAvailableForwardInSession() => sessionCurrent.value?.capabilities.containsKey(capabilityForward) ?? false;
 
 }

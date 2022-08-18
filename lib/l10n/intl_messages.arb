@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-12T09:07:20.482325",
+  "@@last_modified": "2022-08-18T10:12:35.405050",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1888,6 +1888,18 @@
   },
   "yourFilterHasBeenUpdated": "Your filter has been updated",
   "@yourFilterHasBeenUpdated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "headerEmailsForward": "Emails forward",
+  "@headerEmailsForward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwarding": "Forwarding",
+  "@forwarding": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

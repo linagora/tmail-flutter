@@ -7,20 +7,20 @@ part 'tmail_forward.g.dart';
 
 @ForwardIdConverter()
 @JsonSerializable()
-class TmailForward extends Forward {
+class TMailForward extends Forward {
   final ForwardId id;
   final bool localCopy;
   final Set<String> forwards;
-  TmailForward({
+  TMailForward({
     required this.id,
     required this.localCopy,
     required this.forwards,
   });
 
-  factory TmailForward.fromJson(Map<String, dynamic> json) =>
-      _$TmailForwardFromJson(json);
+  factory TMailForward.fromJson(Map<String, dynamic> json) =>
+      _$TMailForwardFromJson(json);
 
-  Map<String, dynamic> toJson() => _$TmailForwardToJson(this);
+  Map<String, dynamic> toJson() => _$TMailForwardToJson(this);
 
   @override
   List<Object?> get props => [
