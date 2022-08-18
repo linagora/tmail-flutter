@@ -2085,4 +2085,11 @@ class AppLocalizations {
       name: 'disable',
     );
   }
+
+  String get yourVacationResponderIsDisabledSuccessfully {
+    return Intl.message(
+      'Your vacation responder is disabled successfully',
+      name: 'yourVacationResponderIsDisabledSuccessfully',
+    );
+  }
 }

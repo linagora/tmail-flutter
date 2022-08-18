@@ -35,12 +35,19 @@ class VacationController extends BaseController {
   final TextEditingController messageBodyEditorController = TextEditingController();
 
   VacationResponse? currentVacation;
+  late Worker vacationWorker;
 
   VacationController(
     this._getAllVacationInteractor,
     this._updateVacationInteractor,
     this._verifyNameInteractor
   );
+
+  @override
+  void onInit() {
+    _initWorker();
+    super.onInit();
+  }
 
   @override
   void onReady() {
@@ -64,6 +71,17 @@ class VacationController extends BaseController {
 
   @override
   void onError(error) {}
+
+  void _initWorker() {
+    vacationWorker = ever(_accountDashBoardController.vacationResponse, (vacation) {
+      if (vacation is VacationResponse) {
+        currentVacation = vacation;
+        final newVacationPresentation = currentVacation?.toVacationPresentation();
+        vacationPresentation.value = newVacationPresentation ?? VacationPresentation.initialize();
+        messageBodyEditorController.text = newVacationPresentation?.messageBody ?? '';
+      }
+    });
+  }
 
   void _getAllVacation() {
     final accountId = _accountDashBoardController.accountId.value;
@@ -273,6 +291,7 @@ class VacationController extends BaseController {
   @override
   void onClose() {
     messageBodyEditorController.dispose();
+    vacationWorker.dispose();
     super.onClose();
   }
 }
