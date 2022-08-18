@@ -96,7 +96,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
                       Expanded(child: Column(children: [
                         Obx(() {
-                          if (controller.vacationResponse.value?.vacationResponderIsReady == true) {
+                          if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
                             return VacationNotificationMessageWidget(
                                 margin: const EdgeInsets.only(top: 16, right: 16),
                                 vacationResponse: controller.vacationResponse.value!,

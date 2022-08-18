@@ -61,7 +61,7 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
                   child: Column(children: [
                     _buildAppBar(context),
                     Obx(() {
-                      if (controller.mailboxDashBoardController.vacationResponse.value?.vacationResponderIsReady == true &&
+                      if (controller.mailboxDashBoardController.vacationResponse.value?.vacationResponderIsValid == true &&
                           (responsiveUtils.isMobile(context) || 
                               responsiveUtils.isTablet(context) ||
                               responsiveUtils.isLandscapeMobile(context))) {

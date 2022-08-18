@@ -85,7 +85,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                     color: AppColor.colorBgDesktop,
                     child: Column(children: [
                       Obx(() {
-                        if (controller.vacationResponse.value?.vacationResponderIsReady == true) {
+                        if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
                           return VacationNotificationMessageWidget(
                               margin: const EdgeInsets.only(
                                   top: 16,
@@ -93,6 +93,22 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                                   right: BuildUtils.isWeb ? 24 : 16),
                               vacationResponse: controller.vacationResponse.value!,
                               action: () => controller.disableVacationResponder());
+                        } else if ((controller.vacationResponse.value?.vacationResponderIsWaiting == true
+                            || controller.vacationResponse.value?.vacationResponderIsStopped == true)
+                          && controller.accountMenuItemSelected.value == AccountMenuItem.vacation) {
+                          return VacationNotificationMessageWidget(
+                              margin: const EdgeInsets.only(
+                                  top: 16,
+                                  left: BuildUtils.isWeb ? 24 : 16,
+                                  right: BuildUtils.isWeb ? 24 : 16),
+                              vacationResponse: controller.vacationResponse.value!,
+                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                              backgroundColor: Colors.yellow,
+                              fontWeight: FontWeight.normal,
+                              leadingIcon: const Padding(
+                                padding: EdgeInsets.only(right: 16),
+                                child: Icon(Icons.timer, size: 20),
+                              ));
                         } else {
                           return const SizedBox.shrink();
                         }
@@ -111,7 +127,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                             : const EdgeInsets.only(top: 16, left: 24, right: 32),
                         child: _buildAppbar(context)),
                     Obx(() {
-                      if (controller.vacationResponse.value?.vacationResponderIsReady == true) {
+                      if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
                         return VacationNotificationMessageWidget(
                             margin: const EdgeInsets.only(
                                 left: BuildUtils.isWeb ? 24 : 16,
@@ -119,6 +135,22 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                                 top: BuildUtils.isWeb ? 16 : 0),
                             vacationResponse: controller.vacationResponse.value!,
                             action: () => controller.disableVacationResponder());
+                      } else if ((controller.vacationResponse.value?.vacationResponderIsWaiting == true
+                          || controller.vacationResponse.value?.vacationResponderIsStopped == true)
+                          && controller.accountMenuItemSelected.value == AccountMenuItem.vacation) {
+                        return VacationNotificationMessageWidget(
+                            margin: const EdgeInsets.only(
+                                left: BuildUtils.isWeb ? 24 : 16,
+                                right: BuildUtils.isWeb ? 24 : 16,
+                                top: BuildUtils.isWeb ? 16 : 0),
+                            vacationResponse: controller.vacationResponse.value!,
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                            fontWeight: FontWeight.normal,
+                            backgroundColor: Colors.yellow,
+                            leadingIcon: const Padding(
+                              padding: EdgeInsets.only(right: 16),
+                              child: Icon(Icons.timer, size: 20),
+                            ));
                       } else {
                         return const SizedBox.shrink();
                       }

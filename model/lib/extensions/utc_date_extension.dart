@@ -3,9 +3,17 @@ import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 
 extension UTCDateExtension on UTCDate? {
 
-  String formatDate({String pattern = 'yMMMd', String locale = 'en_US'}) {
+  String formatDateToLocal({String pattern = 'yMMMd', String locale = 'en_US'}) {
     if (this != null) {
       return DateFormat(pattern, locale).format(this!.value.toLocal());
+    } else {
+      return '';
+    }
+  }
+
+  String formatDate({String pattern = 'yMMMd', String locale = 'en_US'}) {
+    if (this != null) {
+      return DateFormat(pattern, locale).format(this!.value);
     } else {
       return '';
     }
