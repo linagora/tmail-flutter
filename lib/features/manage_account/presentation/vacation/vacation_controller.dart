@@ -34,6 +34,8 @@ class VacationController extends BaseController {
 
   final TextEditingController messageBodyEditorController = TextEditingController();
 
+  VacationResponse? currentVacation;
+
   VacationController(
     this._getAllVacationInteractor,
     this._updateVacationInteractor,
@@ -72,12 +74,14 @@ class VacationController extends BaseController {
 
   void _handleGetAllVacationSuccess(GetAllVacationSuccess success) {
     if (success.listVacationResponse.isNotEmpty) {
-      final currentVacation = success.listVacationResponse.first;
+      currentVacation = success.listVacationResponse.first;
       log('VacationController::_handleGetAllVacationSuccess(): $currentVacation');
 
-      final newVacationPresentation = currentVacation.toVacationPresentation();
-      vacationPresentation.value = newVacationPresentation;
-      messageBodyEditorController.text = newVacationPresentation.messageBody ?? '';
+      if (currentVacation != null) {
+        final newVacationPresentation = currentVacation!.toVacationPresentation();
+        vacationPresentation.value = newVacationPresentation;
+        messageBodyEditorController.text = newVacationPresentation.messageBody ?? '';
+      }
     }
   }
 
@@ -229,6 +233,12 @@ class VacationController extends BaseController {
       final newVacationResponse = newVacationPresentation.toVacationResponse();
       log('VacationController::saveVacation(): newVacationResponse: $newVacationResponse');
       _updateVacationAction(newVacationResponse);
+    } else {
+      final vacationDisabled = currentVacation != null
+          ? currentVacation!.copyWith(isEnabled: false)
+          : VacationResponse(isEnabled: false);
+      log('VacationController::saveVacation(): vacationDisabled: $vacationDisabled');
+      _updateVacationAction(vacationDisabled);
     }
   }
 
@@ -247,12 +257,14 @@ class VacationController extends BaseController {
             message: AppLocalizations.of(currentContext!).vacationSettingSaved,
             icon: _imagePaths.icChecked);
       }
-      final currentVacation = success.listVacationResponse.first;
+      currentVacation = success.listVacationResponse.first;
       log('VacationController::_handleUpdateVacationSuccess(): $currentVacation');
 
-      final newVacationPresentation = currentVacation.toVacationPresentation();
-      vacationPresentation.value = newVacationPresentation;
-      messageBodyEditorController.text = newVacationPresentation.messageBody ?? '';
+      if (currentVacation != null) {
+        final newVacationPresentation = currentVacation!.toVacationPresentation();
+        vacationPresentation.value = newVacationPresentation;
+        messageBodyEditorController.text = newVacationPresentation.messageBody ?? '';
+      }
 
       _accountDashBoardController.updateVacationResponse(currentVacation);
     }
