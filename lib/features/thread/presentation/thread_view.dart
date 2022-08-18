@@ -63,7 +63,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                         ... [
                           _buildAppBarNormal(context),
                           Obx(() {
-                            if (controller.mailboxDashBoardController.vacationResponse.value?.vacationResponderIsReady == true) {
+                            if (controller.mailboxDashBoardController.vacationResponse.value?.vacationResponderIsValid == true) {
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
                                 child: VacationNotificationMessageWidget(

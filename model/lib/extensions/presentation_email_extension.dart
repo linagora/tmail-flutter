@@ -18,7 +18,7 @@ extension PresentationEmailExtension on PresentationEmail {
   String getReceivedAt(String newLocale, {String? pattern}) {
     final emailTime = receivedAt;
     if (emailTime != null) {
-      return emailTime.formatDate(
+      return emailTime.formatDateToLocal(
         pattern: pattern ?? emailTime.value.toLocal().toPattern(),
         locale: newLocale);
     }
