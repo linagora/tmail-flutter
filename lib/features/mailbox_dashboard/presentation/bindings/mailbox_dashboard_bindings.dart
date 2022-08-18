@@ -74,6 +74,7 @@ import 'package:tmail_ui_user/features/manage_account/data/repository/manage_acc
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/local_thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
@@ -110,6 +111,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MarkAsMailboxReadInteractor>(),
       Get.find<GetComposerCacheOnWebInteractor>(),
       Get.find<GetAllVacationInteractor>(),
+      Get.find<UpdateVacationInteractor>(),
     ));
     Get.put(AdvancedFilterController());
   }
@@ -192,6 +194,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => SaveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => GetAllVacationInteractor(Get.find<ManageAccountRepository>()));
+    Get.lazyPut(() => UpdateVacationInteractor(Get.find<ManageAccountRepository>()));
   }
 
   @override
