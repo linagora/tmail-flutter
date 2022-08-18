@@ -67,7 +67,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
                                 child: VacationNotificationMessageWidget(
-                                    vacationResponse: controller.mailboxDashBoardController.vacationResponse.value!),
+                                    vacationResponse: controller.mailboxDashBoardController.vacationResponse.value!,
+                                    action: () => controller.mailboxDashBoardController.disableVacationResponder()),
                               );
                             } else {
                               return const SizedBox.shrink();

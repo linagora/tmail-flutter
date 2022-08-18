@@ -91,7 +91,8 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                                   top: 16,
                                   left: BuildUtils.isWeb ? 24 : 16,
                                   right: BuildUtils.isWeb ? 24 : 16),
-                              vacationResponse: controller.vacationResponse.value!);
+                              vacationResponse: controller.vacationResponse.value!,
+                              action: () => controller.disableVacationResponder());
                         } else {
                           return const SizedBox.shrink();
                         }
@@ -116,7 +117,8 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                                 left: BuildUtils.isWeb ? 24 : 16,
                                 right: BuildUtils.isWeb ? 24 : 16,
                                 top: BuildUtils.isWeb ? 16 : 0),
-                            vacationResponse: controller.vacationResponse.value!);
+                            vacationResponse: controller.vacationResponse.value!,
+                            action: () => controller.disableVacationResponder());
                       } else {
                         return const SizedBox.shrink();
                       }

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-18T14:30:25.186365",
+  "@@last_modified": "2022-08-18T16:16:05.548805",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2008,6 +2008,12 @@
   },
   "disable": "Disable",
   "@disable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourVacationResponderIsDisabledSuccessfully": "Your vacation responder is disabled successfully",
+  "@yourVacationResponderIsDisabledSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
