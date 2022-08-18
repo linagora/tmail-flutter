@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:forward/forward/tmail_forward.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
@@ -102,6 +103,15 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   Future<List<TMailRule>> editEmailRuleFilter(AccountId accountId, EditEmailRuleFilterRequest ruleFilterRequest) {
     return Future.sync(() async {
       return await manageAccountAPI.updateListTMailRule(accountId, ruleFilterRequest.listTMailRulesUpdated);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<TMailForward> getForward(AccountId accountId) {
+    return Future.sync(() async {
+      return await manageAccountAPI.getForward(accountId);
     }).catchError((error) {
       throw error;
     });

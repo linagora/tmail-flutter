@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:forward/forward/tmail_forward.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
@@ -29,4 +30,6 @@ abstract class ManageAccountRepository {
   Future<List<TMailRule>> createNewEmailRuleFilter(AccountId accountId, CreateNewEmailRuleFilterRequest ruleFilterRequest);
 
   Future<List<TMailRule>> editEmailRuleFilter(AccountId accountId, EditEmailRuleFilterRequest ruleFilterRequest);
+
+  Future<TMailForward> getForward(AccountId accountId);
 }

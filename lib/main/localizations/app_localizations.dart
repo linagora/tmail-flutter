@@ -1945,4 +1945,18 @@ class AppLocalizations {
         'Your filter has been updated',
         name: 'yourFilterHasBeenUpdated');
   }
+
+  String get headerEmailsForward {
+    return Intl.message(
+      'Emails forward',
+      name: 'headerEmailsForward',
+    );
+  }
+
+  String get forwarding {
+    return Intl.message(
+      'Forwarding',
+      name: 'forwarding',
+    );
+  }
 }
