@@ -376,7 +376,7 @@ class ComposerController extends BaseController {
           final sentDate = presentationEmail.sentAt;
           final emailAddress = presentationEmail.from.listEmailAddressToString(isFullEmailAddress: true);
           return AppLocalizations.of(context).header_email_quoted(
-              sentDate.formatDate(pattern: 'MMM d, y h:mm a', locale: locale),
+              sentDate.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: locale),
               emailAddress);
         case EmailActionType.forward:
           var headerQuoted = '------- ${AppLocalizations.of(context).forwarded_message} -------'.addNewLineTag();
@@ -397,7 +397,7 @@ class ComposerController extends BaseController {
           if (sentDate != null) {
             headerQuoted = headerQuoted
                 .append('${AppLocalizations.of(context).date}: ')
-                .append(sentDate.formatDate(pattern: 'MMM d, y h:mm a', locale: locale))
+                .append(sentDate.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: locale))
                 .addNewLineTag();
           }
           if (fromEmailAddress.isNotEmpty) {

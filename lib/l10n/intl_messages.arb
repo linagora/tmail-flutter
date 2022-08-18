@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-18T16:16:05.548805",
+  "@@last_modified": "2022-08-18T17:02:08.322535",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2017,5 +2017,25 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "messageEnableVacationResponderAutomatically": "Your vacation responder will be activated on {startDate}",
+  "@messageEnableVacationResponderAutomatically": {
+    "type": "text",
+    "placeholders_order": [
+      "startDate"
+    ],
+    "placeholders": {
+      "startDate": {}
+    }
+  },
+  "messageDisableVacationResponderAutomatically": "Your vacation responder stopped on {endDate}",
+  "@messageDisableVacationResponderAutomatically": {
+    "type": "text",
+    "placeholders_order": [
+      "endDate"
+    ],
+    "placeholders": {
+      "endDate": {}
+    }
   }
 }

@@ -2092,4 +2092,18 @@ class AppLocalizations {
       name: 'yourVacationResponderIsDisabledSuccessfully',
     );
   }
+
+  String messageEnableVacationResponderAutomatically(String startDate) {
+    return Intl.message(
+        'Your vacation responder will be activated on $startDate',
+        name: 'messageEnableVacationResponderAutomatically',
+        args: [startDate]);
+  }
+
+  String messageDisableVacationResponderAutomatically(String endDate) {
+    return Intl.message(
+        'Your vacation responder stopped on $endDate',
+        name: 'messageDisableVacationResponderAutomatically',
+        args: [endDate]);
+  }
 }
