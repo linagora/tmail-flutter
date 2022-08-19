@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/tmail_forward.dart';
 import 'package:get/get.dart';
+import 'package:model/mailbox/select_mode.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
@@ -15,7 +16,9 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipi
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_forward_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_recipient_in_forwarding_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_forward_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/tmail_forward_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/recipient_forward.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -29,7 +32,10 @@ class ForwardController extends BaseController {
   final _imagePaths = Get.find<ImagePaths>();
   final _appToast = Get.find<AppToast>();
 
-  final currentForward = Rxn<TMailForward>();
+  final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
+  final listRecipientForward = RxList<RecipientForward>();
+
+  TMailForward? currentForward;
 
   ForwardController(
     this._getForwardInteractor,
@@ -38,13 +44,20 @@ class ForwardController extends BaseController {
 
   @override
   void onDone() {
-    viewState.value.fold((failure) {}, (success) {
-      if (success is GetForwardSuccess) {
-        currentForward.value = success.forward;
-      } else if (success is DeleteRecipientInForwardingSuccess) {
-        _handleDeleteRecipientSuccess(success);
-      }
-    });
+    viewState.value.fold(
+        (failure) {
+          if (failure is DeleteRecipientInForwardingFailure) {
+            cancelSelectionMode();
+          }
+        },
+        (success) {
+          if (success is GetForwardSuccess) {
+            currentForward = success.forward;
+            listRecipientForward.value = currentForward!.listRecipientForward;
+          } else if (success is DeleteRecipientInForwardingSuccess) {
+            _handleDeleteRecipientSuccess(success);
+          }
+        });
   }
 
   @override
@@ -100,11 +113,11 @@ class ForwardController extends BaseController {
     popBack();
 
     final accountId = _accountDashBoardController.accountId.value;
-    if (accountId != null && currentForward.value != null) {
+    if (accountId != null && currentForward != null) {
       consumeState(_deleteRecipientInForwardingInteractor.execute(
           accountId,
           DeleteRecipientInForwardingRequest(
-              currentForward: currentForward.value!,
+              currentForward: currentForward!,
               listRecipientDeleted: listRecipients)));
     }
   }
@@ -117,6 +130,75 @@ class ForwardController extends BaseController {
           icon: _imagePaths.icSelected);
     }
 
-    currentForward.value = success.forward;
+    currentForward = success.forward;
+    listRecipientForward.value = currentForward!.listRecipientForward;
+    selectionMode.value = SelectMode.INACTIVE;
+  }
+
+  List<RecipientForward> get listRecipientForwardSelected => listRecipientForward
+        .where((recipient) => recipient.selectMode == SelectMode.ACTIVE)
+        .toList();
+
+  bool get isAllUnSelected =>
+      listRecipientForward.every((recipient) => recipient.selectMode == SelectMode.INACTIVE);
+
+  void selectRecipientForward(RecipientForward recipientForward) {
+    if (selectionMode.value == SelectMode.INACTIVE) {
+      selectionMode.value = SelectMode.ACTIVE;
+    }
+
+    final matchRecipientForward = listRecipientForward.indexOf(recipientForward);
+    if (matchRecipientForward >= 0) {
+      final newRecipientForward = recipientForward.toggleSelection();
+      listRecipientForward[matchRecipientForward] = newRecipientForward;
+      listRecipientForward.refresh();
+    }
+
+    if (isAllUnSelected) {
+      selectionMode.value = SelectMode.INACTIVE;
+    }
+  }
+
+  void cancelSelectionMode() {
+    selectionMode.value = SelectMode.INACTIVE;
+    listRecipientForward.value = listRecipientForward
+        .map((recipient) => recipient.cancelSelection())
+        .toList();
+  }
+
+  void deleteMultipleRecipients(BuildContext context, Set<String> listEmailAddress) {
+    if (_responsiveUtils.isMobile(context)) {
+      (ConfirmationDialogActionSheetBuilder(context)
+        ..messageText(AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward)
+        ..onCancelAction(AppLocalizations.of(context).cancel, () =>
+            popBack())
+        ..onConfirmAction(AppLocalizations.of(context).delete, () {
+          _handleDeleteRecipientAction(listEmailAddress);
+        }))
+      .show();
+    } else {
+      showDialog(
+        context: context,
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        builder: (BuildContext context) =>
+          PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
+            ..title(AppLocalizations.of(context).deleteRecipient)
+            ..content(AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward)
+            ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog,
+                fit: BoxFit.fill))
+            ..marginIcon(EdgeInsets.zero)
+            ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+            ..styleTextConfirmButton(const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w500,
+                color: AppColor.colorActionDeleteConfirmDialog))
+            ..onCloseButtonAction(() => popBack())
+            ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
+              _handleDeleteRecipientAction(listEmailAddress);
+            })
+            ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
+                popBack()))
+          .build()));
+    }
   }
 }
