@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_acc
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_email_rule_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
@@ -79,5 +80,10 @@ class ManageAccountRepositoryImpl extends ManageAccountRepository {
   @override
   Future<List<VacationResponse>> updateVacation(AccountId accountId, VacationResponse vacationResponse) {
     return dataSource.updateVacation(accountId, vacationResponse);
+  }
+
+  @override
+  Future<TMailForward> deleteRecipientInForwarding(AccountId accountId, DeleteRecipientInForwardingRequest deleteRequest) {
+    return dataSource.deleteRecipientInForwarding(accountId, deleteRequest);
   }
 }
