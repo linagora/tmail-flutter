@@ -86,4 +86,9 @@ class ManageAccountRepositoryImpl extends ManageAccountRepository {
   Future<TMailForward> deleteRecipientInForwarding(AccountId accountId, DeleteRecipientInForwardingRequest deleteRequest) {
     return dataSource.deleteRecipientInForwarding(accountId, deleteRequest);
   }
+
+  @override
+  Future<TMailForward> updateForward(AccountId accountId, TMailForward forward) {
+    return dataSource.updateForward(accountId, forward);
+  }
 }
