@@ -26,6 +26,10 @@ extension RecipientForwardExtension on RecipientForward {
   RecipientForward cancelSelection() {
     return RecipientForward(emailAddress, selectMode: SelectMode.INACTIVE);
   }
+
+  RecipientForward enableSelection() {
+    return RecipientForward(emailAddress, selectMode: SelectMode.ACTIVE);
+  }
 }
 
 extension ListRecipientForwardExtension on List<RecipientForward> {

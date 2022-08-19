@@ -201,4 +201,14 @@ class ForwardController extends BaseController {
           .build()));
     }
   }
+
+  void selectAllRecipientForward() {
+    if (selectionMode.value == SelectMode.INACTIVE) {
+      selectionMode.value = SelectMode.ACTIVE;
+    }
+
+    listRecipientForward.value = listRecipientForward
+        .map((recipient) => recipient.enableSelection())
+        .toList();
+  }
 }

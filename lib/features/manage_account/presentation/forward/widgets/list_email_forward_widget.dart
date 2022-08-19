@@ -40,7 +40,7 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
                       topRight: Radius.circular(16)),
                 ),
                 padding: controller.selectionMode.value == SelectMode.INACTIVE
-                    ? const EdgeInsets.all(24)
+                    ? const EdgeInsets.symmetric(vertical: 17, horizontal: 24)
                     : const EdgeInsets.symmetric(vertical: 13, horizontal: 24),
                 child: Row(children: [
                   Expanded(child: Text(
@@ -55,7 +55,26 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
                     if (controller.selectionMode.value == SelectMode.ACTIVE) {
                       return _buildListButtonSelection(context);
                     } else {
-                      return const SizedBox.shrink();
+                      if (controller.listRecipientForward.isNotEmpty) {
+                        return (ButtonBuilder(_imagePaths.icSelectAll)
+                            ..decoration(BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: AppColor.colorButtonHeaderThread))
+                            ..paddingIcon(const EdgeInsets.only(right: 8))
+                            ..size(16)
+                            ..radiusSplash(10)
+                            ..padding(const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8))
+                            ..textStyle(const TextStyle(
+                                fontSize: 12,
+                                color: AppColor.colorTextButtonHeaderThread))
+                            ..onPressActionClick(() => controller.selectAllRecipientForward())
+                            ..text(AppLocalizations.of(context).select_all, isVertical: false))
+                          .build();
+                      } else {
+                        return const SizedBox.shrink();
+                      }
                     }
                   })
                 ]),
