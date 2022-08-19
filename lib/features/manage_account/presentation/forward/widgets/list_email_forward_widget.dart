@@ -50,14 +50,14 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
               ),
               Expanded(
                 child: Obx(() {
-                  log('ListEmailForwardsWidget::build(): ${controller.listForwards}');
+                  final listRecipients = controller.currentForward.value?.forwards.toList() ?? <String>[];
                   return ListView.separated(
                     shrinkWrap: true,
-                    itemCount: controller.listForwards.length,
+                    itemCount: listRecipients.length,
                     itemBuilder: (context, index) {
-                      final emailForward = controller.listForwards[index];
-                      log('ListEmailForwardsWidget::build(): $emailForward');
-                      return EmailForwardItemWidget(emailForward: emailForward);
+                      final emailAddress = listRecipients[index];
+                      log('ListEmailForwardsWidget::build(): $emailAddress');
+                      return EmailForwardItemWidget(emailAddress: emailAddress);
                     },
                     separatorBuilder: (context, index) => const Divider(
                         color: AppColor.lineItemListColor,

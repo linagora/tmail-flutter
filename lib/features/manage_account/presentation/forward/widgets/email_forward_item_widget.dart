@@ -9,11 +9,11 @@ class EmailForwardItemWidget extends StatelessWidget {
   final _imagePaths = Get.find<ImagePaths>();
   final _emailForwardController = Get.find<ForwardController>();
 
-  final String emailForward;
+  final String emailAddress;
 
   EmailForwardItemWidget({
     Key? key,
-    required this.emailForward,
+    required this.emailAddress,
   }) : super(key: key);
 
   @override
@@ -23,25 +23,24 @@ class EmailForwardItemWidget extends StatelessWidget {
         top: 15,
         bottom: 15,
         left: _responsiveUtils.isMobile(context) ? 16 : 24,
-        right: _responsiveUtils.isMobile(context) ? 0 : 24
+        right: _responsiveUtils.isMobile(context) ? 8 : 24
       ),
       color: Colors.white,
       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Text(emailForward,
+        Text(emailAddress,
             style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 color: Colors.black)),
         const Spacer(),
-        if (!_responsiveUtils.isMobile(context))
-          buildIconWeb(
-              icon: SvgPicture.asset(
-                _imagePaths.icDeleteEmailForward,
-                fit: BoxFit.fill,
-              ),
-              onTap: () {
-                _emailForwardController.deleteEmailForward(emailForward);
-              }),
+        buildIconWeb(
+            icon: SvgPicture.asset(
+              _imagePaths.icDeleteEmailForward,
+              fit: BoxFit.fill,
+            ),
+            onTap: () {
+              _emailForwardController.deleteRecipients(context, emailAddress);
+            }),
       ]),
     );
   }
