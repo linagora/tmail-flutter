@@ -37,7 +37,10 @@ class AccountMenuItemTileBuilder extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Column(children: [
               Row(children: [
-                SvgPicture.asset(_menuItem.getIcon(_imagePaths)),
+                SvgPicture.asset(_menuItem.getIcon(_imagePaths),
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.fill),
                 const SizedBox(width: 12),
                 Expanded(child: Text(_menuItem.getName(context),
                     style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: Colors.black)))
