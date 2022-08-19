@@ -22,9 +22,8 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: _responsiveUtils.isWebDesktop(context) ? 24 : 16),
             _buildLoadingView(),
-            const Expanded(child: ListEmailForwardsWidget())
+            Expanded(child: ListEmailForwardsWidget())
           ],
         ),
       ),
