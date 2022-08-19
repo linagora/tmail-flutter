@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/manage_account/data/network/manage_accoun
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_email_rule_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
@@ -131,6 +132,15 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   Future<List<VacationResponse>> updateVacation(AccountId accountId, VacationResponse vacationResponse) {
     return Future.sync(() async {
       return await manageAccountAPI.updateVacation(accountId, vacationResponse);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  @override
+  Future<TMailForward> deleteRecipientInForwarding(AccountId accountId, DeleteRecipientInForwardingRequest deleteRequest) {
+    return Future.sync(() async {
+      return await manageAccountAPI.updateForward(accountId, deleteRequest.newTMailForward);
     }).catchError((error) {
       throw error;
     });
