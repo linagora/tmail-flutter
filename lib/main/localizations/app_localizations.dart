@@ -2106,4 +2106,24 @@ class AppLocalizations {
         name: 'messageDisableVacationResponderAutomatically',
         args: [endDate]);
   }
+
+  String messageConfirmationDialogDeleteRecipientForward(String emailAddress) {
+    return Intl.message(
+        'Do you want to delete email $emailAddress?',
+        name: 'messageConfirmationDialogDeleteRecipientForward',
+        args: [emailAddress]
+    );
+  }
+
+  String get deleteRecipient {
+    return Intl.message(
+        'Delete recipient',
+        name: 'deleteRecipient');
+  }
+
+  String get toastMessageDeleteRecipientSuccessfully {
+    return Intl.message(
+        'The email has been removed from the recipient list.',
+        name: 'toastMessageDeleteRecipientSuccessfully');
+  }
 }
