@@ -2126,4 +2126,11 @@ class AppLocalizations {
         'The email has been removed from the recipient list.',
         name: 'toastMessageDeleteRecipientSuccessfully');
   }
+
+  String get messageConfirmationDialogDeleteAllRecipientForward {
+    return Intl.message(
+        'Do you want to delete all email?',
+        name: 'messageConfirmationDialogDeleteAllRecipientForward'
+    );
+  }
 }
