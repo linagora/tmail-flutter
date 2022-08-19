@@ -22,6 +22,17 @@ class TMailForward extends Forward {
 
   Map<String, dynamic> toJson() => _$TMailForwardToJson(this);
 
+  TMailForward copyWith({
+    ForwardId? id,
+    bool? localCopy,
+    Set<String>? forwards,
+  }) {
+    return TMailForward(
+      id: id ?? this.id,
+      localCopy: localCopy ?? this.localCopy,
+      forwards: forwards ?? this.forwards,
+    );
+  }
   @override
   List<Object?> get props => [
     id,
