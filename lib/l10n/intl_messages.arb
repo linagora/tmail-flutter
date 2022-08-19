@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-18T17:02:08.322535",
+  "@@last_modified": "2022-08-19T11:57:02.557202",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2037,5 +2037,27 @@
     "placeholders": {
       "endDate": {}
     }
+  },
+  "messageConfirmationDialogDeleteRecipientForward": "Do you want to delete email {emailAddress}?",
+  "@messageConfirmationDialogDeleteRecipientForward": {
+    "type": "text",
+    "placeholders_order": [
+      "emailAddress"
+    ],
+    "placeholders": {
+      "emailAddress": {}
+    }
+  },
+  "deleteRecipient": "Delete recipient",
+  "@deleteRecipient": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageDeleteRecipientSuccessfully": "The email has been removed from the recipient list.",
+  "@toastMessageDeleteRecipientSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
