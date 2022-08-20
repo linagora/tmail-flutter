@@ -42,49 +42,49 @@ class ForwardHeaderWidget extends StatelessWidget {
   Widget _buildButtonAddNewEmailsForward(BuildContext context) {
     if (!responsiveUtils.isMobile(context)) {
       return (ButtonBuilder(imagePaths.icAddEmailForward)
-            ..key(const Key('button_add_emails_forward'))
-            ..decoration(BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColor.colorTextButton))
-            ..paddingIcon(const EdgeInsets.only(right: 8))
-            ..iconColor(Colors.white)
-            ..maxWidth(130)
-            ..size(20)
-            ..radiusSplash(10)
-            ..padding(const EdgeInsets.symmetric(vertical: 12))
-            ..textStyle(const TextStyle(
-              fontSize: 17,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-            ))
-            ..onPressActionClick(() => addEmailForward.call())
-            ..text(
-              AppLocalizations.of(context).addEmailForward,
-              isVertical: false,
-            ))
-          .build();
+          ..key(const Key('button_add_emails_forward'))
+          ..decoration(BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColor.colorTextButton))
+          ..paddingIcon(const EdgeInsets.only(right: 8))
+          ..iconColor(Colors.white)
+          ..maxWidth(170)
+          ..size(20)
+          ..radiusSplash(10)
+          ..padding(const EdgeInsets.symmetric(vertical: 12))
+          ..textStyle(const TextStyle(
+            fontSize: 17,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ))
+          ..onPressActionClick(() => addEmailForward.call())
+          ..text(
+            AppLocalizations.of(context).addRecipients,
+            isVertical: false,
+          ))
+        .build();
     } else {
       return (ButtonBuilder(imagePaths.icAddEmailForward)
-            ..key(const Key('button_add_emails_forward'))
-            ..decoration(BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColor.colorTextButton))
-            ..paddingIcon(const EdgeInsets.only(right: 8))
-            ..iconColor(Colors.white)
-            ..size(20)
-            ..radiusSplash(10)
-            ..padding(const EdgeInsets.symmetric(vertical: 12))
-            ..textStyle(const TextStyle(
-              fontSize: 17,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-            ))
-            ..onPressActionClick(() => addEmailForward.call())
-            ..text(
-              AppLocalizations.of(context).addEmailForward,
-              isVertical: false,
-            ))
-          .build();
+          ..key(const Key('button_add_emails_forward'))
+          ..decoration(BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColor.colorTextButton))
+          ..paddingIcon(const EdgeInsets.only(right: 8))
+          ..iconColor(Colors.white)
+          ..size(20)
+          ..radiusSplash(10)
+          ..padding(const EdgeInsets.symmetric(vertical: 12))
+          ..textStyle(const TextStyle(
+            fontSize: 17,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ))
+          ..onPressActionClick(() => addEmailForward.call())
+          ..text(
+            AppLocalizations.of(context).addRecipients,
+            isVertical: false,
+          ))
+        .build();
     }
   }
 }

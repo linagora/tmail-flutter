@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class EmailForwardCreatorItemWidget extends StatelessWidget {
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
   final VoidCallback onDelete;
   final String emailForward;
@@ -18,19 +17,25 @@ class EmailForwardCreatorItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(
-          top: 15,
-          bottom: 15,
-          left: _responsiveUtils.isMobile(context) ? 16 : 24,
-          right: _responsiveUtils.isMobile(context) ? 0 : 24),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       color: Colors.white,
       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Text(emailForward,
+        CircleAvatar(
+            backgroundColor: AppColor.colorTextButton,
+            radius: 16,
+            child: Text(emailForward[0].toUpperCase(),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500))),
+        const SizedBox(width: 10),
+        Expanded(child: Text(emailForward,
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            softWrap: CommonTextStyle.defaultSoftWrap,
             style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
-                color: Colors.black)),
-        const Spacer(),
+                color: Colors.black))),
         buildIconWeb(
             icon: SvgPicture.asset(
               _imagePaths.icDeleteEmailAddress,

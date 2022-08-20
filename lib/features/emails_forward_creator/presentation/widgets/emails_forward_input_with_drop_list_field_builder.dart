@@ -3,12 +3,11 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:tmail_ui_user/features/mails_forward_creator/presentation/widgets/emails_forward_input_decoration_builder.dart';
+import 'package:tmail_ui_user/features/emails_forward_creator/presentation/widgets/emails_forward_input_decoration_builder.dart';
 
 typedef OnSelectedSuggestionAction = Function(EmailAddress emailAddress);
 typedef OnSuggestionCallbackAction = Function(String? pattern);
 typedef OnSummitedCallbackAction = Function(String? pattern);
-
 
 class EmailsForwardInputWithDropListFieldBuilder {
 

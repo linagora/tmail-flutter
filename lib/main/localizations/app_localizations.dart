@@ -1946,10 +1946,10 @@ class AppLocalizations {
         name: 'yourFilterHasBeenUpdated');
   }
 
-  String get headerEmailsForward {
+  String get headerRecipients {
     return Intl.message(
-      'Emails forward',
-      name: 'headerEmailsForward',
+      'Recipients',
+      name: 'headerRecipients',
     );
   }
 
@@ -2134,17 +2134,23 @@ class AppLocalizations {
     );
   }
 
-  String get addEmailForward {
+  String get addRecipients {
     return Intl.message(
-      'Add Email',
-      name: 'addEmailForward',
+      'Add Recipients',
+      name: 'addRecipients',
     );
   }
 
-  String get emailForwardLabel {
+  String get recipientsLabel {
     return Intl.message(
       'Name or Email address',
-      name: 'emailForwardLabel',
+      name: 'recipientsLabel',
     );
+  }
+
+  String get toastMessageAddRecipientsSuccessfully {
+    return Intl.message(
+        'The emails has been added from the recipient list.',
+        name: 'toastMessageAddRecipientsSuccessfully');
   }
 }
