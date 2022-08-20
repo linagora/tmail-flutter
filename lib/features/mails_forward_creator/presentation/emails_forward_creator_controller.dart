@@ -3,6 +3,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -12,19 +13,21 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/mails_forward_creator/presentation/model/mails_forward_creator_arguments.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/session_extension.dart';
 
-class RulesFilterCreatorController extends BaseController {
+class EmailsForwardCreatorController extends BaseController {
 
   final inputEmailForwardController = TextEditingController();
   final ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
 
   late AccountId _accountId;
+  late Session? _session;
   late GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
   late GetAutoCompleteInteractor _getAutoCompleteInteractor;
 
-  final listEmailForwards = <String>[].obs;
+  final listEmailForwards = <EmailAddress>[].obs;
 
-  RulesFilterCreatorController(
+  EmailsForwardCreatorController(
       this._getAutoCompleteWithDeviceContactInteractor,
       this._getAutoCompleteInteractor,
       );
@@ -51,12 +54,15 @@ class RulesFilterCreatorController extends BaseController {
     final arguments = Get.arguments;
     if (arguments is MailsForwardCreatorArguments) {
       _accountId = arguments.accountId;
+      _session = arguments.session;
     }
   }
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion(
       {required String word}) async {
-    log('ComposerController::getAutoCompleteSuggestion(): $word | $_contactSuggestionSource');
+    log('EmailsForwardCreatorController::getAutoCompleteSuggestion(): $word | $_contactSuggestionSource');
+
+    if(_session?.hasSupportAutoComplete != true) return <EmailAddress>[];
 
     _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
     _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
@@ -75,12 +81,24 @@ class RulesFilterCreatorController extends BaseController {
             (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
   }
 
-  void _clearAll() {
+  void addToListEmailForwards(EmailAddress emailAddress) {
+    if(emailAddress.email !=null && emailAddress.email!.isNotEmpty) {
+      listEmailForwards.add(emailAddress);
+    }
+  }
+
+  void clearAll() {
     inputEmailForwardController.clear();
   }
 
   void closeView(BuildContext context) {
     FocusScope.of(context).unfocus();
     popBack();
+  }
+
+  void addEmailForwards(BuildContext context) {
+    inputEmailForwardController.clear();
+    FocusScope.of(context).unfocus();
+    popBack(result: listEmailForwards.toList());
   }
 }
