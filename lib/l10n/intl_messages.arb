@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-19T13:28:03.023650",
+  "@@last_modified": "2022-08-20T20:59:54.192845",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2062,6 +2062,24 @@
   },
   "messageConfirmationDialogDeleteAllRecipientForward": "Do you want to delete all email?",
   "@messageConfirmationDialogDeleteAllRecipientForward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addEmailForward": "Add Email",
+  "@addEmailForward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailForwardLabel": "Name or Email address",
+  "@emailForwardLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageAddRecipientsSuccessfully": "The emails has been added from the recipient list.",
+  "@toastMessageAddRecipientsSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

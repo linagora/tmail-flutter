@@ -1,6 +1,7 @@
 
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -11,7 +12,8 @@ import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
-import 'package:tmail_ui_user/features/mails_forward_creator/presentation/model/mails_forward_creator_arguments.dart';
+import 'package:tmail_ui_user/features/emails_forward_creator/presentation/model/mails_forward_creator_arguments.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/session_extension.dart';
 
@@ -19,18 +21,19 @@ class EmailsForwardCreatorController extends BaseController {
 
   final inputEmailForwardController = TextEditingController();
   final ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
+  final _forwardController = Get.find<ForwardController>();
 
   late AccountId _accountId;
   late Session? _session;
   late GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
   late GetAutoCompleteInteractor _getAutoCompleteInteractor;
 
-  final listEmailForwards = <EmailAddress>[].obs;
+  final listEmailForwards = RxSet<EmailAddress>();
 
   EmailsForwardCreatorController(
       this._getAutoCompleteWithDeviceContactInteractor,
       this._getAutoCompleteInteractor,
-      );
+  );
 
   @override
   void onReady() {
@@ -91,14 +94,33 @@ class EmailsForwardCreatorController extends BaseController {
     inputEmailForwardController.clear();
   }
 
+  void _clearListEmailForwards() {
+    listEmailForwards.clear();
+  }
+
   void closeView(BuildContext context) {
     FocusScope.of(context).unfocus();
-    popBack();
+    if(kIsWeb) {
+      _clearListEmailForwards();
+      _forwardController.accountDashBoardController.emailsForwardCreatorIsActive.toggle();
+    } else {
+      popBack();
+    }
   }
 
   void addEmailForwards(BuildContext context) {
-    inputEmailForwardController.clear();
     FocusScope.of(context).unfocus();
-    popBack(result: listEmailForwards.toList());
+    if(inputEmailForwardController.text.trim().isNotEmpty) {
+      listEmailForwards.add(EmailAddress(null, inputEmailForwardController.text.trim()));
+    }
+    inputEmailForwardController.clear();
+
+    if(kIsWeb) {
+      _forwardController.accountDashBoardController.emailsForwardCreatorIsActive.toggle();
+      _forwardController.handleAddRecipients(listEmailForwards.toList());
+      _clearListEmailForwards();
+    } else {
+      popBack(result: listEmailForwards.toList());
+    }
   }
 }
