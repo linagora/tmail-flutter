@@ -4,19 +4,24 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/tmail_forward.dart';
 import 'package:get/get.dart';
+import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_binding.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/add_recipients_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/add_recipient_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/mails_forward_creator/presentation/model/mails_forward_creator_arguments.dart';
+import 'package:tmail_ui_user/features/emails_forward_creator/presentation/model/mails_forward_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_forward_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/add_recipients_in_forwarding_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_recipient_in_forwarding_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_forward_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/tmail_forward_extension.dart';
@@ -30,8 +35,9 @@ class ForwardController extends BaseController {
 
   final GetForwardInteractor _getForwardInteractor;
   final DeleteRecipientInForwardingInteractor _deleteRecipientInForwardingInteractor;
+  final AddRecipientsInForwardingInteractor _addRecipientsInForwardingInteractor;
 
-  final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
+  final accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
   final _appToast = Get.find<AppToast>();
@@ -41,9 +47,12 @@ class ForwardController extends BaseController {
 
   TMailForward? currentForward;
 
+  final listForwards = <String>[].obs;
+
   ForwardController(
     this._getForwardInteractor,
     this._deleteRecipientInForwardingInteractor,
+    this._addRecipientsInForwardingInteractor,
   );
 
   @override
@@ -60,6 +69,8 @@ class ForwardController extends BaseController {
             listRecipientForward.value = currentForward!.listRecipientForward;
           } else if (success is DeleteRecipientInForwardingSuccess) {
             _handleDeleteRecipientSuccess(success);
+          } else if (success is AddRecipientsInForwardingSuccess) {
+            _handleAddRecipientsSuccess(success);
           }
         });
   }
@@ -74,7 +85,7 @@ class ForwardController extends BaseController {
   }
 
   void _getForward() {
-    consumeState(_getForwardInteractor.execute(_accountDashBoardController.accountId.value!));
+    consumeState(_getForwardInteractor.execute(accountDashBoardController.accountId.value!));
   }
 
   void deleteRecipients(BuildContext context, String emailAddress) {
@@ -116,7 +127,7 @@ class ForwardController extends BaseController {
   void _handleDeleteRecipientAction(Set<String> listRecipients) {
     popBack();
 
-    final accountId = _accountDashBoardController.accountId.value;
+    final accountId = accountDashBoardController.accountId.value;
     if (accountId != null && currentForward != null) {
       consumeState(_deleteRecipientInForwardingInteractor.execute(
           accountId,
@@ -217,19 +228,48 @@ class ForwardController extends BaseController {
   }
 
   void goToAddEmailsForward() async {
-    final accountId = _accountDashBoardController.accountId.value;
+    final accountId = accountDashBoardController.accountId.value;
     if (accountId != null) {
-      final listEmail = await push(
-          AppRoutes.EMAILS_FORWARD_CREATOR,
-          arguments: MailsForwardCreatorArguments(accountId, _accountDashBoardController.sessionCurrent.value));
+      if(kIsWeb) {
+        _openMailsForwardCreatorOverlay();
+      } else {
+        final listEmail = await push(
+            AppRoutes.EMAILS_FORWARD_CREATOR,
+            arguments: MailsForwardCreatorArguments(accountId, accountDashBoardController.sessionCurrent.value));
 
-      if (listEmail is List<EmailAddress>) {
-        _addEmailsForward(listEmail);
+        if (listEmail is List<EmailAddress>) {
+          handleAddRecipients(listEmail);
+        }
       }
     }
   }
 
-  void _addEmailsForward(List<EmailAddress> listEmailAddress) {
+  void _openMailsForwardCreatorOverlay() {
+    EmailsForwardCreatorBindings().dependencies();
+    accountDashBoardController.emailsForwardCreatorIsActive.toggle();
+  }
 
+  void handleAddRecipients(List<EmailAddress> listEmailAddress) {
+    final accountId = accountDashBoardController.accountId.value;
+    final listRecipients = listEmailAddress.map((e) => e.emailAddress).toSet();
+    if (accountId != null && currentForward != null) {
+      consumeState(_addRecipientsInForwardingInteractor.execute(
+          accountId,
+          AddRecipientInForwardingRequest(
+              currentForward: currentForward!,
+              listRecipientAdded: listRecipients)));
+    }
+  }
+
+  void _handleAddRecipientsSuccess(AddRecipientsInForwardingSuccess success) {
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          message: AppLocalizations.of(currentContext!).toastMessageAddRecipientsSuccessfully,
+          icon: _imagePaths.icSelected);
+    }
+
+    currentForward = success.forward;
+    listRecipientForward.value = currentForward!.listRecipientForward;
   }
 }

@@ -44,7 +44,7 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
                     : const EdgeInsets.symmetric(vertical: 13, horizontal: 24),
                 child: Row(children: [
                   Expanded(child: Text(
-                      AppLocalizations.of(context).headerEmailsForward,
+                      AppLocalizations.of(context).headerRecipients,
                       overflow: CommonTextStyle.defaultTextOverFlow,
                       softWrap: CommonTextStyle.defaultSoftWrap,
                       style: const TextStyle(

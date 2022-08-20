@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/composer/domain/repository/contact_reposi
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
-import 'package:tmail_ui_user/features/mails_forward_creator/presentation/emails_forward_creator_controller.dart';
+import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_controller.dart';
 
 class EmailsForwardCreatorBindings extends BaseBindings {
 
