@@ -2140,4 +2140,11 @@ class AppLocalizations {
       name: 'addEmailForward',
     );
   }
+
+  String get emailForwardLabel {
+    return Intl.message(
+      'Name or Email address',
+      name: 'emailForwardLabel',
+    );
+  }
 }

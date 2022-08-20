@@ -13,6 +13,9 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/mails_forward_creator/presentation/model/mails_forward_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_forward_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_recipient_in_forwarding_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_forward_interactor.dart';
@@ -216,18 +219,17 @@ class ForwardController extends BaseController {
   void goToAddEmailsForward() async {
     final accountId = _accountDashBoardController.accountId.value;
     if (accountId != null) {
-      // final newEmailRuleFilter = await push(
-      //     AppRoutes.EMAILS_FORWARD_CREATOR,
-      //     arguments: RulesFilterCreatorArguments(accountId));
-      //
-      // if (newEmailRuleFilter is TMailRule) {
-      //   _createNewRuleFilterAction(
-      //       accountId,
-      //       CreateNewEmailRuleFilterRequest(
-      //           listEmailRule,
-      //           newEmailRuleFilter)
-      //   );
-      // }
+      final listEmail = await push(
+          AppRoutes.EMAILS_FORWARD_CREATOR,
+          arguments: MailsForwardCreatorArguments(accountId, _accountDashBoardController.sessionCurrent.value));
+
+      if (listEmail is List<EmailAddress>) {
+        _addEmailsForward(listEmail);
+      }
     }
+  }
+
+  void _addEmailsForward(List<EmailAddress> listEmailAddress) {
+
   }
 }
