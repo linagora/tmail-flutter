@@ -1,19 +1,20 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/button_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class ForwardHeaderWidget extends StatelessWidget {
+class ForwardHeaderWidget extends GetWidget<ForwardController> {
   const ForwardHeaderWidget({
     Key? key,
-    required this.addEmailForward,
     required this.imagePaths,
     required this.responsiveUtils,
   }) : super(key: key);
 
-  final VoidCallback addEmailForward;
   final ImagePaths imagePaths;
   final ResponsiveUtils responsiveUtils;
 
@@ -32,9 +33,10 @@ class ForwardHeaderWidget extends StatelessWidget {
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
                 color: Colors.black)),
-        const SizedBox(height: 4),
         const SizedBox(height: 24),
         _buildButtonAddNewEmailsForward(context),
+        const SizedBox(height: 24),
+        Obx(() => _buildButtonSwitchKeepLocalCopy(context)),
       ]),
     );
   }
@@ -57,7 +59,7 @@ class ForwardHeaderWidget extends StatelessWidget {
             color: Colors.white,
             fontWeight: FontWeight.w500,
           ))
-          ..onPressActionClick(() => addEmailForward.call())
+          ..onPressActionClick(() => controller.goToAddEmailsForward())
           ..text(
             AppLocalizations.of(context).addRecipients,
             isVertical: false,
@@ -79,12 +81,37 @@ class ForwardHeaderWidget extends StatelessWidget {
             color: Colors.white,
             fontWeight: FontWeight.w500,
           ))
-          ..onPressActionClick(() => addEmailForward.call())
+          ..onPressActionClick(() => controller.getCurrentForwardLocalCopyState())
           ..text(
             AppLocalizations.of(context).addRecipients,
             isVertical: false,
           ))
         .build();
+    }
+  }
+
+  Widget _buildButtonSwitchKeepLocalCopy(BuildContext context) {
+    if(controller.currentForward.value != null) {
+      return SizedBox(
+        width: 250,
+        child: SwitchListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+          title: Text(AppLocalizations.of(context).keepLocalCopyForwardLabel,
+              overflow: CommonTextStyle.defaultTextOverFlow,
+              softWrap: CommonTextStyle.defaultSoftWrap,
+              style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black)),
+          value: controller.getCurrentForwardLocalCopyState(),
+          onChanged: (_) {
+            controller.handleEditLocalCopy();
+          },
+          controlAffinity: ListTileControlAffinity.trailing,
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
     }
   }
 }
