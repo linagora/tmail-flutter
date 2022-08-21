@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_em
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/edit_local_copy_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 
@@ -91,5 +92,10 @@ class ManageAccountRepositoryImpl extends ManageAccountRepository {
   @override
   Future<TMailForward> addRecipientsInForwarding(AccountId accountId, AddRecipientInForwardingRequest addRequest) {
     return dataSource.addRecipientsInForwarding(accountId, addRequest);
+  }
+
+  @override
+  Future<TMailForward> editLocalCopyInForwarding(AccountId accountId, EditLocalCopyInForwardingRequest editRequest) {
+    return dataSource.editLocalCopyInForwarding(accountId, editRequest);
   }
 }

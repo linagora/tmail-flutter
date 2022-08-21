@@ -2153,4 +2153,23 @@ class AppLocalizations {
         'The emails has been added from the recipient list.',
         name: 'toastMessageAddRecipientsSuccessfully');
   }
+
+  String get toastMessageLocalCopyEnable {
+    return Intl.message(
+        'Keep local copy enable.',
+        name: 'toastMessageLocalCopyEnable');
+  }
+
+  String get toastMessageLocalCopyDisable {
+    return Intl.message(
+        'Keep local copy disable.',
+        name: 'toastMessageLocalCopyDisable');
+  }
+
+  String get keepLocalCopyForwardLabel {
+    return Intl.message(
+      'Keep local copy',
+      name: 'keepLocalCopyForwardLabel',
+    );
+  }
 }
