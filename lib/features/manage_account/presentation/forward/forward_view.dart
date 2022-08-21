@@ -27,7 +27,6 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
             ForwardHeaderWidget(
               imagePaths: _imagePaths,
               responsiveUtils: _responsiveUtils,
-              addEmailForward: () => controller.goToAddEmailsForward(),
             ),
             SizedBox(height: _responsiveUtils.isWebDesktop(context) ? 24 : 16),
             _buildLoadingView(),
