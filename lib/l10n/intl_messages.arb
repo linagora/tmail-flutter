@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-20T20:59:54.192845",
+  "@@last_modified": "2022-08-21T10:21:05.186351",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1892,8 +1892,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "headerEmailsForward": "Emails forward",
-  "@headerEmailsForward": {
+  "headerRecipients": "Recipients",
+  "@headerRecipients": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2066,20 +2066,38 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addEmailForward": "Add Email",
-  "@addEmailForward": {
+  "addRecipients": "Add Recipients",
+  "@addRecipients": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailForwardLabel": "Name or Email address",
-  "@emailForwardLabel": {
+  "recipientsLabel": "Name or Email address",
+  "@recipientsLabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
   "toastMessageAddRecipientsSuccessfully": "The emails has been added from the recipient list.",
   "@toastMessageAddRecipientsSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageLocalCopyEnable": "Keep local copy enable.",
+  "@toastMessageLocalCopyEnable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageLocalCopyDisable": "Keep local copy disable.",
+  "@toastMessageLocalCopyDisable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keepLocalCopyForwardLabel": "Keep local copy",
+  "@keepLocalCopyForwardLabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

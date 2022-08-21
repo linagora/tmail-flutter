@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_em
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/edit_local_copy_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
 
 abstract class ManageAccountRepository {
@@ -43,4 +44,6 @@ abstract class ManageAccountRepository {
   Future<TMailForward> deleteRecipientInForwarding(AccountId accountId, DeleteRecipientInForwardingRequest deleteRequest);
 
   Future<TMailForward> addRecipientsInForwarding(AccountId accountId, AddRecipientInForwardingRequest addRequest);
+
+  Future<TMailForward> editLocalCopyInForwarding(AccountId accountId, EditLocalCopyInForwardingRequest editRequest);
 }
