@@ -134,7 +134,6 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           const SizedBox(height: 8),
           Expanded(child: SingleChildScrollView(
             physics: const ClampingScrollPhysics(),
-            reverse: true,
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(children: [
