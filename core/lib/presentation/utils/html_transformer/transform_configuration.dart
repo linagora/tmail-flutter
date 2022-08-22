@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/base/text_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/dom/add_target_blank_in_tag_a_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/blockcode_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
@@ -54,6 +55,7 @@ class TransformConfiguration {
     SignatureTransformer(),
     BlockQuotedTransformer(),
     BlockCodeTransformer(),
+    AddTargetBlankInTagATransformer(),
     ImageTransformer(),
   ];
 
