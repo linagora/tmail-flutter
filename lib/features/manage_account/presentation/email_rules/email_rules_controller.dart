@@ -207,8 +207,8 @@ class EmailRulesController extends BaseController {
           iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
           iconRightPadding: const EdgeInsets.only(right: 12))
       ..onActionClick((rule) {
-        editEmailRule(rule);
         popBack();
+        editEmailRule(rule);
       }))
     .build();
   }
