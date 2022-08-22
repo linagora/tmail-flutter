@@ -373,16 +373,16 @@ class ComposerController extends BaseController {
       switch(arguments.emailActionType) {
         case EmailActionType.reply:
         case EmailActionType.replyAll:
-          final sentDate = presentationEmail.sentAt;
+          final receivedAt = presentationEmail.receivedAt;
           final emailAddress = presentationEmail.from.listEmailAddressToString(isFullEmailAddress: true);
           return AppLocalizations.of(context).header_email_quoted(
-              sentDate.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: locale),
+              receivedAt.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: locale),
               emailAddress);
         case EmailActionType.forward:
           var headerQuoted = '------- ${AppLocalizations.of(context).forwarded_message} -------'.addNewLineTag();
 
           final subject = presentationEmail.subject ?? '';
-          final sentDate = presentationEmail.sentAt;
+          final receivedAt = presentationEmail.receivedAt;
           final fromEmailAddress = presentationEmail.from.listEmailAddressToString(isFullEmailAddress: true);
           final toEmailAddress = presentationEmail.to.listEmailAddressToString(isFullEmailAddress: true);
           final ccEmailAddress = presentationEmail.cc.listEmailAddressToString(isFullEmailAddress: true);
@@ -394,10 +394,10 @@ class ComposerController extends BaseController {
                 .append(subject)
                 .addNewLineTag();
           }
-          if (sentDate != null) {
+          if (receivedAt != null) {
             headerQuoted = headerQuoted
                 .append('${AppLocalizations.of(context).date}: ')
-                .append(sentDate.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: locale))
+                .append(receivedAt.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: locale))
                 .addNewLineTag();
           }
           if (fromEmailAddress.isNotEmpty) {
