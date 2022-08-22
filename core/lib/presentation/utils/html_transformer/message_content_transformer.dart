@@ -16,6 +16,7 @@ class MessageContentTransformer {
         DioClient? dioClient
       }
   ) async {
+    await _addTargetBlankInTagA(document);
     await Future.wait([
       if (configuration.domTransformers.isNotEmpty)
         ...configuration.domTransformers.map((domTransformer) async =>
@@ -24,6 +25,13 @@ class MessageContentTransformer {
                 mapUrlDownloadCID: mapUrlDownloadCID,
                 dioClient: dioClient))
     ]);
+  }
+
+  Future _addTargetBlankInTagA(Document document) async {
+    final elements = document.querySelectorAll('a');
+    await Future.wait(elements.map((element) async {
+      element.attributes['target'] = '_blank';
+    }));
   }
 
   Future<Document> toDocument(
