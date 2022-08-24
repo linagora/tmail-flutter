@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/forward_header_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/list_email_forward_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 
 class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -20,7 +21,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
           : Colors.white,
       body: Container(
         width: double.infinity,
-        margin: _getMarginView(context),
+        margin: SettingsUtils.getMarginViewForSettingDetails(context, _responsiveUtils),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -35,28 +36,6 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
         ),
       ),
     );
-  }
-
-  EdgeInsets _getMarginView(BuildContext context) {
-    if (BuildUtils.isWeb) {
-      if (_responsiveUtils.isDesktop(context)) {
-        return const EdgeInsets.only(left: 16, top: 16, right: 24, bottom: 24);
-      } else if (_responsiveUtils.isTabletLarge(context) ||
-          _responsiveUtils.isTablet(context)) {
-        return const EdgeInsets.only(right: 32, top: 16, bottom: 16);
-      } else {
-        return const EdgeInsets.only(right: 32, top: 16, bottom: 16);
-      }
-    } else {
-      if (_responsiveUtils.isDesktop(context) ||
-          _responsiveUtils.isLandscapeTablet(context) ||
-          _responsiveUtils.isTabletLarge(context) ||
-          _responsiveUtils.isTablet(context)) {
-        return const EdgeInsets.only(right: 32, top: 16, bottom: 16);
-      } else {
-        return const EdgeInsets.only(top: 16, bottom: 16, right: 28, left: 20);
-      }
-    }
   }
 
   Widget _buildLoadingView() {

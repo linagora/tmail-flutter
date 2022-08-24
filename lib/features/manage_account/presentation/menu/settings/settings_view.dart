@@ -71,11 +71,7 @@ class SettingsView extends GetWidget<SettingsController> {
               return const SizedBox.shrink();
             }
           }),
-          Expanded(child: Padding(
-            padding: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
-              ? const EdgeInsets.only(left: 8)
-              : const EdgeInsets.only(left: 24),
-            child: _bodySettingsScreen()))
+          Expanded(child: _bodySettingsScreen())
         ]
       )
     );
@@ -115,7 +111,6 @@ class SettingsView extends GetWidget<SettingsController> {
   Widget _buildSettingLevel1AppBar(BuildContext context) {
     return Row(children: [
       _buildBackButton(context),
-      const SizedBox(width: 8),
       Expanded(
         child: Text(
           AppLocalizations.of(context).settings,
@@ -129,7 +124,7 @@ class SettingsView extends GetWidget<SettingsController> {
 
   Widget _buildBackButton(BuildContext context) {
     return buildIconWeb(
-        icon: SvgPicture.asset(_imagePaths.icBack, width: 18, height: 18, color: AppColor.colorTextButton, fit: BoxFit.fill),
+        icon: SvgPicture.asset(_imagePaths.icBack, width: 9, height: 16, color: AppColor.colorTextButton, fit: BoxFit.fill),
         tooltip: AppLocalizations.of(context).back,
         onTap: controller.backToUniversalSettings
     );
@@ -137,7 +132,7 @@ class SettingsView extends GetWidget<SettingsController> {
 
   Widget _buildCloseSettingButton(BuildContext context) {
     return buildIconWeb(
-      icon: SvgPicture.asset(_imagePaths.icCloseMailbox, width: 28, height: 28, fit: BoxFit.fill),
+      icon: SvgPicture.asset(_imagePaths.icClose, width: 28, height: 28, fit: BoxFit.fill),
       tooltip: AppLocalizations.of(context).close,
       onTap: closeAction);
   }
