@@ -2172,4 +2172,10 @@ class AppLocalizations {
       name: 'keepLocalCopyForwardLabel',
     );
   }
+
+  String get emailRuleSettingExplanation {
+    return Intl.message(
+      'Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.',
+      name: 'emailRuleSettingExplanation');
+  }
 }
