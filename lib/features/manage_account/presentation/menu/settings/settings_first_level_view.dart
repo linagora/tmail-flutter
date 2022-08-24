@@ -106,6 +106,11 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
         endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
       ),
+      SettingFirstLevelTileBuilder(
+        AppLocalizations.of(context).sign_out,
+        _imagePaths.icSignOut,
+        controller.manageAccountDashboardController.logoutAction
+      ),
     ]);
   }
 }
