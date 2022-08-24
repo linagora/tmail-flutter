@@ -8,7 +8,8 @@ enum AccountMenuItem {
   languageAndRegion,
   emailRules,
   forward,
-  vacation;
+  vacation,
+  none;
 
   String getIcon(ImagePaths imagePaths) {
     switch(this) {
@@ -22,6 +23,8 @@ enum AccountMenuItem {
         return imagePaths.icForward;
       case AccountMenuItem.vacation:
         return imagePaths.icVacation;
+      case AccountMenuItem.none:
+        return imagePaths.icProfiles;
     }
   }
 
@@ -37,6 +40,8 @@ enum AccountMenuItem {
         return AppLocalizations.of(context).forwarding;
       case AccountMenuItem.vacation:
         return AppLocalizations.of(context).vacation;
+      case AccountMenuItem.none:
+        return AppLocalizations.of(context).profiles;
     }
   }
 }

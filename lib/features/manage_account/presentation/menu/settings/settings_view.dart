@@ -3,12 +3,12 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef CloseSettingsViewAction = void Function();
@@ -31,7 +32,6 @@ class SettingsView extends GetWidget<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    log('SettingsView::build(): ${controller.manageAccountDashboardController.userProfile.value}');
     return SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,6 +42,35 @@ class SettingsView extends GetWidget<SettingsController> {
               padding: SettingsUtils.getPaddingInFirstLevel(context, _responsiveUtils),
               child: _buildAppbar(context))),
           const Divider(color: AppColor.colorDividerComposer, height: 1),
+          Obx(() {
+            if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
+              return VacationNotificationMessageWidget(
+                margin: const EdgeInsets.only(
+                  left: BuildUtils.isWeb ? 24 : 16,
+                  right: BuildUtils.isWeb ? 24 : 16,
+                  top: 16),
+                vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
+                action: () => controller.manageAccountDashboardController.disableVacationResponder());
+            } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
+                || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
+                && controller.manageAccountDashboardController.inVacationSettings()) {
+              return VacationNotificationMessageWidget(
+                  margin: const EdgeInsets.only(
+                    left: BuildUtils.isWeb ? 24 : 16,
+                    right: BuildUtils.isWeb ? 24 : 16,
+                    top: 16),
+                  vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  fontWeight: FontWeight.normal,
+                  backgroundColor: Colors.yellow,
+                  leadingIcon: const Padding(
+                    padding: EdgeInsets.only(right: 16),
+                    child: Icon(Icons.timer, size: 20),
+                  ));
+            } else {
+              return const SizedBox.shrink();
+            }
+          }),
           Expanded(child: Padding(
             padding: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
               ? const EdgeInsets.only(left: 8)

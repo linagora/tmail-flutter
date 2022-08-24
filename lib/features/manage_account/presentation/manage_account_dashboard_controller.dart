@@ -24,8 +24,8 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -199,5 +199,9 @@ class ManageAccountDashBoardController extends ReloadableController {
       vacationResponse.value = success.listVacationResponse.first;
       log('ManageAccountDashBoardController::_handleUpdateVacationSuccess(): $vacationResponse');
     }
+  }
+
+  bool inVacationSettings() {
+    return accountMenuItemSelected.value == AccountMenuItem.vacation;
   }
 }

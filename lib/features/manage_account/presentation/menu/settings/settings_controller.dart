@@ -15,6 +15,7 @@ class SettingsController extends GetxController {
 
   void backToUniversalSettings() {
     log('SettingsController::backToUniversalSettings()');
+    manageAccountDashboardController.selectAccountMenuItem(AccountMenuItem.none);
     manageAccountDashboardController.settingsPageLevel.value = SettingsPageLevel.universal;
   }
 }
