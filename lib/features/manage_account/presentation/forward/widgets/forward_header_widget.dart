@@ -81,7 +81,7 @@ class ForwardHeaderWidget extends GetWidget<ForwardController> {
             color: Colors.white,
             fontWeight: FontWeight.w500,
           ))
-          ..onPressActionClick(() => controller.getCurrentForwardLocalCopyState())
+          ..onPressActionClick(() => controller.goToAddEmailsForward())
           ..text(
             AppLocalizations.of(context).addRecipients,
             isVertical: false,
