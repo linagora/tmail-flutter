@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/forward/forwa
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
@@ -40,12 +41,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           Scaffold(
             key: controller.menuDrawerKey,
             backgroundColor: Colors.white,
-            drawer: ResponsiveWidget(
-                responsiveUtils: _responsiveUtils,
-                mobile: SizedBox(child: ManageAccountMenuView(), width: ResponsiveUtils.defaultSizeDrawer),
-                desktop: const SizedBox.shrink()
-            ),
-            drawerEnableOpenDragGesture: !_responsiveUtils.isDesktop(context),
+            drawerEnableOpenDragGesture: false,
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: ResponsiveWidget(
@@ -123,57 +119,14 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                       ],
                     ))
                   ]),
-                  mobile: SafeArea(
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Padding(
-                            padding: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
-                                ? const EdgeInsets.only(left: 4, right: 8)
-                                : const EdgeInsets.only(top: 16, left: 24, right: 32),
-                            child: _buildAppbar(context)),
-                        Obx(() {
-                          if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
-                            return VacationNotificationMessageWidget(
-                                margin: const EdgeInsets.only(
-                                    left: BuildUtils.isWeb ? 24 : 16,
-                                    right: BuildUtils.isWeb ? 24 : 16,
-                                    top: BuildUtils.isWeb ? 16 : 0),
-                                vacationResponse: controller.vacationResponse.value!,
-                                action: () => controller.disableVacationResponder());
-                          } else if ((controller.vacationResponse.value?.vacationResponderIsWaiting == true
-                              || controller.vacationResponse.value?.vacationResponderIsStopped == true)
-                              && controller.accountMenuItemSelected.value == AccountMenuItem.vacation) {
-                            return VacationNotificationMessageWidget(
-                                margin: const EdgeInsets.only(
-                                    left: BuildUtils.isWeb ? 24 : 16,
-                                    right: BuildUtils.isWeb ? 24 : 16,
-                                    top: BuildUtils.isWeb ? 16 : 0),
-                                vacationResponse: controller.vacationResponse.value!,
-                                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                fontWeight: FontWeight.normal,
-                                backgroundColor: Colors.yellow,
-                                leadingIcon: const Padding(
-                                  padding: EdgeInsets.only(right: 16),
-                                  child: Icon(Icons.timer, size: 20),
-                                ));
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        }),
-                        Expanded(child: Padding(
-                            padding: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context)
-                                ? const EdgeInsets.only(left: 8)
-                                : const EdgeInsets.only(left: 24),
-                            child: _viewDisplayedOfAccountMenuItem()))
-                      ])
-                  )
+                  mobile: SettingsView(closeAction: () => controller.backToMailboxDashBoard(context))
               ),
             ),
           ),
           if(controller.emailsForwardCreatorIsActive.isTrue)
-            EmailsForwardCreatorView(),
-        ] ,
-      ),
-    );
+            EmailsForwardCreatorView()
+        ]
+    ));
   }
 
   Widget _buildRightHeader(BuildContext context) {
@@ -202,20 +155,6 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           ..size(48))
         .build()),
       const SizedBox(width: 16)
-    ]);
-  }
-
-  Widget _buildAppbar(BuildContext context) {
-    return Row(children: [
-      buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icMenuDrawer, fit: BoxFit.fill),
-          onTap:() => controller.openMenuDrawer()),
-      const SizedBox(width: 12),
-      Expanded(child: Text(
-          AppLocalizations.of(context).manage_account,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 21, color: Colors.black, fontWeight: FontWeight.bold))),
     ]);
   }
 

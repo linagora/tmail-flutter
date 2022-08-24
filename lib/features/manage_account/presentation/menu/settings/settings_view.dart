@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_first_level_view.dart';
@@ -16,6 +17,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef CloseSettingsViewAction = void Function();
@@ -135,6 +137,14 @@ class SettingsView extends GetWidget<SettingsController> {
           } else {
             return const SizedBox.shrink();
           }
+        case AccountMenuItem.forward:
+          if(controller.manageAccountDashboardController.checkAvailableForwardInSession()){
+            return ForwardView();
+          } else {
+            return const SizedBox.shrink();
+          }
+        case AccountMenuItem.vacation:
+          return VacationView();
         default:
           return const SizedBox.shrink();
       }
