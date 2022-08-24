@@ -7,23 +7,27 @@ import 'package:get/get_utils/src/platform/platform.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-typedef OnLogoutActionClick = void Function();
+typedef OnSubtitleClick = void Function();
 
 class UserInformationWidgetBuilder {
   final ImagePaths _imagePaths;
   final UserProfile? _userProfile;
   final BuildContext _context;
+  final String? subtitle;
 
-  OnLogoutActionClick? _onLogoutActionClick;
+  OnSubtitleClick? _onSubtitleClick;
 
   UserInformationWidgetBuilder(
     this._imagePaths,
     this._context,
     this._userProfile,
+    {
+      this.subtitle
+    }
   );
 
-  void addOnLogoutAction(OnLogoutActionClick onLogoutActionClick) {
-    _onLogoutActionClick = onLogoutActionClick;
+  void addOnSubtitleClick(OnSubtitleClick onLogoutActionClick) {
+    _onSubtitleClick = onLogoutActionClick;
   }
 
   Widget build() {
@@ -55,23 +59,25 @@ class UserInformationWidgetBuilder {
                     style: const TextStyle(fontSize: 17, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600)
                 )
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Material(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.transparent,
-                  child: Align(
+            subtitle != null
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Material(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.transparent,
+                    child: Align(
                       alignment: Alignment.centerLeft,
                       child: TextButton(
-                        onPressed: () => _onLogoutActionClick?.call(),
+                        onPressed: () => _onSubtitleClick?.call(),
                         child: Text(
                           AppLocalizations.of(_context).manage_account,
                           style: const TextStyle(fontSize: 14, color: AppColor.colorTextButton),
                         ),
                       )
+                    )
                   )
-              )
-            )
+                )
+              : const SizedBox.shrink()
         ])),
         if (!kIsWeb)
           Transform(
