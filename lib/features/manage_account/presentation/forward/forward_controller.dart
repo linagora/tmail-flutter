@@ -53,6 +53,8 @@ class ForwardController extends BaseController {
 
   final listForwards = <String>[].obs;
 
+  bool get currentForwardLocalCopyState => currentForward.value?.localCopy ?? false;
+
   ForwardController(
     this._getForwardInteractor,
     this._deleteRecipientInForwardingInteractor,
@@ -280,10 +282,6 @@ class ForwardController extends BaseController {
 
     currentForward.value = success.forward;
     listRecipientForward.value = currentForward.value!.listRecipientForward;
-  }
-
-  bool getCurrentForwardLocalCopyState() {
-    return currentForward.value?.localCopy ?? false;
   }
 
   void handleEditLocalCopy() {

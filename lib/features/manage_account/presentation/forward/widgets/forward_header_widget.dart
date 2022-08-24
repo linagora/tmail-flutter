@@ -103,7 +103,7 @@ class ForwardHeaderWidget extends GetWidget<ForwardController> {
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                   color: Colors.black)),
-          value: controller.getCurrentForwardLocalCopyState(),
+          value: controller.currentForwardLocalCopyState,
           onChanged: (_) {
             controller.handleEditLocalCopy();
           },
