@@ -2,6 +2,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/profiles_tab_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_controller.dart';
@@ -21,7 +22,7 @@ class ProfilesView extends GetWidget<ProfilesController> {
       body: Container(
         margin: _responsiveUtils.isWebDesktop(context)
           ? const EdgeInsets.all(24)
-          : EdgeInsets.zero,
+          : EdgeInsets.symmetric(horizontal: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)),
         color: _responsiveUtils.isWebDesktop(context) ? null : Colors.white,
         decoration: _responsiveUtils.isWebDesktop(context)
             ? BoxDecoration(

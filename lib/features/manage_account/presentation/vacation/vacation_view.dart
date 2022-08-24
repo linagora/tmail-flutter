@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/border_button_field.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_input_decoration_builder.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/date_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_input_decoration_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class VacationView extends GetWidget<VacationController> {
@@ -37,7 +38,7 @@ class VacationView extends GetWidget<VacationController> {
                   border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
                   color: Colors.white)
               : null,
-          padding: _getPaddingView(context),
+          padding: SettingsUtils.getMarginViewForSettingDetails(context, _responsiveUtils),
           child: ResponsiveWidget(
             responsiveUtils: _responsiveUtils,
             desktop: SingleChildScrollView(
@@ -481,21 +482,5 @@ class VacationView extends GetWidget<VacationController> {
           ..maxLines(null))
         .build();
     });
-  }
-  
-  EdgeInsets _getPaddingView(BuildContext context) {
-    if (BuildUtils.isWeb) {
-      if (_responsiveUtils.isDesktop(context)) {
-        return const EdgeInsets.all(16);
-      } else {
-        return const EdgeInsets.only(top: 16, bottom: 16, left: 0, right: 24);
-      }
-    } else {
-      if (_responsiveUtils.isPortraitMobile(context)) {
-        return const EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 24);
-      } else {
-        return const EdgeInsets.only(top: 16, bottom: 16, left: 0, right: 24);
-      }
-    }
   }
 }
