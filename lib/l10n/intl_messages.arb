@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-21T10:21:05.186351",
+  "@@last_modified": "2022-08-24T12:13:35.492924",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2098,6 +2098,12 @@
   },
   "keepLocalCopyForwardLabel": "Keep local copy",
   "@keepLocalCopyForwardLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailRuleSettingExplanation": "Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.",
+  "@emailRuleSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
