@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -105,6 +106,10 @@ class IdentitiesController extends BaseController {
         _getAllIdentities(accountId);
       }
     });
+
+    if (_accountDashBoardController.settingsPageLevel.value == SettingsPageLevel.level1) {
+      _accountDashBoardController.accountId.refresh();
+    }
   }
 
   void _clearWorker() {
@@ -112,6 +117,7 @@ class IdentitiesController extends BaseController {
   }
 
   void _getAllIdentities(AccountId accountId) {
+    log('IdentitiesController::_getAllIdentities(): $accountId');
     consumeState(_getAllIdentitiesInteractor.execute(accountId));
   }
 
