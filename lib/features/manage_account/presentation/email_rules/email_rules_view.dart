@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/email_rules_header_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/list_email_rules_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 
 class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -20,7 +21,7 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
           : Colors.white,
       body: Container(
         width: double.infinity,
-        margin: _getMarginView(context),
+        margin: SettingsUtils.getMarginViewForSettingDetails(context, _responsiveUtils),
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: Column(
@@ -39,28 +40,6 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
         ),
       ),
     );
-  }
-
-  EdgeInsets _getMarginView(BuildContext context) {
-    if (BuildUtils.isWeb) {
-      if (_responsiveUtils.isDesktop(context)) {
-        return const EdgeInsets.only(left: 16, top: 16, right: 24, bottom: 24);
-      } else if (_responsiveUtils.isTabletLarge(context) ||
-          _responsiveUtils.isTablet(context)) {
-        return const EdgeInsets.only(right: 24, top: 16, bottom: 16);
-      } else {
-        return const EdgeInsets.only(right: 24, top: 16, bottom: 16);
-      }
-    } else {
-      if (_responsiveUtils.isDesktop(context) ||
-          _responsiveUtils.isLandscapeTablet(context) ||
-          _responsiveUtils.isTabletLarge(context) ||
-          _responsiveUtils.isTablet(context)) {
-        return const EdgeInsets.only(right: 32, top: 16, bottom: 16);
-      } else {
-        return const EdgeInsets.only(right: 18, top: 16, bottom: 16, left: 10);
-      }
-    }
   }
 
   Widget _buildLoadingView() {

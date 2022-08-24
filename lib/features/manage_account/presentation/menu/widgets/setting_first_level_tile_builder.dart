@@ -72,6 +72,7 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
             ]
           )),
          IconButton(
+           padding: EdgeInsets.only(right: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)),
            icon: SvgPicture.asset(
              _imagePath.icCollapseFolder,
              fit: BoxFit.fill,

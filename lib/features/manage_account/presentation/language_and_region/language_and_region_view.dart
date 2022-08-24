@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/widgets/change_language_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/widgets/language_and_region_header_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 
 class LanguageAndRegionView extends GetWidget<LanguageAndRegionController> {
 
@@ -22,7 +23,7 @@ class LanguageAndRegionView extends GetWidget<LanguageAndRegionController> {
         width: double.infinity,
         margin: _responsiveUtils.isWebDesktop(context)
           ? const EdgeInsets.all(24)
-          : EdgeInsets.zero,
+          : EdgeInsets.symmetric(horizontal: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)),
         color: _responsiveUtils.isWebDesktop(context) ? null : Colors.white,
         decoration: _responsiveUtils.isWebDesktop(context)
             ? BoxDecoration(
