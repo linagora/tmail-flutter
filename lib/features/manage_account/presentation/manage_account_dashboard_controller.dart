@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/forward/forwa
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -42,6 +43,8 @@ class ManageAccountDashBoardController extends ReloadableController {
   final userProfile = Rxn<UserProfile>();
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
+  final settingsPageLevel = SettingsPageLevel.universal.obs;
+
   final sessionCurrent = Rxn<Session>();
   final vacationResponse = Rxn<VacationResponse>();
 
@@ -118,6 +121,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void _getUserProfile() async {
+    log('ManageAccountDashBoardController::_getUserProfile(): ${sessionCurrent.value}');
     userProfile.value = sessionCurrent.value != null ? UserProfile(sessionCurrent.value!.username.value) : null;
   }
 
