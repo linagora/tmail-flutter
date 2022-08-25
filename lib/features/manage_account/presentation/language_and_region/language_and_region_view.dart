@@ -35,7 +35,9 @@ class LanguageAndRegionView extends GetWidget<LanguageAndRegionController> {
           borderRadius: BorderRadius.circular(
               _responsiveUtils.isWebDesktop(context) ? 20 : 0),
           child: Padding(
-            padding: const EdgeInsets.only(top: 24),
+            padding: EdgeInsets.only(
+                left: _responsiveUtils.isWebDesktop(context) ? 24 : 0,
+                top: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
