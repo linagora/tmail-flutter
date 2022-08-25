@@ -245,7 +245,9 @@ class ComposerController extends BaseController {
             listIdentities.value = success.identities!
                 .where((identity) => identity.mayDelete == true)
                 .toList();
-            selectIdentity(listIdentities.first);
+            if (listIdentities.isNotEmpty) {
+              selectIdentity(listIdentities.first);
+            }
           }
         } else if (success is DownloadImageAsBase64Success) {
           if(kIsWeb) {
