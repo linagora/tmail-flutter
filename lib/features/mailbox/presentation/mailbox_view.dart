@@ -171,13 +171,11 @@ class MailboxView extends GetWidget<MailboxController> {
         padding: EdgeInsets.only(
           left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
           right: 16),
-        child: (UserInformationWidgetBuilder(
-              _imagePaths,
-              context,
-              controller.mailboxDashBoardController.userProfile.value,
-              subtitle: AppLocalizations.of(context).manage_account)
-            ..addOnSubtitleClick(() => controller.mailboxDashBoardController.goToSettings()))
-          .build()),
+        child: UserInformationWidgetBuilder(
+          _imagePaths,
+          controller.mailboxDashBoardController.userProfile.value,
+          subtitle: AppLocalizations.of(context).manage_account,
+          onSubtitleClick: () => controller.mailboxDashBoardController.goToSettings())),
       const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2)
     ]);
   }
