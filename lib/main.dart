@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:worker_manager/worker_manager.dart';
 
 void main() async {
   initLogger(() async {
@@ -23,6 +24,7 @@ void main() async {
     ));
     await MainBindings().dependencies();
     await HiveCacheConfig().setUp();
+    await Executor().warmUp();
     await dotenv.load(fileName: 'env.file');
     runApp(const TMailApp());
   });
