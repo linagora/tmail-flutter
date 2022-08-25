@@ -22,17 +22,19 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
       body: Container(
         width: double.infinity,
         margin: SettingsUtils.getMarginViewForSettingDetails(context, _responsiveUtils),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ForwardHeaderWidget(
-              imagePaths: _imagePaths,
-              responsiveUtils: _responsiveUtils,
-            ),
-            SizedBox(height: _responsiveUtils.isWebDesktop(context) ? 24 : 16),
-            _buildLoadingView(),
-            Expanded(child: ListEmailForwardsWidget())
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ForwardHeaderWidget(
+                imagePaths: _imagePaths,
+                responsiveUtils: _responsiveUtils,
+              ),
+              SizedBox(height: _responsiveUtils.isWebDesktop(context) ? 24 : 16),
+              _buildLoadingView(),
+              ListEmailForwardsWidget()
+            ],
+          ),
         ),
       ),
     );

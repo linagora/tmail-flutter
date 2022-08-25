@@ -84,25 +84,23 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
                 height: 1,
                 thickness: 0.2,
               ),
-              Expanded(
-                child: Obx(() {
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: controller.listRecipientForward.length,
-                    itemBuilder: (context, index) {
-                      final recipientForward = controller.listRecipientForward[index];
-                      return EmailForwardItemWidget(
-                          recipientForward: recipientForward,
-                          selectionMode: controller.selectionMode.value);
-                    },
-                    separatorBuilder: (context, index) => const Divider(
-                        color: AppColor.lineItemListColor,
-                        height: 1,
-                        thickness: 0.2,
-                      ),
-                  );
-                }),
-              ),
+              Obx(() {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: controller.listRecipientForward.length,
+                  itemBuilder: (context, index) {
+                    final recipientForward = controller.listRecipientForward[index];
+                    return EmailForwardItemWidget(
+                        recipientForward: recipientForward,
+                        selectionMode: controller.selectionMode.value);
+                  },
+                  separatorBuilder: (context, index) => const Divider(
+                      color: AppColor.lineItemListColor,
+                      height: 1,
+                      thickness: 0.2,
+                    ),
+                );
+              }),
             ]),
       ),
     );
