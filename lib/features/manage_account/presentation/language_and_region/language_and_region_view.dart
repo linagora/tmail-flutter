@@ -36,9 +36,8 @@ class LanguageAndRegionView extends GetWidget<LanguageAndRegionController> {
               _responsiveUtils.isWebDesktop(context) ? 20 : 0),
           child: Padding(
             padding: EdgeInsets.only(
-                left: _responsiveUtils.isWebDesktop(context) ? 24 : 10,
-                top: 24,
-                right: BuildUtils.isWeb ? 24 : 18),
+                left: _responsiveUtils.isWebDesktop(context) ? 24 : 0,
+                top: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
