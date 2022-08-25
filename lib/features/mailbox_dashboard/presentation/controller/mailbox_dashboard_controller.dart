@@ -70,7 +70,6 @@ class MailboxDashBoardController extends ReloadableController {
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
   final SearchController searchController = Get.find<SearchController>();
-  final Executor _isolateExecutor = Get.find<Executor>();
   final DownloadController downloadController = Get.find<DownloadController>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
@@ -94,7 +93,6 @@ class MailboxDashBoardController extends ReloadableController {
   final composerOverlayState = ComposerOverlayState.inActive.obs;
   final viewStateMarkAsReadMailbox = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final vacationResponse = Rxn<VacationResponse>();
-
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxId = {};
   Map<MailboxId, PresentationMailbox> mapMailbox = {};
@@ -123,10 +121,9 @@ class MailboxDashBoardController extends ReloadableController {
 
   @override
   void onInit() {
+    _registerProgressState();
     _registerNetworkConnectivityState();
-    _registerPendingEmailAddress();
-    _registerPendingFileInfo();
-    _initializeIsolateExecutor();
+
     super.onInit();
   }
 
@@ -134,6 +131,8 @@ class MailboxDashBoardController extends ReloadableController {
   void onReady() {
     log('MailboxDashBoardController::onReady()');
     dispatchRoute(AppRoutes.THREAD);
+    _registerPendingEmailAddress();
+    _registerPendingFileInfo();
     _setSessionCurrent();
     _getUserProfile();
     _getVacationResponse();
@@ -266,7 +265,7 @@ class MailboxDashBoardController extends ReloadableController {
     _fileReceiveManagerStreamSubscription =
         _emailReceiveManager.pendingFileInfo.stream.listen((listFile) {
           log('MailboxDashBoardController::_registerPendingFileInfo(): ${listFile.length}');
-          if (listFile.isNotEmpty) {
+          if (listFile.isNotEmpty && sessionCurrent != null) {
             _emailReceiveManager.clearPendingFileInfo();
             final arguments = ComposerArguments(
               emailActionType: EmailActionType.edit,
@@ -278,9 +277,7 @@ class MailboxDashBoardController extends ReloadableController {
         });
   }
 
-  void _initializeIsolateExecutor() async {
-    await _isolateExecutor.warmUp(log: BuildUtils.isDebugMode);
-
+  void _registerProgressState() async {
     progressState.listen((state) {
       viewStateMarkAsReadMailbox.value = state;
     });
@@ -647,7 +644,7 @@ class MailboxDashBoardController extends ReloadableController {
     _fileReceiveManagerStreamSubscription.cancel();
     _connectivityStreamSubscription.cancel();
     _progressStateController.close();
-    _isolateExecutor.dispose();
+    Executor().dispose();
     Get.delete<DownloadController>();
     super.onClose();
   }

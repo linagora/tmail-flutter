@@ -53,7 +53,7 @@ import 'package:tmail_ui_user/features/upload/data/datasource_impl/attachment_up
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
-import 'package:worker_manager/worker_manager.dart';
+import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 
 class ComposerBindings extends BaseBindings {
 
@@ -64,7 +64,7 @@ class ComposerBindings extends BaseBindings {
   }
 
   void _bindingsUtils() {
-    Get.lazyPut(() => FileUploader(Get.find<DioClient>(), Get.find<Executor>()));
+    Get.lazyPut(() => FileUploader(Get.find<DioClient>(tag: BindingTag.isoLateTag)));
   }
 
   @override
@@ -171,6 +171,7 @@ class ComposerBindings extends BaseBindings {
   void dispose() {
     Get.delete<UploadController>();
     Get.delete<RichTextWebController>();
+    Get.delete<RichTextMobileTabletController>();
     Get.delete<ComposerController>();
   }
 }

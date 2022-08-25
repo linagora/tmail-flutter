@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/authorization_isolate_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -30,6 +31,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 abstract class ReloadableController extends BaseController {
   final DynamicUrlInterceptors _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
   final AuthorizationInterceptors _authorizationInterceptors = Get.find<AuthorizationInterceptors>();
+  final AuthorizationIsolateInterceptors _authorizationIsolateInterceptors = Get.find<AuthorizationIsolateInterceptors>();
   final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
   final DeleteCredentialInteractor _deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
   final CachingManager _cachingManager = Get.find<CachingManager>();
@@ -95,6 +97,10 @@ abstract class ReloadableController extends BaseController {
       credentialViewState.userName.userName,
       credentialViewState.password.value,
     );
+    _authorizationIsolateInterceptors.setBasicAuthorization(
+      credentialViewState.userName.userName,
+      credentialViewState.password.value,
+    );
   }
 
   void _handleGetCredentialSuccess(GetCredentialViewState credentialViewState) {
@@ -138,6 +144,7 @@ abstract class ReloadableController extends BaseController {
         _languageCacheManager.removeLanguage(),
       ]);
       _authorizationInterceptors.clear();
+      _authorizationIsolateInterceptors.clear();
       await HiveCacheConfig().closeHive();
       _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
     }
@@ -151,6 +158,7 @@ abstract class ReloadableController extends BaseController {
       _cachingManager.clearAll(),
       _languageCacheManager.removeLanguage(),
     ]);
+    _authorizationIsolateInterceptors.clear();
     _authorizationInterceptors.clear();
     await HiveCacheConfig().closeHive();
     _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
@@ -164,6 +172,9 @@ abstract class ReloadableController extends BaseController {
   void _setUpInterceptorsOidc(GetStoredTokenOidcSuccess tokenOidcSuccess) {
     _dynamicUrlInterceptors.changeBaseUrl(tokenOidcSuccess.baseUrl.toString());
     _authorizationInterceptors.setTokenAndAuthorityOidc(
+        newToken: tokenOidcSuccess.tokenOidc.toToken(),
+        newConfig: tokenOidcSuccess.oidcConfiguration);
+    _authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
         newToken: tokenOidcSuccess.tokenOidc.toToken(),
         newConfig: tokenOidcSuccess.oidcConfiguration);
   }
