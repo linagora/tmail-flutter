@@ -198,13 +198,11 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.only(left: 16, bottom: 10),
-          child: (UserInformationWidgetBuilder(
-                _imagePaths,
-                context,
-                controller.mailboxDashBoardController.userProfile.value,
-                subtitle: AppLocalizations.of(context).manage_account)
-              ..addOnSubtitleClick(() => controller.mailboxDashBoardController.goToSettings()))
-            .build()),
+          child: UserInformationWidgetBuilder(
+            _imagePaths,
+            controller.mailboxDashBoardController.userProfile.value,
+            subtitle: AppLocalizations.of(context).manage_account,
+            onSubtitleClick: () => controller.mailboxDashBoardController.goToSettings())),
         const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2)
       ]),
     );

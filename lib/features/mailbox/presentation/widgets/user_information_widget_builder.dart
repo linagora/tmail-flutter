@@ -9,28 +9,26 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSubtitleClick = void Function();
 
-class UserInformationWidgetBuilder {
+class UserInformationWidgetBuilder extends StatelessWidget {
   final ImagePaths _imagePaths;
   final UserProfile? _userProfile;
-  final BuildContext _context;
   final String? subtitle;
+  final EdgeInsets? titlePadding;
+  final OnSubtitleClick? onSubtitleClick;
 
-  OnSubtitleClick? _onSubtitleClick;
-
-  UserInformationWidgetBuilder(
+  const UserInformationWidgetBuilder(
     this._imagePaths,
-    this._context,
     this._userProfile,
     {
-      this.subtitle
+      Key? key,
+      this.subtitle,
+      this.titlePadding,
+      this.onSubtitleClick,
     }
-  );
+  ) : super(key: key);
 
-  void addOnSubtitleClick(OnSubtitleClick onLogoutActionClick) {
-    _onSubtitleClick = onLogoutActionClick;
-  }
-
-  Widget build() {
+  @override
+  Widget build(BuildContext context) {
     return Container(
       key: const Key('user_information_widget'),
       color: Colors.transparent,
@@ -51,7 +49,7 @@ class UserInformationWidgetBuilder {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-                padding: const EdgeInsets.only(left: 16, top: 10),
+                padding: titlePadding ?? const EdgeInsets.only(left: 16, top: 10),
                 child: Text(
                     _userProfile != null ? '${_userProfile?.email}' : '',
                     maxLines: 1,
@@ -68,9 +66,9 @@ class UserInformationWidgetBuilder {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: TextButton(
-                        onPressed: () => _onSubtitleClick?.call(),
+                        onPressed: () => onSubtitleClick?.call(),
                         child: Text(
-                          AppLocalizations.of(_context).manage_account,
+                          AppLocalizations.of(context).manage_account,
                           style: const TextStyle(fontSize: 14, color: AppColor.colorTextButton),
                         ),
                       )

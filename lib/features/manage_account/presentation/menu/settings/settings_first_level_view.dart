@@ -21,12 +21,10 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
     return Column(children: [
       Obx(() => Padding(
         padding: SettingsUtils.getPaddingInFirstLevel(context, _responsiveUtils),
-        child: (UserInformationWidgetBuilder(
-              _imagePaths,
-              context,
-              controller.manageAccountDashboardController.userProfile.value)
-          ..addOnSubtitleClick(() => {}))
-          .build()
+        child: UserInformationWidgetBuilder(
+          _imagePaths,
+          controller.manageAccountDashboardController.userProfile.value,
+          titlePadding: const EdgeInsets.only(left: 16))
       )),
       Divider(
         color: AppColor.colorDividerComposer,
