@@ -18,97 +18,99 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Obx(() => Padding(
-        padding: SettingsUtils.getPaddingInFirstLevel(context, _responsiveUtils),
-        child: UserInformationWidgetBuilder(
-          _imagePaths,
-          controller.manageAccountDashboardController.userProfile.value,
-          titlePadding: const EdgeInsets.only(left: 16))
-      )),
-      Divider(
-        color: AppColor.colorDividerComposer,
-        height: 1,
-        indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-        endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
-      ),
-      SettingFirstLevelTileBuilder(
-        AppLocalizations.of(context).identities,
-        AccountMenuItem.profiles.getIcon(_imagePaths),
-        () => controller.selectSettings(AccountMenuItem.profiles)
-      ),
-      Divider(
-        color: AppColor.colorDividerComposer,
-        height: 1,
-        indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-        endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
-      ),
-      Obx(() {
-        if (controller.manageAccountDashboardController.checkAvailableRuleFilterInSession()) {
-          return Column(children: [
-            SettingFirstLevelTileBuilder(
-              AccountMenuItem.emailRules.getName(context),
-              AccountMenuItem.emailRules.getIcon(_imagePaths),
-              subtitle: AppLocalizations.of(context).emailRuleSettingExplanation,
-              () => controller.selectSettings(AccountMenuItem.emailRules)
-            ),
-            Divider(
-              color: AppColor.colorDividerComposer,
-              height: 1,
-              indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-              endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
-            ),
-          ]);
-        } else {
-          return const SizedBox.shrink();
-        }
-      }),
-      Obx(() {
-        if (controller.manageAccountDashboardController.checkAvailableForwardInSession()) {
-          return Column(children: [
-            SettingFirstLevelTileBuilder(
-              AccountMenuItem.forward.getName(context),
-              AccountMenuItem.forward.getIcon(_imagePaths),
-              () => controller.selectSettings(AccountMenuItem.forward)
-            ),
-            Divider(
-              color: AppColor.colorDividerComposer,
-              height: 1,
-              indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-              endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
-            ),
-          ]);
-        } else {
-          return const SizedBox.shrink();
-        }
-      }),
-      SettingFirstLevelTileBuilder(
-        AccountMenuItem.vacation.getName(context),
-        AccountMenuItem.vacation.getIcon(_imagePaths),
-        () => controller.selectSettings(AccountMenuItem.vacation)
-      ),
-      Divider(
-        color: AppColor.colorDividerComposer,
-        height: 1,
-        indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-        endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
-      ),
-      SettingFirstLevelTileBuilder(
-        AccountMenuItem.languageAndRegion.getName(context),
-        AccountMenuItem.languageAndRegion.getIcon(_imagePaths),
-        () => controller.selectSettings(AccountMenuItem.languageAndRegion)
-      ),
-      Divider(
-        color: AppColor.colorDividerComposer,
-        height: 1,
-        indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-        endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
-      ),
-      SettingFirstLevelTileBuilder(
-        AppLocalizations.of(context).sign_out,
-        _imagePaths.icSignOut,
-        controller.manageAccountDashboardController.logoutAction
-      ),
-    ]);
+    return SingleChildScrollView(
+      child: Column(children: [
+        Obx(() => Padding(
+          padding: SettingsUtils.getPaddingInFirstLevel(context, _responsiveUtils),
+          child: UserInformationWidgetBuilder(
+            _imagePaths,
+            controller.manageAccountDashboardController.userProfile.value,
+            titlePadding: const EdgeInsets.only(left: 16))
+        )),
+        Divider(
+          color: AppColor.colorDividerComposer,
+          height: 1,
+          indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+          endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+        ),
+        SettingFirstLevelTileBuilder(
+          AppLocalizations.of(context).identities,
+          AccountMenuItem.profiles.getIcon(_imagePaths),
+          () => controller.selectSettings(AccountMenuItem.profiles)
+        ),
+        Divider(
+          color: AppColor.colorDividerComposer,
+          height: 1,
+          indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+          endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+        ),
+        Obx(() {
+          if (controller.manageAccountDashboardController.checkAvailableRuleFilterInSession()) {
+            return Column(children: [
+              SettingFirstLevelTileBuilder(
+                AccountMenuItem.emailRules.getName(context),
+                AccountMenuItem.emailRules.getIcon(_imagePaths),
+                subtitle: AppLocalizations.of(context).emailRuleSettingExplanation,
+                () => controller.selectSettings(AccountMenuItem.emailRules)
+              ),
+              Divider(
+                color: AppColor.colorDividerComposer,
+                height: 1,
+                indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+                endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+              ),
+            ]);
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        Obx(() {
+          if (controller.manageAccountDashboardController.checkAvailableForwardInSession()) {
+            return Column(children: [
+              SettingFirstLevelTileBuilder(
+                AccountMenuItem.forward.getName(context),
+                AccountMenuItem.forward.getIcon(_imagePaths),
+                () => controller.selectSettings(AccountMenuItem.forward)
+              ),
+              Divider(
+                color: AppColor.colorDividerComposer,
+                height: 1,
+                indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+                endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+              ),
+            ]);
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        SettingFirstLevelTileBuilder(
+          AccountMenuItem.vacation.getName(context),
+          AccountMenuItem.vacation.getIcon(_imagePaths),
+          () => controller.selectSettings(AccountMenuItem.vacation)
+        ),
+        Divider(
+          color: AppColor.colorDividerComposer,
+          height: 1,
+          indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+          endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+        ),
+        SettingFirstLevelTileBuilder(
+          AccountMenuItem.languageAndRegion.getName(context),
+          AccountMenuItem.languageAndRegion.getIcon(_imagePaths),
+          () => controller.selectSettings(AccountMenuItem.languageAndRegion)
+        ),
+        Divider(
+          color: AppColor.colorDividerComposer,
+          height: 1,
+          indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+          endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+        ),
+        SettingFirstLevelTileBuilder(
+          AppLocalizations.of(context).sign_out,
+          _imagePaths.icSignOut,
+          controller.manageAccountDashboardController.logoutAction
+        ),
+      ]),
+    );
   }
 }
