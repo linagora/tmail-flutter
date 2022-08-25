@@ -139,6 +139,7 @@ class RichTextMobileTabletController extends BaseRichTextController {
     if (image.source == ImageSource.network) {
       htmlEditorApi?.insertImageLink(image.link!);
     } else {
+      await htmlEditorApi?.moveCursorAtLastNode();
       htmlEditorApi?.insertHtml(image.base64Uri ?? '');
     }
   }
