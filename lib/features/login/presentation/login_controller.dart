@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/authorization_isolate_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
@@ -35,6 +36,7 @@ class LoginController extends BaseController {
   final AuthenticationInteractor _authenticationInteractor;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
   final AuthorizationInterceptors _authorizationInterceptors;
+  final AuthorizationIsolateInterceptors _authorizationIsolateInterceptors;
   final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
   final GetOIDCConfigurationInteractor _getOIDCConfigurationInteractor;
   final GetTokenOIDCInteractor _getTokenOIDCInteractor;
@@ -52,6 +54,7 @@ class LoginController extends BaseController {
     this._authenticationInteractor,
     this._dynamicUrlInterceptors,
     this._authorizationInterceptors,
+    this._authorizationIsolateInterceptors,
     this._checkOIDCIsAvailableInteractor,
     this._getOIDCConfigurationInteractor,
     this._getTokenOIDCInteractor,
@@ -300,6 +303,9 @@ class LoginController extends BaseController {
     _authorizationInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
         newConfig: config);
+    _authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
+        newToken: success.tokenOIDC.toToken(),
+        newConfig: config);
     pushAndPop(AppRoutes.SESSION);
   }
 
@@ -315,6 +321,7 @@ class LoginController extends BaseController {
     loginState.value = LoginState(Right(success));
     _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
     _authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);
+    _authorizationIsolateInterceptors.setBasicAuthorization(_userNameText, _passwordText);
     pushAndPop(AppRoutes.SESSION);
   }
 
