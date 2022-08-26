@@ -53,7 +53,7 @@ post_install do |installer|
           'PERMISSION_REMINDERS=0',
 
           ## dart: PermissionGroup.contacts
-          # 'PERMISSION_CONTACTS=0',
+          'PERMISSION_CONTACTS=1',
 
           ## dart: PermissionGroup.camera
           'PERMISSION_CAMERA=0',
