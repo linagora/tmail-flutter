@@ -110,7 +110,7 @@ dependencies:
   device_info_plus: 4.0.2
 
   # permission_handler
-  permission_handler: 8.1.6
+  permission_handler: 9.2.0
 
   # share
   share: 2.0.4
