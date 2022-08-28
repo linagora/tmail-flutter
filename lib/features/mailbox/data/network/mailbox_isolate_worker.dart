@@ -29,8 +29,9 @@ class MailboxIsolateWorker {
 
   final ThreadAPI _threadApi;
   final EmailAPI _emailApi;
+  final Executor _isolateExecutor;
 
-  MailboxIsolateWorker(this._threadApi, this._emailApi);
+  MailboxIsolateWorker(this._threadApi, this._emailApi, this._isolateExecutor);
 
   Future<List<Email>> markAsMailboxRead(
       AccountId accountId,
@@ -45,7 +46,7 @@ class MailboxIsolateWorker {
           totalEmailUnread,
           onProgressController);
     } else {
-      final result = await Executor().execute(
+      final result = await _isolateExecutor.execute(
           arg1: MailboxMarkAsReadArguments(
               _threadApi,
               _emailApi,
