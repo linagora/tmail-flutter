@@ -54,6 +54,7 @@ import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:worker_manager/worker_manager.dart';
 
 class ComposerBindings extends BaseBindings {
 
@@ -64,7 +65,7 @@ class ComposerBindings extends BaseBindings {
   }
 
   void _bindingsUtils() {
-    Get.lazyPut(() => FileUploader(Get.find<DioClient>(tag: BindingTag.isoLateTag)));
+    Get.lazyPut(() => FileUploader(Get.find<DioClient>(tag: BindingTag.isoLateTag), Get.find<Executor>()));
   }
 
   @override

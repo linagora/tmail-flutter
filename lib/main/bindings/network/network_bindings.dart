@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:worker_manager/worker_manager.dart';
 
 class NetworkBindings extends Bindings {
 
@@ -99,11 +100,16 @@ class NetworkBindings extends Bindings {
   }
 
   void _bindingIsolateWorker() {
+    Get.put(Executor());
     Get.put(ThreadIsolateWorker(
-        Get.find<ThreadAPI>(),
-        Get.find<EmailAPI>()));
+      Get.find<ThreadAPI>(),
+      Get.find<EmailAPI>(),
+      Get.find<Executor>(),
+    ));
     Get.put(MailboxIsolateWorker(
-        Get.find<ThreadAPI>(),
-        Get.find<EmailAPI>()));
+      Get.find<ThreadAPI>(),
+      Get.find<EmailAPI>(),
+      Get.find<Executor>(),
+    ));
   }
 }

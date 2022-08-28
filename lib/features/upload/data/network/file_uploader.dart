@@ -17,8 +17,9 @@ import 'package:worker_manager/worker_manager.dart' as worker;
 class FileUploader {
 
   final DioClient _dioClient;
+  final worker.Executor _isolateExecutor;
 
-  FileUploader(this._dioClient);
+  FileUploader(this._dioClient, this._isolateExecutor);
 
   Future<Attachment?> uploadAttachment(
       UploadTaskId uploadId,
@@ -35,7 +36,7 @@ class FileUploader {
           uploadUri,
           cancelToken: cancelToken);
     } else {
-      final attachmentUploaded = await worker.Executor().execute(
+      final attachmentUploaded = await _isolateExecutor.execute(
           arg1: UploadFileArguments(
               _dioClient,
               uploadId,

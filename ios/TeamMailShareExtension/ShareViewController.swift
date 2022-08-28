@@ -5,7 +5,7 @@ import Photos
 
 class ShareViewController: SLComposeServiceViewController {
     var hostAppBundleIdentifier = ""
-    var appGroupId = ""
+    let appGroupId = "group.com.linagora.teammail"
     let sharedKey = "ShareKey"
     var sharedMedia: [SharedMediaFile] = []
     var sharedText: [String] = []
@@ -27,9 +27,6 @@ class ShareViewController: SLComposeServiceViewController {
         // For example: com.test.ShareExtension -> com.test
         let lastIndexOfPoint = shareExtensionAppBundleIdentifier.lastIndex(of: ".");
         hostAppBundleIdentifier = String(shareExtensionAppBundleIdentifier[..<lastIndexOfPoint!]);
-        
-        // loading custom AppGroupId from Build Settings or use group.<hostAppBundleIdentifier>
-        appGroupId = (Bundle.main.object(forInfoDictionaryKey: "AppGroupId") as? String) ?? "group.\(hostAppBundleIdentifier)";
 
     }
 

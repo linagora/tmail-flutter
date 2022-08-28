@@ -19,8 +19,9 @@ import 'package:worker_manager/worker_manager.dart';
 class ThreadIsolateWorker {
   final ThreadAPI _threadAPI;
   final EmailAPI _emailAPI;
+  final Executor _isolateExecutor;
 
-  ThreadIsolateWorker(this._threadAPI, this._emailAPI);
+  ThreadIsolateWorker(this._threadAPI, this._emailAPI, this._isolateExecutor);
 
   Future<List<EmailId>> emptyTrashFolder(
     AccountId accountId,
@@ -30,7 +31,7 @@ class ThreadIsolateWorker {
     if (BuildUtils.isWeb) {
       return _emptyTrashFolderOnWeb(accountId, mailboxId, updateDestroyedEmailCache);
     } else {
-      final result = await Executor().execute(
+      final result = await _isolateExecutor.execute(
           arg1: EmptyTrashFolderArguments(_threadAPI, _emailAPI, accountId, mailboxId),
           fun1: _emptyTrashFolderAction,
           notification: (value) {
