@@ -176,7 +176,7 @@ dependencies:
   percent_indicator: 4.2.2
 
   # Isolate
-  worker_manager: 4.4.6
+  worker_manager: 4.4.0
 
   async: 2.8.2
 
