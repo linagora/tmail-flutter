@@ -374,30 +374,36 @@ class ThreadController extends BaseController {
     ));
   }
 
-  EmailFilterCondition _getFilterCondition({bool isLoadMore = false}) {
+  EmailFilterCondition _getFilterCondition() {
+    return EmailFilterCondition(
+      inMailbox: mailboxDashBoardController.selectedMailbox.value?.id
+    );
+  }
+
+  EmailFilterCondition _getLoadMoreFilterCondition() {
     switch(mailboxDashBoardController.filterMessageOption.value) {
       case FilterMessageOption.all:
         return EmailFilterCondition(
           inMailbox: mailboxDashBoardController.selectedMailbox.value?.id,
-          before: isLoadMore ? emailList.last.receivedAt : null
+          before: emailList.last.receivedAt
         );
       case FilterMessageOption.unread:
         return EmailFilterCondition(
-            inMailbox: mailboxDashBoardController.selectedMailbox.value?.id,
-            notKeyword: KeyWordIdentifier.emailSeen.value,
-            before: isLoadMore ? emailList.last.receivedAt : null
+          inMailbox: mailboxDashBoardController.selectedMailbox.value?.id,
+          notKeyword: KeyWordIdentifier.emailSeen.value,
+          before: emailList.last.receivedAt
         );
       case FilterMessageOption.attachments:
         return EmailFilterCondition(
-            inMailbox: mailboxDashBoardController.selectedMailbox.value?.id,
-            hasAttachment: true,
-            before: isLoadMore ? emailList.last.receivedAt : null
+          inMailbox: mailboxDashBoardController.selectedMailbox.value?.id,
+          hasAttachment: true,
+          before: emailList.last.receivedAt
         );
       case FilterMessageOption.starred:
         return EmailFilterCondition(
-            inMailbox: mailboxDashBoardController.selectedMailbox.value?.id,
-            hasKeyword: KeyWordIdentifier.emailFlagged.value,
-            before: isLoadMore ? emailList.last.receivedAt : null
+          inMailbox: mailboxDashBoardController.selectedMailbox.value?.id,
+          hasKeyword: KeyWordIdentifier.emailFlagged.value,
+          before: emailList.last.receivedAt
         );
     }
   }
@@ -446,7 +452,7 @@ class ThreadController extends BaseController {
             _accountId!,
             limit: ThreadConstants.defaultLimit,
             sort: _sortOrder,
-            filter: _getFilterCondition(isLoadMore: true),
+            filter: _getLoadMoreFilterCondition(),
             properties: ThreadConstants.propertiesDefault,
             lastEmailId: emailList.last.id)
       ));
