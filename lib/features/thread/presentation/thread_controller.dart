@@ -53,6 +53,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_stat
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/re_sync_thread_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
@@ -63,6 +64,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_e
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/resync_thread_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
@@ -92,6 +94,7 @@ class ThreadController extends BaseController {
   final EmptyTrashFolderInteractor _emptyTrashFolderInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
   final MoveToMailboxInteractor _moveToMailboxInteractor;
+  final ReSyncThreadInteractor _reSyncThreadInteractor;
 
   final emailList = <PresentationEmail>[].obs;
   final searchIsActive = RxBool(false);
@@ -136,6 +139,7 @@ class ThreadController extends BaseController {
     this._emptyTrashFolderInteractor,
     this._markAsEmailReadInteractor,
     this._moveToMailboxInteractor,
+    this._reSyncThreadInteractor
   );
 
   @override
@@ -171,7 +175,9 @@ class ThreadController extends BaseController {
       (success) {
         if (success is GetAllEmailSuccess) {
           _getAllEmailSuccess(success);
-        } else if (success is RefreshChangesAllEmailSuccess) {
+        } else if (success is ReSyncThreadSuccess) {
+          _reSyncThreadSuccess(success);
+        } else  if (success is RefreshChangesAllEmailSuccess) {
           _refreshChangesAllEmailSuccess(success);
         } else if (success is LoadMoreEmailsSuccess) {
           _loadMoreEmailsSuccess(success);
@@ -258,8 +264,8 @@ class ThreadController extends BaseController {
 
     dashboardActionWorker = ever(mailboxDashBoardController.dashBoardAction, (action) {
       if (action is DashBoardAction) {
-        if (action is RefreshAllEmailAction) {
-          refreshAllEmail();
+        if (action is ReSyncThreadAction) {
+          _reSyncThread();
           mailboxDashBoardController.clearDashBoardAction();
         } else if (action is SelectionAllEmailAction) {
           setSelectAllEmailAction();
@@ -329,6 +335,21 @@ class ThreadController extends BaseController {
     }
   }
 
+  void _reSyncThreadAction() {
+    if (_accountId != null) {
+      consumeState(_reSyncThreadInteractor.execute(
+        _accountId!,
+        sort: _sortOrder,
+        emailFilter: EmailFilter(
+          filter: _getFilterCondition(),
+          filterOption: mailboxDashBoardController.filterMessageOption.value,
+          mailboxId: _currentMailboxId),
+        propertiesCreated: ThreadConstants.propertiesDefault,
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+      ));
+    }
+  }
+
   void _resetToOriginalValue() {
     dispatchState(Right(LoadingState()));
     emailList.clear();
@@ -345,6 +366,10 @@ class ThreadController extends BaseController {
     if (listEmailController.hasClients) {
       listEmailController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
     }
+  }
+
+  void _reSyncThreadSuccess(ReSyncThreadSuccess success) {
+    _getAllEmailSuccess(success);
   }
 
   void _refreshChangesAllEmailSuccess(RefreshChangesAllEmailSuccess success) {
@@ -405,6 +430,16 @@ class ThreadController extends BaseController {
           hasKeyword: KeyWordIdentifier.emailFlagged.value,
           before: emailList.last.receivedAt
         );
+    }
+  }
+
+  void _reSyncThread() {
+    dispatchState(Right(LoadingState()));
+    canLoadMore = true;
+    cancelSelectEmail();
+
+    if (_accountId != null) {
+      _reSyncThreadAction();
     }
   }
 

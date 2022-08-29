@@ -14,9 +14,8 @@ class DashBoardAction extends UIAction {
   List<Object?> get props => [];
 }
 
-class RefreshAllEmailAction extends DashBoardAction {
-
-  RefreshAllEmailAction();
+class ReSyncThreadAction extends DashBoardAction {
+  ReSyncThreadAction();
 
   @override
   List<Object?> get props => [];

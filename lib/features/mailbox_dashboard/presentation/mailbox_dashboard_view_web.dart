@@ -246,7 +246,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ..size(16)
           ..radiusSplash(10)
           ..padding(const EdgeInsets.symmetric(horizontal: 8, vertical: 8))
-          ..onPressActionClick(() => controller.dispatchAction(RefreshAllEmailAction())))
+          ..onPressActionClick(() => controller.dispatchAction(ReSyncThreadAction())))
         .build(),
       const SizedBox(width: 16),
       (ButtonBuilder(imagePaths.icSelectAll)
