@@ -305,4 +305,42 @@ class ThreadRepositoryImpl extends ThreadRepository {
       },
     );
   }
+
+  @override
+  Stream<EmailsResponse> reSyncEmails(
+    AccountId accountId,
+    {
+      UnsignedInt? limit,
+      Set<Comparator>? sort,
+      EmailFilter? emailFilter,
+      Properties? propertiesCreated,
+      Properties? propertiesUpdated
+    }
+  ) async* {
+    log('ThreadRepositoryImpl::reSyncEmails(): filter = ${emailFilter?.mailboxId}');
+    await mapDataSource[DataSourceType.local]!.deleteEmails(inMailboxId: emailFilter?.mailboxId);
+
+    final networkEmailResponse = await mapDataSource[DataSourceType.network]
+      !.getAllEmail(
+        accountId,
+        limit: limit,
+        sort: sort,
+        filter: emailFilter?.filter,
+        properties: propertiesCreated
+      );
+
+    await _updateEmailCache(newCreated: networkEmailResponse.emailList);
+
+    final newEmailResponse = await Future.wait([
+      mapDataSource[DataSourceType.local]!.getAllEmailCache(
+        inMailboxId: emailFilter?.mailboxId,
+        sort: sort,
+        filterOption: emailFilter?.filterOption),
+      stateDataSource.getState(StateType.email)
+    ]).then((List response) {
+      return EmailsResponse(emailList: response.first, state: response.last);
+    });
+
+    yield newEmailResponse;
+  }
 }
