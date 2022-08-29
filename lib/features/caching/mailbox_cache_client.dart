@@ -124,4 +124,9 @@ class MailboxCacheClient extends HiveCacheClient<MailboxCache> {
       throw error;
     });
   }
+
+  @override
+  Future<void> deleteWhere(bool Function(MailboxCache data) validate) {
+    throw UnimplementedError();
+  }
 }

@@ -124,4 +124,9 @@ class StateCacheClient extends HiveCacheClient<StateCache> {
       throw error;
     });
   }
+
+  @override
+  Future<void> deleteWhere(bool Function(StateCache data) validate) {
+    throw UnimplementedError();
+  }
 }

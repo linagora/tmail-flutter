@@ -32,4 +32,6 @@ abstract class HiveCacheClient<T> {
   }
 
   Future<void> clearAllData();
+
+  Future<void> deleteWhere(bool Function(T data) validate);
 }

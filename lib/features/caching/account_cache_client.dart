@@ -125,4 +125,9 @@ class AccountCacheClient extends HiveCacheClient<AccountCache> {
       throw error;
     });
   }
+
+  @override
+  Future<void> deleteWhere(bool Function(AccountCache data) validate) {
+    throw UnimplementedError();
+  }
 }

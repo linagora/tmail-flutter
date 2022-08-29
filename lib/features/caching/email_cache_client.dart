@@ -141,4 +141,15 @@ class EmailCacheClient extends HiveCacheClient<EmailCache> {
       throw error;
     });
   }
+
+  @override
+  Future<void> deleteWhere(bool Function(EmailCache data) validate) {
+    return Future.sync(() async {
+      final boxEmail = await openBox();
+      final emailIds = boxEmail.values.where(validate).map((email) => email.id);
+      boxEmail.deleteAll(emailIds);
+    }).catchError((error) {
+      throw error;
+    });
+  }
 }

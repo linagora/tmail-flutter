@@ -124,4 +124,9 @@ class TokenOidcCacheClient extends HiveCacheClient<TokenOidcCache> {
     });
   }
 
+  @override
+  Future<void> deleteWhere(bool Function(TokenOidcCache data) validate) {
+    throw UnimplementedError();
+  }
+
 }

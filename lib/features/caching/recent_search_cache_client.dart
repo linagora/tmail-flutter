@@ -124,4 +124,9 @@ class RecentSearchCacheClient extends HiveCacheClient<RecentSearchCache> {
       throw error;
     });
   }
+
+  @override
+  Future<void> deleteWhere(bool Function(RecentSearchCache data) validate) {
+    throw UnimplementedError();
+  }
 }
