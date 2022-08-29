@@ -10,9 +10,9 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
+import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
-import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 
 class ThreadDataSourceImpl extends ThreadDataSource {
@@ -85,5 +85,10 @@ class ThreadDataSourceImpl extends ThreadDataSource {
     }).catchError((error) {
       throw error;
     });
+  }
+
+  @override
+  Future<void> deleteEmails({MailboxId? inMailboxId}) {
+    throw UnimplementedError();
   }
 }

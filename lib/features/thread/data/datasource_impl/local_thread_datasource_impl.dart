@@ -55,6 +55,19 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
+  Future<void> deleteEmails({MailboxId? inMailboxId}) {
+    if (inMailboxId == null) {
+      return _emailCacheManager.clearAll();
+    }
+    return _emailCacheManager
+      .deleteWhere((emailCache) {
+        return emailCache.mailboxIds != null
+          && emailCache.mailboxIds!.containsKey(inMailboxId.id.value)
+          && emailCache.mailboxIds![inMailboxId.id.value] == true;
+      });
+  }
+
+  @override
   Future<void> update({List<Email>? updated, List<Email>? created, List<EmailId>? destroyed}) {
     return Future.sync(() async {
       return await _emailCacheManager.update(updated: updated, created: created, destroyed: destroyed);

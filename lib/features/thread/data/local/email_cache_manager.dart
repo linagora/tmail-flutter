@@ -1,15 +1,16 @@
 
 import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:flutter/foundation.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/email_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_cache_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_cache_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 
 class EmailCacheManager {
@@ -72,6 +73,21 @@ class EmailCacheManager {
         .map((emailCache) => emailCache.id)
         .toList();
       await _emailCacheClient.deleteMultipleItem(listEmailIdCacheExpire);
+    }
+  }
+
+  Future<void> deleteWhere(bool Function(EmailCache emailCache) validate) async {
+    final emailCacheExist = await _emailCacheClient.isExistTable();
+    if (emailCacheExist) {
+      await _emailCacheClient.deleteWhere(validate);
+    }
+  }
+
+  Future<void> clearAll() async {
+    if (kIsWeb) {
+      await _emailCacheClient.clearAllData();
+    } else {
+      await _emailCacheClient.deleteBox();
     }
   }
 }
