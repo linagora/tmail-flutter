@@ -12,7 +12,6 @@ import 'package:tmail_ui_user/features/cleanup/domain/model/recent_search_cleanu
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_isolate_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
@@ -31,7 +30,7 @@ class HomeController extends BaseController {
   final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
   final AuthorizationInterceptors _authorizationInterceptors;
-  final AuthorizationIsolateInterceptors _authorizationIsolateInterceptors;
+  final AuthorizationInterceptors _authorizationIsolateInterceptors;
   final CleanupEmailCacheInteractor _cleanupEmailCacheInteractor;
   final EmailReceiveManager _emailReceiveManager;
   final CleanupRecentSearchCacheInteractor _cleanupRecentSearchCacheInteractor;

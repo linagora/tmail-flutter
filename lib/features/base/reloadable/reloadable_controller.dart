@@ -11,7 +11,6 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_isolate_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -25,13 +24,14 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
+import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 abstract class ReloadableController extends BaseController {
   final DynamicUrlInterceptors _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
   final AuthorizationInterceptors _authorizationInterceptors = Get.find<AuthorizationInterceptors>();
-  final AuthorizationIsolateInterceptors _authorizationIsolateInterceptors = Get.find<AuthorizationIsolateInterceptors>();
+  final AuthorizationInterceptors _authorizationIsolateInterceptors = Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag);
   final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
   final DeleteCredentialInteractor _deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
   final CachingManager _cachingManager = Get.find<CachingManager>();

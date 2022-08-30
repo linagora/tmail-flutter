@@ -3,6 +3,7 @@ import 'package:tmail_ui_user/main/bindings/core/core_bindings.dart';
 import 'package:tmail_ui_user/main/bindings/credential/credential_bindings.dart';
 import 'package:tmail_ui_user/main/bindings/local/local_bindings.dart';
 import 'package:tmail_ui_user/main/bindings/network/network_bindings.dart';
+import 'package:tmail_ui_user/main/bindings/network/network_isolate_binding.dart';
 import 'package:tmail_ui_user/main/bindings/session/session_bindings.dart';
 
 class MainBindings extends Bindings {
@@ -11,6 +12,7 @@ class MainBindings extends Bindings {
     await CoreBindings().dependencies();
     LocalBindings().dependencies();
     NetworkBindings().dependencies();
+    NetworkIsolateBindings().dependencies();
     CredentialBindings().dependencies();
     SessionBindings().dependencies();
   }
