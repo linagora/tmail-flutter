@@ -13,17 +13,12 @@ import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.da
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_isolate_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
-import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
 import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
-import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
-import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
-import 'package:worker_manager/worker_manager.dart';
 
 class NetworkBindings extends Bindings {
 
@@ -31,7 +26,6 @@ class NetworkBindings extends Bindings {
   void dependencies() {
     _bindingDio();
     _bindingApi();
-    _bindingIsolateWorker();
     _bindingConnection();
     _bindingException();
   }
@@ -47,9 +41,7 @@ class NetworkBindings extends Bindings {
   void _bindingDio() {
     _bindingBaseOption();
     Get.put(Dio(Get.find<BaseOptions>()));
-    Get.put(Dio(Get.find<BaseOptions>()), tag: BindingTag.isoLateTag);
     Get.put(DioClient(Get.find<Dio>()));
-    Get.put(DioClient(Get.find<Dio>(tag: BindingTag.isoLateTag)), tag: BindingTag.isoLateTag);
     Get.put(const FlutterAppAuth());
     Get.put(AppAuthWebPlugin());
     Get.put(OIDCHttpClient(Get.find<DioClient>()));
@@ -59,20 +51,16 @@ class NetworkBindings extends Bindings {
 
   void _bindingInterceptors() {
     Get.put(DynamicUrlInterceptors());
-    Get.put(AuthorizationIsolateInterceptors());
     Get.put(AuthorizationInterceptors(
         Get.find<Dio>(),
         Get.find<AuthenticationClientBase>(),
         Get.find<TokenOidcCacheManager>(),
         Get.find<AccountCacheManager>(),
     ));
-    Get.find<Dio>(tag: BindingTag.isoLateTag).interceptors.add(Get.find<DynamicUrlInterceptors>());
-    Get.find<Dio>(tag: BindingTag.isoLateTag).interceptors.add(Get.find<AuthorizationIsolateInterceptors>());
     Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
     Get.find<Dio>().interceptors.add(Get.find<AuthorizationInterceptors>());
     if (kDebugMode) {
       Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true));
-      Get.find<Dio>(tag: BindingTag.isoLateTag).interceptors.add(LogInterceptor(requestBody: true));
     }
   }
 
@@ -97,19 +85,5 @@ class NetworkBindings extends Bindings {
 
   void _bindingException() {
     Get.put(RemoteExceptionThrower());
-  }
-
-  void _bindingIsolateWorker() {
-    Get.put(Executor());
-    Get.put(ThreadIsolateWorker(
-      Get.find<ThreadAPI>(),
-      Get.find<EmailAPI>(),
-      Get.find<Executor>(),
-    ));
-    Get.put(MailboxIsolateWorker(
-      Get.find<ThreadAPI>(),
-      Get.find<EmailAPI>(),
-      Get.find<Executor>(),
-    ));
   }
 }
