@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_isolate_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
@@ -36,7 +35,7 @@ class LoginController extends BaseController {
   final AuthenticationInteractor _authenticationInteractor;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
   final AuthorizationInterceptors _authorizationInterceptors;
-  final AuthorizationIsolateInterceptors _authorizationIsolateInterceptors;
+  final AuthorizationInterceptors _authorizationIsolateInterceptors;
   final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
   final GetOIDCConfigurationInteractor _getOIDCConfigurationInteractor;
   final GetTokenOIDCInteractor _getTokenOIDCInteractor;

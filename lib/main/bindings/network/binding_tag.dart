@@ -1,3 +1,3 @@
 class BindingTag {
-  static const isoLateTag = 'isoLateTag';
+  static const isolateTag = 'isolateTag';
 }
