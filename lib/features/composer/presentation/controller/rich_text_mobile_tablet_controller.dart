@@ -71,7 +71,7 @@ class RichTextMobileTabletController extends BaseRichTextController {
         openMenuSelectColor(context, selectedTextColor.value,
             onResetToDefault: () {
           selectedTextColor.value = Colors.black;
-          htmlEditorApi?.setColorDocumentForeground(selectedTextColor.value);
+          htmlEditorApi?.setColorTextForeground(selectedTextColor.value);
         }, onSelectColor: (selectedColor) {
           final newColor = selectedColor ?? Colors.black;
           selectedTextColor.value = newColor;
