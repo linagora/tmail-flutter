@@ -59,7 +59,6 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
-import 'package:worker_manager/worker_manager.dart';
 
 class MailboxDashBoardController extends ReloadableController {
 
@@ -644,7 +643,6 @@ class MailboxDashBoardController extends ReloadableController {
     _fileReceiveManagerStreamSubscription.cancel();
     _connectivityStreamSubscription.cancel();
     _progressStateController.close();
-    Executor().dispose();
     Get.delete<DownloadController>();
     super.onClose();
   }

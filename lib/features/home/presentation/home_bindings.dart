@@ -19,7 +19,6 @@ import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_isolate_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc_repository_impl.dart';
@@ -33,6 +32,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
+import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
 class HomeBindings extends BaseBindings {
@@ -43,7 +43,7 @@ class HomeBindings extends BaseBindings {
         Get.find<GetAuthenticatedAccountInteractor>(),
         Get.find<DynamicUrlInterceptors>(),
         Get.find<AuthorizationInterceptors>(),
-        Get.find<AuthorizationIsolateInterceptors>(),
+        Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag),
         Get.find<CleanupEmailCacheInteractor>(),
         Get.find<EmailReceiveManager>(),
         Get.find<CleanupRecentSearchCacheInteractor>(),
