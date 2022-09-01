@@ -108,28 +108,26 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
   Widget _buildAppBar(BuildContext context) {
     return Obx(() => Padding(
       padding: const EdgeInsets.only(top: 6),
-      child: (AppBarMailWidgetBuilder(
-              context,
-              imagePaths,
-              responsiveUtils,
-              controller.currentEmail,
-              controller.currentMailbox)
-          ..onBackActionClick(() => controller.closeEmailView(context))
-          ..addOnEmailActionClick((email, action) =>
-              controller.handleEmailAction(context, email, action))
-          ..addOnMoreActionClick((email, position) {
-            if (responsiveUtils.isMobile(context)) {
-              controller.openContextMenuAction(
-                  context,
-                  _emailActionMoreActionTile(context, email));
-            } else {
-              controller.openPopupMenuAction(
-                  context,
-                  position,
-                  _popupMenuEmailActionTile(context, email));
-            }
-          }))
-        .build()));
+      child: AppBarMailWidgetBuilder(
+        controller.currentEmail,
+        controller.currentMailbox,
+        onBackActionClick: () => controller.closeEmailView(context),
+        onEmailActionClick: (email, action) =>
+            controller.handleEmailAction(context, email, action),
+        onMoreActionClick: (email, position) {
+          if (responsiveUtils.isMobile(context)) {
+            controller.openContextMenuAction(
+                context,
+                _emailActionMoreActionTile(context, email));
+          } else {
+            controller.openPopupMenuAction(
+                context,
+                position,
+                _popupMenuEmailActionTile(context, email));
+          }
+        }
+      )
+    ));
   }
 
   Widget _buildBottomBar(BuildContext context) {
