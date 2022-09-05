@@ -2178,4 +2178,24 @@ class AppLocalizations {
       'Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.',
       name: 'emailRuleSettingExplanation');
   }
+
+  String messageConfirmationDialogDeleteEmailRule(String ruleName) {
+    return Intl.message(
+        'Do you want to delete rule "$ruleName"?',
+        name: 'messageConfirmationDialogDeleteEmailRule',
+        args: [ruleName]
+    );
+  }
+
+  String get deleteEmailRule {
+    return Intl.message(
+        'Delete rule',
+        name: 'deleteEmailRule');
+  }
+
+  String get toastMessageDeleteEmailRuleSuccessfully {
+    return Intl.message(
+        'The rule has been removed.',
+        name: 'toastMessageDeleteEmailRuleSuccessfully');
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-08-24T12:13:35.492924",
+  "@@last_modified": "2022-09-05T09:25:59.780036",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2104,6 +2104,28 @@
   },
   "emailRuleSettingExplanation": "Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.",
   "@emailRuleSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogDeleteEmailRule": "Do you want to delete rule \"{ruleName}\"?",
+  "@messageConfirmationDialogDeleteEmailRule": {
+    "type": "text",
+    "placeholders_order": [
+      "ruleName"
+    ],
+    "placeholders": {
+      "ruleName": {}
+    }
+  },
+  "deleteEmailRule": "Delete rule",
+  "@deleteEmailRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageDeleteEmailRuleSuccessfully": "The rule has been removed.",
+  "@toastMessageDeleteEmailRuleSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
