@@ -1,11 +1,15 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
+import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/extensions/list_tmail_rule_extensions.dart';
@@ -38,6 +42,7 @@ class EmailRulesController extends BaseController {
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final _imagePaths = Get.find<ImagePaths>();
   final _appToast = Get.find<AppToast>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final listEmailRule = <TMailRule>[].obs;
 
@@ -56,10 +61,7 @@ class EmailRulesController extends BaseController {
           listEmailRule.addAll(success.rules!);
         }
       } else if (success is DeleteEmailRuleSuccess) {
-        if (success.rules?.isNotEmpty == true) {
-          listEmailRule.clear();
-          listEmailRule.addAll(success.rules!);
-        }
+        _handleDeleteEmailRuleSuccess(success);
       } else if (success is CreateNewRuleFilterSuccess) {
         _createNewRuleFilterSuccess(success);
       } else if (success is EditEmailRuleFilterSuccess) {
@@ -159,12 +161,67 @@ class EmailRulesController extends BaseController {
     }
   }
 
-  void deleteEmailRule(TMailRule emailRule) {
+  void deleteEmailRule(BuildContext context, TMailRule emailRule) {
+    if (_responsiveUtils.isMobile(context)) {
+      (ConfirmationDialogActionSheetBuilder(context)
+        ..messageText(AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name))
+        ..onCancelAction(AppLocalizations.of(context).cancel, () =>
+            popBack())
+        ..onConfirmAction(AppLocalizations.of(context).delete, () {
+          _handleDeleteEmailRuleAction(emailRule);
+        }))
+      .show();
+    } else {
+      showDialog(
+          context: context,
+          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+          builder: (BuildContext context) =>
+              PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
+                ..title(AppLocalizations.of(context).deleteEmailRule)
+                ..content(AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name))
+                ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog,
+                    fit: BoxFit.fill))
+                ..marginIcon(EdgeInsets.zero)
+                ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+                ..styleTextConfirmButton(const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                    color: AppColor.colorActionDeleteConfirmDialog))
+                ..onCloseButtonAction(() => popBack())
+                ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
+                  _handleDeleteEmailRuleAction(emailRule);
+                })
+                ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
+                    popBack()))
+              .build()));
+    }
+  }
+
+  void _handleDeleteEmailRuleAction(TMailRule emailRule) {
+    popBack();
+
     final deleteEmailRuleRequest = DeleteEmailRuleRequest(
       emailRuleDelete : emailRule,
       currentEmailRules: listEmailRule,
     );
-    consumeState(_deleteEmailRuleInteractor.execute(_accountDashBoardController.accountId.value!, deleteEmailRuleRequest));
+    consumeState(_deleteEmailRuleInteractor.execute(
+        _accountDashBoardController.accountId.value!,
+        deleteEmailRuleRequest));
+  }
+
+  void _handleDeleteEmailRuleSuccess(DeleteEmailRuleSuccess success) {
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastWithIcon(
+        currentOverlayContext!,
+        message: AppLocalizations.of(currentContext!).toastMessageDeleteEmailRuleSuccessfully,
+        icon: _imagePaths.icSelected,
+      );
+    }
+
+    if (success.rules?.isNotEmpty == true) {
+      listEmailRule.clear();
+      listEmailRule.addAll(success.rules!);
+    }
   }
 
   void _getAllRules() {
@@ -193,8 +250,8 @@ class EmailRulesController extends BaseController {
       textStyleAction: const TextStyle(
           fontSize: 17, color: AppColor.colorActionDeleteConfirmDialog),
     )..onActionClick((rule) {
-      deleteEmailRule(rule);
       popBack();
+      deleteEmailRule(context, rule);
     })).build();
   }
 
