@@ -50,6 +50,11 @@ class HiveCacheConfig {
     return encryptionKey;
   }
 
+  static Future<bool> removeEncryptionKey() {
+    final sharedPreference = Get.find<SharedPreferences>();
+    return sharedPreference.remove(LoginConstant.keyHiveEncrypt);
+  }
+
   void registerAdapter() {
     Hive.registerAdapter(MailboxCacheAdapter());
     Hive.registerAdapter(MailboxRightsCacheAdapter());
