@@ -22,7 +22,6 @@ class AuthenticationInteractor {
         credentialRepository.saveBaseUrl(baseUrl),
         credentialRepository.storeAuthenticationInfo(
             AuthenticationInfoCache(userName.userName, password.value)),
-        credentialRepository.saveUserProfile(user),
         _accountRepository.setCurrentAccount(Account(
           userName.userName,
           AuthenticationType.basic,

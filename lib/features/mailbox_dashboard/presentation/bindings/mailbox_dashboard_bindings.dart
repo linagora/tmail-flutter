@@ -55,7 +55,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/se
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/search_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/search_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_user_profile_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
@@ -159,7 +158,6 @@ class MailboxDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => GetUserProfileInteractor(Get.find<CredentialRepository>()));
     Get.lazyPut(() => RemoveEmailDraftsInteractor(
         Get.find<EmailRepository>(),
         Get.find<MailboxRepository>()));
