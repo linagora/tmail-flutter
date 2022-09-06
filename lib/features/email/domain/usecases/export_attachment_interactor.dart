@@ -39,10 +39,7 @@ class ExportAttachmentInteractor {
           if (account.authenticationType == AuthenticationType.oidc)
             _authenticationOIDCRepository.getStoredTokenOIDC(account.id)
           else
-           ...[
-             credentialRepository.getUserName(),
-             credentialRepository.getPassword()
-            ]
+            credentialRepository.getAuthenticationInfoStored()
         ], eagerError: true
       ).then((List responses) async {
         AccountRequest accountRequest;

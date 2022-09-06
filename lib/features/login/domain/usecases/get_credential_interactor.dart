@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/uri_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
@@ -15,10 +16,12 @@ class GetCredentialInteractor {
   Future<Either<Failure, Success>> execute() async {
     try {
       final baseUrl = await credentialRepository.getBaseUrl();
-      final userName = await credentialRepository.getUserName();
-      final password = await credentialRepository.getPassword();
-      if (isCredentialValid(baseUrl)) {
-        return Right(GetCredentialViewState(baseUrl, userName, password));
+      final authenticationInfo = await credentialRepository.getAuthenticationInfoStored();
+      if (isCredentialValid(baseUrl) && authenticationInfo != null) {
+        return Right(GetCredentialViewState(
+            baseUrl,
+            UserName(authenticationInfo.username),
+            Password(authenticationInfo.password)));
       } else {
         return Left(GetCredentialFailure(BadCredentials()));
       }
