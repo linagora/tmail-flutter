@@ -3,6 +3,7 @@ import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/caching/account_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/authentication_info_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
@@ -11,6 +12,7 @@ import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/token_oidc_cache_client.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_search_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
@@ -40,7 +42,9 @@ class LocalBindings extends Bindings {
     Get.put(TokenOidcCacheClient());
     Get.put(TokenOidcCacheManager(Get.find<TokenOidcCacheClient>()));
     Get.put(AccountCacheClient());
+    Get.put(AuthenticationInfoCacheClient());
     Get.put(AccountCacheManager(Get.find<AccountCacheClient>()));
+    Get.put(AuthenticationInfoCacheManager(Get.find<AuthenticationInfoCacheClient>()));
     Get.put(OidcConfigurationCacheManager(Get.find<SharedPreferences>()));
     Get.put(LanguageCacheManager(Get.find<SharedPreferences>()));
     Get.put(CachingManager(
@@ -50,6 +54,7 @@ class LocalBindings extends Bindings {
       Get.find<RecentSearchCacheClient>(),
       Get.find<TokenOidcCacheClient>(),
       Get.find<AccountCacheClient>(),
+      Get.find<AuthenticationInfoCacheClient>(),
     ));
   }
 }
