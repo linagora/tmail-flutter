@@ -173,7 +173,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             : _buildListButtonTopBar(context);
         }
       }),
-      const SizedBox(width: 16),
+      const SizedBox(width: 48),
       Obx(() => !searchController.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
       Obx(() {
         if (searchController.isSearchActive()) {
@@ -442,12 +442,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   Widget _buildSearchForm(BuildContext context) {
     return Row(
         children: [
-          buildIconWeb(
-              icon: SvgPicture.asset(
-                  imagePaths.icBack,
-                  color: AppColor.colorTextButton,
-                  fit: BoxFit.fill),
-              onTap: () => controller.dispatchAction(DisableSearchEmailAction())),
           Expanded(child: Container(
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(10)),
