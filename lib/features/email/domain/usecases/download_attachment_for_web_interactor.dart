@@ -46,10 +46,7 @@ class DownloadAttachmentForWebInteractor {
         if (currentAccount.authenticationType == AuthenticationType.oidc)
           _authenticationOIDCRepository.getStoredTokenOIDC(currentAccount.id)
         else
-          ...[
-            credentialRepository.getUserName(),
-            credentialRepository.getPassword()
-          ]
+          credentialRepository.getAuthenticationInfoStored()
       ], eagerError: true).then((List responses) async {
         AccountRequest accountRequest;
 
