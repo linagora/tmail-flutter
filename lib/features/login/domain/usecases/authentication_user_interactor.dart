@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
@@ -19,8 +20,8 @@ class AuthenticationInteractor {
       final user = await authenticationRepository.authenticationUser(baseUrl, userName, password);
       await Future.wait([
         credentialRepository.saveBaseUrl(baseUrl),
-        credentialRepository.saveUserName(userName),
-        credentialRepository.savePassword(password),
+        credentialRepository.storeAuthenticationInfo(
+            AuthenticationInfoCache(userName.userName, password.value)),
         credentialRepository.saveUserProfile(user),
         _accountRepository.setCurrentAccount(Account(
           userName.userName,
