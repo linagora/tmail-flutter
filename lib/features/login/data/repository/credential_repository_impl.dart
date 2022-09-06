@@ -33,33 +33,13 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<Password> getPassword() async {
-    return Password(sharedPreferences.getString(LoginConstant.keyPassword) ?? '');
-  }
-
-  @override
   Future removePassword() async {
     await sharedPreferences.remove(LoginConstant.keyPassword);
   }
 
   @override
-  Future savePassword(Password password) async {
-    await sharedPreferences.setString(LoginConstant.keyPassword, password.value);
-  }
-
-  @override
-  Future<UserName> getUserName() async {
-    return UserName(sharedPreferences.getString(LoginConstant.keyUserName) ?? '');
-  }
-
-  @override
   Future removeUserName() async {
     await sharedPreferences.remove(LoginConstant.keyUserName);
-  }
-
-  @override
-  Future saveUserName(UserName userName) async {
-    await sharedPreferences.setString(LoginConstant.keyUserName, userName.userName);
   }
 
   @override
@@ -84,5 +64,10 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<void> storeAuthenticationInfo(AuthenticationInfoCache authenticationInfoCache) {
     return _authenticationInfoCacheManager.storeAuthenticationInfo(authenticationInfoCache);
+  }
+
+  @override
+  Future<AuthenticationInfoCache?> getAuthenticationInfoStored() {
+    return _authenticationInfoCacheManager.getAuthenticationInfoStored();
   }
 }

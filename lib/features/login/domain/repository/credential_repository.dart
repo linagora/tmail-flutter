@@ -10,11 +10,7 @@ abstract class CredentialRepository {
 
   Future removeUserName();
 
-  Future<UserName> getUserName();
-
   Future removePassword();
-
-  Future<Password> getPassword();
 
   Future saveUserProfile(UserProfile userProfile);
 
@@ -23,4 +19,6 @@ abstract class CredentialRepository {
   Future<UserProfile> getUserProfile();
 
   Future<void> storeAuthenticationInfo(AuthenticationInfoCache authenticationInfoCache);
+
+  Future<AuthenticationInfoCache?> getAuthenticationInfoStored();
 }
