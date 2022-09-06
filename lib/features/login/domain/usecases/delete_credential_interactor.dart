@@ -14,8 +14,7 @@ class DeleteCredentialInteractor {
     try {
       await Future.wait([
         credentialRepository.removeBaseUrl(),
-        credentialRepository.removeUserName(),
-        credentialRepository.removePassword(),
+        credentialRepository.removeAuthenticationInfo(),
         credentialRepository.removeUserProfile(),
       ]);
       return Right(DeleteCredentialSuccess());

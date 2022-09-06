@@ -33,16 +33,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future removePassword() async {
-    await sharedPreferences.remove(LoginConstant.keyPassword);
-  }
-
-  @override
-  Future removeUserName() async {
-    await sharedPreferences.remove(LoginConstant.keyUserName);
-  }
-
-  @override
   Future<UserProfile> getUserProfile() async {
     final json = sharedPreferences.getString(LoginConstant.keyUserProfile) ?? '';
     Map<String, dynamic> mapObject = jsonDecode(json);
@@ -69,5 +59,10 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<AuthenticationInfoCache?> getAuthenticationInfoStored() {
     return _authenticationInfoCacheManager.getAuthenticationInfoStored();
+  }
+
+  @override
+  Future<void> removeAuthenticationInfo() {
+    return _authenticationInfoCacheManager.removeAuthenticationInfo();
   }
 }

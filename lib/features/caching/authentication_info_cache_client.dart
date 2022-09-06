@@ -11,6 +11,7 @@ class AuthenticationInfoCacheClient extends HiveCacheClient<AuthenticationInfoCa
   @override
   Future<void> clearAllData() {
     return Future.sync(() async {
+      await HiveCacheConfig.removeEncryptionKey();
       final boxAuthenticationInfo = await openBox();
       return boxAuthenticationInfo.clear();
     }).catchError((error) {
