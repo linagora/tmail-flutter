@@ -536,7 +536,6 @@ class ComposerController extends BaseController {
       listReplyToEmailAddress = identitySelected.value!.replyTo!;
     }
     final generatePartId = PartId(_uuid.v1());
-    final generateBlobId = Id(_uuid.v1());
 
     final attachments = <EmailBodyPart>{};
     attachments.addAll(uploadController.generateAttachments() ?? []);
@@ -571,7 +570,6 @@ class ComposerController extends BaseController {
       htmlBody: {
         EmailBodyPart(
           partId: generatePartId,
-          blobId: generateBlobId,
           type: MediaType.parse('text/html')
         )},
       bodyValues: {
