@@ -1,10 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
+import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/token_oidc_cache.dart';
+import 'package:tmail_ui_user/features/login/data/utils/login_constant.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_rights_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
@@ -31,6 +37,19 @@ class HiveCacheConfig {
     }
   }
 
+  static Future<Uint8List?> getEncryptionKey() async {
+    final sharedPreference = Get.find<SharedPreferences>();
+    final containsEncryptionKey = sharedPreference.containsKey(LoginConstant.keyHiveEncrypt);
+    if (!containsEncryptionKey) {
+      final key = Hive.generateSecureKey();
+      await sharedPreference.setString(LoginConstant.keyHiveEncrypt, base64UrlEncode(key));
+    }
+    final keyStored = sharedPreference.getString(LoginConstant.keyHiveEncrypt) ?? '';
+    final encryptionKey = base64Url.decode(keyStored);
+    log('HiveCacheConfig::getEncryptionKey(): Encryption key: $encryptionKey');
+    return encryptionKey;
+  }
+
   void registerAdapter() {
     Hive.registerAdapter(MailboxCacheAdapter());
     Hive.registerAdapter(MailboxRightsCacheAdapter());
@@ -41,6 +60,7 @@ class HiveCacheConfig {
     Hive.registerAdapter(RecentSearchCacheAdapter());
     Hive.registerAdapter(TokenOidcCacheAdapter());
     Hive.registerAdapter(AccountCacheAdapter());
+    Hive.registerAdapter(AuthenticationInfoCacheAdapter());
   }
 
   Future closeHive() async {

@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication
 import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_oidc_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_account_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
@@ -110,7 +111,9 @@ class LoginBindings extends BaseBindings {
 
   @override
   void bindingsRepositoryImpl() {
-    Get.lazyPut(() => CredentialRepositoryImpl(Get.find<SharedPreferences>()));
+    Get.lazyPut(() => CredentialRepositoryImpl(
+        Get.find<SharedPreferences>(),
+        Get.find<AuthenticationInfoCacheManager>()));
     Get.lazyPut(() => AuthenticationRepositoryImpl(Get.find<AuthenticationDataSource>()));
     Get.lazyPut(() => AuthenticationOIDCRepositoryImpl(Get.find<AuthenticationOIDCDataSource>()));
     Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));

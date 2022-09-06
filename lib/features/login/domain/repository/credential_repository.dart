@@ -1,4 +1,5 @@
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 
 abstract class CredentialRepository {
   Future saveBaseUrl(Uri baseUrl);
@@ -7,13 +8,9 @@ abstract class CredentialRepository {
 
   Future<Uri> getBaseUrl();
 
-  Future saveUserName(UserName userName);
-
   Future removeUserName();
 
   Future<UserName> getUserName();
-
-  Future savePassword(Password password);
 
   Future removePassword();
 
@@ -24,4 +21,6 @@ abstract class CredentialRepository {
   Future removeUserProfile();
 
   Future<UserProfile> getUserProfile();
+
+  Future<void> storeAuthenticationInfo(AuthenticationInfoCache authenticationInfoCache);
 }
