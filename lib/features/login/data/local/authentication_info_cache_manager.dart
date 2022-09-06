@@ -11,4 +11,8 @@ class AuthenticationInfoCacheManager {
         AuthenticationInfoCache.keyCacheValue,
         authenticationInfoCache);
   }
+
+  Future<AuthenticationInfoCache?> getAuthenticationInfoStored() {
+    return _authenticationInfoCacheClient.getItem(AuthenticationInfoCache.keyCacheValue);
+  }
 }
