@@ -431,8 +431,10 @@ class ThreadController extends BaseController {
             sort: _sortOrder,
             propertiesCreated: ThreadConstants.propertiesDefault,
             propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-            inMailboxId: _currentMailboxId,
-            filterOption: mailboxDashBoardController.filterMessageOption.value
+            emailFilter: EmailFilter(
+              filter: _getFilterCondition(),
+              filterOption: mailboxDashBoardController.filterMessageOption.value,
+              mailboxId: _currentMailboxId),
         ));
       }
     }
@@ -446,6 +448,7 @@ class ThreadController extends BaseController {
             _accountId!,
             limit: ThreadConstants.defaultLimit,
             sort: _sortOrder,
+            filterOption: mailboxDashBoardController.filterMessageOption.value,
             filter: _getFilterCondition(isLoadMore: true),
             properties: ThreadConstants.propertiesDefault,
             lastEmailId: emailList.last.id)
@@ -453,9 +456,15 @@ class ThreadController extends BaseController {
     }
   }
 
+  bool _ableAppendLoadMore(List<PresentationEmail> listEmail) {
+    return !(emailList.where((email) => (email.mailboxIds != null && !email.mailboxIds!.keys.contains(currentMailbox?.id)) || emailList.contains(email)).isNotEmpty);
+  }
+
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
     if (success.emailList.isNotEmpty) {
-      emailList.addAll(success.emailList);
+      if (_ableAppendLoadMore(success.emailList)){
+        emailList.addAll(success.emailList);
+      }
     } else {
       canLoadMore = false;
     }
