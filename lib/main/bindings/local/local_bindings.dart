@@ -56,10 +56,8 @@ class LocalBindings extends Bindings {
       Get.find<StateCacheClient>(),
       Get.find<EmailCacheClient>(),
       Get.find<RecentSearchCacheClient>(),
-      Get.find<TokenOidcCacheClient>(),
       Get.find<AccountCacheClient>(),
       Get.find<EncryptionKeyCacheClient>(),
-      Get.find<AuthenticationInfoCacheClient>(),
     ));
   }
 }
