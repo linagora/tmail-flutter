@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
@@ -44,7 +45,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   late double actualHeight;
   double minHeight = 100;
   double minWidth = 300;
-  final double maxHeightForAndroid = 6000;
+  late double maxHeightForAndroid;
   String? _htmlData;
   late WebViewController _webViewController;
   bool _isLoading = true;
@@ -53,6 +54,8 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   void initState() {
     super.initState();
     actualHeight = widget.heightContent;
+    maxHeightForAndroid = window.physicalSize.height;
+    log('_HtmlContentViewState::initState(): maxHeightForAndroid: $maxHeightForAndroid');
     _htmlData = _generateHtmlDocument(widget.contentHtml);
   }
 
@@ -64,7 +67,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      log('_HtmlContentViewState::build(): maxWidth: ${constraints.maxWidth}');
       return Stack(
         children: [
           SizedBox(
@@ -109,7 +111,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
             if (scrollHeightWithBuffer > minHeight) {
               setState(() {
                 //TODO: It hotfix for web_view crash on android device and waiting lib web_view update to fix this issue
-                if(Platform.isAndroid && scrollHeightWithBuffer > maxHeightForAndroid){
+                if (Platform.isAndroid && scrollHeightWithBuffer > maxHeightForAndroid){
                   actualHeight = maxHeightForAndroid;
                 } else {
                   actualHeight = scrollHeightWithBuffer;
