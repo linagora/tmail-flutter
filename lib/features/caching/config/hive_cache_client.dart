@@ -1,5 +1,8 @@
 
+import 'dart:typed_data';
+
 import 'package:hive/hive.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 
 abstract class HiveCacheClient<T> {
 
@@ -32,4 +35,8 @@ abstract class HiveCacheClient<T> {
   }
 
   Future<void> clearAllData();
+
+  Future<Uint8List?> getEncryptionKey() {
+    return HiveCacheConfig.getEncryptionKey();
+  }
 }

@@ -24,6 +24,7 @@ void main() async {
     ));
     await MainBindings().dependencies();
     await HiveCacheConfig().setUp();
+    await HiveCacheConfig.initializeEncryptionKey();
     await Executor().warmUp();
     await dotenv.load(fileName: 'env.file');
     runApp(const TMailApp());

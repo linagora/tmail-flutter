@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 
 class AuthenticationInfoCacheClient extends HiveCacheClient<AuthenticationInfoCache> {
@@ -11,7 +10,6 @@ class AuthenticationInfoCacheClient extends HiveCacheClient<AuthenticationInfoCa
   @override
   Future<void> clearAllData() {
     return Future.sync(() async {
-      await HiveCacheConfig.removeEncryptionKey();
       final boxAuthenticationInfo = await openBox();
       return boxAuthenticationInfo.clear();
     }).catchError((error) {
@@ -101,7 +99,7 @@ class AuthenticationInfoCacheClient extends HiveCacheClient<AuthenticationInfoCa
   @override
   Future<Box<AuthenticationInfoCache>> openBox() async {
     return Future.sync(() async {
-      final encryptionKey = await HiveCacheConfig.getEncryptionKey();
+      final encryptionKey = await getEncryptionKey();
       return Hive.openBox<AuthenticationInfoCache>(
           tableName,
           encryptionCipher: HiveAesCipher(encryptionKey!));
