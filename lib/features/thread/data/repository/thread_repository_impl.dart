@@ -1,7 +1,6 @@
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart' as dartz;
-import 'package:flutter/foundation.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -249,9 +248,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   @override
   Stream<EmailsResponse> loadMoreEmails(GetEmailRequest emailRequest) async* {
-    bench.start('loadMoreEmails in computed');
-    final response = await compute(_getAllEmailsWithoutLastEmailId, emailRequest);
-    bench.end('loadMoreEmails in computed');
+    final response = await _getAllEmailsWithoutLastEmailId(emailRequest);
     await _updateEmailCache(newCreated: response.emailList);
     yield response;
   }
