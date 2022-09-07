@@ -1,14 +1,10 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
-import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -92,15 +88,11 @@ class MailboxBindings extends BaseBindings {
 
   @override
   void bindingsRepository() {
-    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
   }
 
   @override
   void bindingsRepositoryImpl() {
-    Get.lazyPut(() => CredentialRepositoryImpl(
-        Get.find<SharedPreferences>(),
-        Get.find<AuthenticationInfoCacheManager>()));
     Get.lazyPut(() => MailboxRepositoryImpl(
       {
         DataSourceType.network: Get.find<MailboxDataSource>(),

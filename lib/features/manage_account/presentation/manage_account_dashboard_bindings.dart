@@ -84,8 +84,9 @@ class ManageAccountDashBoardBindings extends BaseBindings {
         Get.find<AccountRepository>(),
         Get.find<AuthenticationOIDCRepository>(),
     ));
-    Get.lazyPut(() => DeleteAuthorityOidcInteractor(Get.find<AuthenticationOIDCRepository>()));
-    Get.lazyPut(() => GetCredentialInteractor(Get.find<CredentialRepository>()));
+    Get.lazyPut(() => DeleteAuthorityOidcInteractor(
+        Get.find<AuthenticationOIDCRepository>(),
+        Get.find<CredentialRepository>()));
     Get.lazyPut(() => GetStoredTokenOidcInteractor(
       Get.find<AuthenticationOIDCRepository>(),
       Get.find<CredentialRepository>(),

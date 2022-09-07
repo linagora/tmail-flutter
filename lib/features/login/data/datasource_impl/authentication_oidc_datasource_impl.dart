@@ -101,4 +101,9 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   Future<String?> getAuthenticationInfo() {
     return _authenticationClient.getAuthenticationInfo();
   }
+
+  @override
+  Future<void> deleteTokenOIDC() {
+    return _tokenOidcCacheManager.deleteTokenOidc();
+  }
 }

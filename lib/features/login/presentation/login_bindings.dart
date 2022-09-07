@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_datasource.dart';
@@ -9,7 +8,6 @@ import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication
 import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_oidc_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_account_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
@@ -18,7 +16,6 @@ import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart'
 import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/data/repository/authentication_repository_impl.dart';
-import 'package:tmail_ui_user/features/login/data/repository/credential_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
@@ -103,7 +100,6 @@ class LoginBindings extends BaseBindings {
 
   @override
   void bindingsRepository() {
-    Get.lazyPut<CredentialRepository>(() => Get.find<CredentialRepositoryImpl>());
     Get.lazyPut<AuthenticationRepository>(() => Get.find<AuthenticationRepositoryImpl>());
     Get.lazyPut<AuthenticationOIDCRepository>(() => Get.find<AuthenticationOIDCRepositoryImpl>());
     Get.lazyPut<AccountRepository>(() => Get.find<AccountRepositoryImpl>());
@@ -111,9 +107,6 @@ class LoginBindings extends BaseBindings {
 
   @override
   void bindingsRepositoryImpl() {
-    Get.lazyPut(() => CredentialRepositoryImpl(
-        Get.find<SharedPreferences>(),
-        Get.find<AuthenticationInfoCacheManager>()));
     Get.lazyPut(() => AuthenticationRepositoryImpl(Get.find<AuthenticationDataSource>()));
     Get.lazyPut(() => AuthenticationOIDCRepositoryImpl(Get.find<AuthenticationOIDCDataSource>()));
     Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));

@@ -1,8 +1,6 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/session/data/datasource/session_datasource.dart';
 import 'package:tmail_ui_user/features/session/data/datasource_impl/session_datasource_impl.dart';
 import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
@@ -31,7 +29,6 @@ class SessionBindings extends BaseBindings {
   @override
   void bindingsInteractor() {
     Get.put(GetSessionInteractor(Get.find<SessionRepository>()));
-    Get.put(DeleteCredentialInteractor(Get.find<CredentialRepository>()));
   }
 
   @override
