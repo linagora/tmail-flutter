@@ -153,7 +153,6 @@ abstract class ReloadableController extends BaseController {
   void handleLogoutOidcSuccess(LogoutOidcSuccess success) async {
     log('ReloadableController::handleLogoutOidcSuccess(): $success');
     await Future.wait([
-      _deleteCredentialInteractor.execute(),
       _deleteAuthorityOidcInteractor.execute(),
       _cachingManager.clearAll(),
       _languageCacheManager.removeLanguage(),

@@ -31,4 +31,8 @@ class TokenOidcCacheManager {
     log('TokenOidcCacheManager::persistOneTokenOidc(): token: ${tokenOIDC.token}');
     await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
   }
+
+  Future<void> deleteTokenOidc() async {
+    await _tokenOidcCacheClient.clearAllData();
+  }
 }
