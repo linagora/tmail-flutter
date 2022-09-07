@@ -6,11 +6,11 @@ import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
+import 'package:tmail_ui_user/features/login/data/model/encryption_key_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/token_oidc_cache.dart';
-import 'package:tmail_ui_user/features/login/data/utils/login_constant.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_rights_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
@@ -37,22 +37,32 @@ class HiveCacheConfig {
     }
   }
 
-  static Future<Uint8List?> getEncryptionKey() async {
-    final sharedPreference = Get.find<SharedPreferences>();
-    final containsEncryptionKey = sharedPreference.containsKey(LoginConstant.keyHiveEncrypt);
-    if (!containsEncryptionKey) {
-      final key = Hive.generateSecureKey();
-      await sharedPreference.setString(LoginConstant.keyHiveEncrypt, base64UrlEncode(key));
+  static Future<void> initializeEncryptionKey() async {
+    final encryptionKeyCacheManager = Get.find<EncryptionKeyCacheManager>();
+    final encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
+    if (encryptionKeyCache == null) {
+      final secureKey = Hive.generateSecureKey();
+      final secureKeyEncode = base64UrlEncode(secureKey);
+      log('HiveCacheConfig::_initializeEncryptionKey(): secureKeyEncode: $secureKeyEncode');
+      await encryptionKeyCacheManager.storeEncryptionKey(EncryptionKeyCache(secureKeyEncode));
     }
-    final keyStored = sharedPreference.getString(LoginConstant.keyHiveEncrypt) ?? '';
-    final encryptionKey = base64Url.decode(keyStored);
-    log('HiveCacheConfig::getEncryptionKey(): Encryption key: $encryptionKey');
-    return encryptionKey;
   }
 
-  static Future<bool> removeEncryptionKey() {
-    final sharedPreference = Get.find<SharedPreferences>();
-    return sharedPreference.remove(LoginConstant.keyHiveEncrypt);
+  static Future<Uint8List?> getEncryptionKey() async {
+    final encryptionKeyCacheManager = Get.find<EncryptionKeyCacheManager>();
+    var encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
+    if (encryptionKeyCache == null) {
+      await initializeEncryptionKey();
+      encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
+    }
+
+    if (encryptionKeyCache != null) {
+      log('HiveCacheConfig::getEncryptionKey(): encryptionKey: ${encryptionKeyCache.value}');
+      final encryptionKey = base64Url.decode(encryptionKeyCache.value);
+      return encryptionKey;
+    } else {
+      return null;
+    }
   }
 
   void registerAdapter() {
@@ -65,6 +75,7 @@ class HiveCacheConfig {
     Hive.registerAdapter(RecentSearchCacheAdapter());
     Hive.registerAdapter(TokenOidcCacheAdapter());
     Hive.registerAdapter(AccountCacheAdapter());
+    Hive.registerAdapter(EncryptionKeyCacheAdapter());
     Hive.registerAdapter(AuthenticationInfoCacheAdapter());
   }
 
