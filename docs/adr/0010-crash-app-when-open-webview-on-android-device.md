@@ -8,23 +8,21 @@ Open
 
 ## Context
 
-- When using a webview inside of a scrollview,
-some content renders a completely distorted page and some content even crashes the app.
-This problem only affects Android the same app, on iOS the same code results in a correclty rendered web page.
-Rendering the same content also works fine on Android, when not embedding the webview inside of a scrollview.
+- When using a `WebView` inside of a `Scrollview`, some content renders a completely distorted page and some content even crashes the app.
+This problem only affects Android the same app, on iOS the same code results in a correctly rendered web page.
+Rendering the same content also works fine on Android, when not embedding the `WebView` inside of a scrollview.
 
-- Flutter version has problem: 3.0.3
+- Flutter version has problem: >= `3.0.0`
+- Library `webview_flutter` version used: `3.0.0`
 
 ## Decision
 
-- When using a webview inside of a scrollview,
-some content renders a completely distorted page and some content even crashes the app.
-This problem only affects Android the same app, on iOS the same code results in a correclty rendered web page.
-Rendering the same content also works fine on Android, when not embedding the webview inside of a scrollview.
+- Temporary solution: Set maximum height of `WebView` on `Android` device equal to device physical size height
 
 ## Consequences
 
-- From now we waiting web_view lib update and for android device if content of web_view has max height is 6000,
+- Email content is displayed well on `Android` devices. No more distortion and crashes
+- The content scroll bar appears inside the email detail display.
 
 ## Reference
 
