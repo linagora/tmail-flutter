@@ -76,9 +76,9 @@ class PresentationEmail with EquatableMixin {
     return '';
   }
 
-  String getEmailTitle() => subject ?? '';
+  String getEmailTitle() => subject?.trim() ?? '';
 
-  String getPartialContent() => preview ?? '';
+  String getPartialContent() => preview?.trim() ?? '';
 
   bool get hasRead => keywords?.containsKey(KeyWordIdentifier.emailSeen) == true;
 
