@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/login/data/network/config/authorization_i
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
@@ -47,7 +48,9 @@ class SessionPageBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => DeleteAuthorityOidcInteractor(Get.find<AuthenticationOIDCRepository>()));
+    Get.lazyPut(() => DeleteAuthorityOidcInteractor(
+        Get.find<AuthenticationOIDCRepository>(),
+        Get.find<CredentialRepository>()));
   }
 
   @override

@@ -10,6 +10,8 @@ abstract class AuthenticationOIDCDataSource {
 
   Future<void> persistTokenOIDC(TokenOIDC tokenOidc);
 
+  Future<void> deleteTokenOIDC();
+
   Future<TokenOIDC> getStoredTokenOIDC(String tokenIdHash);
 
   Future<void> persistAuthorityOidc(String authority);

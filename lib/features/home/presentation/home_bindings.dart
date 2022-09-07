@@ -91,7 +91,9 @@ class HomeBindings extends BaseBindings {
     ));
     Get.lazyPut(() => CleanupEmailCacheInteractor(Get.find<CleanupRepository>()));
     Get.lazyPut(() => CleanupRecentSearchCacheInteractor(Get.find<CleanupRepository>()));
-    Get.lazyPut(() => DeleteAuthorityOidcInteractor(Get.find<AuthenticationOIDCRepository>()));
+    Get.lazyPut(() => DeleteAuthorityOidcInteractor(
+        Get.find<AuthenticationOIDCRepository>(),
+        Get.find<CredentialRepository>()));
     Get.lazyPut(() => CheckOIDCIsAvailableInteractor(Get.find<AuthenticationOIDCRepository>()));
   }
 
