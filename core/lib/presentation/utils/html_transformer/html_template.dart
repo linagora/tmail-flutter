@@ -26,7 +26,7 @@ String generateHtml(String content, {
   double? minWidth,
   String? styleCSS,
   String? javaScripts,
-  bool? hideScrollBar
+  bool hideScrollBar = true,
 }) {
   return '''
     <!DOCTYPE html>
@@ -40,7 +40,7 @@ String generateHtml(String content, {
         min-width: ${minWidth ?? 0}px;
         overflow: auto;
       }
-      ${hideScrollBar == true ? '''
+      ${hideScrollBar ? '''
         .tmail-content::-webkit-scrollbar {
           display: none;
         }
