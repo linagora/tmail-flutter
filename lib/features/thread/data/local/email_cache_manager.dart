@@ -1,5 +1,5 @@
-
 import 'package:core/core.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:model/model.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -21,6 +21,7 @@ class EmailCacheManager {
   Future<List<Email>> getAllEmail({
     MailboxId? inMailboxId,
     Set<Comparator>? sort,
+    UnsignedInt? limit,
     FilterMessageOption filterOption = FilterMessageOption.all
   }) async {
     final emailCacheList = inMailboxId != null
@@ -34,6 +35,10 @@ class EmailCacheManager {
       for (var comparator in sort) {
         emailList.sortBy(comparator);
       }
+    }
+
+    if (limit != null && emailList.length > limit.value.toInt()) {
+      return emailList.getRange(0, limit.value.toInt()).toList();
     }
     return emailList;
   }
