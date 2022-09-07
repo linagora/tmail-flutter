@@ -65,7 +65,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<List<Email>> getAllEmailCache({MailboxId? inMailboxId, Set<Comparator>? sort, FilterMessageOption? filterOption}) {
+  Future<List<Email>> getAllEmailCache({MailboxId? inMailboxId, Set<Comparator>? sort, FilterMessageOption? filterOption, UnsignedInt? limit}) {
     throw UnimplementedError();
   }
 

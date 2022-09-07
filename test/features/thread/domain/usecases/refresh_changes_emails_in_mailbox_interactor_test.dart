@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
@@ -40,7 +41,8 @@ void main() {
           sort: Set()..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
           propertiesCreated: ThreadConstants.propertiesDefault,
           propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-          inMailboxId: MailboxFixtures.inboxMailbox.id
+          emailFilter: EmailFilter(
+            mailboxId: MailboxFixtures.inboxMailbox.id)
       )).thenAnswer((_) => Stream.fromIterable({
         EmailsResponse(
             emailList: {
@@ -59,7 +61,9 @@ void main() {
         sort: Set()..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
         propertiesCreated: ThreadConstants.propertiesDefault,
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        inMailboxId: MailboxFixtures.inboxMailbox.id);
+        emailFilter: EmailFilter(
+          mailboxId: MailboxFixtures.inboxMailbox.id),
+      );
 
       final states = await streamStates.toList();
 

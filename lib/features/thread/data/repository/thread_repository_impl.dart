@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
@@ -47,6 +48,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       mapDataSource[DataSourceType.local]!.getAllEmailCache(
           inMailboxId: emailFilter?.mailboxId,
           sort: sort,
+          limit: limit,
           filterOption: emailFilter?.filterOption),
       stateDataSource.getState(StateType.email)
     ]).then((List response) {
@@ -64,7 +66,14 @@ class ThreadRepositoryImpl extends ThreadRepository {
         sort: sort,
         filter: emailFilter?.filter,
         properties: propertiesCreated);
-
+      if (_isApproveFilterOption(emailFilter?.filterOption, networkEmailResponse.emailList)) {
+        _getFirstPage(
+          accountId,
+          sort: sort,
+          mailboxId: emailFilter?.mailboxId,
+          propertiesCreated: propertiesCreated,
+        );
+      }
       yield networkEmailResponse;
     } else {
       yield localEmailResponse;
@@ -127,6 +136,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       mapDataSource[DataSourceType.local]!.getAllEmailCache(
           inMailboxId: emailFilter?.mailboxId,
           sort: sort,
+          limit: limit,
           filterOption: emailFilter?.filterOption),
       stateDataSource.getState(StateType.email)
     ]).then((List response) {
@@ -134,6 +144,31 @@ class ThreadRepositoryImpl extends ThreadRepository {
     });
 
     yield newEmailResponse;
+  }
+
+  bool _isApproveFilterOption(FilterMessageOption? filterOption, List<Email>? listEmailResponse) {
+    return filterOption != FilterMessageOption.all && listEmailResponse!.isNotEmpty;
+  }
+
+  Future<EmailsResponse> _getFirstPage(
+    AccountId accountId,
+    {
+      Set<Comparator>? sort,
+      MailboxId? mailboxId,
+      Properties? propertiesCreated,
+      Filter? filter,
+    }
+  ) async {
+      final networkEmailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
+        accountId,
+        limit: ThreadConstants.defaultLimit,
+        sort: sort,
+        filter: filter ?? EmailFilterCondition(inMailbox: mailboxId),
+        properties: propertiesCreated,
+      );
+      await _updateEmailCache(newCreated: networkEmailResponse.emailList);
+
+      return networkEmailResponse;
   }
 
   Future<List<Email>?> _combineEmailCache({
@@ -185,19 +220,17 @@ class ThreadRepositoryImpl extends ThreadRepository {
       AccountId accountId,
       State currentState,
       {
-        UnsignedInt? limit,
         Set<Comparator>? sort,
+        EmailFilter? emailFilter,
         Properties? propertiesCreated,
         Properties? propertiesUpdated,
-        MailboxId? inMailboxId,
-        FilterMessageOption? filterOption,
       }
   ) async* {
     log('ThreadRepositoryImpl::refreshChanges(): $currentState');
     final localEmailList = await mapDataSource[DataSourceType.local]!.getAllEmailCache(
-      inMailboxId: inMailboxId,
+      inMailboxId: emailFilter?.mailboxId,
       sort: sort,
-      filterOption: filterOption);
+      filterOption: emailFilter?.filterOption);
 
     EmailChangeResponse? emailChangeResponse;
     bool hasMoreChanges = true;
@@ -237,13 +270,26 @@ class ThreadRepositoryImpl extends ThreadRepository {
     }
 
     final newEmailResponse = await Future.wait([
-      mapDataSource[DataSourceType.local]!.getAllEmailCache(inMailboxId: inMailboxId, sort: sort, filterOption: filterOption),
+      mapDataSource[DataSourceType.local]!.getAllEmailCache(inMailboxId: emailFilter?.mailboxId, sort: sort, filterOption: emailFilter?.filterOption),
       stateDataSource.getState(StateType.email)
     ]).then((List response) {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
-    yield newEmailResponse;
+    if (!newEmailResponse.hasEmails()
+        || (newEmailResponse.emailList?.length ?? 0) < ThreadConstants.defaultLimit.value) {
+      final networkEmailResponse = await _getFirstPage(
+        accountId,
+        sort: sort,
+        filter: emailFilter?.filter,
+        mailboxId: emailFilter?.mailboxId,
+        propertiesCreated: propertiesCreated,
+      );
+
+      yield networkEmailResponse;
+    } else {
+      yield newEmailResponse;
+    }
   }
 
   @override
