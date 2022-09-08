@@ -207,7 +207,10 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         RuleFilterButtonField<PresentationMailbox>(
                           value: controller.mailboxSelected.value,
                           borderColor: _getBorderColorMailboxSelected(),
-                          tapActionCallback: (value) => controller.selectMailbox(context)))),
+                          tapActionCallback: (value) {
+                            FocusScope.of(context).unfocus();
+                            controller.selectMailbox(context);
+                          }))),
                     ])
                   ),
                 ]
@@ -364,7 +367,10 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               RuleFilterButtonField<PresentationMailbox>(
                                 value: controller.mailboxSelected.value,
                                 borderColor: _getBorderColorMailboxSelected(),
-                                tapActionCallback: (value) => controller.selectMailbox(context)))),
+                                tapActionCallback: (value) {
+                                  FocusScope.of(context).unfocus();
+                                  controller.selectMailbox(context);
+                                }))),
                           ])
                       ),
                     ]
@@ -464,12 +470,14 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                                 Obx(() {
                                   return RuleFilterButtonField<rule_condition.Field>(
                                       value: controller.ruleConditionFieldSelected.value,
-                                      tapActionCallback: (value) =>
-                                          controller.openContextMenuAction(
+                                      tapActionCallback: (value) {
+                                        FocusScope.of(context).unfocus();
+                                        controller.openContextMenuAction(
                                             context,
                                             _bottomSheetRuleConditionFieldActionTiles(
                                                 context,
-                                                controller.ruleConditionFieldSelected.value))
+                                                controller.ruleConditionFieldSelected.value));
+                                      }
                                   );
                                 }),
                                 Padding(
@@ -477,12 +485,14 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                                   child: Obx(() {
                                     return RuleFilterButtonField<rule_condition.Comparator>(
                                         value: controller.ruleConditionComparatorSelected.value,
-                                        tapActionCallback: (value) =>
-                                            controller.openContextMenuAction(
-                                                context,
-                                                _bottomSheetRuleConditionComparatorActionTiles(
-                                                    context,
-                                                    controller.ruleConditionComparatorSelected.value))
+                                        tapActionCallback: (value) {
+                                          FocusScope.of(context).unfocus();
+                                          controller.openContextMenuAction(
+                                              context,
+                                              _bottomSheetRuleConditionComparatorActionTiles(
+                                                  context,
+                                                  controller.ruleConditionComparatorSelected.value));
+                                        }
                                     );
                                   }),
                                 ),
@@ -520,12 +530,14 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             Obx(() {
                               return RuleFilterButtonField<EmailRuleFilterAction>(
                                 value: controller.emailRuleFilterActionSelected.value,
-                                tapActionCallback: (value) =>
-                                    controller.openContextMenuAction(
-                                        context,
-                                        _bottomSheetActionRuleFilterActionTiles(
-                                            context,
-                                            controller.emailRuleFilterActionSelected.value))
+                                tapActionCallback: (value) {
+                                  FocusScope.of(context).unfocus();
+                                  controller.openContextMenuAction(
+                                      context,
+                                      _bottomSheetActionRuleFilterActionTiles(
+                                          context,
+                                          controller.emailRuleFilterActionSelected.value));
+                                }
                               );
                             }),
                             Container(
@@ -544,7 +556,10 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             Obx(() => RuleFilterButtonField<PresentationMailbox>(
                               value: controller.mailboxSelected.value,
                               borderColor: _getBorderColorMailboxSelected(),
-                              tapActionCallback: (value) => controller.selectMailbox(context)))
+                              tapActionCallback: (value) {
+                                FocusScope.of(context).unfocus();
+                                controller.selectMailbox(context);
+                              }))
                           ])
                       ),
                     ]
