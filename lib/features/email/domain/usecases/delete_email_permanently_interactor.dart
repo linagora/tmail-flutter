@@ -14,6 +14,8 @@ class DeleteEmailPermanentlyInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, EmailId emailId) async* {
     try {
+      yield Right<Failure, Success>(StartDeleteEmailPermanently());
+
       final listState = await Future.wait([
         _mailboxRepository.getMailboxState(),
         _emailRepository.getEmailState(),
