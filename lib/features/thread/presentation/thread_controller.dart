@@ -928,7 +928,11 @@ class ThreadController extends BaseController {
         moveSelectedMultipleEmailToTrash(selectionEmail);
         break;
       case EmailActionType.deletePermanently:
-        deleteSelectionEmailsPermanently(context, DeleteActionType.multiple, selectedEmails: selectionEmail);
+        deleteSelectionEmailsPermanently(
+            context,
+            DeleteActionType.multiple,
+            selectedEmails: selectionEmail,
+            presentationMailbox: currentMailbox);
         break;
       case EmailActionType.moveToSpam:
         moveSelectedMultipleEmailToSpam(selectionEmail);
@@ -1144,10 +1148,20 @@ class ThreadController extends BaseController {
 
   bool get isMailboxTrash => mailboxDashBoardController.selectedMailbox.value?.role == PresentationMailbox.roleTrash;
 
-  void deleteSelectionEmailsPermanently(BuildContext context, DeleteActionType actionType, {List<PresentationEmail>? selectedEmails}) {
+  void deleteSelectionEmailsPermanently(
+      BuildContext context,
+      DeleteActionType actionType,
+      {
+        List<PresentationEmail>? selectedEmails,
+        PresentationMailbox? presentationMailbox
+      }
+  ) {
     if (_responsiveUtils.isMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
-          ..messageText(actionType.getContentDialog(context, count: selectedEmails?.length))
+          ..messageText(actionType.getContentDialog(
+              context,
+              count: selectedEmails?.length,
+              mailboxName: presentationMailbox?.name?.name))
           ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
           ..onConfirmAction(actionType.getConfirmActionName(context), () => _deleteSelectionEmailsPermanentlyAction(actionType)))
         .show();
@@ -1158,7 +1172,10 @@ class ThreadController extends BaseController {
           builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
               ..key(const Key('confirm_dialog_delete_emails_permanently'))
               ..title(actionType.getTitleDialog(context))
-              ..content(actionType.getContentDialog(context, count: selectedEmails?.length))
+              ..content(actionType.getContentDialog(
+                  context,
+                  count: selectedEmails?.length,
+                  mailboxName: presentationMailbox?.name?.name))
               ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog, fit: BoxFit.fill))
               ..colorConfirmButton(AppColor.colorConfirmActionDialog)
               ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))

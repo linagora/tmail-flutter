@@ -21,12 +21,14 @@ extension DeleteActionTypeExtension on DeleteActionType {
     }
   }
 
-  String getContentDialog(BuildContext context, {int? count}) {
+  String getContentDialog(BuildContext context, {int? count, String? mailboxName}) {
     switch(this) {
       case DeleteActionType.all:
         return AppLocalizations.of(context).empty_trash_dialog_message;
       case DeleteActionType.multiple:
-        return AppLocalizations.of(context).delete_multiple_messages_dialog(count ?? 0);
+        return AppLocalizations.of(context).delete_multiple_messages_dialog(
+            count ?? 0,
+            mailboxName ?? '');
       case DeleteActionType.single:
         return AppLocalizations.of(context).delete_single_message_dialog;
     }
