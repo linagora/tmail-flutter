@@ -1075,11 +1075,11 @@ class AppLocalizations {
         name: 'delete_message_forever');
   }
 
-  String delete_multiple_messages_dialog(int count) {
+  String delete_multiple_messages_dialog(int count, String mailboxName) {
     return Intl.message(
-        'You are about to permanently delete $count items in Trash . Do you want to continue?',
+        'You are about to permanently delete $count items in $mailboxName . Do you want to continue?',
         name: 'delete_multiple_messages_dialog',
-        args: [count]);
+        args: [count, mailboxName]);
   }
 
   String get delete_single_message_dialog {

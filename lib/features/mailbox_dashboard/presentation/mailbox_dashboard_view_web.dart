@@ -421,12 +421,17 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         }
       }),
       Obx(() => buildIconWeb(
-          icon: SvgPicture.asset(imagePaths.icDelete, fit: BoxFit.fill),
-          tooltip: controller.selectedMailbox.value?.isTrash == true
+          icon: SvgPicture.asset(
+              canDeletePermanently ? imagePaths.icDeleteComposer : imagePaths.icDelete,
+              color: canDeletePermanently ? AppColor.colorDeletePermanentlyButton : AppColor.primaryColor,
+              width: 20,
+              height: 20,
+              fit: BoxFit.fill),
+          tooltip: canDeletePermanently
               ? AppLocalizations.of(context).delete_permanently
               : AppLocalizations.of(context).move_to_trash,
           onTap: () {
-            if (controller.selectedMailbox.value?.isTrash == true) {
+            if (canDeletePermanently) {
               return controller.dispatchAction(HandleEmailActionTypeAction(context,
                   controller.listEmailSelected,
                   EmailActionType.deletePermanently));
@@ -437,6 +442,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             }
           })),
     ]);
+  }
+
+  bool get canDeletePermanently {
+    return controller.selectedMailbox.value?.isTrash == true ||
+        controller.selectedMailbox.value?.isDrafts == true;
   }
 
   Widget _buildSearchForm(BuildContext context) {
