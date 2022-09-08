@@ -11,6 +11,7 @@ class RulesFilterInputField extends StatelessWidget {
   final String? errorText;
   final String? hintText;
   final TextEditingController? editingController;
+  final FocusNode? focusNode;
   final OnChangeFilterInputAction? onChangeAction;
 
   const RulesFilterInputField({
@@ -18,6 +19,7 @@ class RulesFilterInputField extends StatelessWidget {
     this.hintText,
     this.errorText,
     this.editingController,
+    this.focusNode,
     this.onChangeAction
   }) : super(key: key);
 
@@ -29,6 +31,7 @@ class RulesFilterInputField extends StatelessWidget {
         ..addController(editingController ?? TextEditingController())
         ..textStyle(const TextStyle(color: Colors.black, fontSize: 16))
         ..keyboardType(TextInputType.text)
+        ..addFocusNode(focusNode)
         ..textDecoration((RulesFilterInputDecorationBuilder()
               ..setContentPadding(const EdgeInsets.symmetric(
                   vertical: BuildUtils.isWeb ? 16 : 12,
