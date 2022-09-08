@@ -103,7 +103,14 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
                   ? EmailActionType.unMarkAsStarred
                   : EmailActionType.markAsStarred)),
         buildIconWeb(
-            icon: SvgPicture.asset(_imagePaths.icDeleteEmail, fit: BoxFit.fill),
+            icon: SvgPicture.asset(
+                _currentMailbox?.role == PresentationMailbox.roleTrash
+                  ? _imagePaths.icDeleteComposer
+                  : _imagePaths.icDelete,
+                color: AppColor.colorDefaultButton,
+                width: 24,
+                height: 24,
+                fit: BoxFit.fill),
             tooltip: _currentMailbox?.role != PresentationMailbox.roleTrash
                 ? AppLocalizations.of(context).move_to_trash
                 : AppLocalizations.of(context).delete_permanently,
