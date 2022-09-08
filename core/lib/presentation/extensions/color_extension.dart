@@ -140,6 +140,7 @@ extension AppColor on Color {
   static const colorIconTextField = Color(0xFFB8C1CC);
   static const colorVacationNotificationMessageBackground = Color(0x2999A2AD);
   static const colorDeletePermanentlyButton = Color(0xffE64646);
+  static const colorDefaultButton = Color(0xff9AA1AD);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
