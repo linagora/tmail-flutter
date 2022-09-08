@@ -93,12 +93,13 @@ class BottomBarThreadSelectionWidget {
               })
               ..text(_textButtonSpam, isVertical: _responsiveUtils.isMobile(_context)))
             .build()),
-        Expanded(child: (ButtonBuilder(_imagePaths.icDelete)
+        Expanded(child: (ButtonBuilder(canDeletePermanently ? _imagePaths.icDeleteComposer : _imagePaths.icDelete)
             ..key(const Key('button_delete_email'))
+            ..iconColor(canDeletePermanently ? AppColor.colorDeletePermanentlyButton : AppColor.primaryColor)
             ..paddingIcon(const EdgeInsets.symmetric(horizontal: 8, vertical: 4))
             ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
             ..onPressActionClick(() {
-              if (_currentMailbox?.isTrash == true) {
+              if (canDeletePermanently) {
                 _onPressEmailSelectionActionClick?.call(EmailActionType.deletePermanently, _listSelectionEmail);
               } else {
                 _onPressEmailSelectionActionClick?.call(EmailActionType.moveToTrash, _listSelectionEmail);
@@ -108,6 +109,10 @@ class BottomBarThreadSelectionWidget {
           .build())
       ]
     );
+  }
+
+  bool get canDeletePermanently {
+    return _currentMailbox?.isTrash == true || _currentMailbox?.isDrafts == true;
   }
 
   String? get _textButtonMarkAsRead {
