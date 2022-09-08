@@ -98,14 +98,16 @@ class AuthenticationInfoCacheClient extends HiveCacheClient<AuthenticationInfoCa
 
   @override
   Future<Box<AuthenticationInfoCache>> openBox() async {
-    return Future.sync(() async {
-      final encryptionKey = await getEncryptionKey();
+    final encryptionKey = await getEncryptionKey();
+    if (Hive.isBoxOpen(tableName)) {
+      return Hive.box<AuthenticationInfoCache>(tableName);
+    } else {
       return Hive.openBox<AuthenticationInfoCache>(
           tableName,
-          encryptionCipher: HiveAesCipher(encryptionKey!));
-    }).catchError((error) {
-      throw error;
-    });
+          encryptionCipher: encryptionKey != null
+              ? HiveAesCipher(encryptionKey)
+              : null);
+    }
   }
 
   @override

@@ -98,7 +98,11 @@ class EncryptionKeyCacheClient extends HiveCacheClient<EncryptionKeyCache> {
 
   @override
   Future<Box<EncryptionKeyCache>> openBox() async {
-    return Hive.openBox<EncryptionKeyCache>(tableName);
+    if (Hive.isBoxOpen(tableName)) {
+      return Hive.box<EncryptionKeyCache>(tableName);
+    } else {
+      return Hive.openBox<EncryptionKeyCache>(tableName);
+    }
   }
 
   @override
