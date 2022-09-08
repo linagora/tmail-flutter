@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-09-05T09:25:59.780036",
+  "@@last_modified": "2022-09-08T14:02:20.481140",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2126,6 +2126,12 @@
   },
   "toastMessageDeleteEmailRuleSuccessfully": "The rule has been removed.",
   "@toastMessageDeleteEmailRuleSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastErrorMessageWhenCreateNewRule": "You have not filled in the information completely.",
+  "@toastErrorMessageWhenCreateNewRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -16,11 +16,13 @@ class RuleFilterButtonField<T> extends StatelessWidget {
 
   final T? value;
   final OnTapActionCallback? tapActionCallback;
+  final Color? borderColor;
 
   const RuleFilterButtonField({
     super.key,
     this.value,
-    this.tapActionCallback
+    this.tapActionCallback,
+    this.borderColor,
   });
 
   @override
@@ -34,7 +36,7 @@ class RuleFilterButtonField<T> extends StatelessWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-                color: AppColor.colorInputBorderCreateMailbox,
+                color: borderColor ?? AppColor.colorInputBorderCreateMailbox,
                 width: 1),
             color: Colors.white),
         padding: const EdgeInsets.only(left: 12, right: 10),

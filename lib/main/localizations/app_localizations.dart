@@ -2198,4 +2198,10 @@ class AppLocalizations {
         'The rule has been removed.',
         name: 'toastMessageDeleteEmailRuleSuccessfully');
   }
+
+  String get toastErrorMessageWhenCreateNewRule {
+    return Intl.message(
+        'You have not filled in the information completely.',
+        name: 'toastErrorMessageWhenCreateNewRule');
+  }
 }
