@@ -1,7 +1,5 @@
 
-import 'package:core/presentation/state/failure.dart';
-import 'package:core/presentation/state/success.dart';
-import 'package:core/utils/app_logger.dart';
+import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -23,30 +21,34 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/v
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class RulesFilterCreatorController extends BaseMailboxController {
+
+  final _appToast = Get.find<AppToast>();
 
   final VerifyNameInteractor _verifyNameInteractor;
   final GetAllMailboxInteractor _getAllMailboxInteractor;
 
   final actionType = CreatorActionType.create.obs;
   final errorRuleName = Rxn<String>();
-  final errorConditionValue = Rxn<String>();
+  final errorRuleConditionValue = Rxn<String>();
+  final errorRuleActionValue = Rxn<String>();
   final ruleConditionFieldSelected = Rxn<rule_condition.Field>();
   final ruleConditionComparatorSelected = Rxn<rule_condition.Comparator>();
   final emailRuleFilterActionSelected = Rxn<EmailRuleFilterAction>();
   final mailboxSelected = Rxn<PresentationMailbox>();
-  final isCreateRuleFilterValid = RxBool(false);
 
   final inputRuleNameController = TextEditingController();
   final inputConditionValueController = TextEditingController();
   final inputRuleNameFocusNode = FocusNode();
+  final inputRuleConditionFocusNode = FocusNode();
 
   AccountId? _accountId;
   String? _newRuleName;
-  String? _newConditionValue;
+  String? _newRuleConditionValue;
   TMailRule? _currentTMailRule;
 
   RulesFilterCreatorController(
@@ -65,6 +67,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   @override
   void onClose() {
     inputRuleNameFocusNode.dispose();
+    inputRuleConditionFocusNode.dispose();
     inputRuleNameController.dispose();
     inputConditionValueController.dispose();
     super.onClose();
@@ -77,16 +80,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
   void onData(Either<Failure, Success> newState) {
     super.onData(newState);
     newState.fold(
-      (failure) {
-        if (failure is GetAllMailboxFailure) {
-          _updateStateCreatorButton();
-        }
-      },
+      (failure) => null,
       (success) async {
         if (success is GetAllMailboxSuccess) {
           await buildTree(success.mailboxList);
           _setUpMailboxSelected();
-          _updateStateCreatorButton();
         }
       });
   }
@@ -115,8 +113,8 @@ class RulesFilterCreatorController extends BaseMailboxController {
           ruleConditionFieldSelected.value = _currentTMailRule!.condition.field;
           ruleConditionComparatorSelected.value = _currentTMailRule!.condition.comparator;
           emailRuleFilterActionSelected.value = EmailRuleFilterAction.moveMessage;
-          _newConditionValue = _currentTMailRule!.condition.value;
-          _setValueInputField(inputConditionValueController, _newConditionValue ?? '');
+          _newRuleConditionValue = _currentTMailRule!.condition.value;
+          _setValueInputField(inputConditionValueController, _newRuleConditionValue ?? '');
           _newRuleName = _currentTMailRule!.name;
           _setValueInputField(inputRuleNameController, _newRuleName ?? '');
           _getAllMailboxAction();
@@ -124,7 +122,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
         break;
     }
     inputRuleNameFocusNode.requestFocus();
-    _updateStateCreatorButton();
   }
 
   void _setValueInputField(TextEditingController controller, String value) {
@@ -150,13 +147,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
   void updateRuleName(BuildContext context, String? value) {
     _newRuleName = value;
     errorRuleName.value = _getErrorStringByInputValue(context, _newRuleName);
-    _updateStateCreatorButton();
   }
 
   void updateConditionValue(BuildContext context, String? value) {
-    _newConditionValue = value;
-    errorConditionValue.value = _getErrorStringByInputValue(context, _newConditionValue);
-    _updateStateCreatorButton();
+    _newRuleConditionValue = value;
+    errorRuleConditionValue.value = _getErrorStringByInputValue(context, _newRuleConditionValue);
   }
 
   String? _getErrorStringByInputValue(BuildContext context, String? inputValue) {
@@ -174,20 +169,17 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   void selectRuleConditionField(rule_condition.Field? newField) {
     ruleConditionFieldSelected.value = newField;
-    _updateStateCreatorButton();
   }
 
   void selectRuleConditionComparator(rule_condition.Comparator? newComparator) {
     ruleConditionComparatorSelected.value = newComparator;
-    _updateStateCreatorButton();
   }
 
   void selectEmailRuleFilterAction(EmailRuleFilterAction? newAction) {
     emailRuleFilterActionSelected.value = newAction;
-    _updateStateCreatorButton();
   }
 
-  void selectMailbox() async {
+  void selectMailbox(BuildContext context) async {
     final destinationMailbox = await push(
         AppRoutes.DESTINATION_PICKER,
         arguments: DestinationPickerArguments(
@@ -196,17 +188,10 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
     if (destinationMailbox is PresentationMailbox) {
       mailboxSelected.value = destinationMailbox;
-      _updateStateCreatorButton();
+      errorRuleActionValue.value = _getErrorStringByInputValue(
+          context,
+          mailboxSelected.value?.name?.name);
     }
-  }
-
-  void _updateStateCreatorButton() {
-    isCreateRuleFilterValid.value = _newRuleName?.trim().isNotEmpty == true &&
-      _newConditionValue?.trim().isNotEmpty == true &&
-      mailboxSelected.value != null &&
-      ruleConditionFieldSelected.value != null &&
-      emailRuleFilterActionSelected.value != null &&
-      ruleConditionComparatorSelected.value != null;
   }
 
   void createNewRuleFilter(BuildContext context) async {
@@ -216,13 +201,44 @@ class RulesFilterCreatorController extends BaseMailboxController {
     if (errorName?.isNotEmpty == true) {
       log('RulesFilterCreatorController::createNewRuleFilter(): errorName: $errorName');
       errorRuleName.value = errorName;
+      inputRuleNameFocusNode.requestFocus();
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          textColor: AppColor.toastErrorBackgroundColor,
+          message: AppLocalizations.of(currentContext!).this_field_cannot_be_blank);
       return;
     }
 
-    final errorCondition = _getErrorStringByInputValue(context, _newConditionValue);
+    final errorCondition = _getErrorStringByInputValue(context, _newRuleConditionValue);
     if (errorCondition?.isNotEmpty == true) {
       log('RulesFilterCreatorController::createNewRuleFilter(): errorCondition: $errorCondition');
-      errorConditionValue.value = errorName;
+      errorRuleConditionValue.value = errorCondition;
+      inputRuleConditionFocusNode.requestFocus();
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          textColor: AppColor.toastErrorBackgroundColor,
+          message: AppLocalizations.of(currentContext!).this_field_cannot_be_blank);
+      return;
+    }
+
+    final errorAction = _getErrorStringByInputValue(context, mailboxSelected.value?.name?.name);
+    if (errorAction?.isNotEmpty == true) {
+      log('RulesFilterCreatorController::createNewRuleFilter(): errorAction: $errorAction');
+      errorRuleActionValue.value = errorAction;
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          textColor: AppColor.toastErrorBackgroundColor,
+          message: AppLocalizations.of(currentContext!).this_field_cannot_be_blank);
+      return;
+    }
+
+    if (ruleConditionFieldSelected.value == null ||
+        ruleConditionComparatorSelected.value == null ||
+        emailRuleFilterActionSelected.value == null) {
+      _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          textColor: AppColor.toastErrorBackgroundColor,
+          message: AppLocalizations.of(currentContext!).toastErrorMessageWhenCreateNewRule);
       return;
     }
 
@@ -237,7 +253,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
         condition: rule_condition.RuleCondition(
           field: ruleConditionFieldSelected.value!,
           comparator: ruleConditionComparatorSelected.value!,
-          value: _newConditionValue!
+          value: _newRuleConditionValue!
         ));
 
     log('RulesFilterCreatorController::newTMailRule(): $newTMailRule');
