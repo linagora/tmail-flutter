@@ -123,6 +123,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                     hintText: AppLocalizations.of(context).rulesNameHintTextInput,
                     errorText: controller.errorRuleName.value,
                     editingController: controller.inputRuleNameController,
+                    focusNode: controller.inputRuleNameFocusNode,
                     onChangeAction: (value) => controller.updateRuleName(context, value),)),
                   const SizedBox(height: 24),
                   Text(AppLocalizations.of(context).conditionTitleRulesFilter,
@@ -283,6 +284,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         hintText: AppLocalizations.of(context).rulesNameHintTextInput,
                         errorText: controller.errorRuleName.value,
                         editingController: controller.inputRuleNameController,
+                        focusNode: controller.inputRuleNameFocusNode,
                         onChangeAction: (value) => controller.updateRuleName(context, value),)),
                       const SizedBox(height: 24),
                       Text(AppLocalizations.of(context).conditionTitleRulesFilter,
@@ -443,6 +445,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         hintText: AppLocalizations.of(context).rulesNameHintTextInput,
                         errorText: controller.errorRuleName.value,
                         editingController: controller.inputRuleNameController,
+                        focusNode: controller.inputRuleNameFocusNode,
                         onChangeAction: (value) => controller.updateRuleName(context, value),)),
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 12),

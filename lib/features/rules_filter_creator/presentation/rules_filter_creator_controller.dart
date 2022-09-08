@@ -42,6 +42,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   final inputRuleNameController = TextEditingController();
   final inputConditionValueController = TextEditingController();
+  final inputRuleNameFocusNode = FocusNode();
 
   AccountId? _accountId;
   String? _newRuleName;
@@ -63,6 +64,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   @override
   void onClose() {
+    inputRuleNameFocusNode.dispose();
     inputRuleNameController.dispose();
     inputConditionValueController.dispose();
     super.onClose();
@@ -121,7 +123,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
         }
         break;
     }
-
+    inputRuleNameFocusNode.requestFocus();
     _updateStateCreatorButton();
   }
 
