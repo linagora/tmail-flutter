@@ -161,8 +161,9 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             supportSelectionIcon: true))),
                         Expanded(child: Obx(() => RulesFilterInputField(
                           hintText: AppLocalizations.of(context).conditionValueHintTextInput,
-                          errorText: controller.errorConditionValue.value,
+                          errorText: controller.errorRuleConditionValue.value,
                           editingController: controller.inputConditionValueController,
+                          focusNode: controller.inputRuleConditionFocusNode,
                           onChangeAction: (value) =>
                             controller.updateConditionValue(context, value))))
                       ]
@@ -205,7 +206,8 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       Expanded(child: Obx(() =>
                         RuleFilterButtonField<PresentationMailbox>(
                           value: controller.mailboxSelected.value,
-                          tapActionCallback: (value) => controller.selectMailbox()))),
+                          borderColor: _getBorderColorMailboxSelected(),
+                          tapActionCallback: (value) => controller.selectMailbox(context)))),
                     ])
                   ),
                 ]
@@ -235,16 +237,9 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                   controller.actionType.value.getActionName(context),
                   width: 128,
                   height: 44,
-                  backgroundColor: AppColor.colorTextButton
-                      .withOpacity(controller.isCreateRuleFilterValid.value
-                        ? 1.0
-                        : 0.4),
+                  backgroundColor: AppColor.colorTextButton,
                   radius: 10,
-                  onTap: () {
-                    if (controller.isCreateRuleFilterValid.value) {
-                      controller.createNewRuleFilter(context);
-                    }
-                  })),
+                  onTap: () => controller.createNewRuleFilter(context))),
               ]
             ),
           )
@@ -322,8 +317,9 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                                         supportSelectionIcon: true))),
                                 Expanded(child: Obx(() => RulesFilterInputField(
                                     hintText: AppLocalizations.of(context).conditionValueHintTextInput,
-                                    errorText: controller.errorConditionValue.value,
+                                    errorText: controller.errorRuleConditionValue.value,
                                     editingController: controller.inputConditionValueController,
+                                    focusNode: controller.inputRuleConditionFocusNode,
                                     onChangeAction: (value) =>
                                         controller.updateConditionValue(context, value))))
                               ]
@@ -367,7 +363,8 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             Expanded(child: Obx(() =>
                               RuleFilterButtonField<PresentationMailbox>(
                                 value: controller.mailboxSelected.value,
-                                tapActionCallback: (value) => controller.selectMailbox()))),
+                                borderColor: _getBorderColorMailboxSelected(),
+                                tapActionCallback: (value) => controller.selectMailbox(context)))),
                           ])
                       ),
                     ]
@@ -396,16 +393,9 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         controller.actionType.value.getActionName(context),
                         width: 128,
                         height: 44,
-                        backgroundColor: AppColor.colorTextButton
-                            .withOpacity(controller.isCreateRuleFilterValid.value
-                              ? 1.0
-                              : 0.4),
+                        backgroundColor: AppColor.colorTextButton,
                         radius: 10,
-                        onTap: () {
-                          if (controller.isCreateRuleFilterValid.value) {
-                            controller.createNewRuleFilter(context);
-                          }
-                        }))),
+                        onTap: () => controller.createNewRuleFilter(context)))),
                   ]
               ),
             )
@@ -498,8 +488,9 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                                 ),
                                 Obx(() => RulesFilterInputField(
                                     hintText: AppLocalizations.of(context).conditionValueHintTextInput,
-                                    errorText: controller.errorConditionValue.value,
+                                    errorText: controller.errorRuleConditionValue.value,
                                     editingController: controller.inputConditionValueController,
+                                    focusNode: controller.inputRuleConditionFocusNode,
                                     onChangeAction: (value) =>
                                         controller.updateConditionValue(context, value)))
                               ]
@@ -552,7 +543,8 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             ),
                             Obx(() => RuleFilterButtonField<PresentationMailbox>(
                               value: controller.mailboxSelected.value,
-                              tapActionCallback: (value) => controller.selectMailbox()))
+                              borderColor: _getBorderColorMailboxSelected(),
+                              tapActionCallback: (value) => controller.selectMailbox(context)))
                           ])
                       ),
                     ]
@@ -581,16 +573,9 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         controller.actionType.value.getActionName(context),
                         width: 128,
                         height: 44,
-                        backgroundColor: AppColor.colorTextButton
-                            .withOpacity(controller.isCreateRuleFilterValid.value
-                              ? 1.0
-                              : 0.4),
+                        backgroundColor: AppColor.colorTextButton,
                         radius: 10,
-                        onTap: () {
-                          if (controller.isCreateRuleFilterValid.value) {
-                            controller.createNewRuleFilter(context);
-                          }
-                        }))),
+                        onTap: () => controller.createNewRuleFilter(context)))),
                   ]
               ),
             )
@@ -703,5 +688,13 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         popBack();
       }))
     .build();
+  }
+
+  Color _getBorderColorMailboxSelected() {
+    if (controller.errorRuleActionValue.value?.isNotEmpty == true) {
+      return AppColor.colorInputBorderErrorVerifyName;
+    } else {
+      return AppColor.colorInputBorderCreateMailbox;
+    }
   }
 }
