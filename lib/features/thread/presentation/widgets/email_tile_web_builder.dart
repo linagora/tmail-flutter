@@ -602,18 +602,18 @@ class EmailTileBuilder {
           iconPadding: const EdgeInsets.all(5),
           splashRadius: 10,
           icon: SvgPicture.asset(
-              _imagePaths.icDelete,
-              width: 16,
-              height: 16,
+              canDeletePermanently ? _imagePaths.icDeleteComposer : _imagePaths.icDelete,
+              width: canDeletePermanently ? 14 : 16,
+              height: canDeletePermanently ? 14 : 16,
               color: AppColor.colorActionButtonHover,
               fit: BoxFit.fill),
-          tooltip: _mailboxRole != PresentationMailbox.roleTrash
-              ? AppLocalizations.of(_context).move_to_trash
-              : AppLocalizations.of(_context).delete_permanently,
+          tooltip: canDeletePermanently
+              ? AppLocalizations.of(_context).delete_permanently
+              : AppLocalizations.of(_context).move_to_trash,
           onTap: () => _emailActionClick?.call(
-              _mailboxRole != PresentationMailbox.roleTrash
-                  ? EmailActionType.moveToTrash
-                  : EmailActionType.deletePermanently,
+              canDeletePermanently
+                  ? EmailActionType.deletePermanently
+                  : EmailActionType.moveToTrash,
               _presentationEmail)),
       const SizedBox(width: 5),
       if (_mailboxRole != PresentationMailbox.roleDrafts)
@@ -638,6 +638,11 @@ class EmailTileBuilder {
             }),
       if (_responsiveUtils.isDesktop(_context)) const SizedBox(width: 16),
     ]);
+  }
+
+  bool get canDeletePermanently {
+    return _mailboxRole == PresentationMailbox.roleTrash ||
+        _mailboxRole == PresentationMailbox.roleDrafts;
   }
 
   Widget _buildDateTimeForDesktopScreen() {
