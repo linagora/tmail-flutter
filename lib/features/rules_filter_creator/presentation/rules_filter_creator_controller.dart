@@ -202,10 +202,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
       log('RulesFilterCreatorController::createNewRuleFilter(): errorName: $errorName');
       errorRuleName.value = errorName;
       inputRuleNameFocusNode.requestFocus();
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          textColor: AppColor.toastErrorBackgroundColor,
-          message: AppLocalizations.of(currentContext!).this_field_cannot_be_blank);
       return;
     }
 
@@ -214,10 +210,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
       log('RulesFilterCreatorController::createNewRuleFilter(): errorCondition: $errorCondition');
       errorRuleConditionValue.value = errorCondition;
       inputRuleConditionFocusNode.requestFocus();
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          textColor: AppColor.toastErrorBackgroundColor,
-          message: AppLocalizations.of(currentContext!).this_field_cannot_be_blank);
       return;
     }
 
