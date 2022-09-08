@@ -190,19 +190,23 @@ class AppBarThreadWidgetBuilder {
           iconPadding: const EdgeInsets.all(5),
           splashRadius: 15,
           icon: SvgPicture.asset(
-              _imagePaths.icDeleteComposer,
-              width: 18,
-              height: 18,
-              color: AppColor.textFieldErrorBorderColor,
+              canDeletePermanently ? _imagePaths.icDeleteComposer : _imagePaths.icDelete,
+              color: canDeletePermanently ? AppColor.colorDeletePermanentlyButton : AppColor.primaryColor,
+              width: 20,
+              height: 20,
               fit: BoxFit.fill),
-          tooltip: _currentMailbox?.role != PresentationMailbox.roleTrash
-              ? AppLocalizations.of(_context).move_to_trash
-              : AppLocalizations.of(_context).delete_permanently,
-          onTap: () => _currentMailbox?.isTrash == true
+          tooltip: canDeletePermanently
+              ? AppLocalizations.of(_context).delete_permanently
+              : AppLocalizations.of(_context).move_to_trash,
+          onTap: () => canDeletePermanently
               ? _onEmailSelectionAction?.call(EmailActionType.deletePermanently, _listSelectionEmail)
               : _onEmailSelectionAction?.call(EmailActionType.moveToTrash, _listSelectionEmail)),
       const SizedBox(width: 10),
     ]);
+  }
+
+  bool get canDeletePermanently {
+    return _currentMailbox?.isTrash == true || _currentMailbox?.isDrafts == true;
   }
 
   Widget _buildBodyAppBarForMobile() {

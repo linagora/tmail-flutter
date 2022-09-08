@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-09-08T14:02:20.481140",
+  "@@last_modified": "2022-09-08T15:46:55.686024",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1036,14 +1036,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_multiple_messages_dialog": "You are about to permanently delete {count} items in Trash . Do you want to continue?",
+  "delete_multiple_messages_dialog": "You are about to permanently delete {count} items in {mailboxName} . Do you want to continue?",
   "@delete_multiple_messages_dialog": {
     "type": "text",
     "placeholders_order": [
-      "count"
+      "count",
+      "mailboxName"
     ],
     "placeholders": {
-      "count": {}
+      "count": {},
+      "mailboxName": {}
     }
   },
   "delete_single_message_dialog": "You are about to permanently delete this message. Do you want to continue?",
