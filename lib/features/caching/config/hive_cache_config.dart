@@ -42,7 +42,7 @@ class HiveCacheConfig {
     final encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
     if (encryptionKeyCache == null) {
       final secureKey = Hive.generateSecureKey();
-      final secureKeyEncode = base64UrlEncode(secureKey);
+      final secureKeyEncode = base64Encode(secureKey);
       log('HiveCacheConfig::_initializeEncryptionKey(): secureKeyEncode: $secureKeyEncode');
       await encryptionKeyCacheManager.storeEncryptionKey(EncryptionKeyCache(secureKeyEncode));
     }
@@ -51,15 +51,12 @@ class HiveCacheConfig {
   static Future<Uint8List?> getEncryptionKey() async {
     final encryptionKeyCacheManager = Get.find<EncryptionKeyCacheManager>();
     var encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
-    if (encryptionKeyCache == null) {
-      await initializeEncryptionKey();
-      encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
-    }
 
     if (encryptionKeyCache != null) {
-      log('HiveCacheConfig::getEncryptionKey(): encryptionKey: ${encryptionKeyCache.value}');
-      final encryptionKey = base64Url.decode(encryptionKeyCache.value);
-      return encryptionKey;
+      final encryptionKey = encryptionKeyCache.value;
+      log('HiveCacheConfig::getEncryptionKey(): encryptionKey: $encryptionKey');
+      final encryptionKeyDecode = base64Decode(encryptionKeyCache.value);
+      return encryptionKeyDecode;
     } else {
       return null;
     }

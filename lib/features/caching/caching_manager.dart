@@ -2,7 +2,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:tmail_ui_user/features/caching/account_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/encryption_key_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
@@ -14,7 +13,6 @@ class CachingManager {
   final EmailCacheClient _emailCacheClient;
   final RecentSearchCacheClient _recentSearchCacheClient;
   final AccountCacheClient _accountCacheClient;
-  final EncryptionKeyCacheClient _encryptionKeyCacheClient;
 
   CachingManager(
     this._mailboxCacheClient,
@@ -22,7 +20,6 @@ class CachingManager {
     this._emailCacheClient,
     this._recentSearchCacheClient,
     this._accountCacheClient,
-    this._encryptionKeyCacheClient,
   );
 
   Future<void> clearAll() async {
@@ -33,7 +30,6 @@ class CachingManager {
         _emailCacheClient.clearAllData(),
         _recentSearchCacheClient.clearAllData(),
         _accountCacheClient.clearAllData(),
-        _encryptionKeyCacheClient.clearAllData(),
       ]);
     } else {
       await Future.wait([
@@ -42,7 +38,6 @@ class CachingManager {
         _emailCacheClient.deleteBox(),
         _recentSearchCacheClient.deleteBox(),
         _accountCacheClient.deleteBox(),
-        _encryptionKeyCacheClient.deleteBox(),
       ]);
     }
   }
