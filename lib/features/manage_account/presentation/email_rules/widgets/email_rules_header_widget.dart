@@ -33,7 +33,7 @@ class EmailRulesHeaderWidget extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: Colors.black)),
         const SizedBox(height: 4),
-        Text(AppLocalizations.of(context).emailRulesSubtitle,
+        Text(AppLocalizations.of(context).emailRuleSettingExplanation,
             style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.normal,

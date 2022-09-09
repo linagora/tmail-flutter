@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-09-08T15:46:55.686024",
+  "@@last_modified": "2022-09-09T11:02:43.750933",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1758,12 +1758,6 @@
   },
   "emailRules": "Email Rules",
   "@emailRules": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "emailRulesSubtitle": "Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.",
-  "@emailRulesSubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
