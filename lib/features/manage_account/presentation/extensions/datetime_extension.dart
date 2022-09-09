@@ -23,8 +23,7 @@ extension TimeOfDayExtension on TimeOfDay? {
 
   String formatTime(BuildContext context) {
     if (this != null) {
-      return MaterialLocalizations.of(context)
-          .formatTimeOfDay(this!, alwaysUse24HourFormat: true);
+      return MaterialLocalizations.of(context).formatTimeOfDay(this!);
     }
     return '';
   }
