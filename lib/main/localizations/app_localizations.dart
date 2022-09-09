@@ -2230,4 +2230,11 @@ class AppLocalizations {
       name: 'saveChanges',
     );
   }
+
+  String get messageIsRequired {
+    return Intl.message(
+      'Message is required',
+      name: 'messageIsRequired',
+    );
+  }
 }
