@@ -272,20 +272,7 @@ class VacationView extends GetWidget<VacationController> {
                         ),
                       )),
                       const SizedBox(height: 24),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: buildTextButton(
-                            AppLocalizations.of(context).saveChanges,
-                            textStyle: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 16
-                            ),
-                            width: 156,
-                            height: 44,
-                            radius: 10,
-                            onTap: () => controller.saveVacation(context)),
-                      )
+                      _buildListButtonAction(context)
                     ]),
                   )
                 ]
@@ -294,5 +281,83 @@ class VacationView extends GetWidget<VacationController> {
         ),
       ),
     );
+  }
+
+  Widget _buildListButtonAction(BuildContext context) {
+    if (_responsiveUtils.isWebDesktop(context)) {
+      return Align(
+        alignment: Alignment.centerRight,
+        child: buildTextButton(
+            AppLocalizations.of(context).saveChanges,
+            textStyle: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.normal,
+                fontSize: 16
+            ),
+            width: 156,
+            height: 44,
+            radius: 10,
+            onTap: () => controller.saveVacation(context)),
+      );
+    } else {
+      if (_responsiveUtils.isPortraitMobile(context)) {
+        return Row(children: [
+          Expanded(
+            child: buildTextButton(
+                AppLocalizations.of(context).cancel,
+                textStyle: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 17,
+                    color: AppColor.colorTextButton),
+                backgroundColor: AppColor.emailAddressChipColor,
+                width: 156,
+                height: 44,
+                radius: 10,
+                onTap: () => controller.backToUniversalSettings()),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: buildTextButton(
+                AppLocalizations.of(context).saveChanges,
+                textStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 16
+                ),
+                width: 156,
+                height: 44,
+                radius: 10,
+                onTap: () => controller.saveVacation(context)),
+          )
+        ]);
+      } else {
+        return Row(children: [
+          const Spacer(),
+          buildTextButton(
+              AppLocalizations.of(context).cancel,
+              textStyle: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 17,
+                  color: AppColor.colorTextButton),
+              backgroundColor: AppColor.emailAddressChipColor,
+              width: 156,
+              height: 44,
+              radius: 10,
+              onTap: () => controller.backToUniversalSettings()),
+          const SizedBox(width: 12),
+          buildTextButton(
+              AppLocalizations.of(context).saveChanges,
+              textStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16
+              ),
+              width: 156,
+              height: 44,
+              radius: 10,
+              onTap: () => controller.saveVacation(context))
+        ]);
+      }
+    }
   }
 }
