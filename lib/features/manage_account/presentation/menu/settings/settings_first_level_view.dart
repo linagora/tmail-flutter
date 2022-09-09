@@ -34,7 +34,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
         ),
         SettingFirstLevelTileBuilder(
-          AppLocalizations.of(context).identities,
+          AppLocalizations.of(context).profiles,
           AccountMenuItem.profiles.getIcon(_imagePaths),
           () => controller.selectSettings(AccountMenuItem.profiles)
         ),
