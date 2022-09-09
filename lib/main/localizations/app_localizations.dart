@@ -1960,13 +1960,6 @@ class AppLocalizations {
     );
   }
 
-  String get vacationResponder {
-    return Intl.message(
-      'Vacation responder',
-      name: 'vacationResponder',
-    );
-  }
-
   String get activated {
     return Intl.message(
       'Activated',
@@ -2002,16 +1995,16 @@ class AppLocalizations {
     );
   }
 
-  String get messageBody {
+  String get message {
     return Intl.message(
-      'Message body',
-      name: 'messageBody',
+      'Message',
+      name: 'message',
     );
   }
 
   String get hintMessageBodyVacation {
     return Intl.message(
-      'Start writing your vacation message here',
+      'Vacation messages',
       name: 'hintMessageBodyVacation',
     );
   }
@@ -2196,5 +2189,45 @@ class AppLocalizations {
     return Intl.message(
         'You have not filled in the information completely.',
         name: 'toastErrorMessageWhenCreateNewRule');
+  }
+
+  String get vacationSettingExplanation {
+    return Intl.message(
+        'Sends an automated reply to incoming messages.',
+        name: 'vacationSettingExplanation');
+  }
+
+  String get vacationSettingToggleButtonAutoReply {
+    return Intl.message(
+        'Automatically reply to messages when they are received.',
+        name: 'vacationSettingToggleButtonAutoReply');
+  }
+
+  String get startTime {
+    return Intl.message(
+      'Start time',
+      name: 'startTime',
+    );
+  }
+
+  String get endTime {
+    return Intl.message(
+      'End time',
+      name: 'endTime',
+    );
+  }
+
+  String get hintSubjectInputVacationSetting {
+    return Intl.message(
+      'Enter subject',
+      name: 'hintSubjectInputVacationSetting',
+    );
+  }
+
+  String get saveChanges {
+    return Intl.message(
+      'Save changes',
+      name: 'saveChanges',
+    );
   }
 }
