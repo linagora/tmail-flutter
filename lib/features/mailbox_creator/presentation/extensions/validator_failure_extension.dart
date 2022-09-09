@@ -45,7 +45,7 @@ extension ValicatorFailureExtension on VerifyNameFailure {
 
   String getMessageVacation(BuildContext context) {
     if (exception is EmptyNameException) {
-      return AppLocalizations.of(context).this_field_cannot_be_blank;
+      return AppLocalizations.of(context).messageIsRequired;
     } else {
       return '';
     }
