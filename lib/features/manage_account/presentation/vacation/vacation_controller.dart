@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_va
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/date_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_presentation.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
@@ -24,6 +25,7 @@ class VacationController extends BaseController {
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
+  final _settingController = Get.find<SettingsController>();
 
   final GetAllVacationInteractor _getAllVacationInteractor;
   final UpdateVacationInteractor _updateVacationInteractor;
@@ -294,6 +296,10 @@ class VacationController extends BaseController {
 
       _accountDashBoardController.updateVacationResponse(currentVacation);
     }
+  }
+
+  void backToUniversalSettings() {
+    _settingController.backToUniversalSettings();
   }
 
   @override
