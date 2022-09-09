@@ -120,7 +120,7 @@ extension AppColor on Color {
   static const colorBgMenuItemDropDownSelected = Color(0x80DEE2E7);
   static const colorButtonCancelDialog = Color(0x0D000000);
   static const colorShadowComposerButton = Color(0x99007AFF);
-  static const colorBackgroundTagFilter = Color(0x6D7885);
+  static const colorBackgroundTagFilter = Color(0xFF6D7885);
   static const colorDefaultRichTextButton = Color(0xFF99A2AD);
   static const colorFocusRichTextButton = Color(0x146D7885);
   static const colorStyleBlockQuote = Color(0xFFEEEEEE);
@@ -141,6 +141,8 @@ extension AppColor on Color {
   static const colorVacationNotificationMessageBackground = Color(0x2999A2AD);
   static const colorDeletePermanentlyButton = Color(0xffE64646);
   static const colorDefaultButton = Color(0xff9AA1AD);
+  static const colorVacationSettingExplanation = Color(0xFF686E76);
+  static const colorBackgroundVacationSettingField = Color(0xFFF2F3F5);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

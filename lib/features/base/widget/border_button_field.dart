@@ -1,10 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 
 typedef OnTapActionCallback<T> = Function(T? value);
@@ -18,9 +15,12 @@ class BorderButtonField<T> extends StatelessWidget {
   final MouseCursor? mouseCursor;
   final String? hintText;
   final bool isEmpty;
+  final Color? backgroundColor;
+  final String? label;
 
   const BorderButtonField({
     super.key,
+    this.label,
     this.value,
     this.tapActionCallback,
     this.icon,
@@ -28,13 +28,12 @@ class BorderButtonField<T> extends StatelessWidget {
     this.mouseCursor,
     this.hintText,
     this.isEmpty = false,
+    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final _imagePaths = Get.find<ImagePaths>();
-
-    return InkWell(
+    final buttonField = InkWell(
       onTap: () => tapActionCallback?.call(value),
       mouseCursor: mouseCursor,
       child: Container(
@@ -43,9 +42,9 @@ class BorderButtonField<T> extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
                 color: _getBorderColor(),
-                width: 1),
-            color: Colors.white),
-        padding: const EdgeInsets.only(left: 12, right: 10),
+                width: 0.5),
+            color: backgroundColor ?? Colors.white),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Row(children: [
           Expanded(child: Text(
             _getName(context, value),
@@ -54,10 +53,22 @@ class BorderButtonField<T> extends StatelessWidget {
             softWrap: CommonTextStyle.defaultSoftWrap,
             overflow: CommonTextStyle.defaultTextOverFlow,
           )),
-          icon ?? SvgPicture.asset(_imagePaths.icDropDown)
+          if (icon != null) icon!
         ]),
       ),
     );
+    if (label != null) {
+      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(label!, style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.normal,
+          color: AppColor.colorContentEmail)),
+        const SizedBox(height: 8),
+        buttonField
+      ]);
+    } else {
+      return buttonField;
+    }
   }
 
   TextStyle? _getTextStyle(T? value) {

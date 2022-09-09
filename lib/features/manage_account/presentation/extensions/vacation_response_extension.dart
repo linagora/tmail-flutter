@@ -24,6 +24,7 @@ extension VacationResponseExtension on VacationResponse {
           ? TimeOfDay.fromDateTime(toDate!.value.toUtc())
           : null,
       messageBody: textBody ?? htmlBody,
+      subject: subject,
       vacationStopEnabled: toDate != null
     );
   }

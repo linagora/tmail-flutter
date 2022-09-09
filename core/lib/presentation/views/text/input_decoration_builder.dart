@@ -13,6 +13,11 @@ abstract class InputDecorationBuilder {
   OutlineInputBorder? focusBorder;
   String? errorText;
   TextStyle? errorTextStyle;
+  Color? fillColor;
+
+  void setFillColor(Color? newColor) {
+    fillColor = newColor;
+  }
 
   void setPrefixText(String? newPrefixText) {
     prefixText = newPrefixText;
@@ -74,7 +79,7 @@ abstract class InputDecorationBuilder {
       errorText: errorText,
       errorStyle: errorTextStyle,
       enabledBorder: enabledBorder,
-      focusedBorder: focusBorder
+      focusedBorder: focusBorder,
     );
   }
 }

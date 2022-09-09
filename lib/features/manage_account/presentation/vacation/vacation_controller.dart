@@ -32,7 +32,8 @@ class VacationController extends BaseController {
   final vacationPresentation = VacationPresentation.initialize().obs;
   final errorMessageBody = Rxn<String>();
 
-  final TextEditingController messageBodyEditorController = TextEditingController();
+  final messageTextController = TextEditingController();
+  final subjectTextController = TextEditingController();
 
   VacationResponse? currentVacation;
   late Worker vacationWorker;
@@ -78,7 +79,8 @@ class VacationController extends BaseController {
         currentVacation = vacation;
         final newVacationPresentation = currentVacation?.toVacationPresentation();
         vacationPresentation.value = newVacationPresentation ?? VacationPresentation.initialize();
-        messageBodyEditorController.text = newVacationPresentation?.messageBody ?? '';
+        messageTextController.text = newVacationPresentation?.messageBody ?? '';
+        subjectTextController.text = newVacationPresentation?.subject ?? '';
       }
     });
   }
@@ -98,7 +100,8 @@ class VacationController extends BaseController {
       if (currentVacation != null) {
         final newVacationPresentation = currentVacation!.toVacationPresentation();
         vacationPresentation.value = newVacationPresentation;
-        messageBodyEditorController.text = newVacationPresentation.messageBody ?? '';
+        messageTextController.text = newVacationPresentation.messageBody ?? '';
+        subjectTextController.text = newVacationPresentation.subject ?? '';
       }
     }
   }
@@ -177,7 +180,7 @@ class VacationController extends BaseController {
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(primary: AppColor.primaryColor))),
           child: MediaQuery(
-              data: const MediaQueryData(alwaysUse24HourFormat: true),
+              data: const MediaQueryData(alwaysUse24HourFormat: false),
               child: child!),
         );
       }
@@ -236,7 +239,7 @@ class VacationController extends BaseController {
         return;
       }
 
-      final messageBody = messageBodyEditorController.text;
+      final messageBody = messageTextController.text;
       if (messageBody.isEmpty) {
         _appToast.showToastWithIcon(
             context,
@@ -246,7 +249,11 @@ class VacationController extends BaseController {
         return;
       }
 
-      final newVacationPresentation = vacationPresentation.value.copyWidth(messageBody: messageBody);
+      final subjectVacation = subjectTextController.text;
+
+      final newVacationPresentation = vacationPresentation.value.copyWidth(
+          messageBody: messageBody,
+          subject: subjectVacation);
       log('VacationController::saveVacation(): newVacationPresentation: $newVacationPresentation');
       final newVacationResponse = newVacationPresentation.toVacationResponse();
       log('VacationController::saveVacation(): newVacationResponse: $newVacationResponse');
@@ -281,7 +288,8 @@ class VacationController extends BaseController {
       if (currentVacation != null) {
         final newVacationPresentation = currentVacation!.toVacationPresentation();
         vacationPresentation.value = newVacationPresentation;
-        messageBodyEditorController.text = newVacationPresentation.messageBody ?? '';
+        messageTextController.text = newVacationPresentation.messageBody ?? '';
+        subjectTextController.text = newVacationPresentation.subject ?? '';
       }
 
       _accountDashBoardController.updateVacationResponse(currentVacation);
@@ -290,7 +298,8 @@ class VacationController extends BaseController {
 
   @override
   void onClose() {
-    messageBodyEditorController.dispose();
+    messageTextController.dispose();
+    subjectTextController.dispose();
     vacationWorker.dispose();
     super.onClose();
   }

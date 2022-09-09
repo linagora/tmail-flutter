@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-09-09T11:02:43.750933",
+  "@@last_modified": "2022-09-09T19:10:45.099202",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1906,12 +1906,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationResponder": "Vacation responder",
-  "@vacationResponder": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "activated": "Activated",
   "@activated": {
     "type": "text",
@@ -1942,13 +1936,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageBody": "Message body",
-  "@messageBody": {
+  "message": "Message",
+  "@message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintMessageBodyVacation": "Start writing your vacation message here",
+  "hintMessageBodyVacation": "Vacation messages",
   "@hintMessageBodyVacation": {
     "type": "text",
     "placeholders_order": [],
@@ -2128,6 +2122,42 @@
   },
   "toastErrorMessageWhenCreateNewRule": "You have not filled in the information completely.",
   "@toastErrorMessageWhenCreateNewRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingExplanation": "Sends an automated reply to incoming messages.",
+  "@vacationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingToggleButtonAutoReply": "Automatically reply to messages when they are received.",
+  "@vacationSettingToggleButtonAutoReply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startTime": "Start time",
+  "@startTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endTime": "End time",
+  "@endTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintSubjectInputVacationSetting": "Enter subject",
+  "@hintSubjectInputVacationSetting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveChanges": "Save changes",
+  "@saveChanges": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
