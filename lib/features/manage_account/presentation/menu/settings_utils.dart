@@ -19,6 +19,14 @@ class SettingsUtils {
     }
   }
 
+  static EdgeInsets getPaddingAppBar(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isMobile(context)) {
+      return const EdgeInsets.symmetric(horizontal: 16);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 32);
+    }
+  }
+
   static EdgeInsets getMarginViewForSettingDetails(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (BuildUtils.isWeb) {
       if (responsiveUtils.isDesktop(context)) {

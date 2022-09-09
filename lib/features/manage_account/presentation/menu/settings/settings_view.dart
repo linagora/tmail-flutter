@@ -39,7 +39,7 @@ class SettingsView extends GetWidget<SettingsController> {
           SizedBox.fromSize(
             size: const Size.fromHeight(52),
             child: Padding(
-              padding: SettingsUtils.getPaddingInFirstLevel(context, _responsiveUtils),
+              padding: SettingsUtils.getPaddingAppBar(context, _responsiveUtils),
               child: _buildAppbar(context))),
           const Divider(color: AppColor.colorDividerComposer, height: 1),
           Obx(() {
@@ -109,24 +109,69 @@ class SettingsView extends GetWidget<SettingsController> {
   }
 
   Widget _buildSettingLevel1AppBar(BuildContext context) {
-    return Row(children: [
-      _buildBackButton(context),
-      Expanded(
+    return Stack(children: [
+      if (_responsiveUtils.isPortraitMobile(context))
+        _buildBackButton(context)
+      else
+        Align(
+        alignment: Alignment.centerLeft,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: controller.backToUniversalSettings,
+            borderRadius: BorderRadius.circular(15),
+            child: Tooltip(
+              message: AppLocalizations.of(context).back,
+              child: Container(
+                color: Colors.transparent,
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  SvgPicture.asset(
+                      _imagePaths.icBack,
+                      width: 18,
+                      height: 18,
+                      color: AppColor.colorTextButton,
+                      fit: BoxFit.fill),
+                  Container(
+                    margin: const EdgeInsets.only(left: 8),
+                    constraints: const BoxConstraints(maxWidth: 100),
+                    child: Text(
+                        AppLocalizations.of(context).settings,
+                        maxLines: 1,
+                        overflow: CommonTextStyle.defaultTextOverFlow,
+                        softWrap: CommonTextStyle.defaultSoftWrap,
+                        style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton)),
+                  ),
+                ]),
+              ),
+            ),
+          ),
+        ),
+      ),
+      Align(
+        alignment: Alignment.center,
         child: Text(
-          AppLocalizations.of(context).settings,
+          controller.manageAccountDashboardController.accountMenuItemSelected.value.getName(context),
           maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 21, color: Colors.black, fontWeight: FontWeight.bold)
-        )
-      )
+          overflow: CommonTextStyle.defaultTextOverFlow,
+          softWrap: CommonTextStyle.defaultSoftWrap,
+          style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold)))
     ]);
   }
 
   Widget _buildBackButton(BuildContext context) {
-    return buildIconWeb(
-        icon: SvgPicture.asset(_imagePaths.icBack, width: 9, height: 16, color: AppColor.colorTextButton, fit: BoxFit.fill),
-        tooltip: AppLocalizations.of(context).back,
-        onTap: controller.backToUniversalSettings
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: buildIconWeb(
+          icon: SvgPicture.asset(_imagePaths.icBack,
+              width: 18,
+              height: 18,
+              color: AppColor.colorTextButton,
+              fit: BoxFit.fill),
+          tooltip: AppLocalizations.of(context).back,
+          onTap: controller.backToUniversalSettings
+      ),
     );
   }
 

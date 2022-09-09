@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-09-09T19:10:45.099202",
+  "@@last_modified": "2022-09-09T19:44:24.604383",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2158,6 +2158,12 @@
   },
   "saveChanges": "Save changes",
   "@saveChanges": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageIsRequired": "Message is required",
+  "@messageIsRequired": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
