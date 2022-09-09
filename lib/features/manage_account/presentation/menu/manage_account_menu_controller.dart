@@ -13,8 +13,8 @@ class ManageAccountMenuController extends BaseController {
 
   final listAccountMenuItem = RxList<AccountMenuItem>([
     AccountMenuItem.profiles,
-    AccountMenuItem.languageAndRegion,
     AccountMenuItem.vacation,
+    AccountMenuItem.languageAndRegion,
   ]);
 
   void _initWorker() {
@@ -43,8 +43,8 @@ class ManageAccountMenuController extends BaseController {
     if (dashBoardController.checkAvailableForwardInSession()) {
       listAccountMenuItem.add(AccountMenuItem.forward);
     }
-    listAccountMenuItem.add(AccountMenuItem.languageAndRegion);
     listAccountMenuItem.add(AccountMenuItem.vacation);
+    listAccountMenuItem.add(AccountMenuItem.languageAndRegion);
   }
 
   @override
