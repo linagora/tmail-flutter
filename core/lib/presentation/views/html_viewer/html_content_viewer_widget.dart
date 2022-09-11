@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:developer' as developer;
 
@@ -151,8 +152,11 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       await urlDelegate(Uri.parse(url));
       return NavigationDecision.prevent;
     }
-    if (await launcher.canLaunch(url)) {
-      await launcher.launch(url);
+    if (await launcher.canLaunchUrl(Uri.parse(url))) {
+      await launcher.launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication
+      );
     }
     return NavigationDecision.prevent;
   }
