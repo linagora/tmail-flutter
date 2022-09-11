@@ -62,7 +62,7 @@ dependencies:
   webview_flutter: 3.0.0
 
   # url_launcher
-  url_launcher: 6.0.17
+  url_launcher: 6.1.5
 
   # collection
   collection: 1.16.0
