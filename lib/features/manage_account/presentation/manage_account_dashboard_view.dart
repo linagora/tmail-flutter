@@ -1,7 +1,6 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
@@ -91,8 +90,12 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                                         top: 16,
                                         left: BuildUtils.isWeb ? 24 : 16,
                                         right: BuildUtils.isWeb ? 24 : 16),
+                                    fromAccountDashBoard: true,
                                     vacationResponse: controller.vacationResponse.value!,
-                                    action: () => controller.disableVacationResponder());
+                                    actionGotoVacationSetting: !controller.inVacationSettings()
+                                        ? () => controller.selectAccountMenuItem(AccountMenuItem.vacation)
+                                        : null,
+                                    actionEndNow: () => controller.disableVacationResponder());
                               } else if ((controller.vacationResponse.value?.vacationResponderIsWaiting == true
                                   || controller.vacationResponse.value?.vacationResponderIsStopped == true)
                                   && controller.accountMenuItemSelected.value == AccountMenuItem.vacation) {
@@ -101,10 +104,9 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                                         top: 16,
                                         left: BuildUtils.isWeb ? 24 : 16,
                                         right: BuildUtils.isWeb ? 24 : 16),
+                                    fromAccountDashBoard: true,
                                     vacationResponse: controller.vacationResponse.value!,
                                     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                    backgroundColor: Colors.yellow,
-                                    fontWeight: FontWeight.normal,
                                     leadingIcon: const Padding(
                                       padding: EdgeInsets.only(right: 16),
                                       child: Icon(Icons.timer, size: 20),

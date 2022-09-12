@@ -50,6 +50,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_va
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -620,6 +621,17 @@ class MailboxDashBoardController extends ReloadableController {
           ? vacationResponse.value!.copyWith(isEnabled: false)
           : VacationResponse(isEnabled: false);
       consumeState(_updateVacationInteractor.execute(accountId.value!, vacationDisabled));
+    }
+  }
+
+  void goToVacationSetting() async {
+    final result = await push(AppRoutes.MANAGE_ACCOUNT,
+        arguments: ManageAccountArguments(
+            sessionCurrent,
+            menuSettingCurrent: AccountMenuItem.vacation));
+
+    if (result is VacationResponse) {
+      vacationResponse.value = result;
     }
   }
 

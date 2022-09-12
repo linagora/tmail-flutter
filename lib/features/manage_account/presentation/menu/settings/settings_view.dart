@@ -49,8 +49,9 @@ class SettingsView extends GetWidget<SettingsController> {
                   left: BuildUtils.isWeb ? 24 : 16,
                   right: BuildUtils.isWeb ? 24 : 16,
                   top: 16),
+                fromAccountDashBoard: true,
                 vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
-                action: () => controller.manageAccountDashboardController.disableVacationResponder());
+                actionEndNow: () => controller.manageAccountDashboardController.disableVacationResponder());
             } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
                 || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
                 && controller.manageAccountDashboardController.inVacationSettings()) {
@@ -59,10 +60,9 @@ class SettingsView extends GetWidget<SettingsController> {
                     left: BuildUtils.isWeb ? 24 : 16,
                     right: BuildUtils.isWeb ? 24 : 16,
                     top: 16),
+                  fromAccountDashBoard: true,
                   vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                  fontWeight: FontWeight.normal,
-                  backgroundColor: Colors.yellow,
                   leadingIcon: const Padding(
                     padding: EdgeInsets.only(right: 16),
                     child: Icon(Icons.timer, size: 20),
