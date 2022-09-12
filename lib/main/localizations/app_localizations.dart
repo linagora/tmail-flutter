@@ -2065,13 +2065,6 @@ class AppLocalizations {
     );
   }
 
-  String get disable {
-    return Intl.message(
-      'Disable',
-      name: 'disable',
-    );
-  }
-
   String get yourVacationResponderIsDisabledSuccessfully {
     return Intl.message(
       'Your vacation responder is disabled successfully',
@@ -2235,6 +2228,20 @@ class AppLocalizations {
     return Intl.message(
       'Message is required',
       name: 'messageIsRequired',
+    );
+  }
+
+  String get endNow {
+    return Intl.message(
+      'End now',
+      name: 'endNow',
+    );
+  }
+
+  String get vacationSetting {
+    return Intl.message(
+      'Vacation setting',
+      name: 'vacationSetting',
     );
   }
 }

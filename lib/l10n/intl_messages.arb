@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-09-09T19:44:24.604383",
+  "@@last_modified": "2022-09-12T10:15:14.832674",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1996,12 +1996,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "disable": "Disable",
-  "@disable": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "yourVacationResponderIsDisabledSuccessfully": "Your vacation responder is disabled successfully",
   "@yourVacationResponderIsDisabledSuccessfully": {
     "type": "text",
@@ -2164,6 +2158,18 @@
   },
   "messageIsRequired": "Message is required",
   "@messageIsRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endNow": "End now",
+  "@endNow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSetting": "Vacation setting",
+  "@vacationSetting": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
