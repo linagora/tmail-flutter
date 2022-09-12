@@ -138,11 +138,11 @@ extension AppColor on Color {
   static const colorBackgroundFieldConditionRulesFilter = Color(0xFFF2F3F5);
   static const colorDividerRuleFilter = Color(0xFFE7E8EC);
   static const colorIconTextField = Color(0xFFB8C1CC);
-  static const colorVacationNotificationMessageBackground = Color(0x2999A2AD);
   static const colorDeletePermanentlyButton = Color(0xffE64646);
   static const colorDefaultButton = Color(0xff9AA1AD);
   static const colorVacationSettingExplanation = Color(0xFF686E76);
   static const colorBackgroundVacationSettingField = Color(0xFFF2F3F5);
+  static const colorBackgroundNotificationVacationSetting= Color(0xFFFFF5C2);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

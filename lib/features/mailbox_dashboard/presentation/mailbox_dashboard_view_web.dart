@@ -100,7 +100,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             return VacationNotificationMessageWidget(
                                 margin: const EdgeInsets.only(top: 16, right: 16),
                                 vacationResponse: controller.vacationResponse.value!,
-                                action: () => controller.disableVacationResponder());
+                                actionGotoVacationSetting: () => controller.goToVacationSetting(),
+                                actionEndNow: () => controller.disableVacationResponder());
                           } else {
                             return const SizedBox.shrink();
                           }

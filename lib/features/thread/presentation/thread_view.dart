@@ -63,18 +63,6 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                         ... [
                           _buildAppBarNormal(context),
                           Obx(() {
-                            if (controller.mailboxDashBoardController.vacationResponse.value?.vacationResponderIsValid == true) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: VacationNotificationMessageWidget(
-                                    vacationResponse: controller.mailboxDashBoardController.vacationResponse.value!,
-                                    action: () => controller.mailboxDashBoardController.disableVacationResponder()),
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
-                          Obx(() {
                             return Stack(children: [
                               if (!controller.isSearchActive())
                                 Container(
@@ -95,7 +83,20 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                                         bottom: !BuildUtils.isWeb ? 16 : 0),
                                     child: _buildSearchFormActive(context))
                             ]);
-                          })
+                          }),
+                          Obx(() {
+                            if (controller.mailboxDashBoardController.vacationResponse.value?.vacationResponderIsValid == true) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8, top: 4),
+                                child: VacationNotificationMessageWidget(
+                                    vacationResponse: controller.mailboxDashBoardController.vacationResponse.value!,
+                                    actionGotoVacationSetting: () => controller.mailboxDashBoardController.goToVacationSetting(),
+                                    actionEndNow: () => controller.mailboxDashBoardController.disableVacationResponder()),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
                         ]
                       else
                         const SizedBox.shrink(),

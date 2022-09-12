@@ -33,6 +33,7 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final GetAllVacationInteractor _getAllVacationInteractor;
   final UpdateVacationInteractor _updateVacationInteractor;
@@ -107,6 +108,9 @@ class ManageAccountDashBoardController extends ReloadableController {
       _getUserProfile();
       _getVacationResponse();
       injectAutoCompleteBindings();
+      if (arguments.menuSettingCurrent != null) {
+        _goToSettingMenuCurrent(arguments.menuSettingCurrent!);
+      }
     } else {
       if (kIsWeb) {
         reload();
@@ -155,6 +159,20 @@ class ManageAccountDashBoardController extends ReloadableController {
     accountMenuItemSelected.value = newAccountMenuItem;
     if (isMenuDrawerOpen) {
       closeMenuDrawer();
+    }
+  }
+  
+  void _goToSettingMenuCurrent(AccountMenuItem accountMenuItem) {
+    if(accountMenuItem == AccountMenuItem.emailRules) {
+      EmailRulesBindings().dependencies();
+    }
+    if(accountMenuItem == AccountMenuItem.forward) {
+      ForwardBindings().dependencies();
+    }
+    accountMenuItemSelected.value = accountMenuItem;
+    if (currentContext != null &&
+        !_responsiveUtils.isDesktop(currentContext!)) {
+      settingsPageLevel.value = SettingsPageLevel.level1;
     }
   }
 

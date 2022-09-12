@@ -71,7 +71,8 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
                               radius: 0,
                               margin: EdgeInsets.zero,
                               vacationResponse: controller.mailboxDashBoardController.vacationResponse.value!,
-                              action: () => controller.mailboxDashBoardController.disableVacationResponder()),
+                              actionGotoVacationSetting: () => controller.mailboxDashBoardController.goToVacationSetting(),
+                              actionEndNow: () => controller.mailboxDashBoardController.disableVacationResponder()),
                         );
                       } else {
                         return const SizedBox.shrink();
