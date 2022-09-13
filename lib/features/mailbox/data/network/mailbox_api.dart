@@ -138,9 +138,10 @@ class MailboxAPI {
   }
 
   Future<bool> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {
-    requireCapability(session, [CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail]);
+    requireCapability(session, accountId, [CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail]);
 
-    final coreCapability = (session.capabilities[CapabilityIdentifier.jmapCore] as CoreCapability);
+    final coreCapability = session.getCapabilityProperties<CoreCapability>(
+        accountId, CapabilityIdentifier.jmapCore);
     final maxMethodCount = coreCapability.maxCallsInRequest.value.toInt();
 
     var finalResult = true;
