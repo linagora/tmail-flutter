@@ -1,6 +1,9 @@
 
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
+import 'package:jmap_dart_client/jmap/core/capability/empty_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:uri/uri.dart';
 
@@ -24,5 +27,16 @@ extension SessionExtension on Session {
     });
     log('SessionExtension::getUploadUri(): uploadUri: $uploadUri');
     return Uri.parse(uploadUri);
+  }
+
+  T getCapabilityProperties<T extends CapabilityProperties>(
+    AccountId accountId,
+    CapabilityIdentifier identifier
+  ) {
+    var capability = accounts[accountId]!.accountCapabilities[identifier];
+    if (capability is EmptyCapability) {
+      capability = capabilities[identifier] as T;
+    }
+    return (capability as T);
   }
 }
