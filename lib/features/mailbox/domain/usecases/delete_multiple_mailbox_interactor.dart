@@ -20,9 +20,11 @@ class DeleteMultipleMailboxInteractor {
             mailboxIdDeleted,
             currentMailboxState: currentMailboxState));
       } else {
+        logError('DeleteMultipleMailboxInteractor::execute(): failed');
         yield Left<Failure, Success>(DeleteMultipleMailboxFailure(null));
       }
     } catch (e) {
+      logError('DeleteMultipleMailboxInteractor::execute(): exception: $e');
       yield Left<Failure, Success>(DeleteMultipleMailboxFailure(e));
     }
   }
