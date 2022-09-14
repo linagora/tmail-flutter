@@ -12,10 +12,10 @@ import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/emails_forward_creator/presentation/model/mails_forward_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/session_extension.dart';
 
 class EmailsForwardCreatorController extends BaseController {
 
@@ -65,7 +65,7 @@ class EmailsForwardCreatorController extends BaseController {
       {required String word}) async {
     log('EmailsForwardCreatorController::getAutoCompleteSuggestion(): $word | $_contactSuggestionSource');
 
-    if(_session?.hasSupportAutoComplete != true) return <EmailAddress>[];
+    if(_session?.hasSupportTmailAutoComplete != true) return <EmailAddress>[];
 
     _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
     _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();

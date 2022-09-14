@@ -20,7 +20,7 @@ class AutoCompleteTMailContactMethod extends AutoCompleteMethod {
   @override
   Set<CapabilityIdentifier> get requiredCapabilities => {
     CapabilityIdentifier.jmapCore,
-    capabilityContact
+    tmailContactCapabilityIdentifier
   };
 
   factory AutoCompleteTMailContactMethod.fromJson(Map<String, dynamic> json) {

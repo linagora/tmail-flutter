@@ -34,7 +34,7 @@ class AutoCompleteBindings extends BaseBindings {
   void bindingsDataSourceImpl() {
     _dataSources.clear();
     Get.lazyPut(() => ContactDataSourceImpl());
-    if (_mailboxDashBoardController.sessionCurrent?.hasSupportAutoComplete == true) {
+    if (_mailboxDashBoardController.sessionCurrent?.hasSupportTmailAutoComplete == true) {
       Get.lazyPut(() => TMailContactDataSourceImpl(Get.find<ContactAPI>()));
       _dataSources.add(Get.find<TMailContactDataSourceImpl>());
     }
