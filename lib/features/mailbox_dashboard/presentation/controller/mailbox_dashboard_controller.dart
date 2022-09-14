@@ -28,15 +28,15 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
@@ -76,8 +76,8 @@ class MailboxDashBoardController extends ReloadableController {
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
   final MarkAsMailboxReadInteractor _markAsMailboxReadInteractor;
   final GetComposerCacheOnWebInteractor _getEmailCacheOnWebInteractor;
-  final GetAllVacationInteractor _getAllVacationInteractor;
-  final UpdateVacationInteractor _updateVacationInteractor;
+  GetAllVacationInteractor? _getAllVacationInteractor;
+  UpdateVacationInteractor? _updateVacationInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -112,9 +112,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._moveToMailboxInteractor,
     this._deleteEmailPermanentlyInteractor,
     this._markAsMailboxReadInteractor,
-    this._getEmailCacheOnWebInteractor,
-    this._getAllVacationInteractor,
-    this._updateVacationInteractor,
+    this._getEmailCacheOnWebInteractor
   ) : super(logoutOidcInteractor,
       deleteAuthorityOidcInteractor,
       getAuthenticatedAccountInteractor);
@@ -294,10 +292,22 @@ class MailboxDashBoardController extends ReloadableController {
       sessionCurrent = arguments;
       accountId.value = sessionCurrent?.accounts.keys.first;
       injectAutoCompleteBindings();
+      injectVacationBindings(sessionCurrent, accountId.value);
     } else {
       if (kIsWeb) {
         reload();
       }
+    }
+  }
+
+  @override
+  void injectVacationBindings(Session? session, AccountId? accountId) {
+    try {
+      super.injectVacationBindings(session, accountId);
+      _getAllVacationInteractor = Get.find<GetAllVacationInteractor>();
+      _updateVacationInteractor = Get.find<UpdateVacationInteractor>();
+    } catch (e) {
+      logError('MailboxDashBoardController::injectVacationBindings(): $e');
     }
   }
 
@@ -308,8 +318,8 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _getVacationResponse() {
-    if (accountId.value != null) {
-      consumeState(_getAllVacationInteractor.execute(accountId.value!));
+    if (accountId.value != null && _getAllVacationInteractor != null) {
+      consumeState(_getAllVacationInteractor!.execute(accountId.value!));
     }
   }
 
@@ -469,9 +479,10 @@ class MailboxDashBoardController extends ReloadableController {
     sessionCurrent = session;
     accountId.value = sessionCurrent?.accounts.keys.first;
     _getUserProfile();
-    _getVacationResponse();
     _handleComposerCache();
     injectAutoCompleteBindings();
+    injectVacationBindings(sessionCurrent, accountId.value);
+    _getVacationResponse();
   }
 
   UnsignedInt? get maxSizeAttachmentsPerEmail {
@@ -616,11 +627,11 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void disableVacationResponder() {
-    if (accountId.value != null) {
+    if (accountId.value != null && _updateVacationInteractor != null) {
       final vacationDisabled = vacationResponse.value != null
           ? vacationResponse.value!.copyWith(isEnabled: false)
           : VacationResponse(isEnabled: false);
-      consumeState(_updateVacationInteractor.execute(accountId.value!, vacationDisabled));
+      consumeState(_updateVacationInteractor!.execute(accountId.value!, vacationDisabled));
     }
   }
 
