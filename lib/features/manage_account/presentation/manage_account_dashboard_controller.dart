@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/forward/forwa
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller_bindings.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -35,8 +36,8 @@ class ManageAccountDashBoardController extends ReloadableController {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  final GetAllVacationInteractor _getAllVacationInteractor;
-  final UpdateVacationInteractor _updateVacationInteractor;
+  GetAllVacationInteractor? _getAllVacationInteractor;
+  UpdateVacationInteractor? _updateVacationInteractor;
 
   final menuDrawerKey = GlobalKey<ScaffoldState>(debugLabel: 'manage_account');
 
@@ -54,9 +55,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   ManageAccountDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
     DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
-    GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
-    this._getAllVacationInteractor,
-    this._updateVacationInteractor,
+    GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor
   ) : super(logoutOidcInteractor,
       deleteAuthorityOidcInteractor,
       getAuthenticatedAccountInteractor);
@@ -95,8 +94,9 @@ class ManageAccountDashBoardController extends ReloadableController {
     sessionCurrent.value = session;
     accountId.value = session.accounts.keys.first;
     _getUserProfile();
-    _getVacationResponse();
     injectAutoCompleteBindings();
+    injectVacationBindings(sessionCurrent.value, accountId.value);
+    _getVacationResponse();
   }
 
   void _getArguments() {
@@ -106,8 +106,9 @@ class ManageAccountDashBoardController extends ReloadableController {
       sessionCurrent.value = arguments.session;
       accountId.value = sessionCurrent.value?.accounts.keys.first;
       _getUserProfile();
-      _getVacationResponse();
       injectAutoCompleteBindings();
+      injectVacationBindings(sessionCurrent.value, accountId.value);
+      _getVacationResponse();
       if (arguments.menuSettingCurrent != null) {
         _goToSettingMenuCurrent(arguments.menuSettingCurrent!);
       }
@@ -115,6 +116,18 @@ class ManageAccountDashBoardController extends ReloadableController {
       if (kIsWeb) {
         reload();
       }
+    }
+  }
+
+  @override
+  void injectVacationBindings(Session? session, AccountId? accountId) {
+    try {
+      super.injectVacationBindings(session, accountId);
+      VacationControllerBindings().dependencies();
+      _getAllVacationInteractor = Get.find<GetAllVacationInteractor>();
+      _updateVacationInteractor = Get.find<UpdateVacationInteractor>();
+    } catch (e) {
+      logError('MailboxDashBoardController::injectVacationBindings(): $e');
     }
   }
 
@@ -130,8 +143,8 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void _getVacationResponse() {
-    if (accountId.value != null) {
-      consumeState(_getAllVacationInteractor.execute(accountId.value!));
+    if (accountId.value != null && _getAllVacationInteractor != null) {
+      consumeState(_getAllVacationInteractor!.execute(accountId.value!));
     }
   }
 
@@ -198,11 +211,11 @@ class ManageAccountDashBoardController extends ReloadableController {
   bool checkAvailableForwardInSession() => sessionCurrent.value?.capabilities.containsKey(capabilityForward) ?? false;
 
   void disableVacationResponder() {
-    if (accountId.value != null) {
+    if (accountId.value != null && _updateVacationInteractor != null) {
       final vacationDisabled = vacationResponse.value != null
           ? vacationResponse.value!.copyWith(isEnabled: false)
           : VacationResponse(isEnabled: false);
-      consumeState(_updateVacationInteractor.execute(accountId.value!, vacationDisabled));
+      consumeState(_updateVacationInteractor!.execute(accountId.value!, vacationDisabled));
     }
   }
 
