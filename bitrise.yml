@@ -100,13 +100,13 @@ workflows:
         - platform: ios
         - is_debug_mode: 'true'
         - ios_additional_params: "--release"
-        - ios_codesign_identity: 'iPhone Distribution: Linagora (KUT463DS29)'
+        - ios_codesign_identity: 'Apple Distribution: Linagora (KUT463DS29)'
     - xcode-archive@3:
         inputs:
         - team_id: KUT463DS29
         - force_team_id: KUT463DS29
-        - force_code_sign_identity: 'iPhone Distribution: Linagora (KUT463DS29)'
-        - force_provisioning_profile: b133d019-5fff-4b7e-8126-25f7e248738a
+        - force_code_sign_identity: 'Apple Distribution: Linagora (KUT463DS29)'
+        - force_provisioning_profile: 58a58b5f-40c8-49d8-8113-f93cf5c6d01f
         - force_provisioning_profile_specifier: ''
         - export_method: app-store
     - deploy-to-itunesconnect-application-loader@1:
