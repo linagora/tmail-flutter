@@ -4,6 +4,8 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/oidc/token_oidc.dart';
@@ -22,9 +24,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/a
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -180,5 +184,14 @@ abstract class ReloadableController extends BaseController {
 
   void injectAutoCompleteBindings() {
     AutoCompleteBindings().dependencies();
+  }
+
+  void injectVacationBindings(Session? session, AccountId? accountId) {
+    try {
+      requireCapability(session!, accountId!, [CapabilityIdentifier.jmapVacationResponse]);
+      VacationInteractorsBindings().dependencies();
+    } catch(e) {
+      logError('MailboxDashBoardController::injectVacationBindings(): exception: $e');
+    }
   }
 }
