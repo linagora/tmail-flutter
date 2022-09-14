@@ -124,14 +124,14 @@ workflows:
         - is_debug_mode: 'true'
         - ios_additional_params: "--release"
         - additional_build_params: "--dart-define=SERVER_URL=$SERVER_URL"
-        - ios_codesign_identity: 'iPhone Developer: Tung Tran (B8V9X882MX)'
+        - ios_codesign_identity: 'Apple Development: Nguyen Thai (X8A5QHJY3Q)'
     - sign-apk@1: {}
     - xcode-archive@3:
         inputs:
         - team_id: KUT463DS29
         - force_team_id: KUT463DS29
-        - force_code_sign_identity: 'iPhone Developer: Tung Tran (B8V9X882MX)'
-        - force_provisioning_profile: 431f914f-5662-422a-8fc1-263b41e1bb4b
+        - force_code_sign_identity: 'Apple Development: Nguyen Thai (X8A5QHJY3Q)'
+        - force_provisioning_profile: 7941e5b7-dd0e-4aed-8029-803988b9d5c8
         - force_provisioning_profile_specifier: ''
         - export_method: development
     - deploy-to-bitrise-io@2: {}
