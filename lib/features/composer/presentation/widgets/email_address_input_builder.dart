@@ -84,11 +84,7 @@ class EmailAddressInputBuilder {
       this.controller,
       this.expandMode = ExpandMode.EXPAND,
     }
-  ) {
-    _gapBetweenTagChangedAndFindSuggestion = Timer(
-        const Duration(seconds: 1),
-        _handleGapBetweenTagChangedAndFindSuggestion);
-  }
+  );
 
   Widget build() {
     return Row(
@@ -197,6 +193,9 @@ class EmailAddressInputBuilder {
                 setState(() => listEmailAddress.add(EmailAddress(null, value)));
                 _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
               }
+              _gapBetweenTagChangedAndFindSuggestion = Timer(
+                const Duration(seconds: 1),
+                _handleGapBetweenTagChangedAndFindSuggestion);
             },
             findSuggestions: _findSuggestions,
             searchAllSuggestions: () async {
@@ -327,8 +326,8 @@ class EmailAddressInputBuilder {
   }
 
   FutureOr<List<SuggestionEmailAddress>> _findSuggestions(String query) async {
-    log('EmailAddressInputBuilder::_buildTagEditor(): findSuggestions: $query');
-    if (_gapBetweenTagChangedAndFindSuggestion?.isActive ?? true) {
+    if (_gapBetweenTagChangedAndFindSuggestion?.isActive ?? false) {
+      log('EmailAddressInputBuilder::_findSuggestions(): return empty');
       return [];
     }
 
