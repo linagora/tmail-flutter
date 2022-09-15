@@ -281,6 +281,9 @@ class ThreadController extends BaseController {
         } else if (action is StartSearchEmailAction) {
           _searchEmail();
           mailboxDashBoardController.clearDashBoardAction();
+        } else if (action is EmptyTrashAction) {
+          deleteSelectionEmailsPermanently(action.context, DeleteActionType.all);
+          mailboxDashBoardController.clearDashBoardAction();
         }
       }
     });

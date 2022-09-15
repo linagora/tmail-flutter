@@ -87,3 +87,13 @@ class StartSearchEmailAction extends DashBoardAction {
   @override
   List<Object?> get props => [];
 }
+
+class EmptyTrashAction extends DashBoardAction {
+
+  final BuildContext context;
+
+  EmptyTrashAction(this.context);
+
+  @override
+  List<Object?> get props => [];
+}
