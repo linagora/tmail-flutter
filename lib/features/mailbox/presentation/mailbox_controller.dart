@@ -199,25 +199,18 @@ class MailboxController extends BaseMailboxController {
       if (state is Either) {
         state.fold((failure) => null, (success) {
           if (success is MarkAsMultipleEmailReadAllSuccess) {
-            mailboxDashBoardController.clearState();
             refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-            mailboxDashBoardController.clearState();
             refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
-            mailboxDashBoardController.clearState();
             refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
-            mailboxDashBoardController.clearState();
             refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
-            mailboxDashBoardController.clearState();
             refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
-            mailboxDashBoardController.clearState();
             refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is EmptyTrashFolderSuccess) {
-            mailboxDashBoardController.clearState();
             refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is MarkAsEmailReadSuccess) {
             refreshMailboxChanges(currentMailboxState: success.currentMailboxState);

@@ -8,11 +8,17 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
 
   bool get isAllEmailStarred => every((email) => email.hasStarred);
 
+  bool get isAllSelectionInActive {
+    return every((email) => email.selectMode == SelectMode.INACTIVE);
+  }
+
   List<Email> get listEmail => map((presentationEmail) => presentationEmail.toEmail()).toList();
 
   List<PresentationEmail> get listEmailSelected {
     return where((email) => email.selectMode == SelectMode.ACTIVE).toList();
   }
+
+  List<EmailId> get listEmailIds => map((email) => email.id).toList();
 
   bool isAllCanDeletePermanently(Map<MailboxId, PresentationMailbox> mapMailbox) {
     final listMailboxContain = map((email) => email.findMailboxContain(mapMailbox))

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-09-16T10:29:51.348820",
+  "@@last_modified": "2022-09-16T03:16:09.866930",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2176,6 +2176,12 @@
   },
   "backToSearchResults": "Back to Search Results",
   "@backToSearchResults": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearAll": "Clear all",
+  "@clearAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
