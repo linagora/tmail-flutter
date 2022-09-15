@@ -2,8 +2,8 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/rule_action.dart';
 import 'package:rule_filter/rule_filter/rule_append_in.dart';
@@ -18,6 +18,11 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/data/extensions/list_tmail_rule_extensions.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
@@ -32,7 +37,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final VerifyNameInteractor _verifyNameInteractor;
   final GetAllMailboxInteractor _getAllMailboxInteractor;
 
-  final actionType = CreatorActionType.create.obs;
   final errorRuleName = Rxn<String>();
   final errorRuleConditionValue = Rxn<String>();
   final errorRuleActionValue = Rxn<String>();
@@ -46,10 +50,19 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final inputRuleNameFocusNode = FocusNode();
   final inputRuleConditionFocusNode = FocusNode();
 
-  AccountId? _accountId;
+  final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
+  final _emailRulesController = Get.find<EmailRulesController>();
+
+  late Worker rulesFilterCreatorArgumentsWorker;
+
+  get actionType => _emailRulesController.rulesFilterCreatorArguments.value!.actionType;
+
+  get _accountId => _emailRulesController.rulesFilterCreatorArguments.value!.accountId;
+
+  get _currentTMailRule => _emailRulesController.rulesFilterCreatorArguments.value!.tMailRule;
+
   String? _newRuleName;
   String? _newRuleConditionValue;
-  TMailRule? _currentTMailRule;
 
   RulesFilterCreatorController(
     this._verifyNameInteractor,
@@ -57,9 +70,22 @@ class RulesFilterCreatorController extends BaseMailboxController {
     treeBuilder
   ) : super(treeBuilder);
 
+  void _initWorker() {
+    rulesFilterCreatorArgumentsWorker = ever(_emailRulesController.rulesFilterCreatorArguments, (rulesFilterCreatorArguments) {
+      if (rulesFilterCreatorArguments is RulesFilterCreatorArguments) {
+        _setUpDefaultValueRuleFilter();
+      }
+    });
+  }
+
+  @override
+  void onInit() {
+    _initWorker();
+    super.onInit();
+  }
+
   @override
   void onReady() {
-    _getArguments();
     _setUpDefaultValueRuleFilter();
     super.onReady();
   }
@@ -92,17 +118,8 @@ class RulesFilterCreatorController extends BaseMailboxController {
   @override
   void onError(error) {}
 
-  void _getArguments() {
-    final arguments = Get.arguments;
-    if (arguments is RulesFilterCreatorArguments) {
-      _accountId = arguments.accountId;
-      actionType.value = arguments.actionType;
-      _currentTMailRule = arguments.tMailRule;
-    }
-  }
-
   void _setUpDefaultValueRuleFilter() {
-    switch(actionType.value) {
+    switch(actionType) {
       case CreatorActionType.create:
         ruleConditionFieldSelected.value = rule_condition.Field.from;
         ruleConditionComparatorSelected.value = rule_condition.Comparator.contains;
@@ -250,8 +267,30 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
     log('RulesFilterCreatorController::newTMailRule(): $newTMailRule');
 
+    if(actionType == CreatorActionType.create) {
+      _emailRulesController.createNewRuleFilterAction(
+        _accountId,
+        CreateNewEmailRuleFilterRequest(
+          _emailRulesController.listEmailRule,
+          newTMailRule,
+        ),
+      );
+    } else {
+      _emailRulesController.editEmailRuleFilterAction(
+        _accountId,
+        EditEmailRuleFilterRequest(
+          _emailRulesController.listEmailRule.withIds,
+          newTMailRule,
+        ),
+      );
+    }
+
     _clearAll();
-    popBack(result: newTMailRule);
+    if(kIsWeb) {
+      _accountDashBoardController.rulesFilterCreatorIsActive.toggle();
+    } else {
+      popBack();
+    }
   }
 
   void _clearAll() {
@@ -261,6 +300,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   void closeView(BuildContext context) {
     FocusScope.of(context).unfocus();
-    popBack();
+    if(kIsWeb) {
+      _clearAll();
+      _accountDashBoardController.rulesFilterCreatorIsActive.toggle();
+    } else {
+      popBack();
+    }
   }
 }
