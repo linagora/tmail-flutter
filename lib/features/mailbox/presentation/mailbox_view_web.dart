@@ -130,10 +130,10 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
   Widget _buildSearchBarWidget(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(top: 16, bottom: 16, right: 4, left: _responsiveUtils.isDesktop(context) ? 0 : 12),
-        child: (SearchBarView(_imagePaths)
-            ..hintTextSearch(AppLocalizations.of(context).hint_search_mailboxes)
-            ..addOnOpenSearchViewAction(() => controller.enableSearch()))
-          .build());
+        child: SearchBarView(
+            _imagePaths,
+            hintTextSearch: AppLocalizations.of(context).hint_search_mailboxes,
+            onOpenSearchViewAction: controller.enableSearch));
   }
 
   Widget _buildLoadingView() {
