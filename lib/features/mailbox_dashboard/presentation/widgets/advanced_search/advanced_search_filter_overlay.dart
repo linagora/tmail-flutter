@@ -7,7 +7,12 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 
 class AdvancedSearchFilterOverlay extends StatelessWidget {
 
-  const AdvancedSearchFilterOverlay({Key? key}) : super(key: key);
+  final double? maxWidth;
+
+  const AdvancedSearchFilterOverlay({
+    Key? key,
+    this.maxWidth
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +24,10 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
         padding: const EdgeInsets.only(top: 8, bottom: 16),
         child: Container(
           constraints: BoxConstraints(
-            minWidth: 660,
+            minWidth: maxWidth ?? 660,
             maxHeight: _getHeightOverlay(context, responsiveUtils),
           ),
-          width: 660,
+          width: maxWidth ?? 660,
           height: _getHeightOverlay(context, responsiveUtils),
           padding: responsiveUtils.landscapeTabletSupported(context)
             ? EdgeInsets.zero

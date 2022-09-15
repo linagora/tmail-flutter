@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:io';
 
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
@@ -85,6 +86,8 @@ class QuickSearchInputForm<T, R> extends FormField<String> {
         RecentSelectionCallback<R>? onRecentSelected,
         EdgeInsets? listActionPadding,
         bool hideSuggestionsBox: false,
+        BoxDecoration? decoration,
+        double? maxHeight,
       }) : assert(
   initialValue == null || textFieldConfiguration.controller == null),
         assert(minCharsForSuggestions >= 0),
@@ -146,6 +149,8 @@ class QuickSearchInputForm<T, R> extends FormField<String> {
               onRecentSelected: onRecentSelected,
               listActionPadding: listActionPadding,
               hideSuggestionsBox: hideSuggestionsBox,
+              decoration: decoration,
+              maxHeight: maxHeight,
             );
           });
 
@@ -505,6 +510,10 @@ class TypeAheadFieldQuickSearch<T, R> extends StatefulWidget {
   /// Padding button action
   final EdgeInsets? listActionPadding;
   final bool hideSuggestionsBox;
+  /// Box decoration search input
+  final BoxDecoration? decoration;
+  /// Max height search input
+  final double? maxHeight;
 
   /// Creates a [TypeAheadFieldQuickSearch]
   TypeAheadFieldQuickSearch(
@@ -545,6 +554,8 @@ class TypeAheadFieldQuickSearch<T, R> extends StatefulWidget {
         this.onRecentSelected,
         this.listActionPadding,
         this.hideSuggestionsBox = false,
+        this.decoration,
+        this.maxHeight,
       }) : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
         direction == AxisDirection.down || direction == AxisDirection.up),
@@ -631,6 +642,7 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
           this._suggestionsBox!.close();
         }
       }
+      setState(() {});
     };
 
     this._effectiveFocusNode!.addListener(_focusNodeListener);
@@ -653,6 +665,7 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
         if (this._effectiveFocusNode!.hasFocus) {
           this._suggestionsBox!.open();
         }
+        setState(() {});
       }
     });
   }
@@ -762,15 +775,13 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
           offset: Offset(
               widget.suggestionsBoxDecoration.offsetX,
               _suggestionsBox!.direction == AxisDirection.down
-                  ? _suggestionsBox!.textBoxHeight +
-                  widget.suggestionsBoxVerticalOffset
+                  ? _suggestionsBox!.textBoxHeight + widget.suggestionsBoxVerticalOffset
                   : _suggestionsBox!.directionUpOffset),
           child: _suggestionsBox!.direction == AxisDirection.down
               ? suggestionsList
               : FractionalTranslation(
-            translation:
-            Offset(0.0, -1.0), // visually flips list to go up
-            child: suggestionsList,
+                  translation: Offset(0.0, -1.0), // visually flips list to go up
+                  child: suggestionsList,
           ),
         ),
       );
@@ -781,52 +792,72 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: this._layerLink,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (widget.textFieldConfiguration.leftButton != null)
-            widget.textFieldConfiguration.leftButton!,
-          Expanded(
-            child: TextField(
-              focusNode: this._effectiveFocusNode,
-              controller: this._effectiveController,
-              decoration: widget.textFieldConfiguration.decoration,
-              style: widget.textFieldConfiguration.style,
-              textAlign: widget.textFieldConfiguration.textAlign,
-              enabled: widget.textFieldConfiguration.enabled,
-              keyboardType: widget.textFieldConfiguration.keyboardType,
-              autofocus: widget.textFieldConfiguration.autofocus,
-              inputFormatters: widget.textFieldConfiguration.inputFormatters,
-              autocorrect: widget.textFieldConfiguration.autocorrect,
-              maxLines: widget.textFieldConfiguration.maxLines,
-              textAlignVertical: widget.textFieldConfiguration.textAlignVertical,
-              minLines: widget.textFieldConfiguration.minLines,
-              maxLength: widget.textFieldConfiguration.maxLength,
-              maxLengthEnforcement: widget.textFieldConfiguration.maxLengthEnforcement,
-              obscureText: widget.textFieldConfiguration.obscureText,
-              onChanged: widget.textFieldConfiguration.onChanged,
-              onSubmitted: widget.textFieldConfiguration.onSubmitted,
-              onEditingComplete: widget.textFieldConfiguration.onEditingComplete,
-              onTap: widget.textFieldConfiguration.onTap,
-              scrollPadding: widget.textFieldConfiguration.scrollPadding,
-              textInputAction: widget.textFieldConfiguration.textInputAction,
-              textCapitalization: widget.textFieldConfiguration.textCapitalization,
-              keyboardAppearance: widget.textFieldConfiguration.keyboardAppearance,
-              cursorWidth: widget.textFieldConfiguration.cursorWidth,
-              cursorRadius: widget.textFieldConfiguration.cursorRadius,
-              cursorColor: widget.textFieldConfiguration.cursorColor,
-              textDirection: widget.textFieldConfiguration.textDirection,
-              enableInteractiveSelection:
-              widget.textFieldConfiguration.enableInteractiveSelection,
-              readOnly: widget.hideKeyboard,
+      child: Container(
+        decoration: this._suggestionsBox?.isOpened == true
+          ? const BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(16),
+                  topLeft: Radius.circular(16)),
+              boxShadow: [
+                BoxShadow(
+                    color: AppColor.colorShadowComposer,
+                    blurRadius: 32),
+                BoxShadow(
+                    color: AppColor.colorShadowComposer,
+                    blurRadius: 4),
+              ],
+              color: Colors.white)
+          : const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+              color: AppColor.colorBgSearchBar),
+        height: widget.maxHeight,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (widget.textFieldConfiguration.leftButton != null)
+              widget.textFieldConfiguration.leftButton!,
+            Expanded(
+              child: TextField(
+                focusNode: this._effectiveFocusNode,
+                controller: this._effectiveController,
+                decoration: widget.textFieldConfiguration.decoration,
+                style: widget.textFieldConfiguration.style,
+                textAlign: widget.textFieldConfiguration.textAlign,
+                enabled: widget.textFieldConfiguration.enabled,
+                keyboardType: widget.textFieldConfiguration.keyboardType,
+                autofocus: widget.textFieldConfiguration.autofocus,
+                inputFormatters: widget.textFieldConfiguration.inputFormatters,
+                autocorrect: widget.textFieldConfiguration.autocorrect,
+                maxLines: widget.textFieldConfiguration.maxLines,
+                textAlignVertical: widget.textFieldConfiguration.textAlignVertical,
+                minLines: widget.textFieldConfiguration.minLines,
+                maxLength: widget.textFieldConfiguration.maxLength,
+                maxLengthEnforcement: widget.textFieldConfiguration.maxLengthEnforcement,
+                obscureText: widget.textFieldConfiguration.obscureText,
+                onChanged: widget.textFieldConfiguration.onChanged,
+                onSubmitted: widget.textFieldConfiguration.onSubmitted,
+                onEditingComplete: widget.textFieldConfiguration.onEditingComplete,
+                onTap: widget.textFieldConfiguration.onTap,
+                scrollPadding: widget.textFieldConfiguration.scrollPadding,
+                textInputAction: widget.textFieldConfiguration.textInputAction,
+                textCapitalization: widget.textFieldConfiguration.textCapitalization,
+                keyboardAppearance: widget.textFieldConfiguration.keyboardAppearance,
+                cursorWidth: widget.textFieldConfiguration.cursorWidth,
+                cursorRadius: widget.textFieldConfiguration.cursorRadius,
+                cursorColor: widget.textFieldConfiguration.cursorColor,
+                textDirection: widget.textFieldConfiguration.textDirection,
+                enableInteractiveSelection:
+                widget.textFieldConfiguration.enableInteractiveSelection,
+                readOnly: widget.hideKeyboard,
+              ),
             ),
-          ),
-          if (widget.textFieldConfiguration.clearTextButton != null
-              && this._effectiveController?.text.isNotEmpty == true)
-            widget.textFieldConfiguration.clearTextButton!,
-          if (widget.textFieldConfiguration.rightButton != null)
-            widget.textFieldConfiguration.rightButton!,
-        ],
+            if (widget.textFieldConfiguration.clearTextButton != null
+                && this._effectiveController?.text.isNotEmpty == true)
+              widget.textFieldConfiguration.clearTextButton!,
+            if (widget.textFieldConfiguration.rightButton != null)
+              widget.textFieldConfiguration.rightButton!,
+          ],
+        ),
       ),
     );
   }
@@ -1066,12 +1097,12 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
     final animationChild = widget.transitionBuilder != null
         ? widget.transitionBuilder!(context, child, this._animationController)
         : SizeTransition(
-      axisAlignment: -1.0,
-      sizeFactor: CurvedAnimation(
-          parent: this._animationController!,
-          curve: Curves.fastOutSlowIn),
-      child: child,
-    );
+            axisAlignment: -1.0,
+            sizeFactor: CurvedAnimation(
+                parent: this._animationController!,
+                curve: Curves.fastOutSlowIn),
+            child: child,
+          );
 
     BoxConstraints constraints;
     if (widget.decoration!.constraints == null) {
@@ -1088,10 +1119,16 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
     }
 
     var container = Material(
-      elevation: widget.decoration!.elevation,
+      elevation: widget.suggestionsBox?.isOpened == true
+        ? 1
+        : widget.decoration!.elevation,
       color: widget.decoration!.color,
       shape: widget.decoration!.shape,
-      borderRadius: widget.decoration!.borderRadius,
+      borderRadius:  widget.suggestionsBox?.isOpened == true
+        ? const BorderRadius.only(
+            bottomLeft: Radius.circular(16),
+            bottomRight: Radius.circular(16))
+        : widget.decoration!.borderRadius,
       shadowColor: widget.decoration!.shadowColor,
       clipBehavior: widget.decoration!.clipBehavior,
       child: ConstrainedBox(
@@ -1258,7 +1295,7 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
     if (widget.decoration!.hasScrollbar) {
       child = Scrollbar(
         controller: _scrollController,
-        child: child,
+        child: Container(child: child),
       );
     }
 
