@@ -607,7 +607,8 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   bool supportEmptyTrash(BuildContext context) {
     return controller.isMailboxTrash
         && controller.emailList.isNotEmpty
-        && !controller.isSearchActive();
+        && !controller.isSearchActive()
+        && !_responsiveUtils.isWebDesktop(context);
   }
 
   Widget _buildEmptyTrashButton(BuildContext context) {

@@ -98,6 +98,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     children: [
                       SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
                       Expanded(child: Column(children: [
+                        _buildEmptyTrashButton(context),
                         _buildVacationNotificationMessage(context),
                         _buildListButtonQuickSearchFilter(context),
                         _buildMarkAsMailboxReadLoading(context),
@@ -649,5 +650,60 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ),
         )
     );
+  }
+
+  bool supportEmptyTrash(BuildContext context) {
+    return controller.isMailboxTrash
+        && !controller.searchController.isSearchActive()
+        && responsiveUtils.isWebDesktop(context);
+  }
+
+  Widget _buildEmptyTrashButton(BuildContext context) {
+    return Obx(() {
+      if (supportEmptyTrash(context)) {
+        return Container(
+          decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(14)),
+              border: Border.all(color: AppColor.colorLineLeftEmailView),
+              color: Colors.white),
+          margin: const EdgeInsets.only(right: 16, top: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(children: [
+            Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: SvgPicture.asset(
+                    imagePaths.icDeleteTrash,
+                    fit: BoxFit.fill)),
+            Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Text(
+                              AppLocalizations.of(context).message_delete_all_email_in_trash_button,
+                              style: const TextStyle(
+                                  color: AppColor.colorContentEmail,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500))),
+                      TextButton(
+                          onPressed: () => controller.emptyTrashAction(context),
+                          child: Text(
+                              AppLocalizations.of(context).empty_trash_now,
+                              style: const TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColor.colorTextButton)
+                          )
+                      )
+                    ]
+                )
+            )
+          ]),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 }
