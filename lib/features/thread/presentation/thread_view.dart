@@ -373,33 +373,31 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
 
   Widget _buildAppBarNormal(BuildContext context) {
     return Obx(() {
-      return (AppBarThreadWidgetBuilder(
-              context,
-              controller.currentMailbox,
-              controller.emailList.listEmailSelected,
-              controller.mailboxDashBoardController.currentSelectMode.value,
-              controller.mailboxDashBoardController.filterMessageOption.value)
-          ..addOpenMailboxMenuActionClick(() => controller.openMailboxLeftMenu())
-          ..addOnEditThreadAction(() => controller.enableSelectionEmail())
-          ..addOnEmailSelectionAction((actionType, selectionEmail) =>
-              controller.pressEmailSelectionAction(context, actionType, selectionEmail))
-          ..addOnFilterEmailAction((filterMessageOption, position) {
-            if (_responsiveUtils.isScreenWithShortestSide(context)) {
-              controller.openContextMenuAction(
-                  context,
-                  _filterMessagesCupertinoActionTile(context, filterMessageOption));
-            } else {
-              controller.openPopupMenuAction(
-                  context,
-                  position,
-                  popupMenuFilterEmailActionTile(
-                      context,
-                      filterMessageOption,
-                      (option) => controller.filterMessagesAction(context, option)));
-            }
-          })
-          ..addOnCancelEditThread(() => controller.cancelSelectEmail()))
-        .build();
+      return AppBarThreadWidgetBuilder(
+        controller.currentMailbox,
+        controller.emailList.listEmailSelected,
+        controller.mailboxDashBoardController.currentSelectMode.value,
+        controller.mailboxDashBoardController.filterMessageOption.value,
+        onOpenMailboxMenuActionClick: controller.openMailboxLeftMenu,
+        onCancelEditThread: controller.cancelSelectEmail,
+        onEditThreadAction: controller.enableSelectionEmail,
+        onEmailSelectionAction: (actionType, selectionEmail) =>
+            controller.pressEmailSelectionAction(context, actionType, selectionEmail),
+        onFilterEmailAction: (filterMessageOption, position) {
+          if (_responsiveUtils.isScreenWithShortestSide(context)) {
+            controller.openContextMenuAction(
+                context,
+                _filterMessagesCupertinoActionTile(context, filterMessageOption));
+          } else {
+            controller.openPopupMenuAction(
+                context,
+                position,
+                popupMenuFilterEmailActionTile(
+                    context,
+                    filterMessageOption,
+                        (option) => controller.filterMessagesAction(context, option)));
+          }
+        });
     });
   }
 
