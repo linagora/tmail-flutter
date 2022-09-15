@@ -45,108 +45,33 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
-            ? AppColor.colorBgDesktop
-            : Colors.white,
+        backgroundColor: Colors.white,
         body: Portal(
           child: Row(children: [
-            if ((!BuildUtils.isWeb && _responsiveUtils.isDesktop(context) && _responsiveUtils.isTabletLarge(context))
-                || (BuildUtils.isWeb && _responsiveUtils.isTabletLarge(context)))
-              const VerticalDivider(color: AppColor.lineItemListColor, width: 1, thickness: 0.2),
+            if (supportVerticalDivider(context))
+              const VerticalDivider(
+                  color: AppColor.colorDividerVertical,
+                  width: 1,
+                  thickness: 0.2),
             Expanded(child: SafeArea(
                 right: _responsiveUtils.isLandscapeMobile(context),
                 left: _responsiveUtils.isLandscapeMobile(context),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if ((!_responsiveUtils.isDesktop(context) && BuildUtils.isWeb) || !BuildUtils.isWeb)
+                      if (!_responsiveUtils.isWebDesktop(context))
                         ... [
                           _buildAppBarNormal(context),
-                          Obx(() {
-                            return Stack(children: [
-                              if (!controller.isSearchActive())
-                                Container(
-                                    color: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: BuildUtils.isWeb && !_responsiveUtils.isDesktop(context) ? 8 : 0),
-                                    margin: const EdgeInsets.only(
-                                        bottom: !BuildUtils.isWeb ? 16 : 0),
-                                    child: _buildSearchFormInActive(context))
-                              else
-                                Container(
-                                    color: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: BuildUtils.isWeb && !_responsiveUtils.isDesktop(context) ? 8 : 0),
-                                    margin: const EdgeInsets.only(
-                                        bottom: !BuildUtils.isWeb ? 16 : 0),
-                                    child: _buildSearchFormActive(context))
-                            ]);
-                          }),
-                          Obx(() {
-                            if (controller.mailboxDashBoardController.vacationResponse.value?.vacationResponderIsValid == true) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 8, top: 4),
-                                child: VacationNotificationMessageWidget(
-                                    vacationResponse: controller.mailboxDashBoardController.vacationResponse.value!,
-                                    actionGotoVacationSetting: () => controller.mailboxDashBoardController.goToVacationSetting(),
-                                    actionEndNow: () => controller.mailboxDashBoardController.disableVacationResponder()),
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
-                        ]
-                      else
-                        const SizedBox.shrink(),
-                      Obx(() {
-                        if (controller.isMailboxTrash
-                            && controller.emailList.isNotEmpty
-                            && !controller.isSearchActive()) {
-                          return _buildEmptyTrashButton(context);
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
-                      Obx(() {
-                        if (controller.isSearchActive()
-                            && controller.searchIsActive.isTrue
-                            && _responsiveUtils.isDesktop(context)
-                            && BuildUtils.isWeb) {
-                          return _buildListButtonQuickSearchFilter(context);
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
+                          _buildSearchBarView(context),
+                          _buildVacationNotificationMessage(context),
+                        ],
+                      _buildEmptyTrashButton(context),
+                      _buildListButtonQuickSearchFilter(context),
                       if (!_responsiveUtils.isDesktop(context))
                         _buildMarkAsMailboxReadLoading(context),
-                      Expanded(child: Container(
-                          alignment: Alignment.center,
-                          margin: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
-                              ? const EdgeInsets.only(right: 16, top: 16, bottom: 16)
-                              : EdgeInsets.zero,
-                          decoration: BoxDecoration(
-                              borderRadius: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
-                                  ? BorderRadius.circular(20)
-                                  : null,
-                              border: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
-                                  ? Border.all(color: AppColor.colorBorderBodyThread, width: 1)
-                                  : null,
-                              color: Colors.white),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(
-                                BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 20 : 0)),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildLoadingView(),
-                                  Expanded(child: _buildListEmail(context)),
-                                  _buildLoadingViewLoadMore(),
-                                ]
-                            ),
-                          )
-                      )),
+                      _buildLoadingView(),
+                      Expanded(child: _buildListEmail(context)),
+                      _buildLoadingViewLoadMore(),
                       _buildListButtonSelectionForMobile(context),
                     ]
                 )
@@ -156,6 +81,55 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
         floatingActionButton: _buildFloatingButtonCompose(context),
       ),
     );
+  }
+
+  bool supportVerticalDivider(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return _responsiveUtils.isTabletLarge(context);
+    } else {
+      return _responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context);
+    }
+  }
+
+  Widget _buildSearchBarView(BuildContext context) {
+    return Obx(() {
+      if (!controller.isSearchActive()) {
+        return Container(
+            color: Colors.white,
+            padding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: _responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
+            margin: const EdgeInsets.only(
+                bottom: !BuildUtils.isWeb ? 16 : 0),
+            child: _buildSearchFormInActive(context));
+      } else {
+        return Container(
+            color: Colors.white,
+            padding: EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: _responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
+            margin: const EdgeInsets.only(
+                bottom: !BuildUtils.isWeb ? 16 : 0),
+            child: _buildSearchFormActive(context));
+      }
+    });
+  }
+
+  Widget _buildVacationNotificationMessage(BuildContext context) {
+    return Obx(() {
+      final vacation = controller.mailboxDashBoardController.vacationResponse.value;
+      if (vacation?.vacationResponderIsValid == true) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8, top: 4),
+          child: VacationNotificationMessageWidget(
+              vacationResponse: vacation!,
+              actionGotoVacationSetting: () => controller.mailboxDashBoardController.goToVacationSetting(),
+              actionEndNow: () => controller.mailboxDashBoardController.disableVacationResponder()),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 
   Widget _buildListButtonSelectionForMobile(BuildContext context) {
@@ -631,43 +605,64 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
     );
   }
 
+  bool supportEmptyTrash(BuildContext context) {
+    return controller.isMailboxTrash
+        && controller.emailList.isNotEmpty
+        && !controller.isSearchActive();
+  }
+
   Widget _buildEmptyTrashButton(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(14)),
-          border: Border.all(color: AppColor.colorLineLeftEmailView),
-          color: Colors.white),
-      margin: EdgeInsets.only(
-          left: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 0 : 16,
-          right: 16,
-          bottom: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 0 : 16,
-          top: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 16 : 0),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(children: [
-        Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: SvgPicture.asset(_imagePaths.icDeleteTrash, fit: BoxFit.fill)),
-        Expanded(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Text(
-                          AppLocalizations.of(context).message_delete_all_email_in_trash_button,
-                          style: const TextStyle(color: AppColor.colorContentEmail, fontSize: 13, fontWeight: FontWeight.w500))),
-                  TextButton(
-                      onPressed: () => controller.deleteSelectionEmailsPermanently(context, DeleteActionType.all),
-                      child: Text(
-                          AppLocalizations.of(context).empty_trash_now,
-                          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton)
+    return Obx(() {
+      if (supportEmptyTrash(context)) {
+        return Container(
+          decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(14)),
+              border: Border.all(color: AppColor.colorLineLeftEmailView),
+              color: Colors.white),
+          margin: EdgeInsets.only(
+              left: _responsiveUtils.isWebDesktop(context) ? 0 : 16,
+              right: 16,
+              bottom: _responsiveUtils.isWebDesktop(context) ? 0 : 16,
+              top: _responsiveUtils.isWebDesktop(context) ? 16 : 0),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(children: [
+            Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: SvgPicture.asset(
+                    _imagePaths.icDeleteTrash,
+                    fit: BoxFit.fill)),
+            Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Text(
+                              AppLocalizations.of(context).message_delete_all_email_in_trash_button,
+                              style: const TextStyle(
+                                  color: AppColor.colorContentEmail,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500))),
+                      TextButton(
+                          onPressed: () =>
+                              controller.deleteSelectionEmailsPermanently(context, DeleteActionType.all),
+                          child: Text(
+                              AppLocalizations.of(context).empty_trash_now,
+                              style: const TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColor.colorTextButton)
+                          )
                       )
-                  )
-                ]
+                    ]
+                )
             )
-        )
-      ]),
-    );
+          ]),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 
   List<Widget> _contextMenuActionTile(BuildContext context, PresentationEmail email) {
@@ -706,23 +701,30 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
     ];
   }
 
+  bool supportListButtonQuickSearchFilter(BuildContext context) {
+    return controller.isSearchActive()
+        && controller.searchIsActive.isTrue
+        && _responsiveUtils.isWebDesktop(context);
+  }
+
   Widget _buildListButtonQuickSearchFilter(BuildContext context) {
-    final listQuickSearchFilter = [
-      QuickSearchFilter.hasAttachment,
-      QuickSearchFilter.last7Days,
-      QuickSearchFilter.fromMe,
-    ];
-    return Padding(
-      padding: EdgeInsets.only(
-          left: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 32 : 16,
-          right: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 20 : 16,
-          bottom: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 0 : 16,
-          top: BuildUtils.isWeb && _responsiveUtils.isDesktop(context) ? 16 : 0),
-      child: Row(
-          children: listQuickSearchFilter
-              .map((filter) => _buildQuickSearchFilterButton(context, filter))
-              .toList()),
-    );
+    return Obx(() {
+      if (supportListButtonQuickSearchFilter(context)) {
+        return Padding(
+          padding: EdgeInsets.only(
+              left: _responsiveUtils.isWebDesktop(context) ? 32 : 16,
+              right: _responsiveUtils.isWebDesktop(context) ? 20 : 16,
+              bottom: _responsiveUtils.isWebDesktop(context) ? 0 : 16,
+              top: _responsiveUtils.isWebDesktop(context) ? 16 : 0),
+          child: Row(
+              children: QuickSearchFilter.values
+                  .map((filter) => _buildQuickSearchFilterButton(context, filter))
+                  .toList()),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 
   Widget _buildQuickSearchFilterButton(
