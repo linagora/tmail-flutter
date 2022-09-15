@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
@@ -18,6 +17,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -114,16 +114,32 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(20),
                                   child: Column(children: [
-                                    if (controller.isSelectionEnabled())
-                                      Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: _buildListButtonTopBarSelection(context),
-                                      )
-                                    else
-                                      Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: _buildListButtonTopBar(context),
-                                      ),
+                                    Obx(() {
+                                      log('MailboxDashBoardView::build(): ');
+                                      if (controller.isSelectionEnabled()) {
+                                        return Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: TopBarThreadSelection(
+                                            context,
+                                            controller.listEmailSelected,
+                                            controller.mapMailbox,
+                                            onCancelSelection: () =>
+                                                controller.dispatchAction(CancelSelectionAllEmailAction()),
+                                            onEmailActionTypeAction: (listEmails, actionType) =>
+                                                controller.dispatchAction(
+                                                    HandleEmailActionTypeAction(
+                                                        context,
+                                                        listEmails,
+                                                        actionType)),
+                                          ).build(),
+                                        );
+                                      } else {
+                                        return Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: _buildListButtonTopBar(context),
+                                        );
+                                      }
+                                    }),
                                     const Divider(color: AppColor.colorDivider, height: 1),
                                     Expanded(child: ThreadView())
                                   ]),
@@ -317,116 +333,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               : controller.filterMessageOption.value.getTitle(context), isVertical: false))
         .build()),
     ]);
-  }
-
-  Widget _buildListButtonTopBarSelection(BuildContext context) {
-    return Row(children: [
-      buildIconWeb(
-          icon: SvgPicture.asset(imagePaths.icCloseComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
-          tooltip: AppLocalizations.of(context).cancel,
-          onTap: () => controller.dispatchAction(CancelSelectionAllEmailAction())),
-      Obx(() => Text(
-          AppLocalizations.of(context).count_email_selected(controller.listEmailSelected.length),
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))),
-      const SizedBox(width: 30),
-      Obx(() => buildIconWeb(
-          icon: SvgPicture.asset(
-              controller.listEmailSelected.isAllEmailRead
-                  ? imagePaths.icRead
-                  : imagePaths.icUnread,
-              fit: BoxFit.fill),
-          tooltip: controller.listEmailSelected.isAllEmailRead
-              ? AppLocalizations.of(context).mark_as_unread
-              : AppLocalizations.of(context).mark_as_read,
-          onTap: () => controller.dispatchAction(
-              HandleEmailActionTypeAction(context,
-                  controller.listEmailSelected,
-                  controller.listEmailSelected.isAllEmailRead
-                      ? EmailActionType.markAsUnread
-                      : EmailActionType.markAsRead)))),
-      Obx(() => buildIconWeb(
-          icon: SvgPicture.asset(
-              controller.listEmailSelected.isAllEmailStarred
-                  ? imagePaths.icUnStar
-                  : imagePaths.icStar,
-              fit: BoxFit.fill),
-          tooltip: controller.listEmailSelected.isAllEmailStarred
-              ? AppLocalizations.of(context).un_star
-              : AppLocalizations.of(context).star,
-          onTap: () => controller.dispatchAction(
-              HandleEmailActionTypeAction(context,
-                  controller.listEmailSelected,
-                  controller.listEmailSelected.isAllEmailStarred
-                      ? EmailActionType.markAsStarred
-                      : EmailActionType.unMarkAsStarred)))),
-      Obx(() {
-        if (controller.selectedMailbox.value?.isDrafts == false) {
-          return buildIconWeb(
-              icon: SvgPicture.asset(imagePaths.icMove, fit: BoxFit.fill),
-              tooltip: AppLocalizations.of(context).move,
-              onTap: () => controller.dispatchAction(
-                  HandleEmailActionTypeAction(context,
-                      controller.listEmailSelected,
-                      EmailActionType.moveToMailbox)));
-        } else {
-          return const SizedBox.shrink();
-        }
-      }),
-      Obx(() {
-        if (controller.selectedMailbox.value?.isDrafts == false) {
-          return buildIconWeb(
-              icon: SvgPicture.asset(
-                  controller.selectedMailbox.value?.isSpam == true
-                      ? imagePaths.icNotSpam
-                      : imagePaths.icSpam,
-                  fit: BoxFit.fill),
-              tooltip: controller.selectedMailbox.value?.isSpam == true
-                  ? AppLocalizations.of(context).un_spam
-                  : AppLocalizations.of(context).mark_as_spam,
-              onTap: () {
-                if (controller.selectedMailbox.value?.isSpam == true) {
-                  return controller.dispatchAction(
-                      HandleEmailActionTypeAction(context,
-                          controller.listEmailSelected,
-                          EmailActionType.unSpam));
-                } else {
-                  return controller.dispatchAction(
-                      HandleEmailActionTypeAction(context,
-                          controller.listEmailSelected,
-                          EmailActionType.moveToSpam));
-                }
-              });
-        } else {
-          return const SizedBox.shrink();
-        }
-      }),
-      Obx(() => buildIconWeb(
-          icon: SvgPicture.asset(
-              canDeletePermanently ? imagePaths.icDeleteComposer : imagePaths.icDelete,
-              color: canDeletePermanently ? AppColor.colorDeletePermanentlyButton : AppColor.primaryColor,
-              width: 20,
-              height: 20,
-              fit: BoxFit.fill),
-          tooltip: canDeletePermanently
-              ? AppLocalizations.of(context).delete_permanently
-              : AppLocalizations.of(context).move_to_trash,
-          onTap: () {
-            if (canDeletePermanently) {
-              return controller.dispatchAction(HandleEmailActionTypeAction(context,
-                  controller.listEmailSelected,
-                  EmailActionType.deletePermanently));
-            } else {
-              return controller.dispatchAction(HandleEmailActionTypeAction(context,
-                  controller.listEmailSelected,
-                  EmailActionType.moveToTrash));
-            }
-          })),
-    ]);
-  }
-
-  bool get canDeletePermanently {
-    return controller.selectedMailbox.value?.isTrash == true ||
-        controller.selectedMailbox.value?.isDrafts == true;
   }
 
   Widget _buildMarkAsMailboxReadLoading(BuildContext context) {

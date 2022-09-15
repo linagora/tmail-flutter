@@ -330,11 +330,13 @@ class MailboxController extends BaseMailboxController {
           : mailboxCurrent);
       }
     } else {
-      if (mapDefaultMailbox.containsKey(PresentationMailbox.roleInbox)) {
-        mailboxDashBoardController.setNewFirstSelectedMailbox(mapDefaultMailbox[PresentationMailbox.roleInbox]);
-      } else {
-        if (allMailbox.isNotEmpty) {
-          mailboxDashBoardController.setNewFirstSelectedMailbox(allMailbox.first);
+      if (!mailboxDashBoardController.searchController.isSearchEmailRunning) {
+        if (mapDefaultMailbox.containsKey(PresentationMailbox.roleInbox)) {
+          mailboxDashBoardController.setNewFirstSelectedMailbox(mapDefaultMailbox[PresentationMailbox.roleInbox]);
+        } else {
+          if (allMailbox.isNotEmpty) {
+            mailboxDashBoardController.setNewFirstSelectedMailbox(allMailbox.first);
+          }
         }
       }
     }
