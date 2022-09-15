@@ -43,6 +43,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
@@ -54,7 +55,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -366,7 +366,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void searchEmail(BuildContext context, String value) {
     searchController.updateFilterEmail(text: SearchQuery(value));
-    dispatchState(Right(SearchEmailNewQuery(searchController.searchEmailFilter.value.text ?? SearchQuery.initial())));
+    dispatchAction(StartSearchEmailAction());
     FocusScope.of(context).unfocus();
     if (_searchInsideEmailDetailedViewIsActive(context)) {
       _closeEmailDetailedView();
@@ -657,6 +657,27 @@ class MailboxDashBoardController extends ReloadableController {
       vacationResponse.value = success.listVacationResponse.first;
       log('MailboxDashBoardController::_handleUpdateVacationSuccess(): $vacationResponse');
     }
+  }
+
+  void selectQuickSearchFilterAction(QuickSearchFilter filter) {
+    selectQuickSearchFilter(quickSearchFilter: filter);
+    dispatchAction(StartSearchEmailAction());
+  }
+
+  void selectReceiveTimeQuickSearchFilter(EmailReceiveTimeType? emailReceiveTimeType) {
+    popBack();
+
+    if (emailReceiveTimeType != null) {
+      searchController.updateFilterEmail(emailReceiveTimeType: emailReceiveTimeType);
+    } else {
+      searchController.updateFilterEmail(emailReceiveTimeType: EmailReceiveTimeType.allTime);
+    }
+    searchController.setEmailReceiveTimeType(emailReceiveTimeType);
+    searchController.updateFilterEmail();
+    if (searchController.searchQuery == null){
+      searchController.updateFilterEmail(text: SearchQuery.initial());
+    }
+    dispatchAction(StartSearchEmailAction());
   }
 
   @override
