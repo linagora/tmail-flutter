@@ -127,9 +127,7 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
       padding: const EdgeInsets.only(top: 6),
       child: AppBarMailWidgetBuilder(
         controller.currentEmail,
-        currentMailbox: controller.currentEmail != null
-          ? controller.getMailboxContain(controller.currentEmail!)
-          : null,
+        currentMailbox: controller.mailboxDashBoardController.selectedMailbox.value,
         isSearchIsRunning: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
         onBackActionClick: () => controller.closeEmailView(context),
         onEmailActionClick: (email, action) =>

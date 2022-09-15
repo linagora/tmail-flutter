@@ -2244,4 +2244,12 @@ class AppLocalizations {
       name: 'vacationSetting',
     );
   }
+
+  String get backToSearchResults {
+    return Intl.message(
+      'Back to Search Results',
+      name: 'backToSearchResults',
+    );
+  }
+
 }
