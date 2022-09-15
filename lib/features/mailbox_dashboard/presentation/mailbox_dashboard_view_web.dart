@@ -509,7 +509,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   bool supportListButtonQuickSearchFilter(BuildContext context) {
     return controller.searchController.isSearchActive()
         && controller.searchController.searchIsActive.isTrue
-        && responsiveUtils.isWebDesktop(context);
+        && responsiveUtils.isWebDesktop(context)
+        && controller.routePath.value != AppRoutes.EMAIL;
   }
 
   Widget _buildListButtonQuickSearchFilter(BuildContext context) {
