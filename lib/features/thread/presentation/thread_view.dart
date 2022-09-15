@@ -89,16 +89,35 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   }
 
   Widget _buildSearchBarView(BuildContext context) {
-    return Obx(() => Container(
-        color: Colors.white,
-        padding: EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: _responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
-        margin: const EdgeInsets.only(
-            bottom: !BuildUtils.isWeb ? 16 : 0),
-        child: !controller.isSearchActive()
-            ? _buildSearchFormInActive(context)
-            : _buildSearchFormActive(context)));
+    if (BuildUtils.isWeb) {
+      return Obx(() => Container(
+          color: Colors.white,
+          padding: EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: _responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
+          margin: const EdgeInsets.only(
+              bottom: !BuildUtils.isWeb ? 16 : 0),
+          child: !controller.isSearchActive()
+              ? _buildSearchFormInActive(context)
+              : _buildSearchFormActive(context)));
+    } else {
+      return Obx(() {
+        if (!controller.searchController.isSearchActive()) {
+          return Container(
+              color: Colors.white,
+              padding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: _responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
+              margin: const EdgeInsets.only(
+                  bottom: !BuildUtils.isWeb ? 16 : 0),
+              child: SearchBarView(_imagePaths,
+                  hintTextSearch: AppLocalizations.of(context).search_emails,
+                  onOpenSearchViewAction: () => controller.goToSearchView()));
+        } else {
+          return const SizedBox.shrink();
+        }
+      });
+    }
   }
 
   Widget _buildVacationNotificationMessage(BuildContext context) {

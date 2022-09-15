@@ -13,4 +13,5 @@ abstract class AppRoutes {
   static const IDENTITY_CREATOR = '$MANAGE_ACCOUNT/identity_creator';
   static const RULES_FILTER_CREATOR = '$MANAGE_ACCOUNT/rules_filter_creator';
   static const EMAILS_FORWARD_CREATOR = '$MANAGE_ACCOUNT/emails_forward_creator';
+  static const SEARCH_EMAIL = '$MAILBOX_DASHBOARD/search_email';
 }

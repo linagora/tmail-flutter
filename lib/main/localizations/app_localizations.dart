@@ -2252,4 +2252,11 @@ class AppLocalizations {
     );
   }
 
+
+  String get clearAll {
+    return Intl.message(
+      'Clear all',
+      name: 'clearAll',
+    );
+  }
 }

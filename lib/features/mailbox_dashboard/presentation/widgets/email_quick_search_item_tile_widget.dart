@@ -13,12 +13,14 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
 
   final PresentationEmail _presentationEmail;
   final PresentationMailbox? _presentationMailbox;
+  final EdgeInsets? contentPadding;
 
   EmailQuickSearchItemTileWidget(
       this._presentationEmail,
-      this._presentationMailbox,
-      {Key? key}
-  ) : super(key: key);
+      this._presentationMailbox, {
+      Key? key,
+      this.contentPadding,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
         final maxWidthItem = constraints.maxWidth;
         log('EmailQuickSearchItemTileWidget::build(): maxWidthItem: $maxWidthItem');
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          padding: contentPadding ?? const EdgeInsets.all(12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -48,7 +50,8 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
                          constraints: BoxConstraints(maxWidth: maxWidthItem / 3),
                          child: Text(_getInformationSender(),
                              maxLines: 1,
-                             overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
+                             overflow: CommonTextStyle.defaultTextOverFlow,
+                             softWrap: CommonTextStyle.defaultSoftWrap,
                              style: const TextStyle(
                                  fontSize: 15,
                                  fontWeight: FontWeight.w600,
@@ -58,7 +61,8 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
                        Expanded(
                          child: Text(_presentationEmail.getEmailTitle(),
                              maxLines: 1,
-                             overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
+                             overflow: CommonTextStyle.defaultTextOverFlow,
+                             softWrap: CommonTextStyle.defaultSoftWrap,
                              style: const TextStyle(
                                  fontSize: 13,
                                  fontWeight: FontWeight.normal,
@@ -71,6 +75,9 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
                         ),
                        Text(_presentationEmail.getReceivedAt(Localizations.localeOf(context).toLanguageTag()),
                            textAlign: TextAlign.right,
+                           maxLines: 1,
+                           overflow: CommonTextStyle.defaultTextOverFlow,
+                           softWrap: CommonTextStyle.defaultSoftWrap,
                            style: const TextStyle(
                                fontSize: 13,
                                fontWeight: FontWeight.normal,
@@ -79,7 +86,8 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(_presentationEmail.getPartialContent(),
                         maxLines: 1,
-                        overflow: BuildUtils.isWeb ? null : TextOverflow.ellipsis,
+                        overflow: CommonTextStyle.defaultTextOverFlow,
+                        softWrap: CommonTextStyle.defaultSoftWrap,
                         style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.normal,
