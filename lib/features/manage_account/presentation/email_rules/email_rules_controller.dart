@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -12,7 +13,6 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/data/extensions/list_tmail_rule_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_email_rule_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_email_rule_state.dart';
@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/w
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_bindings.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -45,6 +46,8 @@ class EmailRulesController extends BaseController {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final listEmailRule = <TMailRule>[].obs;
+
+  final rulesFilterCreatorArguments = Rxn<RulesFilterCreatorArguments>();
 
   EmailRulesController(
     this._getAllRulesInteractor,
@@ -82,22 +85,18 @@ class EmailRulesController extends BaseController {
   void goToCreateNewRule() async {
     final accountId = _accountDashBoardController.accountId.value;
     if (accountId != null) {
-      final newEmailRuleFilter = await push(
+      rulesFilterCreatorArguments.value = RulesFilterCreatorArguments(accountId);
+      if(kIsWeb) {
+        _openRulesFilterCreatorOverlay();
+      } else {
+        push(
           AppRoutes.RULES_FILTER_CREATOR,
-          arguments: RulesFilterCreatorArguments(accountId));
-
-      if (newEmailRuleFilter is TMailRule) {
-        _createNewRuleFilterAction(
-          accountId,
-          CreateNewEmailRuleFilterRequest(
-              listEmailRule,
-              newEmailRuleFilter)
         );
       }
     }
   }
 
-  void _createNewRuleFilterAction(
+  void createNewRuleFilterAction(
       AccountId accountId,
       CreateNewEmailRuleFilterRequest ruleFilterRequest
   ) async {
@@ -123,24 +122,22 @@ class EmailRulesController extends BaseController {
   void editEmailRule(TMailRule rule) async {
     final accountId = _accountDashBoardController.accountId.value;
     if (accountId != null) {
-      final emailRuleFilterChanged = await push(
+      rulesFilterCreatorArguments.value = RulesFilterCreatorArguments(
+        accountId,
+        actionType: CreatorActionType.edit,
+        tMailRule: rule,
+      );
+      if(kIsWeb) {
+        _openRulesFilterCreatorOverlay();
+      } else {
+        push(
           AppRoutes.RULES_FILTER_CREATOR,
-          arguments: RulesFilterCreatorArguments(
-              accountId,
-              actionType: CreatorActionType.edit,
-              tMailRule: rule));
-
-      if (emailRuleFilterChanged is TMailRule) {
-        final newListRuleWithIds = listEmailRule.withIds;
-        _editEmailRuleFilterAction(
-            accountId,
-            EditEmailRuleFilterRequest(newListRuleWithIds, emailRuleFilterChanged)
         );
       }
     }
   }
 
-  void _editEmailRuleFilterAction(
+  void editEmailRuleFilterAction(
       AccountId accountId,
       EditEmailRuleFilterRequest ruleFilterRequest
   ) {
@@ -226,6 +223,11 @@ class EmailRulesController extends BaseController {
 
   void _getAllRules() {
     consumeState(_getAllRulesInteractor.execute(_accountDashBoardController.accountId.value!));
+  }
+
+  void _openRulesFilterCreatorOverlay() {
+    RulesFilterCreatorBindings().dependencies();
+    _accountDashBoardController.rulesFilterCreatorIsActive.toggle();
   }
 
   void openEditRuleMenuAction(BuildContext context, TMailRule rule) {

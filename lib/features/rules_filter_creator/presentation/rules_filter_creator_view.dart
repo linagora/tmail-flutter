@@ -107,7 +107,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             padding: const EdgeInsets.only(top: 16),
             alignment: Alignment.center,
             child: Obx(() => Text(
-                controller.actionType.value.getTitle(context),
+                controller.actionType.getTitle(context),
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
@@ -237,7 +237,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                   onTap: () => controller.closeView(context)),
                 const SizedBox(width: 12),
                 Obx(() => buildTextButton(
-                  controller.actionType.value.getActionName(context),
+                  controller.actionType.getActionName(context),
                   width: 128,
                   height: 44,
                   backgroundColor: AppColor.colorTextButton,
@@ -266,7 +266,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                 padding: const EdgeInsets.only(top: 16),
                 alignment: Alignment.center,
                 child: Obx(() => Text(
-                    controller.actionType.value.getTitle(context),
+                    controller.actionType.getTitle(context),
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -396,7 +396,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         onTap: () => controller.closeView(context))),
                     const SizedBox(width: 12),
                     Expanded(child: Obx(() => buildTextButton(
-                        controller.actionType.value.getActionName(context),
+                        controller.actionType.getActionName(context),
                         width: 128,
                         height: 44,
                         backgroundColor: AppColor.colorTextButton,
@@ -425,7 +425,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                 padding: const EdgeInsets.only(top: 16),
                 alignment: Alignment.center,
                 child: Obx(() => Text(
-                    controller.actionType.value.getTitle(context),
+                    controller.actionType.getTitle(context),
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -585,7 +585,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         onTap: () => controller.closeView(context))),
                     const SizedBox(width: 12),
                     Expanded(child: Obx(() => buildTextButton(
-                        controller.actionType.value.getActionName(context),
+                        controller.actionType.getActionName(context),
                         width: 128,
                         height: 44,
                         backgroundColor: AppColor.colorTextButton,
