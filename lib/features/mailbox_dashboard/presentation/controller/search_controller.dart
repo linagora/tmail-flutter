@@ -165,6 +165,8 @@ class SearchController extends BaseController {
 
   bool isAdvanceSearchActive() => isAdvancedSearchHasApply.isTrue;
 
+  bool get isSearchEmailRunning => isSearchActive() || isAdvanceSearchActive();
+
   void enableSearch() {
     searchState.value = searchState.value.enableSearchState();
   }

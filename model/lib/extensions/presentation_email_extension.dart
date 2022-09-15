@@ -147,4 +147,17 @@ extension PresentationEmailExtension on PresentationEmail {
       selectMode: selectMode,
     );
   }
+
+  PresentationMailbox? findMailboxContain(Map<MailboxId, PresentationMailbox> mapMailbox) {
+    final newMailboxIds = mailboxIds;
+    newMailboxIds?.removeWhere((key, value) => !value);
+
+    if (newMailboxIds?.isNotEmpty == true) {
+      final firstMailboxId = newMailboxIds!.keys.first;
+      if (mapMailbox.containsKey(firstMailboxId)) {
+        return mapMailbox[firstMailboxId];
+      }
+    }
+    return null;
+  }
 }
