@@ -40,8 +40,11 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
             ? AppColor.colorBgDesktop
             : Colors.white,
         body: Row(children: [
-          if (responsiveUtils.isMailboxDashboardSplitView(context))
-            const VerticalDivider(color: AppColor.lineItemListColor, width: 1, thickness: 0.2),
+          if (_supportVerticalDivider(context))
+            const VerticalDivider(
+                color: AppColor.lineItemListColor,
+                width: 1,
+                thickness: 0.2),
           Expanded(child: SafeArea(
               right: responsiveUtils.isLandscapeMobile(context),
               left: responsiveUtils.isLandscapeMobile(context),
@@ -60,24 +63,7 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
                       : EdgeInsets.zero,
                   child: Column(children: [
                     _buildAppBar(context),
-                    Obx(() {
-                      if (controller.mailboxDashBoardController.vacationResponse.value?.vacationResponderIsValid == true &&
-                          (responsiveUtils.isMobile(context) || 
-                              responsiveUtils.isTablet(context) ||
-                              responsiveUtils.isLandscapeMobile(context))) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 5),
-                          child: VacationNotificationMessageWidget(
-                              radius: 0,
-                              margin: EdgeInsets.zero,
-                              vacationResponse: controller.mailboxDashBoardController.vacationResponse.value!,
-                              actionGotoVacationSetting: () => controller.mailboxDashBoardController.goToVacationSetting(),
-                              actionEndNow: () => controller.mailboxDashBoardController.disableVacationResponder()),
-                        );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    }),
+                    _buildVacationNotificationMessage(context),
                     if (responsiveUtils.isWebDesktop(context))
                       const SizedBox(height: 5),
                     Obx(() {
@@ -100,10 +86,40 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
     );
   }
 
+  bool _supportVerticalDivider(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return responsiveUtils.isTabletLarge(context);
+    } else {
+      return responsiveUtils.isLandscapeTablet(context) || responsiveUtils.isDesktop(context);
+    }
+  }
+
   Widget _buildDivider({EdgeInsets? edgeInsets}){
     return Padding(
       padding: edgeInsets ?? const EdgeInsets.symmetric(horizontal: 16),
       child: const Divider(color: AppColor.colorDividerEmailView, height: 0.5));
+  }
+
+  Widget _buildVacationNotificationMessage(BuildContext context) {
+    return Obx(() {
+      final vacation = controller.mailboxDashBoardController.vacationResponse.value;
+      if (vacation?.vacationResponderIsValid == true &&
+          (responsiveUtils.isMobile(context) ||
+              responsiveUtils.isTablet(context) ||
+              responsiveUtils.isLandscapeMobile(context))) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: VacationNotificationMessageWidget(
+              radius: 0,
+              margin: EdgeInsets.zero,
+              vacationResponse: vacation!,
+              actionGotoVacationSetting: () => controller.mailboxDashBoardController.goToVacationSetting(),
+              actionEndNow: () => controller.mailboxDashBoardController.disableVacationResponder()),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 
   Widget _buildAppBar(BuildContext context) {
@@ -111,7 +127,10 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
       padding: const EdgeInsets.only(top: 6),
       child: AppBarMailWidgetBuilder(
         controller.currentEmail,
-        controller.currentMailbox,
+        currentMailbox: controller.mailboxDashBoardController.searchController.isSearchEmailRunning
+          ? controller.currentEmail?.findMailboxContain(controller.mailboxDashBoardController.mapMailbox)
+          : controller.currentMailbox,
+        isSearchIsRunning: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
         onBackActionClick: () => controller.closeEmailView(context),
         onEmailActionClick: (email, action) =>
             controller.handleEmailAction(context, email, action),
