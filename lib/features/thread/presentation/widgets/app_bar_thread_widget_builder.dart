@@ -1,6 +1,5 @@
 
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -14,94 +13,81 @@ typedef OnOpenMailboxMenuActionClick = void Function();
 typedef OnCancelEditThread = void Function();
 typedef OnEmailSelectionAction = void Function(EmailActionType actionType, List<PresentationEmail>);
 
-class AppBarThreadWidgetBuilder {
+class AppBarThreadWidgetBuilder extends StatelessWidget {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  OnFilterEmailAction? _onFilterEmailAction;
-  OnOpenMailboxMenuActionClick? _onOpenMailboxMenuActionClick;
-  OnEditThreadAction? _onEditThreadAction;
-  OnCancelEditThread? _onCancelEditThread;
-  OnEmailSelectionAction? _onEmailSelectionAction;
+  final OnFilterEmailAction? onFilterEmailAction;
+  final OnOpenMailboxMenuActionClick? onOpenMailboxMenuActionClick;
+  final OnEditThreadAction? onEditThreadAction;
+  final OnCancelEditThread? onCancelEditThread;
+  final OnEmailSelectionAction? onEmailSelectionAction;
 
-  final BuildContext _context;
   final PresentationMailbox? _currentMailbox;
   final List<PresentationEmail> _listSelectionEmail;
   final SelectMode _selectMode;
   final FilterMessageOption _filterMessageOption;
 
   AppBarThreadWidgetBuilder(
-    this._context,
     this._currentMailbox,
     this._listSelectionEmail,
     this._selectMode,
-    this._filterMessageOption,
-  );
+    this._filterMessageOption, {
+    Key? key,
+    this.onFilterEmailAction,
+    this.onOpenMailboxMenuActionClick,
+    this.onEditThreadAction,
+    this.onCancelEditThread,
+    this.onEmailSelectionAction,
+  }) : super(key: key);
 
-  void addOnFilterEmailAction(OnFilterEmailAction onFilterEmailAction) {
-    _onFilterEmailAction = onFilterEmailAction;
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+          key: const Key('app_bar_thread_widget'),
+          alignment: Alignment.center,
+          height: 56,
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _buildAppBar(context, constraints)
+      );
+    });
   }
 
-  void addOpenMailboxMenuActionClick(OnOpenMailboxMenuActionClick actionClick) {
-    _onOpenMailboxMenuActionClick = actionClick;
-  }
-
-  void addOnEditThreadAction(OnEditThreadAction onEditThreadAction) {
-    _onEditThreadAction = onEditThreadAction;
-  }
-
-  void addOnCancelEditThread(OnCancelEditThread onCancelEditThread) {
-    _onCancelEditThread = onCancelEditThread;
-  }
-
-  void addOnEmailSelectionAction(OnEmailSelectionAction onEmailSelectionAction) {
-    _onEmailSelectionAction = onEmailSelectionAction;
-  }
-
-  Widget build() {
-    return Container(
-      key: const Key('app_bar_thread_widget'),
-      alignment: Alignment.topCenter,
-      color: Colors.white,
-      margin: EdgeInsets.zero,
-      padding: EdgeInsets.symmetric(
-          vertical: _selectMode == SelectMode.INACTIVE ? 16 : 11,
-          horizontal: 8),
-      child: MediaQuery(
-        data: const MediaQueryData(padding: EdgeInsets.zero),
-        child: _buildAppBar()
-      )
-    );
-  }
-
-  Widget _buildAppBar() {
+  Widget _buildAppBar(BuildContext context, BoxConstraints constraints) {
     if (BuildUtils.isWeb) {
       return _selectMode == SelectMode.INACTIVE
-          ? _buildBodyAppBarForWeb()
-          : _buildBodyAppBarForWebSelection();
+          ? _buildBodyAppBarForWeb(context)
+          : _buildBodyAppBarForWebSelection(context);
     } else {
       return _selectMode == SelectMode.INACTIVE
-          ? _buildBodyAppBarForMobile()
-          : _buildBodyAppBarForMobileSelection();
+          ? _buildBodyAppBarForMobile(context, constraints)
+          : _buildBodyAppBarForMobileSelection(context, constraints);
     }
   }
 
-  Widget _buildBodyAppBarForWeb() {
+  Widget _buildBodyAppBarForWeb(BuildContext context) {
     return Row(children: [
-      if (_responsiveUtils.hasLeftMenuDrawerActive(_context))
-        _buildMenuButton(),
-      if (_responsiveUtils.hasLeftMenuDrawerActive(_context))
-        const SizedBox(width: 16),
+      if (_responsiveUtils.hasLeftMenuDrawerActive(context))
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: _buildMenuButton(),
+        ),
       Expanded(child: Text(
           _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
           maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 21, color: Colors.black, fontWeight: FontWeight.bold))),
-      _buildFilterButton(),
+          overflow: CommonTextStyle.defaultTextOverFlow,
+          softWrap: CommonTextStyle.defaultSoftWrap,
+          style: const TextStyle(
+              fontSize: 21,
+              color: Colors.black,
+              fontWeight: FontWeight.bold))),
+      _buildFilterButton(context),
     ]);
   }
 
-  Widget _buildBodyAppBarForWebSelection() {
+  Widget _buildBodyAppBarForWebSelection(BuildContext context) {
     return Row(children: [
       buildIconWeb(
           icon: SvgPicture.asset(_imagePaths.icCloseComposer,
@@ -111,10 +97,10 @@ class AppBarThreadWidgetBuilder {
           iconSize: 25,
           iconPadding: const EdgeInsets.all(5),
           splashRadius: 15,
-          tooltip: AppLocalizations.of(_context).cancel,
-          onTap: () => _onCancelEditThread?.call()),
+          tooltip: AppLocalizations.of(context).cancel,
+          onTap: () => onCancelEditThread?.call()),
       Expanded(child: Text(
-        AppLocalizations.of(_context).count_email_selected(_listSelectionEmail.length),
+        AppLocalizations.of(context).count_email_selected(_listSelectionEmail.length),
         style: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w500,
@@ -130,9 +116,9 @@ class AppBarThreadWidgetBuilder {
                   : _imagePaths.icUnread,
               fit: BoxFit.fill),
           tooltip: _listSelectionEmail.isAllEmailRead
-              ? AppLocalizations.of(_context).unread
-              : AppLocalizations.of(_context).read,
-          onTap: () => _onEmailSelectionAction?.call(
+              ? AppLocalizations.of(context).unread
+              : AppLocalizations.of(context).read,
+          onTap: () => onEmailSelectionAction?.call(
               _listSelectionEmail.isAllEmailRead
                   ? EmailActionType.markAsUnread
                   : EmailActionType.markAsRead,
@@ -149,9 +135,9 @@ class AppBarThreadWidgetBuilder {
                   : _imagePaths.icStar,
               fit: BoxFit.fill),
           tooltip: _listSelectionEmail.isAllEmailStarred
-              ? AppLocalizations.of(_context).not_starred
-              : AppLocalizations.of(_context).starred,
-          onTap: () => _onEmailSelectionAction?.call(
+              ? AppLocalizations.of(context).not_starred
+              : AppLocalizations.of(context).starred,
+          onTap: () => onEmailSelectionAction?.call(
               _listSelectionEmail.isAllEmailStarred
                   ? EmailActionType.unMarkAsStarred
                   : EmailActionType.markAsStarred,
@@ -165,8 +151,8 @@ class AppBarThreadWidgetBuilder {
               iconPadding: const EdgeInsets.all(5),
               splashRadius: 15,
               icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
-              tooltip: AppLocalizations.of(_context).move,
-              onTap: () => _onEmailSelectionAction?.call(EmailActionType.moveToMailbox, _listSelectionEmail)),
+              tooltip: AppLocalizations.of(context).move,
+              onTap: () => onEmailSelectionAction?.call(EmailActionType.moveToMailbox, _listSelectionEmail)),
           const SizedBox(width: 5),
           buildIconWeb(
               minSize: 25,
@@ -177,11 +163,11 @@ class AppBarThreadWidgetBuilder {
                   ? _imagePaths.icNotSpam : _imagePaths.icSpam,
                   fit: BoxFit.fill),
               tooltip: _currentMailbox?.isSpam == true
-                  ? AppLocalizations.of(_context).un_spam
-                  : AppLocalizations.of(_context).mark_as_spam,
+                  ? AppLocalizations.of(context).un_spam
+                  : AppLocalizations.of(context).mark_as_spam,
               onTap: () => _currentMailbox?.isSpam == true
-                  ? _onEmailSelectionAction?.call(EmailActionType.unSpam, _listSelectionEmail)
-                  : _onEmailSelectionAction?.call(EmailActionType.moveToSpam, _listSelectionEmail)),
+                  ? onEmailSelectionAction?.call(EmailActionType.unSpam, _listSelectionEmail)
+                  : onEmailSelectionAction?.call(EmailActionType.moveToSpam, _listSelectionEmail)),
           const SizedBox(width: 5),
         ],
       buildIconWeb(
@@ -196,11 +182,11 @@ class AppBarThreadWidgetBuilder {
               height: 20,
               fit: BoxFit.fill),
           tooltip: canDeletePermanently
-              ? AppLocalizations.of(_context).delete_permanently
-              : AppLocalizations.of(_context).move_to_trash,
+              ? AppLocalizations.of(context).delete_permanently
+              : AppLocalizations.of(context).move_to_trash,
           onTap: () => canDeletePermanently
-              ? _onEmailSelectionAction?.call(EmailActionType.deletePermanently, _listSelectionEmail)
-              : _onEmailSelectionAction?.call(EmailActionType.moveToTrash, _listSelectionEmail)),
+              ? onEmailSelectionAction?.call(EmailActionType.deletePermanently, _listSelectionEmail)
+              : onEmailSelectionAction?.call(EmailActionType.moveToTrash, _listSelectionEmail)),
       const SizedBox(width: 10),
     ]);
   }
@@ -209,123 +195,118 @@ class AppBarThreadWidgetBuilder {
     return _currentMailbox?.isTrash == true || _currentMailbox?.isDrafts == true;
   }
 
-  Widget _buildBodyAppBarForMobile() {
-    return Row(children: [
-      Expanded(child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Positioned(left: 0,child: _buildEditButton()),
-            Positioned(right: 0, child: _buildFilterButton()),
-            _filterMessageOption.getTitle(_context).isNotEmpty
-                ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Padding(
-                        padding: const EdgeInsets.only(left: 40, right: 40),
-                        child: _buildContentCenterAppBar()),
-                    Transform(
-                        transform: Matrix4.translationValues(
-                            _getXTranslationValues(),
-                            -8.0,
-                            0.0),
-                        child: Text(
-                            _filterMessageOption.getTitle(_context),
-                            style: const TextStyle(
-                                fontSize: 11,
-                                color: AppColor.colorContentEmail)))
-                  ])
-                : Padding(
-                    padding: const EdgeInsets.only(left: 60, right: 40),
-                    child: _buildContentCenterAppBar()),
-          ]
-      ))
-    ]);
-  }
-
-  Widget _buildBodyAppBarForMobileSelection() {
-    return Row(children: [
-      Expanded(child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Positioned(left: 0, child: _buildBackButton()),
-            Positioned(left: 40, child: _buildCountItemSelected()),
-            Positioned(right: 0, child: _buildFilterButton()),
-            _filterMessageOption.getTitle(_context).isNotEmpty
-                ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Padding(
-                        padding: const EdgeInsets.only(left: 40, right: 40),
-                        child: _buildContentCenterAppBar()),
-                    Transform(
-                        transform: Matrix4.translationValues(
-                            _responsiveUtils.isDesktop(_context) ? -2.0 : -16.0,
-                            -8.0,
-                            0.0),
-                        child: Text(
-                            _filterMessageOption.getTitle(_context),
-                            style: const TextStyle(
-                                fontSize: 11,
-                                color: AppColor.colorContentEmail)))
-                  ])
-                : Padding(
-                    padding: const EdgeInsets.only(left: 60, right: 40),
-                    child: _buildContentCenterAppBar()),
-          ]
-      ))
-    ]);
-  }
-
-  Widget _buildEditButton() {
-    return Material(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.transparent,
-        child: Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: TextButton(
-              onPressed: () => _onEditThreadAction?.call(),
-              child: Text(
-                AppLocalizations.of(_context).edit,
-                style: const TextStyle(
-                    fontSize: 17,
-                    color: AppColor.colorTextButton),
-              ),
+  Widget _buildBodyAppBarForMobile(BuildContext context, BoxConstraints constraints) {
+    return Stack(
+        alignment: Alignment.center,
+        children: [
+          if (_filterMessageOption.getTitle(context).isNotEmpty)
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildContentCenterAppBar(context, constraints),
+                  Transform(
+                      transform: Matrix4.translationValues(
+                          _getXTranslationValues(context),
+                          -8.0,
+                          0.0),
+                      child: Text(
+                          _filterMessageOption.getTitle(context),
+                          style: const TextStyle(fontSize: 11, color: AppColor.colorContentEmail)))
+                ]),
             )
+          else
+            Center(child: _buildContentCenterAppBar(context, constraints)),
+          Positioned(left: 0, child: _buildEditButton(context)),
+          Positioned(right: 0, child: _buildFilterButton(context))
+        ]
+    );
+  }
+
+  Widget _buildBodyAppBarForMobileSelection(BuildContext context, BoxConstraints constraints) {
+    return Stack(
+        alignment: Alignment.center,
+        children: [
+          if (_filterMessageOption.getTitle(context).isNotEmpty)
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildContentCenterAppBar(context, constraints),
+                    Transform(
+                        transform: Matrix4.translationValues(
+                            _responsiveUtils.isDesktop(context) ? -2.0 : -16.0,
+                            -8.0,
+                            0.0),
+                        child: Text(
+                            _filterMessageOption.getTitle(context),
+                            style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColor.colorContentEmail)))
+                  ]),
+              )
+          else
+              Center(child: _buildContentCenterAppBar(context, constraints)),
+          Positioned(left: 0, child: _buildCancelSelection()),
+          Positioned(right: 0, child: _buildFilterButton(context))
+        ]
+    );
+  }
+
+  Widget _buildEditButton(BuildContext context) {
+    return Material(
+        borderRadius: BorderRadius.circular(15),
+        color: Colors.transparent,
+        child: TextButton(
+          onPressed: onEditThreadAction,
+          child: Text(
+            AppLocalizations.of(context).edit,
+            style: const TextStyle(
+                fontSize: 17,
+                color: AppColor.colorTextButton),
+          ),
         )
     );
   }
 
-  Widget _buildFilterButton() {
+  Widget _buildFilterButton(BuildContext context) {
     return Material(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(15),
       color: Colors.transparent,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16),
-        child: InkWell(
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
-            onTap: () {
-              if (_onFilterEmailAction != null
-                  && _responsiveUtils.isScreenWithShortestSide(_context)) {
-                _onFilterEmailAction!.call(_filterMessageOption, null);
-              }
-            },
+      child: InkWell(
+          borderRadius: BorderRadius.circular(15),
+          onTap: () {
+            if (onFilterEmailAction != null
+                && _responsiveUtils.isScreenWithShortestSide(context)) {
+              onFilterEmailAction!.call(_filterMessageOption, null);
+            }
+          },
+          child: Container(
+            color: Colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
             child: SvgPicture.asset(
               _imagePaths.icFilter,
               color: _filterMessageOption == FilterMessageOption.all
                   ? AppColor.colorFilterMessageDisabled
                   : AppColor.colorFilterMessageEnabled,
               fit: BoxFit.fill),
-            onTapDown: (detail) {
-              if (_onFilterEmailAction != null
-                  && !_responsiveUtils.isScreenWithShortestSide(_context)) {
-                final screenSize = MediaQuery.of(_context).size;
-                final offset = detail.globalPosition;
-                final position = RelativeRect.fromLTRB(
-                  offset.dx,
-                  offset.dy,
-                  screenSize.width - offset.dx,
-                  screenSize.height - offset.dy,
-                );
-                _onFilterEmailAction!.call(_filterMessageOption, position);
-              }
-            })
-      )
+          ),
+          onTapDown: (detail) {
+            if (onFilterEmailAction != null
+                && !_responsiveUtils.isScreenWithShortestSide(context)) {
+              final screenSize = MediaQuery.of(context).size;
+              final offset = detail.globalPosition;
+              final position = RelativeRect.fromLTRB(
+                offset.dx,
+                offset.dy,
+                screenSize.width - offset.dx,
+                screenSize.height - offset.dy,
+              );
+              onFilterEmailAction!.call(_filterMessageOption, position);
+            }
+          })
     );
   }
 
@@ -336,17 +317,32 @@ class AppBarThreadWidgetBuilder {
         iconPadding: const EdgeInsets.all(3),
         splashRadius: 15,
         icon: SvgPicture.asset(_imagePaths.icMenuDrawer, fit: BoxFit.fill),
-        onTap:() => _onOpenMailboxMenuActionClick?.call());
+        onTap: onOpenMailboxMenuActionClick);
   }
 
-  Widget _buildBackButton() {
-    return buildIconWeb(
-        icon: SvgPicture.asset(_imagePaths.icBack,
-            width: 20,
-            height: 20,
-            color: AppColor.colorTextButton,
-            fit: BoxFit.fill),
-        onTap:() => _onCancelEditThread?.call());
+  Widget _buildCancelSelection() {
+    return Material(
+      borderRadius: BorderRadius.circular(15),
+      color: Colors.transparent,
+      child: InkWell(
+          onTap: onCancelEditThread,
+          borderRadius: BorderRadius.circular(15),
+          child: Container(
+            color: Colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(_imagePaths.icBack,
+                      width: 20,
+                      height: 20,
+                      color: AppColor.colorTextButton,
+                      fit: BoxFit.fill),
+                  const SizedBox(width: 8),
+                  _buildCountItemSelected()
+                ]),
+          )),
+    );
   }
 
   Widget _buildCountItemSelected() {
@@ -355,84 +351,55 @@ class AppBarThreadWidgetBuilder {
         child: Text(
             '${_listSelectionEmail.length}',
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            softWrap: CommonTextStyle.defaultSoftWrap,
             style: const TextStyle(
                 fontSize: 17,
                 color: AppColor.colorTextButton)));
   }
 
-  Widget _buildContentCenterAppBar() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        InkWell(
-          onTap: () {
-            if (_responsiveUtils.hasLeftMenuDrawerActive(_context)) {
-              _onOpenMailboxMenuActionClick?.call();
-            }
-          },
-          child: Padding(
-            padding: (_responsiveUtils.hasLeftMenuDrawerActive(_context))
-                ? EdgeInsets.zero
-                : const EdgeInsets.only(bottom: 8, top: 8),
-            child: Container(
-              padding: EdgeInsets.zero,
-              margin: EdgeInsets.zero,
-              constraints: BoxConstraints(maxWidth: _getMaxWidthAppBarTitle()),
-              child: Text(
-                _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
-                maxLines: 1,
-                softWrap: CommonTextStyle.defaultSoftWrap,
-                overflow: CommonTextStyle.defaultTextOverFlow,
-                style: const TextStyle(
-                    fontSize: 21,
-                    color: AppColor.colorNameEmail,
-                    fontWeight: FontWeight.w700))
-            ))),
-        if (_responsiveUtils.hasLeftMenuDrawerActive(_context))
-          Transform(
-            transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              color: AppColor.baseTextColor,
-              icon: SvgPicture.asset(_imagePaths.icChevronDown,
-                  width: 20,
-                  height: 16,
-                  fit: BoxFit.fill),
-              onPressed: () => _onOpenMailboxMenuActionClick?.call()
-            )
-          )
-      ]
-    );
-  }
-
-  double _getMaxWidthAppBarTitle() {
-    var width = MediaQuery.of(_context).size.width;
-    var widthSiblingsWidget = 220;
-    if (_responsiveUtils.isTablet(_context) || _responsiveUtils.isLandscapeMobile(_context)) {
-      width = width * 0.7;
-      widthSiblingsWidget = 250;
-    } else if (_responsiveUtils.isTabletLarge(_context)) {
-      width = width * 0.6;
-      widthSiblingsWidget = 250;
-    } else if (_responsiveUtils.isDesktop(_context)) {
-      width = width * 0.25;
-      widthSiblingsWidget = 150;
-    }
-    final maxWidth = width > widthSiblingsWidget
-        ? width - widthSiblingsWidget
-        : 0.0;
-    return maxWidth;
-  }
-
-  double _getXTranslationValues() {
-    if (BuildUtils.isWeb) {
-      return _responsiveUtils.isDesktop(_context) && BuildUtils.isWeb
-          ? -2.0
-          : -16.0;
+  Widget _buildContentCenterAppBar(BuildContext context, BoxConstraints constraints) {
+    if (_responsiveUtils.hasLeftMenuDrawerActive(context)) {
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onOpenMailboxMenuActionClick,
+          borderRadius: BorderRadius.circular(15),
+          child: Container(
+            color: Colors.transparent,
+            height: 40,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      constraints: BoxConstraints(maxWidth: constraints.maxWidth - 220),
+                      child: Text(
+                          _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
+                          maxLines: 1,
+                          softWrap: CommonTextStyle.defaultSoftWrap,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
+                          style: const TextStyle(
+                              fontSize: 21,
+                              color: AppColor.colorNameEmail,
+                              fontWeight: FontWeight.w700))),
+                  SvgPicture.asset(_imagePaths.icChevronDown)
+                ]
+            ),
+          ),
+        ),
+      );
     } else {
-      return _responsiveUtils.isTabletLarge(_context) ? 0.0 : -16.0;
+      return const SizedBox.shrink();
+    }
+  }
+
+  double _getXTranslationValues(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return _responsiveUtils.isWebDesktop(context) ? -2.0 : -16.0;
+    } else {
+      return _responsiveUtils.isTabletLarge(context) ? 0.0 : -16.0;
     }
   }
 }
