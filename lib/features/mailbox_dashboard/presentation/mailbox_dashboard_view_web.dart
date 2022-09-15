@@ -110,7 +110,30 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         Expanded(child: Obx(() {
                           switch(controller.routePath.value) {
                             case AppRoutes.THREAD:
-                              return ThreadView();
+                              return Container(
+                                margin: const EdgeInsets.only(right: 16, top: 16, bottom: 16),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
+                                    color: Colors.white),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Column(children: [
+                                    if (controller.isSelectionEnabled())
+                                      Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: _buildListButtonTopBarSelection(context),
+                                      )
+                                    else
+                                      Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: _buildListButtonTopBar(context),
+                                      ),
+                                    const Divider(color: AppColor.colorDivider, height: 1),
+                                    Expanded(child: ThreadView())
+                                  ]),
+                                ),
+                              );
                             case AppRoutes.EMAIL:
                               return EmailView();
                             default:
@@ -162,19 +185,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   Widget _buildRightHeader(BuildContext context) {
     return Row(children: [
-      Obx(() {
-        if (controller.routePath.value != AppRoutes.THREAD) {
-          return const SizedBox.shrink();
-        }
-        if (controller.isSelectionEnabled()) {
-          return _buildListButtonTopBarSelection(context);
-        } else {
-          return searchController.isSearchActive()
-            ? _buildListButtonTopBarSearchActive(context)
-            : _buildListButtonTopBar(context);
-        }
-      }),
-      const SizedBox(width: 16),
       Obx(() => !searchController.isSearchActive() ? const Spacer() : const SizedBox.shrink()),
       Obx(() {
         if (searchController.isSearchActive()) {
@@ -305,38 +315,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               ? AppLocalizations.of(context).filter_messages
               : controller.filterMessageOption.value.getTitle(context), isVertical: false))
         .build()),
-    ]);
-  }
-
-  Widget _buildListButtonTopBarSearchActive(BuildContext context) {
-    return Row(children: [
-      (ButtonBuilder(imagePaths.icSelectAll)
-          ..key(const Key('button_select_all'))
-          ..decoration(BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: AppColor.colorButtonHeaderThread))
-          ..paddingIcon(const EdgeInsets.only(right: 8))
-          ..size(16)
-          ..radiusSplash(10)
-          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-          ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
-          ..onPressActionClick(() => controller.dispatchAction(SelectionAllEmailAction()))
-          ..text(AppLocalizations.of(context).select_all, isVertical: false))
-        .build(),
-      const SizedBox(width: 16),
-      (ButtonBuilder(imagePaths.icMarkAllAsRead)
-          ..key(const Key('button_mark_all_as_read'))
-          ..decoration(BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: AppColor.colorButtonHeaderThread))
-          ..paddingIcon(const EdgeInsets.only(right: 8))
-          ..size(16)
-          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-          ..radiusSplash(10)
-          ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
-          ..onPressActionClick(() => controller.markAsReadMailboxAction())
-          ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
-        .build(),
     ]);
   }
 
