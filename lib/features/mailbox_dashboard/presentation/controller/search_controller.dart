@@ -42,8 +42,11 @@ class SearchController extends BaseController {
   final mailboxFilterSelectedFormAdvancedSearch = Rxn<PresentationMailbox>();
   final hasAttachment = false.obs;
   final emailReceiveTimeType = Rxn<EmailReceiveTimeType>();
+  final searchIsActive = RxBool(false);
 
-  get searchEmailFilterValue => searchEmailFilter.value;
+  SearchEmailFilter get searchEmailFilterValue => searchEmailFilter.value;
+
+  SearchQuery? get searchQuery => searchEmailFilter.value.text;
 
   FocusNode searchFocus = FocusNode();
 

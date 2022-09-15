@@ -10,7 +10,6 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_c
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_overlay.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
@@ -66,7 +65,6 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                           _buildVacationNotificationMessage(context),
                         ],
                       _buildEmptyTrashButton(context),
-                      _buildListButtonQuickSearchFilter(context),
                       if (!_responsiveUtils.isDesktop(context))
                         _buildMarkAsMailboxReadLoading(context),
                       _buildLoadingView(),
@@ -699,134 +697,6 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
     return [
       PopupMenuItem(padding: const EdgeInsets.symmetric(horizontal: 8), child: _markAsEmailSpamOrUnSpamAction(context, email)),
     ];
-  }
-
-  bool supportListButtonQuickSearchFilter(BuildContext context) {
-    return controller.isSearchActive()
-        && controller.searchIsActive.isTrue
-        && _responsiveUtils.isWebDesktop(context);
-  }
-
-  Widget _buildListButtonQuickSearchFilter(BuildContext context) {
-    return Obx(() {
-      if (supportListButtonQuickSearchFilter(context)) {
-        return Padding(
-          padding: EdgeInsets.only(
-              left: _responsiveUtils.isWebDesktop(context) ? 32 : 16,
-              right: _responsiveUtils.isWebDesktop(context) ? 20 : 16,
-              bottom: _responsiveUtils.isWebDesktop(context) ? 0 : 16,
-              top: _responsiveUtils.isWebDesktop(context) ? 16 : 0),
-          child: Row(
-              children: QuickSearchFilter.values
-                  .map((filter) => _buildQuickSearchFilterButton(context, filter))
-                  .toList()),
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
-  }
-
-  Widget _buildQuickSearchFilterButton(
-      BuildContext context, QuickSearchFilter filter) {
-    return Obx(() {
-      final quickSearchFilterSelected = controller.mailboxDashBoardController.checkQuickSearchFilterSelected(
-          quickSearchFilter: filter,
-      );
-
-      return Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: InkWell(
-          onTap: () {
-            if (filter != QuickSearchFilter.last7Days) {
-              controller.selectQuickSearchFilter(filter);
-            }
-          },
-          onTapDown: (detail) {
-            if (filter == QuickSearchFilter.last7Days) {
-              final screenSize = MediaQuery.of(context).size;
-              final offset = detail.globalPosition;
-              final position = RelativeRect.fromLTRB(
-                offset.dx,
-                offset.dy,
-                screenSize.width - offset.dx,
-                screenSize.height - offset.dy,
-              );
-              controller.openPopupReceiveTimeQuickSearchFilter(context, position,
-                  popupMenuEmailReceiveTimeType(context,
-                      controller.searchController.emailReceiveTimeType.value,
-                      (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(receiveTime)));
-            }
-          },
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: filter.getBackgroundColor(quickSearchFilterSelected: quickSearchFilterSelected)),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                SvgPicture.asset(
-                    filter.getIcon(_imagePaths, quickSearchFilterSelected: quickSearchFilterSelected),
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.fill),
-                const SizedBox(width: 4),
-                Text(
-                  filter.getTitle(context, receiveTimeType: controller.searchController.emailReceiveTimeType.value),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: filter.getTextStyle(quickSearchFilterSelected: quickSearchFilterSelected),
-                ),
-                if (filter == QuickSearchFilter.last7Days)
-                  ... [
-                    const SizedBox(width: 4),
-                    SvgPicture.asset(
-                        _imagePaths.icChevronDown,
-                        width: 16,
-                        height: 16,
-                        fit: BoxFit.fill),
-                  ]
-              ])),
-        ),
-      );
-    });
-  }
-
-  List<PopupMenuEntry> popupMenuEmailReceiveTimeType(BuildContext context,
-      EmailReceiveTimeType? receiveTimeSelected, Function(EmailReceiveTimeType?)? onCallBack) {
-    return EmailReceiveTimeType.values
-        .map((timeType) => PopupMenuItem(
-            padding: EdgeInsets.zero,
-            child: _receiveTimeTileAction(context, receiveTimeSelected, timeType, onCallBack)))
-        .toList();
-  }
-
-  Widget _receiveTimeTileAction(
-      BuildContext context,
-      EmailReceiveTimeType? receiveTimeSelected,
-      EmailReceiveTimeType receiveTimeType,
-      Function(EmailReceiveTimeType?)? onCallBack
-  ) {
-    return InkWell(
-        onTap: () => onCallBack?.call(receiveTimeType == receiveTimeSelected
-            ? null
-            : receiveTimeType),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: SizedBox(
-              width: 320,
-              child: Row(children: [
-                Expanded(child: Text(
-                    receiveTimeType.getTitle(context),
-                    style: const TextStyle(fontSize: 17, color: Colors.black, fontWeight: FontWeight.normal))),
-                if (receiveTimeType == receiveTimeSelected)
-                  const SizedBox(width: 12),
-                if (receiveTimeType == receiveTimeSelected)
-                  SvgPicture.asset(_imagePaths.icFilterSelected, width: 24, height: 24, fit: BoxFit.fill),
-              ])
-          ),
-        )
-    );
   }
 
   Widget _buildQuickSearchFilterButtonSuggestionBox(

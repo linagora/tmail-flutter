@@ -94,7 +94,6 @@ class ThreadController extends BaseController {
   final MoveToMailboxInteractor _moveToMailboxInteractor;
 
   final emailList = <PresentationEmail>[].obs;
-  final searchIsActive = RxBool(false);
 
   bool canLoadMore = true;
   bool canSearchMore = true;
@@ -279,6 +278,9 @@ class ThreadController extends BaseController {
         } else if (action is DisableSearchEmailAction) {
           closeSearchEmailAction();
           mailboxDashBoardController.clearDashBoardAction();
+        } else if (action is StartSearchEmailAction) {
+          _searchEmail();
+          mailboxDashBoardController.clearDashBoardAction();
         }
       }
     });
@@ -286,10 +288,7 @@ class ThreadController extends BaseController {
     viewStateWorker = ever(mailboxDashBoardController.viewState, (viewState) {
       if (viewState is Either) {
         viewState.map((success) {
-          if (success is SearchEmailNewQuery){
-            mailboxDashBoardController.clearState();
-            _searchEmail();
-          } else if (success is MarkAsEmailReadSuccess) {
+          if (success is MarkAsEmailReadSuccess) {
             _refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is MoveToMailboxSuccess) {
             _refreshEmailChanges(currentEmailState: success.currentEmailState);
@@ -842,7 +841,7 @@ class ThreadController extends BaseController {
   }
 
   void disableSearch() {
-    searchIsActive.value = false;
+    searchController.searchIsActive.value = false;
     searchController.disableSearch();
   }
 
@@ -858,7 +857,7 @@ class ThreadController extends BaseController {
 
   void _searchEmail({UnsignedInt? limit, EmailFilterCondition? filterMessageOption}) {
     if (_accountId != null && searchQuery != null) {
-      searchIsActive.value = true;
+      searchController.searchIsActive.value = true;
 
       if(searchController.isAdvancedSearchHasApply.isFalse){
         searchController.updateFilterEmail(mailbox: currentMailbox);
