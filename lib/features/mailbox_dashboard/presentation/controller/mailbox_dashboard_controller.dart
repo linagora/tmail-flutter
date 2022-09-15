@@ -680,6 +680,12 @@ class MailboxDashBoardController extends ReloadableController {
     dispatchAction(StartSearchEmailAction());
   }
 
+  bool get isMailboxTrash => selectedMailbox.value?.isTrash == true;
+
+  void emptyTrashAction(BuildContext context) {
+    dispatchAction(EmptyTrashAction(context));
+  }
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
