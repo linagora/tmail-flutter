@@ -573,7 +573,14 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                 controller.searchController.searchState.value.searchStatus,
                 controller.searchQuery,
                 advancedSearchActivated: controller.searchController.isAdvancedSearchHasApply.isTrue)
-            ..addOnPressEmailActionClick((action, email) => controller.pressEmailAction(context, action, email))
+            ..addOnPressEmailActionClick((action, email) =>
+                controller.pressEmailAction(
+                    context,
+                    action,
+                    email,
+                    mailboxContain: controller.searchController.isSearchEmailRunning
+                      ? email.findMailboxContain(controller.mailboxDashBoardController.mapMailbox)
+                      : controller.currentMailbox))
             ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
               ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
               : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email))))
@@ -672,12 +679,18 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   }
 
   Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
+    final mailboxContain = controller.searchController.isSearchEmailRunning
+        ? email.findMailboxContain(controller.mailboxDashBoardController.mapMailbox)
+        : controller.currentMailbox;
     return (EmailActionCupertinoActionSheetActionBuilder(
             const Key('mark_as_spam_or_un_spam_action'),
             SvgPicture.asset(
-                controller.currentMailbox?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
-                width: 28, height: 28, fit: BoxFit.fill, color: AppColor.colorTextButton),
-            controller.currentMailbox?.isSpam == true
+                mailboxContain?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
+                width: 28,
+                height: 28,
+                fit: BoxFit.fill,
+                color: AppColor.colorTextButton),
+            mailboxContain?.isSpam == true
                 ? AppLocalizations.of(context).remove_from_spam
                 : AppLocalizations.of(context).mark_as_spam,
             email,
@@ -688,10 +701,11 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                 ? const EdgeInsets.only(right: 12)
                 : EdgeInsets.zero)
         ..onActionClick((email) => controller.pressEmailAction(context,
-            controller.currentMailbox?.isSpam == true
+            mailboxContain?.isSpam == true
                 ? EmailActionType.unSpam
                 : EmailActionType.moveToSpam,
-            email)))
+            email,
+            mailboxContain: mailboxContain)))
       .build();
   }
 

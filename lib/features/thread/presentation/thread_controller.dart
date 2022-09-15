@@ -955,10 +955,15 @@ class ThreadController extends BaseController {
     }
   }
 
-  void pressEmailAction(BuildContext context, EmailActionType actionType, PresentationEmail selectedEmail) {
+  void pressEmailAction(
+      BuildContext context,
+      EmailActionType actionType,
+      PresentationEmail selectedEmail,
+      {PresentationMailbox? mailboxContain}
+  ) {
     switch(actionType) {
       case EmailActionType.preview:
-        if (mailboxDashBoardController.selectedMailbox.value?.role == PresentationMailbox.roleDrafts) {
+        if (mailboxContain?.isDrafts == true) {
           editEmail(selectedEmail);
         } else {
           previewEmail(context, selectedEmail);
