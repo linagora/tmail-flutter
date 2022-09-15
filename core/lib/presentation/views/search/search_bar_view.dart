@@ -6,62 +6,42 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnOpenSearchViewAction = Function();
 
-class SearchBarView {
-  OnOpenSearchViewAction? _onOpenSearchViewAction;
+class SearchBarView extends StatelessWidget {
 
+  final OnOpenSearchViewAction? onOpenSearchViewAction;
   final ImagePaths _imagePaths;
+  final double? heightSearchBar;
+  final EdgeInsets? padding;
+  final EdgeInsets? margin;
+  final String? hintTextSearch;
+  final double? maxSizeWidth;
+  final Widget? rightButton;
+  final double? radius;
 
-  double? _heightSearchBar;
-  EdgeInsets? _padding;
-  EdgeInsets? _margin;
-  String? _hintTextSearch;
-  double? _maxSizeWidth;
-  Widget? _rightButton;
+  const SearchBarView(this._imagePaths, {
+    this.heightSearchBar,
+    this.padding,
+    this.margin,
+    this.hintTextSearch,
+    this.maxSizeWidth,
+    this.rightButton,
+    this.onOpenSearchViewAction,
+    this.radius,
+  });
 
-
-  SearchBarView(this._imagePaths);
-
-  void addOnOpenSearchViewAction(OnOpenSearchViewAction onOpenSearchViewAction) {
-    _onOpenSearchViewAction = onOpenSearchViewAction;
-  }
-
-  void setHeightSearchBar(double heightSearchBar) {
-    _heightSearchBar = heightSearchBar;
-  }
-
-  void addPadding(EdgeInsets padding) {
-    _padding = padding;
-  }
-
-  void addRightButton(Widget rightButton) {
-    _rightButton = rightButton;
-  }
-
-  void addMargin(EdgeInsets margin) {
-    _margin = margin;
-  }
-
-  void hintTextSearch(String text) {
-    _hintTextSearch = text;
-  }
-
-  void maxSizeWidth(double? size) {
-    _maxSizeWidth = size;
-  }
-
-  Widget build() {
+  Widget build(BuildContext context) {
     return Container(
         key: Key('search_bar_widget'),
         alignment: Alignment.center,
-        height: _heightSearchBar ?? 40,
-        width: _maxSizeWidth ?? double.infinity,
+        height: heightSearchBar ?? 40,
+        width: maxSizeWidth ?? double.infinity,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(radius ?? 10),
             color: AppColor.colorBgSearchBar),
-        padding: _padding ?? EdgeInsets.zero,
-        margin: _margin ?? EdgeInsets.zero,
+        padding: padding ?? EdgeInsets.zero,
+        margin: margin ?? EdgeInsets.zero,
         child: InkWell(
-          onTap: () => _onOpenSearchViewAction?.call(),
+          onTap: onOpenSearchViewAction,
           mouseCursor: SystemMouseCursors.text,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -71,16 +51,24 @@ class SearchBarView {
                   splashRadius: 15,
                   minSize: 40,
                   iconPadding: EdgeInsets.zero,
-                  icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
-                  onTap: () => _onOpenSearchViewAction?.call()),
+                  icon: SvgPicture.asset(
+                      _imagePaths.icSearchBar,
+                      width: 16,
+                      height: 16,
+                      fit: BoxFit.fill),
+                  onTap: onOpenSearchViewAction),
               Expanded(
                 child: Text(
-                    _hintTextSearch ?? '',
+                    hintTextSearch ?? '',
                     maxLines: 1,
-                    style: TextStyle(fontSize: kIsWeb ? 15 : 17, color: AppColor.colorHintSearchBar)),
+                    overflow: CommonTextStyle.defaultTextOverFlow,
+                    softWrap: CommonTextStyle.defaultSoftWrap,
+                    style: TextStyle(
+                        fontSize: kIsWeb ? 15 : 17,
+                        color: AppColor.colorHintSearchBar)),
               ),
-              if(_rightButton != null)
-                _rightButton!
+              if(rightButton != null)
+                rightButton!
             ]
           ),
         ),

@@ -232,10 +232,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             left: _responsiveUtils.isLandscapeMobile(context) &&
                 !BuildUtils.isWeb ? 0 : 16,
             right: 16),
-        child: (SearchBarView(_imagePaths)
-            ..hintTextSearch(AppLocalizations.of(context).hint_search_mailboxes)
-            ..addOnOpenSearchViewAction(() => controller.enableSearch()))
-          .build());
+        child: SearchBarView(
+            _imagePaths,
+            hintTextSearch: AppLocalizations.of(context).hint_search_mailboxes,
+            onOpenSearchViewAction: controller.enableSearch));
   }
 
   Widget _buildBodyDestinationPicker(BuildContext context, MailboxActions? actions) {

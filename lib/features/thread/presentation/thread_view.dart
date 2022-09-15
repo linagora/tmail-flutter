@@ -176,11 +176,12 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
         portalFollower: _responsiveUtils.isMobile(context)
             ? const SizedBox.shrink()
             : const AdvancedSearchFilterOverlay(),
-        child: (SearchBarView(_imagePaths)
-            ..hintTextSearch(AppLocalizations.of(context).search_emails)
-            ..addOnOpenSearchViewAction(() => controller.enableSearch(context))
-            ..addRightButton(IconOpenAdvancedSearchWidget(context)))
-          .build(),
+        child: SearchBarView(
+          _imagePaths,
+          hintTextSearch: AppLocalizations.of(context).search_emails,
+          onOpenSearchViewAction: () => controller.enableSearch(context),
+          rightButton: IconOpenAdvancedSearchWidget(context),
+        ),
       ),
     );
   }

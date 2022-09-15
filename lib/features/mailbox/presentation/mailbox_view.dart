@@ -187,10 +187,10 @@ class MailboxView extends GetWidget<MailboxController> {
           bottom: 16,
           left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
           right: 16),
-      child: (SearchBarView(_imagePaths)
-          ..hintTextSearch(AppLocalizations.of(context).hint_search_mailboxes)
-          ..addOnOpenSearchViewAction(() => controller.enableSearch()))
-        .build());
+      child: SearchBarView(
+        _imagePaths,
+        hintTextSearch: AppLocalizations.of(context).hint_search_mailboxes,
+        onOpenSearchViewAction: controller.enableSearch));
   }
 
   Widget _buildLoadingView() {
