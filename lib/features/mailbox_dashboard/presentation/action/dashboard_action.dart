@@ -79,3 +79,11 @@ class DisableSearchEmailAction extends DashBoardAction {
   @override
   List<Object?> get props => [];
 }
+
+class StartSearchEmailAction extends DashBoardAction {
+
+  StartSearchEmailAction();
+
+  @override
+  List<Object?> get props => [];
+}

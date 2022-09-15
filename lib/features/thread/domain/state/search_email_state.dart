@@ -1,7 +1,6 @@
 
 import 'package:core/core.dart';
 import 'package:model/email/presentation_email.dart';
-import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
 class SearchingState extends UIState {
 
@@ -9,15 +8,6 @@ class SearchingState extends UIState {
 
   @override
   List<Object> get props => [];
-}
-
-class SearchEmailNewQuery extends UIState {
-  final SearchQuery searchQuery;
-
-  SearchEmailNewQuery(this.searchQuery);
-
-  @override
-  List<Object> get props => [searchQuery];
 }
 
 class SearchEmailSuccess extends UIState {
