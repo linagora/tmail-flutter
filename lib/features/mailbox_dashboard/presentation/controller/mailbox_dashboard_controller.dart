@@ -374,12 +374,17 @@ class MailboxDashBoardController extends ReloadableController {
     if (value.isEmpty){
       searchController.setEmailReceiveTimeType(null);
     }
+    _unSelectedMailbox();
   }
 
   bool _searchInsideEmailDetailedViewIsActive(BuildContext context) {
     return BuildUtils.isWeb
         && _responsiveUtils.isDesktop(context)
         && routePath.value == AppRoutes.EMAIL;
+  }
+
+  void _unSelectedMailbox() {
+    selectedMailbox.value = null;
   }
 
   void _closeEmailDetailedView() {
