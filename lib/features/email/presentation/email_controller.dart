@@ -81,8 +81,6 @@ class EmailController extends BaseController with AppLoaderMixin {
       StreamController<Either<Failure, Success>>.broadcast();
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
 
-  PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
-
   PresentationEmail? get currentEmail => mailboxDashBoardController.selectedEmail.value;
 
   EmailController(
@@ -240,9 +238,15 @@ class EmailController extends BaseController with AppLoaderMixin {
 
   bool get isExpandEmailAddress => emailAddressExpandMode.value == ExpandMode.EXPAND;
 
+  PresentationMailbox? getMailboxContain(PresentationEmail email) {
+    return mailboxDashBoardController.searchController.isSearchEmailRunning
+        ? email.findMailboxContain(mailboxDashBoardController.mapMailbox)
+        : mailboxDashBoardController.selectedMailbox.value;
+  }
+
   void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions) async {
     final accountId = mailboxDashBoardController.accountId.value;
-    final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
+    final mailboxCurrent = getMailboxContain(presentationEmail);
     if (accountId != null && mailboxCurrent != null) {
       consumeState(_markAsEmailReadInteractor.execute(accountId, presentationEmail.toEmail(), readActions));
     }
@@ -432,7 +436,7 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void moveToMailbox(BuildContext context, PresentationEmail email) async {
-    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    final currentMailbox = getMailboxContain(email);
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (currentMailbox != null && accountId != null) {
@@ -503,11 +507,12 @@ class EmailController extends BaseController with AppLoaderMixin {
   void moveToTrash(BuildContext context, PresentationEmail email) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final trashMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleTrash);
+    final currentMailbox = getMailboxContain(email);
 
     if (accountId != null && currentMailbox != null && trashMailboxId != null) {
       _moveToTrashAction(context, accountId, MoveToMailboxRequest(
         [email.id],
-        currentMailbox!.id,
+        currentMailbox.id,
         trashMailboxId,
         MoveAction.moving,
         EmailActionType.moveToTrash)
@@ -523,11 +528,12 @@ class EmailController extends BaseController with AppLoaderMixin {
   void moveToSpam(BuildContext context, PresentationEmail email) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
+    final currentMailbox = getMailboxContain(email);
 
     if (accountId != null && currentMailbox != null && spamMailboxId != null) {
       _moveToSpamAction(context, accountId, MoveToMailboxRequest(
           [email.id],
-          currentMailbox!.id,
+          currentMailbox.id,
           spamMailboxId,
           MoveAction.moving,
           EmailActionType.moveToSpam)
@@ -558,7 +564,7 @@ class EmailController extends BaseController with AppLoaderMixin {
 
   void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction markStarAction) async {
     final accountId = mailboxDashBoardController.accountId.value;
-    final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
+    final mailboxCurrent = getMailboxContain(presentationEmail);
     if (accountId != null && mailboxCurrent != null) {
       consumeState(_markAsStarEmailInteractor.execute(accountId, presentationEmail.toEmail(), markStarAction));
     }
