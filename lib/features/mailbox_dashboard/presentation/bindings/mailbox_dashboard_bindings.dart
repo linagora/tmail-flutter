@@ -14,6 +14,14 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/session_storage_composer_datasoure_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
@@ -47,15 +55,10 @@ import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_reposit
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/search_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/search_datasource_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/session_storage_composer_datasoure_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/search_repository_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/search_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
@@ -66,6 +69,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/search/domain/usecases/refresh_changes_search_email_interactor.dart';
+import 'package:tmail_ui_user/features/search/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/local_thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
@@ -74,6 +79,12 @@ import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 import 'package:tmail_ui_user/features/thread/data/repository/thread_repository_impl.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_bindings.dart';
 
 class MailboxDashBoardBindings extends BaseBindings {
@@ -84,6 +95,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     MailboxBindings().dependencies();
     ThreadBindings().dependencies();
     EmailBindings().dependencies();
+    SearchEmailBindings().dependencies();
   }
 
   @override
@@ -101,7 +113,14 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MoveToMailboxInteractor>(),
       Get.find<DeleteEmailPermanentlyInteractor>(),
       Get.find<MarkAsMailboxReadInteractor>(),
-      Get.find<GetComposerCacheOnWebInteractor>()
+      Get.find<GetComposerCacheOnWebInteractor>(),
+      Get.find<MarkAsEmailReadInteractor>(),
+      Get.find<MarkAsStarEmailInteractor>(),
+      Get.find<MarkAsMultipleEmailReadInteractor>(),
+      Get.find<MarkAsStarMultipleEmailInteractor>(),
+      Get.find<MoveMultipleEmailToMailboxInteractor>(),
+      Get.find<EmptyTrashFolderInteractor>(),
+      Get.find<DeleteMultipleEmailsPermanentlyInteractor>(),
     ));
     Get.put(AdvancedFilterController());
   }
@@ -155,6 +174,9 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<MailboxRepository>()));
     Get.lazyPut(() => SaveRecentSearchInteractor(Get.find<SearchRepository>()));
     Get.lazyPut(() => GetAllRecentSearchLatestInteractor(Get.find<SearchRepository>()));
+    Get.lazyPut(() => SearchEmailInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => SearchMoreEmailInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => RefreshChangesSearchEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => QuickSearchEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => MarkAsMailboxReadInteractor(
       Get.find<MailboxRepository>(),
@@ -179,6 +201,27 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => GetComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => SaveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
+    Get.lazyPut(() => MarkAsEmailReadInteractor(
+        Get.find<EmailRepository>(),
+        Get.find<MailboxRepository>()
+    ));
+    Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MarkAsMultipleEmailReadInteractor(
+        Get.find<EmailRepository>(),
+        Get.find<MailboxRepository>()
+    ));
+    Get.lazyPut(() => MarkAsStarMultipleEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MoveMultipleEmailToMailboxInteractor(
+        Get.find<EmailRepository>(),
+        Get.find<MailboxRepository>()
+    ));
+    Get.lazyPut(() => DeleteMultipleEmailsPermanentlyInteractor(
+        Get.find<EmailRepository>(),
+        Get.find<MailboxRepository>()));
+    Get.lazyPut(() => EmptyTrashFolderInteractor(
+        Get.find<ThreadRepository>(),
+        Get.find<MailboxRepository>(),
+        Get.find<EmailRepository>()));
   }
 
   @override
