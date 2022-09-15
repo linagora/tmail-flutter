@@ -89,3 +89,21 @@ class SearchEmailFilter {
     });
   }
 }
+
+extension SearchEmailFilterExtension on SearchEmailFilter {
+
+  SearchEmailFilter toSearchEmailFilter({UTCDate? newBefore}) {
+    return SearchEmailFilter(
+      from: from,
+      to: to,
+      text: text,
+      subject: subject,
+      hasKeyword: hasKeyword,
+      notKeyword: notKeyword,
+      mailbox: mailbox,
+      emailReceiveTimeType: emailReceiveTimeType,
+      hasAttachment: hasAttachment,
+      before: newBefore,
+    );
+  }
+}

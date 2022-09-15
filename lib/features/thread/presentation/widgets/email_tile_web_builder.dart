@@ -3,7 +3,6 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
@@ -20,7 +19,7 @@ class EmailTileBuilder {
   final PresentationEmail _presentationEmail;
   final BuildContext _context;
   final SelectMode _selectModeAll;
-  final Role? _mailboxRole;
+  final PresentationMailbox? mailboxCurrent;
   final SearchStatus _searchStatus;
   final SearchQuery? _searchQuery;
   final bool advancedSearchActivated;
@@ -34,11 +33,11 @@ class EmailTileBuilder {
   EmailTileBuilder(
     this._context,
     this._presentationEmail,
-    this._mailboxRole,
     this._selectModeAll,
     this._searchStatus,
     this._searchQuery,
     {
+      this.mailboxCurrent,
       this.advancedSearchActivated = false
     }
   );
@@ -577,7 +576,7 @@ class EmailTileBuilder {
                   : EmailActionType.markAsRead,
               _presentationEmail)),
       const SizedBox(width: 5),
-      if (_mailboxRole != PresentationMailbox.roleDrafts)
+      if (mailboxCurrent?.isDrafts == false)
         ... [
           buildIconWeb(
               minSize: 18,
@@ -616,7 +615,7 @@ class EmailTileBuilder {
                   : EmailActionType.moveToTrash,
               _presentationEmail)),
       const SizedBox(width: 5),
-      if (_mailboxRole != PresentationMailbox.roleDrafts)
+      if (mailboxCurrent?.isDrafts == false)
         buildIconWebHasPosition(
             _context,
             icon: SvgPicture.asset(
@@ -641,8 +640,7 @@ class EmailTileBuilder {
   }
 
   bool get canDeletePermanently {
-    return _mailboxRole == PresentationMailbox.roleTrash ||
-        _mailboxRole == PresentationMailbox.roleDrafts;
+    return mailboxCurrent?.isTrash == true || mailboxCurrent?.isDrafts == true;
   }
 
   Widget _buildDateTimeForDesktopScreen() {
@@ -834,9 +832,9 @@ class EmailTileBuilder {
   }
 
   String _getInformationSender() {
-    if (_mailboxRole == PresentationMailbox.roleSent
-        || _mailboxRole == PresentationMailbox.roleDrafts
-        || _mailboxRole == PresentationMailbox.roleOutbox) {
+    if (mailboxCurrent?.isSent == true
+        || mailboxCurrent?.isDrafts == true
+        || mailboxCurrent?.isOutbox == true) {
       return _presentationEmail.recipientsName();
     }
     return _presentationEmail.getSenderName();
