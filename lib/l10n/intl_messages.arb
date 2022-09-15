@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-09-12T10:15:14.832674",
+  "@@last_modified": "2022-09-16T10:29:51.348820",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2170,6 +2170,12 @@
   },
   "vacationSetting": "Vacation setting",
   "@vacationSetting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "backToSearchResults": "Back to Search Results",
+  "@backToSearchResults": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
