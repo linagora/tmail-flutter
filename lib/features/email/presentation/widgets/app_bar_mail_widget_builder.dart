@@ -15,19 +15,21 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final PresentationEmail? _presentationEmail;
-  final PresentationMailbox? _currentMailbox;
+  final PresentationMailbox? currentMailbox;
+  final bool isSearchIsRunning;
   final OnBackActionClick? onBackActionClick;
   final OnEmailActionClick? onEmailActionClick;
   final OnMoreActionClick? onMoreActionClick;
 
   AppBarMailWidgetBuilder(
     this._presentationEmail,
-    this._currentMailbox,
     {
       Key? key,
+      this.currentMailbox,
       this.onBackActionClick,
       this.onEmailActionClick,
-      this.onMoreActionClick
+      this.onMoreActionClick,
+      this.isSearchIsRunning = false,
     }
   ) : super(key: key);
 
@@ -39,7 +41,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
       color: Colors.transparent,
       padding: const EdgeInsets.only(left: 8),
       child: Row(children: [
-        if (_responsiveUtils.mailboxDashboardHasMailboxAndEmailView(context))
+        if (_supportDisplayMailboxNameTitle(context))
           Material(
             color: Colors.transparent,
             child: InkWell(
@@ -63,7 +65,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
                       constraints: BoxConstraints(
                           maxWidth: _responsiveUtils.getSizeScreenWidth(context) - 250),
                       child: Text(
-                          _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
+                          currentMailbox?.name?.name.capitalizeFirstEach ?? '',
                           maxLines: 1,
                           overflow: CommonTextStyle.defaultTextOverFlow,
                           softWrap: CommonTextStyle.defaultSoftWrap,
@@ -78,6 +80,20 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
         if (_presentationEmail != null) _buildListOptionButton(context),
       ])
     );
+  }
+
+  bool _supportDisplayMailboxNameTitle(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return _responsiveUtils.isDesktop(context) ||
+          _responsiveUtils.isMobile(context) ||
+          _responsiveUtils.isTablet(context) ||
+          isSearchIsRunning;
+    } else {
+      return _responsiveUtils.isPortraitMobile(context) ||
+          _responsiveUtils.isLandscapeMobile(context) ||
+          _responsiveUtils.isTablet(context) ||
+          isSearchIsRunning;
+    }
   }
 
   Widget _buildListOptionButton(BuildContext context) {
@@ -104,18 +120,18 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
                   : EmailActionType.markAsStarred)),
         buildIconWeb(
             icon: SvgPicture.asset(
-                _currentMailbox?.role == PresentationMailbox.roleTrash
+                currentMailbox?.role == PresentationMailbox.roleTrash
                   ? _imagePaths.icDeleteComposer
                   : _imagePaths.icDelete,
                 color: AppColor.colorDefaultButton,
                 width: 24,
                 height: 24,
                 fit: BoxFit.fill),
-            tooltip: _currentMailbox?.role != PresentationMailbox.roleTrash
+            tooltip: currentMailbox?.role != PresentationMailbox.roleTrash
                 ? AppLocalizations.of(context).move_to_trash
                 : AppLocalizations.of(context).delete_permanently,
             onTap: () {
-              if (_currentMailbox?.role != PresentationMailbox.roleTrash) {
+              if (currentMailbox?.role != PresentationMailbox.roleTrash) {
                 onEmailActionClick?.call(
                     _presentationEmail!,
                     EmailActionType.moveToTrash);
