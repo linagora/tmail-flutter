@@ -134,7 +134,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
     return Obx(() {
       if ((!BuildUtils.isWeb || (BuildUtils.isWeb && controller.isSelectionEnabled()
             && controller.isSearchActive() && !_responsiveUtils.isDesktop(context)))
-          && controller.listEmailSelected.isNotEmpty) {
+          && controller.emailList.listEmailSelected.isNotEmpty) {
         return Column(children: [
           const Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
           Padding(
@@ -143,7 +143,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                     context,
                     _imagePaths,
                     _responsiveUtils,
-                    controller.listEmailSelected,
+                    controller.emailList.listEmailSelected,
                     controller.mailboxDashBoardController.selectedMailbox.value)
                 ..addOnPressEmailSelectionActionClick((actionType, selectionEmail) =>
                     controller.pressEmailSelectionAction(context, actionType, selectionEmail)))
@@ -379,7 +379,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
       return (AppBarThreadWidgetBuilder(
               context,
               controller.currentMailbox,
-              controller.listEmailSelected,
+              controller.emailList.listEmailSelected,
               controller.mailboxDashBoardController.currentSelectMode.value,
               controller.mailboxDashBoardController.filterMessageOption.value)
           ..addOpenMailboxMenuActionClick(() => controller.openMailboxLeftMenu())
@@ -568,10 +568,13 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
         itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
                 context,
                 listPresentationEmail[index],
-                controller.currentMailbox?.role,
                 controller.mailboxDashBoardController.currentSelectMode.value,
                 controller.searchController.searchState.value.searchStatus,
                 controller.searchQuery,
+                mailboxCurrent: controller.searchController.isSearchEmailRunning
+                    ? listPresentationEmail[index].findMailboxContain(
+                          controller.mailboxDashBoardController.mapMailbox)
+                    : controller.currentMailbox,
                 advancedSearchActivated: controller.searchController.isAdvancedSearchHasApply.isTrue)
             ..addOnPressEmailActionClick((action, email) =>
                 controller.pressEmailAction(
