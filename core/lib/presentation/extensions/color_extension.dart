@@ -72,7 +72,7 @@ extension AppColor on Color {
   static const colorContentEmail = Color(0xFF6D7885);
   static const colorTextButton = Color(0xFF007AFF);
   static const colorHintSearchBar = Color(0xFF818C99);
-  static const colorBgSearchBar = Color(0xFFEBEDF0);
+  static const colorBgSearchBar = Color(0x99EBEDF0);
   static const colorShadowBgContentEmail = Color(0x14000000);
   static const colorDividerMailbox = Color(0xFF99A2AD);
   static const colorCollapseMailbox = Color(0xFFB8C1CC);
