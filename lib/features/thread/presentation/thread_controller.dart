@@ -236,8 +236,12 @@ class ThreadController extends BaseController {
         if (_currentMailboxId != mailbox.id) {
           _currentMailboxId = mailbox.id;
           _resetToOriginalValue();
+          disableSearch();
           _getAllEmail();
         }
+      } else if (mailbox == null) { // disable current mailbox when search active
+        _currentMailboxId = null;
+        _resetToOriginalValue();
       }
     });
 
@@ -336,7 +340,6 @@ class ThreadController extends BaseController {
     emailList.clear();
     canLoadMore = true;
     _isLoadingMore = false;
-    disableSearch();
     cancelSelectEmail();
     mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
   }
@@ -861,10 +864,6 @@ class ThreadController extends BaseController {
   void _searchEmail({UnsignedInt? limit, EmailFilterCondition? filterMessageOption}) {
     if (_accountId != null && searchQuery != null) {
       searchController.searchIsActive.value = true;
-
-      if(searchController.isAdvancedSearchHasApply.isFalse){
-        searchController.updateFilterEmail(mailbox: currentMailbox);
-      }
 
       filterMessageOption = EmailFilterCondition(
         notKeyword: filterMessageOption?.notKeyword,
