@@ -1,17 +1,14 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/base/mixin/network_connection_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/search/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
-class MailboxDashBoardView extends GetWidget<MailboxDashBoardController>
-    with NetworkConnectionMixin {
-
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
+class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   MailboxDashBoardView({Key? key}) : super(key: key);
 
@@ -30,7 +27,7 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController>
     return Scaffold(
       key: controller.scaffoldKey,
       drawer: ResponsiveWidget(
-        responsiveUtils: _responsiveUtils,
+        responsiveUtils: responsiveUtils,
         mobile: SizedBox(child: MailboxView(), width: double.infinity),
         landscapeMobile: SizedBox(
             child: MailboxView(),
@@ -47,30 +44,50 @@ class MailboxDashBoardView extends GetWidget<MailboxDashBoardController>
         desktop: SizedBox(
             child: MailboxView(),
             width: ResponsiveUtils.defaultSizeLeftMenuMobile)),
-      drawerEnableOpenDragGesture: _responsiveUtils.hasLeftMenuDrawerActive(context),
+      drawerEnableOpenDragGesture: responsiveUtils.hasLeftMenuDrawerActive(context),
       body: Stack(children: [
         Obx(() {
           switch(controller.routePath.value) {
             case AppRoutes.THREAD:
               return ResponsiveWidget(
-                  responsiveUtils: _responsiveUtils,
-                  desktop: bodyLandscapeTablet,
-                  tabletLarge: bodyLandscapeTablet,
-                  landscapeTablet: bodyLandscapeTablet,
+                  responsiveUtils: responsiveUtils,
+                  desktop: controller.searchController.isSearchEmailRunning
+                      ? EmailView()
+                      : bodyLandscapeTablet,
+                  tabletLarge: controller.searchController.isSearchEmailRunning
+                      ? EmailView()
+                      : bodyLandscapeTablet,
+                  landscapeTablet: controller.searchController.isSearchEmailRunning
+                      ? EmailView()
+                      : bodyLandscapeTablet,
                   mobile: ThreadView());
             case AppRoutes.EMAIL:
               return ResponsiveWidget(
-                  responsiveUtils: _responsiveUtils,
-                  desktop: bodyLandscapeTablet,
-                  tabletLarge: bodyLandscapeTablet,
-                  landscapeTablet: bodyLandscapeTablet,
+                  responsiveUtils: responsiveUtils,
+                  desktop: controller.searchController.isSearchEmailRunning
+                      ? EmailView()
+                      : bodyLandscapeTablet,
+                  tabletLarge: controller.searchController.isSearchEmailRunning
+                      ? EmailView()
+                      : bodyLandscapeTablet,
+                  landscapeTablet: controller.searchController.isSearchEmailRunning
+                      ? EmailView()
+                      : bodyLandscapeTablet,
                   mobile: EmailView());
+            case AppRoutes.SEARCH_EMAIL:
+              return SafeArea(child: SearchEmailView());
             default:
               return ResponsiveWidget(
-                  responsiveUtils: _responsiveUtils,
-                  desktop: bodyLandscapeTablet,
-                  tabletLarge: bodyLandscapeTablet,
-                  landscapeTablet: bodyLandscapeTablet,
+                  responsiveUtils: responsiveUtils,
+                  desktop: controller.searchController.isSearchEmailRunning
+                      ? EmailView()
+                      : bodyLandscapeTablet,
+                  tabletLarge: controller.searchController.isSearchEmailRunning
+                      ? EmailView()
+                      : bodyLandscapeTablet,
+                  landscapeTablet: controller.searchController.isSearchEmailRunning
+                      ? EmailView()
+                      : bodyLandscapeTablet,
                   mobile: ThreadView());
           }
         }),

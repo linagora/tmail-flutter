@@ -707,7 +707,16 @@ class EmailController extends BaseController with AppLoaderMixin {
 
   void closeEmailView(BuildContext context) {
     mailboxDashBoardController.clearSelectedEmail();
-    mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
+
+    if (BuildUtils.isWeb) {
+      mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
+    } else {
+      if (mailboxDashBoardController.searchController.isSearchEmailRunning) {
+        mailboxDashBoardController.dispatchRoute(AppRoutes.SEARCH_EMAIL);
+      } else {
+        mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
+      }
+    }
   }
 
   void pressEmailAction(EmailActionType emailActionType) {
