@@ -131,7 +131,8 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       navigationDelegate: _onNavigation,
       gestureRecognizers: {
         Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
-        Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
+        if (Platform.isAndroid)
+          Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
       },
     );
   }

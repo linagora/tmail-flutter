@@ -48,7 +48,9 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
               onTap: () => onBackActionClick?.call(),
               borderRadius: BorderRadius.circular(15),
               child: Tooltip(
-                message: AppLocalizations.of(context).back,
+                message: isSearchIsRunning
+                    ? AppLocalizations.of(context).backToSearchResults
+                    : AppLocalizations.of(context).back,
                 child: Container(
                   color: Colors.transparent,
                   height: 40,
@@ -60,17 +62,18 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
                         height: 18,
                         color: AppColor.colorTextButton,
                         fit: BoxFit.fill),
-                    Container(
-                      margin: const EdgeInsets.only(left: 8),
-                      constraints: BoxConstraints(
-                          maxWidth: _responsiveUtils.getSizeScreenWidth(context) - 250),
-                      child: Text(
-                          currentMailbox?.name?.name.capitalizeFirstEach ?? '',
-                          maxLines: 1,
-                          overflow: CommonTextStyle.defaultTextOverFlow,
-                          softWrap: CommonTextStyle.defaultSoftWrap,
-                          style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton)),
-                    ),
+                    if (!isSearchIsRunning)
+                      Container(
+                        margin: const EdgeInsets.only(left: 8),
+                        constraints: BoxConstraints(
+                            maxWidth: _responsiveUtils.getSizeScreenWidth(context) - 250),
+                        child: Text(
+                            currentMailbox?.name?.name.capitalizeFirstEach ?? '',
+                            maxLines: 1,
+                            overflow: CommonTextStyle.defaultTextOverFlow,
+                            softWrap: CommonTextStyle.defaultSoftWrap,
+                            style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton)),
+                      ),
                   ]),
                 ),
               ),
