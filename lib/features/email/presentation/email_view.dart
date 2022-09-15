@@ -127,9 +127,9 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
       padding: const EdgeInsets.only(top: 6),
       child: AppBarMailWidgetBuilder(
         controller.currentEmail,
-        currentMailbox: controller.mailboxDashBoardController.searchController.isSearchEmailRunning
-          ? controller.currentEmail?.findMailboxContain(controller.mailboxDashBoardController.mapMailbox)
-          : controller.currentMailbox,
+        currentMailbox: controller.currentEmail != null
+          ? controller.getMailboxContain(controller.currentEmail!)
+          : null,
         isSearchIsRunning: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
         onBackActionClick: () => controller.closeEmailView(context),
         onEmailActionClick: (email, action) =>
@@ -600,12 +600,14 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
   }
 
   Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
+    final currentMailbox = controller.getMailboxContain(email);
+
     return (EmailActionCupertinoActionSheetActionBuilder(
             const Key('mark_as_spam_or_un_spam_action'),
             SvgPicture.asset(
-                controller.currentMailbox?.isSpam == true ? imagePaths.icNotSpam : imagePaths.icSpam,
+                currentMailbox?.isSpam == true ? imagePaths.icNotSpam : imagePaths.icSpam,
                 width: 28, height: 28, fit: BoxFit.fill, color: AppColor.colorTextButton),
-            controller.currentMailbox?.isSpam == true
+            currentMailbox?.isSpam == true
                 ? AppLocalizations.of(context).remove_from_spam
                 : AppLocalizations.of(context).mark_as_spam,
             email,
@@ -616,7 +618,7 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
                 ? const EdgeInsets.only(right: 12)
                 : EdgeInsets.zero)
         ..onActionClick((email) => controller.handleEmailAction(context, email,
-            controller.currentMailbox?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam)))
+            currentMailbox?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam)))
       .build();
   }
 
