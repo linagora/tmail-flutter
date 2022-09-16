@@ -12,7 +12,6 @@ class SearchEmailFilter {
   final Set<String> to;
   final SearchQuery? text;
   final String? subject;
-  final Set<String> hasKeyword;
   final Set<String> notKeyword;
   final PresentationMailbox? mailbox;
   final EmailReceiveTimeType emailReceiveTimeType;
@@ -26,13 +25,11 @@ class SearchEmailFilter {
     bool? hasAttachment,
     this.text,
     this.subject,
-    Set<String>? hasKeyword,
     Set<String>? notKeyword,
     this.mailbox,
     this.before,
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
-        hasKeyword = hasKeyword ?? <String>{},
         notKeyword = notKeyword ?? <String>{},
         hasAttachment = hasAttachment ?? false,
         emailReceiveTimeType =
@@ -43,7 +40,6 @@ class SearchEmailFilter {
     Set<String>? to,
     SearchQuery? text,
     String? subject,
-    Set<String>? hasKeyword,
     Set<String>? notKeyword,
     PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
@@ -55,7 +51,6 @@ class SearchEmailFilter {
       to: to ?? this.to,
       text: text ?? this.text,
       subject: subject ?? this.subject,
-      hasKeyword: hasKeyword ?? this.hasKeyword,
       notKeyword: notKeyword ?? this.notKeyword,
       mailbox: mailbox ?? this.mailbox,
       emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
@@ -82,8 +77,6 @@ class SearchEmailFilter {
       LogicFilterOperator(
           Operator.AND, from.map((e) => EmailFilterCondition(from: e)).toSet()),
       LogicFilterOperator(
-          Operator.AND, hasKeyword.map((e) => EmailFilterCondition(hasKeyword: e)).toSet()),
-      LogicFilterOperator(
           Operator.AND, notKeyword.map((e) => EmailFilterCondition(notKeyword: e)).toSet()),
       if(moreFilterCondition !=null) moreFilterCondition
     });
@@ -98,7 +91,6 @@ extension SearchEmailFilterExtension on SearchEmailFilter {
       to: to,
       text: text,
       subject: subject,
-      hasKeyword: hasKeyword,
       notKeyword: notKeyword,
       mailbox: mailbox,
       emailReceiveTimeType: emailReceiveTimeType,
