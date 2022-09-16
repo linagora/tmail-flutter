@@ -55,8 +55,8 @@ mixin BaseEmailItemTile {
     }
   }
 
-  bool isSearchEnabled(SearchStatus state, SearchQuery? query) =>
-      state == SearchStatus.ACTIVE && query != null && query.value.isNotEmpty;
+  bool isSearchEnabled(SearchStatus state, bool advancedSearchActivated, SearchQuery? query) =>
+      (state == SearchStatus.ACTIVE || advancedSearchActivated) && query?.value.isNotEmpty == true;
 
   FontWeight buildFontForReadEmail(PresentationEmail email) =>
       !email.hasRead ? FontWeight.w600 : FontWeight.normal;
@@ -80,9 +80,10 @@ mixin BaseEmailItemTile {
       PresentationEmail email,
       PresentationMailbox? mailbox,
       SearchStatus state,
+      bool advancedSearchActivated,
       SearchQuery? query
   ) {
-    if (isSearchEnabled(state, query)) {
+    if (isSearchEnabled(state, advancedSearchActivated, query)) {
       return RichTextBuilder(
           informationSender(email, mailbox),
           query?.value ?? '',
@@ -114,9 +115,10 @@ mixin BaseEmailItemTile {
   Widget buildEmailTitle(
       PresentationEmail email,
       SearchStatus state,
+      bool advancedSearchActivated,
       SearchQuery? query
   ) {
-    if (isSearchEnabled(state, query)) {
+    if (isSearchEnabled(state, advancedSearchActivated, query)) {
       return RichTextBuilder(
           email.getEmailTitle(),
           query?.value ?? '',
@@ -147,9 +149,10 @@ mixin BaseEmailItemTile {
   Widget buildEmailPartialContent(
       PresentationEmail email,
       SearchStatus state,
+      bool advancedSearchActivated,
       SearchQuery? query
   ) {
-    if (isSearchEnabled(state, query)) {
+    if (isSearchEnabled(state, advancedSearchActivated, query)) {
       return RichTextBuilder(
           email.getPartialContent(),
           query?.value ?? '',

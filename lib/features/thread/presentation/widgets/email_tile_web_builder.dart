@@ -136,6 +136,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                       _presentationEmail,
                       mailboxCurrent,
                       _searchStatus,
+                      advancedSearchActivated,
                       _searchQuery)),
                   if (_presentationEmail.hasAttachment == true)
                     Padding(
@@ -157,6 +158,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                     Expanded(child: buildEmailTitle(
                         _presentationEmail,
                         _searchStatus,
+                        advancedSearchActivated,
                         _searchQuery)),
                     buildMailboxContain(
                         _searchStatus,
@@ -174,6 +176,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                   Expanded(child: buildEmailPartialContent(
                       _presentationEmail,
                       _searchStatus,
+                      advancedSearchActivated,
                       _searchQuery)),
                 ]),
               ]),
@@ -229,6 +232,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                           _presentationEmail,
                           mailboxCurrent,
                           _searchStatus,
+                          advancedSearchActivated,
                           _searchQuery)),
                       if (isHoverItem)
                         const SizedBox(width: 120)
@@ -242,6 +246,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                         Expanded(child: buildEmailTitle(
                             _presentationEmail,
                             _searchStatus,
+                            advancedSearchActivated,
                             _searchQuery)),
                         buildMailboxContain(
                             _searchStatus,
@@ -259,6 +264,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                       Expanded(child: buildEmailPartialContent(
                           _presentationEmail,
                           _searchStatus,
+                          advancedSearchActivated,
                           _searchQuery)),
                     ]),
                   ]),
@@ -347,6 +353,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                   _presentationEmail,
                   mailboxCurrent,
                   _searchStatus,
+                  advancedSearchActivated,
                   _searchQuery)),
             const SizedBox(width: 24),
             Expanded(child: _buildSubjectAndContent()),
@@ -502,11 +509,13 @@ class EmailTileBuilder with BaseEmailItemTile {
                 child: buildEmailTitle(
                     _presentationEmail,
                     _searchStatus,
+                    advancedSearchActivated,
                     _searchQuery)),
         Expanded(child: Container(
             child: buildEmailPartialContent(
                 _presentationEmail,
                 _searchStatus,
+                advancedSearchActivated,
                 _searchQuery))
         ),
       ]);
