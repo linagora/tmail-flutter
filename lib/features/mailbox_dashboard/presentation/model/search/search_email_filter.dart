@@ -59,9 +59,11 @@ class SearchEmailFilter {
     );
   }
 
-  Filter mappingToEmailFilterCondition({Filter? moreFilterCondition}) {
+  Filter? mappingToEmailFilterCondition({EmailFilterCondition? moreFilterCondition}) {
     final emailEmailFilterConditionShared = EmailFilterCondition(
-      text: text?.value,
+      text: text?.value.trim().isNotEmpty == true
+        ? text?.value
+        : null,
       inMailbox: mailbox == PresentationMailbox.unifiedMailbox
           ? null
           : mailbox?.id,
@@ -70,16 +72,29 @@ class SearchEmailFilter {
       subject: subject,
       before: before,
     );
-    return LogicFilterOperator(Operator.AND, {
-      emailEmailFilterConditionShared,
-      LogicFilterOperator(
-          Operator.AND, to.map((e) => EmailFilterCondition(to: e)).toSet()),
-      LogicFilterOperator(
-          Operator.AND, from.map((e) => EmailFilterCondition(from: e)).toSet()),
-      LogicFilterOperator(
-          Operator.AND, notKeyword.map((e) => EmailFilterCondition(notKeyword: e)).toSet()),
-      if(moreFilterCondition !=null) moreFilterCondition
-    });
+
+    final listEmailCondition = {
+      if (emailEmailFilterConditionShared.hasCondition)
+        emailEmailFilterConditionShared,
+      if (to.isNotEmpty)
+        LogicFilterOperator(
+            Operator.AND,
+            to.map((e) => EmailFilterCondition(to: e)).toSet()),
+      if (from.isNotEmpty)
+        LogicFilterOperator(
+            Operator.AND,
+            from.map((e) => EmailFilterCondition(from: e)).toSet()),
+      if (notKeyword.isNotEmpty)
+        LogicFilterOperator(
+            Operator.AND,
+            notKeyword.map((e) => EmailFilterCondition(notKeyword: e)).toSet()),
+      if (moreFilterCondition != null && moreFilterCondition.hasCondition)
+        moreFilterCondition
+    };
+
+    return listEmailCondition.isNotEmpty
+      ? LogicFilterOperator(Operator.AND, listEmailCondition)
+      : null;
   }
 }
 
