@@ -25,7 +25,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/e
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -53,7 +52,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final _emailRulesController = Get.find<EmailRulesController>();
 
-  late Worker rulesFilterCreatorArgumentsWorker;
+  late Worker rulesFilterCreatorIsActiveWorker;
 
   get actionType => _emailRulesController.rulesFilterCreatorArguments.value!.actionType;
 
@@ -71,21 +70,16 @@ class RulesFilterCreatorController extends BaseMailboxController {
   ) : super(treeBuilder);
 
   void _initWorker() {
-    rulesFilterCreatorArgumentsWorker = ever(_emailRulesController.rulesFilterCreatorArguments, (rulesFilterCreatorArguments) {
-      if (rulesFilterCreatorArguments is RulesFilterCreatorArguments) {
+    rulesFilterCreatorIsActiveWorker = ever(_accountDashBoardController.rulesFilterCreatorIsActive, (rulesFilterCreatorIsActive) {
+      if (rulesFilterCreatorIsActive == true) {
         _setUpDefaultValueRuleFilter();
       }
     });
   }
 
   @override
-  void onInit() {
-    _initWorker();
-    super.onInit();
-  }
-
-  @override
   void onReady() {
+    _initWorker();
     _setUpDefaultValueRuleFilter();
     super.onReady();
   }
