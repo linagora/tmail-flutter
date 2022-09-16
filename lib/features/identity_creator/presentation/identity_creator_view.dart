@@ -124,7 +124,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Padding(
             padding: const EdgeInsets.only(left: 24, top: 24),
-            child: Obx(() => Text(controller.actionType.value == IdentityActionType.create
+            child: Obx(() => Text(controller.actionType == IdentityActionType.create
                     ? AppLocalizations.of(context).new_identity.inCaps
                     : AppLocalizations.of(context).edit_identity.inCaps,
                 style: const TextStyle(
@@ -148,7 +148,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                     .build())),
                   const SizedBox(width: 24),
                   Expanded(child: Obx(() {
-                    if (controller.actionType.value == IdentityActionType.create) {
+                    if (controller.actionType == IdentityActionType.create) {
                       return (IdentityDropListFieldBuilder(
                             _imagePaths,
                             AppLocalizations.of(context).email.inCaps,
@@ -248,7 +248,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                       onTap: () => controller.closeView(context)),
                   const SizedBox(width: 12),
                   Obx(() => buildTextButton(
-                      controller.actionType.value == IdentityActionType.create
+                      controller.actionType == IdentityActionType.create
                           ? AppLocalizations.of(context).create
                           : AppLocalizations.of(context).save,
                       width: 128,
@@ -274,7 +274,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           Column(children: [
             Padding(
                 padding: const EdgeInsets.only(top: 16),
-                child: Text(controller.actionType.value == IdentityActionType.create
+                child: Text(controller.actionType == IdentityActionType.create
                       ? AppLocalizations.of(context).new_identity.inCaps
                       : AppLocalizations.of(context).edit_identity.inCaps,
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 21, color: Colors.black))),
@@ -295,7 +295,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                     .build()),
                   const SizedBox(height: 24),
                   Obx(() {
-                    if (controller.actionType.value == IdentityActionType.create) {
+                    if (controller.actionType == IdentityActionType.create) {
                       return (IdentityDropListFieldBuilder(
                             _imagePaths,
                             AppLocalizations.of(context).email.inCaps,
@@ -391,7 +391,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Obx(() => buildTextButton(
-                                controller.actionType.value == IdentityActionType.create
+                                controller.actionType == IdentityActionType.create
                                   ? AppLocalizations.of(context).create
                                   : AppLocalizations.of(context).save,
                                 width: 128,
