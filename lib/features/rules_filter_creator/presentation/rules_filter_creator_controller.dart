@@ -90,6 +90,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
     inputRuleConditionFocusNode.dispose();
     inputRuleNameController.dispose();
     inputConditionValueController.dispose();
+    rulesFilterCreatorIsActiveWorker.dispose();
     super.onClose();
   }
 
