@@ -192,7 +192,7 @@ class AdvancedFilterController extends GetxController {
 
   void initSearchFilterField(BuildContext context) {
     searchController.updateFilterEmail(
-        mailbox: _mailboxDashBoardController.selectedMailbox.value);
+        mailbox: PresentationMailbox.unifiedMailbox);
     subjectFilterInputController.text =
         StringConvert.writeNullToEmpty(searchEmailFilter.subject);
     hasKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(
