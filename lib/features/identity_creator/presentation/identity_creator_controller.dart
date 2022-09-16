@@ -2,25 +2,31 @@
 import 'package:core/core.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:uuid/uuid.dart';
 
 class IdentityCreatorController extends BaseController {
 
@@ -36,7 +42,9 @@ class IdentityCreatorController extends BaseController {
   final emailOfIdentity = Rxn<EmailAddress>();
   final replyToOfIdentity = Rxn<EmailAddress>();
   final bccOfIdentity = Rxn<EmailAddress>();
-  final actionType = IdentityActionType.create.obs;
+  final _uuid = Get.find<Uuid>();
+  final _identitiesController = Get.find<IdentitiesController>();
+  final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
 
   final HtmlEditorController signatureHtmlEditorController = HtmlEditorController(processNewLineAsBr: true);
   final TextEditingController signaturePlainEditorController = TextEditingController();
@@ -44,10 +52,13 @@ class IdentityCreatorController extends BaseController {
   final TextEditingController inputBccIdentityController = TextEditingController();
   final FocusNode inputNameIdentityFocusNode = FocusNode();
 
+  late Worker identityCreatorIsActiveWorker;
+
   HtmlEditorApi? signatureHtmlEditorMobileController;
-  AccountId? accountId;
-  UserProfile? userProfile;
-  Identity? identity;
+  AccountId? get accountId => _identitiesController.identityCreatorArguments.value!.accountId;
+  UserProfile? get userProfile => _identitiesController.identityCreatorArguments.value!.userProfile;
+  Identity? get identity => _identitiesController.identityCreatorArguments.value!.identity;
+  IdentityActionType get actionType => _identitiesController.identityCreatorArguments.value!.actionType;
   String? _nameIdentity;
   String? _contentHtmlEditor;
 
@@ -67,12 +78,21 @@ class IdentityCreatorController extends BaseController {
 
   @override
   void onReady() {
-    _getArguments();
+    _setUpValueFromIdentity();
     _getAllIdentities();
-    if (actionType.value == IdentityActionType.edit && identity != null) {
-      _setUpValueFromIdentity();
-    }
+    _initWorker();
     super.onReady();
+  }
+
+  void _initWorker() {
+    identityCreatorIsActiveWorker = ever(_accountDashBoardController.identityCreatorIsActive, (identityCreatorIsActive) {
+      if (identityCreatorIsActive == true) {
+        if (actionType == IdentityActionType.edit && identity != null) {
+          _setUpValueFromIdentity();
+          _setUpAllFieldEmailAddress();
+        }
+      }
+    });
   }
 
   @override
@@ -102,16 +122,6 @@ class IdentityCreatorController extends BaseController {
 
   @override
   void onError(error) {}
-
-  void _getArguments() {
-    final arguments = Get.arguments;
-    if (arguments is IdentityCreatorArguments) {
-      accountId = arguments.accountId;
-      userProfile = arguments.userProfile;
-      actionType.value = arguments.actionType;
-      identity = arguments.identity;
-    }
-  }
 
   void _setUpValueFromIdentity() {
     _nameIdentity = identity?.name ?? '';
@@ -170,7 +180,7 @@ class IdentityCreatorController extends BaseController {
   }
 
   void _setUpAllFieldEmailAddress() {
-    if (actionType.value == IdentityActionType.edit && identity != null) {
+    if (actionType == IdentityActionType.edit && identity != null) {
       if (identity?.replyTo?.isNotEmpty == true) {
         try {
           replyToOfIdentity.value = listEmailAddressOfReplyTo
@@ -286,8 +296,28 @@ class IdentityCreatorController extends BaseController {
 
     log('IdentityCreatorController::createNewIdentity(): $newIdentity');
 
-    _clearAll();
-    popBack(result: newIdentity);
+    final generateCreateId = Id(_uuid.v1());
+
+    if(actionType == IdentityActionType.create) {
+      _identitiesController.createNewIdentityAction(
+        accountId!,
+        CreateNewIdentityRequest(generateCreateId, newIdentity),
+      );
+    } else {
+      _identitiesController.editIdentityAction(
+        accountId!,
+        EditIdentityRequest(
+          identityId: identity!.id!,
+          identityRequest: newIdentity.toIdentityRequest(),
+        )
+      );
+    }
+
+    if(kIsWeb) {
+      _accountDashBoardController.identityCreatorIsActive.toggle();
+    } else {
+      popBack();
+    }
   }
 
   String? _getErrorInputNameString(BuildContext context) {
@@ -359,6 +389,10 @@ class IdentityCreatorController extends BaseController {
   void closeView(BuildContext context) {
     _clearAll();
     clearFocusEditor(context);
-    popBack();
+    if(kIsWeb) {
+      _accountDashBoardController.identityCreatorIsActive.toggle();
+    } else {
+      popBack();
+    }
   }
 }
