@@ -1,13 +1,14 @@
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
-import 'package:model/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
@@ -25,7 +26,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/setting
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:uuid/uuid.dart';
 
 class IdentitiesController extends BaseController {
 
@@ -33,7 +33,6 @@ class IdentitiesController extends BaseController {
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _uuid = Get.find<Uuid>();
 
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final CreateNewIdentityInteractor _createNewIdentityInteractor;
@@ -45,6 +44,8 @@ class IdentitiesController extends BaseController {
   final listSelectedIdentities = <Identity>[].obs;
 
   final idIdentityAll = IdentityId(Id('all'));
+
+  final identityCreatorArguments = Rxn<IdentityCreatorArguments>();
 
   late Worker accountIdWorker;
 
@@ -140,6 +141,11 @@ class IdentitiesController extends BaseController {
     }
   }
 
+  void _openIdentityCreatorOverlay() {
+    IdentityCreatorBindings().dependencies();
+    _accountDashBoardController.identityCreatorIsActive.toggle();
+  }
+
   void selectIdentity(Identity? newIdentity) {
     identitySelected.value = newIdentity;
     if (newIdentity != null) {
@@ -159,20 +165,16 @@ class IdentitiesController extends BaseController {
     final accountId = _accountDashBoardController.accountId.value;
     final userProfile = _accountDashBoardController.userProfile.value;
     if (accountId != null && userProfile != null) {
-      final newIdentity = await push(
-          AppRoutes.IDENTITY_CREATOR,
-          arguments: IdentityCreatorArguments(accountId, userProfile));
-
-      if (newIdentity != null && newIdentity is Identity) {
-        final generateCreateId = Id(_uuid.v1());
-        _createNewIdentityAction(
-            accountId,
-            CreateNewIdentityRequest(generateCreateId, newIdentity));
+      identityCreatorArguments.value = IdentityCreatorArguments(accountId, userProfile);
+      if (kIsWeb) {
+        _openIdentityCreatorOverlay();
+      } else {
+        push(AppRoutes.IDENTITY_CREATOR);
       }
     }
   }
 
-  void _createNewIdentityAction(AccountId accountId, CreateNewIdentityRequest identityRequest) async {
+  void createNewIdentityAction(AccountId accountId, CreateNewIdentityRequest identityRequest) async {
     consumeState(_createNewIdentityInteractor.execute(accountId, identityRequest));
   }
 
@@ -285,25 +287,20 @@ class IdentitiesController extends BaseController {
     final accountId = _accountDashBoardController.accountId.value;
     final userProfile = _accountDashBoardController.userProfile.value;
     if (accountId != null && userProfile != null) {
-      final newIdentity = await push(
-          AppRoutes.IDENTITY_CREATOR,
-          arguments: IdentityCreatorArguments(
-              accountId,
-              userProfile,
-              identity: identity,
-              actionType: IdentityActionType.edit));
-
-      if (newIdentity is Identity) {
-        log('IdentitiesController::goToEditIdentity(): $newIdentity');
-        _editIdentityAction(accountId, EditIdentityRequest(
-            identityId: identity.id!,
-            identityRequest: newIdentity.toIdentityRequest()
-        ));
+      identityCreatorArguments.value = IdentityCreatorArguments(
+          accountId,
+          userProfile,
+          identity: identity,
+          actionType: IdentityActionType.edit);
+      if (kIsWeb) {
+        _openIdentityCreatorOverlay();
+      } else {
+        push(AppRoutes.IDENTITY_CREATOR);
       }
     }
   }
 
-  void _editIdentityAction(AccountId accountId, EditIdentityRequest editIdentityRequest) async {
+  void editIdentityAction(AccountId accountId, EditIdentityRequest editIdentityRequest) async {
     log('IdentitiesController::_editIdentityAction(): $editIdentityRequest');
     consumeState(_editIdentityInteractor.execute(accountId, editIdentityRequest));
   }
