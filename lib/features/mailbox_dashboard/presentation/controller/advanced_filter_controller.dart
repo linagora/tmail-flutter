@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -76,9 +77,10 @@ class AdvancedFilterController extends GetxController {
 
   void _updateFilterEmailFromAdvancedSearchView() {
     if (hasKeyWordFilterInputController.text.isNotEmpty) {
-      searchController.updateFilterEmail(hasKeyword: hasKeyWordFilterInputController.text.split(',').toSet());
+      searchController.updateFilterEmail(text: SearchQuery(hasKeyWordFilterInputController.text));
+      searchController.searchInputController.text = hasKeyWordFilterInputController.text;
     } else {
-      searchController.updateFilterEmail(hasKeyword: {});
+      searchController.updateFilterEmail(text: SearchQuery(searchController.searchInputController.text));
     }
 
     if (notKeyWordFilterInputController.text.isNotEmpty) {
@@ -194,7 +196,7 @@ class AdvancedFilterController extends GetxController {
     subjectFilterInputController.text =
         StringConvert.writeNullToEmpty(searchEmailFilter.subject);
     hasKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(
-        searchEmailFilter.hasKeyword.firstOrNull);
+        searchEmailFilter.text?.value);
     notKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(
         searchEmailFilter.notKeyword.firstOrNull);
     dateFilterInputController.text = StringConvert.writeNullToEmpty(
