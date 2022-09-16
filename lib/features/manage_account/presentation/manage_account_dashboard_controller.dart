@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller_bindings.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -208,9 +209,25 @@ class ManageAccountDashBoardController extends ReloadableController {
     }
   }
 
-  bool checkAvailableRuleFilterInSession() => sessionCurrent.value?.capabilities.containsKey(capabilityRuleFilter) ?? false;
+  bool checkAvailableRuleFilterInSession() {
+    try {
+      requireCapability(sessionCurrent.value!, accountId.value!, [capabilityRuleFilter]);
+      return true;
+    } catch(e) {
+      logError('ManageAccountDashBoardController::checkAvailableRuleFilterInSession(): exception = $e');
+      return false;
+    }
+  }
 
-  bool checkAvailableForwardInSession() => sessionCurrent.value?.capabilities.containsKey(capabilityForward) ?? false;
+  bool checkAvailableForwardInSession() {
+    try {
+      requireCapability(sessionCurrent.value!, accountId.value!, [capabilityForward]);
+      return true;
+    } catch(e) {
+      logError('ManageAccountDashBoardController::checkAvailableRuleFilterInSession(): exception = $e');
+      return false;
+    }
+  }
 
   void disableVacationResponder() {
     if (accountId.value != null && _updateVacationInteractor != null) {
