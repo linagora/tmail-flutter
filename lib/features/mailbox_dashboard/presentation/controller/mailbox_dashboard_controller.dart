@@ -891,17 +891,18 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   UnsignedInt? get maxSizeAttachmentsPerEmail {
-    if (sessionCurrent != null && accountId.value != null) {
-      final mailCapability = sessionCurrent
-          ?.accounts[accountId.value]
-          ?.accountCapabilities[CapabilityIdentifier.jmapMail];
-      if (mailCapability is MailCapability) {
+    try {
+      if (sessionCurrent != null && accountId.value != null) {
+        final mailCapability = sessionCurrent!.getCapabilityProperties<MailCapability>(accountId.value!, CapabilityIdentifier.jmapMail);
         final maxSizeAttachmentsPerEmail = mailCapability.maxSizeAttachmentsPerEmail;
         log('MailboxDashBoardController::maxSizeAttachmentsPerEmail(): $maxSizeAttachmentsPerEmail');
         return maxSizeAttachmentsPerEmail;
       }
+      return null;
+    } catch (e) {
+      logError('MailboxDashBoardController::maxSizeAttachmentsPerEmail(): [Exception] $e');
+      return null;
     }
-    return null;
   }
 
   bool filterMessageWithAttachmentIsActive () {
