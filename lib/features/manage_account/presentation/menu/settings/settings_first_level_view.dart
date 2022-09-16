@@ -83,12 +83,26 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             return const SizedBox.shrink();
           }
         }),
-        SettingFirstLevelTileBuilder(
-          AccountMenuItem.vacation.getName(context),
-          AccountMenuItem.vacation.getIcon(_imagePaths),
-          subtitle: AppLocalizations.of(context).vacationSettingExplanation,
-          () => controller.selectSettings(AccountMenuItem.vacation)
-        ),
+        Obx(() {
+          if (controller.manageAccountDashboardController.checkAvailableVacationInSession()) {
+            return Column(children: [
+              SettingFirstLevelTileBuilder(
+                AccountMenuItem.vacation.getName(context),
+                AccountMenuItem.vacation.getIcon(_imagePaths),
+                subtitle: AppLocalizations.of(context).vacationSettingExplanation,
+                  () => controller.selectSettings(AccountMenuItem.vacation)
+              ),
+              Divider(
+                color: AppColor.colorDividerComposer,
+                height: 1,
+                indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+                endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+              ),
+            ]);
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
         Divider(
           color: AppColor.colorDividerComposer,
           height: 1,
