@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
@@ -206,6 +207,16 @@ class ManageAccountDashBoardController extends ReloadableController {
     } else {
       log('ManageAccountDashBoardController::backToMailboxDashBoard(): canBack: FALSE');
       pushAndPopAll(AppRoutes.MAILBOX_DASHBOARD, arguments: sessionCurrent);
+    }
+  }
+
+  bool checkAvailableVacationInSession() {
+    try {
+      requireCapability(sessionCurrent.value!, accountId.value!, [CapabilityIdentifier.jmapVacationResponse]);
+      return true;
+    } catch(e) {
+      logError('ManageAccountDashBoardController::checkAvailableVacationInSession(): exception = $e');
+      return false;
     }
   }
 
