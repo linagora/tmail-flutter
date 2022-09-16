@@ -95,8 +95,8 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
-    sessionCurrent.value = session;
     accountId.value = session.accounts.keys.first;
+    sessionCurrent.value = session;
     _getUserProfile();
     injectAutoCompleteBindings();
     injectVacationBindings(sessionCurrent.value, accountId.value);
@@ -107,8 +107,8 @@ class ManageAccountDashBoardController extends ReloadableController {
     final arguments = Get.arguments;
     log('ManageAccountDashBoardController::_getAccountIdAndUserProfile(): $arguments');
     if (arguments is ManageAccountArguments) {
+      accountId.value = arguments.session?.accounts.keys.first;
       sessionCurrent.value = arguments.session;
-      accountId.value = sessionCurrent.value?.accounts.keys.first;
       _getUserProfile();
       injectAutoCompleteBindings();
       injectVacationBindings(sessionCurrent.value, accountId.value);
