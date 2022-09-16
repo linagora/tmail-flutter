@@ -101,6 +101,7 @@ class IdentityCreatorController extends BaseController {
     inputNameIdentityFocusNode.dispose();
     inputNameIdentityController.dispose();
     inputBccIdentityController.dispose();
+    identityCreatorIsActiveWorker.dispose();
     super.onClose();
   }
 
