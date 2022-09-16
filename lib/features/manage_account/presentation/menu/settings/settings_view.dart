@@ -213,7 +213,11 @@ class SettingsView extends GetWidget<SettingsController> {
             return const SizedBox.shrink();
           }
         case AccountMenuItem.vacation:
-          return VacationView();
+          if (controller.manageAccountDashboardController.checkAvailableVacationInSession()) {
+            return VacationView();
+          } else {
+            return const SizedBox.shrink();
+          }
         default:
           return const SizedBox.shrink();
       }

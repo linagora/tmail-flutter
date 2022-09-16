@@ -43,7 +43,9 @@ class ManageAccountMenuController extends BaseController {
     if (dashBoardController.checkAvailableForwardInSession()) {
       listAccountMenuItem.add(AccountMenuItem.forward);
     }
-    listAccountMenuItem.add(AccountMenuItem.vacation);
+    if (dashBoardController.checkAvailableVacationInSession()) {
+      listAccountMenuItem.add(AccountMenuItem.vacation);
+    }
     listAccountMenuItem.add(AccountMenuItem.languageAndRegion);
   }
 
