@@ -80,6 +80,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                     _presentationEmail,
                     mailboxCurrent,
                     _searchStatus,
+                    advancedSearchActivated,
                     _searchQuery)),
                 if (_presentationEmail.hasAttachment == true)
                   Padding(
@@ -103,6 +104,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                         Expanded(child: buildEmailTitle(
                             _presentationEmail,
                             _searchStatus,
+                            advancedSearchActivated,
                             _searchQuery)),
                         buildMailboxContain(
                             _searchStatus,
@@ -121,6 +123,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                       Expanded(child: buildEmailPartialContent(
                           _presentationEmail,
                           _searchStatus,
+                          advancedSearchActivated,
                           _searchQuery)),
                     ])
                 ),
