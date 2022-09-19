@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/se
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
+import 'package:tmail_ui_user/features/search/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -156,21 +157,42 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   ))
                 ]),
               ),
-              tabletLarge: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                      width: ResponsiveUtils.defaultSizeLeftMenuMobile,
-                      child: ThreadView()),
-                  Expanded(child: EmailView()),
-                ],
-              ),
+              tabletLarge: Obx(() {
+                switch(controller.routePath.value) {
+                  case AppRoutes.SEARCH_EMAIL:
+                    return SearchEmailView();
+                  case AppRoutes.EMAIL:
+                    return controller.searchController.isSearchEmailRunning
+                        ? EmailView()
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                  width: ResponsiveUtils.defaultSizeLeftMenuMobile,
+                                  child: ThreadView()),
+                              Expanded(child: EmailView()),
+                            ],
+                          );
+                  default:
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                            width: ResponsiveUtils.defaultSizeLeftMenuMobile,
+                            child: ThreadView()),
+                        Expanded(child: EmailView()),
+                      ],
+                    );
+                }
+              }),
               mobile: Obx(() {
                 switch(controller.routePath.value) {
                   case AppRoutes.THREAD:
                     return ThreadView();
                   case AppRoutes.EMAIL:
                     return EmailView();
+                  case AppRoutes.SEARCH_EMAIL:
+                    return SearchEmailView();
                   default:
                     return ThreadView();
                 }
