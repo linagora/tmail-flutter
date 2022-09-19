@@ -464,7 +464,7 @@ class ThreadController extends BaseController {
   }
 
   bool _ableAppendLoadMore(List<PresentationEmail> listEmail) {
-    return !(emailList.where((email) => (email.mailboxIds != null && !email.mailboxIds!.keys.contains(currentMailbox?.id)) || emailList.contains(email)).isNotEmpty);
+    return !(listEmail.where((email) => (email.mailboxIds != null && !email.mailboxIds!.keys.contains(currentMailbox?.id)) || emailList.contains(email)).isNotEmpty);
   }
 
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
