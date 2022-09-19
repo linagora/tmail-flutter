@@ -61,12 +61,12 @@ class HandleEmailActionTypeAction extends DashBoardAction {
   List<Object> get props => [listEmailSelected, emailAction];
 }
 
-class OpenEmailDetailedAction extends DashBoardAction {
+class OpenEmailDetailedFromSuggestionQuickSearchAction extends DashBoardAction {
 
   final BuildContext context;
   final PresentationEmail presentationEmail;
 
-  OpenEmailDetailedAction(this.context, this.presentationEmail);
+  OpenEmailDetailedFromSuggestionQuickSearchAction(this.context, this.presentationEmail);
 
   @override
   List<Object?> get props => [presentationEmail];
