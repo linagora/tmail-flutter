@@ -6,6 +6,7 @@ import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/background/background_widget_builder.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,6 +20,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/search/presentation/model/search_more_state.dart';
+import 'package:tmail_ui_user/features/search/presentation/model/simple_search_filter.dart';
 import 'package:tmail_ui_user/features/search/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/search/presentation/utils/search_email_utils.dart';
 import 'package:tmail_ui_user/features/search/presentation/widgets/app_bar_selection_mode.dart';
@@ -158,14 +160,16 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       margin: SearchEmailUtils.getMarginSearchFilterButton(context, _responsiveUtils),
       padding: SearchEmailUtils.getPaddingSearchFilterButton(context, _responsiveUtils),
       height: 60,
-      child: ListView.builder(
+      child: ListView(
           scrollDirection: Axis.horizontal,
-          itemCount: QuickSearchFilter.values.length,
-          itemBuilder: (context, index) {
-            return _buildQuickSearchFilterButton(
-                context,
-                QuickSearchFilter.values[index]);
-          }
+          children: [
+            ...[
+              QuickSearchFilter.fromMe,
+              QuickSearchFilter.hasAttachment,
+              QuickSearchFilter.last7Days
+            ].map((filter) => _buildQuickSearchFilterButton(context, filter)),
+            _buildSearchFilterByMailboxButton(context),
+          ],
       ),
     );
   }
@@ -173,7 +177,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   Widget _buildQuickSearchFilterButton(BuildContext context, QuickSearchFilter filter) {
     return Obx(() {
       final filterSelected = controller.checkQuickSearchFilterSelected(filter);
-
+      log('SearchEmailView::_buildQuickSearchFilterButton(): filterSelected: $filterSelected');
       return Padding(
         padding: const EdgeInsets.only(right: 8),
         child: InkWell(
@@ -504,5 +508,59 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   child: loadingWidget)
               : const SizedBox.shrink();
         }));
+  }
+
+  Widget _buildSearchFilterByMailboxButton(BuildContext context) {
+    return Obx(() {
+      final filterSelected = controller.simpleSearchFilter.value.searchFilterByMailboxApplied;
+      return Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: InkWell(
+          onTap: () => controller.selectMailboxForSearchFilter(
+              context,
+              controller.simpleSearchFilter.value.mailbox),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: filterSelected
+                    ? AppColor.colorItemEmailSelectedDesktop
+                    : AppColor.colorButtonHeaderThread),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                SvgPicture.asset(
+                    filterSelected ? _imagePaths.icSelectedSB : _imagePaths.icFolderMailbox,
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.fill),
+                const SizedBox(width: 4),
+                Text(
+                  filterSelected
+                      ? controller.simpleSearchFilter.value.mailboxName
+                      : AppLocalizations.of(context).mailbox,
+                  maxLines: 1,
+                  overflow: CommonTextStyle.defaultTextOverFlow,
+                  softWrap: CommonTextStyle.defaultSoftWrap,
+                  style: filterSelected
+                    ? const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: AppColor.colorTextButton)
+                    : const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.normal,
+                        color: AppColor.colorTextButtonHeaderThread)
+                ),
+                const SizedBox(width: 4),
+                SvgPicture.asset(
+                    _imagePaths.icChevronDown,
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.fill),
+              ])
+          ),
+        ),
+      );
+    });
   }
 }

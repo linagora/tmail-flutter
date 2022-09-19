@@ -118,7 +118,8 @@ class AdvancedFilterController extends GetxController {
         AppRoutes.DESTINATION_PICKER,
         arguments: DestinationPickerArguments(
             _mailboxDashBoardController.accountId.value!,
-            MailboxActions.select));
+            MailboxActions.select,
+            mailboxIdSelected: searchController.searchEmailFilter.value.mailbox?.id));
 
     if (destinationMailbox is PresentationMailbox) {
       searchController.updateFilterEmail(mailbox: destinationMailbox);
