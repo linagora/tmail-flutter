@@ -35,5 +35,6 @@ class ThreadConstants {
     EmailProperty.sentAt,
     EmailProperty.preview,
     EmailProperty.hasAttachment,
+    EmailProperty.mailboxIds,
   });
 }
