@@ -27,10 +27,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_s
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/search/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/presentation/model/search_more_state.dart';
+import 'package:tmail_ui_user/features/search/presentation/model/simple_search_filter.dart';
 import 'package:tmail_ui_user/features/search/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -65,7 +65,7 @@ class SearchEmailController extends BaseController
   final listRecentSearch = RxList<RecentSearch>();
   final listSuggestionSearch = RxList<PresentationEmail>();
   final listResultSearch = RxList<PresentationEmail>();
-  final searchEmailFilter = Rx<SearchEmailFilter>(SearchEmailFilter());
+  final simpleSearchFilter = Rx<SimpleSearchFilter>(SimpleSearchFilter());
   final searchIsRunning = RxBool(false);
   final emailReceiveTimeType = Rxn<EmailReceiveTimeType>();
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
@@ -81,7 +81,7 @@ class SearchEmailController extends BaseController
 
   UserProfile? get userProfile => mailboxDashBoardController.userProfile.value;
 
-  SearchQuery? get searchQuery => searchEmailFilter.value.text;
+  SearchQuery? get searchQuery => simpleSearchFilter.value.text;
 
   SearchEmailController(
       this._quickSearchEmailInteractor,
@@ -147,7 +147,7 @@ class SearchEmailController extends BaseController
     _deBouncerTime.values.listen((value) async {
       log('SearchEmailController::_initializeDebounceTimeTextSearchChange(): $value');
       currentSearchText.value = value;
-      _updateFilterEmail(text: value.isNotEmpty ? SearchQuery(value) : null);
+      _updateSimpleSearchFilter(text: value.isNotEmpty ? SearchQuery(value) : null);
       if (value.isNotEmpty && accountId != null) {
         listSuggestionSearch.value = await quickSearchEmails(accountId: accountId!);
       } else {
@@ -197,7 +197,7 @@ class SearchEmailController extends BaseController
       final limit = listResultSearch.isNotEmpty
           ? UnsignedInt(listResultSearch.length)
           : ThreadConstants.defaultLimit;
-      searchEmailFilter.value = searchEmailFilter.value.toSearchEmailFilter(newBefore: null);
+      simpleSearchFilter.value = simpleSearchFilter.value.toSimpleSearchFilter(newBefore: null);
 
       consumeState(_refreshChangesSearchEmailInteractor.execute(
         accountId!,
@@ -205,7 +205,7 @@ class SearchEmailController extends BaseController
         sort: <Comparator>{}
           ..add(EmailComparator(EmailComparatorProperty.receivedAt)
             ..setIsAscending(false)),
-        filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+        filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
         properties: ThreadConstants.propertiesDefault,
       ));
     }
@@ -241,7 +241,7 @@ class SearchEmailController extends BaseController
             sort: <Comparator>{}..add(
                 EmailComparator(EmailComparatorProperty.receivedAt)
                   ..setIsAscending(false)),
-            filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+            filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
             properties: ThreadConstants.propertiesQuickSearch)
         .then((result) => result.fold(
             (failure) => <PresentationEmail>[],
@@ -266,7 +266,7 @@ class SearchEmailController extends BaseController
         sort: <Comparator>{}
           ..add(EmailComparator(EmailComparatorProperty.receivedAt)
             ..setIsAscending(false)),
-        filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+        filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
         properties: ThreadConstants.propertiesDefault,
       ));
     }
@@ -298,7 +298,7 @@ class SearchEmailController extends BaseController
   void searchMoreEmailsAction() {
     if (canSearchMore && accountId != null) {
       final lastEmail = listResultSearch.last;
-      _updateFilterEmail(before: lastEmail.receivedAt);
+      _updateSimpleSearchFilter(before: lastEmail.receivedAt);
 
       consumeState(_searchMoreEmailInteractor.execute(
           accountId!,
@@ -306,7 +306,7 @@ class SearchEmailController extends BaseController
           sort: <Comparator>{}
             ..add(EmailComparator(EmailComparatorProperty.receivedAt)
               ..setIsAscending(false)),
-          filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+          filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
           properties: ThreadConstants.propertiesDefault,
           lastEmailId: lastEmail.id
       ));
@@ -332,18 +332,18 @@ class SearchEmailController extends BaseController
 
   void showAllResultSearchAction(BuildContext context, String query) {
     setTextInputSearchForm(query);
-    _updateFilterEmail(text: SearchQuery(query));
+    _updateSimpleSearchFilter(text: SearchQuery(query));
     _searchEmailAction(context);
   }
 
   void searchEmailByRecentAction(BuildContext context, RecentSearch recentSearch) {
     setTextInputSearchForm(recentSearch.value);
-    _updateFilterEmail(text: SearchQuery(recentSearch.value));
+    _updateSimpleSearchFilter(text: SearchQuery(recentSearch.value));
     _searchEmailAction(context);
   }
 
   void submitSearchAction(BuildContext context, String query) {
-    _updateFilterEmail(text: SearchQuery(query));
+    _updateSimpleSearchFilter(text: SearchQuery(query));
     _searchEmailAction(context);
   }
 
@@ -355,16 +355,16 @@ class SearchEmailController extends BaseController
   bool checkQuickSearchFilterSelected(QuickSearchFilter filter) {
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
-        return searchEmailFilter.value.hasAttachment == true;
+        return simpleSearchFilter.value.hasAttachment == true;
       case QuickSearchFilter.last7Days:
         if (emailReceiveTimeType.value != null) {
           return true;
         }
-        return searchEmailFilter.value.emailReceiveTimeType == EmailReceiveTimeType.last7Days;
+        return simpleSearchFilter.value.emailReceiveTimeType == EmailReceiveTimeType.last7Days;
       case QuickSearchFilter.fromMe:
         return userProfile != null &&
-            searchEmailFilter.value.from.contains(userProfile!.email) &&
-            searchEmailFilter.value.from.length == 1;
+            simpleSearchFilter.value.from.contains(userProfile!.email) &&
+            simpleSearchFilter.value.from.length == 1;
     }
   }
 
@@ -373,23 +373,23 @@ class SearchEmailController extends BaseController
 
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
-        _updateFilterEmail(hasAttachment: !filterSelected);
+        _updateSimpleSearchFilter(hasAttachment: !filterSelected);
         break;
       case QuickSearchFilter.last7Days:
         if (filterSelected) {
           _setEmailReceiveTimeType(null);
-          _updateFilterEmail(emailReceiveTimeType: EmailReceiveTimeType.allTime);
+          _updateSimpleSearchFilter(emailReceiveTimeType: EmailReceiveTimeType.allTime);
         } else {
           _setEmailReceiveTimeType(EmailReceiveTimeType.last7Days);
-          _updateFilterEmail(emailReceiveTimeType: EmailReceiveTimeType.last7Days);
+          _updateSimpleSearchFilter(emailReceiveTimeType: EmailReceiveTimeType.last7Days);
         }
         break;
       case QuickSearchFilter.fromMe:
         if (userProfile != null) {
           filterSelected
-              ? searchEmailFilter.value.from.removeWhere((e) => e == userProfile!.email)
-              : searchEmailFilter.value.from.add(userProfile!.email);
-          _updateFilterEmail(from: searchEmailFilter.value.from);
+              ? simpleSearchFilter.value.from.removeWhere((e) => e == userProfile!.email)
+              : simpleSearchFilter.value.from.add(userProfile!.email);
+          _updateSimpleSearchFilter(from: simpleSearchFilter.value.from);
         }
         break;
     }
@@ -403,36 +403,28 @@ class SearchEmailController extends BaseController
     popBack();
 
     if (emailReceiveTimeType != null) {
-      _updateFilterEmail(
+      _updateSimpleSearchFilter(
           emailReceiveTimeType: emailReceiveTimeType,
-          text: searchQuery == null ? SearchQuery.initial() : searchEmailFilter.value.text);
+          text: searchQuery == null ? SearchQuery.initial() : simpleSearchFilter.value.text);
     } else {
-      _updateFilterEmail(
+      _updateSimpleSearchFilter(
           emailReceiveTimeType: EmailReceiveTimeType.allTime,
-          text: searchQuery == null ? SearchQuery.initial() : searchEmailFilter.value.text);
+          text: searchQuery == null ? SearchQuery.initial() : simpleSearchFilter.value.text);
     }
     _setEmailReceiveTimeType(emailReceiveTimeType);
     _searchEmailAction(context);
   }
 
-  void _updateFilterEmail({
+  void _updateSimpleSearchFilter({
     Set<String>? from,
-    Set<String>? to,
     SearchQuery? text,
-    String? subject,
-    Set<String>? notKeyword,
-    PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
     UTCDate? before,
   }) {
-    searchEmailFilter.value = searchEmailFilter.value.copyWith(
+    simpleSearchFilter.value = simpleSearchFilter.value.copyWith(
       from: from,
-      to: to,
       text: text,
-      subject: subject,
-      notKeyword: notKeyword,
-      mailbox: mailbox,
       emailReceiveTimeType: emailReceiveTimeType,
       hasAttachment: hasAttachment,
       before: before,
@@ -460,7 +452,7 @@ class SearchEmailController extends BaseController
     listRecentSearch.clear();
     listSuggestionSearch.clear();
     listResultSearch.clear();
-    searchEmailFilter.value = SearchEmailFilter();
+    simpleSearchFilter.value = SimpleSearchFilter();
   }
 
   void closeSearchView(BuildContext context) {
