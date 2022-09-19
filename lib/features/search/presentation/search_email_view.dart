@@ -365,7 +365,16 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   listSuggestionSearch[index],
                   controller.currentMailbox,
                   contentPadding: SearchEmailUtils.getPaddingSearchSuggestionList(context, _responsiveUtils)),
-              onTap: () => controller.previewEmail(context, listSuggestionSearch[index]),
+              onTap: () {
+                final emailPreview = listSuggestionSearch[index];
+                final mailboxContain = emailPreview
+                    .findMailboxContain(controller.mailboxDashBoardController.mapMailbox);
+                controller.pressEmailAction(
+                    context,
+                    EmailActionType.preview,
+                    emailPreview,
+                    mailboxContain: mailboxContain);
+              },
             ),
           );
         });

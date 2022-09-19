@@ -277,8 +277,14 @@ class ThreadController extends BaseController {
         } else if (action is HandleEmailActionTypeAction) {
           pressEmailSelectionAction(action.context, action.emailAction, action.listEmailSelected);
           mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is OpenEmailDetailedAction) {
-          pressEmailAction(action.context, EmailActionType.preview, action.presentationEmail);
+        } else if (action is OpenEmailDetailedFromSuggestionQuickSearchAction) {
+          final mailboxContain = action.presentationEmail
+              .findMailboxContain(mailboxDashBoardController.mapMailbox);
+          pressEmailAction(
+              action.context,
+              EmailActionType.preview,
+              action.presentationEmail,
+              mailboxContain: mailboxContain);
           mailboxDashBoardController.clearDashBoardAction();
         } else if (action is DisableSearchEmailAction) {
           closeSearchEmailAction();
