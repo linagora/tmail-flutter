@@ -246,8 +246,8 @@ class SearchEmailController extends BaseController
         .then((result) => result.fold(
             (failure) => <PresentationEmail>[],
             (success) => success is QuickSearchEmailSuccess
-            ? success.emailList
-            : <PresentationEmail>[]));
+                ? success.emailList
+                : <PresentationEmail>[]));
   }
 
   void saveRecentSearch(RecentSearch recentSearch) {

@@ -189,8 +189,8 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
                 EmailQuickSearchItemTileWidget(email, dashBoardController.selectedMailbox.value),
             onSuggestionSelected: (presentationEmail) =>
                 dashBoardController.dispatchAction(
-                    OpenEmailDetailedAction
-                      (context,
+                    OpenEmailDetailedFromSuggestionQuickSearchAction(
+                        context,
                         presentationEmail))),
       ),
     );
