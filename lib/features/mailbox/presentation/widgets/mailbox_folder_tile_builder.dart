@@ -2,8 +2,10 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -24,6 +26,8 @@ class MailBoxFolderTileBuilder {
   final MailboxDisplayed mailboxDisplayed;
   final MailboxNode? lastNode;
   final PresentationMailbox? mailboxNodeSelected;
+  final MailboxActions? mailboxActions;
+  final MailboxId? mailboxIdSelected;
 
   OnExpandFolderActionClick? _onExpandFolderActionClick;
   OnOpenMailboxFolderClick? _onOpenMailboxFolderClick;
@@ -41,6 +45,8 @@ class MailBoxFolderTileBuilder {
       this.mailboxDisplayed = MailboxDisplayed.mailbox,
       this.lastNode,
       this.mailboxNodeSelected,
+      this.mailboxActions,
+      this.mailboxIdSelected,
     }
   );
 
@@ -105,6 +111,7 @@ class MailBoxFolderTileBuilder {
                   _buildLeadingMailboxItem(),
                   const SizedBox(width: 8),
                   Expanded(child: _buildTitleFolderItem()),
+                  _buildSelectedIcon(),
                   const SizedBox(width: 8),
                   _buildTrailingMailboxItem()
                 ])
@@ -132,6 +139,7 @@ class MailBoxFolderTileBuilder {
                           _buildLeadingMailboxItem(),
                           const SizedBox(width: 8),
                           Expanded(child: _buildTitleFolderItem()),
+                          _buildSelectedIcon(),
                           const SizedBox(width: 8),
                           _buildTrailingMailboxItem()
                         ]),
@@ -364,5 +372,19 @@ class MailBoxFolderTileBuilder {
       );
     }
     return const SizedBox.shrink();
+  }
+
+  Widget _buildSelectedIcon() {
+    if (_mailboxNode.item.id == mailboxIdSelected &&
+        mailboxDisplayed == MailboxDisplayed.destinationPicker &&
+        mailboxActions == MailboxActions.select) {
+      return SvgPicture.asset(
+          _imagePaths.icFilterSelected,
+          width: 20,
+          height: 20,
+          fit: BoxFit.fill);
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 }

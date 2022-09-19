@@ -14,11 +14,13 @@ import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
@@ -197,7 +199,7 @@ class SearchEmailController extends BaseController
       final limit = listResultSearch.isNotEmpty
           ? UnsignedInt(listResultSearch.length)
           : ThreadConstants.defaultLimit;
-      simpleSearchFilter.value = simpleSearchFilter.value.toSimpleSearchFilter(newBefore: null);
+      simpleSearchFilter.value = simpleSearchFilter.value.toSimpleSearchFilterByBefore(newBefore: null);
 
       consumeState(_refreshChangesSearchEmailInteractor.execute(
         accountId!,
@@ -353,6 +355,9 @@ class SearchEmailController extends BaseController
   }
 
   bool checkQuickSearchFilterSelected(QuickSearchFilter filter) {
+    log('SearchEmailController::checkQuickSearchFilterSelected(): filter: $filter');
+    log('SearchEmailController::checkQuickSearchFilterSelected(): simpleSearchFilter: ${simpleSearchFilter.value.from}');
+    log('SearchEmailController::checkQuickSearchFilterSelected(): userProfile: ${userProfile!.email}');
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
         return simpleSearchFilter.value.hasAttachment == true;
@@ -370,7 +375,7 @@ class SearchEmailController extends BaseController
 
   void _selectQuickSearchFilter(QuickSearchFilter filter) {
     final filterSelected = checkQuickSearchFilterSelected(filter);
-
+    log('SearchEmailController::_selectQuickSearchFilter(): filterSelected: $filterSelected');
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
         _updateSimpleSearchFilter(hasAttachment: !filterSelected);
@@ -389,6 +394,7 @@ class SearchEmailController extends BaseController
           filterSelected
               ? simpleSearchFilter.value.from.removeWhere((e) => e == userProfile!.email)
               : simpleSearchFilter.value.from.add(userProfile!.email);
+          log('SearchEmailController::_selectQuickSearchFilter(): from: ${simpleSearchFilter.value.from}');
           _updateSimpleSearchFilter(from: simpleSearchFilter.value.from);
         }
         break;
@@ -415,9 +421,30 @@ class SearchEmailController extends BaseController
     _searchEmailAction(context);
   }
 
+  void selectMailboxForSearchFilter(BuildContext context, PresentationMailbox? mailbox) async {
+    final destinationMailbox = await push(
+        AppRoutes.DESTINATION_PICKER,
+        arguments: DestinationPickerArguments(
+            mailboxDashBoardController.accountId.value!,
+            MailboxActions.select,
+            mailboxIdSelected: mailbox?.id));
+
+    if (destinationMailbox is PresentationMailbox) {
+      final mailboxSelected = destinationMailbox == PresentationMailbox.unifiedMailbox
+        ? null
+        : destinationMailbox;
+      if (mailbox?.id != mailboxSelected?.id) {
+        simpleSearchFilter.value = simpleSearchFilter.value
+            .toSimpleSearchFilterByMailbox(newMailbox: mailboxSelected);
+        _searchEmailAction(context);
+      }
+    }
+  }
+
   void _updateSimpleSearchFilter({
     Set<String>? from,
     SearchQuery? text,
+    PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
     UTCDate? before,
@@ -425,10 +452,12 @@ class SearchEmailController extends BaseController
     simpleSearchFilter.value = simpleSearchFilter.value.copyWith(
       from: from,
       text: text,
+      mailbox: mailbox,
       emailReceiveTimeType: emailReceiveTimeType,
       hasAttachment: hasAttachment,
       before: before,
     );
+    simpleSearchFilter.refresh();
   }
 
   void onTextSearchChange(String text) {
