@@ -27,11 +27,11 @@ class DestinationPickerController extends BaseMailboxController {
 
   final mailboxAction = Rxn<MailboxActions>();
   final listMailboxSearched = <PresentationMailbox>[].obs;
+  final mailboxIdSelected = Rxn<MailboxId>();
   final searchState = SearchState.initial().obs;
   final searchQuery = SearchQuery.initial().obs;
   final mailboxCategoriesExpandMode = MailboxCategoriesExpandMode.initial().obs;
 
-  MailboxId? mailboxIdSelected;
   AccountId? accountId;
   final searchInputController = TextEditingController();
   final searchFocus = FocusNode();
@@ -48,7 +48,7 @@ class DestinationPickerController extends BaseMailboxController {
     final arguments = Get.arguments;
     if (arguments != null && arguments is DestinationPickerArguments) {
       mailboxAction.value = arguments.mailboxAction;
-      mailboxIdSelected = arguments.mailboxIdSelected;
+      mailboxIdSelected.value = arguments.mailboxIdSelected;
       accountId = arguments.accountId;
       getAllMailboxAction();
     }
@@ -59,9 +59,9 @@ class DestinationPickerController extends BaseMailboxController {
     super.onData(newState);
     newState.map((success) {
       if (success is GetAllMailboxSuccess) {
-        if (mailboxAction.value == MailboxActions.move && mailboxIdSelected != null) {
+        if (mailboxAction.value == MailboxActions.move && mailboxIdSelected.value != null) {
           final newMailboxList = success.mailboxList
-              .where((mailbox) => mailbox.id != mailboxIdSelected)
+              .where((mailbox) => mailbox.id != mailboxIdSelected.value)
               .toList();
           buildTree(newMailboxList);
         } else {

@@ -1,8 +1,10 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 
 typedef OnOpenMailboxActionClick = void Function(PresentationMailbox);
@@ -18,6 +20,8 @@ class MailboxSearchTileBuilder {
   final ResponsiveUtils _responsiveUtils;
   final BuildContext _context;
   final MailboxDisplayed mailboxDisplayed;
+  final MailboxActions? mailboxActions;
+  final MailboxId? mailboxIdSelected;
 
   bool isHoverItem = false;
 
@@ -34,6 +38,8 @@ class MailboxSearchTileBuilder {
       this.allSelectMode = SelectMode.INACTIVE,
       this.lastMailbox,
       this.mailboxDisplayed = MailboxDisplayed.mailbox,
+      this.mailboxActions,
+      this.mailboxIdSelected,
     }
   );
 
@@ -90,6 +96,7 @@ class MailboxSearchTileBuilder {
           leading: _buildLeadingIcon(),
           title: _buildTitleItem(),
           subtitle: _buildSubtitleItem(),
+          trailing: _buildSelectedIcon(),
         ),
         if (lastMailbox?.id != _presentationMailbox.id)
           Padding(
@@ -183,8 +190,9 @@ class MailboxSearchTileBuilder {
                 height: 20,
                 fit: BoxFit.fill)),
       );
+    } else {
+      return _buildSelectedIcon();
     }
-    return null;
   }
 
   Color get backgroundColorItem {
@@ -198,6 +206,23 @@ class MailboxSearchTileBuilder {
       } else {
         return Colors.white;
       }
+    }
+  }
+
+  Widget? _buildSelectedIcon() {
+    if (_presentationMailbox.id == mailboxIdSelected &&
+        mailboxDisplayed == MailboxDisplayed.destinationPicker &&
+        mailboxActions == MailboxActions.select) {
+      return Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: SvgPicture.asset(
+            _imagePaths.icFilterSelected,
+            width: 20,
+            height: 20,
+            fit: BoxFit.fill),
+      );
+    } else {
+      return null;
     }
   }
 }
