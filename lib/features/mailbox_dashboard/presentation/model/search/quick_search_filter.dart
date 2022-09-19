@@ -24,7 +24,6 @@ enum QuickSearchFilter {
   }
 
   String getIcon(ImagePaths imagePaths, {required bool quickSearchFilterSelected}) {
-
     if (quickSearchFilterSelected) {
       return imagePaths.icSelectedSB;
     } else {
@@ -40,7 +39,6 @@ enum QuickSearchFilter {
   }
 
   Color getBackgroundColor({required bool quickSearchFilterSelected}) {
-
     if (quickSearchFilterSelected) {
       return AppColor.colorItemEmailSelectedDesktop;
     } else {
@@ -49,7 +47,6 @@ enum QuickSearchFilter {
   }
 
   TextStyle getTextStyle({required bool quickSearchFilterSelected}) {
-
     if (quickSearchFilterSelected) {
       return const TextStyle(
           fontSize: 13,

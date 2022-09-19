@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 class SimpleSearchFilter with EquatableMixin {
   final Set<String> from;
   final SearchQuery? text;
+  final PresentationMailbox? mailbox;
   final EmailReceiveTimeType emailReceiveTimeType;
   final bool hasAttachment;
   final UTCDate? before;
@@ -21,13 +22,15 @@ class SimpleSearchFilter with EquatableMixin {
     bool? hasAttachment,
     this.text,
     this.before,
+    this.mailbox,
   })  : from = from ?? <String>{},
         hasAttachment = hasAttachment ?? false,
-        emailReceiveTimeType =emailReceiveTimeType ?? EmailReceiveTimeType.allTime;
+        emailReceiveTimeType = emailReceiveTimeType ?? EmailReceiveTimeType.allTime;
 
   SimpleSearchFilter copyWith({
     Set<String>? from,
     SearchQuery? text,
+    PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
     UTCDate? before,
@@ -35,6 +38,7 @@ class SimpleSearchFilter with EquatableMixin {
     return SimpleSearchFilter(
       from: from ?? this.from,
       text: text ?? this.text,
+      mailbox: mailbox ?? this.mailbox,
       emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
       hasAttachment: hasAttachment ?? this.hasAttachment,
       before: before ?? this.before,
@@ -46,6 +50,7 @@ class SimpleSearchFilter with EquatableMixin {
       text: text?.value.trim().isNotEmpty == true
         ? text?.value
         : null,
+      inMailbox: mailbox?.id,
       after: emailReceiveTimeType.toUTCDate(),
       hasAttachment: hasAttachment == false ? null : hasAttachment,
       before: before,
@@ -66,18 +71,34 @@ class SimpleSearchFilter with EquatableMixin {
   }
 
   @override
-  List<Object?> get props => [from, text, emailReceiveTimeType, hasAttachment, before];
+  List<Object?> get props => [from, text, mailbox, emailReceiveTimeType, hasAttachment, before];
 }
 
 extension SearchEmailFilterExtension on SimpleSearchFilter {
 
-  SimpleSearchFilter toSimpleSearchFilter({UTCDate? newBefore}) {
+  SimpleSearchFilter toSimpleSearchFilterByBefore({UTCDate? newBefore}) {
     return SimpleSearchFilter(
       from: from,
       text: text,
+      mailbox: mailbox,
       emailReceiveTimeType: emailReceiveTimeType,
       hasAttachment: hasAttachment,
       before: newBefore,
     );
   }
+
+  SimpleSearchFilter toSimpleSearchFilterByMailbox({PresentationMailbox? newMailbox}) {
+    return SimpleSearchFilter(
+      from: from,
+      text: text,
+      mailbox: newMailbox,
+      emailReceiveTimeType: emailReceiveTimeType,
+      hasAttachment: hasAttachment,
+      before: before,
+    );
+  }
+
+  bool get searchFilterByMailboxApplied => mailbox != null;
+
+  String get mailboxName => mailbox?.name?.name ?? '';
 }
