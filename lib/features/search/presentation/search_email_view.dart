@@ -6,7 +6,6 @@ import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/background/background_widget_builder.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -163,8 +162,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       child: ListView(
           scrollDirection: Axis.horizontal,
           children: [
+            _buildSearchFilterByContactButton(context, PrefixEmailAddress.from),
+            _buildSearchFilterByContactButton(context, PrefixEmailAddress.to),
             ...[
-              QuickSearchFilter.fromMe,
               QuickSearchFilter.hasAttachment,
               QuickSearchFilter.last7Days
             ].map((filter) => _buildQuickSearchFilterButton(context, filter)),
@@ -177,7 +177,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   Widget _buildQuickSearchFilterButton(BuildContext context, QuickSearchFilter filter) {
     return Obx(() {
       final filterSelected = controller.checkQuickSearchFilterSelected(filter);
-      log('SearchEmailView::_buildQuickSearchFilterButton(): filterSelected: $filterSelected');
       return Padding(
         padding: const EdgeInsets.only(right: 8),
         child: InkWell(
@@ -237,9 +236,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   ... [
                     const SizedBox(width: 4),
                     SvgPicture.asset(
-                        _imagePaths.icChevronDown,
-                        width: 16,
-                        height: 16,
+                        _imagePaths.icChevronDownOutline,
+                        color: filterSelected
+                            ? AppColor.primaryColor
+                            : AppColor.colorDefaultRichTextButton,
                         fit: BoxFit.fill),
                   ]
               ])
@@ -253,7 +253,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       BuildContext context,
       EmailReceiveTimeType? receiveTimeSelected,
       Function(EmailReceiveTimeType?)? onCallBack
-      ) {
+  ) {
     return EmailReceiveTimeType.values
         .map((timeType) => PopupMenuItem(
         padding: EdgeInsets.zero,
@@ -553,9 +553,64 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 ),
                 const SizedBox(width: 4),
                 SvgPicture.asset(
-                    _imagePaths.icChevronDown,
+                    _imagePaths.icChevronDownOutline,
+                    color: filterSelected
+                        ? AppColor.primaryColor
+                        : AppColor.colorDefaultRichTextButton,
+                    fit: BoxFit.fill),
+              ])
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildSearchFilterByContactButton(BuildContext context, PrefixEmailAddress prefixEmailAddress) {
+    return Obx(() {
+      final filterSelected = controller.simpleSearchFilter.value
+          .searchFilterByContactApplied(prefixEmailAddress);
+      return Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: InkWell(
+          onTap: () => controller.selectContactForSearchFilter(context, prefixEmailAddress),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: filterSelected
+                      ? AppColor.colorItemEmailSelectedDesktop
+                      : AppColor.colorButtonHeaderThread),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                SvgPicture.asset(
+                    filterSelected ? _imagePaths.icSelectedSB : _imagePaths.icUserSB,
                     width: 16,
                     height: 16,
+                    fit: BoxFit.fill),
+                const SizedBox(width: 4),
+                Text(
+                    filterSelected
+                        ? controller.simpleSearchFilter.value.getNameContactApplied(prefixEmailAddress)
+                        : controller.simpleSearchFilter.value.getNameContactDefault(context, prefixEmailAddress),
+                    maxLines: 1,
+                    overflow: CommonTextStyle.defaultTextOverFlow,
+                    softWrap: CommonTextStyle.defaultSoftWrap,
+                    style: filterSelected
+                        ? const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: AppColor.colorTextButton)
+                        : const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.normal,
+                            color: AppColor.colorTextButtonHeaderThread)
+                ),
+                const SizedBox(width: 4),
+                SvgPicture.asset(
+                    _imagePaths.icChevronDownOutline,
+                    color: filterSelected
+                        ? AppColor.primaryColor
+                        : AppColor.colorDefaultRichTextButton,
                     fit: BoxFit.fill),
               ])
           ),
