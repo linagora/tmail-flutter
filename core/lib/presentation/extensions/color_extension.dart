@@ -145,6 +145,7 @@ extension AppColor on Color {
   static const colorBackgroundNotificationVacationSetting= Color(0xFFFFF5C2);
   static const colorDivider = Color(0xFFE7E8EC);
   static const colorDividerVertical = Color(0xFF99A2AD);
+  static const colorCloseButton = Color(0xFF818C99);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

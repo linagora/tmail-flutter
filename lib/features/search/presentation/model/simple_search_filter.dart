@@ -138,12 +138,12 @@ extension SearchEmailFilterExtension on SimpleSearchFilter {
     }
   }
 
-  String getNameContactApplied(PrefixEmailAddress prefixEmailAddress) {
+  String getNameContactApplied(BuildContext context, PrefixEmailAddress prefixEmailAddress) {
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.from:
-        return from.first;
+        return '${AppLocalizations.of(context).from_email_address_prefix} ${from.first}';
       case PrefixEmailAddress.to:
-        return to.first;
+        return '${AppLocalizations.of(context).to_email_address_prefix} ${to.first}';
       default:
         return '';
     }

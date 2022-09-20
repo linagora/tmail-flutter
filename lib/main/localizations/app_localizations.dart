@@ -2252,11 +2252,23 @@ class AppLocalizations {
     );
   }
 
-
   String get clearAll {
     return Intl.message(
       'Clear all',
       name: 'clearAll',
+    );
+  }
+
+  String get contact {
+    return Intl.message(
+        'Contact',
+        name: 'contact');
+  }
+
+  String get hintSearchInputContact {
+    return Intl.message(
+        'Enter name or email',
+        name: 'hintSearchInputContact'
     );
   }
 }

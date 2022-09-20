@@ -7,13 +7,16 @@ import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -80,6 +83,8 @@ class SearchEmailController extends BaseController
   PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
+
+  Session? get session => mailboxDashBoardController.sessionCurrent;
 
   UserProfile? get userProfile => mailboxDashBoardController.userProfile.value;
 
@@ -355,9 +360,6 @@ class SearchEmailController extends BaseController
   }
 
   bool checkQuickSearchFilterSelected(QuickSearchFilter filter) {
-    log('SearchEmailController::checkQuickSearchFilterSelected(): filter: $filter');
-    log('SearchEmailController::checkQuickSearchFilterSelected(): simpleSearchFilter: ${simpleSearchFilter.value.from}');
-    log('SearchEmailController::checkQuickSearchFilterSelected(): userProfile: ${userProfile!.email}');
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
         return simpleSearchFilter.value.hasAttachment == true;
@@ -366,16 +368,13 @@ class SearchEmailController extends BaseController
           return true;
         }
         return simpleSearchFilter.value.emailReceiveTimeType == EmailReceiveTimeType.last7Days;
-      case QuickSearchFilter.fromMe:
-        return userProfile != null &&
-            simpleSearchFilter.value.from.contains(userProfile!.email) &&
-            simpleSearchFilter.value.from.length == 1;
+      default:
+        return false;
     }
   }
 
   void _selectQuickSearchFilter(QuickSearchFilter filter) {
     final filterSelected = checkQuickSearchFilterSelected(filter);
-    log('SearchEmailController::_selectQuickSearchFilter(): filterSelected: $filterSelected');
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
         _updateSimpleSearchFilter(hasAttachment: !filterSelected);
@@ -389,14 +388,7 @@ class SearchEmailController extends BaseController
           _updateSimpleSearchFilter(emailReceiveTimeType: EmailReceiveTimeType.last7Days);
         }
         break;
-      case QuickSearchFilter.fromMe:
-        if (userProfile != null) {
-          filterSelected
-              ? simpleSearchFilter.value.from.removeWhere((e) => e == userProfile!.email)
-              : simpleSearchFilter.value.from.add(userProfile!.email);
-          log('SearchEmailController::_selectQuickSearchFilter(): from: ${simpleSearchFilter.value.from}');
-          _updateSimpleSearchFilter(from: simpleSearchFilter.value.from);
-        }
+      default:
         break;
     }
   }
@@ -445,11 +437,60 @@ class SearchEmailController extends BaseController
       BuildContext context,
       PrefixEmailAddress prefixEmailAddress
   ) async {
+    if (accountId != null && session != null) {
+      final listContactSelected = simpleSearchFilter.value.getContactApplied(prefixEmailAddress);
+      final newContact = await push(
+          AppRoutes.CONTACT,
+          arguments: ContactArguments(accountId!, session!, listContactSelected));
 
+      if (newContact is EmailAddress) {
+        if (listContactSelected.isNotEmpty) {
+          switch(prefixEmailAddress) {
+            case PrefixEmailAddress.from:
+              listContactSelected.first == newContact.email
+                  ? simpleSearchFilter.value.from.removeWhere((e) => e == newContact.email!)
+                  : simpleSearchFilter.value.from.add(newContact.email!);
+              break;
+            case PrefixEmailAddress.to:
+              listContactSelected.first == newContact.email
+                  ? simpleSearchFilter.value.to.removeWhere((e) => e == newContact.email!)
+                  : simpleSearchFilter.value.to.add(newContact.email!);
+              break;
+            default:
+              break;
+          }
+        } else {
+          switch(prefixEmailAddress) {
+            case PrefixEmailAddress.from:
+              simpleSearchFilter.value.from.add(newContact.email!);
+              break;
+            case PrefixEmailAddress.to:
+              simpleSearchFilter.value.to.add(newContact.email!);
+              break;
+            default:
+              break;
+          }
+        }
+
+        switch(prefixEmailAddress) {
+          case PrefixEmailAddress.from:
+            _updateSimpleSearchFilter(from: simpleSearchFilter.value.from);
+            break;
+          case PrefixEmailAddress.to:
+            _updateSimpleSearchFilter(to: simpleSearchFilter.value.to);
+            break;
+          default:
+            break;
+        }
+
+        _searchEmailAction(context);
+      }
+    }
   }
 
   void _updateSimpleSearchFilter({
     Set<String>? from,
+    Set<String>? to,
     SearchQuery? text,
     PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
@@ -458,6 +499,7 @@ class SearchEmailController extends BaseController
   }) {
     simpleSearchFilter.value = simpleSearchFilter.value.copyWith(
       from: from,
+      to: to,
       text: text,
       mailbox: mailbox,
       emailReceiveTimeType: emailReceiveTimeType,
