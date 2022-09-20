@@ -42,6 +42,12 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
   @override
   Widget build(BuildContext context) {
+    if (_responsiveUtils.isWebDesktop(context)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.closeSearchView(context);
+      });
+    }
+
     return Scaffold(
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -129,7 +135,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             ..textDecoration(InputDecoration(
                 contentPadding: const EdgeInsets.all(12),
                 hintText: AppLocalizations.of(context).search_emails,
-                fillColor: Colors.redAccent,
                 hintStyle: const TextStyle(
                     color: AppColor.loginTextFieldHintColor,
                     fontSize: 16),
@@ -590,7 +595,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 const SizedBox(width: 4),
                 Text(
                     filterSelected
-                        ? controller.simpleSearchFilter.value.getNameContactApplied(prefixEmailAddress)
+                        ? controller.simpleSearchFilter.value.getNameContactApplied(context, prefixEmailAddress)
                         : controller.simpleSearchFilter.value.getNameContactDefault(context, prefixEmailAddress),
                     maxLines: 1,
                     overflow: CommonTextStyle.defaultTextOverFlow,
