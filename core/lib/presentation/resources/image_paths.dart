@@ -160,6 +160,7 @@ class ImagePaths {
   String get icClock => _getImagePath('ic_clock.svg');
   String get icCalendar => _getImagePath('ic_calendar.svg');
   String get icAddEmailForward => _getImagePath('ic_add_email_forwards.svg');
+  String get icChevronDownOutline => _getImagePath('ic_chevron_down_outline.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
