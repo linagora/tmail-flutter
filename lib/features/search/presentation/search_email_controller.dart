@@ -441,6 +441,13 @@ class SearchEmailController extends BaseController
     }
   }
 
+  void selectContactForSearchFilter(
+      BuildContext context,
+      PrefixEmailAddress prefixEmailAddress
+  ) async {
+
+  }
+
   void _updateSimpleSearchFilter({
     Set<String>? from,
     SearchQuery? text,
@@ -546,9 +553,7 @@ class SearchEmailController extends BaseController
 
   void selectEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
     listResultSearch.value = listResultSearch
-        .map((email) => email.id == presentationEmailSelected.id
-        ? email.toggleSelect()
-        : email)
+        .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
         .toList();
 
     if (listResultSearch.isAllSelectionInActive) {
