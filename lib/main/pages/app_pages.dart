@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart' deferred as composer;
+import 'package:tmail_ui_user/features/contact/presentation/contact_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart' deferred as destination_picker;
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart' deferred as email;
@@ -11,6 +12,7 @@ import 'package:tmail_ui_user/features/identity_creator/presentation/identity_cr
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart' deferred as identity_creator;
 import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_binding.dart';
 import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_view.dart' deferred as emails_forward_creator;
+import 'package:tmail_ui_user/features/contact/presentation/contact_view.dart' deferred as contact_view;
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_bindings.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart' deferred as rules_filter_creator;
 import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
@@ -89,5 +91,12 @@ class AppPages {
           emails_forward_creator.loadLibrary,
           () => emails_forward_creator.EmailsForwardCreatorView()),
       binding: EmailsForwardCreatorBindings()),
+    GetPage(
+        name: AppRoutes.CONTACT,
+        opaque: false,
+        page: () => DeferredWidget(
+            contact_view.loadLibrary,
+            () => contact_view.ContactView()),
+        binding: ContactBindings()),
 ];
 }

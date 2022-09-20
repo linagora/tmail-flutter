@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-09-16T03:16:09.866930",
+  "@@last_modified": "2022-09-20T13:44:48.613115",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2182,6 +2182,18 @@
   },
   "clearAll": "Clear all",
   "@clearAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "contact": "Contact",
+  "@contact": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintSearchInputContact": "Enter name or email",
+  "@hintSearchInputContact": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
