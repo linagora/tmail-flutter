@@ -65,8 +65,8 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
               controller.cleanSearchFilter(context);
               popBack();
             },
-            colorButton: AppColor.primaryColor.withOpacity(0.06),
-            colorText: AppColor.primaryColor,
+            colorButton: Colors.white,
+            colorText: AppColor.colorContentEmail,
             text: AppLocalizations.of(context).clearFilter,
             context: context,
             responsiveUtils: responsiveUtils,
@@ -96,11 +96,12 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
             controller.cleanSearchFilter(context);
             popBack();
           },
-          colorButton: AppColor.primaryColor.withOpacity(0.06),
-          colorText: AppColor.primaryColor,
+          colorButton: Colors.white,
+          colorText: AppColor.colorContentEmail,
           text: AppLocalizations.of(context).clearFilter,
           context: context,
           responsiveUtils: responsiveUtils,
+          minWidth: 92
         ),
         const SizedBox(width: 12),
         _buildButton(
@@ -113,6 +114,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
           text: AppLocalizations.of(context).search,
           context: context,
           responsiveUtils: responsiveUtils,
+          minWidth: 144,
           currentFocusNode: focusManager?.searchButtonFocusNode,
           nextFocusNode: focusManager?.fromFieldFocusNode
         ),
@@ -128,28 +130,21 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
       }
   ) {
     return Obx(
-      () => SizedBox(
-        width: 220,
-        child: RawKeyboardListener(
-          focusNode: FocusNode(),
-          onKey: (event) {
-            log('AdvancedSearchFilterFormBottomView::_buildCheckboxHasAttachment(): Event runtimeType is ${event.runtimeType}');
-            if (event is RawKeyDownEvent &&
-                event.logicalKey == LogicalKeyboardKey.tab) {
-              log('AdvancedSearchFilterFormBottomView::_buildCheckboxHasAttachment(): PRESS TAB');
-              nextFocusNode?.requestFocus();
-            }
-          },
-          child: CheckboxListTile(
-            focusNode: currentFocusNode,
-            contentPadding: EdgeInsets.zero,
-            controlAffinity: ListTileControlAffinity.leading,
-            value: controller.hasAttachment.value,
-            onChanged: (value) {
-              controller.hasAttachment.value = value ?? false;
-            },
-            title: Text(AppLocalizations.of(context).hasAttachment),
-          ),
+      () => RawKeyboardListener(
+        focusNode: FocusNode(),
+        onKey: (event) {
+          if (event is RawKeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.tab) {
+            nextFocusNode?.requestFocus();
+          }
+        },
+        child: LabeledCheckbox(
+          label: AppLocalizations.of(context).hasAttachment,
+          focusNode: currentFocusNode,
+          contentPadding: EdgeInsets.zero,
+          value: controller.hasAttachment.value,
+          activeColor: AppColor.primaryColor,
+          onChanged: (value) => controller.hasAttachment.value = value ?? false,
         ),
       ),
     );
@@ -164,31 +159,27 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
     required ResponsiveUtils responsiveUtils,
     FocusNode? currentFocusNode,
     FocusNode? nextFocusNode,
+    double? minWidth,
   }) {
     return RawKeyboardListener(
       focusNode: FocusNode(),
       onKey: (event) {
-        log('AdvancedSearchFilterFormBottomView::_buildButton(): Event runtimeType is ${event.runtimeType}');
         if (event is RawKeyDownEvent &&
             event.logicalKey == LogicalKeyboardKey.tab) {
-          log('AdvancedSearchFilterFormBottomView::_buildButton(): PRESS TAB');
           nextFocusNode?.requestFocus();
         }
       },
-      child: buildTextButton(
+      child: buildButtonWrapText(
           text,
           focusNode: currentFocusNode,
-          width: _isMobileAndLandscapeTablet(context, responsiveUtils)
-              ? double.infinity
-              : 144,
-          height: 44,
           radius: 10,
-          textStyle: TextStyle(fontSize: 17, color: colorText),
-          backgroundColor: colorButton,
-          padding: EdgeInsets.symmetric(
-              horizontal: _isMobileAndLandscapeTablet(context, responsiveUtils)
-                  ? 0
-                  : 26),
+          height: 44,
+          minWidth: minWidth,
+          textStyle: TextStyle(
+              fontSize: 17,
+              color: colorText,
+              fontWeight: FontWeight.w500),
+          bgColor: colorButton,
           onTap: onAction),
     );
   }

@@ -22,71 +22,68 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: Column(
-        children: [
-          _buildSuggestionFilterField(
-            listTagSelected: controller.searchEmailFilter.from,
+    return Column(
+      children: [
+        _buildSuggestionFilterField(
+          listTagSelected: controller.searchEmailFilter.from,
+          context: context,
+          advancedSearchFilterField: AdvancedSearchFilterField.form,
+          listTagInitial: controller.searchEmailFilter.from,
+          currentFocusNode: controller.focusManager.fromFieldFocusNode,
+          nextFocusNode: controller.focusManager.toFieldFocusNode
+        ),
+        _buildSuggestionFilterField(
+          listTagSelected: controller.searchEmailFilter.to,
+          context: context,
+          advancedSearchFilterField: AdvancedSearchFilterField.to,
+          listTagInitial: controller.searchEmailFilter.to,
+          currentFocusNode: controller.focusManager.toFieldFocusNode,
+          nextFocusNode: controller.focusManager.subjectFieldFocusNode
+        ),
+        _buildFilterField(
+          textEditingController: controller.subjectFilterInputController,
+          context: context,
+          advancedSearchFilterField: AdvancedSearchFilterField.subject,
+          currentFocusNode: controller.focusManager.subjectFieldFocusNode,
+          nextFocusNode: controller.focusManager.hasKeywordFieldFocusNode
+        ),
+        _buildFilterField(
+          textEditingController: controller.hasKeyWordFilterInputController,
+          context: context,
+          advancedSearchFilterField: AdvancedSearchFilterField.hasKeyword,
+          currentFocusNode: controller.focusManager.hasKeywordFieldFocusNode,
+          nextFocusNode: controller.focusManager.notKeywordFieldFocusNode
+        ),
+        _buildFilterField(
+          textEditingController: controller.notKeyWordFilterInputController,
+          context: context,
+          advancedSearchFilterField: AdvancedSearchFilterField.notKeyword,
+          currentFocusNode: controller.focusManager.notKeywordFieldFocusNode,
+          nextFocusNode: controller.focusManager.mailboxFieldFocusNode,
+        ),
+        _buildFilterField(
+            textEditingController: controller.mailBoxFilterInputController,
             context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.form,
-            listTagInitial: controller.searchEmailFilter.from,
-            currentFocusNode: controller.focusManager.fromFieldFocusNode,
-            nextFocusNode: controller.focusManager.toFieldFocusNode
-          ),
-          _buildSuggestionFilterField(
-            listTagSelected: controller.searchEmailFilter.to,
-            context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.to,
-            listTagInitial: controller.searchEmailFilter.to,
-            currentFocusNode: controller.focusManager.toFieldFocusNode,
-            nextFocusNode: controller.focusManager.subjectFieldFocusNode
-          ),
-          _buildFilterField(
-            textEditingController: controller.subjectFilterInputController,
-            context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.subject,
-            currentFocusNode: controller.focusManager.subjectFieldFocusNode,
-            nextFocusNode: controller.focusManager.hasKeywordFieldFocusNode
-          ),
-          _buildFilterField(
-            textEditingController: controller.hasKeyWordFilterInputController,
-            context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.hasKeyword,
-            currentFocusNode: controller.focusManager.hasKeywordFieldFocusNode,
-            nextFocusNode: controller.focusManager.notKeywordFieldFocusNode
-          ),
-          _buildFilterField(
-            textEditingController: controller.notKeyWordFilterInputController,
-            context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.notKeyword,
-            currentFocusNode: controller.focusManager.notKeywordFieldFocusNode,
-            nextFocusNode: controller.focusManager.mailboxFieldFocusNode,
-          ),
-          _buildFilterField(
-              textEditingController: controller.mailBoxFilterInputController,
-              context: context,
-              advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
-              isSelectFormList: true,
-              currentFocusNode: controller.focusManager.mailboxFieldFocusNode,
-              nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
-              mouseCursor: SystemMouseCursors.click,
-              onTap: () => controller.selectedMailBox()),
-          _buildFilterField(
-            textEditingController: controller.dateFilterInputController,
-            context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.date,
+            advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
             isSelectFormList: true,
-            onTap: () {
-              openContextMenuAction(
-                context,
-                _buildEmailReceiveTimeTypeActionTiles(context),
-              );
-            },
-          ),
-          AdvancedSearchFilterFormBottomView(focusManager: controller.focusManager)
-        ],
-      ),
+            currentFocusNode: controller.focusManager.mailboxFieldFocusNode,
+            nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
+            mouseCursor: SystemMouseCursors.click,
+            onTap: () => controller.selectedMailBox()),
+        _buildFilterField(
+          textEditingController: controller.dateFilterInputController,
+          context: context,
+          advancedSearchFilterField: AdvancedSearchFilterField.date,
+          isSelectFormList: true,
+          onTap: () {
+            openContextMenuAction(
+              context,
+              _buildEmailReceiveTimeTypeActionTiles(context),
+            );
+          },
+        ),
+        AdvancedSearchFilterFormBottomView(focusManager: controller.focusManager)
+      ],
     );
   }
 
@@ -347,10 +344,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     return RawKeyboardListener(
       focusNode: currentFocusNode ?? FocusNode(),
       onKey: (event) {
-        log('AdvancedSearchInputForm::_buildTextField(): Event runtimeType is ${event.runtimeType}');
         if (event is RawKeyDownEvent &&
             event.logicalKey == LogicalKeyboardKey.tab) {
-          log('AdvancedSearchInputForm::_buildTextField(): PRESS TAB');
           nextFocusNode?.requestFocus();
         }
       },
@@ -382,9 +377,11 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             ),
           ),
           hintText: advancedSearchFilterField.getHintText(context),
-          hintStyle: const TextStyle(
-            fontSize: 14,
-            color: AppColor.colorHintSearchBar,
+          hintStyle: TextStyle(
+            fontSize: 16,
+            color: advancedSearchFilterField == AdvancedSearchFilterField.mailBox
+              ? Colors.black
+              : AppColor.colorHintSearchBar,
           ),
           suffixIconConstraints: const BoxConstraints(minHeight: 24, minWidth: 24),
           suffixIcon: isSelectFormList
