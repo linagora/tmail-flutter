@@ -31,39 +31,37 @@ class ExportAttachmentInteractor {
       CancelToken cancelToken
   ) async* {
     try {
-      final account = await _accountRepository.getCurrentAccount();
+      final currentAccount = await _accountRepository.getCurrentAccount();
 
-      log('ExportAttachmentInteractor::execute(): account: $account');
+      AccountRequest? accountRequest;
 
-      final downloadedResponse = await Future.wait([
-          if (account.authenticationType == AuthenticationType.oidc)
-            _authenticationOIDCRepository.getStoredTokenOIDC(account.id)
-          else
-            credentialRepository.getAuthenticationInfoStored()
-        ], eagerError: true
-      ).then((List responses) async {
-        AccountRequest accountRequest;
-
-        if (account.authenticationType == AuthenticationType.oidc) {
-          final tokenOidc = responses.first as TokenOIDC;
+      if (currentAccount.authenticationType == AuthenticationType.oidc) {
+        final tokenOidc = await _authenticationOIDCRepository.getStoredTokenOIDC(currentAccount.id);
+        accountRequest = AccountRequest(
+            token: tokenOidc.toToken(),
+            authenticationType: AuthenticationType.oidc);
+      } else {
+        final authenticationInfoCache = await credentialRepository.getAuthenticationInfoStored();
+        if (authenticationInfoCache != null) {
           accountRequest = AccountRequest(
-              token: tokenOidc.toToken(),
-              authenticationType: AuthenticationType.oidc);
-        } else {
-          accountRequest = AccountRequest(
-              userName: responses.first as UserName,
-              password: responses.last as Password,
+              userName: UserName(authenticationInfoCache.username),
+              password: Password(authenticationInfoCache.password),
               authenticationType: AuthenticationType.basic);
         }
+      }
 
-        return await emailRepository.exportAttachment(
+      if (accountRequest != null) {
+        final downloadedResponse = await emailRepository.exportAttachment(
             attachment,
             accountId,
             baseDownloadUrl,
             accountRequest,
             cancelToken);
-      });
-      yield Right<Failure, Success>(ExportAttachmentSuccess(downloadedResponse));
+
+        yield Right<Failure, Success>(ExportAttachmentSuccess(downloadedResponse));
+      } else {
+        yield Left<Failure, Success>(ExportAttachmentFailure(null));
+      }
     } catch (exception) {
       log('ExportAttachmentInteractor::execute(): exception: $exception');
       yield Left<Failure, Success>(ExportAttachmentFailure(exception));
