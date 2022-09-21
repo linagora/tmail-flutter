@@ -9,6 +9,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
+import 'package:rich_text_composer/rich_text_composer.dart' as rich_text_composer;
+import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
@@ -51,13 +53,14 @@ class ComposerView extends GetWidget<ComposerController>
           controller.saveEmailAsDrafts(context, canPop: false);
           return true;
         },
-        child: GestureDetector(
-            onTap: () {
-              controller.clearFocusEditor(context);
-            },
-            child: Scaffold(
-              backgroundColor: Colors.white,
-              body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) => GestureDetector(
+              onTap: () {
+                controller.clearFocusEditor(context);
+              },
+              child: Scaffold(
+                backgroundColor: Colors.white,
+                body: SafeArea(
                   right: responsiveUtils.isLandscapeMobile(context),
                   left: responsiveUtils.isLandscapeMobile(context),
                   child: Container(
@@ -65,11 +68,12 @@ class ComposerView extends GetWidget<ComposerController>
                       child: Column(children: [
                         Obx(() => _buildAppBar(context, controller.isEnableEmailSendButton.value)),
                         const Divider(color: AppColor.colorDividerComposer, height: 1),
-                        Expanded(child: _buildBodyMobile(context))
+                        Expanded(child: _buildBodyMobile(context, constraints.maxWidth))
                       ])
-                  )
-              ),
-            )
+                  ),
+                ),
+              )
+          ),
         )
     );
   }
@@ -283,67 +287,77 @@ class ComposerView extends GetWidget<ComposerController>
   }
 
   Widget _buildEmailAddress(BuildContext context) {
-    return Column(
-      children: [
-        Obx(() => Padding(
-            padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-            child: (EmailAddressInputBuilder(context, imagePaths,
-                    PrefixEmailAddress.to,
-                    controller.listToEmailAddress,
-                    controller.listEmailAddressType,
-                    expandMode: controller.toAddressExpandMode.value,
-                    controller: controller.toEmailAddressController,
-                    isInitial: controller.isInitialRecipient.value)
-                ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
-                ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
-                ..addOnAddEmailAddressTypeAction((prefixEmailAddress) => controller.addEmailAddressType(prefixEmailAddress))
-                ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion))
-              .build()
-        )),
-        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
-            ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-            : const SizedBox.shrink()),
-        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
-            ? Padding(
-                padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                child: (EmailAddressInputBuilder(context, imagePaths,
-                        PrefixEmailAddress.cc,
-                        controller.listCcEmailAddress,
-                        controller.listEmailAddressType,
-                        expandMode: controller.ccAddressExpandMode.value,
-                        controller: controller.ccEmailAddressController,
-                        isInitial: controller.isInitialRecipient.value,)
-                    ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
-                    ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
-                    ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
-                    ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                    ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion))
-                  .build())
-            : const SizedBox.shrink()
-        ),
-        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
-            ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-            : const SizedBox.shrink()),
-        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
-            ? Padding(
-                padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                child: (EmailAddressInputBuilder(context, imagePaths,
-                        PrefixEmailAddress.bcc,
-                        controller.listBccEmailAddress,
-                        controller.listEmailAddressType,
-                        expandMode: controller.bccAddressExpandMode.value,
-                        controller: controller.bccEmailAddressController,
-                        isInitial: controller.isInitialRecipient.value,)
-                    ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
-                    ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
-                    ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
-                    ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                    ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion))
-                  .build())
-            : const SizedBox.shrink()
-        ),
-      ],
+    return Focus(
+      onFocusChange: (focus) {
+        if(focus) {
+          controller.htmlEditorApi?.unfocus();
+        }
+      },
+      child: Column(
+        children: [
+          Obx(() => Padding(
+              padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+              child: (EmailAddressInputBuilder(context, imagePaths,
+                      PrefixEmailAddress.to,
+                      controller.listToEmailAddress,
+                      controller.listEmailAddressType,
+                      expandMode: controller.toAddressExpandMode.value,
+                      controller: controller.toEmailAddressController,
+                      isInitial: controller.isInitialRecipient.value)
+                  ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
+                  ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
+                  ..addOnAddEmailAddressTypeAction((prefixEmailAddress) => controller.addEmailAddressType(prefixEmailAddress))
+                  ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+                  ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(''))
+                  ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                .build()
+          )),
+          Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
+              ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+              : const SizedBox.shrink()),
+          Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
+              ? Padding(
+                  padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+                  child: (EmailAddressInputBuilder(context, imagePaths,
+                          PrefixEmailAddress.cc,
+                          controller.listCcEmailAddress,
+                          controller.listEmailAddressType,
+                          expandMode: controller.ccAddressExpandMode.value,
+                          controller: controller.ccEmailAddressController,
+                          isInitial: controller.isInitialRecipient.value,)
+                      ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
+                      ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
+                      ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
+                      ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+                      ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(''))
+                      ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                    .build())
+              : const SizedBox.shrink()
+          ),
+          Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
+              ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+              : const SizedBox.shrink()),
+          Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
+              ? Padding(
+                  padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+                  child: (EmailAddressInputBuilder(context, imagePaths,
+                          PrefixEmailAddress.bcc,
+                          controller.listBccEmailAddress,
+                          controller.listEmailAddressType,
+                          expandMode: controller.bccAddressExpandMode.value,
+                          controller: controller.bccEmailAddressController,
+                          isInitial: controller.isInitialRecipient.value,)
+                      ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
+                      ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
+                      ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
+                      ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+                      ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(''))
+                      ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                    .build())
+              : const SizedBox.shrink()
+          ),
+        ],
+      ),
     );
   }
 
@@ -373,99 +387,81 @@ class ComposerView extends GetWidget<ComposerController>
     );
   }
 
-  Widget _buildListButton(BuildContext context, BoxConstraints constraints) {
-    return Transform(
-        transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
-        child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: Row(children: [
-              buildIconWeb(
-                  icon: SvgPicture.asset(imagePaths.icAttachmentsComposer, color: AppColor.colorTextButton, fit: BoxFit.fill),
-                  tooltip: AppLocalizations.of(context).attach_file,
-                  onTap: () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context))),
-              buildIconWeb(
-                  minSize: 40,
-                  iconPadding: EdgeInsets.zero,
-                  icon: SvgPicture.asset(imagePaths.icInsertImage,
-                      color: AppColor.colorTextButton,
-                      fit: BoxFit.fill),
-                  tooltip: AppLocalizations.of(context).insertImage,
-                  onTap: () => controller.insertImage(context, constraints.maxWidth))
-            ])
-        )
-    );
-  }
-
-  Widget _buildBodyMobile(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const ClampingScrollPhysics(),
-      child: LayoutBuilder(
-        builder: (context, constraints) => Column(children: [
-          Obx(() => controller.identitySelected.value != null
-              ? _buildFromEmailAddress(context)
-              : const SizedBox.shrink()),
-          Obx(() => controller.identitySelected.value != null
-              ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-              : const SizedBox.shrink()),
-          _buildEmailAddress(context),
-          const Divider(color: AppColor.colorDividerComposer, height: 1),
-          Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), child: _buildSubjectEmail(context)),
-          const Divider(color: AppColor.colorDividerComposer, height: 1),
-          Padding(padding: const EdgeInsets.symmetric(horizontal: 16),  child: _buildListButton(context, constraints)),
-          const Divider(color: AppColor.colorDividerComposer, height: 1),
-          _buildAttachmentsWidget(context),
-          _buildToolbarMobileWidget(context),
-          buildInlineLoadingView(controller),
-          _buildComposerEditor(context),
-        ]),
-      )
+  Widget _buildBodyMobile(BuildContext context, double maxWidth) {
+    return rich_text_composer.KeyboardRichText(
+      child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: Column(children: [
+            Obx(() => controller.identitySelected.value != null
+                ? _buildFromEmailAddress(context)
+                : const SizedBox.shrink()),
+            Obx(() => controller.identitySelected.value != null
+                ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+                : const SizedBox.shrink()),
+            _buildEmailAddress(context),
+            const Divider(color: AppColor.colorDividerComposer, height: 1),
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), child: _buildSubjectEmail(context)),
+            const Divider(color: AppColor.colorDividerComposer, height: 1),
+            _buildAttachmentsWidget(context),
+            buildInlineLoadingView(controller),
+            _buildComposerEditor(context),
+          ])
+      ),
+      richTextController: controller.keyboardRichTextController,
+      backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
+      keyBroadToolbar: RichTextKeyboardToolBar(
+        isLandScapeMode: responsiveUtils.isLandscapeMobile(context),
+        insertAttachment: () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context)),
+        insertImage: () => controller.insertImage(context, maxWidth),
+        richTextController: controller.keyboardRichTextController,
+        titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
+        titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
+        titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
+        titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
+      ),
     );
   }
 
   Widget _buildBodyTablet(BuildContext context) {
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
-      child: LayoutBuilder(
-        builder: (context, constraints) => Column(children: [
-          Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Padding(padding: const EdgeInsets.only(top: 20),
-                    child: (AvatarBuilder()
-                        ..text(controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
-                        ..size(56)
-                        ..addTextStyle(const TextStyle(fontWeight: FontWeight.w600, fontSize: 28, color: Colors.white))
-                        ..backgroundColor(AppColor.colorAvatar))
+      child: Column(children: [
+        Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Padding(padding: const EdgeInsets.only(top: 20),
+                  child: (AvatarBuilder()
+                    ..text(controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
+                    ..size(56)
+                    ..addTextStyle(const TextStyle(fontWeight: FontWeight.w600, fontSize: 28, color: Colors.white))
+                    ..backgroundColor(AppColor.colorAvatar))
                       .build()),
-                Expanded(child: Padding(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: Column(children: [
-                    Obx(() => controller.identitySelected.value != null
-                        ? _buildFromEmailAddress(context)
-                        : const SizedBox.shrink()),
-                    Obx(() => controller.identitySelected.value != null
-                        ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-                        : const SizedBox.shrink()),
-                    _buildEmailAddress(context),
-                    const Divider(color: AppColor.colorDividerComposer, height: 1),
-                    Padding(padding: const EdgeInsets.only(right: 16), child: _buildSubjectEmail(context)),
-                    const Divider(color: AppColor.colorDividerComposer, height: 1),
-                    _buildListButton(context, constraints),
-                  ]),
-                ))
-              ])),
-          const Divider(color: AppColor.colorDividerComposer, height: 1),
-          Padding(
-              padding: const EdgeInsets.only(left: 60, right: 25),
-              child: Column(children: [
-                _buildToolbarRichTextWidget(context),
-                _buildAttachmentsWidget(context),
-                buildInlineLoadingView(controller),
-                _buildComposerEditor(context),
-              ])
-          )
-        ]),
-      )
+              Expanded(child: Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: Column(children: [
+                  Obx(() => controller.identitySelected.value != null
+                      ? _buildFromEmailAddress(context)
+                      : const SizedBox.shrink()),
+                  Obx(() => controller.identitySelected.value != null
+                      ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+                      : const SizedBox.shrink()),
+                  _buildEmailAddress(context),
+                  const Divider(color: AppColor.colorDividerComposer, height: 1),
+                  Padding(padding: const EdgeInsets.only(right: 16), child: _buildSubjectEmail(context)),
+                ]),
+              ))
+            ])),
+        const Divider(color: AppColor.colorDividerComposer, height: 1),
+        Padding(
+            padding: const EdgeInsets.only(left: 60, right: 25),
+            child: Column(children: [
+              _buildToolbarRichTextWidget(context),
+              _buildAttachmentsWidget(context),
+              buildInlineLoadingView(controller),
+              _buildComposerEditor(context),
+            ])
+        )
+      ])
     );
   }
 
@@ -624,10 +620,10 @@ class ComposerView extends GetWidget<ComposerController>
       switch(argsComposer.emailActionType) {
         case EmailActionType.compose:
         case EmailActionType.composeFromEmailAddress:
-          return _buildHtmlEditor(HtmlExtension.editorStartTags);
+          return _buildHtmlEditor('', context);
         case EmailActionType.edit:
           return controller.emailContentsViewState.value.fold(
-            (failure) => _buildHtmlEditor(HtmlExtension.editorStartTags),
+            (failure) => _buildHtmlEditor(HtmlExtension.editorStartTags, context),
             (success) {
                 if (success is GetEmailContentLoading) {
                   return Padding(
@@ -639,9 +635,9 @@ class ComposerView extends GetWidget<ComposerController>
                   if (contentHtml.isEmpty == true) {
                     contentHtml = HtmlExtension.editorStartTags;
                   }
-                  return _buildHtmlEditor(contentHtml);
+                  return _buildHtmlEditor(contentHtml, context);
                 } else {
-                  return _buildHtmlEditor(HtmlExtension.editorStartTags);
+                  return _buildHtmlEditor(HtmlExtension.editorStartTags, context);
                 }
               });
         case EmailActionType.reply:
@@ -653,26 +649,31 @@ class ComposerView extends GetWidget<ComposerController>
           if (contentHtml.isEmpty == true) {
             contentHtml = HtmlExtension.editorStartTags;
           }
-          return _buildHtmlEditor(contentHtml);
+          return _buildHtmlEditor(contentHtml, context);
         default:
-          return _buildHtmlEditor(HtmlExtension.editorStartTags);
+          return _buildHtmlEditor(HtmlExtension.editorStartTags, context);
       }
     });
   }
 
-  Widget _buildHtmlEditor(String initialContent) {
+  Widget _buildHtmlEditor(String initialContent, BuildContext context) {
     final richTextMobileTabletController = controller.richTextMobileTabletController;
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20, top: 10),
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
       child: HtmlEditor(
-          key: const Key('composer_editor'),
-          minHeight: 550,
-          addDefaultSelectionMenuItems: false,
-          initialContent: initialContent,
-          onCreated: (editorApi) {
+        key: const Key('composer_editor'),
+        minHeight: 550,
+        addDefaultSelectionMenuItems: false,
+        initialContent: initialContent,
+        onCreated: (editorApi) {
+          if(responsiveUtils.isMobile(context)){
+            controller.keyboardRichTextController.onCreateHTMLEditor(editorApi);
+          } else {
             richTextMobileTabletController.htmlEditorApi = editorApi;
             richTextMobileTabletController.listenHtmlEditorApi();
-          }),
+          }
+        },
+      ),
     );
   }
 
@@ -764,56 +765,5 @@ class ComposerView extends GetWidget<ComposerController>
 
   double _getMaxWidthItemListAttachment(BuildContext context, BoxConstraints constraints) {
     return constraints.maxWidth / _getMaxItemRowListAttachment(context, constraints);
-  }
-
-  Widget _buildToolbarMobileWidget(BuildContext context) {
-    return Obx(() {
-      final richTextController = controller.richTextMobileTabletController;
-      return Container(
-        padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
-        alignment: Alignment.centerLeft,
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            buildWrapIconStyleText(
-              hasDropdown: false,
-              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-              icon: Wrap(children: [
-                RichTextStyleType.bold,
-                RichTextStyleType.italic,
-                RichTextStyleType.underline
-              ].map((formatStyle) => buildIconStyleText(
-                  path: formatStyle.getIcon(imagePaths),
-                  isSelected: richTextController.isTextStyleTypeSelected(formatStyle),
-                  onTap: () => richTextController.applyRichTextStyle(context, formatStyle)))
-              .toList())
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 4),
-              child: buildWrapIconStyleText(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                  icon: buildIconColorBackgroundTextWithoutTooltip(
-                    iconData: RichTextStyleType.textColor.getIconData(),
-                    colorSelected: richTextController.selectedTextColor.value),
-                  onTap: () => richTextController.applyRichTextStyle(
-                      context,
-                      RichTextStyleType.textColor))),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: buildWrapIconStyleText(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                  icon: buildIconColorBackgroundTextWithoutTooltip(
-                    iconData: RichTextStyleType.textBackgroundColor.getIconData(),
-                    colorSelected: richTextController.selectedTextBackgroundColor.value,
-                  ),
-                  onTap: () => richTextController.applyRichTextStyle(
-                      context,
-                      RichTextStyleType.textBackgroundColor)),
-            ),
-          ],
-        ),
-      );
-    });
   }
 }

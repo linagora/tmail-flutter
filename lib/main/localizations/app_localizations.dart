@@ -2271,4 +2271,32 @@ class AppLocalizations {
         name: 'hintSearchInputContact'
     );
   }
+
+  String get titleFormat {
+    return Intl.message(
+        'Format',
+        name: 'titleFormat'
+    );
+  }
+
+  String get titleQuickStyles {
+    return Intl.message(
+        'Quick styles',
+        name: 'titleQuickStyles'
+    );
+  }
+
+  String get titleBackground {
+    return Intl.message(
+        'Background',
+        name: 'titleBackground'
+    );
+  }
+
+  String get titleForeground {
+    return Intl.message(
+        'Foreground',
+        name: 'titleForeground'
+    );
+  }
 }
