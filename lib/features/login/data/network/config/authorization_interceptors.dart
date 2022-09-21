@@ -20,6 +20,8 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
   final TokenOidcCacheManager _tokenOidcCacheManager;
   final AccountCacheManager _accountCacheManager;
 
+  static const String fastmailToken = "<signal>";
+
   AuthenticationType _authenticationType = AuthenticationType.none;
   OIDCConfiguration? _configOIDC;
   Token? _token;
@@ -58,9 +60,10 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     switch(_authenticationType) {
       case AuthenticationType.basic:
-        if (_authorization != null) {
-          options.headers[HttpHeaders.authorizationHeader] = _getAuthorizationAsBasicHeader(_authorization);
-        }
+        // if (_authorization != null) {
+        //   options.headers[HttpHeaders.authorizationHeader] = _getAuthorizationAsBasicHeader(_authorization);
+        // }
+        options.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(fastmailToken);
         break;
       case AuthenticationType.oidc:
         if (_token != null && _token?.isTokenValid() == true) {

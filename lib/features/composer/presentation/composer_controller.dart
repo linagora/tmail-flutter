@@ -524,7 +524,9 @@ class ComposerController extends BaseController {
   ) async {
     final generateEmailId = EmailId(Id(_uuid.v1()));
     final outboxMailboxId = mapDefaultMailboxId[PresentationMailbox.roleOutbox];
+    log('ComposerController::_generateEmail(): outbox = $outboxMailboxId');
     final draftMailboxId = mapDefaultMailboxId[PresentationMailbox.roleDrafts];
+    log('ComposerController::_generateEmail(): draft = $draftMailboxId');
     Set<EmailAddress> listFromEmailAddress = {EmailAddress(null, userProfile.email)};
     if (identitySelected.value?.email?.isNotEmpty == true) {
       listFromEmailAddress = {EmailAddress(
@@ -557,27 +559,36 @@ class ComposerController extends BaseController {
     final userAgent = await userAgentPlatform;
     log('ComposerController::_generateEmail(): userAgent: $userAgent');
 
-    return Email(
-      generateEmailId,
-      mailboxIds: asDrafts ? {draftMailboxId!: true} : {outboxMailboxId!: true},
-      from: listFromEmailAddress,
-      to: listToEmailAddress.toSet(),
-      cc: listCcEmailAddress.toSet(),
-      bcc: listBccEmailAddress.toSet(),
-      replyTo: listReplyToEmailAddress,
-      keywords: asDrafts ? {KeyWordIdentifier.emailDraft : true} : null,
-      subject: subjectEmail.value,
-      htmlBody: {
-        EmailBodyPart(
-          partId: generatePartId,
-          type: MediaType.parse('text/html')
-        )},
-      bodyValues: {
-        generatePartId: EmailBodyValue(emailBodyText, false, false)
-      },
-      headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgent},
-      attachments: attachments.isNotEmpty ? attachments : null,
-    );
+    try {
+      return Email(
+        generateEmailId,
+        mailboxIds: asDrafts ? {draftMailboxId!: true} : {
+          outboxMailboxId!: true
+        },
+        from: listFromEmailAddress,
+        to: listToEmailAddress.toSet(),
+        cc: listCcEmailAddress.toSet(),
+        bcc: listBccEmailAddress.toSet(),
+        replyTo: listReplyToEmailAddress,
+        keywords: asDrafts ? {KeyWordIdentifier.emailDraft: true} : null,
+        subject: subjectEmail.value,
+        htmlBody: {
+          EmailBodyPart(
+              partId: generatePartId,
+              type: MediaType.parse('text/html')
+          )},
+        bodyValues: {
+          generatePartId: EmailBodyValue(emailBodyText, false, false)
+        },
+        headerUserAgent: {
+          IndividualHeaderIdentifier.headerUserAgent: userAgent
+        },
+        attachments: attachments.isNotEmpty ? attachments : null,
+      );
+    } catch (e) {
+      log('ComposerController::_generateEmail(): exception $e');
+      throw e;
+    }
   }
 
   Future<Tuple2<String, List<Attachment>>> _getMapContent(String emailBodyText) async {
@@ -680,14 +691,20 @@ class ComposerController extends BaseController {
   }
 
   void _handleSendMessages(BuildContext context) async {
+    log('ComposerController::_handleSendMessages()');
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
     final mapDefaultMailboxId = mailboxDashBoardController.mapDefaultMailboxId;
     final userProfile = mailboxDashBoardController.userProfile.value;
+    log('ComposerController::_handleSendMessages(): argurment = $arguments');
+    log('ComposerController::_handleSendMessages(): map = $mapDefaultMailboxId');
+    log('ComposerController::_handleSendMessages(): profile = $userProfile');
     if (arguments != null && session != null && mapDefaultMailboxId.isNotEmpty
         && userProfile != null) {
 
       final email = await _generateEmail(context, mapDefaultMailboxId, userProfile);
+      log('ComposerController::_handleSendMessages(): email = $email');
+
       final accountId = session.accounts.keys.first;
       final sentMailboxId = mapDefaultMailboxId[PresentationMailbox.roleSent];
       final submissionCreateId = Id(_uuid.v1());

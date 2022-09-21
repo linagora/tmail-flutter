@@ -40,29 +40,34 @@ class DownloadAttachmentForWebInteractor {
       yield Right<Failure, Success>(StartDownloadAttachmentForWeb(taskId, attachment));
       onReceiveController.add(Right(StartDownloadAttachmentForWeb(taskId, attachment)));
 
-      final currentAccount = await _accountRepository.getCurrentAccount();
+      // final currentAccount = await _accountRepository.getCurrentAccount();
+      //
+      // final bytesDownloaded = await Future.wait([
+      //   if (currentAccount.authenticationType == AuthenticationType.oidc)
+      //     _authenticationOIDCRepository.getStoredTokenOIDC(currentAccount.id)
+      //   else
+      //     credentialRepository.getAuthenticationInfoStored()
+      // ], eagerError: true).then((List responses) async {
+      //   AccountRequest accountRequest;
+      //
+      //   if (currentAccount.authenticationType == AuthenticationType.oidc) {
+      //     final tokenOidc = responses.first as TokenOIDC;
+      //     accountRequest = AccountRequest(
+      //         token: tokenOidc.toToken(),
+      //         authenticationType: AuthenticationType.oidc);
+      //   } else {
+      //     accountRequest = AccountRequest(
+      //         userName: responses.first as UserName,
+      //         password: responses.last as Password,
+      //         authenticationType: AuthenticationType.basic);
+      //   }
 
-      final bytesDownloaded = await Future.wait([
-        if (currentAccount.authenticationType == AuthenticationType.oidc)
-          _authenticationOIDCRepository.getStoredTokenOIDC(currentAccount.id)
-        else
-          credentialRepository.getAuthenticationInfoStored()
-      ], eagerError: true).then((List responses) async {
-        AccountRequest accountRequest;
+      final accountRequest = AccountRequest(
+          userName: UserName("dat"),
+          password: Password("pham"),
+          authenticationType: AuthenticationType.basic);
 
-        if (currentAccount.authenticationType == AuthenticationType.oidc) {
-          final tokenOidc = responses.first as TokenOIDC;
-          accountRequest = AccountRequest(
-              token: tokenOidc.toToken(),
-              authenticationType: AuthenticationType.oidc);
-        } else {
-          accountRequest = AccountRequest(
-              userName: responses.first as UserName,
-              password: responses.last as Password,
-              authenticationType: AuthenticationType.basic);
-        }
-
-        return await emailRepository.downloadAttachmentForWeb(
+        final bytesDownloaded = await emailRepository.downloadAttachmentForWeb(
             taskId,
             attachment,
             accountId,
@@ -70,7 +75,7 @@ class DownloadAttachmentForWebInteractor {
             accountRequest,
             onReceiveController
         );
-      });
+      // });
 
       yield Right<Failure, Success>(DownloadAttachmentForWebSuccess(
           taskId,

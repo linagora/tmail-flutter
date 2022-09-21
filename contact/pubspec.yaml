@@ -20,8 +20,8 @@ dependencies:
 
   jmap_dart_client:
     git:
-      url: https://github.com/linagora/jmap-dart-client.git
-      ref: master
+      url: https://github.com/hoangdat/jmap-dart-client.git
+      ref: fastmail-interoperate
 
   http_mock_adapter: 0.3.2
 

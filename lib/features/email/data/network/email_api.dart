@@ -189,16 +189,16 @@ class EmailAPI {
       throw DeviceNotSupportedException();
     }
 
-    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
-        ? accountRequest.bearerToken
-        : accountRequest.basicAuth;
+    // final authentication = accountRequest.authenticationType == AuthenticationType.oidc
+    //     ? accountRequest.bearerToken
+    //     : accountRequest.basicAuth;
 
     final taskIds = await Future.wait(
       attachments.map((attachment) async => await FlutterDownloader.enqueue(
         url: attachment.getDownloadUrl(baseDownloadUrl, accountId),
         savedDir: externalStorageDirPath,
         headers: {
-          HttpHeaders.authorizationHeader: authentication,
+          HttpHeaders.authorizationHeader: 'Bearer <signal>',
           HttpHeaders.acceptHeader: DioClient.jmapHeader
         },
         fileName: attachment.name,

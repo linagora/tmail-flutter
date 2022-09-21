@@ -1,3 +1,4 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
@@ -24,6 +25,7 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
       final oidcResponse = await _oidcHttpClient.checkOIDCIsAvailable(oidcRequest);
       return oidcResponse!;
     }).catchError((error) {
+      log('AuthenticationOIDCDataSourceImpl::checkOIDCIsAvailable(): $error');
       throw error;
     });
   }

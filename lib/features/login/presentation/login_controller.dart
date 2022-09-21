@@ -317,6 +317,7 @@ class LoginController extends BaseController {
   }
 
   void _loginSuccessAction(AuthenticationUserViewState success) {
+    log('LoginController::_loginSuccessAction(): $success');
     loginState.value = LoginState(Right(success));
     _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
     _authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);

@@ -61,7 +61,7 @@ class NetworkBindings extends Bindings {
     Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
     Get.find<Dio>().interceptors.add(Get.find<AuthorizationInterceptors>());
     if (kDebugMode) {
-      Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true));
+      Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
     }
   }
 

@@ -25,6 +25,7 @@ class SendEmailInteractor {
       final currentEmailState = listState.last;
 
       final result = await _emailRepository.sendEmail(accountId, emailRequest);
+      log('SendEmailInteractor::execute(): result = $result');
       if (result) {
         yield Right<Failure, Success>(SendEmailSuccess(
             currentEmailState: currentEmailState,
@@ -33,6 +34,7 @@ class SendEmailInteractor {
         yield Left<Failure, Success>(SendEmailFailure(result));
       }
     } catch (e) {
+      log('SendEmailInteractor::execute(): $e');
       yield Left<Failure, Success>(SendEmailFailure(e));
     }
   }

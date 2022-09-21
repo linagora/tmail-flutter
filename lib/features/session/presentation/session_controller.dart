@@ -1,6 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/domain/exceptions/remote_exception.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
@@ -36,6 +37,7 @@ class SessionController extends GetxController {
   }
 
   void _getSession() async {
+    log('SessionController::_getSession()');
     await _getSessionInteractor.execute()
       .then((response) => response.fold(
         (failure) {
@@ -48,6 +50,7 @@ class SessionController extends GetxController {
   }
 
   void _handleSessionFailure(Failure failure) {
+    log('SessionController::_handleSessionFailure(): $failure');
     if (failure is GetSessionFailure) {
       final sessionException = failure.exception;
       if (_checkUrlError(sessionException) && currentContext != null) {
@@ -67,6 +70,7 @@ class SessionController extends GetxController {
   }
 
   void _goToLogin() async {
+    log('SessionController::_goToLogin()');
     await Future.wait([
       _deleteCredentialInteractor.execute(),
       _deleteAuthorityOidcInteractor.execute(),
@@ -77,6 +81,7 @@ class SessionController extends GetxController {
   }
 
   void _goToMailboxDashBoard(GetSessionSuccess getSessionSuccess) {
+    log('SessionController::_goToMailboxDashBoard(): $getSessionSuccess');
     pushAndPop(AppRoutes.MAILBOX_DASHBOARD, arguments: getSessionSuccess.session);
   }
 }

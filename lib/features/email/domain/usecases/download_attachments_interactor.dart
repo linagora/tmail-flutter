@@ -32,37 +32,37 @@ class DownloadAttachmentsInteractor {
       String baseDownloadUrl
   ) async* {
     try {
-      final account = await _accountRepository.getCurrentAccount();
-
-      log('ExportAttachmentInteractor::execute(): account: $account');
-
-      final taskIds = await Future.wait([
-        if (account.authenticationType == AuthenticationType.oidc)
-          _authenticationOIDCRepository.getStoredTokenOIDC(account.id)
-        else
-          credentialRepository.getAuthenticationInfoStored()
-      ], eagerError: true
-      ).then((List responses) async {
+      // final account = await _accountRepository.getCurrentAccount();
+      //
+      // log('ExportAttachmentInteractor::execute(): account: $account');
+      //
+      // final taskIds = await Future.wait([
+      //   if (account.authenticationType == AuthenticationType.oidc)
+      //     _authenticationOIDCRepository.getStoredTokenOIDC(account.id)
+      //   else
+      //     credentialRepository.getAuthenticationInfoStored()
+      // ], eagerError: true
+      // ).then((List responses) async {
         AccountRequest accountRequest;
 
-        if (account.authenticationType == AuthenticationType.oidc) {
-          final tokenOidc = responses.first as TokenOIDC;
+        // if (account.authenticationType == AuthenticationType.oidc) {
+        //   final tokenOidc = responses.first as TokenOIDC;
+        //   accountRequest = AccountRequest(
+        //       token: tokenOidc.toToken(),
+        //       authenticationType: AuthenticationType.oidc);
+        // } else {
           accountRequest = AccountRequest(
-              token: tokenOidc.toToken(),
-              authenticationType: AuthenticationType.oidc);
-        } else {
-          accountRequest = AccountRequest(
-              userName: responses.first as UserName,
-              password: responses.last as Password,
+              userName: UserName("dat"),
+              password: Password("pham"),
               authenticationType: AuthenticationType.basic);
-        }
+        // }
 
-        return await emailRepository.downloadAttachments(
+        final taskIds = await emailRepository.downloadAttachments(
             attachments,
             accountId,
             baseDownloadUrl,
             accountRequest);
-      });
+      // });
 
       yield Right<Failure, Success>(DownloadAttachmentsSuccess(taskIds));
     } catch (exception) {
