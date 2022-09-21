@@ -1,3 +1,4 @@
+import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/domain/exceptions/remote_exception.dart';
@@ -20,6 +21,7 @@ class SessionController extends GetxController {
   final DeleteAuthorityOidcInteractor _deleteAuthorityOidcInteractor;
   final AuthorizationInterceptors _authorizationInterceptors;
   final AppToast _appToast;
+  final DynamicUrlInterceptors _dynamicUrlInterceptors;
 
   SessionController(
     this._getSessionInteractor,
@@ -27,7 +29,9 @@ class SessionController extends GetxController {
     this._cachingManager,
     this._deleteAuthorityOidcInteractor,
     this._authorizationInterceptors,
-    this._appToast);
+    this._appToast,
+    this._dynamicUrlInterceptors,
+  );
 
   @override
   void onReady() {
@@ -76,7 +80,13 @@ class SessionController extends GetxController {
     pushAndPopAll(AppRoutes.LOGIN);
   }
 
-  void _goToMailboxDashBoard(GetSessionSuccess getSessionSuccess) {
-    pushAndPop(AppRoutes.MAILBOX_DASHBOARD, arguments: getSessionSuccess.session);
+  void _goToMailboxDashBoard(GetSessionSuccess success) {
+    final apiUrl = success.session.apiUrl.toString();
+    if (apiUrl.isNotEmpty) {
+      _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
+      pushAndPop(AppRoutes.MAILBOX_DASHBOARD, arguments: success.session);
+    } else {
+      _goToLogin();
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
@@ -28,6 +29,7 @@ class SessionPageBindings extends BaseBindings {
       Get.find<DeleteAuthorityOidcInteractor>(),
       Get.find<AuthorizationInterceptors>(),
       Get.find<AppToast>(),
+      Get.find<DynamicUrlInterceptors>(),
     ));
   }
 
