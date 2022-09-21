@@ -236,33 +236,38 @@ class ComposerView extends GetWidget<ComposerController>
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         color: Colors.white,
-        child: Row(mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              buildTextButton(
-                AppLocalizations.of(context).cancel,
-                textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.lineItemListColor),
-                backgroundColor: AppColor.emailAddressChipColor,
-                width: 150,
-                height: 44,
-                radius: 10,
-                onTap: () => controller.closeComposerWeb()),
-              const SizedBox(width: 12),
-              buildTextButton(
-                  AppLocalizations.of(context).save_to_drafts,
-                  textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.colorTextButton),
-                  backgroundColor: AppColor.emailAddressChipColor,
-                  width: 150,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(width: 24),
+                buildButtonWrapText(
+                  AppLocalizations.of(context).cancel,
+                  textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.lineItemListColor),
+                  bgColor: AppColor.emailAddressChipColor,
+                  minWidth: 150,
                   height: 44,
                   radius: 10,
-                  onTap: () => controller.saveEmailAsDrafts(context)),
-              const SizedBox(width: 12),
-              buildTextButton(
-                  AppLocalizations.of(context).send,
-                  width: 150,
-                  height: 44,
-                  radius: 10,
-                  onTap: () => controller.sendEmailAction(context)),
-            ]
+                  onTap: () => controller.closeComposerWeb()),
+                const SizedBox(width: 12),
+                buildButtonWrapText(
+                    AppLocalizations.of(context).save_to_drafts,
+                    textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.colorTextButton),
+                    bgColor: AppColor.emailAddressChipColor,
+                    minWidth: 150,
+                    height: 44,
+                    radius: 10,
+                    onTap: () => controller.saveEmailAsDrafts(context)),
+                const SizedBox(width: 12),
+                buildButtonWrapText(
+                    AppLocalizations.of(context).send,
+                    minWidth: 150,
+                    height: 44,
+                    radius: 10,
+                    onTap: () => controller.sendEmailAction(context)),
+                const SizedBox(width: 24),
+              ]
+          ),
         ),
       );
   }
