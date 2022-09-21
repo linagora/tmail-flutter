@@ -120,9 +120,15 @@ Widget buildTextButton(String text, {
             backgroundColor: MaterialStateProperty.resolveWith((states) => backgroundColor ?? AppColor.colorTextButton),
             elevation: MaterialStateProperty.resolveWith((states) => 0),
             padding: MaterialStateProperty.resolveWith<EdgeInsets>(
-                (Set<MaterialState> states) => padding ?? EdgeInsets.zero),
+                (Set<MaterialState> states) => padding ?? EdgeInsets.symmetric(horizontal: 8)),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius ?? 0)))),
-        child: Text(text, style: textStyle ?? TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w500)),
+        child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: textStyle ?? TextStyle(
+                fontSize: 17,
+                color: Colors.white,
+                fontWeight: FontWeight.w500)),
         onPressed: () => onTap?.call()
     ),
   );
@@ -134,13 +140,17 @@ Widget buildButtonWrapText(String name, {
   Color? borderColor,
   double? radius,
   double? height,
+  double? minWidth,
   EdgeInsets? padding,
+  FocusNode? focusNode,
   IconWebCallback? onTap
 }) {
   return Container(
     height: height ?? 40,
     padding: padding,
+    constraints: BoxConstraints(minWidth: minWidth ?? 0),
     child: ElevatedButton(
+      focusNode: focusNode,
       onPressed: () => onTap?.call(),
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
