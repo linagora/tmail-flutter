@@ -28,6 +28,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -112,6 +113,8 @@ class ComposerController extends BaseController {
   final toEmailAddressController = TextEditingController();
   final ccEmailAddressController = TextEditingController();
   final bccEmailAddressController = TextEditingController();
+
+  final RichTextController keyboardRichTextController = RichTextController();
 
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
@@ -215,6 +218,7 @@ class ComposerController extends BaseController {
     ccEmailAddressController.dispose();
     bccEmailAddressController.dispose();
     uploadInlineImageWorker.dispose();
+    keyboardRichTextController.dispose();
     super.dispose();
   }
 
@@ -1076,6 +1080,7 @@ class ComposerController extends BaseController {
       toAddressExpandMode.value = ExpandMode.COLLAPSE;
       ccAddressExpandMode.value = ExpandMode.COLLAPSE;
       bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+      htmlEditorApi?.unfocus();
     }
   }
 
