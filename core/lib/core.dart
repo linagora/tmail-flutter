@@ -75,6 +75,7 @@ export 'presentation/views/quick_search/quick_search_input_form.dart';
 export 'presentation/views/toast/toast_position.dart';
 export 'presentation/views/toast/tmail_toast.dart';
 export 'presentation/views/bottom_popup/full_screen_action_sheet_builder.dart';
+export 'presentation/views/checkbox/labeled_checkbox.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';

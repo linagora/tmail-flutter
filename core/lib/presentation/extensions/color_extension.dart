@@ -146,6 +146,7 @@ extension AppColor on Color {
   static const colorDivider = Color(0xFFE7E8EC);
   static const colorDividerVertical = Color(0xFF99A2AD);
   static const colorCloseButton = Color(0xFF818C99);
+  static const colorDropShadow = Color(0x0F000000);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
