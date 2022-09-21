@@ -132,7 +132,13 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
-    handleReloaded(success.session);
+    final apiUrl = success.session.apiUrl.toString();
+    if (apiUrl.isNotEmpty) {
+      _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
+      handleReloaded(success.session);
+    } else {
+      _handleGetSessionFailure();
+    }
   }
 
   void handleReloaded(Session session) {}
