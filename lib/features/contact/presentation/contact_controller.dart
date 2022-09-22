@@ -9,17 +9,16 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class ContactController extends GetxController {
+class ContactController extends BaseController {
 
   final textInputSearchController = TextEditingController();
   final textInputSearchFocus = FocusNode();
@@ -28,8 +27,8 @@ class ContactController extends GetxController {
   final searchQuery = SearchQuery.initial().obs;
   final listContactSearched = RxList<EmailAddress>();
 
-  late GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
-  late GetAutoCompleteInteractor _getAutoCompleteInteractor;
+  GetAutoCompleteWithDeviceContactInteractor? _getAutoCompleteWithDeviceContactInteractor;
+  GetAutoCompleteInteractor? _getAutoCompleteInteractor;
 
   late Debouncer<String> _deBouncerTime;
   late AccountId _accountId;
@@ -54,6 +53,7 @@ class ContactController extends GetxController {
       if (listContactSelected.isNotEmpty) {
         contactSelected = EmailAddress(listContactSelected.first, listContactSelected.first);
       }
+      injectAutoCompleteBindings(_session, _accountId);
     }
     if (!BuildUtils.isWeb) {
       Future.delayed(
@@ -108,33 +108,52 @@ class ContactController extends GetxController {
     listContactSearched.value = listContact;
   }
 
-  Future<List<EmailAddress>> _getAutoCompleteSuggestion(String query) async {
-    if(_session.hasSupportTmailAutoComplete != true) return <EmailAddress>[];
+  @override
+  void injectAutoCompleteBindings(Session? session, AccountId? accountId) {
+    try {
+      super.injectAutoCompleteBindings(session, accountId);
+      _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
+      _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
+    } catch (e) {
+      logError('ContactController::injectAutoCompleteBindings(): $e');
+    }
+  }
 
-    if (!Get.isRegistered<GetAutoCompleteWithDeviceContactInteractor>() ||
-        !Get.isRegistered<GetAutoCompleteInteractor>()) {
-      AutoCompleteBindings().dependencies();
+  Future<List<EmailAddress>> _getAutoCompleteSuggestion(String query) async {
+    try {
+      _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
+      _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
+    } catch (e) {
+      logError('ContactController::getAutoCompleteSuggestion(): Exception $e');
     }
 
-    _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
-    _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
-
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      return await _getAutoCompleteWithDeviceContactInteractor
+      if (_getAutoCompleteWithDeviceContactInteractor == null || _getAutoCompleteInteractor == null) {
+        return <EmailAddress>[];
+      }
+
+      final listEmailAddress = await _getAutoCompleteWithDeviceContactInteractor!
           .execute(AutoCompletePattern(word: query, limit: 30, accountId: _accountId))
           .then((value) => value.fold(
               (failure) => <EmailAddress>[],
               (success) => success is GetAutoCompleteSuccess
                   ? success.listEmailAddress
                   : <EmailAddress>[]));
+      return listEmailAddress;
+    } else {
+      if (_getAutoCompleteInteractor == null) {
+        return <EmailAddress>[];
+      }
+
+      final listEmailAddress = await _getAutoCompleteInteractor!
+          .execute(AutoCompletePattern(word: query, limit: 30, accountId: _accountId))
+          .then((value) => value.fold(
+              (failure) => <EmailAddress>[],
+              (success) => success is GetAutoCompleteSuccess
+                  ? success.listEmailAddress
+                  : <EmailAddress>[]));
+      return listEmailAddress;
     }
-    return await _getAutoCompleteInteractor
-        .execute(AutoCompletePattern(word: query, limit: 30, accountId: _accountId))
-        .then((value) => value.fold(
-            (failure) => <EmailAddress>[],
-            (success) => success is GetAutoCompleteSuccess
-                ? success.listEmailAddress
-                : <EmailAddress>[]));
   }
 
   void selectContact(BuildContext context, EmailAddress emailAddress) {
@@ -147,4 +166,10 @@ class ContactController extends GetxController {
     FocusScope.of(context).unfocus();
     popBack();
   }
+
+  @override
+  void onDone() {}
+
+  @override
+  void onError(error) {}
 }

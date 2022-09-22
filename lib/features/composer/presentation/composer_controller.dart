@@ -14,7 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -97,8 +99,8 @@ class ComposerController extends BaseController {
   final RichTextWebController richTextWebController;
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
 
-  late GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
-  late GetAutoCompleteInteractor _getAutoCompleteInteractor;
+  GetAutoCompleteWithDeviceContactInteractor? _getAutoCompleteWithDeviceContactInteractor;
+  GetAutoCompleteInteractor? _getAutoCompleteInteractor;
 
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
@@ -314,6 +316,10 @@ class ComposerController extends BaseController {
     final arguments = kIsWeb ? mailboxDashBoardController.routerArguments : Get.arguments;
     if (arguments is ComposerArguments) {
       composerArguments.value = arguments;
+      injectAutoCompleteBindings(
+          mailboxDashBoardController.sessionCurrent,
+          mailboxDashBoardController.accountId.value);
+
       if (arguments.emailActionType == EmailActionType.edit) {
         _getEmailContentAction(arguments);
       }
@@ -721,30 +727,55 @@ class ComposerController extends BaseController {
     }
   }
 
-  Future<List<EmailAddress>> getAutoCompleteSuggestion(
-      {required String word}) async {
-    log('ComposerController::getAutoCompleteSuggestion(): $word | $_contactSuggestionSource');
+  @override
+  void injectAutoCompleteBindings(Session? session, AccountId? accountId) {
+    try {
+      super.injectAutoCompleteBindings(session, accountId);
+      _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
+      _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
+    } catch (e) {
+      logError('ComposerController::injectAutoCompleteBindings(): $e');
+    }
+  }
 
-    if (!Get.isRegistered<GetAutoCompleteWithDeviceContactInteractor>() ||
-        !Get.isRegistered<GetAutoCompleteInteractor>()) {
-      mailboxDashBoardController.injectAutoCompleteBindings();
+  Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
+    log('ComposerController::getAutoCompleteSuggestion(): $word | $_contactSuggestionSource');
+    try {
+      _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
+      _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
+    } catch (e) {
+      logError('ComposerController::getAutoCompleteSuggestion(): Exception $e');
     }
 
-    _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
-    _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
+    final accountId = mailboxDashBoardController.accountId.value;
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      return await _getAutoCompleteWithDeviceContactInteractor
-        .execute(AutoCompletePattern(word: word, accountId: mailboxDashBoardController.accountId.value))
+      if (_getAutoCompleteWithDeviceContactInteractor == null || _getAutoCompleteInteractor == null) {
+        return <EmailAddress>[];
+      }
+
+      final listEmailAddress = await _getAutoCompleteWithDeviceContactInteractor!
+        .execute(AutoCompletePattern(word: word, accountId: accountId))
         .then((value) => value.fold(
           (failure) => <EmailAddress>[],
-          (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
+          (success) => success is GetAutoCompleteSuccess
+              ? success.listEmailAddress
+              : <EmailAddress>[]));
+      return listEmailAddress;
+    } else {
+      if (_getAutoCompleteInteractor == null) {
+        return <EmailAddress>[];
+      }
+
+      final listEmailAddress = await _getAutoCompleteInteractor!
+          .execute(AutoCompletePattern(word: word, accountId: accountId))
+          .then((value) => value.fold(
+              (failure) => <EmailAddress>[],
+              (success) => success is GetAutoCompleteSuccess
+                  ? success.listEmailAddress
+                  : <EmailAddress>[]));
+      return listEmailAddress;
     }
-    return await _getAutoCompleteInteractor
-      .execute(AutoCompletePattern(word: word, accountId: mailboxDashBoardController.accountId.value))
-      .then((value) => value.fold(
-        (failure) => <EmailAddress>[],
-        (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]));
   }
 
   void openPickAttachmentMenu(BuildContext context, List<Widget> actionTiles) {

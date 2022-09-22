@@ -421,8 +421,7 @@ class ComposerView extends GetWidget<ComposerController>
                       ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                       ..addOnAddEmailAddressTypeAction((prefixEmailAddress) => controller.addEmailAddressType(prefixEmailAddress))
                       ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                      ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(word: ''))
-                      ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word: word)))
+                      ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion))
                     .build()
               )),
               Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
@@ -442,8 +441,7 @@ class ComposerView extends GetWidget<ComposerController>
                         ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                         ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
                         ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                        ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(word: ''))
-                        ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word: word)))
+                        ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion))
                       .build())
                   : const SizedBox.shrink()
               ),
@@ -464,8 +462,7 @@ class ComposerView extends GetWidget<ComposerController>
                         ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                         ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
                         ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                        ..addOnOpenSuggestionBoxEmailAddress(() => controller.getAutoCompleteSuggestion(word: ''))
-                        ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word: word)))
+                        ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion))
                       .build())
                   : const SizedBox.shrink()
               ),
