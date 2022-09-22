@@ -337,7 +337,7 @@ class MailboxDashBoardController extends ReloadableController {
     if (arguments is Session) {
       sessionCurrent = arguments;
       accountId.value = sessionCurrent?.accounts.keys.first;
-      injectAutoCompleteBindings();
+      injectAutoCompleteBindings(sessionCurrent, accountId.value);
       injectVacationBindings(sessionCurrent, accountId.value);
     } else {
       if (kIsWeb) {
@@ -885,7 +885,7 @@ class MailboxDashBoardController extends ReloadableController {
     accountId.value = sessionCurrent?.accounts.keys.first;
     _getUserProfile();
     _handleComposerCache();
-    injectAutoCompleteBindings();
+    injectAutoCompleteBindings(sessionCurrent, accountId.value);
     injectVacationBindings(sessionCurrent, accountId.value);
     _getVacationResponse();
   }

@@ -139,12 +139,7 @@ class EmailsForwardCreatorView extends GetWidget<EmailsForwardCreatorController>
                   controller.clearAll();
                 }
               })
-              ..addOnSuggestionCallbackAction((pattern) {
-                if (pattern != null) {
-                  controller.getAutoCompleteSuggestion(word: pattern.trim());
-                }
-              }))
-                .build(),
+              ..addOnSuggestionCallbackAction(controller.getAutoCompleteSuggestion)).build(),
           ),
           Expanded(
             child: Obx(() => ListView.builder(

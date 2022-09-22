@@ -98,7 +98,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     accountId.value = session.accounts.keys.first;
     sessionCurrent.value = session;
     _getUserProfile();
-    injectAutoCompleteBindings();
+    injectAutoCompleteBindings(sessionCurrent.value, accountId.value);
     injectVacationBindings(sessionCurrent.value, accountId.value);
     _getVacationResponse();
   }
@@ -110,7 +110,7 @@ class ManageAccountDashBoardController extends ReloadableController {
       accountId.value = arguments.session?.accounts.keys.first;
       sessionCurrent.value = arguments.session;
       _getUserProfile();
-      injectAutoCompleteBindings();
+      injectAutoCompleteBindings(sessionCurrent.value, accountId.value);
       injectVacationBindings(sessionCurrent.value, accountId.value);
       _getVacationResponse();
       if (arguments.menuSettingCurrent != null) {
@@ -131,13 +131,13 @@ class ManageAccountDashBoardController extends ReloadableController {
       _getAllVacationInteractor = Get.find<GetAllVacationInteractor>();
       _updateVacationInteractor = Get.find<UpdateVacationInteractor>();
     } catch (e) {
-      logError('MailboxDashBoardController::injectVacationBindings(): $e');
+      logError('ManageAccountDashBoardController::injectVacationBindings(): $e');
     }
   }
 
   Future<void> _getAppVersion() async {
     final info = await PackageInfo.fromPlatform();
-    log('MailboxDashBoardController::_getAppVersion(): ${info.version}');
+    log('ManageAccountDashBoardController::_getAppVersion(): ${info.version}');
     appInformation.value = info;
   }
 

@@ -74,12 +74,9 @@ abstract class BaseController extends GetxController with MessageDialogActionMix
   }
 
   void injectAutoCompleteBindings(Session? session, AccountId? accountId) {
-    if (session == null || accountId == null) {
-      return;
-    }
     try {
       ContactAutoCompleteBindings().dependencies();
-      requireCapability(session, accountId, [tmailContactCapabilityIdentifier]);
+      requireCapability(session!, accountId!, [tmailContactCapabilityIdentifier]);
       TMailAutoCompleteBindings().dependencies();
     } catch (e) {
       logError('BaseController::injectAutoCompleteBindings(): exception: $e');
