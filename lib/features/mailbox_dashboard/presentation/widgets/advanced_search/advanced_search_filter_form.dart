@@ -246,9 +246,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
       const Padding(padding: EdgeInsets.all(4)),
       _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
           ? TextFieldAutoCompleteEmailAddress(
-              optionsBuilder: (word) async {
-                return controller.getAutoCompleteSuggestion(word: word);
-              },
+              optionsBuilder: controller.getAutoCompleteSuggestion,
               advancedSearchFilterField: advancedSearchFilterField,
               initialTags: listTagInitial,
               currentFocusNode: currentFocusNode,
@@ -282,9 +280,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             )
           : Expanded(
               child: TextFieldAutoCompleteEmailAddress(
-                optionsBuilder: (word) async {
-                  return controller.getAutoCompleteSuggestion(word: word);
-                },
+                optionsBuilder: controller.getAutoCompleteSuggestion,
                 advancedSearchFilterField: advancedSearchFilterField,
                 initialTags: listTagInitial,
                 currentFocusNode: currentFocusNode,

@@ -48,8 +48,8 @@ class ForwardController extends BaseController {
 
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
   final listRecipientForward = RxList<RecipientForward>();
-
   final currentForward = Rxn<TMailForward>();
+  final emailsForwardCreatorArguments = Rxn<MailsForwardCreatorArguments>();
 
   final listForwards = <String>[].obs;
 
@@ -239,17 +239,13 @@ class ForwardController extends BaseController {
 
   void goToAddEmailsForward() async {
     final accountId = accountDashBoardController.accountId.value;
-    if (accountId != null) {
+    final session = accountDashBoardController.sessionCurrent.value;
+    if (accountId != null && session != null) {
+      emailsForwardCreatorArguments.value = MailsForwardCreatorArguments(accountId, session);
       if (kIsWeb) {
         _openMailsForwardCreatorOverlay();
       } else {
-        final listEmail = await push(
-            AppRoutes.EMAILS_FORWARD_CREATOR,
-            arguments: MailsForwardCreatorArguments(accountId, accountDashBoardController.sessionCurrent.value));
-
-        if (listEmail is List<EmailAddress>) {
-          handleAddRecipients(listEmail);
-        }
+       push(AppRoutes.EMAILS_FORWARD_CREATOR);
       }
     }
   }

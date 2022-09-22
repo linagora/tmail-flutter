@@ -2,9 +2,12 @@ import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
@@ -20,9 +23,9 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class AdvancedFilterController extends GetxController {
-  late GetAutoCompleteWithDeviceContactInteractor _getAutoCompleteWithDeviceContactInteractor;
-  late GetAutoCompleteInteractor _getAutoCompleteInteractor;
+class AdvancedFilterController extends BaseController {
+  GetAutoCompleteWithDeviceContactInteractor? _getAutoCompleteWithDeviceContactInteractor;
+  GetAutoCompleteInteractor? _getAutoCompleteInteractor;
 
   final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
   final hasAttachment = false.obs;
@@ -49,11 +52,15 @@ class AdvancedFilterController extends GetxController {
   final focusManager = InputFieldFocusManager.initial();
 
   @override
-  void onReady() async {
+  void onReady() {
     if (!BuildUtils.isWeb) {
       Future.delayed(
-          const Duration(milliseconds: 500), () => _checkContactPermission());
+          const Duration(milliseconds: 500),
+          () => _checkContactPermission());
     }
+    injectAutoCompleteBindings(
+      _mailboxDashBoardController.sessionCurrent,
+      _mailboxDashBoardController.accountId.value);
     super.onReady();
   }
 
@@ -148,36 +155,55 @@ class AdvancedFilterController extends GetxController {
     }
   }
 
-  Future<List<EmailAddress>> getAutoCompleteSuggestion(
-      {required String word}) async {
+  @override
+  void injectAutoCompleteBindings(Session? session, AccountId? accountId) {
+    try {
+      super.injectAutoCompleteBindings(session, accountId);
+      _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
+      _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
+    } catch (e) {
+      logError('AdvancedFilterController::injectAutoCompleteBindings(): $e');
+    }
+  }
 
-    if (!Get.isRegistered<GetAutoCompleteWithDeviceContactInteractor>() ||
-      !Get.isRegistered<GetAutoCompleteInteractor>()) {
-      _mailboxDashBoardController.injectAutoCompleteBindings();
+  Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
+    log('AdvancedFilterController::getAutoCompleteSuggestion():  $word | $_contactSuggestionSource');
+    final accountId = _mailboxDashBoardController.accountId.value;
+
+    try {
+      _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
+      _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
+    } catch (e) {
+      logError('AdvancedFilterController::getAutoCompleteSuggestion(): Exception $e');
     }
 
-    _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
-    _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
-
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      return await _getAutoCompleteWithDeviceContactInteractor
-          .execute(AutoCompletePattern(
-              word: word,
-              accountId: _mailboxDashBoardController.accountId.value))
+      if (_getAutoCompleteWithDeviceContactInteractor == null || _getAutoCompleteInteractor == null) {
+        return <EmailAddress>[];
+      }
+
+      final listEmailAddress = await _getAutoCompleteWithDeviceContactInteractor!
+          .execute(AutoCompletePattern(word: word, accountId: accountId))
           .then((value) => value.fold(
               (failure) => <EmailAddress>[],
               (success) => success is GetAutoCompleteSuccess
                   ? success.listEmailAddress
                   : <EmailAddress>[]));
+      return listEmailAddress;
+    } else {
+      if (_getAutoCompleteInteractor == null) {
+        return <EmailAddress>[];
+      }
+
+      final listEmailAddress = await _getAutoCompleteInteractor!
+          .execute(AutoCompletePattern(word: word, accountId: accountId))
+          .then((value) => value.fold(
+              (failure) => <EmailAddress>[],
+              (success) => success is GetAutoCompleteSuccess
+                  ? success.listEmailAddress
+                  : <EmailAddress>[]));
+      return listEmailAddress;
     }
-    return await _getAutoCompleteInteractor
-        .execute(AutoCompletePattern(
-            word: word, accountId: _mailboxDashBoardController.accountId.value))
-        .then((value) => value.fold(
-            (failure) => <EmailAddress>[],
-            (success) => success is GetAutoCompleteSuccess
-                ? success.listEmailAddress
-                : <EmailAddress>[]));
   }
 
   bool _checkAdvancedSearchHasApply() {
@@ -219,4 +245,10 @@ class AdvancedFilterController extends GetxController {
     dateFilterInputController.dispose();
     super.onClose();
   }
+
+  @override
+  void onDone() {}
+
+  @override
+  void onError(error) {}
 }

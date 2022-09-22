@@ -20,7 +20,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_i
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
@@ -188,16 +187,12 @@ abstract class ReloadableController extends BaseController {
         newConfig: tokenOidcSuccess.oidcConfiguration);
   }
 
-  void injectAutoCompleteBindings() {
-    AutoCompleteBindings().dependencies();
-  }
-
   void injectVacationBindings(Session? session, AccountId? accountId) {
     try {
       requireCapability(session!, accountId!, [CapabilityIdentifier.jmapVacationResponse]);
       VacationInteractorsBindings().dependencies();
     } catch(e) {
-      logError('MailboxDashBoardController::injectVacationBindings(): exception: $e');
+      logError('ReloadableController::injectVacationBindings(): exception: $e');
     }
   }
 }
