@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 
 class EmailRepositoryImpl extends EmailRepository {
 
@@ -35,8 +36,8 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest) {
-    return emailDataSource.sendEmail(accountId, emailRequest);
+  Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest, {CreateNewMailboxRequest? mailboxRequest}) {
+    return emailDataSource.sendEmail(accountId, emailRequest, mailboxRequest: mailboxRequest);
   }
 
   @override

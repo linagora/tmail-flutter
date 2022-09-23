@@ -7,4 +7,8 @@ extension MailboxNameExtension on MailboxName {
     }
     return name.toLowerCase().compareTo(other.name.toLowerCase());
   }
+
+  MailboxName toLowerCase() {
+    return MailboxName(name.toLowerCase());
+  }
 }

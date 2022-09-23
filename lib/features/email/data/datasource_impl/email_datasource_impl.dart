@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart'
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 
 class EmailDataSourceImpl extends EmailDataSource {
 
@@ -28,9 +29,9 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest) {
+  Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest, {CreateNewMailboxRequest? mailboxRequest}) {
     return Future.sync(() async {
-      return await emailAPI.sendEmail(accountId, emailRequest);
+      return await emailAPI.sendEmail(accountId, emailRequest, mailboxRequest: mailboxRequest);
     }).catchError((error) {
       throw error;
     });

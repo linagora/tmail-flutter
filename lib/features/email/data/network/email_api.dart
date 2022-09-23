@@ -25,6 +25,8 @@ import 'package:jmap_dart_client/jmap/mail/email/submission/email_submission.dar
 import 'package:jmap_dart_client/jmap/mail/email/submission/email_submission_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/envelope.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submission_method.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/download/download_task_id.dart';
@@ -34,12 +36,14 @@ import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
+import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/oidc/token.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 
 class EmailAPI {
 
@@ -76,39 +80,61 @@ class EmailAPI {
     });
   }
 
-  Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest) async {
-    final mailboxIdSaved = emailRequest.mailboxIdSaved ?? emailRequest.email.mailboxIds?.keys.first;
+  Future<bool> sendEmail(
+      AccountId accountId,
+      EmailRequest emailRequest,
+      {CreateNewMailboxRequest? mailboxRequest}
+  ) async {
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    Email? emailNeedsToBeCreated;
+    MailboxId? outboxMailboxId;
+
+    if (mailboxRequest != null) {
+      final setMailboxMethod = SetMailboxMethod(accountId)
+        ..addCreate(
+            mailboxRequest.creationId,
+            Mailbox(name: mailboxRequest.newName, parentId: mailboxRequest.parentId));
+
+      requestBuilder.invocation(setMailboxMethod);
+
+      outboxMailboxId = MailboxId(ReferenceId(
+          ReferencePrefix.defaultPrefix,
+          mailboxRequest.creationId));
+      emailNeedsToBeCreated = emailRequest.email.updatedEmail(newMailboxIds: {outboxMailboxId: true});
+    } else {
+      outboxMailboxId = emailRequest.email.mailboxIds?.keys.first;
+      emailNeedsToBeCreated = emailRequest.email;
+    }
 
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addCreate(emailRequest.email.id.id, emailRequest.email);
+      ..addCreate(emailNeedsToBeCreated.id.id, emailNeedsToBeCreated);
 
     if (emailRequest.emailIdDestroyed != null) {
-      setEmailMethod
-        .addDestroy({emailRequest.emailIdDestroyed!.id});
+      setEmailMethod.addDestroy({emailRequest.emailIdDestroyed!.id});
     }
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
     final setEmailSubmissionMethod = SetEmailSubmissionMethod(accountId)
       ..addCreate(
           emailRequest.submissionCreateId,
           EmailSubmission(
-              emailId: EmailId(ReferenceId(ReferencePrefix.defaultPrefix, emailRequest.email.id.id)),
+              identityId: emailRequest.identity?.id?.id,
+              emailId: EmailId(ReferenceId(ReferencePrefix.defaultPrefix, emailNeedsToBeCreated.id.id)),
               envelope: Envelope(
-                  Address(emailRequest.email.from?.first.email ?? ''),
-                  emailRequest.email.getRecipientEmailAddressList().map((emailAddress) => Address(emailAddress)).toSet()
+                  Address(emailNeedsToBeCreated.from?.first.email ?? ''),
+                  emailNeedsToBeCreated.getRecipientEmailAddressList().map((emailAddress) => Address(emailAddress)).toSet()
               )
           ))
       ..addOnSuccessUpdateEmail({
           EmailSubmissionId(ReferenceId(ReferencePrefix.defaultPrefix, emailRequest.submissionCreateId)): PatchObject({
-            PatchObject.mailboxIdsProperty: {
-              mailboxIdSaved?.id.value: true
-            },
-            KeyWordIdentifier.emailSeen.generatePath(): true
+            emailRequest.sentMailboxId!.generatePath() : true,
+            outboxMailboxId!.generatePath() : null,
+            KeyWordIdentifier.emailSeen.generatePath(): true,
+            KeyWordIdentifier.emailDraft.generatePath(): null
         })
       });
 
-    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-
-    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
     final setEmailSubmissionInvocation = requestBuilder.invocation(setEmailSubmissionMethod);
 
     final response = await (requestBuilder
@@ -125,15 +151,14 @@ class EmailAPI {
       SetEmailResponse.deserialize,
       methodName: setEmailInvocation.methodName);
 
-    return Future.sync(() async {
-      final emailCreated = setEmailResponse?.created?[emailRequest.email.id.id];
-      if (emailCreated != null) {
-        return setEmailSubmissionResponse?.updated?[emailCreated.id.id] == null;
-      }
+    final emailCreated = setEmailResponse?.created?[emailNeedsToBeCreated.id.id];
+    if (emailCreated != null) {
+      return setEmailSubmissionResponse?.notUpdated == null &&
+          setEmailSubmissionResponse?.notCreated == null &&
+          setEmailSubmissionResponse?.notDestroyed == null;
+    } else {
       return false;
-    }).catchError((error) {
-      throw error;
-    });
+    }
   }
 
   Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions) async {
