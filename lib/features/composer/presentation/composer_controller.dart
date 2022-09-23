@@ -304,7 +304,7 @@ class ComposerController extends BaseController {
       if (userProfile != null) {
         final draftEmail = await _generateEmail(
           currentContext!,
-          mailboxDashBoardController.mapDefaultMailboxId,
+          mailboxDashBoardController.mapDefaultMailboxIdByRole,
           userProfile,
         );
         _saveComposerCacheOnWebInteractor.execute(draftEmail);
@@ -688,14 +688,14 @@ class ComposerController extends BaseController {
   void _handleSendMessages(BuildContext context) async {
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
-    final mapDefaultMailboxId = mailboxDashBoardController.mapDefaultMailboxId;
+    final mapDefaultMailboxIdByRole = mailboxDashBoardController.mapDefaultMailboxIdByRole;
     final userProfile = mailboxDashBoardController.userProfile.value;
-    if (arguments != null && session != null && mapDefaultMailboxId.isNotEmpty
+    if (arguments != null && session != null && mapDefaultMailboxIdByRole.isNotEmpty
         && userProfile != null) {
 
-      final email = await _generateEmail(context, mapDefaultMailboxId, userProfile);
+      final email = await _generateEmail(context, mapDefaultMailboxIdByRole, userProfile);
       final accountId = session.accounts.keys.first;
-      final sentMailboxId = mapDefaultMailboxId[PresentationMailbox.roleSent];
+      final sentMailboxId = mapDefaultMailboxIdByRole[PresentationMailbox.roleSent];
       final submissionCreateId = Id(_uuid.v1());
 
       mailboxDashBoardController.consumeState(_sendEmailInteractor.execute(
@@ -896,18 +896,18 @@ class ComposerController extends BaseController {
     clearFocusEditor(context);
 
     final arguments = composerArguments.value;
-    final mapDefaultMailboxId = mailboxDashBoardController.mapDefaultMailboxId;
+    final mapDefaultMailboxIdByRole = mailboxDashBoardController.mapDefaultMailboxIdByRole;
     final userProfile = mailboxDashBoardController.userProfile.value;
     final session = mailboxDashBoardController.sessionCurrent;
 
-    if (arguments != null && mapDefaultMailboxId.isNotEmpty && userProfile != null && session != null) {
+    if (arguments != null && mapDefaultMailboxIdByRole.isNotEmpty && userProfile != null && session != null) {
       log('ComposerController::saveEmailAsDrafts(): saveEmailAsDrafts START');
       final isChanged = await _isEmailChanged(context, arguments);
       log('ComposerController::saveEmailAsDrafts(): saveEmailAsDrafts isChanged: $isChanged');
       if (isChanged) {
         final newEmail = await _generateEmail(
             context,
-            mapDefaultMailboxId,
+            mapDefaultMailboxIdByRole,
             userProfile,
             asDrafts: true);
         final accountId = session.accounts.keys.first;

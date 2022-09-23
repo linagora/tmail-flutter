@@ -289,7 +289,7 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _setUpMapMailboxIdDefault(List<PresentationMailbox> allMailbox, MailboxTree defaultTree, MailboxTree folderTree) {
-    final mapDefaultMailboxId = {
+    final mapDefaultMailboxIdByRole = {
       for (var mailboxNode
           in defaultTree.root.childrenItems ?? List<MailboxNode>.empty())
         mailboxNode.item.role!: mailboxNode.item.id
@@ -301,14 +301,14 @@ class MailboxController extends BaseMailboxController {
         mailboxNode.item.role!: mailboxNode.item
     };
 
-    final mapMailbox = {
+    final mapMailboxById = {
       for (var presentationMailbox in allMailbox)
         presentationMailbox.id: presentationMailbox
     };
 
-    mailboxDashBoardController.setMapDefaultMailboxId(mapDefaultMailboxId);
+    mailboxDashBoardController.setMapDefaultMailboxIdByRole(mapDefaultMailboxIdByRole);
 
-    mailboxDashBoardController.setMapMailbox(mapMailbox);
+    mailboxDashBoardController.setMapMailboxById(mapMailboxById);
 
     var mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
 
@@ -318,8 +318,8 @@ class MailboxController extends BaseMailboxController {
           ? mapDefaultMailbox[mailboxCurrent.role]
           : mailboxCurrent);
       } else {
-        mailboxDashBoardController.setNewFirstSelectedMailbox(mapMailbox.containsKey(mailboxCurrent.id)
-          ? mapMailbox[mailboxCurrent.id]
+        mailboxDashBoardController.setNewFirstSelectedMailbox(mapMailboxById.containsKey(mailboxCurrent.id)
+          ? mapMailboxById[mailboxCurrent.id]
           : mailboxCurrent);
       }
     } else {

@@ -240,7 +240,7 @@ class EmailController extends BaseController with AppLoaderMixin {
 
   PresentationMailbox? getMailboxContain(PresentationEmail email) {
     return mailboxDashBoardController.searchController.isSearchEmailRunning
-        ? email.findMailboxContain(mailboxDashBoardController.mapMailbox)
+        ? email.findMailboxContain(mailboxDashBoardController.mapMailboxById)
         : mailboxDashBoardController.selectedMailbox.value;
   }
 
