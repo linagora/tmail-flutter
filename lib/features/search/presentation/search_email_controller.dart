@@ -220,7 +220,7 @@ class SearchEmailController extends BaseController
 
   void _refreshChangesSearchEmailsSuccess(RefreshChangesSearchEmailSuccess success) {
     final resultEmailSearchList = success.emailList
-        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox))
+        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
         .toList();
 
     final emailsBeforeChanges = listResultSearch;
@@ -281,7 +281,7 @@ class SearchEmailController extends BaseController
 
   void _searchEmailsSuccess(SearchEmailSuccess success) {
     final resultEmailSearchList = success.emailList
-        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox))
+        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
         .toList();
 
     final emailsBeforeChanges = listResultSearch;
@@ -327,7 +327,7 @@ class SearchEmailController extends BaseController
   void _searchMoreEmailsSuccess(SearchMoreEmailSuccess success) {
     if (success.emailList.isNotEmpty) {
       final resultEmailSearchList = success.emailList
-          .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox))
+          .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
           .where((email) => !listResultSearch.contains(email))
           .toList();
       listResultSearch.addAll(resultEmailSearchList);
@@ -639,20 +639,20 @@ class SearchEmailController extends BaseController
         break;
       case EmailActionType.moveToMailbox:
         cancelSelectionMode(context);
-        final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailbox);
+        final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
         if (mailboxContainCurrent != null) {
           moveSelectedMultipleEmailToMailbox(listEmails, mailboxContainCurrent);
         }
         break;
       case EmailActionType.moveToTrash:
         cancelSelectionMode(context);
-        final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailbox);
+        final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
         if (mailboxContainCurrent != null) {
           moveSelectedMultipleEmailToTrash(listEmails, mailboxContainCurrent);
         }
         break;
       case EmailActionType.deletePermanently:
-        final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailbox);
+        final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
         if (mailboxContainCurrent != null) {
           deleteSelectionEmailsPermanently(
               context,
@@ -664,7 +664,7 @@ class SearchEmailController extends BaseController
         break;
       case EmailActionType.moveToSpam:
         cancelSelectionMode(context);
-        final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailbox);
+        final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
         if (mailboxContainCurrent != null) {
           moveSelectedMultipleEmailToSpam(listEmails, mailboxContainCurrent);
         }
