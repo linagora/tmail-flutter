@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 
 extension EmailExtension on Email {
@@ -23,7 +24,7 @@ extension EmailExtension on Email {
     return listEmailAddress;
   }
 
-  Email updatedEmail({Map<KeyWordIdentifier, bool>? newKeywords}) {
+  Email updatedEmail({Map<KeyWordIdentifier, bool>? newKeywords, Map<MailboxId, bool>? newMailboxIds}) {
     return Email(
         id,
         keywords: newKeywords ?? keywords,
@@ -37,7 +38,12 @@ extension EmailExtension on Email {
         to: to,
         cc: cc,
         bcc: bcc,
-        replyTo: replyTo
+        replyTo: replyTo,
+        mailboxIds: newMailboxIds ?? mailboxIds,
+        htmlBody: htmlBody,
+        bodyValues: bodyValues,
+        headerUserAgent: headerUserAgent,
+        attachments: attachments
     );
   }
 

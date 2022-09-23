@@ -118,10 +118,13 @@ class MailboxDashBoardController extends ReloadableController {
   final composerOverlayState = ComposerOverlayState.inActive.obs;
   final viewStateMarkAsReadMailbox = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final vacationResponse = Rxn<VacationResponse>();
+
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
   Map<MailboxId, PresentationMailbox> mapMailboxById = {};
+  PresentationMailbox? outboxMailbox;
   RouterArguments? routerArguments;
+
   late StreamSubscription _connectivityStreamSubscription;
   late StreamSubscription _emailReceiveManagerStreamSubscription;
   late StreamSubscription _fileReceiveManagerStreamSubscription;
@@ -237,7 +240,7 @@ class MailboxDashBoardController extends ReloadableController {
           if (currentOverlayContext != null && currentContext != null) {
             _appToast.showToastWithIcon(
                 currentOverlayContext!,
-                textColor: AppColor.toastSuccessBackgroundColor,
+                textColor: AppColor.primaryColor,
                 message: AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
                 icon: _imagePaths.icSendToast);
           }
@@ -379,6 +382,11 @@ class MailboxDashBoardController extends ReloadableController {
 
   void setMapMailboxById(Map<MailboxId, PresentationMailbox> newMapMailboxById) {
     mapMailboxById = newMapMailboxById;
+  }
+
+  void setOutboxMailbox(PresentationMailbox? newOutbox) {
+    outboxMailbox = newOutbox;
+    log('MailboxDashBoardController::setOutboxMailbox(): $newOutbox');
   }
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {

@@ -9,11 +9,12 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 
 abstract class EmailDataSource {
   Future<Email> getEmailContent(AccountId accountId, EmailId emailId);
 
-  Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest);
+  Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest, {CreateNewMailboxRequest? mailboxRequest});
 
   Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions);
 
