@@ -103,9 +103,9 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
   }
 
   String _getInformationSender() {
-    if (_presentationMailbox?.role == PresentationMailbox.roleSent
-        || _presentationMailbox?.role == PresentationMailbox.roleDrafts
-        || _presentationMailbox?.role == PresentationMailbox.roleOutbox) {
+    if (_presentationMailbox?.isSent == true
+        || _presentationMailbox?.isDrafts == true
+        || _presentationMailbox?.isOutbox == true) {
       return _presentationEmail.recipientsName();
     }
     return _presentationEmail.getSenderName();

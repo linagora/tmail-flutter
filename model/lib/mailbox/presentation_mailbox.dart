@@ -70,7 +70,7 @@ class PresentationMailbox with EquatableMixin {
 
   bool get isSent => role == roleSent;
 
-  bool get isOutbox => role == roleOutbox;
+  bool get isOutbox => name?.name == 'Outbox';
 
   bool matchCountingRules() {
     if (isSpam || isTrash || isDrafts || isTemplates || isSent) {

@@ -279,7 +279,7 @@ class ThreadController extends BaseController {
           mailboxDashBoardController.clearDashBoardAction();
         } else if (action is OpenEmailDetailedFromSuggestionQuickSearchAction) {
           final mailboxContain = action.presentationEmail
-              .findMailboxContain(mailboxDashBoardController.mapMailbox);
+              .findMailboxContain(mailboxDashBoardController.mapMailboxById);
           pressEmailAction(
               action.context,
               EmailActionType.preview,
@@ -902,7 +902,7 @@ class ThreadController extends BaseController {
 
   void _searchEmailsSuccess(SearchEmailSuccess success) {
     final resultEmailSearchList = success.emailList
-        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox))
+        .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
         .toList();
 
     final emailsSearchBeforeChanges = emailList;
@@ -928,7 +928,7 @@ class ThreadController extends BaseController {
   void _searchMoreEmailsSuccess(SearchMoreEmailSuccess success) {
     if (success.emailList.isNotEmpty) {
       final resultEmailSearchList = success.emailList
-          .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailbox))
+          .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
           .where((email) => !emailList.contains(email))
           .toList();
       emailList.addAll(resultEmailSearchList);
@@ -956,7 +956,7 @@ class ThreadController extends BaseController {
         break;
       case EmailActionType.moveToMailbox:
         final mailboxContainCurrent = searchController.isSearchEmailRunning
-            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailbox)
+            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
             : currentMailbox;
         if (mailboxContainCurrent != null) {
           moveSelectedMultipleEmailToMailbox(selectionEmail, mailboxContainCurrent);
@@ -964,7 +964,7 @@ class ThreadController extends BaseController {
         break;
       case EmailActionType.moveToTrash:
         final mailboxContainCurrent = searchController.isSearchEmailRunning
-            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailbox)
+            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
             : currentMailbox;
         if (mailboxContainCurrent != null) {
           moveSelectedMultipleEmailToTrash(selectionEmail, mailboxContainCurrent);
@@ -972,7 +972,7 @@ class ThreadController extends BaseController {
         break;
       case EmailActionType.deletePermanently:
         final mailboxContainCurrent = searchController.isSearchEmailRunning
-            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailbox)
+            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
             : currentMailbox;
         if (mailboxContainCurrent != null) {
           deleteSelectionEmailsPermanently(
@@ -984,7 +984,7 @@ class ThreadController extends BaseController {
         break;
       case EmailActionType.moveToSpam:
         final mailboxContainCurrent = searchController.isSearchEmailRunning
-            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailbox)
+            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
             : currentMailbox;
         if (mailboxContainCurrent != null) {
           moveSelectedMultipleEmailToSpam(selectionEmail, mailboxContainCurrent);
@@ -1125,7 +1125,7 @@ class ThreadController extends BaseController {
   void moveToTrash(PresentationEmail email) async {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     final accountId = mailboxDashBoardController.accountId.value;
-    final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxId[PresentationMailbox.roleTrash];
+    final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
 
     if (currentMailbox != null && accountId != null && trashMailboxId != null) {
       _moveToTrashAction(accountId, MoveToMailboxRequest(
@@ -1294,7 +1294,7 @@ class ThreadController extends BaseController {
   void _emptyTrashFolderAction() {
     cancelSelectEmail();
 
-    final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxId[PresentationMailbox.roleTrash];
+    final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
     log('ThreadController::_emptyTrashFolderAction(): trashMailboxId: $trashMailboxId');
     if (_accountId != null && trashMailboxId != null) {
       consumeState(_emptyTrashFolderInteractor.execute(_accountId!, trashMailboxId));

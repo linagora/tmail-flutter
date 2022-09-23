@@ -123,7 +123,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                           child: TopBarThreadSelection(
                                             context,
                                             controller.listEmailSelected,
-                                            controller.mapMailbox,
+                                            controller.mapMailboxById,
                                             onCancelSelection: () =>
                                                 controller.dispatchAction(CancelSelectionAllEmailAction()),
                                             onEmailActionTypeAction: (listEmails, actionType) =>

@@ -119,8 +119,8 @@ class MailboxDashBoardController extends ReloadableController {
   final viewStateMarkAsReadMailbox = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final vacationResponse = Rxn<VacationResponse>();
   Session? sessionCurrent;
-  Map<Role, MailboxId> mapDefaultMailboxId = {};
-  Map<MailboxId, PresentationMailbox> mapMailbox = {};
+  Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
+  Map<MailboxId, PresentationMailbox> mapMailboxById = {};
   RouterArguments? routerArguments;
   late StreamSubscription _connectivityStreamSubscription;
   late StreamSubscription _emailReceiveManagerStreamSubscription;
@@ -370,15 +370,15 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   MailboxId? getMailboxIdByRole(Role role) {
-    return mapDefaultMailboxId[role];
+    return mapDefaultMailboxIdByRole[role];
   }
 
-  void setMapDefaultMailboxId(Map<Role, MailboxId> newMapMailboxId) {
-    mapDefaultMailboxId = newMapMailboxId;
+  void setMapDefaultMailboxIdByRole(Map<Role, MailboxId> newMapMailboxId) {
+    mapDefaultMailboxIdByRole = newMapMailboxId;
   }
 
-  void setMapMailbox(Map<MailboxId, PresentationMailbox> newMapMailbox) {
-    mapMailbox = newMapMailbox;
+  void setMapMailboxById(Map<MailboxId, PresentationMailbox> newMapMailboxById) {
+    mapMailboxById = newMapMailboxById;
   }
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
@@ -811,7 +811,7 @@ class MailboxDashBoardController extends ReloadableController {
   void _emptyTrashFolderAction({Function? onCancelSelectionEmail}) {
     onCancelSelectionEmail?.call();
 
-    final trashMailboxId = mapDefaultMailboxId[PresentationMailbox.roleTrash];
+    final trashMailboxId = mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
     if (accountId.value != null && trashMailboxId != null) {
       consumeState(_emptyTrashFolderInteractor.execute(accountId.value!, trashMailboxId));
     }
