@@ -20,10 +20,10 @@ void main() {
 
     test('get forward method and response parsing', () async {
       final baseOption = BaseOptions(method: 'POST');
-      final dio = Dio(baseOption)..options.baseUrl = 'http://domain.com';
+      final dio = Dio(baseOption)..options.baseUrl = 'http://domain.com/jmap';
       final dioAdapter = DioAdapter(dio: dio);
       dioAdapter.onPost(
-          '/jmap',
+          '',
           (server) => server.reply(200, {
                 "sessionState": "abcdefghij",
                 "methodResponses": [
