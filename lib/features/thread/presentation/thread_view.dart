@@ -340,7 +340,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                 controller.searchQuery,
                 mailboxCurrent: controller.searchController.isSearchEmailRunning
                     ? listPresentationEmail[index].findMailboxContain(
-                          controller.mailboxDashBoardController.mapMailbox)
+                          controller.mailboxDashBoardController.mapMailboxById)
                     : controller.currentMailbox,
                 advancedSearchActivated: controller.searchController.isAdvancedSearchHasApply.isTrue)
             ..addOnPressEmailActionClick((action, email) =>
@@ -349,7 +349,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                     action,
                     email,
                     mailboxContain: controller.searchController.isSearchEmailRunning
-                      ? email.findMailboxContain(controller.mailboxDashBoardController.mapMailbox)
+                      ? email.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
                       : controller.currentMailbox))
             ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
               ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
@@ -450,7 +450,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
 
   Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
     final mailboxContain = controller.searchController.isSearchEmailRunning
-        ? email.findMailboxContain(controller.mailboxDashBoardController.mapMailbox)
+        ? email.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
         : controller.currentMailbox;
     return (EmailActionCupertinoActionSheetActionBuilder(
             const Key('mark_as_spam_or_un_spam_action'),

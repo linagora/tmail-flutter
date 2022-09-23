@@ -62,7 +62,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   if (controller.selectionMode.value == SelectMode.ACTIVE) {
                     return AppBarSelectionMode(
                         controller.listResultSearch.listEmailSelected,
-                        controller.mailboxDashBoardController.mapMailbox,
+                        controller.mailboxDashBoardController.mapMailboxById,
                         onCancelSelection: () => controller.cancelSelectionMode(context),
                         onHandleEmailAction: (actionType, listEmails) =>
                             controller.handleSelectionEmailAction(context, actionType, listEmails));
@@ -377,7 +377,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               onTap: () {
                 final emailPreview = listSuggestionSearch[index];
                 final mailboxContain = emailPreview
-                    .findMailboxContain(controller.mailboxDashBoardController.mapMailbox);
+                    .findMailboxContain(controller.mailboxDashBoardController.mapMailboxById);
                 controller.pressEmailAction(
                     context,
                     EmailActionType.preview,
@@ -430,14 +430,14 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 padding: SearchEmailUtils.getPaddingSearchResultList(context, _responsiveUtils),
                 paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, _responsiveUtils),
                 mailboxCurrent: listPresentationEmail[index].findMailboxContain(
-                    controller.mailboxDashBoardController.mapMailbox))
+                    controller.mailboxDashBoardController.mapMailboxById))
               ..addOnPressEmailActionClick((action, email) =>
                   controller.pressEmailAction(
                       context,
                       action,
                       email,
                       mailboxContain: email.findMailboxContain(
-                          controller.mailboxDashBoardController.mapMailbox)))
+                          controller.mailboxDashBoardController.mapMailboxById)))
               ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
                   ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
                   : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email))))
@@ -470,7 +470,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
-    final mailboxContain = email.findMailboxContain(controller.mailboxDashBoardController.mapMailbox);
+    final mailboxContain = email.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById);
 
     return (EmailActionCupertinoActionSheetActionBuilder(
         const Key('mark_as_spam_or_un_spam_action'),
