@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/screen_displa
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -302,11 +303,7 @@ class ComposerController extends BaseController {
       final userProfile = mailboxDashBoardController.userProfile.value;
       _removeComposerCacheOnWebInteractor.execute();
       if (userProfile != null) {
-        final draftEmail = await _generateEmail(
-          currentContext!,
-          mailboxDashBoardController.mapDefaultMailboxIdByRole,
-          userProfile,
-        );
+        final draftEmail = await _generateEmail(currentContext!, userProfile);
         _saveComposerCacheOnWebInteractor.execute(draftEmail);
       }
     });
@@ -524,13 +521,13 @@ class ComposerController extends BaseController {
 
   Future<Email> _generateEmail(
       BuildContext context,
-      Map<Role, MailboxId> mapDefaultMailboxId,
       UserProfile userProfile,
-      {bool asDrafts = false}
+      {
+        bool asDrafts = false,
+        MailboxId? draftMailboxId,
+        MailboxId? outboxMailboxId
+      }
   ) async {
-    final generateEmailId = EmailId(Id(_uuid.v1()));
-    final outboxMailboxId = mapDefaultMailboxId[PresentationMailbox.roleOutbox];
-    final draftMailboxId = mapDefaultMailboxId[PresentationMailbox.roleDrafts];
     Set<EmailAddress> listFromEmailAddress = {EmailAddress(null, userProfile.email)};
     if (identitySelected.value?.email?.isNotEmpty == true) {
       listFromEmailAddress = {EmailAddress(
@@ -541,37 +538,48 @@ class ComposerController extends BaseController {
     if (identitySelected.value?.replyTo?.isNotEmpty == true) {
       listReplyToEmailAddress = identitySelected.value!.replyTo!;
     }
-    final generatePartId = PartId(_uuid.v1());
 
     final attachments = <EmailBodyPart>{};
     attachments.addAll(uploadController.generateAttachments() ?? []);
 
     var emailBodyText = await _getEmailBodyText(context);
-
     if (uploadController.mapInlineAttachments.isNotEmpty) {
       final mapContents = await _getMapContent(emailBodyText);
-      log('ComposerController::_generateEmail(): mapContents: $mapContents');
       emailBodyText = mapContents.value1;
       final listInlineAttachment = mapContents.value2;
       final listInlineEmailBodyPart = listInlineAttachment
           .map((attachment) => attachment.toEmailBodyPart(charset: 'base64'))
           .toSet();
       attachments.addAll(listInlineEmailBodyPart);
-      log('ComposerController::_generateEmail(): listInlineEmailBodyPart: $listInlineEmailBodyPart');
     }
 
     final userAgent = await userAgentPlatform;
-    log('ComposerController::_generateEmail(): userAgent: $userAgent');
+
+    Map<MailboxId, bool> mailboxIds = {};
+    if (asDrafts && draftMailboxId != null) {
+      mailboxIds[draftMailboxId] = true;
+    }
+    if (outboxMailboxId != null) {
+      mailboxIds[outboxMailboxId] = true;
+    }
+
+    Map<KeyWordIdentifier, bool>? mapKeywords = {};
+    if (asDrafts) {
+      mapKeywords[KeyWordIdentifier.emailDraft] = true;
+    }
+
+    final generateEmailId = EmailId(Id(_uuid.v1()));
+    final generatePartId = PartId(_uuid.v1());
 
     return Email(
       generateEmailId,
-      mailboxIds: asDrafts ? {draftMailboxId!: true} : {outboxMailboxId!: true},
+      mailboxIds: mailboxIds.isNotEmpty ? mailboxIds : null,
       from: listFromEmailAddress,
       to: listToEmailAddress.toSet(),
       cc: listCcEmailAddress.toSet(),
       bcc: listBccEmailAddress.toSet(),
       replyTo: listReplyToEmailAddress,
-      keywords: asDrafts ? {KeyWordIdentifier.emailDraft : true} : null,
+      keywords: mapKeywords.isNotEmpty ? mapKeywords : null,
       subject: subjectEmail.value,
       htmlBody: {
         EmailBodyPart(
@@ -687,23 +695,33 @@ class ComposerController extends BaseController {
 
   void _handleSendMessages(BuildContext context) async {
     final arguments = composerArguments.value;
-    final session = mailboxDashBoardController.sessionCurrent;
-    final mapDefaultMailboxIdByRole = mailboxDashBoardController.mapDefaultMailboxIdByRole;
+    final accountId = mailboxDashBoardController.accountId.value;
+    final sentMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent];
+    final outboxMailboxId = mailboxDashBoardController.outboxMailbox?.id;
+    log('ComposerController::_handleSendMessages(): outboxMailboxId: $outboxMailboxId');
     final userProfile = mailboxDashBoardController.userProfile.value;
-    if (arguments != null && session != null && mapDefaultMailboxIdByRole.isNotEmpty
-        && userProfile != null) {
-
-      final email = await _generateEmail(context, mapDefaultMailboxIdByRole, userProfile);
-      final accountId = session.accounts.keys.first;
-      final sentMailboxId = mapDefaultMailboxIdByRole[PresentationMailbox.roleSent];
+    if (arguments != null && accountId != null && userProfile != null) {
+      final email = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId);
       final submissionCreateId = Id(_uuid.v1());
 
-      mailboxDashBoardController.consumeState(_sendEmailInteractor.execute(
-        accountId,
-        EmailRequest(email, submissionCreateId, mailboxIdSaved: sentMailboxId,
-          emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
-            ? arguments.presentationEmail?.id
-            : null)));
+      mailboxDashBoardController.consumeState(
+        _sendEmailInteractor.execute(
+          accountId,
+          EmailRequest(
+            email,
+            submissionCreateId,
+            sentMailboxId: sentMailboxId,
+            identity: identitySelected.value,
+            emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
+              ? arguments.presentationEmail?.id
+              : null),
+          mailboxRequest: outboxMailboxId == null
+            ? CreateNewMailboxRequest(
+                Id(_uuid.v1()),
+                PresentationMailbox.outboxMailboxName)
+            : null
+        )
+      );
 
       uploadController.clearInlineFileUploaded();
     }
@@ -892,25 +910,21 @@ class ComposerController extends BaseController {
   }
 
   void saveEmailAsDrafts(BuildContext context, {bool canPop = true}) async {
-    log('ComposerController::saveEmailAsDrafts():');
     clearFocusEditor(context);
 
     final arguments = composerArguments.value;
-    final mapDefaultMailboxIdByRole = mailboxDashBoardController.mapDefaultMailboxIdByRole;
+    final draftMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts];
     final userProfile = mailboxDashBoardController.userProfile.value;
-    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
 
-    if (arguments != null && mapDefaultMailboxIdByRole.isNotEmpty && userProfile != null && session != null) {
-      log('ComposerController::saveEmailAsDrafts(): saveEmailAsDrafts START');
+    if (arguments != null && userProfile != null && accountId != null) {
       final isChanged = await _isEmailChanged(context, arguments);
-      log('ComposerController::saveEmailAsDrafts(): saveEmailAsDrafts isChanged: $isChanged');
       if (isChanged) {
         final newEmail = await _generateEmail(
             context,
-            mapDefaultMailboxIdByRole,
             userProfile,
-            asDrafts: true);
-        final accountId = session.accounts.keys.first;
+            asDrafts: true,
+            draftMailboxId: draftMailboxId);
         final oldEmail = arguments.presentationEmail;
 
         if (arguments.emailActionType == EmailActionType.edit && oldEmail != null) {
