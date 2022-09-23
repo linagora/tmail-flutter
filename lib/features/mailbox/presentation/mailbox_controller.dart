@@ -146,11 +146,11 @@ class MailboxController extends BaseMailboxController {
       if (success is GetAllMailboxSuccess) {
         _currentMailboxState = success.currentMailboxState;
         await buildTree(success.mailboxList);
-        _setUpMapMailboxIdDefault(success.mailboxList, defaultMailboxTree.value, folderMailboxTree.value);
+        _setUpMapMailbox(success.mailboxList, defaultMailboxTree.value, folderMailboxTree.value);
       } else if (success is RefreshChangesAllMailboxSuccess) {
         _currentMailboxState = success.currentMailboxState;
         await refreshTree(success.mailboxList);
-        _setUpMapMailboxIdDefault(success.mailboxList, defaultMailboxTree.value, folderMailboxTree.value);
+        _setUpMapMailbox(success.mailboxList, defaultMailboxTree.value, folderMailboxTree.value);
       }
     });
   }
@@ -288,7 +288,7 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
-  void _setUpMapMailboxIdDefault(List<PresentationMailbox> allMailbox, MailboxTree defaultTree, MailboxTree folderTree) {
+  void _setUpMapMailbox(List<PresentationMailbox> allMailbox, MailboxTree defaultTree, MailboxTree folderTree) {
     final mapDefaultMailboxIdByRole = {
       for (var mailboxNode
           in defaultTree.root.childrenItems ?? List<MailboxNode>.empty())
@@ -307,8 +307,21 @@ class MailboxController extends BaseMailboxController {
     };
 
     mailboxDashBoardController.setMapDefaultMailboxIdByRole(mapDefaultMailboxIdByRole);
-
     mailboxDashBoardController.setMapMailboxById(mapMailboxById);
+
+    try {
+      final outboxMailboxIdByRole = mapDefaultMailboxIdByRole[PresentationMailbox.roleOutbox];
+      if (outboxMailboxIdByRole == null) {
+        final outboxMailboxByName = allMailbox
+            .firstWhere((mailbox) => mailbox.name?.toLowerCase() == PresentationMailbox.lowerCaseOutboxMailboxName);
+        mailboxDashBoardController.setOutboxMailbox(outboxMailboxByName);
+      } else {
+        mailboxDashBoardController.setOutboxMailbox(mapMailboxById[outboxMailboxIdByRole]!);
+      }
+    } catch (e) {
+      logError('MailboxController::_setUpMapMailboxIdDefault: Not found outbox mailbox');
+      mailboxDashBoardController.setOutboxMailbox(null);
+    }
 
     var mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
 

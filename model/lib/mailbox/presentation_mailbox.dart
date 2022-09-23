@@ -16,6 +16,9 @@ class PresentationMailbox with EquatableMixin {
   static final roleDrafts = Role('drafts');
   static final roleSpam = Role('spam');
 
+  static final outboxMailboxName = MailboxName('Outbox');
+  static final lowerCaseOutboxMailboxName = MailboxName('outbox');
+
   final MailboxId id;
   final MailboxName? name;
   final MailboxId? parentId;
@@ -70,7 +73,7 @@ class PresentationMailbox with EquatableMixin {
 
   bool get isSent => role == roleSent;
 
-  bool get isOutbox => name?.name == 'Outbox';
+  bool get isOutbox => name == lowerCaseOutboxMailboxName || role == roleOutbox;
 
   bool matchCountingRules() {
     if (isSpam || isTrash || isDrafts || isTemplates || isSent) {
