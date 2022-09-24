@@ -1466,7 +1466,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "jmapBasedMailSolution": "Solution email collaborative \nbasée sur JMAP",
+  "jmapBasedMailSolution": "Solution de messagerie collaborative \nbasée sur JMAP",
   "@jmapBasedMailSolution": {
     "type": "text",
     "placeholders_order": [],
@@ -1882,6 +1882,12 @@
   },
   "yourFilterHasBeenUpdated": "Votre filtre a été créé",
   "@yourFilterHasBeenUpdated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveMessage": "Déplacer le message",
+  "@moveMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
