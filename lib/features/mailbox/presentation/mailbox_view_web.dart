@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -375,66 +376,102 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
     );
   }
 
-  void _openMailboxMenuAction(BuildContext context, RelativeRect position,
-      PresentationMailbox mailbox) {
-    final listMailboxActions = [
-      if (mailbox.getCountUnReadEmails().isNotEmpty) MailboxActions.markAsRead,
-      if (!mailbox.hasRole()) MailboxActions.move,
-      if (!mailbox.hasRole()) MailboxActions.rename,
-      if (!mailbox.hasRole()) MailboxActions.delete,
+  void _openMailboxMenuAction(
+      BuildContext context,
+      RelativeRect position,
+      PresentationMailbox mailbox
+  ) {
+    final mailboxActionsSupported = [
+      MailboxActions.markAsRead,
+      MailboxActions.move,
+      MailboxActions.rename,
+      MailboxActions.delete
     ];
 
-    if (listMailboxActions.isNotEmpty) {
-      if (_responsiveUtils.isScreenWithShortestSide(context)) {
-        controller.openContextMenuAction(context,
-            _bottomSheetIdentityActionTiles(context, mailbox, listMailboxActions));
-      } else {
-        controller.openPopupMenuAction(context, position,
-            _popupMenuMailboxActionTiles(context, mailbox, listMailboxActions));
-      }
+    final listContextMenuItemAction = mailboxActionsSupported
+        .map((action) => ContextMenuItemMailboxAction(
+            action,
+            action.getContextMenuItemState(mailbox)))
+        .toList();
+
+    if (_responsiveUtils.isScreenWithShortestSide(context)) {
+      controller.openContextMenuAction(
+          context,
+          _bottomSheetIdentityActionTiles(
+              context,
+              mailbox,
+              listContextMenuItemAction));
+    } else {
+      controller.openPopupMenuAction(
+          context,
+          position,
+          _popupMenuMailboxActionTiles(
+              context,
+              mailbox,
+              listContextMenuItemAction));
     }
   }
 
-  List<Widget> _bottomSheetIdentityActionTiles(BuildContext context,
-      PresentationMailbox mailbox, List<MailboxActions> listMailboxActions) {
-    return listMailboxActions
+  List<Widget> _bottomSheetIdentityActionTiles(
+      BuildContext context,
+      PresentationMailbox mailbox,
+      List<ContextMenuItemMailboxAction> contextMenuActions
+  ) {
+    return contextMenuActions
         .map((action) => _mailboxContextMenuActionTile(context, action, mailbox))
         .toList();
   }
 
-  Widget _mailboxContextMenuActionTile(BuildContext context, MailboxActions actions,
-      PresentationMailbox mailbox) {
+  Widget _mailboxContextMenuActionTile(
+      BuildContext context,
+      ContextMenuItemMailboxAction contextMenuItem,
+      PresentationMailbox mailbox
+  ) {
     return (MailboxBottomSheetActionTileBuilder(
-            Key('${actions.name}_action'),
+            Key('${contextMenuItem.action.name}_action'),
             SvgPicture.asset(
-                actions.getContextMenuIcon(_imagePaths),
-                color: actions.getColorContextMenuIcon()),
-            actions.getTitleContextMenu(context),
-            mailbox)
+                contextMenuItem.action.getContextMenuIcon(_imagePaths),
+                color: contextMenuItem.action.getColorContextMenuIcon()),
+            contextMenuItem.action.getTitleContextMenu(context),
+            mailbox,
+            absorbing: !contextMenuItem.isActivated,
+            opacity: !contextMenuItem.isActivated)
         ..onActionClick((mailbox) =>
-            controller.handleMailboxAction(context, actions, mailbox)))
+            controller.handleMailboxAction(context, contextMenuItem.action, mailbox)))
       .build();
   }
 
-  List<PopupMenuEntry> _popupMenuMailboxActionTiles(BuildContext context,
-      PresentationMailbox mailbox, List<MailboxActions> listMailboxActions) {
-    return listMailboxActions
+  List<PopupMenuEntry> _popupMenuMailboxActionTiles(
+      BuildContext context,
+      PresentationMailbox mailbox,
+      List<ContextMenuItemMailboxAction> contextMenuActions
+  ) {
+    return contextMenuActions
         .map((action) => _mailboxPopupMenuActionTile(context, action, mailbox))
         .toList();
   }
 
-  PopupMenuItem _mailboxPopupMenuActionTile(BuildContext context, MailboxActions actions,
-      PresentationMailbox mailbox) {
+  PopupMenuItem _mailboxPopupMenuActionTile(
+      BuildContext context,
+      ContextMenuItemMailboxAction contextMenuItem,
+      PresentationMailbox mailbox
+  ) {
     return PopupMenuItem(
         padding: EdgeInsets.zero,
-        child: popupItem(actions.getContextMenuIcon(_imagePaths),
-            actions.getTitleContextMenu(context),
-            colorIcon: actions.getColorContextMenuIcon(),
-            styleName: TextStyle(
-                fontWeight: FontWeight.normal,
-                fontSize: 17,
-                color: actions.getColorContextMenuIcon()),
-            onCallbackAction: () =>
-                controller.handleMailboxAction(context, actions, mailbox)));
+        child: AbsorbPointer(
+          absorbing: !contextMenuItem.isActivated,
+          child: Opacity(
+            opacity: contextMenuItem.isActivated ? 1.0 : 0.3,
+            child: popupItem(contextMenuItem.action.getContextMenuIcon(_imagePaths),
+                contextMenuItem.action.getTitleContextMenu(context),
+                colorIcon: contextMenuItem.action.getColorContextMenuIcon(),
+                styleName: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 17,
+                    color: contextMenuItem.action.getColorContextMenuIcon()),
+                onCallbackAction: () =>
+                    controller.handleMailboxAction(context, contextMenuItem.action, mailbox)),
+          ),
+        ));
   }
 }
