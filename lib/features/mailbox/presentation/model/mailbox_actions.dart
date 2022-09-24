@@ -1,6 +1,8 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/widget/context_menu_item_action.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum MailboxActions {
@@ -111,6 +113,23 @@ extension MailboxActionsExtension on MailboxActions {
         return false;
       default:
         return true;
+    }
+  }
+
+  ContextMenuItemState getContextMenuItemState(PresentationMailbox mailbox) {
+    switch(this) {
+      case MailboxActions.markAsRead:
+        return mailbox.getCountUnReadEmails().isNotEmpty
+            ? ContextMenuItemState.activated
+            : ContextMenuItemState.deactivated;
+      case MailboxActions.move:
+      case MailboxActions.rename:
+      case MailboxActions.delete:
+        return mailbox.hasRole()
+            ? ContextMenuItemState.deactivated
+            : ContextMenuItemState.activated;
+      default:
+        return ContextMenuItemState.deactivated;
     }
   }
 }

@@ -12,6 +12,8 @@ class MailboxBottomSheetActionTileBuilder extends CupertinoActionSheetActionBuil
   final Color? bgColor;
   final EdgeInsets? iconLeftPadding;
   final EdgeInsets? iconRightPadding;
+  final bool opacity;
+  final bool absorbing;
 
   MailboxBottomSheetActionTileBuilder(
       Key key,
@@ -23,28 +25,36 @@ class MailboxBottomSheetActionTileBuilder extends CupertinoActionSheetActionBuil
         this.bgColor,
         this.iconLeftPadding,
         this.iconRightPadding,
+        this.opacity = false,
+        this.absorbing = false,
       }
   ) : super(key, actionIcon, actionName);
 
   @override
   Widget build() {
-    return Container(
-      color: bgColor ?? Colors.white,
-      child: MouseRegion(
-        cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
-        child: CupertinoActionSheetAction(
-          key: key,
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Padding(
-                padding: iconLeftPadding ?? const EdgeInsets.only(left: 12, right: 16),
-                child: actionIcon),
-            Expanded(child: Text(actionName, textAlign: TextAlign.left, style: actionTextStyle())),
-          ]),
-          onPressed: () {
-            if (onCupertinoActionSheetActionClick != null) {
-              onCupertinoActionSheetActionClick!(presentationMailbox);
-            }
-          },
+    return AbsorbPointer(
+      absorbing: absorbing,
+      child: Opacity(
+        opacity: opacity ? 0.3 : 1.0,
+        child: Container(
+          color: bgColor ?? Colors.white,
+          child: MouseRegion(
+            cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+            child: CupertinoActionSheetAction(
+              key: key,
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Padding(
+                    padding: iconLeftPadding ?? const EdgeInsets.only(left: 12, right: 16),
+                    child: actionIcon),
+                Expanded(child: Text(actionName, textAlign: TextAlign.left, style: actionTextStyle())),
+              ]),
+              onPressed: () {
+                if (onCupertinoActionSheetActionClick != null) {
+                  onCupertinoActionSheetActionClick!(presentationMailbox);
+                }
+              },
+            ),
+          ),
         ),
       ),
     );
