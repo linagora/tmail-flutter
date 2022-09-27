@@ -1,7 +1,6 @@
 import 'package:forward/forward/tmail_forward.dart';
 import 'package:jmap_dart_client/http/converter/account_id_converter.dart';
 import 'package:jmap_dart_client/http/converter/id_converter.dart';
-import 'package:jmap_dart_client/http/converter/state_converter.dart';
 import 'package:jmap_dart_client/http/converter/state_nullable_converter.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
@@ -13,7 +12,8 @@ class SetForwardResponse extends SetResponse<TMailForward> {
 
   SetForwardResponse(
     AccountId accountId,
-    State newState, {
+    {
+      State? newState,
       State? oldState,
       Map<Id, TMailForward>? created,
       Map<Id, TMailForward?>? updated,
@@ -21,9 +21,10 @@ class SetForwardResponse extends SetResponse<TMailForward> {
       Map<Id, SetError>? notCreated,
       Map<Id, SetError>? notUpdated,
       Map<Id, SetError>? notDestroyed
-  }) : super(
+    }
+  ) : super(
     accountId,
-    newState,
+    newState: newState,
     oldState: oldState,
     created: created,
     updated: updated,
@@ -36,7 +37,7 @@ class SetForwardResponse extends SetResponse<TMailForward> {
   static SetForwardResponse deserialize(Map<String, dynamic> json) {
     return SetForwardResponse(
       const AccountIdConverter().fromJson(json['accountId'] as String),
-      const StateConverter().fromJson(json['newState'] as String),
+      newState: const StateNullableConverter().fromJson(json['newState'] as String?),
       oldState: const StateNullableConverter().fromJson(json['oldState'] as String?),
       created: (json['created'] as Map<String, dynamic>?)
         ?.map((key, value) => MapEntry(
