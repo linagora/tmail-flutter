@@ -5,6 +5,8 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
@@ -125,16 +127,34 @@ class MailboxAPI {
         setMailboxInvocation.methodCallId,
         SetMailboxResponse.deserialize);
 
-    return Future.sync(() async {
-      final newMailbox = setMailboxResponse?.created?[request.creationId];
-      if (newMailbox != null) {
-        return newMailbox.addMailboxName(newMailbox, request.newName, parentId: request.parentId);
+    final mapMailboxCreated = setMailboxResponse?.created;
+    if (mapMailboxCreated != null &&
+        mapMailboxCreated.containsKey(request.creationId)) {
+      final mailboxCreated = mapMailboxCreated[request.creationId]!;
+      final newMailboxCreated = mailboxCreated.toMailbox(
+          request.newName,
+          parentId: request.parentId);
+      return newMailboxCreated;
+    } else {
+      throw _parseErrorForSetMailboxResponse(setMailboxResponse, request.creationId);
+    }
+  }
+
+  _parseErrorForSetMailboxResponse(SetMailboxResponse? response, Id requestId) {
+    final mapError = response?.notCreated ?? response?.notUpdated ?? response?.notDestroyed;
+    if (mapError != null && mapError.containsKey(requestId)) {
+      final setError = mapError[requestId];
+      log('MailboxAPI::_parseErrorForSetMailboxResponse():setError: $setError');
+      if (setError?.type == ErrorMethodResponse.invalidArguments) {
+        throw InvalidArgumentsMethodResponse(description: setError?.description);
+      } else if (setError?.type == ErrorMethodResponse.invalidResultReference) {
+        throw InvalidResultReferenceMethodResponse(description: setError?.description);
       } else {
-        return null;
+        throw UnknownMethodResponse(description: setError?.description);
       }
-    }).catchError((error) {
-      throw error;
-    });
+    }  else {
+      throw UnknownMethodResponse();
+    }
   }
 
   Future<bool> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {

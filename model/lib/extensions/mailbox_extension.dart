@@ -38,7 +38,7 @@ extension MailboxExtension on Mailbox {
     );
   }
 
-  Mailbox addMailboxName(Mailbox newMailbox, MailboxName mailboxName, {MailboxId? parentId}) {
+  Mailbox toMailbox(MailboxName mailboxName, {MailboxId? parentId}) {
     return Mailbox(
         id: id,
         name: mailboxName,
