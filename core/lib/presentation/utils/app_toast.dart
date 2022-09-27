@@ -123,7 +123,7 @@ class AppToast {
     fToast.showToast(
       child: toast,
       gravity: ToastGravity.BOTTOM,
-      toastDuration: toastLength ?? Duration(seconds: 2),
+      toastDuration: toastLength ?? Duration(seconds: 3),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -411,11 +412,17 @@ class MailboxController extends BaseMailboxController {
 
   void _createNewMailboxFailure(CreateNewMailboxFailure failure) {
     if (currentOverlayContext != null && currentContext != null) {
+      final exception = failure.exception;
+      var messageError = AppLocalizations.of(currentContext!).create_new_mailbox_failure;
+      if (exception is ErrorMethodResponse) {
+        messageError = exception.description ?? AppLocalizations.of(currentContext!).create_new_mailbox_failure;
+      }
+
       _appToast.showToastWithIcon(
           currentOverlayContext!,
-          textColor: AppColor.toastErrorBackgroundColor,
-          message: AppLocalizations.of(currentContext!).create_new_mailbox_failure,
-          icon: _imagePaths.icFolderMailbox);
+          message: messageError,
+          iconColor: AppColor.toastErrorBackgroundColor,
+          icon: _imagePaths.icNotConnection);
     }
   }
 
