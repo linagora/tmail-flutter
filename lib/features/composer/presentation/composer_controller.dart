@@ -1019,7 +1019,7 @@ class ComposerController extends BaseController {
 
   void clearFocusEditor(BuildContext context) {
     if (!kIsWeb) {
-      htmlEditorApi?.unfocus(context);
+      htmlEditorApi?.unfocus();
     }
     FocusManager.instance.primaryFocus?.unfocus();
   }

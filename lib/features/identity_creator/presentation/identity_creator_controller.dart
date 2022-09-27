@@ -382,7 +382,7 @@ class IdentityCreatorController extends BaseController {
 
   void clearFocusEditor(BuildContext context) {
     if (!BuildUtils.isWeb) {
-      signatureHtmlEditorMobileController?.unfocus(context);
+      signatureHtmlEditorMobileController?.unfocus();
     }
     FocusScope.of(context).unfocus();
   }
