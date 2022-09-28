@@ -1,7 +1,5 @@
 on:
   push:
-    branches:
-      - "release"
     tags:
       - "v*.*.*"
 
@@ -28,9 +26,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          ref: "release"
-          fetch-depth: 0
 
       - name: Setup flutter
         uses: subosito/flutter-action@v2
