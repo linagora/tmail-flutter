@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
+import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/select_mode.dart';
 
 class PresentationMailbox with EquatableMixin {
@@ -32,6 +33,7 @@ class PresentationMailbox with EquatableMixin {
   final IsSubscribed? isSubscribed;
   final SelectMode selectMode;
   final String? mailboxPath;
+  final MailboxState? state;
 
   PresentationMailbox(
     this.id,
@@ -48,8 +50,11 @@ class PresentationMailbox with EquatableMixin {
       this.isSubscribed,
       this.selectMode = SelectMode.INACTIVE,
       this.mailboxPath,
+      this.state = MailboxState.activated,
     }
   );
+
+  bool get isActivated => state == MailboxState.activated;
 
   bool hasParentId() => parentId != null && parentId!.id.value.isNotEmpty;
 

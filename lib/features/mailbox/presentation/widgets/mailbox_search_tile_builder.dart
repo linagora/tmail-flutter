@@ -68,35 +68,47 @@ class MailboxSearchTileBuilder {
     if (BuildUtils.isWeb) {
       return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
-            return InkWell(
-                onTap: () {},
-                onHover: (value) => setState(() => isHoverItem = value),
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: backgroundColorItem),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.only(left: 8),
-                    onTap: () => _onOpenMailboxActionClick?.call(_presentationMailbox),
-                    leading: _buildLeadingIcon(),
-                    title: _buildTitleItem(),
-                    subtitle: _buildSubtitleItem(),
-                    trailing: _buildMenuIcon(),
-                  ),
-                )
+            return AbsorbPointer(
+              absorbing: !_presentationMailbox.isActivated,
+              child: Opacity(
+                opacity: _presentationMailbox.isActivated ? 1.0 : 0.3,
+                child: InkWell(
+                    onTap: () {},
+                    onHover: (value) => setState(() => isHoverItem = value),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: backgroundColorItem),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.only(left: 8),
+                        onTap: () => _onOpenMailboxActionClick?.call(_presentationMailbox),
+                        leading: _buildLeadingIcon(),
+                        title: _buildTitleItem(),
+                        subtitle: _buildSubtitleItem(),
+                        trailing: _buildMenuIcon(),
+                      ),
+                    )
+                ),
+              ),
             );
           });
     } else {
       return Column(children: [
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          onTap: () => allSelectMode == SelectMode.ACTIVE
-              ? _onSelectMailboxActionClick?.call(_presentationMailbox)
-              : _onOpenMailboxActionClick?.call(_presentationMailbox),
-          leading: _buildLeadingIcon(),
-          title: _buildTitleItem(),
-          subtitle: _buildSubtitleItem(),
-          trailing: _buildSelectedIcon(),
+        AbsorbPointer(
+          absorbing: !_presentationMailbox.isActivated,
+          child: Opacity(
+            opacity: _presentationMailbox.isActivated ? 1.0 : 0.3,
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              onTap: () => allSelectMode == SelectMode.ACTIVE
+                  ? _onSelectMailboxActionClick?.call(_presentationMailbox)
+                  : _onOpenMailboxActionClick?.call(_presentationMailbox),
+              leading: _buildLeadingIcon(),
+              title: _buildTitleItem(),
+              subtitle: _buildSubtitleItem(),
+              trailing: _buildSelectedIcon(),
+            ),
+          ),
         ),
         if (lastMailbox?.id != _presentationMailbox.id)
           Padding(

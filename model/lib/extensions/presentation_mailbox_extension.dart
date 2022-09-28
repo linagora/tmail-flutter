@@ -17,7 +17,27 @@ extension PresentationMailboxExtension on PresentationMailbox {
       myRights: myRights,
       isSubscribed: isSubscribed,
       selectMode: selectMode,
-      mailboxPath: mailboxPath
+      mailboxPath: mailboxPath,
+      state: state
+    );
+  }
+
+  PresentationMailbox withMailboxSate(MailboxState newMailboxState) {
+    return PresentationMailbox(
+        id,
+        name: name,
+        parentId: parentId,
+        role: role,
+        sortOrder: sortOrder,
+        totalEmails: totalEmails,
+        unreadEmails: unreadEmails,
+        totalThreads: totalThreads,
+        unreadThreads: unreadThreads,
+        myRights: myRights,
+        isSubscribed: isSubscribed,
+        selectMode: selectMode,
+        mailboxPath: mailboxPath,
+        state: newMailboxState
     );
   }
 
@@ -52,6 +72,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
         isSubscribed: isSubscribed,
         mailboxPath: mailboxPath,
         selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
+        state: state
     );
   }
 
@@ -70,6 +91,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
       isSubscribed: isSubscribed,
       mailboxPath: mailboxPath,
       selectMode: selectMode,
+      state: state
     );
   }
 }

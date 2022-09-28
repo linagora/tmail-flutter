@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/expand_mode.dart';
+import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 
@@ -12,6 +13,7 @@ class MailboxNode with EquatableMixin{
   List<MailboxNode>? childrenItems;
   ExpandMode expandMode;
   SelectMode selectMode;
+  MailboxState nodeState;
 
   factory MailboxNode.root() => MailboxNode(_root);
 
@@ -19,18 +21,29 @@ class MailboxNode with EquatableMixin{
 
   bool hasChildren() => childrenItems?.isNotEmpty ?? false;
 
+  bool get isActivated => nodeState == MailboxState.activated;
+
   MailboxNode(
     this.item,
     {
       this.childrenItems,
       this.expandMode = ExpandMode.COLLAPSE,
-      this.selectMode = SelectMode.INACTIVE
+      this.selectMode = SelectMode.INACTIVE,
+      this.nodeState = MailboxState.activated,
     }
   );
 
   void addChildNode(MailboxNode node) {
     childrenItems ??= [];
     childrenItems?.add(node);
+  }
+
+  void updateNodeState(MailboxState state) {
+    nodeState = state;
+  }
+
+  void updateItem(PresentationMailbox newItem) {
+    item = newItem;
   }
 
   List<MailboxNode>? updateNode(MailboxId mailboxId, MailboxNode newNode, {MailboxNode? parent}) {
@@ -106,13 +119,16 @@ extension MailboxNodeExtension on MailboxNode {
   MailboxNode copyWith({
     SelectMode? newSelectMode,
     ExpandMode? newExpandMode,
+    MailboxState? newNodeState,
+    PresentationMailbox? newItem,
     List<MailboxNode>? children
   }) {
     return MailboxNode(
-      item,
+      newItem ?? item,
       childrenItems: children ?? childrenItems,
       expandMode: newExpandMode ?? expandMode,
       selectMode: newSelectMode ?? selectMode,
+      nodeState: newNodeState ?? nodeState,
     );
   }
 
@@ -122,6 +138,7 @@ extension MailboxNodeExtension on MailboxNode {
         childrenItems: childrenItems,
         expandMode: expandMode,
         selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
+        nodeState: nodeState,
     );
   }
 
@@ -131,6 +148,7 @@ extension MailboxNodeExtension on MailboxNode {
         childrenItems: childrenItems,
         expandMode: newExpandMode ?? expandMode,
         selectMode: selectMode,
+        nodeState: nodeState,
     );
   }
 
