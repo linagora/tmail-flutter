@@ -1,0 +1,41 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+#
+
+opt_out_usage # Opt out of telemetry
+default_platform(:android)
+
+platform :android do
+  desc "Build development version"
+  lane :dev do
+    sh "flutter build apk --verbose --release --dart-define=SERVER_URL=$SERVER_URL"
+  end
+
+  desc "Build and deploy release version"
+  lane :release do
+    track = "alpha"
+    latest_build_number = google_play_track_version_codes(
+      track: track,
+      json_key_data: ENV["PLAY_STORE_CONFIG_JSON"]
+    )[0].to_i
+    build_name = last_git_tag.gsub("v", "")
+    sh "flutter build appbundle --verbose --release --dart-define=SERVER_URL=$SERVER_URL --build-number=#{latest_build_number+1} --build-name=#{build_name}"
+    upload_to_play_store(
+      json_key_data: ENV["PLAY_STORE_CONFIG_JSON"],
+      track: track,
+      aab: "../build/app/outputs/bundle/release/app-release.aab",
+    )
+  end
+end

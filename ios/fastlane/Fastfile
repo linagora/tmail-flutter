@@ -1,0 +1,110 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+opt_out_usage
+default_platform(:ios)
+setup_ci if ENV['CI']
+
+# Import signing certificate
+import_certificate(
+  certificate_path: "cert.p12",
+  certificate_password: ENV["CERTIFICATE_PASSWORD"],
+  keychain_name: ENV["MATCH_KEYCHAIN_NAME"]
+)
+
+# 2 provisioning profiles, 1 for the main app and 1 for the share extension
+install_provisioning_profile(path: "buildpp.mobileprovision")
+install_provisioning_profile(path: "shareextpp.mobileprovision")
+
+
+platform :ios do
+  desc "Build development version"
+  lane :dev do
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "Runner.xcodeproj",
+      code_sign_identity: "Apple Development"
+    )
+    # Update the provisioning profile for both the main app and extension
+    update_project_provisioning(
+      xcodeproj: "Runner.xcodeproj",
+      profile: "./buildpp.mobileprovision",
+      target_filter: ".*Runner.*"
+    )
+    update_project_provisioning(
+      xcodeproj: "Runner.xcodeproj",
+      profile: "./shareextpp.mobileprovision",
+      target_filter: ".*TeamMailShareExtension.*"
+    )
+    build_app(
+      scheme: "Runner",
+      workspace: "Runner.xcworkspace",
+      export_method: "development",
+      export_options: {
+        provisioningProfiles: {
+          "com.linagora.ios.teammail": "tmail.development.profile",
+          "com.linagora.ios.teammail.TeamMailShareExtension": "tmail.ext.ios.development.provisioning.profile"
+        }
+      }
+    )
+  end
+
+  desc "Build and deploy release version"
+  lane :release do
+    # App Store Connect API setup
+    app_store_connect_api_key(
+      key_id: ENV["APPLE_KEY_ID"],
+      issuer_id: ENV["APPLE_ISSUER_ID"],
+      key_filepath: "./apiKey.p8"
+    )
+    increment_build_number(
+      build_number: latest_testflight_build_number + 1
+    )
+    increment_version_number(
+      version_number: last_git_tag.gsub("v", "")
+    )
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "Runner.xcodeproj",
+      code_sign_identity: "Apple Distribution"
+    )
+    # Update the provisioning profile for both the main app and extension
+    update_project_provisioning(
+      xcodeproj: "Runner.xcodeproj",
+      profile: "./buildpp.mobileprovision",
+      target_filter: ".*Runner.*"
+    )
+    update_project_provisioning(
+      xcodeproj: "Runner.xcodeproj",
+      profile: "./shareextpp.mobileprovision",
+      target_filter: ".*TeamMailShareExtension.*"
+    )
+    build_app(
+      scheme: "Runner",
+      workspace: "Runner.xcworkspace",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          "com.linagora.ios.teammail": "tmail.distribution.profile",
+          "com.linagora.ios.teammail.TeamMailShareExtension": "tmail.share.ext.distribution.profile"
+        }
+      }
+    )
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      ipa: "Runner.ipa"
+    )
+  end
+end

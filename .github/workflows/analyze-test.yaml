@@ -1,0 +1,73 @@
+on:
+  workflow_call:
+
+name: Analyze and test
+
+jobs:
+  analyze-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        modules:
+          - default
+          - core
+          - model
+          - contact
+          - forward
+          - rule_filter
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.0.5"
+          channel: "stable"
+          cache: true
+          cache-key: "deps-${{ hashFiles('pubspec.lock') }}"
+          cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
+
+      - name: Run prebuild
+        run: bash prebuild.sh
+
+      - name: Analyze
+        uses: zgosalvez/github-actions-analyze-dart@v1
+        with:
+          analysis-options-file: "placeholder"
+
+      - name: Test
+        run: |
+          if [[ "${{ matrix.modules }}" == "default" ]]; then
+            flutter test -r json > test-report-${{ matrix.modules }}.json
+          else
+            flutter test -r json ${{ matrix.modules }} > test-report-${{ matrix.modules }}.json
+          fi
+
+      - name: Upload test reports
+        if: success() || failure() # Always upload report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: test-report*.json
+
+  report:
+    runs-on: ubuntu-latest
+    if: success() || failure() # Always upload report
+    needs:
+      - analyze-test
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: test-reports
+
+      - uses: dorny/test-reporter@v1
+        with:
+          name: Flutter Tests
+          path: "*.json"
+          reporter: flutter-json
+          only-summary: "true"
