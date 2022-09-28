@@ -156,5 +156,10 @@ extension AppColor on Color {
     [Color(0xFF8DDAD5), Color(0xFF00CDAC)],
     [Color(0xFFDE9AF5), Color(0xFFD670EE)],
   ];
+
+  String toHexTriplet() => '#${(value & 0xFFFFFF)
+      .toRadixString(16)
+      .padLeft(6, '0')
+      .toUpperCase()}';
 }
 

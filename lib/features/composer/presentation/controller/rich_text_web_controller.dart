@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
@@ -76,10 +77,7 @@ class RichTextWebController extends BaseRichTextController {
             context,
             selectedTextColor.value,
             onResetToDefault: () {
-              final colorAsString = (Colors.black.value & 0xFFFFFF)
-                  .toRadixString(16)
-                  .padLeft(6, '0')
-                  .toUpperCase();
+              final colorAsString = Colors.black.toHexTriplet();
               selectedTextColor.value = Colors.black;
               editorController.execCommand(
                   textStyleType.commandAction,
@@ -88,10 +86,7 @@ class RichTextWebController extends BaseRichTextController {
             },
             onSelectColor: (selectedColor) {
                 final newColor = selectedColor ?? Colors.black;
-                final colorAsString = (newColor.value & 0xFFFFFF)
-                    .toRadixString(16)
-                    .padLeft(6, '0')
-                    .toUpperCase();
+                final colorAsString = newColor.toHexTriplet();
                 log('RichTextWebController::applyRichTextStyle():selectedTextColor: colorAsString: $colorAsString');
                 selectedTextColor.value = newColor;
                 editorController.execCommand(
@@ -106,10 +101,7 @@ class RichTextWebController extends BaseRichTextController {
             context,
             selectedTextBackgroundColor.value,
             onResetToDefault: () {
-              final colorAsString = (Colors.white.value & 0xFFFFFF)
-                  .toRadixString(16)
-                  .padLeft(6, '0')
-                  .toUpperCase();
+              final colorAsString = Colors.white.toHexTriplet();
               log('RichTextWebController::applyRichTextStyle():onResetToDefault: colorAsString: $colorAsString');
               selectedTextBackgroundColor.value = Colors.white;
               editorController.execCommand(
@@ -119,10 +111,7 @@ class RichTextWebController extends BaseRichTextController {
             },
             onSelectColor: (selectedColor) {
               final newColor = selectedColor ?? Colors.white;
-              final colorAsString = (newColor.value & 0xFFFFFF)
-                  .toRadixString(16)
-                  .padLeft(6, '0')
-                  .toUpperCase();
+              final colorAsString = newColor.toHexTriplet();
               log('RichTextWebController::applyRichTextStyle():textBackgroundColor: colorAsString: $colorAsString');
               selectedTextBackgroundColor.value = newColor;
               editorController.execCommand(
