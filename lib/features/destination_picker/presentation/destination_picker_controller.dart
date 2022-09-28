@@ -60,10 +60,7 @@ class DestinationPickerController extends BaseMailboxController {
     newState.map((success) {
       if (success is GetAllMailboxSuccess) {
         if (mailboxAction.value == MailboxActions.move && mailboxIdSelected != null) {
-          final newMailboxList = success.mailboxList
-              .where((mailbox) => mailbox.id != mailboxIdSelected)
-              .toList();
-          buildTree(newMailboxList);
+          buildTree(success.mailboxList, mailboxIdSelected: mailboxIdSelected);
         } else {
           buildTree(success.mailboxList);
         }

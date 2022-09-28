@@ -58,6 +58,7 @@ export 'mailbox/expand_mode.dart';
 export 'mailbox/mailbox_property.dart';
 // Mailbox
 export 'mailbox/presentation_mailbox.dart';
+export 'mailbox/mailbox_state.dart';
 export 'mailbox/select_mode.dart';
 export 'oidc/oidc_configuration.dart';
 export 'oidc/request/oidc_request.dart';

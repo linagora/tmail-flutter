@@ -39,14 +39,24 @@ class TreeBuilder {
     return tree;
   }
 
-  Future<Tuple2<MailboxTree, MailboxTree>> generateMailboxTreeInUI(List<PresentationMailbox> allMailboxes) async {
+  Future<Tuple3<MailboxTree, MailboxTree, List<PresentationMailbox>>> generateMailboxTreeInUI(
+      List<PresentationMailbox> allMailboxes,
+      {MailboxId? mailboxIdSelected}
+  ) async {
     final Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
 
     final defaultTree = MailboxTree(MailboxNode.root());
     final folderTree = MailboxTree(MailboxNode.root());
+    List<PresentationMailbox> listAllMailboxes = <PresentationMailbox>[];
 
     for (var mailbox in allMailboxes) {
-      mailboxDictionary[mailbox.id] = MailboxNode(mailbox);
+      if (mailbox.id == mailboxIdSelected) {
+        mailboxDictionary[mailbox.id] = MailboxNode(
+            mailbox.withMailboxSate(MailboxState.deactivated),
+            nodeState: MailboxState.deactivated);
+      } else {
+        mailboxDictionary[mailbox.id] = MailboxNode(mailbox);
+      }
     }
 
     for (var mailbox in allMailboxes) {
@@ -55,12 +65,22 @@ class TreeBuilder {
       final node = mailboxDictionary[mailbox.id];
       if (node != null) {
         if (parentNode != null) {
-          parentNode.addChildNode(node);
+          if (parentNode.nodeState == MailboxState.deactivated) {
+            node.updateItem(mailbox.withMailboxSate(MailboxState.deactivated));
+            node.updateNodeState(MailboxState.deactivated);
+            parentNode.addChildNode(node);
+            listAllMailboxes.add(node.item);
+          } else {
+            parentNode.addChildNode(node);
+            listAllMailboxes.add(node.item);
+          }
           parentNode.childrenItems?.sortByCompare<MailboxName?>(
             (node) => node.item.name,
             (name, other) => name?.compareAlphabetically(other) ?? -1
           );
         } else {
+          listAllMailboxes.add(node.item);
+
           var tree = mailbox.hasRole() ? defaultTree : folderTree;
 
           tree.root.addChildNode(node);
@@ -73,7 +93,7 @@ class TreeBuilder {
     }
 
     defaultTree.root.childrenItems?.sort((thisMailbox, thatMailbox) => thisMailbox.compareTo(thatMailbox));
-    return Tuple2(defaultTree, folderTree);
+    return Tuple3(defaultTree, folderTree, listAllMailboxes);
   }
 
   Future<Tuple2<MailboxTree, MailboxTree>> generateMailboxTreeInUIAfterRefreshChanges(

@@ -100,54 +100,66 @@ class MailBoxFolderTileBuilder {
               );
             });
       } else {
-        return InkWell(
-          onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(14)),
-            child: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10),
-                child: Row(children: [
-                  _buildLeadingMailboxItem(),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildTitleFolderItem()),
-                  _buildSelectedIcon(),
-                  const SizedBox(width: 8),
-                  _buildTrailingMailboxItem()
-                ])
+        return AbsorbPointer(
+          absorbing: !_mailboxNode.isActivated,
+          child: Opacity(
+            opacity: _mailboxNode.isActivated ? 1.0 : 0.3,
+            child: InkWell(
+              onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
+              radius: 14,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(14)),
+                child: Container(
+                    padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10),
+                    child: Row(children: [
+                      _buildLeadingMailboxItem(),
+                      const SizedBox(width: 8),
+                      Expanded(child: _buildTitleFolderItem()),
+                      _buildSelectedIcon(),
+                      const SizedBox(width: 8),
+                      _buildTrailingMailboxItem()
+                    ])
+                ),
+              ),
             ),
           ),
         );
       }
     } else {
-      return InkWell(
-        onTap: () => allSelectMode == SelectMode.ACTIVE
-            ? _onSelectMailboxFolderClick?.call(_mailboxNode)
-            : _onOpenMailboxFolderClick?.call(_mailboxNode),
-        child: ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(14)),
-            child: Container(
-                color: Colors.white,
-                child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: _mailboxNode.hasChildren() ? 8 : 15),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          _buildLeadingMailboxItem(),
-                          const SizedBox(width: 8),
-                          Expanded(child: _buildTitleFolderItem()),
-                          _buildSelectedIcon(),
-                          const SizedBox(width: 8),
-                          _buildTrailingMailboxItem()
-                        ]),
-                      ),
-                      _buildDivider(),
-                    ]
+      return AbsorbPointer(
+        absorbing: !_mailboxNode.isActivated,
+        child: Opacity(
+          opacity: _mailboxNode.isActivated ? 1.0 : 0.3,
+          child: InkWell(
+            onTap: () => allSelectMode == SelectMode.ACTIVE
+                ? _onSelectMailboxFolderClick?.call(_mailboxNode)
+                : _onOpenMailboxFolderClick?.call(_mailboxNode),
+            child: ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(14)),
+                child: Container(
+                    color: Colors.white,
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: _mailboxNode.hasChildren() ? 8 : 15),
+                            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                              _buildLeadingMailboxItem(),
+                              const SizedBox(width: 8),
+                              Expanded(child: _buildTitleFolderItem()),
+                              _buildSelectedIcon(),
+                              const SizedBox(width: 8),
+                              _buildTrailingMailboxItem()
+                            ]),
+                          ),
+                          _buildDivider(),
+                        ]
+                    )
                 )
-            )
+            ),
+          ),
         ),
       );
     }
