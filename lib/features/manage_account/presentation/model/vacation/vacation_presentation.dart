@@ -12,7 +12,8 @@ class VacationPresentation with EquatableMixin {
   final TimeOfDay? startTime;
   final DateTime? endDate;
   final TimeOfDay? endTime;
-  final String? messageBody;
+  final String? messagePlainText;
+  final String? messageHtmlText;
   final String? subject;
   final bool vacationStopEnabled;
 
@@ -22,7 +23,8 @@ class VacationPresentation with EquatableMixin {
     this.startTime,
     this.endDate,
     this.endTime,
-    this.messageBody,
+    this.messagePlainText,
+    this.messageHtmlText,
     this.subject,
     this.vacationStopEnabled = false,
   });
@@ -37,7 +39,8 @@ class VacationPresentation with EquatableMixin {
      TimeOfDay? startTime,
      DateTime? endDate,
      TimeOfDay? endTime,
-     String? messageBody,
+     String? messagePlainText,
+     String? messageHtmlText,
      String? subject,
      bool? vacationStopEnabled,
   }) {
@@ -47,7 +50,8 @@ class VacationPresentation with EquatableMixin {
       startTime: startTime ?? this.startTime,
       endDate: endDate ?? this.endDate,
       endTime: endTime ?? this.endTime,
-      messageBody: messageBody ?? this.messageBody,
+      messagePlainText: messagePlainText ?? this.messagePlainText,
+      messageHtmlText: messageHtmlText ?? this.messageHtmlText,
       subject: subject ?? this.subject,
       vacationStopEnabled: vacationStopEnabled ?? this.vacationStopEnabled
     );
@@ -75,7 +79,8 @@ class VacationPresentation with EquatableMixin {
     endDate,
     endTime,
     vacationStopEnabled,
-    messageBody,
+    messagePlainText,
+    messageHtmlText,
     subject,
   ];
 }
@@ -86,7 +91,8 @@ extension VacationPresentationExtension on VacationPresentation {
       isEnabled: isEnabled,
       fromDate: fromDate != null ? UTCDate(fromDate!) : null,
       toDate: toDate != null ? UTCDate(toDate!) : null,
-      textBody: messageBody,
+      textBody: messagePlainText,
+      htmlBody: messageHtmlText,
       subject: subject,
     );
   }

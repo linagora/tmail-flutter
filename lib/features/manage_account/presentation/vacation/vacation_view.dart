@@ -3,15 +3,21 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/border_button_field.dart';
+import 'package:tmail_ui_user/features/base/widget/text_input_decoration_builder.dart';
 import 'package:tmail_ui_user/features/base/widget/text_input_field_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/button_layout_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/date_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_message_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
 
-class VacationView extends GetWidget<VacationController> {
+class VacationView extends GetWidget<VacationController> with RichTextButtonMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -257,18 +263,7 @@ class VacationView extends GetWidget<VacationController> {
                         absorbing: controller.isVacationDeactivated,
                         child: Opacity(
                           opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                          child: TextInputFieldBuilder(
-                              label: AppLocalizations.of(context).message,
-                              hint: AppLocalizations.of(context).hintMessageBodyVacation,
-                              minLines: 10,
-                              maxLines: null,
-                              inputType: TextInputType.multiline,
-                              backgroundColor: Colors.white,
-                              error: controller.isVacationDeactivated
-                                  ? null
-                                  : controller.errorMessageBody.value,
-                              onChangeInputAction: (value) => controller.updateMessageBody(context, value),
-                              editingController: controller.messageTextController),
+                          child: _buildVacationMessage(context),
                         ),
                       )),
                       const SizedBox(height: 24),
@@ -359,5 +354,120 @@ class VacationView extends GetWidget<VacationController> {
         ]);
       }
     }
+  }
+
+  Widget _buildVacationMessage(BuildContext context) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [
+        Expanded(child: Text(AppLocalizations.of(context).message,
+            style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+                color: AppColor.colorContentEmail))),
+        _buildVacationMessageTypeButton(context, VacationMessageType.plainText),
+        _buildVacationMessageTypeButton(context, VacationMessageType.htmlTemplate),
+      ]),
+      const SizedBox(height: 8),
+      _buildMessageTextEditor(context)
+    ]);
+  }
+
+  Widget _buildMessageTextEditor(BuildContext context) {
+    return Obx(() {
+      if (controller.vacationMessageType.value == VacationMessageType.plainText) {
+        return _buildMessagePlainTextEditor(context);
+      } else {
+        return Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
+              color: Colors.white),
+          padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
+          child: Column(children: [
+            _buildMessageHtmlTextEditor(context),
+            Center(child: Obx(() {
+              return PointerInterceptor(
+                child: buildToolbarRichTextForWeb(
+                    context,
+                    controller.richTextControllerForWeb,
+                    layoutType: ButtonLayoutType.scrollHorizontal),
+              );
+            }))
+          ]),
+        );
+      }
+    });
+  }
+
+  Widget _buildMessagePlainTextEditor(BuildContext context) {
+    return (TextFieldBuilder()
+      ..onChange((value) => controller.updateMessageBody(context, value))
+      ..textInputAction(TextInputAction.next)
+      ..addController(controller.messageTextController)
+      ..textStyle(const TextStyle(color: Colors.black, fontSize: 16))
+      ..keyboardType(TextInputType.text)
+      ..minLines(10)
+      ..maxLines(null)
+      ..textDecoration((TextInputDecorationBuilder()
+        ..setContentPadding(const EdgeInsets.all(16))
+        ..setHintText(AppLocalizations.of(context).hintMessageBodyVacation)
+        ..setFillColor(Colors.white)
+        ..setErrorText(controller.isVacationDeactivated
+            ? null
+            : controller.errorMessageBody.value))
+        .build()))
+      .build();
+  }
+
+  Widget _buildMessageHtmlTextEditor(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      return html_editor_browser.HtmlEditor(
+        key: const Key('vacation_message_html_text_editor_web'),
+        controller: controller.richTextControllerForWeb.editorController,
+        htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
+            hint: '',
+            darkMode: false,
+            customBodyCssStyle: bodyCssStyleForEditor),
+        blockQuotedContent: controller.vacationMessageHtmlText ?? '',
+        htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
+            toolbarType: html_editor_browser.ToolbarType.hide,
+            defaultToolbarButtons: []),
+        otherOptions: const html_editor_browser.OtherOptions(height: 150),
+        callbacks: html_editor_browser.Callbacks(
+          onInit: () {
+            controller.richTextControllerForWeb.setFullScreenEditor();
+          }, onChangeSelection: (settings) {
+            controller.richTextControllerForWeb.onEditorSettingsChange(settings);
+          }, onChangeContent: (String? changed) {
+            controller.updateMessageHtmlText(changed);
+          }, onFocus: () {
+            FocusScope.of(context).unfocus();
+            Future.delayed(const Duration(milliseconds: 500), () {
+              controller.richTextControllerForWeb.editorController.setFocus();
+            });
+            controller.richTextControllerForWeb.closeAllMenuPopup();
+          }
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildVacationMessageTypeButton(BuildContext context, VacationMessageType messageType) {
+    return buildButtonWrapText(
+        messageType.getTitle(context),
+        textStyle: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: controller.vacationMessageType.value == messageType
+                ? AppColor.colorContentEmail
+                : AppColor.colorHintSearchBar),
+        bgColor: controller.vacationMessageType.value == messageType
+            ? AppColor.emailAddressChipColor
+            : Colors.transparent,
+        height: 35,
+        radius: 10,
+        onTap: () => controller.selectVacationMessageType(context, messageType));
   }
 }
