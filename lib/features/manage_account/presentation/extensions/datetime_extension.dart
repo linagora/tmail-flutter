@@ -13,7 +13,7 @@ extension DateTimeExtension on DateTime? {
 
   DateTime? applied(TimeOfDay? time) {
     if (this != null && time != null) {
-      return DateTime.utc(this!.year, this!.month, this!.day, time.hour, time.minute);
+      return DateTime(this!.year, this!.month, this!.day, time.hour, time.minute);
     }
     return null;
   }
