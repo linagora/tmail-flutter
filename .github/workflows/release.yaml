@@ -33,7 +33,7 @@ jobs:
           flutter-version: "3.0.5"
           channel: "stable"
           cache: true
-          cache-key: deps-${{ hashFiles('pubspec.lock') }} # optional, change this to force refresh cache
+          cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
           cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
 
       - name: Setup Android environment
