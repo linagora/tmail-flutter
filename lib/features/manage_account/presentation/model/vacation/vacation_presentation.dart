@@ -89,8 +89,8 @@ extension VacationPresentationExtension on VacationPresentation {
   VacationResponse toVacationResponse() {
     return VacationResponse(
       isEnabled: isEnabled,
-      fromDate: fromDate != null ? UTCDate(fromDate!) : null,
-      toDate: toDate != null ? UTCDate(toDate!) : null,
+      fromDate: fromDate != null ? UTCDate(fromDate!.toUtc()) : null,
+      toDate: toDate != null ? UTCDate(toDate!.toUtc()) : null,
       textBody: messagePlainText,
       htmlBody: messageHtmlText,
       subject: subject,

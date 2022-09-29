@@ -10,12 +10,4 @@ extension UTCDateExtension on UTCDate? {
       return '';
     }
   }
-
-  String formatDate({String pattern = 'yMMMd', String locale = 'en_US'}) {
-    if (this != null) {
-      return DateFormat(pattern, locale).format(this!.value);
-    } else {
-      return '';
-    }
-  }
 }

@@ -1,5 +1,4 @@
 
-import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
@@ -15,13 +14,13 @@ extension VacationResponseExtension on VacationResponse {
       status: isEnabled == true
           ? VacationResponderStatus.activated
           : VacationResponderStatus.deactivated,
-      startDate: fromDate?.value.toUtc(),
+      startDate: fromDate?.value.toLocal(),
       startTime: fromDate?.value != null
-          ? TimeOfDay.fromDateTime(fromDate!.value.toUtc())
+          ? TimeOfDay.fromDateTime(fromDate!.value.toLocal())
           : null,
-      endDate: toDate?.value.toUtc(),
+      endDate: toDate?.value.toLocal(),
       endTime: toDate?.value != null
-          ? TimeOfDay.fromDateTime(toDate!.value.toUtc())
+          ? TimeOfDay.fromDateTime(toDate!.value.toLocal())
           : null,
       messagePlainText: textBody,
       messageHtmlText: htmlBody,
@@ -36,10 +35,8 @@ extension VacationResponseExtension on VacationResponse {
 
   bool get vacationResponderIsReady {
     if (isEnabled == true) {
-      final currentDate = DateTime.now().toUtc();
-      log('VacationResponseExtension::vacationResponderEnabled(): currentDate: $currentDate');
-      final startDate = fromDate?.value.toUtc();
-      log('VacationResponseExtension::vacationResponderEnabled(): startDate: $startDate');
+      final currentDate = DateTime.now();
+      final startDate = fromDate?.value.toLocal();
       if (startDate != null && (startDate.isBefore(currentDate) ||
           startDate.isAtSameMomentAs(currentDate))) {
         return true;
@@ -52,10 +49,8 @@ extension VacationResponseExtension on VacationResponse {
 
   bool get vacationResponderIsWaiting {
     if (isEnabled == true) {
-      final currentDate = DateTime.now().toUtc();
-      log('VacationResponseExtension::vacationResponderIsWaiting(): currentDate: $currentDate');
-      final startDate = fromDate?.value.toUtc();
-      log('VacationResponseExtension::vacationResponderIsWaiting(): startDate: $startDate');
+      final currentDate = DateTime.now();
+      final startDate = fromDate?.value.toLocal();
       if (startDate != null && startDate.isAfter(currentDate)) {
         return true;
       } else {
@@ -67,10 +62,8 @@ extension VacationResponseExtension on VacationResponse {
 
   bool get vacationResponderIsStopped {
     if (isEnabled == true) {
-      final currentDate = DateTime.now().toUtc();
-      log('VacationResponseExtension::vacationResponderIsStopped(): currentDate: $currentDate');
-      final endDate = toDate?.value.toUtc();
-      log('VacationResponseExtension::vacationResponderIsStopped(): endDate: $endDate');
+      final currentDate = DateTime.now();
+      final endDate = toDate?.value.toLocal();
       if (endDate != null && endDate.isBefore(currentDate)) {
         return true;
       } else {
@@ -103,12 +96,12 @@ extension VacationResponseExtension on VacationResponse {
       return AppLocalizations.of(context).yourVacationResponderIsEnabled;
     } else if (vacationResponderIsWaiting) {
       return AppLocalizations.of(context).messageEnableVacationResponderAutomatically(
-          fromDate.formatDate(
+          fromDate.formatDateToLocal(
               pattern: 'MMM d, y h:mm a',
               locale: Localizations.localeOf(context).toLanguageTag()));
     } else if (vacationResponderIsStopped) {
       return AppLocalizations.of(context).messageDisableVacationResponderAutomatically(
-          toDate.formatDate(
+          toDate.formatDateToLocal(
               pattern: 'MMM d, y h:mm a',
               locale: Localizations.localeOf(context).toLanguageTag()));
     } else {
