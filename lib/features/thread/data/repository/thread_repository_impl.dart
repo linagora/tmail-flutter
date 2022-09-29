@@ -52,7 +52,6 @@ class ThreadRepositoryImpl extends ThreadRepository {
           filterOption: emailFilter?.filterOption),
       stateDataSource.getState(StateType.email)
     ]).then((List response) {
-      log('ThreadRepositoryImpl::getAllEmail(): localEmail: ${response.first}');
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
@@ -80,51 +79,16 @@ class ThreadRepositoryImpl extends ThreadRepository {
     }
 
     if (localEmailResponse.hasState() && networkEmailResponse == null) {
-      log('ThreadRepositoryImpl::getAllEmail(): local has state: ${localEmailResponse.state}');
-      EmailChangeResponse? emailChangeResponse;
-      bool hasMoreChanges = true;
-      State? sinceState = localEmailResponse.state!;
-
-      while(hasMoreChanges && sinceState != null) {
-        final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(
-          accountId,
-          sinceState,
-          propertiesCreated: propertiesCreated,
-          propertiesUpdated: propertiesUpdated);
-
-        hasMoreChanges = changesResponse.hasMoreChanges;
-        sinceState = changesResponse.newStateChanges;
-
-        if (emailChangeResponse != null) {
-          emailChangeResponse.union(changesResponse);
-        } else {
-          emailChangeResponse = changesResponse;
-        }
-      }
-
-      final totalEmails = networkEmailResponse != null
-        ? networkEmailResponse.emailList
-        : localEmailResponse.emailList;
-
-      final newEmailUpdated = await _combineEmailCache(
-        emailUpdated: emailChangeResponse?.updated,
-        updatedProperties: emailChangeResponse?.updatedProperties,
-        emailCacheList: totalEmails);
-
-      final newEmailCreated = networkEmailResponse != null
-        ? networkEmailResponse.emailList
-        : emailChangeResponse?.created;
-
-      await _updateEmailCache(
-        newCreated: newEmailCreated,
-        newUpdated: newEmailUpdated,
-        newDestroyed: emailChangeResponse?.destroyed);
-
-      if (emailChangeResponse != null && emailChangeResponse.newStateEmail != null) {
-        await _updateState(emailChangeResponse.newStateEmail!);
-      }
+      log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} local has state: ${localEmailResponse.state}');
+      await _synchronizeCacheWithChanges(
+        accountId,
+        localEmailResponse.state!,
+        propertiesCreated: propertiesCreated,
+        propertiesUpdated: propertiesUpdated
+      );
     } else {
       if (networkEmailResponse != null) {
+        log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} no local state -> update from network: ${networkEmailResponse?.state}');
         await _updateEmailCache(newCreated: networkEmailResponse.emailList);
         if (networkEmailResponse.state != null) {
           await _updateState(networkEmailResponse.state!);
@@ -194,8 +158,10 @@ class ThreadRepositoryImpl extends ThreadRepository {
   dartz.Tuple2<Email, Email?> _combineUpdatedWithEmailInCache(Email updatedEmail, List<Email>? emailCacheList) {
     final emailOld = emailCacheList?.findEmailById(updatedEmail.id);
     if (emailOld != null) {
+      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache hit');
       return dartz.Tuple2(updatedEmail, emailOld);
     } else {
+      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache miss');
       return dartz.Tuple2(updatedEmail, null);
     }
   }
@@ -212,6 +178,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   Future<void> _updateState(State newState) async {
+    log('ThreadRepositoryImpl::_updateState(): [MAIL] $newState');
     await stateDataSource.saveState(newState.toStateCache(StateType.email));
   }
 
@@ -227,47 +194,12 @@ class ThreadRepositoryImpl extends ThreadRepository {
       }
   ) async* {
     log('ThreadRepositoryImpl::refreshChanges(): $currentState');
-    final localEmailList = await mapDataSource[DataSourceType.local]!.getAllEmailCache(
-      inMailboxId: emailFilter?.mailboxId,
-      sort: sort,
-      filterOption: emailFilter?.filterOption);
-
-    EmailChangeResponse? emailChangeResponse;
-    bool hasMoreChanges = true;
-    State? sinceState = currentState;
-
-    while(hasMoreChanges && sinceState != null) {
-      final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(
-        accountId,
-        sinceState,
-        propertiesCreated: propertiesCreated,
-        propertiesUpdated: propertiesUpdated);
-
-      hasMoreChanges = changesResponse.hasMoreChanges;
-      sinceState = changesResponse.newStateChanges;
-
-      if (emailChangeResponse != null) {
-        emailChangeResponse.union(changesResponse);
-      } else {
-        emailChangeResponse = changesResponse;
-      }
-    }
-
-    if (emailChangeResponse != null) {
-      final newEmailUpdated = await _combineEmailCache(
-        emailUpdated: emailChangeResponse.updated,
-        updatedProperties: emailChangeResponse.updatedProperties,
-        emailCacheList: localEmailList);
-
-      await _updateEmailCache(
-        newCreated: emailChangeResponse.created,
-        newUpdated: newEmailUpdated,
-        newDestroyed: emailChangeResponse.destroyed);
-
-      if (emailChangeResponse.newStateEmail != null) {
-        await _updateState(emailChangeResponse.newStateEmail!);
-      }
-    }
+    await _synchronizeCacheWithChanges(
+      accountId,
+      currentState,
+      propertiesCreated: propertiesCreated,
+      propertiesUpdated: propertiesUpdated
+    );
 
     final newEmailResponse = await Future.wait([
       mapDataSource[DataSourceType.local]!.getAllEmailCache(inMailboxId: emailFilter?.mailboxId, sort: sort, filterOption: emailFilter?.filterOption),
@@ -347,5 +279,60 @@ class ThreadRepositoryImpl extends ThreadRepository {
         await _updateEmailCache(newDestroyed: listEmailIdDeleted);
       },
     );
+  }
+
+  Future<void> _synchronizeCacheWithChanges(
+    AccountId accountId,
+    State currentState,
+    {
+      Properties? propertiesCreated,
+      Properties? propertiesUpdated,
+    }
+  ) async {
+    final localEmailList = await mapDataSource[DataSourceType.local]!
+        .getAllEmailCache();
+
+    EmailChangeResponse? emailChangeResponse;
+    bool hasMoreChanges = true;
+    State? sinceState = currentState;
+
+    while(hasMoreChanges && sinceState != null) {
+      log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): sinceState = $sinceState');
+      final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(
+          accountId,
+          sinceState,
+          propertiesCreated: propertiesCreated,
+          propertiesUpdated: propertiesUpdated);
+
+      hasMoreChanges = changesResponse.hasMoreChanges;
+      sinceState = changesResponse.newStateChanges;
+
+      if (emailChangeResponse != null) {
+        emailChangeResponse.union(changesResponse);
+      } else {
+        emailChangeResponse = changesResponse;
+      }
+    }
+
+    if (emailChangeResponse != null) {
+      final newEmailUpdated = await _combineEmailCache(
+          emailUpdated: emailChangeResponse.updated,
+          updatedProperties: emailChangeResponse.updatedProperties,
+          emailCacheList: localEmailList);
+
+      log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): [Changes]: '
+          'created = ${emailChangeResponse.created?.length} - '
+          'updated = ${newEmailUpdated?.length} - '
+          'destroyed = ${emailChangeResponse.destroyed?.length}');
+
+      await _updateEmailCache(
+          newCreated: emailChangeResponse.created,
+          newUpdated: newEmailUpdated,
+          newDestroyed: emailChangeResponse.destroyed);
+
+      if (emailChangeResponse.newStateEmail != null) {
+        await _updateState(emailChangeResponse.newStateEmail!);
+      }
+    }
   }
 }
