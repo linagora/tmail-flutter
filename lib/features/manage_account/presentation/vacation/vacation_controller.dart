@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
@@ -15,8 +16,11 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/date_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_message_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_presentation.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/utils/vacation_utils.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller_bindings.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -26,6 +30,7 @@ class VacationController extends BaseController {
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _settingController = Get.find<SettingsController>();
+  final _richTextControllerForWeb = Get.find<RichTextWebController>(tag: VacationUtils.vacationTagName);
 
   final GetAllVacationInteractor _getAllVacationInteractor;
   final UpdateVacationInteractor _updateVacationInteractor;
@@ -33,11 +38,14 @@ class VacationController extends BaseController {
 
   final vacationPresentation = VacationPresentation.initialize().obs;
   final errorMessageBody = Rxn<String>();
+  final vacationMessageType = Rx<VacationMessageType>(VacationMessageType.plainText);
 
   final messageTextController = TextEditingController();
   final subjectTextController = TextEditingController();
 
   VacationResponse? currentVacation;
+  String? _vacationMessageHtmlText;
+
   late Worker vacationWorker;
 
   VacationController(
@@ -45,6 +53,10 @@ class VacationController extends BaseController {
     this._updateVacationInteractor,
     this._verifyNameInteractor
   );
+
+  String? get vacationMessageHtmlText => _vacationMessageHtmlText;
+
+  RichTextWebController get richTextControllerForWeb => _richTextControllerForWeb;
 
   @override
   void onInit() {
@@ -80,9 +92,7 @@ class VacationController extends BaseController {
       if (vacation is VacationResponse) {
         currentVacation = vacation;
         final newVacationPresentation = currentVacation?.toVacationPresentation();
-        vacationPresentation.value = newVacationPresentation ?? VacationPresentation.initialize();
-        messageTextController.text = newVacationPresentation?.messageBody ?? '';
-        subjectTextController.text = newVacationPresentation?.subject ?? '';
+        _initializeValueForVacation(newVacationPresentation ?? VacationPresentation.initialize());
       }
     });
   }
@@ -101,11 +111,17 @@ class VacationController extends BaseController {
 
       if (currentVacation != null) {
         final newVacationPresentation = currentVacation!.toVacationPresentation();
-        vacationPresentation.value = newVacationPresentation;
-        messageTextController.text = newVacationPresentation.messageBody ?? '';
-        subjectTextController.text = newVacationPresentation.subject ?? '';
+        _initializeValueForVacation(newVacationPresentation);
       }
     }
+  }
+
+  void _initializeValueForVacation(VacationPresentation newVacation) {
+    vacationPresentation.value = newVacation;
+    messageTextController.text = newVacation.messagePlainText ?? '';
+    subjectTextController.text = newVacation.subject ?? '';
+    updateMessageHtmlText(newVacation.messageHtmlText ?? '');
+    _richTextControllerForWeb.editorController.setText(newVacation.messageHtmlText ?? '');
   }
 
   bool get isVacationDeactivated => !vacationPresentation.value.isEnabled;
@@ -121,7 +137,8 @@ class VacationController extends BaseController {
     DateTime? endDate,
     TimeOfDay? endTime,
     bool? vacationStopEnabled,
-    String? messageBody
+    String? messagePlainText,
+    String? messageHtmlText,
   }) {
     final currentVacation = vacationPresentation.value;
     final newVacation = currentVacation.copyWidth(
@@ -131,7 +148,9 @@ class VacationController extends BaseController {
         endDate: endDate,
         endTime: endTime,
         vacationStopEnabled: vacationStopEnabled,
-        messageBody: messageBody);
+        messagePlainText: messagePlainText,
+        messageHtmlText: messageHtmlText
+    );
     log('VacationController::updateVacationPresentation():newVacation: $newVacation');
     vacationPresentation.value = newVacation;
   }
@@ -241,8 +260,9 @@ class VacationController extends BaseController {
         return;
       }
 
-      final messageBody = messageTextController.text;
-      if (messageBody.isEmpty) {
+      final messagePlainText = messageTextController.text;
+      final messageHtmlText = _vacationMessageHtmlText ?? '';
+      if (messagePlainText.isEmpty && messageHtmlText.isEmpty) {
         _appToast.showToastWithIcon(
             context,
             bgColor: AppColor.toastErrorBackgroundColor,
@@ -254,7 +274,8 @@ class VacationController extends BaseController {
       final subjectVacation = subjectTextController.text;
 
       final newVacationPresentation = vacationPresentation.value.copyWidth(
-          messageBody: messageBody,
+          messagePlainText: messagePlainText,
+          messageHtmlText: messageHtmlText,
           subject: subjectVacation);
       log('VacationController::saveVacation(): newVacationPresentation: $newVacationPresentation');
       final newVacationResponse = newVacationPresentation.toVacationResponse();
@@ -289,13 +310,30 @@ class VacationController extends BaseController {
 
       if (currentVacation != null) {
         final newVacationPresentation = currentVacation!.toVacationPresentation();
-        vacationPresentation.value = newVacationPresentation;
-        messageTextController.text = newVacationPresentation.messageBody ?? '';
-        subjectTextController.text = newVacationPresentation.subject ?? '';
+        _initializeValueForVacation(newVacationPresentation);
       }
 
       _accountDashBoardController.updateVacationResponse(currentVacation);
     }
+  }
+
+  void updateMessageHtmlText(String? text) => _vacationMessageHtmlText = text;
+
+  Future<String?> _getMessageHtmlText() {
+    return _richTextControllerForWeb.editorController.getText();
+  }
+
+  void selectVacationMessageType(BuildContext context, VacationMessageType newMessageType) async {
+    if (newMessageType == VacationMessageType.plainText && !BuildUtils.isWeb) {
+      final messageHtml = await _getMessageHtmlText();
+      updateMessageHtmlText(messageHtml);
+    }
+    clearFocusEditor(context);
+    vacationMessageType.value = newMessageType;
+  }
+
+  void clearFocusEditor(BuildContext context) {
+    FocusScope.of(context).unfocus();
   }
 
   void backToUniversalSettings() {
@@ -307,6 +345,7 @@ class VacationController extends BaseController {
     messageTextController.dispose();
     subjectTextController.dispose();
     vacationWorker.dispose();
+    VacationControllerBindings().dispose();
     super.onClose();
   }
 }
