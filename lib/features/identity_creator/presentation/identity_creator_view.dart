@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:rich_text_composer/views/keyboard_richtext.dart';
+import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_drop_list_field_builder.dart';
@@ -279,28 +281,29 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                       : AppLocalizations.of(context).edit_identity.inCaps,
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 21, color: Colors.black))),
             const SizedBox(height: 8),
-            Expanded(child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              reverse: true,
-              child: Padding(
+            Expanded(child: KeyboardRichText(
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                reverse: true,
+                child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(children: [
                   Obx(() => (IdentityInputFieldBuilder(
-                          AppLocalizations.of(context).name,
-                          controller.errorNameIdentity.value,
-                          editingController: controller.inputNameIdentityController,
-                          focusNode: controller.inputNameIdentityFocusNode,
-                          isMandatory: true)
-                      ..addOnChangeInputNameAction((value) => controller.updateNameIdentity(context, value)))
-                    .build()),
+                    AppLocalizations.of(context).name,
+                    controller.errorNameIdentity.value,
+                    editingController: controller.inputNameIdentityController,
+                    focusNode: controller.inputNameIdentityFocusNode,
+                    isMandatory: true)
+                    ..addOnChangeInputNameAction((value) => controller.updateNameIdentity(context, value)))
+                  .build()),
                   const SizedBox(height: 24),
                   Obx(() {
                     if (controller.actionType == IdentityActionType.create) {
                       return (IdentityDropListFieldBuilder(
-                            _imagePaths,
-                            AppLocalizations.of(context).email.inCaps,
-                            controller.emailOfIdentity.value,
-                            controller.listEmailAddressDefault)
+                          _imagePaths,
+                          AppLocalizations.of(context).email.inCaps,
+                          controller.emailOfIdentity.value,
+                          controller.listEmailAddressDefault)
                         ..addOnSelectEmailAddressDropListAction((emailAddress) =>
                             controller.updateEmailOfIdentity(emailAddress))
                       ).build();
@@ -313,40 +316,42 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   }),
                   const SizedBox(height: 24),
                   Obx(() => (IdentityDropListFieldBuilder(
-                          _imagePaths,
-                          AppLocalizations.of(context).reply_to_address,
-                          controller.replyToOfIdentity.value,
-                          controller.listEmailAddressOfReplyTo)
-                      ..addOnSelectEmailAddressDropListAction((newEmailAddress) =>
-                          controller.updaterReplyToOfIdentity(newEmailAddress)))
-                    .build()),
+                      _imagePaths,
+                      AppLocalizations.of(context).reply_to_address,
+                      controller.replyToOfIdentity.value,
+                      controller.listEmailAddressOfReplyTo)
+                    ..addOnSelectEmailAddressDropListAction((newEmailAddress) =>
+                        controller.updaterReplyToOfIdentity(newEmailAddress)))
+                  .build()),
                   const SizedBox(height: 24),
                   Obx(() => (IdentityInputWithDropListFieldBuilder(
-                          AppLocalizations.of(context).bcc_to_address,
-                          controller.errorBccIdentity.value,
-                          controller.inputBccIdentityController)
-                      ..addOnSelectedSuggestionAction((newEmailAddress) {
-                        controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
-                        controller.updateBccOfIdentity(newEmailAddress);
-                      })
-                      ..addOnChangeInputSuggestionAction((pattern) {
-                        controller.validateInputBccAddress(context, pattern);
-                        if (pattern == null || pattern.trim().isEmpty) {
-                          controller.updateBccOfIdentity(null);
-                        } else {
-                          controller.updateBccOfIdentity(EmailAddress(null, pattern));
-                        }
-                      })
-                      ..addOnSuggestionCallbackAction((pattern) =>
-                          controller.getSuggestionEmailAddress(pattern)))
-                    .build()
+                      AppLocalizations.of(context).bcc_to_address,
+                      controller.errorBccIdentity.value,
+                      controller.inputBccIdentityController)
+                    ..addOnSelectedSuggestionAction((newEmailAddress) {
+                      controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
+                      controller.updateBccOfIdentity(newEmailAddress);
+                    })
+                    ..addOnChangeInputSuggestionAction((pattern) {
+                      controller.validateInputBccAddress(context, pattern);
+                      if (pattern == null || pattern.trim().isEmpty) {
+                        controller.updateBccOfIdentity(null);
+                      } else {
+                        controller.updateBccOfIdentity(EmailAddress(null, pattern));
+                      }
+                    })
+                    ..addOnSuggestionCallbackAction((pattern) =>
+                        controller.getSuggestionEmailAddress(pattern)))
+                  .build()
                   ),
                   const SizedBox(height: 32),
                   Text(AppLocalizations.of(context).signature,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 14,
-                          color: AppColor.colorContentEmail)),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: 14,
+                      color: AppColor.colorContentEmail,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Obx(() => _buildSignatureButton(context, SignatureType.plainText)),
@@ -356,17 +361,18 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   const SizedBox(height: 8),
                   Obx(() => Container(
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
-                        color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
+                      color: Colors.white,
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                     child: Stack(
-                        children: [
-                          if (controller.signatureType.value == SignatureType.plainText)
-                            _buildSignaturePlainTextTemplate(context)
-                          else
-                            _buildSignatureHtmlTemplate(context)
-                        ]
+                      children: [
+                        if (controller.signatureType.value == SignatureType.plainText)
+                          _buildSignaturePlainTextTemplate(context)
+                        else
+                          _buildSignatureHtmlTemplate(context)
+                      ]
                     ),
                   )),
                   const SizedBox(height: 24),
@@ -374,35 +380,48 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                     alignment: Alignment.center,
                     color: Colors.white,
                     child: Row(
-                        children: [
-                          Expanded(
-                            child: buildTextButton(
-                                AppLocalizations.of(context).cancel,
-                                textStyle: const TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 17,
-                                    color: AppColor.colorTextButton),
-                                backgroundColor: AppColor.emailAddressChipColor,
-                                width: 128,
-                                height: 44,
-                                radius: 10,
-                                onTap: () => controller.closeView(context)),
+                      children: [
+                        Expanded(
+                          child: buildTextButton(
+                            AppLocalizations.of(context).cancel,
+                            textStyle: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 17,
+                              color: AppColor.colorTextButton,
+                            ),
+                            backgroundColor: AppColor.emailAddressChipColor,
+                            width: 128,
+                            height: 44,
+                            radius: 10,
+                            onTap: () => controller.closeView(context),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Obx(() => buildTextButton(
-                                controller.actionType == IdentityActionType.create
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Obx(() => buildTextButton(
+                              controller.actionType == IdentityActionType.create
                                   ? AppLocalizations.of(context).create
                                   : AppLocalizations.of(context).save,
-                                width: 128,
-                                height: 44,
-                                radius: 10,
-                                onTap: () => controller.createNewIdentity(context))),
-                          ),
-                        ]
+                              width: 128,
+                              height: 44,
+                              radius: 10,
+                              onTap: () => controller.createNewIdentity(context))),
+                        ),
+                      ]
                     ),
                   )
-                ]),
+        ]),
+      ),
+    ),
+              richTextController: controller.keyboardRichTextController,
+              backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
+              keyBroadToolbar: RichTextKeyboardToolBar(
+                isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
+                richTextController: controller.keyboardRichTextController,
+                titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
+                titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
+                titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
+                titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
               ),
             )),
           ]),
@@ -492,7 +511,10 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
       return html_editor_mobile.HtmlEditor(
         key: const Key('signature_html_editor_mobile'),
         minHeight: 230,
-        onCreated: (htmlEditorController) => controller.signatureHtmlEditorMobileController = htmlEditorController,
+        onCreated: (htmlEditorController) {
+          controller.keyboardRichTextController.onCreateHTMLEditor(htmlEditorController);
+          controller.signatureHtmlEditorMobileController = htmlEditorController;
+        },
         initialContent: controller.contentHtmlEditor ?? '',
       );
     }
