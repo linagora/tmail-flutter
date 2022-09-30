@@ -291,6 +291,7 @@ class ComposerView extends GetWidget<ComposerController>
       onFocusChange: (focus) {
         if(focus) {
           controller.htmlEditorApi?.unfocus();
+          controller.keyboardRichTextController.hideRichTextView();
         }
       },
       child: Column(
@@ -362,28 +363,36 @@ class ComposerView extends GetWidget<ComposerController>
   }
 
   Widget _buildSubjectEmail(BuildContext context) {
-    return Row(
-        children: [
-          Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Text(
-                  '${AppLocalizations.of(context).subject_email}:',
-                  style: const TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput))),
-          Expanded(
-              child: FocusScope(child: Focus(
-                onFocusChange: (focus) => controller.onSubjectEmailFocusChange(focus),
-                child: (TextFieldBuilder()
-                    ..key(const Key('subject_email_input'))
-                    ..cursorColor(AppColor.colorTextButton)
-                    ..maxLines(responsiveUtils.isMobile(context) ? null : 1)
-                    ..onChange((value) => controller.setSubjectEmail(value))
-                    ..textStyle(const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.normal))
-                    ..textDecoration(const InputDecoration(contentPadding: EdgeInsets.zero, border: InputBorder.none))
-                    ..addController(controller.subjectEmailInputController))
-                  .build(),
-              ))
-          )
-        ]
+    return Focus(
+      onFocusChange: (focus) {
+        if(focus) {
+          controller.htmlEditorApi?.unfocus();
+          controller.keyboardRichTextController.hideRichTextView();
+        }
+      },
+      child: Row(
+          children: [
+            Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Text(
+                    '${AppLocalizations.of(context).subject_email}:',
+                    style: const TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput))),
+            Expanded(
+                child: FocusScope(child: Focus(
+                  onFocusChange: (focus) => controller.onSubjectEmailFocusChange(focus),
+                  child: (TextFieldBuilder()
+                      ..key(const Key('subject_email_input'))
+                      ..cursorColor(AppColor.colorTextButton)
+                      ..maxLines(responsiveUtils.isMobile(context) ? null : 1)
+                      ..onChange((value) => controller.setSubjectEmail(value))
+                      ..textStyle(const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.normal))
+                      ..textDecoration(const InputDecoration(contentPadding: EdgeInsets.zero, border: InputBorder.none))
+                      ..addController(controller.subjectEmailInputController))
+                    .build(),
+                ))
+            )
+          ]
+      ),
     );
   }
 

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-09-30T16:41:42.005040",
+  "@@last_modified": "2022-09-30T17:54:08.425416",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2218,6 +2218,30 @@
   },
   "foreground": "Foreground",
   "@foreground": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleFormat": "Format",
+  "@titleFormat": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleQuickStyles": "Quick styles",
+  "@titleQuickStyles": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleBackground": "Background",
+  "@titleBackground": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleForeground": "Foreground",
+  "@titleForeground": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

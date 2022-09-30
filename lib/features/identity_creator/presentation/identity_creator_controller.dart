@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
+import 'package:rich_text_composer/richtext_controller.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
@@ -45,6 +46,8 @@ class IdentityCreatorController extends BaseController {
   final _uuid = Get.find<Uuid>();
   final _identitiesController = Get.find<IdentitiesController>();
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
+
+  final RichTextController keyboardRichTextController = RichTextController();
 
   final HtmlEditorController signatureHtmlEditorController = HtmlEditorController(processNewLineAsBr: true);
   final TextEditingController signaturePlainEditorController = TextEditingController();
@@ -102,6 +105,7 @@ class IdentityCreatorController extends BaseController {
     inputNameIdentityController.dispose();
     inputBccIdentityController.dispose();
     identityCreatorIsActiveWorker.dispose();
+    keyboardRichTextController.dispose();
     super.onClose();
   }
 
