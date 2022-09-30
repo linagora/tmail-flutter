@@ -1083,6 +1083,15 @@ packages:
       url: "https://github.com/KasemJaffer/receive_sharing_intent.git"
     source: git
     version: "1.4.5"
+  rich_text_composer:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "85fe10cd4d3b29bbf803ac796ebe722710fa1d36"
+      url: "https://github.com/linagora/rich-text-composer.git"
+    source: git
+    version: "0.0.1"
   rule_filter:
     dependency: "direct main"
     description:

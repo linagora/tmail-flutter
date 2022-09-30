@@ -106,7 +106,7 @@ class VacationNotificationMessageWidget extends StatelessWidget {
         if (leadingIcon != null) leadingIcon!,
         Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(top: 8, right: 12),
+              padding: const EdgeInsets.only(right: 12),
               child: Center(
                 child: Text(
                     vacationResponse.getNotificationMessage(context),
