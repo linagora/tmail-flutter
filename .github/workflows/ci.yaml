@@ -15,12 +15,14 @@ jobs:
     name: Build app
     needs:
       - analyze-test
-    runs-on: macos-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        os:
-          - android
-          - ios
+        include:
+          - os: android
+            runner: ubuntu-latest
+          - os: ios
+            runner: macos-latest
     environment: dev
 
     steps:
@@ -44,8 +46,8 @@ jobs:
           PLAY_STORE_KEY_INFO_BASE64: ${{ secrets.PLAY_STORE_KEY_INFO_BASE64 }}
         run: |
           # echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
-          echo "$PLAY_STORE_UPLOAD_KEY_BASE64" | base64 --decode --output app/keystore.jks
-          echo "$PLAY_STORE_KEY_INFO_BASE64" | base64 --decode --output key.properties
+          echo "$PLAY_STORE_UPLOAD_KEY_BASE64" | base64 --decode > app/keystore.jks
+          echo "$PLAY_STORE_KEY_INFO_BASE64" | base64 --decode > key.properties
         working-directory: ${{ matrix.os }}
 
       - name: Setup Java
