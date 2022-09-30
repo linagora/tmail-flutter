@@ -88,7 +88,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       );
     } else {
       if (networkEmailResponse != null) {
-        log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} no local state -> update from network: ${networkEmailResponse?.state}');
+        log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} no local state -> update from network: ${networkEmailResponse.state}');
         await _updateEmailCache(newCreated: networkEmailResponse.emailList);
         if (networkEmailResponse.state != null) {
           await _updateState(networkEmailResponse.state!);
