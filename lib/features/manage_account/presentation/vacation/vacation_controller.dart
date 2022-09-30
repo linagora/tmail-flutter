@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
+import 'package:rich_text_composer/richtext_controller.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
@@ -42,6 +43,7 @@ class VacationController extends BaseController {
 
   final messageTextController = TextEditingController();
   final subjectTextController = TextEditingController();
+  final richTextControllerForMobile = RichTextController();
 
   VacationResponse? currentVacation;
   String? _vacationMessageHtmlText;
@@ -121,7 +123,11 @@ class VacationController extends BaseController {
     messageTextController.text = newVacation.messagePlainText ?? '';
     subjectTextController.text = newVacation.subject ?? '';
     updateMessageHtmlText(newVacation.messageHtmlText ?? '');
-    _richTextControllerForWeb.editorController.setText(newVacation.messageHtmlText ?? '');
+    if (BuildUtils.isWeb) {
+      _richTextControllerForWeb.editorController.setText(newVacation.messageHtmlText ?? '');
+    } else {
+      richTextControllerForMobile.htmlEditorApi?.setText(newVacation.messageHtmlText ?? '');
+    }
   }
 
   bool get isVacationDeactivated => !vacationPresentation.value.isEnabled;
@@ -235,7 +241,7 @@ class VacationController extends BaseController {
     errorMessageBody.value = _getErrorStringByInputValue(context, value);
   }
 
-  void saveVacation(BuildContext context) {
+  void saveVacation(BuildContext context) async {
     FocusScope.of(context).unfocus();
 
     if (vacationPresentation.value.isEnabled) {
@@ -261,7 +267,7 @@ class VacationController extends BaseController {
       }
 
       final messagePlainText = messageTextController.text;
-      final messageHtmlText = _vacationMessageHtmlText ?? '';
+      final messageHtmlText = (BuildUtils.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
       if (messagePlainText.isEmpty && messageHtmlText.isEmpty) {
         _appToast.showToastWithIcon(
             context,
@@ -319,24 +325,36 @@ class VacationController extends BaseController {
 
   void updateMessageHtmlText(String? text) => _vacationMessageHtmlText = text;
 
-  Future<String?> _getMessageHtmlText() {
-    return _richTextControllerForWeb.editorController.getText();
+  Future<String>? _getMessageHtmlText() {
+    if (BuildUtils.isWeb) {
+      return _richTextControllerForWeb.editorController.getText();
+    } else {
+      return richTextControllerForMobile.htmlEditorApi?.getText();
+    }
   }
 
-  void selectVacationMessageType(BuildContext context, VacationMessageType newMessageType) async {
+  void selectVacationMessageType(BuildContext context, VacationMessageType newMessageType) {
     if (newMessageType == VacationMessageType.plainText && !BuildUtils.isWeb) {
-      final messageHtml = await _getMessageHtmlText();
-      updateMessageHtmlText(messageHtml);
+      _storeMessageHtmlTextOnMobile();
     }
     clearFocusEditor(context);
     vacationMessageType.value = newMessageType;
   }
 
+  void _storeMessageHtmlTextOnMobile() async {
+    final messageHtml = await _getMessageHtmlText();
+    updateMessageHtmlText(messageHtml);
+  }
+
   void clearFocusEditor(BuildContext context) {
+    if (!BuildUtils.isWeb) {
+      richTextControllerForMobile.htmlEditorApi?.unfocus();
+    }
     FocusScope.of(context).unfocus();
   }
 
-  void backToUniversalSettings() {
+  void backToUniversalSettings(BuildContext context) {
+    clearFocusEditor(context);
     _settingController.backToUniversalSettings();
   }
 
@@ -344,6 +362,7 @@ class VacationController extends BaseController {
   void onClose() {
     messageTextController.dispose();
     subjectTextController.dispose();
+    richTextControllerForMobile.dispose();
     vacationWorker.dispose();
     VacationControllerBindings().dispose();
     super.onClose();
