@@ -4,7 +4,7 @@
 
 ![LOGO](https://user-images.githubusercontent.com/6462404/169949991-bd72462e-fdb8-4a07-9c35-1d2c0c28f4ee.png)
 
-This project aims at providing a multi-plateform mobile email application, running the [JMAP protocol](https://jmap.io/) and will also deliver additional 
+This project aims at providing a multi-platform mobile email application, running the [JMAP protocol](https://jmap.io/) and will also deliver additional 
 features to the [TMail back-end](https://github.com/linagora/tmail-backend).
 
 Here is how TMail looks like on a phone:
@@ -82,7 +82,7 @@ If what you are looking for is not in the *user guide* then ask us directly in t
 
 <details>
   <summary>Read more...</summary>
-First, we target Android, IOS mobiles. We also take care of tablets and large rendering space early on in the development process.
+First, we target Android, iOS mobiles. We also take care of tablets and large rendering space early on in the development process.
 
 Then, we plan on introducing a desktop application.
 
@@ -93,7 +93,7 @@ This versatility is enabled by the use of the [Flutter framework](https://flutte
 
 <details>
   <summary>Read more...</summary>
-First, we plan to write a simple, multi-plateform JMAP email client. This includes reading your mails and mailboxes, managing them, sending emails, searching your emails. This will likely keep us busy by the end of 2021.
+First, we plan to write a simple, multi-platform JMAP email client. This includes reading your mails and mailboxes, managing them, sending emails, searching your emails. This will likely keep us busy by the end of 2021.
 
 Then, we have plan for multiple features including:
 
