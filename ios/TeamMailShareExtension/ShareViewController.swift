@@ -12,6 +12,8 @@ class ShareViewController: SLComposeServiceViewController {
     let imageContentType = kUTTypeImage as String
     let textContentType = kUTTypeText as String
     let urlContentType = kUTTypeURL as String
+    let videoContentType = kUTTypeMovie as String
+    let fileURLType = kUTTypeFileURL as String
 
     override func isContentValid() -> Bool {
         return true
@@ -50,6 +52,10 @@ class ShareViewController: SLComposeServiceViewController {
                         handleText(content: content, attachment: attachment, index: index)
                     } else if attachment.hasItemConformingToTypeIdentifier(urlContentType) {
                         handleUrl(content: content, attachment: attachment, index: index)
+                    } else if attachment.hasItemConformingToTypeIdentifier(fileURLType) {
+                        handleFiles(content: content, attachment: attachment, index: index)
+                    } else if attachment.hasItemConformingToTypeIdentifier(videoContentType) {
+                        handleVideos(content: content, attachment: attachment, index: index)
                     }
                 }
             }
@@ -135,6 +141,66 @@ class ShareViewController: SLComposeServiceViewController {
             }
         }
     }
+    
+    private func handleVideos (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
+            attachment.loadItem(forTypeIdentifier: videoContentType, options: nil) { [weak self] data, error in
+
+                if error == nil, let url = data as? URL, let this = self {
+
+                    // Always copy
+                    let fileName = this.getFileName(from: url, type: .video)
+                    let newPath = FileManager.default
+                        .containerURL(forSecurityApplicationGroupIdentifier: this.appGroupId)!
+                        .appendingPathComponent(fileName)
+                    let copied = this.copyFile(at: url, to: newPath)
+                    if(copied) {
+                        guard let sharedFile = this.getSharedMediaFile(forVideo: newPath) else {
+                            return
+                        }
+                        this.sharedMedia.append(sharedFile)
+                    }
+
+                    // If this is the last item, save imagesData in userDefaults and redirect to host app
+                    if index == (content.attachments?.count)! - 1 {
+                        let userDefaults = UserDefaults(suiteName: this.appGroupId)
+                        userDefaults?.set(this.toData(data: this.sharedMedia), forKey: this.sharedKey)
+                        userDefaults?.synchronize()
+                        this.redirectToHostApp(type: .media)
+                    }
+
+                } else {
+                     self?.dismissWithError()
+                }
+            }
+        }
+
+        private func handleFiles (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
+            attachment.loadItem(forTypeIdentifier: fileURLType, options: nil) { [weak self] data, error in
+
+                if error == nil, let url = data as? URL, let this = self {
+
+                    // Always copy
+                    let fileName = this.getFileName(from :url, type: .file)
+                    let newPath = FileManager.default
+                        .containerURL(forSecurityApplicationGroupIdentifier: this.appGroupId)!
+                        .appendingPathComponent(fileName)
+                    let copied = this.copyFile(at: url, to: newPath)
+                    if (copied) {
+                        this.sharedMedia.append(SharedMediaFile(path: newPath.absoluteString, thumbnail: nil, duration: nil, type: .file))
+                    }
+
+                    if index == (content.attachments?.count)! - 1 {
+                        let userDefaults = UserDefaults(suiteName: this.appGroupId)
+                        userDefaults?.set(this.toData(data: this.sharedMedia), forKey: this.sharedKey)
+                        userDefaults?.synchronize()
+                        this.redirectToHostApp(type: .file)
+                    }
+
+                } else {
+                    self?.dismissWithError()
+                }
+            }
+        }
 
 
     private func dismissWithError() {

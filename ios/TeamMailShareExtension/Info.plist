@@ -26,6 +26,10 @@
 		<dict>
 			<key>NSExtensionActivationRule</key>
 			<dict>
+				<key>NSExtensionActivationSupportsFileWithMaxCount</key>
+				<integer>15</integer>
+				<key>NSExtensionActivationSupportsMovieWithMaxCount</key>
+				<integer>15</integer>
 				<key>NSExtensionActivationSupportsImageWithMaxCount</key>
 				<integer>15</integer>
 				<key>NSExtensionActivationSupportsText</key>
@@ -35,6 +39,7 @@
 			</dict>
 			<key>PHSupportedMediaTypes</key>
 			<array>
+				<string>Video</string>
 				<string>Image</string>
 			</array>
 		</dict>
