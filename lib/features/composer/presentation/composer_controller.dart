@@ -116,6 +116,8 @@ class ComposerController extends BaseController {
 
   final RichTextController keyboardRichTextController = RichTextController();
 
+  final ScrollController scrollController = ScrollController();
+
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
   List<EmailContent>? _emailContents;
@@ -219,6 +221,7 @@ class ComposerController extends BaseController {
     bccEmailAddressController.dispose();
     uploadInlineImageWorker.dispose();
     keyboardRichTextController.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
