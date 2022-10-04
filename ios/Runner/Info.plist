@@ -46,8 +46,8 @@
 		<string>https</string>
 		<string>http</string>
 		<string>mailto</string>
-        <string>sms</string>
-        <string>tel</string>
+		<string>sms</string>
+		<string>tel</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
