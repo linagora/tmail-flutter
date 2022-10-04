@@ -399,6 +399,7 @@ class ComposerView extends GetWidget<ComposerController>
   Widget _buildBodyMobile(BuildContext context, double maxWidth) {
     return rich_text_composer.KeyboardRichText(
       child: SingleChildScrollView(
+          controller: controller.scrollController,
           physics: const ClampingScrollPhysics(),
           child: Column(children: [
             Obx(() => controller.identitySelected.value != null
@@ -629,7 +630,7 @@ class ComposerView extends GetWidget<ComposerController>
       switch(argsComposer.emailActionType) {
         case EmailActionType.compose:
         case EmailActionType.composeFromEmailAddress:
-          return _buildHtmlEditor('', context);
+          return _buildHtmlEditor(HtmlExtension.editorStartTags, context);
         case EmailActionType.edit:
           return controller.emailContentsViewState.value.fold(
             (failure) => _buildHtmlEditor(HtmlExtension.editorStartTags, context),
@@ -677,7 +678,10 @@ class ComposerView extends GetWidget<ComposerController>
         onCreated: (editorApi) {
           richTextMobileTabletController.htmlEditorApi = editorApi;
           if(responsiveUtils.isMobile(context)){
-            controller.keyboardRichTextController.onCreateHTMLEditor(editorApi);
+            controller.keyboardRichTextController.onCreateHTMLEditor(
+              editorApi,
+              scrollController: controller.scrollController,
+            );
           } else {
             richTextMobileTabletController.listenHtmlEditorApi();
           }
