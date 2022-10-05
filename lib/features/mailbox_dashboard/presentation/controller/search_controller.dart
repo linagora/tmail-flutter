@@ -129,6 +129,8 @@ class SearchController extends BaseController {
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
     UTCDate? before,
+    UTCDate? startDate,
+    UTCDate? endDate,
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       from: from,
@@ -140,6 +142,8 @@ class SearchController extends BaseController {
       emailReceiveTimeType: emailReceiveTimeType,
       hasAttachment: hasAttachment,
       before: before,
+      startDate: startDate,
+      endDate: endDate,
     );
   }
 

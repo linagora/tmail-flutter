@@ -17,6 +17,8 @@ class SearchEmailFilter {
   final EmailReceiveTimeType emailReceiveTimeType;
   final bool hasAttachment;
   final UTCDate? before;
+  final UTCDate? startDate;
+  final UTCDate? endDate;
 
   SearchEmailFilter({
     Set<String>? from,
@@ -28,6 +30,8 @@ class SearchEmailFilter {
     Set<String>? notKeyword,
     this.mailbox,
     this.before,
+    this.startDate,
+    this.endDate,
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
         notKeyword = notKeyword ?? <String>{},
@@ -45,6 +49,8 @@ class SearchEmailFilter {
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
     UTCDate? before,
+    UTCDate? startDate,
+    UTCDate? endDate,
   }) {
     return SearchEmailFilter(
       from: from ?? this.from,
@@ -56,6 +62,8 @@ class SearchEmailFilter {
       emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
       hasAttachment: hasAttachment ?? this.hasAttachment,
       before: before ?? this.before,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
     );
   }
 
@@ -67,10 +75,14 @@ class SearchEmailFilter {
       inMailbox: mailbox == PresentationMailbox.unifiedMailbox
           ? null
           : mailbox?.id,
-      after: emailReceiveTimeType.toUTCDate(),
+      after: emailReceiveTimeType == EmailReceiveTimeType.customRange
+        ? startDate
+        : emailReceiveTimeType.toUTCDate(),
       hasAttachment: hasAttachment == false ? null : hasAttachment,
       subject: subject,
-      before: before,
+      before: emailReceiveTimeType == EmailReceiveTimeType.customRange
+        ? endDate
+        : before,
     );
 
     final listEmailCondition = {
@@ -111,6 +123,22 @@ extension SearchEmailFilterExtension on SearchEmailFilter {
       emailReceiveTimeType: emailReceiveTimeType,
       hasAttachment: hasAttachment,
       before: newBefore,
+    );
+  }
+
+  SearchEmailFilter withDateRange({UTCDate? startDate, UTCDate? endDate}) {
+    return SearchEmailFilter(
+      from: from,
+      to: to,
+      text: text,
+      subject: subject,
+      notKeyword: notKeyword,
+      mailbox: mailbox,
+      emailReceiveTimeType: emailReceiveTimeType,
+      hasAttachment: hasAttachment,
+      before: before,
+      startDate: startDate,
+      endDate: endDate,
     );
   }
 }

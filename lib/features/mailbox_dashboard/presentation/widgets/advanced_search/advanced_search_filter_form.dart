@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/drop_down_button_filter_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_auto_complete_email_adress.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     with PopupContextMenuActionMixin {
@@ -70,18 +71,30 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
             mouseCursor: SystemMouseCursors.click,
             onTap: () => controller.selectedMailBox()),
-        _buildFilterField(
-          textEditingController: controller.dateFilterInputController,
-          context: context,
-          advancedSearchFilterField: AdvancedSearchFilterField.date,
-          isSelectFormList: true,
-          onTap: () {
-            openContextMenuAction(
-              context,
-              _buildEmailReceiveTimeTypeActionTiles(context),
-            );
-          },
-        ),
+        Row(children: [
+         Expanded(child: _buildFilterField(
+           textEditingController: controller.dateFilterInputController,
+           context: context,
+           advancedSearchFilterField: AdvancedSearchFilterField.date,
+           isSelectFormList: true,
+           onTap: () {
+             openContextMenuAction(
+               context,
+               _buildEmailReceiveTimeTypeActionTiles(context),
+             );
+           },
+         )),
+          const SizedBox(width: 10),
+          buildIconWeb(
+              icon: SvgPicture.asset(
+                  _imagePaths.icCalendarSB,
+                  width: 24,
+                  height: 24,
+                  fit: BoxFit.fill),
+              tooltip: AppLocalizations.of(context).selectDate,
+              iconPadding: EdgeInsets.zero,
+              onTap: () => controller.selectDateRange(context)),
+        ]),
         AdvancedSearchFilterFormBottomView(focusManager: controller.focusManager)
       ],
     );
@@ -95,7 +108,11 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               child: Row(children: [
                 const SizedBox(width: 12),
                 Expanded(
-                    child: Text(e.getTitle(context),
+                    child: Text(
+                        e.getTitle(
+                            context,
+                            startDate: controller.startDate,
+                            endDate: controller.endDate),
                         style: const TextStyle(
                             fontSize: 15,
                             color: Colors.black,
@@ -112,8 +129,14 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
                 ]
               ]),
               onTap: () {
+                if (e != EmailReceiveTimeType.customRange) {
+                  controller.clearDateRangeOfFilter();
+                }
                 controller.dateFilterSelectedFormAdvancedSearch.value = e;
-                controller.dateFilterInputController.text = e.getTitle(context);
+                controller.dateFilterInputController.text = e.getTitle(
+                    context,
+                    startDate: controller.startDate,
+                    endDate: controller.endDate);
               },
             ),
           ),

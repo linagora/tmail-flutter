@@ -2327,4 +2327,54 @@ class AppLocalizations {
         name: 'titleForeground'
     );
   }
+
+  String get selectDate {
+    return Intl.message(
+      'Select date',
+      name: 'selectDate',
+    );
+  }
+
+  String get setDate {
+    return Intl.message(
+      'Set date',
+      name: 'setDate',
+    );
+  }
+
+  String get toastMessageErrorWhenSelectStartDateIsEmpty {
+    return Intl.message(
+      'The start date cannot be null.',
+      name: 'toastMessageErrorWhenSelectStartDateIsEmpty',
+    );
+  }
+
+  String get toastMessageErrorWhenSelectEndDateIsEmpty {
+    return Intl.message(
+      'The end date cannot be null.',
+      name: 'toastMessageErrorWhenSelectEndDateIsEmpty',
+    );
+  }
+
+  String get toastMessageErrorWhenSelectDateIsInValid {
+    return Intl.message(
+      'The end time cannot be less than the start time.',
+      name: 'toastMessageErrorWhenSelectDateIsInValid',
+    );
+  }
+
+  String dateRangeAdvancedSearchFilter(String startDate, String endDate) {
+    return Intl.message(
+        'From $startDate to $endDate',
+        name: 'dateRangeAdvancedSearchFilter',
+        args: [startDate, endDate]
+    );
+  }
+
+  String get customRange {
+    return Intl.message(
+        'Custom range',
+        name: 'customRange');
+  }
+
 }

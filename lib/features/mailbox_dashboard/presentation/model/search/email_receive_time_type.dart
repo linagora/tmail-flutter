@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum EmailReceiveTimeType {
@@ -8,9 +9,10 @@ enum EmailReceiveTimeType {
   last7Days,
   last30Days,
   last6Months,
-  lastYear;
+  lastYear,
+  customRange;
 
-  String getTitle(BuildContext context) {
+  String getTitle(BuildContext context, {DateTime? startDate, DateTime? endDate}) {
     switch(this) {
       case EmailReceiveTimeType.allTime:
         return AppLocalizations.of(context).allTime;
@@ -22,6 +24,16 @@ enum EmailReceiveTimeType {
         return AppLocalizations.of(context).last6Months;
       case EmailReceiveTimeType.lastYear:
         return AppLocalizations.of(context).lastYears;
+      case EmailReceiveTimeType.customRange:
+        if (startDate != null && endDate != null) {
+          final startDateString = startDate.formatDate(pattern: 'yyyy-dd-MM');
+          final endDateString = endDate.formatDate(pattern: 'yyyy-dd-MM');
+          return AppLocalizations.of(context).dateRangeAdvancedSearchFilter(
+              startDateString,
+              endDateString);
+        } else {
+          return AppLocalizations.of(context).customRange;
+        }
     }
   }
 
@@ -30,13 +42,23 @@ enum EmailReceiveTimeType {
       case EmailReceiveTimeType.allTime:
         return null;
       case EmailReceiveTimeType.last7Days:
-        return UTCDate(DateTime.now().subtract(const Duration(days: 7)));
+        final today = DateTime.now();
+        final last7Days = today.subtract(const Duration(days: 7));
+        return last7Days.toUTCDate();
       case EmailReceiveTimeType.last30Days:
-        return UTCDate(DateTime.now().subtract(const Duration(days: 30)));
+        final today = DateTime.now();
+        final last30Days = today.subtract(const Duration(days: 30));
+        return last30Days.toUTCDate();
       case EmailReceiveTimeType.last6Months:
-        return UTCDate(DateTime.now().subtract(const Duration(days: 180)));
+        final today = DateTime.now();
+        final last6months = DateTime(today.year, today.month - 6, today.day);
+        return last6months.toUTCDate();
       case EmailReceiveTimeType.lastYear:
-        return UTCDate(DateTime.now().subtract(const Duration(days: 365)));
+        final today = DateTime.now();
+        final lastYear = DateTime(today.year - 1, today.month, today.day);
+        return lastYear.toUTCDate();
+      case EmailReceiveTimeType.customRange:
+        return null;
     }
   }
 }
