@@ -950,41 +950,74 @@ class ComposerController extends BaseController {
     }
   }
 
-  List<InlineImage> covertListSharedMediaFileToFile(List<SharedMediaFile> value) {
+  File _covertSharedMediaFileToFile(SharedMediaFile sharedMediaFile) {
+    return File(
+      Platform.isIOS
+          ? sharedMediaFile.type == SharedMediaType.FILE
+          ? sharedMediaFile.path.toString().replaceAll('file:/', '')
+          : sharedMediaFile.path
+          : sharedMediaFile.path,
+    );
+  }
+
+  FileInfo _covertFileToFileInfo(File file) {
+    return FileInfo(
+      file.path.split('/').last,
+      file.path,
+      file.existsSync() ? file.lengthSync() : 0,
+    );
+  }
+
+  List<InlineImage> covertListSharedMediaFileToInlineImage(List<SharedMediaFile> value) {
     List<File> newFiles = List.empty(growable: true);
     if (value.isNotEmpty) {
       for (var element in value) {
-        newFiles.add(File(
-          Platform.isIOS
-              ? element.type == SharedMediaType.FILE
-              ? element.path.toString().replaceAll('file:/', '')
-              : element.path
-              : element.path,
-        ));
+        newFiles.add(_covertSharedMediaFileToFile(element));
       }
     }
 
     final List<InlineImage> listInlineImage = newFiles.map(
             (e) => InlineImage(
-                ImageSource.local,
-                fileInfo: FileInfo(
-                    e.path.split('/').last,
-                    e.path,
-                    e.existsSync() ? e.lengthSync() : 0,
-                )
+              ImageSource.local,
+              fileInfo: _covertFileToFileInfo(e),
             )
     ).toList();
     return listInlineImage;
   }
 
-  void _getEmailContentAction(ComposerArguments arguments) async {
-    if(arguments.listSharedMediaFile != null && arguments.listSharedMediaFile!.isNotEmpty){
-      final listInlineImage = covertListSharedMediaFileToFile(arguments.listSharedMediaFile!);
-      for (var e in listInlineImage) {
-        _uploadInlineAttachmentsAction(e.fileInfo!);
+  List<FileInfo> covertListSharedMediaFileToFileInfo(List<SharedMediaFile> value) {
+    List<File> newFiles = List.empty(growable: true);
+    if (value.isNotEmpty) {
+      for (var element in value) {
+        newFiles.add(_covertSharedMediaFileToFile(element));
       }
     }
-    if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty){
+
+    final List<FileInfo> listFileInfo = newFiles.map(
+            (e) => _covertFileToFileInfo(e),
+    ).toList();
+    return listFileInfo;
+  }
+
+  void _getEmailContentAction(ComposerArguments arguments) async {
+
+    final listSharedMediaFile = arguments.listSharedMediaFile;
+    if(listSharedMediaFile != null && listSharedMediaFile.isNotEmpty) {
+      final listImageSharedMediaFile = listSharedMediaFile.where((element) => element.type == SharedMediaType.IMAGE);
+      final listFileAttachmentSharedMediaFile = listSharedMediaFile.where((element) => element.type != SharedMediaType.IMAGE);
+      if (listImageSharedMediaFile.isNotEmpty) {
+        final listInlineImage = covertListSharedMediaFileToInlineImage(arguments.listSharedMediaFile!);
+        for (var e in listInlineImage) {
+          _uploadInlineAttachmentsAction(e.fileInfo!);
+        }
+      }
+      if (listFileAttachmentSharedMediaFile.isNotEmpty) {
+        final listFile = covertListSharedMediaFileToFileInfo(arguments.listSharedMediaFile!);
+        _uploadAttachmentsAction(listFile);
+      }
+    }
+
+    if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty) {
       _emailContents = arguments.emailContents;
       emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!,[],[]));
     } else {
