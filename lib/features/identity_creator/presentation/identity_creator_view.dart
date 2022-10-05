@@ -283,6 +283,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             const SizedBox(height: 8),
             Expanded(child: KeyboardRichText(
               child: SingleChildScrollView(
+                controller: controller.scrollController,
                 physics: const ClampingScrollPhysics(),
                 reverse: true,
                 child: Padding(
@@ -512,7 +513,10 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         key: const Key('signature_html_editor_mobile'),
         minHeight: 230,
         onCreated: (htmlEditorController) {
-          controller.keyboardRichTextController.onCreateHTMLEditor(htmlEditorController);
+          controller.keyboardRichTextController.onCreateHTMLEditor(
+            htmlEditorController,
+            scrollController:controller.scrollController,
+          );
           controller.signatureHtmlEditorMobileController = htmlEditorController;
         },
         initialContent: controller.contentHtmlEditor ?? '',
