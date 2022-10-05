@@ -65,6 +65,8 @@ class IdentityCreatorController extends BaseController {
   String? _nameIdentity;
   String? _contentHtmlEditor;
 
+  final ScrollController scrollController = ScrollController();
+
   void updateNameIdentity(BuildContext context, String? value) {
     _nameIdentity = value;
     errorNameIdentity.value = _getErrorInputNameString(context);
@@ -106,6 +108,7 @@ class IdentityCreatorController extends BaseController {
     inputBccIdentityController.dispose();
     identityCreatorIsActiveWorker.dispose();
     keyboardRichTextController.dispose();
+    scrollController.dispose();
     super.onClose();
   }
 
