@@ -675,10 +675,10 @@ class ComposerView extends GetWidget<ComposerController>
         addDefaultSelectionMenuItems: false,
         initialContent: initialContent,
         onCreated: (editorApi) {
+          richTextMobileTabletController.htmlEditorApi = editorApi;
           if(responsiveUtils.isMobile(context)){
             controller.keyboardRichTextController.onCreateHTMLEditor(editorApi);
           } else {
-            richTextMobileTabletController.htmlEditorApi = editorApi;
             richTextMobileTabletController.listenHtmlEditorApi();
           }
         },

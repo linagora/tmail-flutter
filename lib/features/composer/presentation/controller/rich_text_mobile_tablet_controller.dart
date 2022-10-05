@@ -140,7 +140,7 @@ class RichTextMobileTabletController extends BaseRichTextController {
       htmlEditorApi?.insertImageLink(image.link!);
     } else {
       await htmlEditorApi?.moveCursorAtLastNode();
-      htmlEditorApi?.insertHtml(image.base64Uri ?? '');
+      await htmlEditorApi?.insertHtml(image.base64Uri ?? '');
     }
   }
 
