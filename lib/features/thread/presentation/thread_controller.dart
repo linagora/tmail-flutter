@@ -454,6 +454,7 @@ class ThreadController extends BaseController {
   }
 
   void loadMoreEmails() {
+    log('ThreadController::loadMoreEmails()');
     if (canLoadMore && _accountId != null) {
       startFpsMeter();
       consumeState(_loadMoreEmailsInMailboxInteractor.execute(
@@ -469,15 +470,21 @@ class ThreadController extends BaseController {
     }
   }
 
-  bool _ableAppendLoadMore(List<PresentationEmail> listEmail) {
-    return !(listEmail.where((email) => (email.mailboxIds != null && !email.mailboxIds!.keys.contains(currentMailbox?.id)) || emailList.contains(email)).isNotEmpty);
+  bool _belongToCurrentMailboxId(PresentationEmail email) {
+    return (email.mailboxIds != null && email.mailboxIds!.keys.contains(currentMailbox?.id));
+  }
+
+  bool _notDuplicatedInCurrentList(PresentationEmail email) {
+    return emailList.isEmpty || !emailList.map((element) => element.id).contains(email.id);
   }
 
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
     if (success.emailList.isNotEmpty) {
-      if (_ableAppendLoadMore(success.emailList)){
-        emailList.addAll(success.emailList);
-      }
+      final appendableList = success.emailList
+        .where(_belongToCurrentMailboxId)
+        .where(_notDuplicatedInCurrentList);
+
+      emailList.addAll(appendableList);
     } else {
       canLoadMore = false;
     }

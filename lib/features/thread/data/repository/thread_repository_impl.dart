@@ -244,9 +244,6 @@ class ThreadRepositoryImpl extends ThreadRepository {
             properties: emailRequest.properties)
         .then((response) {
             var listEmails = response.emailList;
-            if (listEmails != null && listEmails.isNotEmpty) {
-              listEmails = listEmails.where((email) => email.id != emailRequest.lastEmailId).toList();
-            }
             return EmailsResponse(emailList: listEmails, state: response.state);
         });
 
