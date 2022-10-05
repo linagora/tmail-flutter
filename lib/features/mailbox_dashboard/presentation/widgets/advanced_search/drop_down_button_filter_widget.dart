@@ -17,8 +17,17 @@ class DateDropDownButton extends GetWidget<AdvancedFilterController> {
         items: EmailReceiveTimeType.values,
         itemSelected: controller.dateFilterSelectedFormAdvancedSearch.value,
         context: context,
+        startDate: controller.startDate,
+        endDate: controller.endDate,
         onChanged: (item) {
+          if (item != EmailReceiveTimeType.customRange) {
+            controller.clearDateRangeOfFilter();
+          }
           controller.dateFilterSelectedFormAdvancedSearch.value = item!;
+          controller.dateFilterInputController.text = item.getTitle(
+              context,
+              startDate: controller.startDate,
+              endDate: controller.endDate);
         },
       ),
     );
@@ -30,6 +39,8 @@ Widget _buildDropDownButton<T>({
   required T itemSelected,
   required BuildContext context,
   required Function(T?)? onChanged,
+  DateTime? startDate,
+  DateTime? endDate
 }) {
   final ImagePaths _imagePaths = Get.find<ImagePaths>();
 
@@ -43,6 +54,8 @@ Widget _buildDropDownButton<T>({
                   StringConvert.writeNullToEmpty(_getTextItemDropdown<T>(
                     item: item,
                     context: context,
+                    startDate: startDate,
+                    endDate: endDate,
                   )),
                   style: const TextStyle(
                       fontSize: 16,
@@ -81,10 +94,13 @@ Widget _buildDropDownButton<T>({
   );
 }
 
-String? _getTextItemDropdown<T>(
-    {required T item, required BuildContext context}) {
+String? _getTextItemDropdown<T>({required T item,
+    required BuildContext context,
+    DateTime? startDate,
+    DateTime? endDate
+}) {
   if (item is EmailReceiveTimeType) {
-    return item.getTitle(context);
+    return item.getTitle(context, startDate: startDate, endDate: endDate);
   }
 
   if (item is Mailbox) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 
 extension DateTimeExtension on DateTime? {
 
@@ -16,6 +17,14 @@ extension DateTimeExtension on DateTime? {
       return DateTime(this!.year, this!.month, this!.day, time.hour, time.minute);
     }
     return null;
+  }
+
+  UTCDate? toUTCDate() {
+    if (this != null) {
+      return UTCDate(this!.toUtc());
+    } else {
+      return null;
+    }
   }
 }
 

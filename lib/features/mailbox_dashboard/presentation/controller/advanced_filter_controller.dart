@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_date_range_picker/multiple_view_date_range_picker.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -19,7 +20,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -45,11 +48,19 @@ class AdvancedFilterController extends BaseController {
   final SearchController searchController = Get.find<SearchController>();
   final MailboxDashBoardController _mailboxDashBoardController =
       Get.find<MailboxDashBoardController>();
+  final _appToast = Get.find<AppToast>();
+  final _imagePaths = Get.find<ImagePaths>();
 
   SearchEmailFilter get searchEmailFilter =>
       searchController.searchEmailFilter.value;
 
   final focusManager = InputFieldFocusManager.initial();
+
+  DateTime? _startDate, _endDate;
+
+  DateTime? get startDate => _startDate;
+
+  DateTime? get endDate => _endDate;
 
   @override
   void onReady() {
@@ -71,6 +82,7 @@ class AdvancedFilterController extends BaseController {
   void cleanSearchFilter(BuildContext context) {
     searchController.cleanSearchFilter();
     dateFilterSelectedFormAdvancedSearch.value = EmailReceiveTimeType.allTime;
+    clearDateRangeOfFilter();
     subjectFilterInputController.text = '';
     hasKeyWordFilterInputController.text = '';
     notKeyWordFilterInputController.text = '';
@@ -117,6 +129,8 @@ class AdvancedFilterController extends BaseController {
           StringConvert.writeEmptyToNull(subjectFilterInputController.text),
       emailReceiveTimeType: dateFilterSelectedFormAdvancedSearch.value,
       hasAttachment: hasAttachment.value,
+      endDate: _endDate.toUTCDate(),
+      startDate: _startDate.toUTCDate()
     );
   }
 
@@ -227,12 +241,100 @@ class AdvancedFilterController extends BaseController {
     notKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(
         searchEmailFilter.notKeyword.firstOrNull);
     dateFilterInputController.text = StringConvert.writeNullToEmpty(
-        searchEmailFilter.emailReceiveTimeType.getTitle(context));
+        searchEmailFilter.emailReceiveTimeType.getTitle(
+            context,
+            startDate: _startDate,
+            endDate: _endDate));
     mailBoxFilterInputController.text =
         StringConvert.writeNullToEmpty(searchEmailFilter.mailbox?.name?.name);
     dateFilterSelectedFormAdvancedSearch.value =
         searchEmailFilter.emailReceiveTimeType;
     hasAttachment.value = searchEmailFilter.hasAttachment;
+  }
+
+  void selectDateRange(BuildContext context) {
+    showGeneralDialog(
+        context: context,
+        barrierDismissible: true,
+        barrierLabel: '',
+        barrierColor: Colors.black54,
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return Dialog(
+              elevation: 0,
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0)),
+              child: MultipleViewDateRangePicker(
+                confirmText: AppLocalizations.of(context).setDate,
+                cancelText: AppLocalizations.of(context).cancel,
+                last7daysTitle: AppLocalizations.of(context).last7Days,
+                last30daysTitle: AppLocalizations.of(context).last30Days,
+                last6monthsTitle: AppLocalizations.of(context).last6Months,
+                lastYearTitle: AppLocalizations.of(context).lastYears,
+                startDate: _startDate,
+                endDate: _endDate,
+                setDateActionCallback: ({startDate, endDate}) {
+                  _handleSelectDateRangeResult(context, startDate, endDate);
+                },
+              )
+          );
+        }
+    );
+  }
+
+  void _handleSelectDateRangeResult(
+      BuildContext context,
+      DateTime? startDate,
+      DateTime? endDate
+  ) {
+    log('AdvancedFilterController::_handleSelectDateRangeResult(): startDate: $startDate');
+    log('AdvancedFilterController::_handleSelectDateRangeResult(): endDate: $endDate');
+    if (startDate == null) {
+      _appToast.showToastWithIcon(
+          context,
+          textColor: Colors.black,
+          message: AppLocalizations.of(context).toastMessageErrorWhenSelectStartDateIsEmpty,
+          icon: _imagePaths.icNotConnection);
+      return;
+    }
+    if (endDate == null) {
+      _appToast.showToastWithIcon(
+          context,
+          textColor: Colors.black,
+          message: AppLocalizations.of(context).toastMessageErrorWhenSelectEndDateIsEmpty,
+          icon: _imagePaths.icNotConnection);
+      return;
+    }
+
+    if (endDate.isBefore(startDate)) {
+      _appToast.showToastWithIcon(
+          context,
+          textColor: Colors.black,
+          message: AppLocalizations.of(context).toastMessageErrorWhenSelectDateIsInValid,
+          icon: _imagePaths.icNotConnection);
+      return;
+    }
+
+    _startDate = startDate;
+    _endDate = endDate;
+    dateFilterSelectedFormAdvancedSearch.value = EmailReceiveTimeType.customRange;
+    dateFilterInputController.text = EmailReceiveTimeType.customRange.getTitle(
+        context,
+        startDate: startDate,
+        endDate: endDate);
+    dateFilterSelectedFormAdvancedSearch.refresh();
+
+    popBack();
+  }
+
+  void clearDateRangeOfFilter() {
+    _startDate = null;
+    _endDate = null;
+
+    searchController.searchEmailFilter.value =
+        searchController.searchEmailFilter.value.withDateRange(
+          startDate: _startDate.toUTCDate(),
+          endDate: _endDate.toUTCDate());
   }
 
   @override

@@ -481,6 +481,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  flutter_date_range_picker:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: c04608f5daad5e96daf0f419946ad0db23c46811
+      url: "https://github.com/linagora/flutter-date-range-picker.git"
+    source: git
+    version: "1.0.0"
   flutter_dotenv:
     dependency: "direct main"
     description:
@@ -891,7 +900,7 @@ packages:
       name: package_info_plus_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.5"
+    version: "1.0.6"
   package_info_plus_windows:
     dependency: transitive
     description:
@@ -955,6 +964,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.3"
+  pattern_formatter:
+    dependency: transitive
+    description:
+      name: pattern_formatter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   pedantic:
     dependency: transitive
     description:
@@ -989,7 +1005,7 @@ packages:
       name: permission_handler_apple
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "9.0.4"
+    version: "9.0.6"
   permission_handler_platform_interface:
     dependency: transitive
     description:
@@ -1003,7 +1019,7 @@ packages:
       name: permission_handler_windows
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.0"
+    version: "0.1.1"
   petitparser:
     dependency: transitive
     description:
@@ -1088,7 +1104,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "85fe10cd4d3b29bbf803ac796ebe722710fa1d36"
+      resolved-ref: "45ed9a973331ac4209917e365792967d7ca7b5bb"
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.1"
@@ -1251,6 +1267,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.1"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "20.3.48"
+  syncfusion_flutter_datepicker:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_datepicker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "20.3.48"
   synchronized:
     dependency: transitive
     description:
@@ -1425,7 +1455,7 @@ packages:
       name: webview_flutter_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.10.3"
+    version: "2.10.4"
   webview_flutter_platform_interface:
     dependency: transitive
     description:
