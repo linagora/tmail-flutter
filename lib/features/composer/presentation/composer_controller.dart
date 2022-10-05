@@ -954,8 +954,8 @@ class ComposerController extends BaseController {
     return File(
       Platform.isIOS
           ? sharedMediaFile.type == SharedMediaType.FILE
-          ? sharedMediaFile.path.toString().replaceAll('file:/', '')
-          : sharedMediaFile.path
+          ? sharedMediaFile.path.toString().replaceAll('file:/', '').replaceAll('%20', ' ')
+          : sharedMediaFile.path.toString().replaceAll('%20', ' ')
           : sharedMediaFile.path,
     );
   }
