@@ -112,7 +112,7 @@ class SearchEmailFilter {
 
 extension SearchEmailFilterExtension on SearchEmailFilter {
 
-  SearchEmailFilter toSearchEmailFilter({UTCDate? newBefore}) {
+  SearchEmailFilter clearBeforeDate() {
     return SearchEmailFilter(
       from: from,
       to: to,
@@ -122,7 +122,9 @@ extension SearchEmailFilterExtension on SearchEmailFilter {
       mailbox: mailbox,
       emailReceiveTimeType: emailReceiveTimeType,
       hasAttachment: hasAttachment,
-      before: newBefore,
+      before: null,
+      startDate: startDate,
+      endDate: endDate,
     );
   }
 
