@@ -802,7 +802,7 @@ packages:
       name: logging
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.1.0"
   matcher:
     dependency: transitive
     description:
@@ -1012,7 +1012,7 @@ packages:
       name: permission_handler_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.8.0"
+    version: "3.9.0"
   permission_handler_windows:
     dependency: transitive
     description:
@@ -1104,7 +1104,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "45ed9a973331ac4209917e365792967d7ca7b5bb"
+      resolved-ref: "3dc2e65ee12bf6df9c341ccc229a5dfc9d16405f"
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.1"
@@ -1252,7 +1252,7 @@ packages:
       name: stream_transform
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.1"
   string_scanner:
     dependency: transitive
     description:

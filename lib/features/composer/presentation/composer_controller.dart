@@ -1319,12 +1319,13 @@ class ComposerController extends BaseController {
     popBack();
   }
 
-
   void onEnterKeyDown() {
-    scrollController.animateTo(
-      keyboardRichTextController.currentLine * 20,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.linear,
-    );
+    if(scrollController.position.pixels < scrollController.position.maxScrollExtent) {
+      scrollController.animateTo(
+        scrollController.position.pixels + 20,
+        duration: const Duration(milliseconds: 1),
+        curve: Curves.linear,
+      );
+    }
   }
 }
