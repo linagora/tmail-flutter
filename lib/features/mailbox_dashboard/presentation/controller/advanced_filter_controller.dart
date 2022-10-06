@@ -151,7 +151,11 @@ class AdvancedFilterController extends BaseController {
 
   void applyAdvancedSearchFilter(BuildContext context) {
     _updateFilterEmailFromAdvancedSearchView();
-    searchController.isAdvancedSearchHasApply.value = _checkAdvancedSearchHasApply();
+    searchController.isAdvancedSearchHasApply.value = isAdvancedSearchHasApplied;
+    if (!isAdvancedSearchHasApplied) {
+      final newSearchEmailFilter = searchController.searchEmailFilter.value.clearBeforeDate();
+      searchController.searchEmailFilter.value = newSearchEmailFilter;
+    }
     searchController.isAdvancedSearchViewOpen.toggle();
     _mailboxDashBoardController.searchEmail(
         context, StringConvert.writeNullToEmpty(searchEmailFilter.text?.value));
@@ -220,14 +224,14 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  bool _checkAdvancedSearchHasApply() {
+  bool get isAdvancedSearchHasApplied {
     return searchEmailFilter.from.isNotEmpty ||
         searchEmailFilter.to.isNotEmpty ||
         subjectFilterInputController.text.isNotEmpty ||
         hasKeyWordFilterInputController.text.isNotEmpty ||
         notKeyWordFilterInputController.text.isNotEmpty ||
         searchEmailFilter.emailReceiveTimeType != EmailReceiveTimeType.allTime ||
-        searchEmailFilter.mailbox != _mailboxDashBoardController.selectedMailbox.value ||
+        searchEmailFilter.mailbox != PresentationMailbox.unifiedMailbox ||
         hasAttachment.isTrue;
   }
 

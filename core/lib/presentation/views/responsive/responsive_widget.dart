@@ -24,8 +24,6 @@ class ResponsiveWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log('ResponsiveWidget::build(): WIDTH_SIZE: ${responsiveUtils.getDeviceWidth(context)}');
-
     if (BuildUtils.isWeb) {
       if (responsiveUtils.isMobile(context)) {
         return mobile;

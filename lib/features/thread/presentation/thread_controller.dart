@@ -431,7 +431,7 @@ class ThreadController extends BaseController {
         final limit = emailList.isNotEmpty
             ? UnsignedInt(emailList.length)
             : ThreadConstants.defaultLimit;
-        searchController.searchEmailFilter.value = _searchEmailFilter.toSearchEmailFilter(newBefore: null);
+        searchController.searchEmailFilter.value = _searchEmailFilter.clearBeforeDate();
         _searchEmail(limit: limit);
       }
     } else {
@@ -456,7 +456,6 @@ class ThreadController extends BaseController {
   void loadMoreEmails() {
     log('ThreadController::loadMoreEmails()');
     if (canLoadMore && _accountId != null) {
-      startFpsMeter();
       consumeState(_loadMoreEmailsInMailboxInteractor.execute(
         GetEmailRequest(
             _accountId!,
