@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
@@ -97,7 +98,7 @@ class HomeController extends BaseController {
     _emailReceiveManager.receivingSharingStream.listen((uri) {
       log('HomeController::onReady(): Received Email: ${uri.toString()}');
       if (uri != null) {
-        if(_emailReceiveManager.mailRegex.hasMatch(uri.path)) {
+        if(GetUtils.isEmail(uri.path)) {
           log('HomeController::onReady(): Address: ${uri.path}');
           _emailReceiveManager.setPendingEmailAddress(EmailAddress(null, uri.path));
         } else {

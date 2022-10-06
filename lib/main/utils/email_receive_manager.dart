@@ -5,9 +5,6 @@ import 'package:rxdart/rxdart.dart';
 
 class EmailReceiveManager {
 
-  /// Regex check Url is mail or not
-  final mailRegex = RegExp(r'(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)');
-
   BehaviorSubject<EmailAddress?> _pendingEmailAddressInfo = BehaviorSubject.seeded(null);
   BehaviorSubject<EmailAddress?> get pendingEmailAddressInfo => _pendingEmailAddressInfo;
 
