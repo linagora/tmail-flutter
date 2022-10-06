@@ -285,7 +285,6 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
               child: SingleChildScrollView(
                 controller: controller.scrollController,
                 physics: const ClampingScrollPhysics(),
-                reverse: true,
                 child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(children: [
@@ -510,7 +509,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
       );
     } else {
       return html_editor_mobile.HtmlEditor(
-        key:const Key('html_editor_mobile'),
+        key: controller.htmlKey,
         minHeight: 230,
         onCreated: (htmlEditorController) {
           controller.keyboardRichTextController.onCreateHTMLEditor(

@@ -66,7 +66,7 @@ class IdentityCreatorController extends BaseController {
   String? _contentHtmlEditor;
 
   final ScrollController scrollController = ScrollController();
-  double currentPositionYHTMLEditor = 250;
+  final GlobalKey htmlKey = GlobalKey();
 
   void updateNameIdentity(BuildContext context, String? value) {
     _nameIdentity = value;
@@ -405,19 +405,24 @@ class IdentityCreatorController extends BaseController {
     }
   }
 
-  void onFocusHTMLEditor() {
-    scrollController.animateTo(
-      currentPositionYHTMLEditor,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.linear,
-    );
+  void onFocusHTMLEditor() async {
+    await Scrollable.ensureVisible(htmlKey.currentContext!);
+    await Future.delayed(const Duration(milliseconds: 500), () {
+      scrollController.animateTo(
+        scrollController.position.pixels + defaultKeyboardToolbarHeight,
+        duration: const Duration(milliseconds: 1),
+        curve: Curves.linear,
+      );
+    });
   }
 
   void onEnterKeyDown() {
-    scrollController.animateTo(
-      currentPositionYHTMLEditor - keyboardRichTextController.currentLine * 20,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.linear,
-    );
+    if(scrollController.position.pixels < scrollController.position.maxScrollExtent) {
+      scrollController.animateTo(
+        scrollController.position.pixels + 20,
+        duration: const Duration(milliseconds: 1),
+        curve: Curves.linear,
+      );
+    }
   }
 }

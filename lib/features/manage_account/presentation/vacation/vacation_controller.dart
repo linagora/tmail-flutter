@@ -44,6 +44,9 @@ class VacationController extends BaseController {
   final messageTextController = TextEditingController();
   final subjectTextController = TextEditingController();
   final richTextControllerForMobile = RichTextController();
+  final htmlEditorMinHeight = 150;
+
+  final GlobalKey htmlKey = GlobalKey();
 
   VacationResponse? currentVacation;
   String? _vacationMessageHtmlText;
@@ -51,7 +54,6 @@ class VacationController extends BaseController {
   late Worker vacationWorker;
 
   final ScrollController scrollController = ScrollController();
-  double currentPositionYHTMLEditor = 660;
 
   VacationController(
     this._getAllVacationInteractor,
@@ -361,20 +363,25 @@ class VacationController extends BaseController {
     _settingController.backToUniversalSettings();
   }
 
-  void onFocusHTMLEditor() {
-    scrollController.animateTo(
-      currentPositionYHTMLEditor,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.linear,
-    );
+  void onFocusHTMLEditor() async {
+    await Scrollable.ensureVisible(htmlKey.currentContext!);
+    await Future.delayed(const Duration(milliseconds: 500), () {
+      scrollController.animateTo(
+        scrollController.position.pixels + defaultKeyboardToolbarHeight + htmlEditorMinHeight,
+        duration: const Duration(milliseconds: 1),
+        curve: Curves.linear,
+      );
+    });
   }
 
   void onEnterKeyDown() {
-    scrollController.animateTo(
-      currentPositionYHTMLEditor + richTextControllerForMobile.currentLine * 20,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.linear,
-    );
+    if(scrollController.position.pixels < scrollController.position.maxScrollExtent) {
+      scrollController.animateTo(
+        scrollController.position.pixels + 20,
+        duration: const Duration(milliseconds: 1),
+        curve: Curves.linear,
+      );
+    }
   }
 
   @override

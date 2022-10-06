@@ -61,6 +61,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                 : null,
             padding: SettingsUtils.getMarginViewForSettingDetails(context, _responsiveUtils),
             child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
               controller: controller.scrollController,
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -469,8 +470,8 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
       );
     } else {
       return html_editor_mobile.HtmlEditor(
-          key: const Key('vacation_message_html_text_editor_mobile'),
-          minHeight: 150,
+          key: controller.htmlKey,
+          minHeight: controller.htmlEditorMinHeight,
           addDefaultSelectionMenuItems: false,
           initialContent: controller.vacationMessageHtmlText ?? '',
           onCreated: (htmlApi) {
