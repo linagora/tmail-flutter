@@ -50,6 +50,9 @@ class VacationController extends BaseController {
 
   late Worker vacationWorker;
 
+  final ScrollController scrollController = ScrollController();
+  double currentPositionYHTMLEditor = 660;
+
   VacationController(
     this._getAllVacationInteractor,
     this._updateVacationInteractor,
@@ -356,6 +359,22 @@ class VacationController extends BaseController {
   void backToUniversalSettings(BuildContext context) {
     clearFocusEditor(context);
     _settingController.backToUniversalSettings();
+  }
+
+  void onFocusHTMLEditor() {
+    scrollController.animateTo(
+      currentPositionYHTMLEditor,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.linear,
+    );
+  }
+
+  void onEnterKeyDown() {
+    scrollController.animateTo(
+      currentPositionYHTMLEditor + richTextControllerForMobile.currentLine * 20,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.linear,
+    );
   }
 
   @override
