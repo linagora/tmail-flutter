@@ -679,7 +679,7 @@ class ComposerView extends GetWidget<ComposerController>
           if(responsiveUtils.isMobile(context)){
             controller.keyboardRichTextController.onCreateHTMLEditor(
               editorApi,
-              scrollController: controller.scrollController,
+              onEnterKeyDown: controller.onEnterKeyDown,
             );
           } else {
             richTextMobileTabletController.htmlEditorApi = editorApi;

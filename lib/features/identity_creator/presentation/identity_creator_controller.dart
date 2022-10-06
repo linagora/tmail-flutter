@@ -66,6 +66,7 @@ class IdentityCreatorController extends BaseController {
   String? _contentHtmlEditor;
 
   final ScrollController scrollController = ScrollController();
+  double currentPositionYHTMLEditor = 250;
 
   void updateNameIdentity(BuildContext context, String? value) {
     _nameIdentity = value;
@@ -402,5 +403,21 @@ class IdentityCreatorController extends BaseController {
     } else {
       popBack();
     }
+  }
+
+  void onFocusHTMLEditor() {
+    scrollController.animateTo(
+      currentPositionYHTMLEditor,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.linear,
+    );
+  }
+
+  void onEnterKeyDown() {
+    scrollController.animateTo(
+      currentPositionYHTMLEditor - keyboardRichTextController.currentLine * 20,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.linear,
+    );
   }
 }

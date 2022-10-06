@@ -510,12 +510,13 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
       );
     } else {
       return html_editor_mobile.HtmlEditor(
-        key: const Key('signature_html_editor_mobile'),
+        key:const Key('html_editor_mobile'),
         minHeight: 230,
         onCreated: (htmlEditorController) {
           controller.keyboardRichTextController.onCreateHTMLEditor(
             htmlEditorController,
-            scrollController:controller.scrollController,
+            onFocus: controller.onFocusHTMLEditor,
+            onEnterKeyDown: controller.onEnterKeyDown,
           );
           controller.signatureHtmlEditorMobileController = htmlEditorController;
         },

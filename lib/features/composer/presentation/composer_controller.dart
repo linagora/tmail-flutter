@@ -1318,4 +1318,13 @@ class ComposerController extends BaseController {
     FocusManager.instance.primaryFocus?.unfocus();
     popBack();
   }
+
+
+  void onEnterKeyDown() {
+    scrollController.animateTo(
+      keyboardRichTextController.currentLine * 20,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.linear,
+    );
+  }
 }
