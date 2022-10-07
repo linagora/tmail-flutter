@@ -390,6 +390,7 @@ class VacationController extends BaseController {
     subjectTextController.dispose();
     richTextControllerForMobile.dispose();
     vacationWorker.dispose();
+    scrollController.dispose();
     VacationControllerBindings().dispose();
     super.onClose();
   }
