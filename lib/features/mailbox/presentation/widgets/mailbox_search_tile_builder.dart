@@ -224,7 +224,8 @@ class MailboxSearchTileBuilder {
   Widget? _buildSelectedIcon() {
     if (_presentationMailbox.id == mailboxIdSelected &&
         mailboxDisplayed == MailboxDisplayed.destinationPicker &&
-        mailboxActions == MailboxActions.select) {
+        (mailboxActions == MailboxActions.select ||
+        mailboxActions == MailboxActions.create)) {
       return Padding(
         padding: const EdgeInsets.only(right: 8),
         child: SvgPicture.asset(

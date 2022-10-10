@@ -764,7 +764,7 @@ class MailboxController extends BaseMailboxController {
       _appToast.showToastWithAction(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).moved_to_mailbox(
-              success.destinationMailboxName?.name ?? AppLocalizations.of(currentContext!).default_mailbox),
+              success.destinationMailboxName?.name ?? AppLocalizations.of(currentContext!).allMailboxes),
           AppLocalizations.of(currentContext!).undo_action,
           () {
             _undoMovingMailbox(MoveMailboxRequest(
