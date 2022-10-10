@@ -6,12 +6,12 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class TopBarDestinationPickerWebBuilder extends StatelessWidget {
+class TopBarDestinationPickerBuilder extends StatelessWidget {
 
   final MailboxActions? _mailboxAction;
   final VoidCallback? onCloseAction;
 
-  const TopBarDestinationPickerWebBuilder(
+  const TopBarDestinationPickerBuilder(
       this._mailboxAction,
       {
         Key? key,
@@ -24,31 +24,35 @@ class TopBarDestinationPickerWebBuilder extends StatelessWidget {
     final _imagePaths = Get.find<ImagePaths>();
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       color: Colors.white,
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+      height: 52,
+      child: Stack(
           children: [
-            const SizedBox(width: 40),
-            Expanded(
+            Center(
               child: Text(
                 _mailboxAction?.getTitle(context) ?? '',
                 maxLines: 1,
-                  softWrap: CommonTextStyle.defaultSoftWrap,
+                softWrap: CommonTextStyle.defaultSoftWrap,
                 overflow: CommonTextStyle.defaultTextOverFlow,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontSize: 20,
                     color: Colors.black,
                     fontWeight: FontWeight.w700))),
-            buildIconWeb(
-                iconSize: 32,
-                colorSelected: Colors.white,
-                splashRadius: 20,
-                iconPadding: const EdgeInsets.all(5),
-                icon: SvgPicture.asset(_imagePaths.icCloseMailbox, fit: BoxFit.fill),
-                tooltip: AppLocalizations.of(context).close,
-                onTap: () => onCloseAction?.call()),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: buildIconWeb(
+                    iconSize: 24,
+                    colorSelected: Colors.white,
+                    splashRadius: 15,
+                    iconPadding: const EdgeInsets.all(3),
+                    icon: SvgPicture.asset(_imagePaths.icComposerClose, fit: BoxFit.fill),
+                    tooltip: AppLocalizations.of(context).close,
+                    onTap: () => onCloseAction?.call()),
+              ),
+            ),
           ]
       ),
     );
