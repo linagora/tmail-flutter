@@ -81,7 +81,7 @@ extension MailboxActionsExtension on MailboxActions {
     }
   }
 
-  bool hasSearchActive() {
+  bool canSearch() {
     switch(this) {
       case MailboxActions.moveEmail:
       case MailboxActions.move:

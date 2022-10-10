@@ -66,60 +66,71 @@ class MailBoxFolderTileBuilder {
     _onMenuActionClick = onMenuActionClick;
   }
 
-  Widget build() {
-    return Theme(
-        data: ThemeData(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent),
-        child: _buildMailboxItem()
-    );
-  }
+  Widget build() => _buildMailboxItem();
 
   Widget _buildMailboxItem() {
-    if (BuildUtils.isWeb) {
-      if (mailboxDisplayed == MailboxDisplayed.mailbox) {
-        return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return InkWell(
-                onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
-                onHover: (value) => setState(() => isHoverItem = value),
-                child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: backgroundColorItem),
-                    padding: const EdgeInsets.only(left: 4, right: 4, top: 8, bottom: 8),
-                    margin: const EdgeInsets.only(bottom: 4),
-                    child: Row(children: [
-                      _buildLeadingMailboxItem(),
-                      const SizedBox(width: 4),
-                      Expanded(child: _buildTitleFolderItem()),
-                      const SizedBox(width: 8),
-                      _buildTrailingMailboxItem()
-                    ])
-                ),
-              );
-            });
+    if (mailboxDisplayed == MailboxDisplayed.mailbox) {
+      if (BuildUtils.isWeb) {
+        return Theme(
+          data: ThemeData(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent),
+          child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return InkWell(
+                  onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
+                  onHover: (value) => setState(() => isHoverItem = value),
+                  child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: backgroundColorItem),
+                      padding: const EdgeInsets.only(left: 4, right: 4, top: 8, bottom: 8),
+                      margin: const EdgeInsets.only(bottom: 4),
+                      child: Row(children: [
+                        _buildLeadingMailboxItem(),
+                        const SizedBox(width: 4),
+                        Expanded(child: _buildTitleFolderItem()),
+                        const SizedBox(width: 8),
+                        _buildTrailingMailboxItem()
+                      ])
+                  ),
+                );
+              }
+          ),
+        );
       } else {
         return AbsorbPointer(
           absorbing: !_mailboxNode.isActivated,
           child: Opacity(
             opacity: _mailboxNode.isActivated ? 1.0 : 0.3,
             child: InkWell(
-              onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
-              radius: 14,
+              onTap: () => allSelectMode == SelectMode.ACTIVE
+                  ? _onSelectMailboxFolderClick?.call(_mailboxNode)
+                  : _onOpenMailboxFolderClick?.call(_mailboxNode),
               child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(14)),
-                child: Container(
-                    padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10),
-                    child: Row(children: [
-                      _buildLeadingMailboxItem(),
-                      const SizedBox(width: 8),
-                      Expanded(child: _buildTitleFolderItem()),
-                      _buildSelectedIcon(),
-                      const SizedBox(width: 8),
-                      _buildTrailingMailboxItem()
-                    ])
-                ),
+                  borderRadius: const BorderRadius.all(Radius.circular(14)),
+                  child: Container(
+                      color: Colors.white,
+                      child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: _mailboxNode.hasChildren() ? 8 : 15),
+                              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                _buildLeadingMailboxItem(),
+                                const SizedBox(width: 8),
+                                Expanded(child: _buildTitleFolderItem()),
+                                _buildSelectedIcon(),
+                                const SizedBox(width: 8),
+                                _buildTrailingMailboxItem()
+                              ]),
+                            ),
+                            _buildDivider(),
+                          ]
+                      )
+                  )
               ),
             ),
           ),
@@ -130,34 +141,22 @@ class MailBoxFolderTileBuilder {
         absorbing: !_mailboxNode.isActivated,
         child: Opacity(
           opacity: _mailboxNode.isActivated ? 1.0 : 0.3,
-          child: InkWell(
-            onTap: () => allSelectMode == SelectMode.ACTIVE
-                ? _onSelectMailboxFolderClick?.call(_mailboxNode)
-                : _onOpenMailboxFolderClick?.call(_mailboxNode),
-            child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(14)),
-                child: Container(
-                    color: Colors.white,
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: _mailboxNode.hasChildren() ? 8 : 15),
-                            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                              _buildLeadingMailboxItem(),
-                              const SizedBox(width: 8),
-                              Expanded(child: _buildTitleFolderItem()),
-                              _buildSelectedIcon(),
-                              const SizedBox(width: 8),
-                              _buildTrailingMailboxItem()
-                            ]),
-                          ),
-                          _buildDivider(),
-                        ]
-                    )
-                )
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
+              child: Container(
+                  color: Colors.transparent,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  child: Row(children: [
+                    _buildLeadingMailboxItem(),
+                    const SizedBox(width: 8),
+                    Expanded(child: _buildTitleFolderItem()),
+                    _buildSelectedIcon(),
+                    const SizedBox(width: 8),
+                    _buildTrailingMailboxItem()
+                  ])
+              ),
             ),
           ),
         ),
@@ -252,9 +251,9 @@ class MailBoxFolderTileBuilder {
                           ? AppColor.colorExpandMailbox
                           : AppColor.colorCollapseMailbox,
                       fit: BoxFit.fill),
-                  splashRadius: 20,
+                  splashRadius: mailboxDisplayed == MailboxDisplayed.mailbox ? 20 : 20,
                   iconPadding: EdgeInsets.zero,
-                  minSize: 40,
+                  minSize: mailboxDisplayed == MailboxDisplayed.mailbox ? 40 : 24,
                   tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND
                       ? AppLocalizations.of(_context).collapse
                       : AppLocalizations.of(_context).expand,
