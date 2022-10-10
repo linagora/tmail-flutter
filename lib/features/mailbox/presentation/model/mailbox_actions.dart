@@ -21,7 +21,7 @@ extension MailboxActionsExtension on MailboxActions {
   String getTitle(BuildContext context) {
     switch(this) {
       case MailboxActions.create:
-        return AppLocalizations.of(context).mailbox_location;
+        return AppLocalizations.of(context).selectParentFolder;
       case MailboxActions.moveEmail:
       case MailboxActions.move:
         return AppLocalizations.of(context).moveTo;
@@ -72,17 +72,9 @@ extension MailboxActionsExtension on MailboxActions {
     }
   }
 
-  Color getBackgroundColor() {
-    switch(this) {
-      case MailboxActions.create:
-        return AppColor.colorBgMailbox;
-      default:
-        return Colors.white;
-    }
-  }
-
   bool canSearch() {
     switch(this) {
+      case MailboxActions.create:
       case MailboxActions.moveEmail:
       case MailboxActions.move:
       case MailboxActions.select:

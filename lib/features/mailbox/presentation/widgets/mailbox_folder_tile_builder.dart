@@ -388,7 +388,8 @@ class MailBoxFolderTileBuilder {
   Widget _buildSelectedIcon() {
     if (_mailboxNode.item.id == mailboxIdSelected &&
         mailboxDisplayed == MailboxDisplayed.destinationPicker &&
-        mailboxActions == MailboxActions.select) {
+        (mailboxActions == MailboxActions.select ||
+        mailboxActions == MailboxActions.create)) {
       return SvgPicture.asset(
           _imagePaths.icFilterSelected,
           width: 20,

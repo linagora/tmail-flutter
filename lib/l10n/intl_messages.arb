@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-05T22:55:58.696295",
+  "@@last_modified": "2022-10-10T22:38:31.310368",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -612,18 +612,6 @@
   },
   "new_mailbox": "New mailbox",
   "@new_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailbox_location": "Mailbox location",
-  "@mailbox_location": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "default_mailbox": "Default mailbox",
-  "@default_mailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2290,6 +2278,12 @@
   },
   "customRange": "Custom range",
   "@customRange": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectParentFolder": "Select parent folder",
+  "@selectParentFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

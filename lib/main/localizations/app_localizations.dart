@@ -637,20 +637,6 @@ class AppLocalizations {
     );
   }
 
-  String get mailbox_location {
-    return Intl.message(
-      'Mailbox location',
-      name: 'mailbox_location',
-    );
-  }
-
-  String get default_mailbox {
-    return Intl.message(
-      'Default mailbox',
-      name: 'default_mailbox',
-    );
-  }
-
   String get name_of_mailbox_is_required {
     return Intl.message(
       'Name of mailbox is required',
@@ -2377,4 +2363,9 @@ class AppLocalizations {
         name: 'customRange');
   }
 
+  String get selectParentFolder {
+    return Intl.message(
+        'Select parent folder',
+        name: 'selectParentFolder');
+  }
 }

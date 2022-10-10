@@ -38,12 +38,12 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
     }
 
     return PointerInterceptor(
-      child: Card(
-        margin: EdgeInsets.zero,
-        borderOnForeground: false,
-        color: Colors.transparent,
-        child: GestureDetector(
-          onTap: () => controller.closeDestinationPicker(),
+      child: GestureDetector(
+        onTap: () => controller.closeDestinationPicker(),
+        child: Card(
+          margin: EdgeInsets.zero,
+          borderOnForeground: false,
+          color: Colors.transparent,
           child: SafeArea(
             top: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context),
             bottom: false,
@@ -86,7 +86,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                                     ? _buildInputSearchFormWidget(context)
                                     : const SizedBox.shrink()),
                                 Expanded(child: Container(
-                                    color: actions?.getBackgroundColor(),
+                                    color: Colors.white,
                                     child: RefreshIndicator(
                                         color: AppColor.primaryColor,
                                         onRefresh: () async => controller.getAllMailboxAction(),
@@ -255,8 +255,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
       MailboxActions? actions,
       MailboxId? mailboxIdSelected
   ) {
-    if (actions == MailboxActions.move || actions == MailboxActions.select) {
-      return Material(
+    return Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => controller.selectMailboxAction(PresentationMailbox.unifiedMailbox),
@@ -294,42 +293,6 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           ),
         ),
       );
-    }
-
-    return Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.only(
-          left: !_responsiveUtils.isLandscapeMobile(context) ? 16 : 0,
-          top: 16,
-          right: 16),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white),
-      child: MediaQuery(
-        data: const MediaQueryData(padding: EdgeInsets.zero),
-        child: ListTile(
-          contentPadding: EdgeInsets.zero,
-          onTap: () => controller.selectMailboxAction(PresentationMailbox.unifiedMailbox),
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: SvgPicture.asset(_imagePaths.icFolderMailbox,
-                width: BuildUtils.isWeb ? 20 : 24,
-                height: BuildUtils.isWeb ? 20 : 24,
-                fit: BoxFit.fill)),
-          title: Transform(
-            transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
-            child: Row(
-              children: [
-                Expanded(child: Text(
-                  AppLocalizations.of(context).default_mailbox,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 15, color: AppColor.colorNameEmail),
-                ))
-              ]
-            )
-          ),
-        ),
-      )
-    );
   }
 
   void _handleOpenMailboxClick(MailboxNode mailboxNode) {

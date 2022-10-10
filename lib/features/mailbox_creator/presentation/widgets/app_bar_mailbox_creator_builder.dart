@@ -32,23 +32,14 @@ class AppBarMailboxCreatorBuilder {
 
   Widget build() {
     return Container(
-        key: const Key('app_bar_mailbox_creator'),
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-          color: AppColor.colorBgMailbox),
-        child: MediaQuery(
-            data: const MediaQueryData(padding: EdgeInsets.zero),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildCancelButton(),
-                  Expanded(child: _buildTitle()),
-                  _buildCreateButton()
-                ]
-            )
-        )
+        color: Colors.white,
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Row(children: [
+          _buildCancelButton(),
+          Expanded(child: _buildTitle()),
+          _buildCreateButton()
+        ])
     );
   }
 
@@ -73,7 +64,11 @@ class AppBarMailboxCreatorBuilder {
         child: TextButton(
             child: Text(
               AppLocalizations.of(_context).done,
-              style: TextStyle(fontSize: 17, color: isValidated ? AppColor.colorTextButton : AppColor.colorDisableMailboxCreateButton),
+              style: TextStyle(
+                  fontSize: 17,
+                  color: isValidated
+                      ? AppColor.colorTextButton
+                      : AppColor.colorDisableMailboxCreateButton),
             ),
             onPressed: () => isValidated ? _onDoneActionClick?.call() : null
         )
