@@ -762,7 +762,7 @@
       "nameMailbox": {}
     }
   },
-  "delete_multiple_messages_dialog": "Bạn đang xoá vĩnh viễn {count} tin nhắn trong Thùng rác. Bạn có tiếp tục không?",
+  "delete_multiple_messages_dialog": "Bạn đang xoá vĩnh viễn {count} tin nhắn trong {mailboxName}. Bạn có tiếp tục không?",
   "@delete_multiple_messages_dialog": {
     "type": "text",
     "placeholders_order": [
@@ -1936,6 +1936,412 @@
   },
   "ruleFilterAddressFromField": "Từ",
   "@ruleFilterAddressFromField": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEnableVacationResponderAutomatically": "Phản hồi kỳ nghỉ sẽ được kích hoạt vào {startDate}",
+  "@messageEnableVacationResponderAutomatically": {
+    "type": "text",
+    "placeholders_order": [
+      "startDate"
+    ],
+    "placeholders": {
+      "startDate": {}
+    }
+  },
+  "setDate": "Ngày",
+  "@setDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageErrorWhenSelectStartDateIsEmpty": "Ngày bắt đầu rỗng.",
+  "@toastMessageErrorWhenSelectStartDateIsEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addRecipients": "Thêm người nhận",
+  "@addRecipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogDeleteAllRecipientForward": "Bạn có muốn xoá tất cả email?",
+  "@messageConfirmationDialogDeleteAllRecipientForward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageLocalCopyEnable": "Giữ bản sao.",
+  "@toastMessageLocalCopyEnable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endTime": "Kết thúc",
+  "@endTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "contact": "Liên hệ",
+  "@contact": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintSearchInputContact": "Điền tên hoặc email",
+  "@hintSearchInputContact": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageErrorWhenSelectDateIsInValid": "Thời gian kết thúc trước thời gian bắt đầu.",
+  "@toastMessageErrorWhenSelectDateIsInValid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dateRangeAdvancedSearchFilter": "Từ {startDate} đến {endDate}",
+  "@dateRangeAdvancedSearchFilter": {
+    "type": "text",
+    "placeholders_order": [
+      "startDate",
+      "endDate"
+    ],
+    "placeholders": {
+      "startDate": {},
+      "endDate": {}
+    }
+  },
+  "vacation": "Kỳ nghỉ",
+  "@vacation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deactivated": "Vô hiệu",
+  "@deactivated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startDate": "Bắt đầu",
+  "@startDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endDate": "Kết thúc",
+  "@endDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationStopsAt": "Kết thúc kỳ nghỉ",
+  "@vacationStopsAt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message": "Tin nhắn",
+  "@message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintMessageBodyVacation": "Tin nhắn kỳ nghỉ",
+  "@hintMessageBodyVacation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noStartTime": "Không có thời gian bắt đầu",
+  "@noStartTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenStartDateVacationIsEmpty": "Vui lòng điền ngày bắt đầu",
+  "@errorMessageWhenStartDateVacationIsEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourVacationResponderIsDisabledSuccessfully": "Phản hồi kỳ nghỉ đã được vô hiệu",
+  "@yourVacationResponderIsDisabledSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDisableVacationResponderAutomatically": "Phản hồi kỳ nghỉ đã vô hiệu {endDate}",
+  "@messageDisableVacationResponderAutomatically": {
+    "type": "text",
+    "placeholders_order": [
+      "endDate"
+    ],
+    "placeholders": {
+      "endDate": {}
+    }
+  },
+  "toastMessageLocalCopyDisable": "Vô hiệu bản sao.",
+  "@toastMessageLocalCopyDisable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastErrorMessageWhenCreateNewRule": "Bạn chưa điền đủ thông tin.",
+  "@toastErrorMessageWhenCreateNewRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingExplanation": "Trả lời tự động.",
+  "@vacationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingToggleButtonAutoReply": "Tự động trả lời tin nhắn.",
+  "@vacationSettingToggleButtonAutoReply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintSubjectInputVacationSetting": "Tiêu đề",
+  "@hintSubjectInputVacationSetting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveChanges": "Lưu thay đổi",
+  "@saveChanges": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageIsRequired": "Tin nhắn bắt buộc",
+  "@messageIsRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endNow": "Kết thúc",
+  "@endNow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSetting": "Cài đặt kỳ nghỉ",
+  "@vacationSetting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "backToSearchResults": "Quay lại kết quả Tìm kiếm",
+  "@backToSearchResults": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearAll": "Xoá tất cả",
+  "@clearAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quickStyles": "Định dạng",
+  "@quickStyles": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "format": "Định dạng",
+  "@format": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "background": "Nền",
+  "@background": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "foreground": "Foreground",
+  "@foreground": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleFormat": "Định dạng",
+  "@titleFormat": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleQuickStyles": "Định dạng",
+  "@titleQuickStyles": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleBackground": "Nền",
+  "@titleBackground": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleForeground": "Foreground",
+  "@titleForeground": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageErrorWhenSelectEndDateIsEmpty": "Ngày kết thúc rỗng.",
+  "@toastMessageErrorWhenSelectEndDateIsEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "headerRecipients": "Người nhận",
+  "@headerRecipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwarding": "Chuyển tiếp",
+  "@forwarding": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noEndTime": "Không có thời gian kết thúc",
+  "@noEndTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "customRange": "Khoảng thời gian",
+  "@customRange": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "activated": "Đã kích hoạt",
+  "@activated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noEndDate": "Không có ngày kết thúc",
+  "@noEndDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenEndDateVacationIsInValid": "Ngày kết thúc phải sau ngày bắt đầu",
+  "@errorMessageWhenEndDateVacationIsInValid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteRecipient": "Xoá người nhận",
+  "@deleteRecipient": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageAddRecipientsSuccessfully": "Email đã được thêm vào danh sách nhận.",
+  "@toastMessageAddRecipientsSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keepLocalCopyForwardLabel": "Giữ bản sao",
+  "@keepLocalCopyForwardLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startTime": "Bắt đầu",
+  "@startTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenMessageVacationIsEmpty": "Tin nhắn trống",
+  "@errorMessageWhenMessageVacationIsEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingSaved": "Cài đặt đã thay đổi",
+  "@vacationSettingSaved": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recipientsLabel": "Tên hoặc Email",
+  "@recipientsLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogDeleteEmailRule": "Bạn có muốn xoá bộ lọc \"{ruleName}\"?",
+  "@messageConfirmationDialogDeleteEmailRule": {
+    "type": "text",
+    "placeholders_order": [
+      "ruleName"
+    ],
+    "placeholders": {
+      "ruleName": {}
+    }
+  },
+  "selectDate": "Ngày",
+  "@selectDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourVacationResponderIsEnabled": "Phản hồi kỳ nghỉ đã được kích hoạt.",
+  "@yourVacationResponderIsEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogDeleteRecipientForward": "Bạn có muốn xoá email {emailAddress}?",
+  "@messageConfirmationDialogDeleteRecipientForward": {
+    "type": "text",
+    "placeholders_order": [
+      "emailAddress"
+    ],
+    "placeholders": {
+      "emailAddress": {}
+    }
+  },
+  "toastMessageDeleteRecipientSuccessfully": "Địa chỉ email đã được xoá khỏi danh sách nhận.",
+  "@toastMessageDeleteRecipientSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailRuleSettingExplanation": "Tạo bộ lọc để phân loại tin nhắn tới. Bạn có thể chọn các điều kiện để kích hoạt thực hiện bộ lọc.",
+  "@emailRuleSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageDeleteEmailRuleSuccessfully": "Bộ lọc đã được loại bỏ.",
+  "@toastMessageDeleteEmailRuleSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteEmailRule": "Xoá bộ lọc",
+  "@deleteEmailRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
