@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-10T22:38:31.310368",
+  "@@last_modified": "2022-10-10T23:39:00.642884",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -414,8 +414,8 @@
       "destinationMailboxPath": {}
     }
   },
-  "undo_action": "UNDO",
-  "@undo_action": {
+  "undo": "Undo",
+  "@undo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

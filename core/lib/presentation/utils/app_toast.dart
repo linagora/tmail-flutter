@@ -38,37 +38,95 @@ class AppToast {
         gravity: ToastGravity.BOTTOM);
   }
 
-  void showToastWithAction(
+  void showBottomToast(
       BuildContext context,
       String message,
-      String actionName,
-      Function onActionClick, {double? maxWidth}) {
+      {
+        String? actionName,
+        Function? onActionClick,
+        Widget? actionIcon,
+        Widget? leadingIcon,
+        double? maxWidth,
+        Color? backgroundColor,
+        Color? textColor,
+        Color? textActionColor,
+      }
+  ) {
+    var trailingAction;
+
+    if (actionName != null) {
+      if (actionIcon == null) {
+        trailingAction = TextButton(
+          onPressed: () {
+            ToastView.dismiss();
+            onActionClick?.call();
+          },
+          child: Text(
+            actionName,
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.normal,
+                color: textActionColor ?? AppColor.buttonActionToastWithActionColor),
+          ),
+        );
+      } else {
+        trailingAction = Material(
+          color: Colors.transparent,
+          child: InkWell(
+              onTap: () {
+                ToastView.dismiss();
+                onActionClick?.call();
+              },
+              customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      actionIcon,
+                      Text(
+                        actionName,
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                            color: textActionColor ?? Colors.white),
+                      )
+                    ]
+                ),
+              )),
+        );
+      }
+    }
+
     showToastMessage(
         context,
         message,
         maxWidth: maxWidth,
-        trailing: TextButton(
-          onPressed: () {
-            ToastView.dismiss();
-            onActionClick.call();
-          },
-          child: Text(
-            actionName,
-            style: const TextStyle(fontSize: 16, color: AppColor.buttonActionToastWithActionColor),
-          ),
-        ));
+        backgroundColor: backgroundColor,
+        textColor: textColor,
+        leading: leadingIcon,
+        trailing: trailingAction);
   }
 
-  void showToastMessage(BuildContext context, String message, {
-    Widget? leading, Widget? trailing, double? maxWidth
+  void showToastMessage(
+    BuildContext context,
+    String message, {
+    Color? textColor,
+    Widget? leading,
+    Widget? trailing,
+    double? maxWidth,
+    Color? backgroundColor
   }) {
     TMailToast.showToast(
         message,
         context,
         width: maxWidth,
         toastPosition: ToastPosition.BOTTOM,
-        textStyle: TextStyle(fontSize: 16, color: Colors.white),
-        backgroundColor: AppColor.toastWithActionBackgroundColor,
+        textStyle: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.normal,
+            color: textColor ?? Colors.white),
+        backgroundColor: backgroundColor ?? AppColor.toastWithActionBackgroundColor,
         trailing: trailing != null
           ? Padding(
               padding: const EdgeInsets.only(left: 8),
@@ -79,7 +137,7 @@ class AppToast {
                 padding: const EdgeInsets.only(right: 8),
                 child: PointerInterceptor(child: leading))
             : null,
-        toastBorderRadius: 5.0,
+        toastBorderRadius: 10.0,
         toastDuration: 3
     );
   }

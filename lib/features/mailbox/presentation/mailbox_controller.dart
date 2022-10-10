@@ -400,11 +400,19 @@ class MailboxController extends BaseMailboxController {
 
   void _createNewMailboxSuccess(CreateNewMailboxSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
+      _appToast.showBottomToast(
           currentOverlayContext!,
-          textColor: AppColor.toastSuccessBackgroundColor,
-          message: AppLocalizations.of(currentContext!).new_mailbox_is_created(success.newMailbox.name?.name ?? ''),
-          icon: _imagePaths.icFolderMailbox);
+          AppLocalizations.of(currentContext!).new_mailbox_is_created(success.newMailbox.name?.name ?? ''),
+          leadingIcon: SvgPicture.asset(
+              _imagePaths.icFolderMailbox,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastSuccessBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
     }
 
     refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
@@ -418,11 +426,19 @@ class MailboxController extends BaseMailboxController {
         messageError = exception.description ?? AppLocalizations.of(currentContext!).create_new_mailbox_failure;
       }
 
-      _appToast.showToastWithIcon(
+      _appToast.showBottomToast(
           currentOverlayContext!,
-          message: messageError,
-          iconColor: AppColor.toastErrorBackgroundColor,
-          icon: _imagePaths.icNotConnection);
+          messageError,
+          leadingIcon: SvgPicture.asset(
+              _imagePaths.icNotConnection,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastErrorBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
     }
   }
 
@@ -761,18 +777,28 @@ class MailboxController extends BaseMailboxController {
     if (success.moveAction == MoveAction.moving
         && currentOverlayContext != null
         && currentContext != null) {
-      _appToast.showToastWithAction(
+      _appToast.showBottomToast(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).moved_to_mailbox(
               success.destinationMailboxName?.name ?? AppLocalizations.of(currentContext!).allMailboxes),
-          AppLocalizations.of(currentContext!).undo_action,
-          () {
+          actionName: AppLocalizations.of(currentContext!).undo,
+          onActionClick: () {
             _undoMovingMailbox(MoveMailboxRequest(
                 success.mailboxIdSelected,
                 MoveAction.undo,
                 destinationMailboxId: success.parentId,
                 parentId: success.destinationMailboxId));
           },
+          leadingIcon: SvgPicture.asset(
+              _imagePaths.icFolderMailbox,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastSuccessBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
           maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
     }
 

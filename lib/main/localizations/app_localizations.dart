@@ -432,10 +432,10 @@ class AppLocalizations {
     );
   }
 
-  String get undo_action {
+  String get undo {
     return Intl.message(
-        'UNDO',
-        name: 'undo_action'
+        'Undo',
+        name: 'undo'
     );
   }
 

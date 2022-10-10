@@ -481,17 +481,28 @@ class EmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.dispatchState(Right(success));
 
     if (success.moveAction == MoveAction.moving && currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastWithAction(
-          currentOverlayContext!,
-          success.emailActionType.getToastMessageMoveToMailboxSuccess(currentContext!, destinationPath: success.destinationPath),
-          AppLocalizations.of(currentContext!).undo_action, () {
-        _revertedToOriginalMailbox(MoveToMailboxRequest(
+      _appToast.showBottomToast(
+        currentOverlayContext!,
+        success.emailActionType.getToastMessageMoveToMailboxSuccess(currentContext!, destinationPath: success.destinationPath),
+        actionName: AppLocalizations.of(currentContext!).undo,
+        onActionClick: () {
+          _revertedToOriginalMailbox(MoveToMailboxRequest(
               [success.emailId],
               success.destinationMailboxId,
               success.currentMailboxId,
               MoveAction.undo,
               success.emailActionType));
-          },
+        },
+        leadingIcon: SvgPicture.asset(
+            imagePaths.icFolderMailbox,
+            width: 24,
+            height: 24,
+            color: Colors.white,
+            fit: BoxFit.fill),
+        backgroundColor: AppColor.toastSuccessBackgroundColor,
+        textColor: Colors.white,
+        textActionColor: Colors.white,
+        actionIcon: SvgPicture.asset(imagePaths.icUndo),
         maxWidth: responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
