@@ -701,10 +701,11 @@ class ThreadController extends BaseController {
 
     if (currentContext != null && currentOverlayContext != null
         && emailActionType != null && moveAction == MoveAction.moving) {
-      _appToast.showToastWithAction(
+      _appToast.showBottomToast(
           currentOverlayContext!,
           emailActionType.getToastMessageMoveToMailboxSuccess(currentContext!, destinationPath: destinationPath),
-          AppLocalizations.of(currentContext!).undo_action, () {
+          actionName: AppLocalizations.of(currentContext!).undo,
+          onActionClick: () {
             final newCurrentMailboxId = destinationMailboxId;
             final newDestinationMailboxId = currentMailboxId;
             if (newCurrentMailboxId != null && newDestinationMailboxId != null) {
@@ -717,6 +718,16 @@ class ThreadController extends BaseController {
                   destinationPath: destinationPath));
             }
           },
+          leadingIcon: SvgPicture.asset(
+              _imagePaths.icFolderMailbox,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastSuccessBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
           maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
@@ -1101,10 +1112,11 @@ class ThreadController extends BaseController {
     mailboxDashBoardController.dispatchState(Right(success));
 
     if (success.moveAction == MoveAction.moving && currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastWithAction(
+      _appToast.showBottomToast(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).moved_to_mailbox(success.destinationPath ?? ''),
-          AppLocalizations.of(currentContext!).undo_action, () {
+          actionName: AppLocalizations.of(currentContext!).undo,
+          onActionClick: () {
             _revertedToOriginalMailbox(MoveToMailboxRequest(
                 [success.emailId],
                 success.destinationMailboxId,
@@ -1112,6 +1124,16 @@ class ThreadController extends BaseController {
                 MoveAction.undo,
                 success.emailActionType));
           },
+          leadingIcon: SvgPicture.asset(
+              _imagePaths.icFolderMailbox,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastSuccessBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
           maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }

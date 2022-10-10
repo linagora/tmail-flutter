@@ -448,11 +448,21 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _saveEmailAsDraftsSuccess(SaveEmailAsDraftsSuccess success) {
     if (currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastWithAction(
+      _appToast.showBottomToast(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).drafts_saved,
-          AppLocalizations.of(currentContext!).discard,
-          () => _discardEmail(success.emailAsDrafts),
+          actionName: AppLocalizations.of(currentContext!).discard,
+          onActionClick: () => _discardEmail(success.emailAsDrafts),
+          leadingIcon: SvgPicture.asset(
+              _imagePaths.icMailboxDrafts,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastSuccessBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
           maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
@@ -464,10 +474,11 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _moveToMailboxSuccess(MoveToMailboxSuccess success) {
     if (success.moveAction == MoveAction.moving && currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastWithAction(
+      _appToast.showBottomToast(
           currentOverlayContext!,
           success.emailActionType.getToastMessageMoveToMailboxSuccess(currentContext!, destinationPath: success.destinationPath),
-          AppLocalizations.of(currentContext!).undo_action, () {
+          actionName: AppLocalizations.of(currentContext!).undo,
+          onActionClick: () {
             _revertedToOriginalMailbox(MoveToMailboxRequest(
                 [success.emailId],
                 success.destinationMailboxId,
@@ -475,6 +486,16 @@ class MailboxDashBoardController extends ReloadableController {
                 MoveAction.undo,
                 success.emailActionType));
           },
+          leadingIcon: SvgPicture.asset(
+              _imagePaths.icFolderMailbox,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastSuccessBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
           maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
@@ -673,13 +694,13 @@ class MailboxDashBoardController extends ReloadableController {
         currentOverlayContext != null &&
         emailActionType != null &&
         moveAction == MoveAction.moving) {
-      _appToast.showToastWithAction(
+      _appToast.showBottomToast(
           currentOverlayContext!,
           emailActionType.getToastMessageMoveToMailboxSuccess(
               currentContext!,
               destinationPath: destinationPath),
-          AppLocalizations.of(currentContext!).undo_action,
-          () {
+          actionName: AppLocalizations.of(currentContext!).undo,
+          onActionClick: () {
             final newCurrentMailboxId = destinationMailboxId;
             final newDestinationMailboxId = currentMailboxId;
             if (newCurrentMailboxId != null && newDestinationMailboxId != null) {
@@ -692,6 +713,16 @@ class MailboxDashBoardController extends ReloadableController {
                   destinationPath: destinationPath));
             }
           },
+          leadingIcon: SvgPicture.asset(
+              _imagePaths.icFolderMailbox,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastSuccessBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
           maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
