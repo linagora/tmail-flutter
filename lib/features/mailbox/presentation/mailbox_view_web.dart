@@ -163,20 +163,9 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
               ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultRootNode)
               : const SizedBox.shrink()),
           const SizedBox(height: 8),
-          Obx(() {
-            if (controller.folderMailboxHasChild) {
-              return Column(children: const [
-                Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
-                SizedBox(height: 8),
-              ]);
-            }
-            return const SizedBox.shrink();
-          }),
-          Obx(() => controller.folderMailboxHasChild
-              ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderRootNode)
-              : const SizedBox.shrink()),
-          const SizedBox(height: 8),
           const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+          const SizedBox(height: 8),
+          _buildHeaderMailboxCategory(context, MailboxCategories.folders),
           Row(children: [
             Expanded(child: _buildSearchBarWidget(context)),
             Padding(
@@ -189,6 +178,9 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                     tooltip: AppLocalizations.of(context).new_mailbox,
                     onTap: () => controller.goToCreateNewMailboxView())),
           ]),
+          Obx(() => controller.folderMailboxHasChild
+              ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderRootNode)
+              : const SizedBox.shrink()),
         ])
     );
   }
@@ -211,7 +203,8 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
 
   Widget _buildHeaderMailboxCategory(BuildContext context, MailboxCategories categories) {
     return Padding(
-        padding: EdgeInsets.only(top: 10, bottom: 10,
+        padding: EdgeInsets.only(
+            top: 10,
             left: _responsiveUtils.isDesktop(context) ? 0 : 16,
             right: _responsiveUtils.isDesktop(context) ? 0 : 16),
         child: Row(children: [
@@ -257,14 +250,11 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
     if (categories == MailboxCategories.exchange) {
       return _buildBodyMailboxCategory(context, categories, mailboxNode);
     }
-    return Column(children: [
-      _buildHeaderMailboxCategory(context, categories),
-      AnimatedContainer(
-          duration: const Duration(milliseconds: 400),
-          child: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
-              ? _buildBodyMailboxCategory(context, categories, mailboxNode)
-              : const Offstage())
-    ]);
+    return AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        child: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
+            ? _buildBodyMailboxCategory(context, categories, mailboxNode)
+            : const Offstage());
   }
 
   List<Widget> _buildListChildTileWidget(BuildContext context,
