@@ -214,14 +214,12 @@ class MailboxView extends GetWidget<MailboxController> {
       padding: EdgeInsets.only(bottom: controller.isSelectionEnabled() ? 16 : 0),
       child: Column(children: [
         Obx(() {
-          if ((controller.isSelectionEnabled() && _responsiveUtils.isLandscapeMobile(context))
-              || (BuildUtils.isWeb && _responsiveUtils.isDesktop(context))) {
+          if (controller.isSelectionEnabled() && _responsiveUtils.isLandscapeMobile(context)) {
             return const SizedBox.shrink();
           }
           return _buildUserInformation(context);
         }),
-        if ((BuildUtils.isWeb && !_responsiveUtils.isDesktop(context))
-            || !BuildUtils.isWeb) _buildSearchBarWidget(context),
+        _buildSearchBarWidget(context),
         _buildLoadingView(),
         Obx(() => controller.defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
             ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultMailboxTree.value.root)
