@@ -254,6 +254,9 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
   }
 
   Widget _buildMailboxCategory(BuildContext context, MailboxCategories categories, MailboxNode mailboxNode) {
+    if (categories == MailboxCategories.exchange) {
+      return _buildBodyMailboxCategory(context, categories, mailboxNode);
+    }
     return Column(children: [
       _buildHeaderMailboxCategory(context, categories),
       AnimatedContainer(

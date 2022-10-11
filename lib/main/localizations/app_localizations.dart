@@ -124,10 +124,10 @@ class AppLocalizations {
     );
   }
 
-  String get my_folders {
+  String get myFolders {
     return Intl.message(
-      'MY FOLDERS',
-      name: 'my_folders',
+      'My Folders',
+      name: 'myFolders',
     );
   }
 
