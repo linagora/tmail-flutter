@@ -25,7 +25,7 @@ extension MailboxCategoriessExtension on MailboxCategories {
       case MailboxCategories.exchange:
         return AppLocalizations.of(context).exchange;
       case MailboxCategories.folders:
-        return AppLocalizations.of(context).folders;
+        return AppLocalizations.of(context).myFolders;
     }
   }
 

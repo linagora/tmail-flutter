@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-10T23:39:00.642884",
+  "@@last_modified": "2022-10-11T09:16:53.834708",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -126,8 +126,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "my_folders": "MY FOLDERS",
-  "@my_folders": {
+  "myFolders": "My Folders",
+  "@myFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
