@@ -626,11 +626,14 @@ class EmailController extends BaseController with AppLoaderMixin {
       showDialog(
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => PointerInterceptor(child: (EmailAddressDialogBuilder(context, imagePaths, emailAddress)
-              ..addOnCloseContextMenuAction(() => popBack())
-              ..addOnCopyEmailAddressAction((emailAddress) => copyEmailAddress(context, emailAddress))
-              ..addOnComposeEmailAction((emailAddress) => composeEmailFromEmailAddress(emailAddress)))
-            .build()));
+          builder: (BuildContext context) => PointerInterceptor(
+              child: EmailAddressDialogBuilder(
+                  emailAddress,
+                  onCloseDialogAction: () => popBack(),
+                  onCopyEmailAddressAction: (emailAddress) =>
+                      copyEmailAddress(context, emailAddress),
+                  onComposeEmailAction: (emailAddress) =>
+                      composeEmailFromEmailAddress(emailAddress))));
     }
   }
 

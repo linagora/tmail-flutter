@@ -9,6 +9,7 @@ export 'domain/extensions/datetime_extension.dart';
 export 'presentation/extensions/html_extension.dart';
 export 'presentation/extensions/compare_string_extension.dart';
 export 'presentation/extensions/compare_list_extensions.dart';
+export 'presentation/extensions/string_extension.dart';
 export 'domain/extensions/media_type_extension.dart';
 
 // Exceptions
