@@ -72,25 +72,51 @@ class EmailAddressBottomSheetBuilder {
                       child: IconButton(
                           padding: const EdgeInsets.only(top: 16, right: 16),
                           onPressed: () => _onCloseBottomSheetAction?.call(),
-                          icon: SvgPicture.asset(_imagePaths.icCloseMailbox, width: 24, height: 24, fit: BoxFit.fill))),
+                          icon: SvgPicture.asset(
+                              _imagePaths.icCloseMailbox,
+                              width: 24, height: 24,
+                              fit: BoxFit.fill))),
                   (AvatarBuilder()
-                      ..text(_emailAddress.asString().characters.first.toUpperCase())
+                      ..text(_emailAddress.asString().firstLetterToUpperCase)
                       ..size(64)
-                      ..addTextStyle(const TextStyle(fontWeight: FontWeight.w600, fontSize: 23, color: Colors.white))
+                      ..addTextStyle(const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 23,
+                          color: Colors.white))
                       ..avatarColor(_emailAddress.avatarColors))
                     .build(),
                   if (_emailAddress.displayName.isNotEmpty)
                     Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+                        padding: const EdgeInsets.only(
+                            left: 16,
+                            right: 16,
+                            top: 16),
                         child: Text(
-                          _emailAddress.asString(),
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: AppColor.colorNameEmail),
+                          _emailAddress.displayName,
+                          textAlign: TextAlign.center,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
+                          softWrap: CommonTextStyle.defaultSoftWrap,
+                          maxLines: 2,
+                          style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: AppColor.colorNameEmail),
                         )),
                   Padding(
-                      padding: EdgeInsets.only(left: 16, right: 16, top: _emailAddress.displayName.isNotEmpty ? 12 : 16),
+                      padding: EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: _emailAddress.displayName.isNotEmpty ? 12 : 16),
                       child: Text(
                         _emailAddress.emailAddress,
-                        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.normal, color: AppColor.colorMessageConfirmDialog),
+                        textAlign: TextAlign.center,
+                        overflow: CommonTextStyle.defaultTextOverFlow,
+                        softWrap: CommonTextStyle.defaultSoftWrap,
+                        maxLines: 2,
+                        style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.normal,
+                            color: AppColor.colorMessageConfirmDialog),
                       )),
                   Material(
                       borderRadius: BorderRadius.circular(20),
@@ -98,7 +124,10 @@ class EmailAddressBottomSheetBuilder {
                       child: TextButton(
                           child: Text(
                             AppLocalizations.of(_context).copy_email_address,
-                            style: const TextStyle(fontSize: 13, color: AppColor.colorTextButton, fontWeight: FontWeight.normal),
+                            style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColor.colorTextButton,
+                                fontWeight: FontWeight.normal),
                           ),
                           onPressed: () => _onCopyEmailAddressAction?.call(_emailAddress)
                       )
@@ -112,12 +141,21 @@ class EmailAddressBottomSheetBuilder {
                         height: 48,
                         child: ElevatedButton(
                             style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
-                                backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.colorTextButton),
+                                foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                                    (Set<MaterialState> states) => Colors.white),
+                                backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                                    (Set<MaterialState> states) => AppColor.colorTextButton),
                                 shape: MaterialStateProperty.all(RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    side: const BorderSide(width: 0, color: AppColor.colorTextButton)))),
-                            child: Text(AppLocalizations.of(_context).compose_email, style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500)),
+                                    side: const BorderSide(
+                                        width: 0,
+                                        color: AppColor.colorTextButton)))),
+                            child: Text(
+                                AppLocalizations.of(_context).compose_email,
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500)),
                             onPressed: () => _onComposeEmailAction?.call(_emailAddress)),
                       )
                   )
