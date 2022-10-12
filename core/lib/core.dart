@@ -22,6 +22,7 @@ export 'domain/exceptions/web_session_exception.dart';
 export 'presentation/utils/theme_utils.dart';
 export 'presentation/utils/responsive_utils.dart';
 export 'presentation/utils/keyboard_utils.dart';
+export 'presentation/utils/icon_utils.dart';
 export 'presentation/utils/style_utils.dart';
 export 'presentation/utils/app_toast.dart';
 export 'presentation/utils/html_transformer/html_template.dart';
