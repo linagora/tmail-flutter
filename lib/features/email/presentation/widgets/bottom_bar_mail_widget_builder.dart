@@ -28,7 +28,13 @@ class BottomBarMailWidgetBuilder extends StatelessWidget {
 
     return Container(
       alignment: Alignment.center,
-      color: Colors.white,
+      decoration: responsiveUtils.isWebDesktop(context)
+        ? const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+                 bottomRight: Radius.circular(20),
+                 bottomLeft: Radius.circular(20)))
+        : const BoxDecoration(color: Colors.white),
       child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
