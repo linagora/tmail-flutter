@@ -374,11 +374,11 @@ class AppLocalizations {
     );
   }
 
-  String count_attachment(int count) {
+  String titleHeaderAttachment(int count, String totalSize) {
     return Intl.message(
-        '$count attachments',
-        name: 'count_attachment',
-        args: [count]
+        '$count Attachments ($totalSize):',
+        name: 'titleHeaderAttachment',
+        args: [count, totalSize]
     );
   }
 
@@ -821,10 +821,10 @@ class AppLocalizations {
         name: 'attachments');
   }
 
-  String get show_all {
+  String get showAll {
     return Intl.message(
         'Show all',
-        name: 'show_all');
+        name: 'showAll');
   }
 
   String get message_dialog_send_email_without_a_subject {

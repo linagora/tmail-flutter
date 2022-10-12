@@ -704,7 +704,7 @@ class ComposerView extends GetWidget<ComposerController>
                 child: Text(
                     expandModeAttachment == ExpandMode.EXPAND
                         ? AppLocalizations.of(context).hide
-                        : '${AppLocalizations.of(context).show_all} (${uploadFilesState.length})',
+                        : '${AppLocalizations.of(context).showAll} (${uploadFilesState.length})',
                     style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12, color: AppColor.colorTextButton)),
                 onPressed: () => controller.toggleDisplayAttachments()
             )

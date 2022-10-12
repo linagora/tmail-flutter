@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-12T11:51:14.324607",
+  "@@last_modified": "2022-10-12T16:44:35.025767",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -358,14 +358,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "count_attachment": "{count} attachments",
-  "@count_attachment": {
+  "titleHeaderAttachment": "{count} Attachments ({totalSize}):",
+  "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [
-      "count"
+      "count",
+      "totalSize"
     ],
     "placeholders": {
-      "count": {}
+      "count": {},
+      "totalSize": {}
     }
   },
   "attach_file_prepare_text": "Preparing to attach file...",
@@ -792,8 +794,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "show_all": "Show all",
-  "@show_all": {
+  "showAll": "Show all",
+  "@showAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

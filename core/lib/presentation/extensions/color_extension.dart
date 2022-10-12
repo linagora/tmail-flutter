@@ -46,9 +46,9 @@ extension AppColor on Color {
   static const bgMailboxListMail = Color(0xFFFBFBFF);
   static const bgMessenger = Color(0xFFF2F2F5);
   static const textButtonColor = Color(0xFF182952);
-  static const attachmentFileBorderColor = Color(0xFFEAEAEA);
-  static const attachmentFileNameColor = Color(0xFF182952);
-  static const attachmentFileSizeColor = Color(0xFF7E869B);
+  static const attachmentFileBorderColor = Color(0x1F000000);
+  static const attachmentFileNameColor = Color(0xFF000000);
+  static const attachmentFileSizeColor = Color(0xFF818C99);
   static const avatarColor = Color(0xFFF8F8F8);
   static const avatarTextColor = Color(0xFF3840F7);
   static const sentTimeTextColorUnRead = Color(0xFF182952);
@@ -152,6 +152,8 @@ extension AppColor on Color {
   static const colorShadowLayerTop = Color(0x1F000000);
   static const colorDividerHorizontal = Color(0x1F000000);
   static const colorEmailAddressFull = Color(0xFF818C99);
+  static const colorTitleHeaderAttachment = Color(0xFF818C99);
+  static const colorAttachmentIcon = Color(0xFFAEB7C2);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

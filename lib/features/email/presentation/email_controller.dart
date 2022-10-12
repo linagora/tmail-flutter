@@ -84,6 +84,8 @@ class EmailController extends BaseController with AppLoaderMixin {
 
   bool get isDisplayFullEmailAddress => emailAddressExpandMode.value == ExpandMode.EXPAND;
 
+  bool get isDisplayFullAttachments => attachmentsExpandMode.value == ExpandMode.EXPAND;
+
   EmailController(
     this._getEmailContentInteractor,
     this._markAsEmailReadInteractor,

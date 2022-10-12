@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -579,113 +578,110 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
    });
   }
 
-  int _getAttachmentLimitDisplayed(BuildContext context) {
-    if (responsiveUtils.isMobile(context)
-        || responsiveUtils.isLandscapeMobile(context)) {
-      return 2;
-    } else if (responsiveUtils.isTablet(context) ||
-        responsiveUtils.isLandscapeTablet(context)) {
-      return 3;
-    } else {
-      return 4;
-    }
-  }
-
   Widget _buildAttachmentsBody(BuildContext context, List<Attachment> attachments) {
-    final attachmentLimitDisplayed = _getAttachmentLimitDisplayed(context);
-    final countAttachments = _getListAttachmentsSize(
-        context,
-        controller.attachmentsExpandMode.value,
-        attachments,
-        attachmentLimitDisplayed);
-    final isExpand = controller.attachmentsExpandMode.value == ExpandMode.EXPAND
-        && attachments.length > attachmentLimitDisplayed;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (isExpand)
-          Padding(
-            padding: EdgeInsets.zero,
-            child: _buildAttachmentsHeader(context, attachments)),
-        GridView.builder(
-          key: const Key('list_attachment'),
-          primary: false,
-          shrinkWrap: true,
-          padding: EdgeInsets.only(top: isExpand ? 0 : 16, bottom: 16),
-          itemCount: countAttachments,
-          gridDelegate: SliverGridDelegateFixedHeight(
-            height: 60,
-            crossAxisCount: attachmentLimitDisplayed,
-            crossAxisSpacing: 16.0,
-            mainAxisSpacing: 8.0),
-          itemBuilder: (context, index) =>
-                (AttachmentFileTileBuilder(
-                    imagePaths,
-                    attachments[index],
-                    attachments.length,
-                    attachmentLimitDisplayed)
-                ..setExpandMode((countAttachments - 1 == index) ? controller.attachmentsExpandMode.value : null)
-                ..onExpandAttachmentActionClick(() => controller.toggleDisplayAttachmentsAction())
-                ..onDownloadAttachmentFileActionClick((attachment) {
-                  if (kIsWeb) {
-                    controller.downloadAttachmentForWeb(context, attachment);
-                  } else {
-                    controller.exportAttachment(context, attachment);
-                  }
-                }))
-            .build())
-      ],
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12, top: 10),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildAttachmentsHeader(context, attachments),
+          _buildAttachmentsList(context, attachments, controller.isDisplayFullAttachments)
+        ],
+      ),
     );
-  }
-
-  int _getListAttachmentsSize(
-      BuildContext context,
-      ExpandMode expandMode,
-      List<Attachment> attachments,
-      int limitDisplayAttachment
-  ) {
-    if (attachments.length > limitDisplayAttachment) {
-      return expandMode == ExpandMode.EXPAND
-        ? attachments.length
-        : attachments.sublist(0, limitDisplayAttachment).length;
-    } else {
-      return attachments.length;
-    }
   }
 
   Widget _buildAttachmentsHeader(BuildContext context, List<Attachment> attachments) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context).count_attachment(attachments.length),
-              style: const TextStyle(fontSize: 12, color: AppColor.baseTextColor)),
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Text(
-                '(${filesize(attachments.totalSize(), 1)})',
-                style: const TextStyle(fontSize: 12, color: AppColor.nameUserColor, fontWeight: FontWeight.w500)))
-          ],
-        ),
-        if (attachments.length > 2)
-          Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: IconButton(
-              icon: SvgPicture.asset(imagePaths.icExpandAttachment,
-                width: 20,
-                height: 20,
-                color: AppColor.primaryColor,
-                fit: BoxFit.fill),
-              onPressed: () => controller.toggleDisplayAttachmentsAction()
+    return Container(
+      color: Colors.white,
+      child: Row(
+        children: [
+          Expanded(child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(children: [
+                SvgPicture.asset(imagePaths.icAttachment,
+                    width: 20,
+                    height: 20,
+                    color: AppColor.colorAttachmentIcon,
+                    fit: BoxFit.fill),
+                const SizedBox(width: 5),
+                Expanded(child: Text(
+                    AppLocalizations.of(context).titleHeaderAttachment(
+                        attachments.length,
+                        filesize(attachments.totalSize(), 1)),
+                    style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal,
+                        color: AppColor.colorTitleHeaderAttachment)))
+              ])
+          )),
+          if (attachments.length > 2)
+            Obx(() => Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: controller.toggleDisplayAttachmentsAction,
+                customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  child: Text(
+                      controller.isDisplayFullAttachments
+                          ? AppLocalizations.of(context).hide
+                          : AppLocalizations.of(context).showAll,
+                      style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColor.colorTextButton,
+                          fontWeight: FontWeight.normal)),
+                ),
+              ),
             ))
-      ],
+        ],
+      ),
     );
+  }
+
+  Widget _buildAttachmentsList(
+      BuildContext context,
+      List<Attachment> attachments,
+      bool isDisplayAll
+  ) {
+    return LayoutBuilder(builder: (context, constraints) {
+      if (isDisplayAll) {
+        return Wrap(
+          runSpacing: 12,
+          children: attachments
+            .map((attachment) => AttachmentFileTileBuilder(
+              attachment,
+              onDownloadAttachmentFileActionClick: (attachment) {
+                if (BuildUtils.isWeb) {
+                  controller.downloadAttachmentForWeb(context, attachment);
+                } else {
+                  controller.exportAttachment(context, attachment);
+                }
+              }))
+            .toList());
+      } else {
+        return Container(
+            height: 60,
+            color: Colors.transparent,
+            child: ListView.builder(
+                key: const Key('list_attachment_minimize_in_email'),
+                shrinkWrap: true,
+                physics: const ClampingScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                itemCount: attachments.length,
+                itemBuilder: (context, index) => AttachmentFileTileBuilder(
+                    attachments[index],
+                    onDownloadAttachmentFileActionClick: (attachment) {
+                      if (BuildUtils.isWeb) {
+                        controller.downloadAttachmentForWeb(context, attachment);
+                      } else {
+                        controller.exportAttachment(context, attachment);
+                      }
+                    })
+            )
+        );
+      }
+    });
   }
 
   Widget _buildEmailContent(BuildContext context, BoxConstraints constraints) {
