@@ -9,10 +9,7 @@ extension EmailAddressExtension on EmailAddress {
 
   String asString() {
     if (displayName.isNotEmpty) {
-      if (emailAddress.isNotEmpty && displayName == emailAddress) {
-        return displayName;
-      }
-      return displayName.capitalizeFirstEach;
+      return displayName;
     } else if (emailAddress.isNotEmpty) {
       return emailAddress;
     }
