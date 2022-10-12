@@ -90,31 +90,35 @@ class ButtonBuilder {
   }
 
   Widget build() {
-    return InkWell(
-      onTap: () => _onPressActionClick != null ? _onPressActionClick?.call() : null,
-      onTapDown: (detail) {
-        if (_onPressActionWithPositionClick != null && _context != null) {
-          final screenSize = MediaQuery.of(_context!).size;
-          final offset = detail.globalPosition;
-          final position = RelativeRect.fromLTRB(
-            offset.dx,
-            offset.dy,
-            screenSize.width - offset.dx,
-            screenSize.height - offset.dy,
-          );
-          _onPressActionWithPositionClick?.call(position);
-        }
-      },
-      borderRadius: BorderRadius.all(Radius.circular(_radiusSplash ?? 20)),
-      child: Container(
-        key: _key,
-        alignment: Alignment.center,
-        color: _decoration == null ? _colorButton : null,
-        decoration: _decoration,
-        width: _maxWidth,
-        padding: _padding ?? EdgeInsets.zero,
-        child: _buildBody()
-      )
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _onPressActionClick != null ? _onPressActionClick?.call() : null,
+        onTapDown: (detail) {
+          if (_onPressActionWithPositionClick != null && _context != null) {
+            final screenSize = MediaQuery.of(_context!).size;
+            final offset = detail.globalPosition;
+            final position = RelativeRect.fromLTRB(
+              offset.dx,
+              offset.dy,
+              screenSize.width - offset.dx,
+              screenSize.height - offset.dy,
+            );
+            _onPressActionWithPositionClick?.call(position);
+          }
+        },
+        customBorder: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(_radiusSplash ?? 20)),
+        child: Container(
+          key: _key,
+          alignment: Alignment.center,
+          color: _decoration == null ? _colorButton : null,
+          decoration: _decoration,
+          width: _maxWidth,
+          padding: _padding ?? EdgeInsets.zero,
+          child: _buildBody()
+        )
+      ),
     );
   }
 
@@ -144,7 +148,12 @@ class ButtonBuilder {
 
   Widget _buildIcon() => Padding(
     padding: _paddingIcon ?? EdgeInsets.all(10),
-    child: SvgPicture.asset(_icon ?? '', width: _size ?? 24, height: _size ?? 24, fit: BoxFit.fill, color: _iconColor));
+    child: SvgPicture.asset(
+        _icon ?? '',
+        width: _size ?? 24,
+        height: _size ?? 24,
+        fit: BoxFit.fill,
+        color: _iconColor));
 
   Widget _buildText() {
     return Text(
@@ -152,7 +161,9 @@ class ButtonBuilder {
       maxLines: 1,
       softWrap: CommonTextStyle.defaultSoftWrap,
       overflow: CommonTextStyle.defaultTextOverFlow,
-      style: _textStyle ?? TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+      style: _textStyle ?? TextStyle(
+          fontSize: 12,
+          color: AppColor.colorTextButton),
     );
   }
 }

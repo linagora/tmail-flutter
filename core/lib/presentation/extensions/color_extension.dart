@@ -150,6 +150,8 @@ extension AppColor on Color {
   static const colorBackgroundKeyboard = Color(0xFFD2D5DC);
   static const colorShadowLayerBottom = Color(0x29000000);
   static const colorShadowLayerTop = Color(0x1F000000);
+  static const colorDividerHorizontal = Color(0x1F000000);
+  static const colorEmailAddressFull = Color(0xFF818C99);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

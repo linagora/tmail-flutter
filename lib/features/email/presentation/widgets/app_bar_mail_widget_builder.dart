@@ -14,7 +14,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  final PresentationEmail? _presentationEmail;
+  final PresentationEmail _presentationEmail;
   final PresentationMailbox? currentMailbox;
   final bool isSearchIsRunning;
   final OnBackActionClick? onBackActionClick;
@@ -37,29 +37,29 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       key: const Key('app_bar_messenger_widget'),
-      alignment: Alignment.center,
       color: Colors.transparent,
-      padding: const EdgeInsets.only(left: 8),
+      height: 52,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(children: [
         if (_supportDisplayMailboxNameTitle(context))
           Material(
             color: Colors.transparent,
             child: InkWell(
               onTap: () => onBackActionClick?.call(),
-              borderRadius: BorderRadius.circular(15),
+              customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Tooltip(
                 message: isSearchIsRunning
                     ? AppLocalizations.of(context).backToSearchResults
                     : AppLocalizations.of(context).back,
                 child: Container(
                   color: Colors.transparent,
-                  height: 40,
+                  height: 32,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
                     SvgPicture.asset(
                         _imagePaths.icBack,
-                        width: 18,
-                        height: 18,
+                        width: 14,
+                        height: 14,
                         color: AppColor.colorTextButton,
                         fit: BoxFit.fill),
                     if (!isSearchIsRunning)
@@ -80,7 +80,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
             ),
           ),
         const Spacer(),
-        if (_presentationEmail != null) _buildListOptionButton(context),
+        _buildListOptionButton(context),
       ])
     );
   }
@@ -103,32 +103,38 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
     return Row(
       children: [
         buildIconWeb(
-            icon: SvgPicture.asset(_imagePaths.icMoveEmail, fit: BoxFit.fill),
+            icon: SvgPicture.asset(
+                _imagePaths.icMoveEmail,
+                width: IconUtils.defaultIconSize,
+                height: IconUtils.defaultIconSize,
+                fit: BoxFit.fill),
             tooltip: AppLocalizations.of(context).move_message,
             onTap: () => onEmailActionClick?.call(
-                _presentationEmail!,
+                _presentationEmail,
                 EmailActionType.moveToMailbox)),
         buildIconWeb(
           icon: SvgPicture.asset(
-              _presentationEmail!.hasStarred
+              _presentationEmail.hasStarred
                 ? _imagePaths.icStar
                 : _imagePaths.icUnStar,
+              width: IconUtils.defaultIconSize,
+              height: IconUtils.defaultIconSize,
               fit: BoxFit.fill),
-          tooltip: _presentationEmail!.hasStarred
+          tooltip: _presentationEmail.hasStarred
               ? AppLocalizations.of(context).not_starred
               : AppLocalizations.of(context).mark_as_starred,
-          onTap: () => onEmailActionClick?.call(_presentationEmail!,
-              _presentationEmail!.hasStarred
+          onTap: () => onEmailActionClick?.call(_presentationEmail,
+              _presentationEmail.hasStarred
                   ? EmailActionType.unMarkAsStarred
                   : EmailActionType.markAsStarred)),
         buildIconWeb(
             icon: SvgPicture.asset(
-                currentMailbox?.role == PresentationMailbox.roleTrash
-                  ? _imagePaths.icDeleteComposer
-                  : _imagePaths.icDelete,
-                color: AppColor.colorDefaultButton,
-                width: 24,
-                height: 24,
+                _imagePaths.icDeleteComposer,
+                color: currentMailbox?.role != PresentationMailbox.roleTrash
+                  ? AppColor.colorTextButton
+                  : AppColor.colorDeletePermanentlyButton,
+                width: BuildUtils.isWeb ? 18 : 20,
+                height: BuildUtils.isWeb ? 18 : 20,
                 fit: BoxFit.fill),
             tooltip: currentMailbox?.role != PresentationMailbox.roleTrash
                 ? AppLocalizations.of(context).move_to_trash
@@ -136,31 +142,34 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
             onTap: () {
               if (currentMailbox?.role != PresentationMailbox.roleTrash) {
                 onEmailActionClick?.call(
-                    _presentationEmail!,
+                    _presentationEmail,
                     EmailActionType.moveToTrash);
               } else {
                 onEmailActionClick?.call(
-                    _presentationEmail!,
+                    _presentationEmail,
                     EmailActionType.deletePermanently);
               }
             }),
-        Padding(
-          padding: const EdgeInsets.only(left: 10, right: 16),
-          child: buildIconWebHasPosition(
-            context,
-            tooltip: AppLocalizations.of(context).more,
-            icon: SvgPicture.asset(_imagePaths.icMore, fit: BoxFit.fill),
-            onTap: () {
-              if (_presentationEmail != null && _responsiveUtils.isMobile(context)) {
-                onMoreActionClick?.call(_presentationEmail!, null);
-              }
-            },
-            onTapDown: (position) {
-              if (_presentationEmail != null && !_responsiveUtils.isMobile(context)) {
-                onMoreActionClick?.call(_presentationEmail!, position);
-              }
+        buildIconWebHasPosition(
+          context,
+          tooltip: AppLocalizations.of(context).more,
+          icon: SvgPicture.asset(
+              _imagePaths.icMore,
+              width: IconUtils.defaultIconSize,
+              height: IconUtils.defaultIconSize,
+              fit: BoxFit.fill),
+          onTap: () {
+            if (_responsiveUtils.isPortraitMobile(context) ||
+                _responsiveUtils.isLandscapeMobile(context)) {
+              onMoreActionClick?.call(_presentationEmail, null);
             }
-          )
+          },
+          onTapDown: (position) {
+            if (!_responsiveUtils.isPortraitMobile(context) &&
+                !_responsiveUtils.isLandscapeMobile(context)) {
+              onMoreActionClick?.call(_presentationEmail, position);
+            }
+          }
         ),
       ]
     );
