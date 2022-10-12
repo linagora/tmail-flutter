@@ -37,12 +37,11 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
         onTap: () => FocusScope.of(context).unfocus(),
         child: KeyboardRichText(
           richTextController: controller.richTextControllerForMobile,
-          backgroundKeyboardToolBarColor: Colors.grey,
           keyBroadToolbar: RichTextKeyboardToolBar(
+            titleBack: AppLocalizations.of(context).format,
+            backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
             titleFormatBottomSheet: AppLocalizations.of(context).format,
             richTextController: controller.richTextControllerForMobile,
-            insertImage: () {},
-            insertAttachment: () {},
             titleQuickStyleBottomSheet: AppLocalizations.of(context).quickStyles,
             titleBackgroundBottomSheet: AppLocalizations.of(context).background,
             titleForegroundBottomSheet: AppLocalizations.of(context).foreground,
@@ -479,6 +478,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
               htmlApi,
               onFocus: controller.onFocusHTMLEditor,
               onEnterKeyDown: controller.onEnterKeyDown,
+              context: context,
             );
           }
       );

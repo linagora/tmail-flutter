@@ -12,17 +12,10 @@ import 'package:model/model.dart';
 import 'package:rich_text_composer/rich_text_composer.dart' as rich_text_composer;
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/composer_loading_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/order_list_type.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_type.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/drop_down_menu_header_style_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
@@ -90,19 +83,33 @@ class ComposerView extends GetWidget<ComposerController>
             },
             child: Scaffold(
                 backgroundColor: Colors.black38,
-                body: Align(alignment: Alignment.center, child: Card(
-                    color: Colors.transparent,
-                    elevation: 20,
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24))),
-                    shadowColor: Colors.transparent,
-                    child: Container(
-                        decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(24))),
-                        width: responsiveUtils.getSizeScreenWidth(context) * 0.9,
-                        height: responsiveUtils.getSizeScreenHeight(context) * 0.9,
-                        child: ClipRRect(
-                            borderRadius: const BorderRadius.all(Radius.circular(24)),
-                            child: SafeArea(
-                                child: Column(children: [
+                body: LayoutBuilder(builder: (context, constraints) {
+                  return rich_text_composer.KeyboardRichText(
+                    richTextController: controller.keyboardRichTextController,
+                    keyBroadToolbar: RichTextKeyboardToolBar(
+                      backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
+                      insertAttachment: () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context)),
+                      insertImage: () => controller.insertImage(context, constraints.maxWidth),
+                      richTextController: controller.keyboardRichTextController,
+                      titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
+                      titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
+                      titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
+                      titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
+                      titleBack: AppLocalizations.of(context).format,
+                    ),
+                    child: Align(alignment: Alignment.center, child: Card(
+                        color: Colors.transparent,
+                        elevation: 20,
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24))),
+                        shadowColor: Colors.transparent,
+                        child: Container(
+                            decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(24))),
+                            width: responsiveUtils.getSizeScreenWidth(context) * 0.9,
+                            height: responsiveUtils.getSizeScreenHeight(context) * 0.9,
+                            child: ClipRRect(
+                                borderRadius: const BorderRadius.all(Radius.circular(24)),
+                                child: SafeArea(
+                                  child: Column(children: [
                                     Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: 16),
                                         child: _buildAppBar(context, controller.isEnableEmailSendButton.value)),
@@ -110,11 +117,13 @@ class ComposerView extends GetWidget<ComposerController>
                                     Expanded(child: _buildBodyTablet(context)),
                                     const Divider(color: AppColor.colorDividerComposer, height: 1),
                                     Obx(() => _buildBottomBar(context, controller.isEnableEmailSendButton.value)),
-                                ]),
+                                  ]),
+                                )
                             )
                         )
-                    )
-                ))
+                    )),
+                  );
+                })
             )
         )
     );
@@ -418,8 +427,8 @@ class ComposerView extends GetWidget<ComposerController>
           ])
       ),
       richTextController: controller.keyboardRichTextController,
-      backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
       keyBroadToolbar: RichTextKeyboardToolBar(
+        backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
         isLandScapeMode: responsiveUtils.isLandscapeMobile(context),
         insertAttachment: () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context)),
         insertImage: () => controller.insertImage(context, maxWidth),
@@ -428,50 +437,51 @@ class ComposerView extends GetWidget<ComposerController>
         titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
         titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
         titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
+        titleBack: AppLocalizations.of(context).format,
       ),
     );
   }
 
   Widget _buildBodyTablet(BuildContext context) {
     return SingleChildScrollView(
-      physics: const ClampingScrollPhysics(),
-      child: Column(children: [
-        Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(padding: const EdgeInsets.only(top: 20),
-                  child: (AvatarBuilder()
-                    ..text(controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
-                    ..size(56)
-                    ..addTextStyle(const TextStyle(fontWeight: FontWeight.w600, fontSize: 28, color: Colors.white))
-                    ..backgroundColor(AppColor.colorAvatar))
-                      .build()),
-              Expanded(child: Padding(
-                padding: const EdgeInsets.only(left: 16),
-                child: Column(children: [
-                  Obx(() => controller.identitySelected.value != null
-                      ? _buildFromEmailAddress(context)
-                      : const SizedBox.shrink()),
-                  Obx(() => controller.identitySelected.value != null
-                      ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-                      : const SizedBox.shrink()),
-                  _buildEmailAddress(context),
-                  const Divider(color: AppColor.colorDividerComposer, height: 1),
-                  Padding(padding: const EdgeInsets.only(right: 16), child: _buildSubjectEmail(context)),
-                ]),
-              ))
-            ])),
-        const Divider(color: AppColor.colorDividerComposer, height: 1),
-        Padding(
-            padding: const EdgeInsets.only(left: 60, right: 25),
-            child: Column(children: [
-              _buildToolbarRichTextWidget(context),
-              _buildAttachmentsWidget(context),
-              buildInlineLoadingView(controller),
-              _buildComposerEditor(context),
-            ])
-        )
-      ])
+        controller: controller.scrollController,
+        physics: const ClampingScrollPhysics(),
+        child: Column(children: [
+          Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Padding(padding: const EdgeInsets.only(top: 20),
+                    child: (AvatarBuilder()
+                      ..text(controller.mailboxDashBoardController.userProfile.value?.getAvatarText() ?? '')
+                      ..size(56)
+                      ..addTextStyle(const TextStyle(fontWeight: FontWeight.w600, fontSize: 28, color: Colors.white))
+                      ..backgroundColor(AppColor.colorAvatar))
+                        .build()),
+                Expanded(child: Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Column(children: [
+                    Obx(() => controller.identitySelected.value != null
+                        ? _buildFromEmailAddress(context)
+                        : const SizedBox.shrink()),
+                    Obx(() => controller.identitySelected.value != null
+                        ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+                        : const SizedBox.shrink()),
+                    _buildEmailAddress(context),
+                    const Divider(color: AppColor.colorDividerComposer, height: 1),
+                    Padding(padding: const EdgeInsets.only(right: 16), child: _buildSubjectEmail(context)),
+                  ]),
+                ))
+              ])),
+          const Divider(color: AppColor.colorDividerComposer, height: 1),
+          Padding(
+              padding: const EdgeInsets.only(left: 60, right: 25),
+              child: Column(children: [
+                _buildAttachmentsWidget(context),
+                buildInlineLoadingView(controller),
+                _buildComposerEditor(context),
+              ])
+          )
+        ])
     );
   }
 
@@ -497,128 +507,6 @@ class ComposerView extends GetWidget<ComposerController>
     });
   }
 
-  Widget _buildToolbarRichTextWidget(BuildContext context) {
-    return Obx(() {
-      final richTextMobileTabletController = controller.richTextMobileTabletController;
-
-      return Container(
-        padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
-        alignment: Alignment.centerLeft,
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            DropDownMenuHeaderStyleWidget(
-                icon: buildWrapIconStyleText(
-                  isSelected: richTextMobileTabletController.isMenuHeaderStyleOpen,
-                  icon: SvgPicture.asset(RichTextStyleType.headerStyle.getIcon(imagePaths),
-                      color: AppColor.colorDefaultRichTextButton,
-                      fit: BoxFit.fill),
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                ),
-                items: HeaderStyleType.values,
-                onChanged: (newStyle) => richTextMobileTabletController.applyHeaderStyle(newStyle)),
-            Container(
-                width: 120,
-                padding: const EdgeInsets.only(right: 2, left: 8),
-                child: DropDownButtonWidget<SafeFont>(
-                    items: SafeFont.values,
-                    itemSelected: richTextMobileTabletController.selectedFontName.value,
-                    onChanged: (newFont) => richTextMobileTabletController.applyNewFontStyle(newFont),
-                    heightItem: 38,
-                    sizeIconChecked: 16,
-                    dropdownWidth: 200,
-                    radiusButton: 5,
-                    colorButton: Colors.white,
-                    supportSelectionIcon: true)),
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: buildWrapIconStyleText(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                  icon: buildIconColorBackgroundTextWithoutTooltip(
-                    iconData: RichTextStyleType.textColor.getIconData(),
-                    colorSelected: richTextMobileTabletController.selectedTextColor.value,
-                  ),
-                  onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.textColor)),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: buildWrapIconStyleText(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                  icon: buildIconColorBackgroundTextWithoutTooltip(
-                    iconData: RichTextStyleType.textBackgroundColor.getIconData(),
-                    colorSelected: richTextMobileTabletController.selectedTextBackgroundColor.value,
-                  ),
-                  onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.textBackgroundColor)),
-            ),
-            buildWrapIconStyleText(
-                hasDropdown: false,
-                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-                icon: Wrap(children: [
-                  buildIconStyleText(
-                      path: RichTextStyleType.bold.getIcon(imagePaths),
-                      isSelected: richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.bold),
-                      onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.bold)),
-                  buildIconStyleText(
-                      path: RichTextStyleType.italic.getIcon(imagePaths),
-                      isSelected: richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.italic),
-                      onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.italic)),
-                  buildIconStyleText(
-                      path: RichTextStyleType.underline.getIcon(imagePaths),
-                      isSelected: richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.underline),
-                      onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.underline)),
-                  buildIconStyleText(
-                      path: RichTextStyleType.strikeThrough.getIcon(imagePaths),
-                      isSelected: richTextMobileTabletController.isTextStyleTypeSelected(RichTextStyleType.strikeThrough),
-                      onTap: () => richTextMobileTabletController.applyRichTextStyle(context, RichTextStyleType.strikeThrough))
-                ])),
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: PopupMenuOverlayWidget(
-                controller: richTextMobileTabletController.menuParagraphController,
-                listButtonAction: ParagraphType.values
-                    .map((paragraph) => paragraph.buildButtonWidget(
-                        context,
-                        imagePaths,
-                        (paragraph) => richTextMobileTabletController.applyParagraphType(paragraph)))
-                    .toList(),
-                iconButton: buildWrapIconStyleText(
-                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    spacing: 3,
-                    isSelected: richTextMobileTabletController.focusMenuParagraph.value,
-                    icon: buildIcon(
-                      path: richTextMobileTabletController.selectedParagraph.value.getIcon(imagePaths),
-                      color: AppColor.colorDefaultRichTextButton,
-                    )),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: PopupMenuOverlayWidget(
-                controller: richTextMobileTabletController.menuOrderListController,
-                listButtonAction: OrderListType.values
-                    .map((orderType) => orderType.buildButtonWidget(
-                        context,
-                        imagePaths,
-                        (orderType) => richTextMobileTabletController.applyOrderListType(orderType)))
-                    .toList(),
-                iconButton: buildWrapIconStyleText(
-                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    spacing: 3,
-                    isSelected: richTextMobileTabletController.focusMenuOrderList.value,
-                    icon: buildIcon(
-                      path: richTextMobileTabletController.selectedOrderList.value.getIcon(imagePaths),
-                      color: AppColor.colorDefaultRichTextButton,
-                    )),
-              ),
-            )
-          ],
-        ),
-      );
-    },
-    );
-  }
-
   Widget _buildComposerEditor(BuildContext context) {
     return Obx(() {
       final argsComposer = controller.composerArguments.value;
@@ -630,10 +518,10 @@ class ComposerView extends GetWidget<ComposerController>
       switch(argsComposer.emailActionType) {
         case EmailActionType.compose:
         case EmailActionType.composeFromEmailAddress:
-          return _buildHtmlEditor(HtmlExtension.editorStartTags, context);
+          return _buildHtmlEditor(context);
         case EmailActionType.edit:
           return controller.emailContentsViewState.value.fold(
-            (failure) => _buildHtmlEditor(HtmlExtension.editorStartTags, context),
+            (failure) => _buildHtmlEditor(context, initialContent: HtmlExtension.editorStartTags),
             (success) {
                 if (success is GetEmailContentLoading) {
                   return Padding(
@@ -645,9 +533,9 @@ class ComposerView extends GetWidget<ComposerController>
                   if (contentHtml.isEmpty == true) {
                     contentHtml = HtmlExtension.editorStartTags;
                   }
-                  return _buildHtmlEditor(contentHtml, context);
+                  return _buildHtmlEditor(context, initialContent: contentHtml);
                 } else {
-                  return _buildHtmlEditor(HtmlExtension.editorStartTags, context);
+                  return _buildHtmlEditor(context, initialContent: HtmlExtension.editorStartTags);
                 }
               });
         case EmailActionType.reply:
@@ -659,14 +547,14 @@ class ComposerView extends GetWidget<ComposerController>
           if (contentHtml.isEmpty == true) {
             contentHtml = HtmlExtension.editorStartTags;
           }
-          return _buildHtmlEditor(contentHtml, context);
+          return _buildHtmlEditor(context, initialContent: contentHtml);
         default:
-          return _buildHtmlEditor(HtmlExtension.editorStartTags, context);
+          return _buildHtmlEditor(context, initialContent: HtmlExtension.editorStartTags);
       }
     });
   }
 
-  Widget _buildHtmlEditor(String initialContent, BuildContext context) {
+  Widget _buildHtmlEditor(BuildContext context, {String? initialContent}) {
     final richTextMobileTabletController = controller.richTextMobileTabletController;
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
@@ -674,17 +562,14 @@ class ComposerView extends GetWidget<ComposerController>
         key: const Key('composer_editor'),
         minHeight: 550,
         addDefaultSelectionMenuItems: false,
-        initialContent: initialContent,
+        initialContent: initialContent ?? '',
         onCreated: (editorApi) {
           richTextMobileTabletController.htmlEditorApi = editorApi;
-          if(responsiveUtils.isMobile(context)){
             controller.keyboardRichTextController.onCreateHTMLEditor(
               editorApi,
               onEnterKeyDown: controller.onEnterKeyDown,
+              context: context,
             );
-          } else {
-            richTextMobileTabletController.listenHtmlEditorApi();
-          }
         },
       ),
     );
