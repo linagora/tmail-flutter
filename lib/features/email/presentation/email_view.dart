@@ -21,10 +21,10 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
 
+  static const double maxSizeFullDisplayEmailAddressArrowDownButton = 30.0;
+
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
-
-  static const int limitAddressDisplay = 1;
 
   EmailView({Key? key}) : super(key: key);
 
@@ -54,31 +54,15 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
                           color: Colors.white)
-                      : null,
-                  margin: responsiveUtils.isWebDesktop(context)
-                      ? const EdgeInsets.only(right: 16, top: 16, bottom: 16)
-                      : EdgeInsets.zero,
-                  padding: responsiveUtils.isWebDesktop(context)
-                      ? const EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 3)
-                      : EdgeInsets.zero,
-                  child: Column(children: [
-                    _buildAppBar(context),
-                    _buildVacationNotificationMessage(context),
-                    if (responsiveUtils.isWebDesktop(context))
-                      const SizedBox(height: 5),
-                    Obx(() {
-                     if (controller.currentEmail != null &&
-                         !responsiveUtils.isWebDesktop(context)) {
-                       return _buildDivider();
-                     }
-                     return const SizedBox.shrink();
-                    }),
-                    Expanded(child: _buildEmailBody(context)),
-                    Obx(() => controller.currentEmail != null
-                        ? const Divider(color: AppColor.colorDividerEmailView, height: 1)
-                        : const SizedBox.shrink()),
-                    _buildBottomBar(context),
-                  ])
+                      : const BoxDecoration(color: Colors.white),
+                  margin: _getMarginEmailView(context),
+                  child: Obx(() {
+                    if (controller.currentEmail != null) {
+                      return _buildEmailView(context, controller.currentEmail!);
+                    } else {
+                      return _buildEmailViewEmpty(context);
+                    }
+                  })
               )
           ))
         ])
@@ -86,18 +70,40 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
     );
   }
 
+  EdgeInsets _getMarginEmailView(BuildContext context) {
+    if (BuildUtils.isWeb) {
+      if (responsiveUtils.isDesktop(context)) {
+        return const EdgeInsets.only(right: 16, top: 16, bottom: 16);
+      } else {
+        return const EdgeInsets.symmetric(vertical: 16);
+      }
+    } else {
+      return EdgeInsets.zero;
+    }
+  }
+
+  Widget _buildEmailViewEmpty(BuildContext context) {
+    return Center(child: _buildEmailEmpty(context));
+  }
+
+  Widget _buildEmailView(BuildContext context, PresentationEmail email) {
+    return Column(children: [
+      _buildAppBar(context, email),
+      _buildVacationNotificationMessage(context),
+      const Divider(color: AppColor.colorDividerHorizontal, height: 1),
+      Expanded(child: _buildEmailBody(context, email)),
+      const Divider(color: AppColor.colorDividerHorizontal, height: 1),
+      _buildBottomBar(context, email),
+    ]);
+  }
+
+
   bool _supportVerticalDivider(BuildContext context) {
     if (BuildUtils.isWeb) {
       return responsiveUtils.isTabletLarge(context);
     } else {
       return responsiveUtils.isLandscapeTablet(context) || responsiveUtils.isDesktop(context);
     }
-  }
-
-  Widget _buildDivider({EdgeInsets? edgeInsets}){
-    return Padding(
-      padding: edgeInsets ?? const EdgeInsets.symmetric(horizontal: 16),
-      child: const Divider(color: AppColor.colorDividerEmailView, height: 0.5));
   }
 
   Widget _buildVacationNotificationMessage(BuildContext context) {
@@ -122,78 +128,51 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
     });
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Obx(() => Padding(
-      padding: const EdgeInsets.only(top: 6),
-      child: AppBarMailWidgetBuilder(
-        controller.currentEmail,
-        currentMailbox: controller.mailboxDashBoardController.selectedMailbox.value,
-        isSearchIsRunning: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
-        onBackActionClick: () => controller.closeEmailView(context),
-        onEmailActionClick: (email, action) =>
-            controller.handleEmailAction(context, email, action),
-        onMoreActionClick: (email, position) {
-          if (responsiveUtils.isMobile(context)) {
-            controller.openContextMenuAction(
-                context,
-                _emailActionMoreActionTile(context, email));
-          } else {
-            controller.openPopupMenuAction(
-                context,
-                position,
-                _popupMenuEmailActionTile(context, email));
-          }
+  Widget _buildAppBar(BuildContext context, PresentationEmail presentationEmail) {
+    return Obx(() => AppBarMailWidgetBuilder(
+      presentationEmail,
+      currentMailbox: controller.mailboxDashBoardController.selectedMailbox.value,
+      isSearchIsRunning: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
+      onBackActionClick: () => controller.closeEmailView(context),
+      onEmailActionClick: (email, action) =>
+          controller.handleEmailAction(context, email, action),
+      onMoreActionClick: (email, position) {
+        if (position == null) {
+          controller.openContextMenuAction(
+              context,
+              _emailActionMoreActionTile(context, email));
+        } else {
+          controller.openPopupMenuAction(
+              context,
+              position,
+              _popupMenuEmailActionTile(context, email));
         }
-      )
+      }
     ));
   }
 
-  Widget _buildBottomBar(BuildContext context) {
-    bool isMobileDevice = responsiveUtils.isPortraitMobile(context) ||
-        responsiveUtils.isLandscapeMobile(context);
-    return Padding(
-      padding: EdgeInsets.only(
-          bottom: isMobileDevice ? 16 : 0),
-      child: Obx(() => (BottomBarMailWidgetBuilder(
-              context,
-              imagePaths,
-              responsiveUtils,
-              controller.mailboxDashBoardController.selectedEmail.value)
-          ..addOnPressEmailAction((emailActionType) =>
-              controller.pressEmailAction(emailActionType)))
-        .build()));
+  Widget _buildBottomBar(BuildContext context, PresentationEmail presentationEmail) {
+    return BottomBarMailWidgetBuilder(
+      presentationEmail,
+      onPressEmailActionClick: (emailActionType) => controller.pressEmailAction(emailActionType));
   }
 
-  Widget _buildEmailBody(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Container(
-        color: Colors.white,
-        margin: EdgeInsets.zero,
-        alignment: Alignment.topCenter,
-        child: Obx(() {
-          if (controller.currentEmail != null) {
-            if (kIsWeb) {
-              return _buildEmailMessage(context);
-            } else {
-              return SingleChildScrollView(
-                  physics : const ClampingScrollPhysics(),
-                  child: Container(
-                      margin: EdgeInsets.zero,
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.zero,
-                      color: Colors.white,
-                      child: _buildEmailMessage(context)
-                  )
-              );
-            }
-          } else {
-            return Center(child: _buildEmailEmpty(context));
-          }
-        })
-      ),
-    );
+  Widget _buildEmailBody(BuildContext context, PresentationEmail email) {
+    if (BuildUtils.isWeb) {
+      return _buildEmailMessage(context, email);
+    } else {
+      return SingleChildScrollView(
+          physics : const ClampingScrollPhysics(),
+          child: Container(
+              margin: EdgeInsets.zero,
+              width: double.infinity,
+              alignment: Alignment.center,
+              padding: EdgeInsets.zero,
+              color: Colors.white,
+              child: _buildEmailMessage(context, email)
+          )
+      );
+    }
   }
 
   Widget _buildEmailEmpty(BuildContext context) {
@@ -203,56 +182,106 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
       style: const TextStyle(fontSize: 25, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold));
   }
 
-  Widget _buildEmailSubject(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 16),
+  Widget _buildEmailSubject(BuildContext context, PresentationEmail email) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: SelectableText(
-          '${controller.mailboxDashBoardController.selectedEmail.value?.getEmailTitle()}',
-          maxLines: kIsWeb ? 3 : null,
-          minLines: kIsWeb ? 1 : null,
+          email.getEmailTitle(),
+          maxLines: BuildUtils.isWeb ? 2 : null,
+          minLines: BuildUtils.isWeb ? 1 : null,
           cursorColor: AppColor.colorTextButton,
-          style: TextStyle(
+          style: const TextStyle(
               fontSize: 20,
               color: AppColor.colorNameEmail,
-              fontWeight: responsiveUtils.isDesktop(context) ? FontWeight.w500 : FontWeight.normal)
+              fontWeight: FontWeight.w500)
       ));
   }
 
-  Widget _buildEmailMessage(BuildContext context) {
+  Widget _buildEmailMessage(BuildContext context, PresentationEmail email) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildEmailSubject(context, email),
+            _buildEmailInformationSenderAndReceiver(context, email),
+            _buildLoadingView(),
+            _buildAttachments(context),
+            if (BuildUtils.isWeb)
+              Expanded(child: Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 16),
+                  child: _buildEmailContent(context, constraints)))
+            else
+              Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: _buildEmailContent(context, constraints))
+          ],
+        );
+      });
+  }
+
+  Widget _buildEmailInformationSenderAndReceiver(
+      BuildContext context,
+      PresentationEmail presentationEmail
+  ) {
     return Container(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 10),
-      alignment: Alignment.center,
       color: Colors.white,
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return Column(
-            children: [
-              Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+          crossAxisAlignment: presentationEmail.numberOfAllEmailAddress() > 0
+              ? CrossAxisAlignment.start
+              : CrossAxisAlignment.center,
+          children: [
+            (AvatarBuilder()
+                ..text(presentationEmail.getAvatarText())
+                ..size(48)
+                ..addTextStyle(const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 21,
+                    color: Colors.white))
+                ..backgroundColor(AppColor.colorAvatar))
+              .build(),
+            const SizedBox(width: 16),
+            Expanded(
+              child: LayoutBuilder(builder: (context, constraints) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: _buildEmailSubject(context)),
-                    _buildEmailTime(context),
-                  ]),
-              if (responsiveUtils.isDesktop(context)) const SizedBox(height: 20),
-              if (!responsiveUtils.isDesktop(context)) _buildDivider(edgeInsets: const EdgeInsets.only(top: 16)),
-              Obx(() => controller.currentEmail != null
-                  ? _buildEmailAddress(
-                      context,
-                      controller.currentEmail!,
-                      controller.emailAddressExpandMode.value,
-                      controller.isDisplayFullEmailAddress.value)
-                  : const SizedBox.shrink()),
-              _buildDivider(edgeInsets: const EdgeInsets.only(top: 8)),
-              _buildLoadingView(),
-              _buildAttachments(context),
-              if (kIsWeb)
-                Expanded(child: _buildEmailContent(context, constraints))
-              else
-                _buildEmailContent(context, constraints),
-              const SizedBox(height: 16),
-            ],
-          );
-        })
+                    Row(children: [
+                      if (presentationEmail.from?.isNotEmpty == true)
+                        Expanded(child: Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: Transform(
+                            transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
+                            child: _buildEmailAddressOfSender(
+                                context,
+                                presentationEmail.from!.first,
+                                constraints.maxWidth),
+                          ),
+                        )),
+                      _buildEmailReceivedTime(context),
+                    ]),
+                    if (presentationEmail.numberOfAllEmailAddress() > 0)
+                      Obx(() => Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: _buildEmailAddressOfReceiver(
+                                context,
+                                presentationEmail,
+                                controller.isDisplayFullEmailAddress,
+                                constraints)),
+                            if (controller.isDisplayFullEmailAddress)
+                              Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: _buildGoneDisplayFullButton(context))
+                          ]
+                      )),
+                  ]
+                );
+              }),
+            )
+          ]
+      ),
     );
   }
 
@@ -279,156 +308,265 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
     });
   }
 
-  Widget _buildEmailTime(BuildContext context) {
-    return Transform(
-        transform: Matrix4.translationValues(0.0, 12.0, 0.0),
-        child: Text(
-            '${controller.currentEmail?.getReceivedAt(
-                Localizations.localeOf(context).toLanguageTag(),
-                pattern: controller.currentEmail?.receivedAt?.value.toLocal().toPatternForEmailView())}',
-            maxLines: 1,
-            overflow:TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 13, color: AppColor.colorTime)));
+  Widget _buildEmailReceivedTime(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 100),
+      color: Colors.transparent,
+      child: Text(
+          '${controller.currentEmail?.getReceivedAt(
+              Localizations.localeOf(context).toLanguageTag(),
+              pattern: controller.currentEmail?.receivedAt?.value.toLocal().toPatternForEmailView())}',
+          maxLines: 1,
+          overflow: CommonTextStyle.defaultTextOverFlow,
+          softWrap: CommonTextStyle.defaultSoftWrap,
+          style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+              color: AppColor.colorEmailAddressFull)),
+    );
   }
 
-  Widget _buildEmailAddress(BuildContext context, PresentationEmail email, ExpandMode expandMode, bool isDisplayFull) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (email.from.numberEmailAddress() > 0)
-          _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.from, isDisplayFull),
-        if (email.to.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND)
-          _buildDivider(edgeInsets: const EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
-        if (email.to.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND)
-          _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.to, isDisplayFull),
-        if (email.cc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
-          _buildDivider(edgeInsets: const EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
-        if (email.cc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
-          _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.cc, isDisplayFull),
-        if (email.bcc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
-          _buildDivider(edgeInsets: const EdgeInsets.only(top: kIsWeb ? 8 : 4, bottom: 4)),
-        if (email.bcc.numberEmailAddress() > 0 && expandMode == ExpandMode.EXPAND && isDisplayFull)
-          _buildEmailAddressByPrefix(context, email, PrefixEmailAddress.bcc, isDisplayFull),
-      ],
+  Widget _buildEmailAddressOfSender(
+      BuildContext context,
+      EmailAddress sender,
+      double maxWidth
+  ) {
+    return Row(
+        children: [
+          if (sender.displayName.isNotEmpty)
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => controller.openEmailAddressDialog(context, sender),
+                customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                child: Container(
+                  constraints: BoxConstraints(maxWidth: maxWidth - 100),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  child: Text(
+                      sender.displayName,
+                      overflow: CommonTextStyle.defaultTextOverFlow,
+                      softWrap: CommonTextStyle.defaultSoftWrap,
+                      style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black)),
+                ),
+              ),
+            ),
+          Expanded(
+            child: Text(
+                '<${sender.emailAddress}>',
+                overflow: CommonTextStyle.defaultTextOverFlow,
+                softWrap: CommonTextStyle.defaultSoftWrap,
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: AppColor.colorEmailAddressFull)),
+          ),
+        ]
     );
+  }
+
+  double _getMaxWidthEmailAddressDisplayed(BuildContext context, double maxWidth) {
+    if (responsiveUtils.isPortraitMobile(context)) {
+      return maxWidth - maxSizeFullDisplayEmailAddressArrowDownButton;
+    } else if (responsiveUtils.isWebDesktop(context)) {
+      return maxWidth / 2;
+    } else {
+      return maxWidth * 3/4;
+    }
+  }
+
+  Widget _buildEmailAddressOfReceiver(
+      BuildContext context,
+      PresentationEmail presentationEmail,
+      bool isDisplayFull,
+      BoxConstraints constraints
+  ) {
+    if (!isDisplayFull && presentationEmail.numberOfAllEmailAddress() > 2) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 40,
+            color: Colors.white,
+            constraints: BoxConstraints(
+                maxWidth: _getMaxWidthEmailAddressDisplayed(
+                    context,
+                    constraints.maxWidth)),
+            child: ListView(
+                scrollDirection: Axis.horizontal,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  if (presentationEmail.to.numberEmailAddress() > 0)
+                    _buildEmailAddressByPrefix(
+                        context,
+                        presentationEmail,
+                        PrefixEmailAddress.to,
+                        isDisplayFull),
+                  if (presentationEmail.cc.numberEmailAddress() > 0)
+                    _buildEmailAddressByPrefix(
+                        context,
+                        presentationEmail,
+                        PrefixEmailAddress.cc,
+                        isDisplayFull),
+                  if (presentationEmail.bcc.numberEmailAddress() > 0)
+                    _buildEmailAddressByPrefix(
+                        context,
+                        presentationEmail,
+                        PrefixEmailAddress.bcc,
+                        isDisplayFull),
+                ]
+            ),
+          ),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: controller.expandEmailAddress,
+              customBorder: const CircleBorder(),
+              child: Container(
+                padding: const EdgeInsets.all(5),
+                color: Colors.transparent,
+                constraints: const BoxConstraints(
+                    maxHeight: maxSizeFullDisplayEmailAddressArrowDownButton,
+                    maxWidth: maxSizeFullDisplayEmailAddressArrowDownButton),
+                child: SvgPicture.asset(
+                    imagePaths.icChevronDown,
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.fill),
+              ),
+            ),
+          ),
+        ]
+      );
+    } else {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (presentationEmail.to.numberEmailAddress() > 0)
+            _buildEmailAddressByPrefix(
+                context,
+                presentationEmail,
+                PrefixEmailAddress.to,
+                isDisplayFull),
+          if (presentationEmail.cc.numberEmailAddress() > 0 && isDisplayFull)
+            _buildEmailAddressByPrefix(
+                context,
+                presentationEmail,
+                PrefixEmailAddress.cc,
+                isDisplayFull),
+          if (presentationEmail.bcc.numberEmailAddress() > 0 && isDisplayFull)
+            _buildEmailAddressByPrefix(
+                context,
+                presentationEmail,
+                PrefixEmailAddress.bcc,
+                isDisplayFull),
+        ],
+      );
+    }
   }
 
   Widget _buildEmailAddressByPrefix(
       BuildContext context,
       PresentationEmail presentationEmail,
       PrefixEmailAddress prefixEmailAddress,
-      bool isDisplayFull,
+      bool isDisplayFull
   ) {
-    return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-              padding: const EdgeInsets.only(top: kIsWeb ? 10: 20),
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
               child: Text(
                   '${prefixEmailAddress.asName(context)}:',
-                  style: const TextStyle(fontSize: 14, color: AppColor.colorEmailAddressPrefix))),
-          Expanded(child: _buildEmailAddressWidget(
-              context,
-              presentationEmail,
-              prefixEmailAddress.listEmailAddress(presentationEmail),
-              prefixEmailAddress,
-              isDisplayFull
-          )),
-          if (prefixEmailAddress == PrefixEmailAddress.from) _buildEmailAddressDetailButton(context),
-        ]
+                  style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: AppColor.colorEmailAddressFull)),
+            ),
+            if (!isDisplayFull && presentationEmail.numberOfAllEmailAddress() > 2)
+              _buildListEmailAddressWidget(
+                  context,
+                  prefixEmailAddress.listEmailAddress(presentationEmail),
+                  isDisplayFull
+              )
+            else
+              Expanded(child: _buildListEmailAddressWidget(
+                  context,
+                  prefixEmailAddress.listEmailAddress(presentationEmail),
+                  isDisplayFull
+              ))
+          ]
+      ),
     );
   }
 
-  Widget _buildEmailAddressWidget(
+  Widget _buildListEmailAddressWidget(
       BuildContext context,
-      PresentationEmail presentationEmail,
       List<EmailAddress> listEmailAddress,
-      PrefixEmailAddress prefixEmailAddress,
-      bool isDisplayFull,
+      bool isDisplayFull
   ) {
-    final displayedEmailAddress = isDisplayFull
-        ? listEmailAddress
-        : listEmailAddress.sublist(0, limitAddressDisplay);
-
-    return Padding(
-        padding: const EdgeInsets.only(top: 4),
-        child: Wrap(
-            children: [
-              ...displayedEmailAddress.map((emailAddress) {
-                return Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: GestureDetector(
-                      onTap: () => controller.openEmailAddressDialog(context, emailAddress),
-                      child: Chip(
-                        labelPadding: const EdgeInsets.only(left: 8, right: 8, bottom: 2),
-                        label: Text(emailAddress.asString(), maxLines: 1, overflow: TextOverflow.ellipsis),
-                        labelStyle: const TextStyle(color: AppColor.colorNameEmail, fontSize: 15, fontWeight: FontWeight.normal),
-                        backgroundColor: AppColor.colorEmailAddressTag,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: const BorderSide(width: 0, color: AppColor.colorEmailAddressTag),
-                        ),
-                        avatar: (AvatarBuilder()
-                            ..text(emailAddress.asString().characters.first.toUpperCase())
-                            ..addTextStyle(const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600))
-                            ..avatarColor(emailAddress.avatarColors))
-                          .build(),
-                      ),
-                    )
-                );
-              }).toList(),
-              if (prefixEmailAddress == PrefixEmailAddress.to
-                && presentationEmail.numberOfAllEmailAddress() > 1
-                && !isDisplayFull)
-                _buildEmailAddressCounter(context, presentationEmail),
-            ]
-        ));
-  }
-
-  Widget _buildEmailAddressDetailButton(BuildContext context) {
-    return Material(
-        borderRadius: BorderRadius.circular(12),
+    final lastEmailAddress = listEmailAddress.last;
+    final emailAddressWidgets = listEmailAddress.map((emailAddress) {
+      return Material(
         color: Colors.transparent,
-        child: Padding(
-            padding: const EdgeInsets.only(top: 4, left: 16),
-            child: TextButton(
-              onPressed: () => controller.toggleDisplayEmailAddressAction(),
-              child: Text(
-                controller.isExpandEmailAddress
-                    ? AppLocalizations.of(context).hide
-                    : AppLocalizations.of(context).details,
-                style: const TextStyle(fontSize: 15, color: AppColor.colorTextButton, fontWeight: FontWeight.normal),
-              ),
-            )
-        )
-    );
-  }
-
-  String _getRemainCountAddressReceiver(PresentationEmail email) {
-    if (email.numberOfAllEmailAddress() - limitAddressDisplay >= 999) {
-      return '999';
-    }
-    return '${email.numberOfAllEmailAddress() - limitAddressDisplay}';
-  }
-
-  Widget _buildEmailAddressCounter(BuildContext context, PresentationEmail email) {
-    return GestureDetector(
-      onTap: () => controller.showFullEmailAddress(),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 8),
-        child: Chip(
-          labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-          label: Text('+${_getRemainCountAddressReceiver(email)}', maxLines: 1, overflow: TextOverflow.ellipsis),
-          labelStyle: const TextStyle(color: AppColor.colorTextButton, fontSize: 15, fontWeight: FontWeight.normal),
-          backgroundColor: AppColor.colorEmailAddressTag,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: const BorderSide(width: 0, color: AppColor.colorEmailAddressTag),
+        child: InkWell(
+          onTap: () => controller.openEmailAddressDialog(context, emailAddress),
+          customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            child: Text(
+                lastEmailAddress == emailAddress
+                  ? emailAddress.asString()
+                  : '${emailAddress.asString()},',
+                maxLines: 1,
+                softWrap: CommonTextStyle.defaultSoftWrap,
+                overflow: CommonTextStyle.defaultTextOverFlow,
+                style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal)),
           ),
         ),
-      ),
+      );
+    }).toList();
+
+    if (isDisplayFull) {
+      return Wrap(children: emailAddressWidgets);
+    } else {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        child: Row(
+            crossAxisAlignment:CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: emailAddressWidgets),
+      );
+    }
+  }
+
+  Widget _buildGoneDisplayFullButton(BuildContext context) {
+    return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: controller.collapseEmailAddress,
+          customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            child: Text(
+              AppLocalizations.of(context).hide,
+              style: const TextStyle(
+                  fontSize: 15,
+                  color: AppColor.colorTextButton,
+                  fontWeight: FontWeight.normal),
+            ),
+          ),
+        )
     );
   }
 
@@ -555,7 +693,7 @@ class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
       if (controller.emailContents.isNotEmpty) {
         final allEmailContents = controller.emailContents.asHtmlString;
 
-        if (kIsWeb) {
+        if (BuildUtils.isWeb) {
           return HtmlContentViewerOnWeb(
               widthContent: constraints.maxWidth,
               heightContent: responsiveUtils.getSizeScreenHeight(context),

@@ -767,12 +767,6 @@ class AppLocalizations {
     );
   }
 
-  String get details {
-    return Intl.message(
-        'Details',
-        name: 'details');
-  }
-
   String get hide {
     return Intl.message(
         'Hide',

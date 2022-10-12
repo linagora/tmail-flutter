@@ -68,7 +68,6 @@ class EmailController extends BaseController with AppLoaderMixin {
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
-  final isDisplayFullEmailAddress = false.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
   final emailContents = <EmailContent>[].obs;
   final attachments = <Attachment>[].obs;
@@ -82,6 +81,8 @@ class EmailController extends BaseController with AppLoaderMixin {
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
 
   PresentationEmail? get currentEmail => mailboxDashBoardController.selectedEmail.value;
+
+  bool get isDisplayFullEmailAddress => emailAddressExpandMode.value == ExpandMode.EXPAND;
 
   EmailController(
     this._getEmailContentInteractor,
@@ -217,26 +218,10 @@ class EmailController extends BaseController with AppLoaderMixin {
   void _resetToOriginalValue() {
     attachmentsExpandMode.value = ExpandMode.COLLAPSE;
     emailAddressExpandMode.value = ExpandMode.COLLAPSE;
-    isDisplayFullEmailAddress.value = false;
     emailContents.clear();
     initialEmailContents?.clear();
     attachments.clear();
   }
-
-  void toggleDisplayEmailAddressAction({ExpandMode? expandMode}) {
-    if (expandMode != null) {
-      emailAddressExpandMode.value = expandMode;
-    } else {
-      final newExpandMode = emailAddressExpandMode.value == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
-      emailAddressExpandMode.value = newExpandMode;
-    }
-
-    if (emailAddressExpandMode.value == ExpandMode.COLLAPSE) {
-      isDisplayFullEmailAddress.value = false;
-    }
-  }
-
-  bool get isExpandEmailAddress => emailAddressExpandMode.value == ExpandMode.EXPAND;
 
   PresentationMailbox? getMailboxContain(PresentationEmail email) {
     return mailboxDashBoardController.searchController.isSearchEmailRunning
@@ -622,8 +607,12 @@ class EmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void showFullEmailAddress() {
-    isDisplayFullEmailAddress.value = true;
+  void expandEmailAddress() {
+    emailAddressExpandMode.value = ExpandMode.EXPAND;
+  }
+
+  void collapseEmailAddress() {
+    emailAddressExpandMode.value = ExpandMode.COLLAPSE;
   }
 
   void openEmailAddressDialog(BuildContext context, EmailAddress emailAddress) {

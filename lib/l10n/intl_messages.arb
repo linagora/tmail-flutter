@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-11T09:16:53.834708",
+  "@@last_modified": "2022-10-12T11:51:14.324607",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -734,12 +734,6 @@
   },
   "new_message": "New message",
   "@new_message": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "details": "Details",
-  "@details": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
