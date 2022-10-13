@@ -20,7 +20,6 @@ typedef OnAddEmailAddressTypeAction = void Function(PrefixEmailAddress);
 typedef OnDeleteEmailAddressTypeAction = void Function(PrefixEmailAddress);
 typedef OnShowFullListEmailAddressAction = void Function(PrefixEmailAddress);
 typedef OnFocusEmailAddressChangeAction = void Function(PrefixEmailAddress, bool);
-typedef OnOpenSuggestionBoxEmailAddress = Future<List<EmailAddress>> Function();
 
 class EmailAddressInputBuilder {
 
@@ -41,7 +40,6 @@ class EmailAddressInputBuilder {
   OnDeleteEmailAddressTypeAction? _onDeleteEmailAddressTypeAction;
   OnShowFullListEmailAddressAction? _onShowFullListEmailAddressAction;
   OnFocusEmailAddressChangeAction? _onFocusEmailAddressChangeAction;
-  OnOpenSuggestionBoxEmailAddress? _onOpenSuggestionBoxEmailAddress;
 
   Timer? _gapBetweenTagChangedAndFindSuggestion;
 
@@ -69,10 +67,6 @@ class EmailAddressInputBuilder {
     _onFocusEmailAddressChangeAction = onFocusEmailAddressChangeAction;
   }
 
-  void addOnOpenSuggestionBoxEmailAddress(OnOpenSuggestionBoxEmailAddress onOpenSuggestionBoxEmailAddress) {
-    _onOpenSuggestionBoxEmailAddress = onOpenSuggestionBoxEmailAddress;
-  }
-
   EmailAddressInputBuilder(
     this._context,
     this._imagePaths,
@@ -91,6 +85,7 @@ class EmailAddressInputBuilder {
       children: [
         Text('${_prefixEmailAddress.asName(_context)}:',
           style: const TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput)),
+        const SizedBox(width: 8),
         Expanded(child: Padding(
             padding: EdgeInsets.only(right: _listEmailAddressType.length == 2 ? 8 : 8),
             child: _buildTagEditor())),
@@ -144,7 +139,6 @@ class EmailAddressInputBuilder {
             suggestionsBoxBackgroundColor: Colors.white,
             suggestionsBoxRadius: 20,
             suggestionsBoxMaxHeight: 300,
-            iconSuggestionBox: SvgPicture.asset(_imagePaths.icAddEmailAddress, fit: BoxFit.fill),
             textStyle: const TextStyle(color: AppColor.colorEmailAddress, fontSize: 14, fontWeight: FontWeight.w500),
             onSubmitted: (value) {
               log('EmailAddressInputBuilder::_buildTagEditor(): onSubmitted: $value');
@@ -198,14 +192,6 @@ class EmailAddressInputBuilder {
                 _handleGapBetweenTagChangedAndFindSuggestion);
             },
             findSuggestions: _findSuggestions,
-            searchAllSuggestions: () async {
-              if (_onOpenSuggestionBoxEmailAddress != null) {
-                return (await _onOpenSuggestionBoxEmailAddress!())
-                  .map((emailAddress) => _toSuggestionEmailAddress(emailAddress, listEmailAddress))
-                  .toList();
-              }
-              return [];
-            },
             suggestionBuilder: (context, tagEditorState, suggestionEmailAddress) {
               switch (suggestionEmailAddress.state) {
                 case SuggestionEmailState.duplicated:
