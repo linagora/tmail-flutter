@@ -42,11 +42,13 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_app_dashboard_configuration_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
@@ -88,6 +90,7 @@ class MailboxDashBoardController extends ReloadableController {
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
   final SearchController searchController = Get.find<SearchController>();
   final DownloadController downloadController = Get.find<DownloadController>();
+  final AppGridDashboardController _appGridDashboardController = Get.find<AppGridDashboardController>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
@@ -274,6 +277,8 @@ class MailboxDashBoardController extends ReloadableController {
         } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess
             || success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
           _deleteMultipleEmailsPermanentlySuccess(success);
+        } else if (success is GetAppDashboardConfigurationSuccess) {
+          _appGridDashboardController.handleShowAppDashboard(success.linagoraApplications);
         }
       }
     );
@@ -1129,6 +1134,15 @@ class MailboxDashBoardController extends ReloadableController {
 
   void emptyTrashAction(BuildContext context) {
     dispatchAction(EmptyTrashAction(context));
+  }
+
+  void showAppDashboardAction() async {
+    final apps = _appGridDashboardController.linagoraApplications.value;
+    if (apps != null) {
+      consumeState(Stream.value(Right(GetAppDashboardConfigurationSuccess(apps))));
+      return;
+    }
+    consumeState(_appGridDashboardController.showDashboardAction());
   }
 
   @override

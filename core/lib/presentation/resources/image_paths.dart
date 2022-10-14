@@ -163,8 +163,13 @@ class ImagePaths {
   String get icChevronDownOutline => _getImagePath('ic_chevron_down_outline.svg');
   String get icUndo => _getImagePath('ic_undo.svg');
   String get icDownloadAttachment => _getImagePath('ic_download_attachment.svg');
+  String get icAppDashboard => _getImagePath('ic_app_dashboard.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
+  }
+
+  String getConfigurationImagePath(String imageName) {
+    return AssetsPaths.configurationImages + imageName;
   }
 }
