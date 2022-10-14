@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -26,12 +27,16 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
+
+import 'widgets/app_dashboard/app_grid_dashboard_overlay.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   MailboxDashBoardView({Key? key}) : super(key: key);
 
   final SearchController searchController = Get.find<SearchController>();
+  final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
 
   @override
   Widget build(BuildContext context) {
@@ -259,6 +264,35 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             }
           })),
         const Spacer(),
+        AppConfig.appGridDashboardAvailable
+          ? Obx(() => PortalTarget(
+              visible: appGridDashboardController.isAppGridDashboardOverlayOpen.isTrue,
+              portalFollower: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => appGridDashboardController.toggleAppGridDashboard()),
+              child: PortalTarget(
+                child: InkWell(
+                  onTapDown: (tapDownDetails) => controller.showAppDashboardAction(),
+                  child: buildIconWeb(
+                    icon: SvgPicture.asset(imagePaths.icAppDashboard, width: 28, height: 28, fit: BoxFit.fill),
+                  )
+                ),
+                anchor: const Aligned(
+                  follower: Alignment.topRight,
+                  target: Alignment.bottomRight
+                ),
+                portalFollower: Obx(() {
+                  if (appGridDashboardController.linagoraApplications.value != null) {
+                    return AppDashboardOverlay(appGridDashboardController.linagoraApplications.value!);
+                  }
+                  return const SizedBox.shrink();
+                }),
+                visible: appGridDashboardController.isAppGridDashboardOverlayOpen.isTrue,
+              )
+            )
+          )
+          : const SizedBox.shrink(),
+        const SizedBox(width: 24),
         Obx(() => (AvatarBuilder()
           ..text(controller.userProfile.value?.getAvatarText() ?? '')
           ..backgroundColor(Colors.white)
