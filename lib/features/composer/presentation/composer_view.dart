@@ -150,42 +150,83 @@ class ComposerView extends GetWidget<ComposerController>
                       fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).send,
                   onTap: () => controller.sendEmailAction(context)),
-          ]
+            if (responsiveUtils.isScreenWithShortestSide(context))
+              buildIconWithLowerMenu(
+                SvgPicture.asset(imagePaths.icRequestReadReceipt), 
+                context, 
+                _popUpMoreActionMenu(context), 
+                controller.openPopupMenuAction),
+          ],
       ),
     );
+  }
+
+  List<PopupMenuEntry> _popUpMoreActionMenu(BuildContext context) {
+    return [
+      PopupMenuItem(
+        padding: const EdgeInsets.symmetric(horizontal: 8), 
+        child: Row(
+          children: [
+            Obx(() => buildIconWeb(
+              icon: Icon(controller.hasRequestReadReceipt.value ? Icons.done : null, color: Colors.black))), 
+            IgnorePointer(
+              child: buildTextIcon(
+                AppLocalizations.of(context).requestReadReceipt, 
+                textStyle: const TextStyle(color: Colors.black, fontSize: 15)),
+            ),
+          ]),
+        onTap: () {
+          controller.toggleRequestReadReceipt();
+        },
+      )
+    ];
   }
 
   Widget _buildBottomBar(BuildContext context, bool isEnableSendButton) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       color: Colors.white,
-      child: Row(mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            buildTextButton(
-                AppLocalizations.of(context).cancel,
-                textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.lineItemListColor),
-                backgroundColor: AppColor.emailAddressChipColor,
-                width: 150,
-                height: 44,
-                radius: 10,
-                onTap: () => controller.closeComposer()),
-            const SizedBox(width: 12),
-            buildTextButton(
-                AppLocalizations.of(context).save_to_drafts,
-                textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.colorTextButton),
-                backgroundColor: AppColor.emailAddressChipColor,
-                width: 150,
-                height: 44,
-                radius: 10,
-                onTap: () => controller.saveEmailAsDrafts(context)),
-            const SizedBox(width: 12),
-            buildTextButton(
-                AppLocalizations.of(context).send,
-                width: 150,
-                height: 44,
-                radius: 10,
-                onTap: () => controller.sendEmailAction(context)),
-          ]
+      child: Stack(
+        alignment: Alignment.centerRight,
+        children: [
+          Row(mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              buildTextButton(
+                  AppLocalizations.of(context).cancel,
+                  textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.lineItemListColor),
+                  backgroundColor: AppColor.emailAddressChipColor,
+                  width: 150,
+                  height: 44,
+                  radius: 10,
+                  onTap: () => controller.closeComposer()),
+              const SizedBox(width: 12),
+              buildTextButton(
+                  AppLocalizations.of(context).save_to_drafts,
+                  textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.colorTextButton),
+                  backgroundColor: AppColor.emailAddressChipColor,
+                  width: 150,
+                  height: 44,
+                  radius: 10,
+                  onTap: () => controller.saveEmailAsDrafts(context)),
+              const SizedBox(width: 12),
+              buildTextButton(
+                  AppLocalizations.of(context).send,
+                  width: 150,
+                  height: 44,
+                  radius: 10,
+                  onTap: () => controller.sendEmailAction(context)),
+            ]
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              buildIconWithUpperMenu(
+                SvgPicture.asset(imagePaths.icRequestReadReceipt),  
+                context, 
+                _popUpMoreActionMenu(context), 
+                controller.openPopupMenuAction)
+            ]),
+        ],
       ),
     );
   }
