@@ -227,46 +227,103 @@ class ComposerView extends GetWidget<ComposerController>
                     fit: BoxFit.fill),
                 tooltip: AppLocalizations.of(context).send,
                 onTap: () => controller.sendEmailAction(context)),
+            buildIconWithLowerMenu(
+              SvgPicture.asset(imagePaths.icRequestReadReceipt), 
+              context, 
+              _popUpMoreActionMenu(context), 
+              controller.openPopupMenuAction),
           ]
       ),
     );
   }
 
-  Widget _buildBottomBar(BuildContext context, bool isEnableSendButton) {
+  List<PopupMenuEntry> _popUpMoreActionMenu(BuildContext context) {
+    return [
+      PopupMenuItem(
+        padding: const EdgeInsets.symmetric(horizontal: 8), 
+        child: PointerInterceptor(
+          child: IntrinsicHeight(
+            child: Row(
+              children: [
+                Obx(() => buildIconWeb(
+                  icon: Icon(controller.hasRequestReadReceipt.value ? Icons.done : null, color: Colors.black))), 
+                Expanded(
+                  child: InkResponse(
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: Center(
+                        child: Text(
+                          AppLocalizations.of(context).requestReadReceipt,
+                          style: const TextStyle(color: Colors.black, fontSize: 15),
+                          )
+                      ),
+                    ),
+                  ),
+                ),
+              ]),
+          ),
+        ),
+        onTap: () {
+          controller.toggleRequestReadReceipt();
+        },
+      )
+    ];
+  }
+
+  Widget _buildBottomBar(BuildContext context, bool isEnableSendButton, BoxConstraints constraints) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         color: Colors.white,
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: Row(mainAxisAlignment: MainAxisAlignment.center,
+          child: ConstrainedBox(
+            constraints: constraints.widthConstraints(),
+            child: Stack(
+              alignment: Alignment.centerRight,
               children: [
-                const SizedBox(width: 24),
-                buildButtonWrapText(
-                  AppLocalizations.of(context).cancel,
-                  textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.lineItemListColor),
-                  bgColor: AppColor.emailAddressChipColor,
-                  minWidth: 150,
-                  height: 44,
-                  radius: 10,
-                  onTap: () => controller.closeComposerWeb()),
-                const SizedBox(width: 12),
-                buildButtonWrapText(
-                    AppLocalizations.of(context).save_to_drafts,
-                    textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.colorTextButton),
-                    bgColor: AppColor.emailAddressChipColor,
-                    minWidth: 150,
-                    height: 44,
-                    radius: 10,
-                    onTap: () => controller.saveEmailAsDrafts(context)),
-                const SizedBox(width: 12),
-                buildButtonWrapText(
-                    AppLocalizations.of(context).send,
-                    minWidth: 150,
-                    height: 44,
-                    radius: 10,
-                    onTap: () => controller.sendEmailAction(context)),
-                const SizedBox(width: 24),
-              ]
+                Row(mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(width: 24),
+                      buildButtonWrapText(
+                        AppLocalizations.of(context).cancel,
+                        textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.lineItemListColor),
+                        bgColor: AppColor.emailAddressChipColor,
+                        minWidth: 150,
+                        height: 44,
+                        radius: 10,
+                        onTap: () => controller.closeComposerWeb()),
+                      const SizedBox(width: 12),
+                      buildButtonWrapText(
+                          AppLocalizations.of(context).save_to_drafts,
+                          textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17, color: AppColor.colorTextButton),
+                          bgColor: AppColor.emailAddressChipColor,
+                          minWidth: 150,
+                          height: 44,
+                          radius: 10,
+                          onTap: () => controller.saveEmailAsDrafts(context)),
+                      const SizedBox(width: 12),
+                      buildButtonWrapText(
+                          AppLocalizations.of(context).send,
+                          minWidth: 150,
+                          height: 44,
+                          radius: 10,
+                          onTap: () => controller.sendEmailAction(context)),
+                      const SizedBox(width: 24),
+                    ]
+                ),
+                if(!responsiveUtils.isMobile(context))
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      buildIconWithUpperMenu(
+                        SvgPicture.asset(imagePaths.icRequestReadReceipt), 
+                        context, 
+                        _popUpMoreActionMenu(context), 
+                        controller.openPopupMenuAction)
+                    ]),
+              ],
+            ),
           ),
         ),
       );
@@ -317,7 +374,7 @@ class ComposerView extends GetWidget<ComposerController>
                 ]
             ))),
         const Divider(color: AppColor.colorDividerComposer, height: 1),
-        Obx(() => _buildBottomBar(context, controller.isEnableEmailSendButton.value)),
+        Obx(() => _buildBottomBar(context, controller.isEnableEmailSendButton.value, constraints)),
     ]);
   }
 
@@ -644,6 +701,7 @@ class ComposerView extends GetWidget<ComposerController>
             }, onBlur: () {
               controller.onEditorFocusChange(false);
             }, onMouseDown: () {
+              Navigator.maybePop(context);  
               controller.onEditorFocusChange(true);
             }, onChangeSelection: (settings) {
               controller.richTextWebController.onEditorSettingsChange(settings);

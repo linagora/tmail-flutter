@@ -174,3 +174,71 @@ Widget buildButtonWrapText(String name, {
     ),
   );
 }
+
+Widget buildIconWithLowerMenu(
+  Widget icon,
+  BuildContext context,
+  List<PopupMenuEntry> popupMenuItems,
+  Function(BuildContext context, RelativeRect? position,
+          List<PopupMenuEntry> popupMenuItems)
+      openPopUpMenuAction,
+) {
+  return Builder(
+    builder: (iconContext) {
+      final screenSize = MediaQuery.of(context).size;
+
+      return buildIconWeb(
+          icon: icon,
+          onTap: () {
+            // get size and position of the icon
+            RenderBox box = iconContext.findRenderObject() as RenderBox;
+            Offset iconTopLeft = box.localToGlobal(Offset.zero);
+            final iconSize = box.size;
+
+            // calculate the popup position for popup menu action
+            final popupLeft = iconTopLeft.dx + iconSize.width * 3 / 4;
+            final popupTop = iconTopLeft.dy + iconSize.height * 4 / 5;
+            final popupRight = screenSize.width - popupLeft;
+            final popupBottom = screenSize.height - popupRight;
+            final position = RelativeRect.fromLTRB(
+                popupLeft, popupTop, popupRight, popupBottom);
+
+            openPopUpMenuAction(context, position, popupMenuItems);
+          });
+    },
+  );
+}
+
+Widget buildIconWithUpperMenu(
+  Widget icon,
+  BuildContext context,
+  List<PopupMenuEntry> popupMenuItems,
+  Function(BuildContext context, RelativeRect? position,
+          List<PopupMenuEntry> popupMenuItems)
+      openPopUpMenuAction,
+) {
+  return Builder(
+    builder: (iconContext) {
+      final screenSize = MediaQuery.of(context).size;
+
+      return buildIconWeb(
+          icon: icon,
+          onTap: () {
+            // get size and position of the icon
+            RenderBox box = iconContext.findRenderObject() as RenderBox;
+            Offset iconTopLeft = box.localToGlobal(Offset.zero);
+            final iconSize = box.size;
+
+            // calculate the popup position for popup menu action
+            final popupLeft = iconTopLeft.dx + iconSize.width * 3 / 4;
+            final popupTop = iconTopLeft.dy - iconSize.height * 9 / 5;
+            final popupRight = screenSize.width - popupLeft;
+            final popupBottom = screenSize.height - popupRight;
+            final position = RelativeRect.fromLTRB(
+                popupLeft, popupTop, popupRight, popupBottom);
+
+            openPopUpMenuAction(context, position, popupMenuItems);
+          });
+    },
+  );
+}
