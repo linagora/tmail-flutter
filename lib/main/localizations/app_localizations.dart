@@ -2362,4 +2362,11 @@ class AppLocalizations {
         'Select parent folder',
         name: 'selectParentFolder');
   }
+
+  String get requestReadReceipt {
+    return Intl.message(
+      'Request read receipt',
+      name: 'requestReadReceipt',
+    );
+  }
 }
