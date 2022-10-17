@@ -87,6 +87,7 @@ class ComposerController extends BaseController {
   final identitySelected = Rxn<Identity>();
   final listIdentities = <Identity>[].obs;
   final emailContentsViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
+  final hasRequestReadReceipt = false.obs;
 
   final SendEmailInteractor _sendEmailInteractor;
   final LocalFilePickerInteractor _localFilePickerInteractor;
@@ -598,6 +599,7 @@ class ComposerController extends BaseController {
       },
       headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgent},
       attachments: attachments.isNotEmpty ? attachments : null,
+      headerMdn: hasRequestReadReceipt.value ? {IndividualHeaderIdentifier.headerMdn: getEmailAddressSender()} : {},
     );
   }
 
@@ -1375,4 +1377,9 @@ class ComposerController extends BaseController {
       );
     }
   }
+
+  void toggleRequestReadReceipt() {
+    hasRequestReadReceipt.toggle();
+  }
+
 }
