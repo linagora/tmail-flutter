@@ -109,15 +109,18 @@ class ToastView {
       ),
     );
 
-    final Widget toastChild = ToastCard(
-      child,
-      Duration(seconds: toastDuration ?? 2),
-      fadeDuration: 500,
-    );
 
     _overlayEntry = OverlayEntry(
         builder: (BuildContext context) =>
-            _showWidgetBasedOnPosition(toastDuration != null ? toastChild : child, toastPosition));
+            _showWidgetBasedOnPosition(
+              toastDuration != null ?
+                ToastCard(
+                    child,
+                    Duration(seconds: toastDuration),
+                    fadeDuration: 500,
+                )
+                : child, toastPosition,
+            ));
 
     _isVisible = true;
     overlayState!.insert(_overlayEntry!);
