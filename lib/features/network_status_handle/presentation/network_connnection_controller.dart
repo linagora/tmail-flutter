@@ -16,16 +16,17 @@ class NetworkConnectionController extends BaseController {
   final AppToast _appToast = Get.find<AppToast>();
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  bool _isEnableShowToastDisConnection = true;
+  bool _isEnableShowToastDisconnection = true;
 
   late StreamSubscription<ConnectivityResult> subscription;
 
   NetworkConnectionController(this._connectivity);
+
   @override
   void onReady() {
    subscription = _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
      connectivityResult.value = result;
-     if (_isEnableShowToastDisConnection && result == ConnectivityResult.none) {
+     if (_isEnableShowToastDisconnection && result == ConnectivityResult.none) {
        _showToastLostConnection();
      }
     }) ;
@@ -37,6 +38,7 @@ class NetworkConnectionController extends BaseController {
     subscription.cancel();
     super.onClose();
   }
+
   @override
   void onDone() {}
 
@@ -58,7 +60,7 @@ class NetworkConnectionController extends BaseController {
           AppLocalizations.of(currentContext!).no_internet_connection,
           actionName: AppLocalizations.of(currentContext!).skip,
           onActionClick: () {
-            _isEnableShowToastDisConnection = false;
+            _isEnableShowToastDisconnection = false;
             ToastView.dismiss();
           },
           leadingIcon: SvgPicture.asset(
@@ -66,7 +68,7 @@ class NetworkConnectionController extends BaseController {
               width: 24,
               height: 24,
               fit: BoxFit.fill),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: AppColor.textFieldErrorBorderColor,
           textColor: Colors.white,
           textActionColor: Colors.white,
           maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!),
