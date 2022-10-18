@@ -50,9 +50,9 @@ class TMailToast {
       }) {
     assert(text != null);
     ToastView.dismiss();
-    ToastView.createView(text, context, toastDuration, toastPosition,
+    ToastView.createView(text, context, toastPosition,
         backgroundColor, textStyle, toastBorderRadius, border, trailing,
-        leading, width);
+        leading, width, toastDuration: toastDuration,);
   }
 }
 
@@ -69,21 +69,24 @@ class ToastView {
 
   // ignore: avoid_void_async
   static void createView(
-      String text,
-      BuildContext context,
-      int? toastDuration,
-      ToastPosition? toastPosition,
-      Color backgroundColor,
-      TextStyle textStyle,
-      double toastBorderRadius,
-      Border? border,
-      Widget? trailing,
-      Widget? leading,
-      double? width) async {
+    String text,
+    BuildContext context,
+    ToastPosition? toastPosition,
+    Color backgroundColor,
+    TextStyle textStyle,
+    double toastBorderRadius,
+    Border? border,
+    Widget? trailing,
+    Widget? leading,
+    double? width,
+    {int? toastDuration = 2}
+  ) async {
     overlayState = Overlay.of(context, rootOverlay: false);
 
-    final Widget toastChild = ToastCard(
-        Container(
+    final Widget child = Center(
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
           width: width,
           decoration: BoxDecoration(
             color: backgroundColor,
@@ -92,27 +95,36 @@ class ToastView {
           ),
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-          child: trailing == null && leading == null
-              ? Text(text, softWrap: true, style: textStyle)
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (leading != null) leading,
-                    Expanded(child: Text(text, style: textStyle)),
-                    if (trailing != null) trailing
-                  ],
-                ),
+          child: trailing == null && leading == null ?
+            Text(text, softWrap: true, style: textStyle) :
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (leading != null) leading,
+                Expanded(child: Text(text, style: textStyle)),
+                if (trailing != null) trailing
+              ],
+            ),
         ),
-        Duration(seconds: toastDuration ?? 2), fadeDuration: 500);
+      ),
+    );
+
+    final Widget toastChild = ToastCard(
+      child,
+      Duration(seconds: toastDuration ?? 2),
+      fadeDuration: 500,
+    );
 
     _overlayEntry = OverlayEntry(
         builder: (BuildContext context) =>
-            _showWidgetBasedOnPosition(toastChild, toastPosition));
+            _showWidgetBasedOnPosition(toastDuration != null ? toastChild : child, toastPosition));
 
     _isVisible = true;
     overlayState!.insert(_overlayEntry!);
-    await Future.delayed(Duration(seconds: toastDuration ?? 2));
-    await dismiss();
+    if (toastDuration != null) {
+      await Future.delayed(Duration(seconds: toastDuration));
+      await dismiss();
+    }
   }
 
   static Positioned _showWidgetBasedOnPosition(
@@ -209,11 +221,6 @@ class ToastStateFulState extends State<ToastCard>
   @override
   Widget build(BuildContext context) => FadeTransition(
     opacity: _fadeAnimation as Animation<double>,
-    child: Center(
-      child: Material(
-        color: Colors.transparent,
-        child: widget.child,
-      ),
-    ),
+    child: widget.child,
   );
 }

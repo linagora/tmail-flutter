@@ -687,6 +687,13 @@ class AppLocalizations {
     );
   }
 
+  String get skip {
+    return Intl.message(
+        'Skip',
+        name: 'skip'
+    );
+  }
+
   String get hint_input_create_new_mailbox {
     return Intl.message(
         'Enter name of mailbox',

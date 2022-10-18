@@ -206,15 +206,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           Obx(() => controller.composerOverlayState.value == ComposerOverlayState.active
               ? ComposerView()
               : const SizedBox.shrink()),
-          Obx(() {
-            if (controller.isNetworkConnectionAvailable()) {
-              return const SizedBox.shrink();
-            } else {
-              return Align(
-                  alignment: Alignment.bottomCenter,
-                  child: buildNetworkConnectionWidget(context));
-            }
-          }),
           _buildDownloadTaskStateWidget(),
         ]),
       ),

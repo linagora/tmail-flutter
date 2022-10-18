@@ -5,7 +5,6 @@ import 'package:core/presentation/views/text/text_builder.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/base/mixin/network_connection_mixin.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
@@ -15,7 +14,7 @@ import 'package:tmail_ui_user/features/login/presentation/widgets/login_input_de
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_text_input_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-abstract class BaseLoginView extends GetWidget<LoginController> with NetworkConnectionMixin {
+abstract class BaseLoginView extends GetWidget<LoginController> {
   BaseLoginView({Key? key}) : super(key: key);
 
   final loginController = Get.find<LoginController>();
@@ -72,14 +71,14 @@ abstract class BaseLoginView extends GetWidget<LoginController> with NetworkConn
         margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
         width: responsiveUtils.getDeviceWidth(context),height: 48,
         child: AbsorbPointer(
-          absorbing: !controller.isNetworkConnectionAvailable(),
+          absorbing: !controller.networkConnectionController.isNetworkConnectionAvailable(),
           child: ElevatedButton(
               key: const Key('loginSubmitForm'),
               style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
                   backgroundColor: MaterialStateProperty.resolveWith<Color>(
                       (Set<MaterialState> states) => AppColor.primaryColor.withOpacity(
-                          controller.isNetworkConnectionAvailable() ? 1 : 0.5)),
+                          controller.networkConnectionController.isNetworkConnectionAvailable() ? 1 : 0.5)),
                   shape: MaterialStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                       side: const BorderSide(width: 0, color: AppColor.primaryColor)

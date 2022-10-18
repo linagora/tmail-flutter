@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:contact/contact/model/capability_contact.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
@@ -13,7 +12,6 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 abstract class BaseController extends GetxController with MessageDialogActionMixin, PopupContextMenuActionMixin {
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
-  final connectivityResult = Rxn<ConnectivityResult>();
   FpsCallback? fpsCallback;
 
   void consumeState(Stream<Either<Failure, Success>> newStateStream) async {
@@ -26,14 +24,6 @@ abstract class BaseController extends GetxController with MessageDialogActionMix
 
   void dispatchState(Either<Failure, Success> newState) {
     viewState.value = newState;
-  }
-
-  void setNetworkConnectivityState(ConnectivityResult newConnectivityResult) {
-    connectivityResult.value = newConnectivityResult;
-  }
-
-  bool isNetworkConnectionAvailable() {
-    return connectivityResult.value != ConnectivityResult.none;
   }
 
   void getState(Future<Either<Failure, Success>> newStateStream) async {
