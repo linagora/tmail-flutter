@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/base/mixin/network_connection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
@@ -18,7 +17,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class EmailView extends GetWidget<EmailController> with NetworkConnectionMixin {
+class EmailView extends GetWidget<EmailController> {
 
   static const double maxSizeFullDisplayEmailAddressArrowDownButton = 30.0;
 

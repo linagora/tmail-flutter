@@ -25,9 +25,9 @@ class NetworkBindings extends Bindings {
 
   @override
   void dependencies() {
+    _bindingConnection();
     _bindingDio();
     _bindingApi();
-    _bindingConnection();
     _bindingException();
   }
 

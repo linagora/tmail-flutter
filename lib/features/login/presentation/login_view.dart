@@ -49,14 +49,6 @@ class LoginView extends BaseLoginView {
             ),
           ),
         ),
-        Obx(() {
-          if (controller.isNetworkConnectionAvailable()) {
-            return const SizedBox.shrink();
-          }
-          return Align(
-              alignment: Alignment.bottomCenter,
-              child: buildNetworkConnectionWidget(context));
-        }),
       ]));
   }
 
@@ -169,14 +161,14 @@ class LoginView extends BaseLoginView {
       margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
       width: responsiveUtils.getDeviceWidth(context),height: 48,
       child: AbsorbPointer(
-        absorbing: !controller.isNetworkConnectionAvailable(),
+        absorbing: !controller.networkConnectionController.isNetworkConnectionAvailable(),
         child: ElevatedButton(
           key: const Key('nextToCredentialForm'),
           style: ButtonStyle(
             foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
             backgroundColor: MaterialStateProperty.resolveWith<Color>(
               (Set<MaterialState> states) => AppColor.primaryColor.withOpacity(
-                  controller.isNetworkConnectionAvailable() ? 1 : 0.5)),
+                  controller.networkConnectionController.isNetworkConnectionAvailable() ? 1 : 0.5)),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: const BorderSide(width: 0, color: AppColor.primaryColor)

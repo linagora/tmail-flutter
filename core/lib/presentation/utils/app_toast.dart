@@ -47,6 +47,7 @@ class AppToast {
         Widget? actionIcon,
         Widget? leadingIcon,
         double? maxWidth,
+        bool infinityToast = false,
         Color? backgroundColor,
         Color? textColor,
         Color? textActionColor,
@@ -103,6 +104,7 @@ class AppToast {
         message,
         maxWidth: maxWidth,
         backgroundColor: backgroundColor,
+        infinityToast: infinityToast,
         textColor: textColor,
         leading: leadingIcon,
         trailing: trailingAction);
@@ -113,6 +115,7 @@ class AppToast {
     String message, {
     Color? textColor,
     Widget? leading,
+    bool infinityToast = false,
     Widget? trailing,
     double? maxWidth,
     Color? backgroundColor
@@ -138,7 +141,7 @@ class AppToast {
                 child: PointerInterceptor(child: leading))
             : null,
         toastBorderRadius: 10.0,
-        toastDuration: 3
+        toastDuration: infinityToast ? null : 3,
     );
   }
 

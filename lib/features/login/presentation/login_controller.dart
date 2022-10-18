@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,6 +23,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_inte
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
+import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -43,11 +41,9 @@ class LoginController extends BaseController {
   final GetAuthenticationInfoInteractor _getAuthenticationInfoInteractor;
   final GetStoredOidcConfigurationInteractor _getStoredOidcConfigurationInteractor;
 
-  final Connectivity _connectivity = Get.find<Connectivity>();
 
   final TextEditingController urlInputController = TextEditingController();
-
-  late StreamSubscription _connectivityStreamSubscription;
+  final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
 
   LoginController(
     this._authenticationInteractor,
@@ -87,12 +83,6 @@ class LoginController extends BaseController {
   Password? _parsePassword(String? password) => password != null && password.trim().isNotEmpty
       ? Password(password.trim())
       : null;
-
-  @override
-  void onInit() {
-    _registerNetworkConnectivityState();
-    super.onInit();
-  }
 
   @override
   void onReady() {
@@ -337,18 +327,9 @@ class LoginController extends BaseController {
     setUrlText(urlInputController.text);
   }
 
-  void _registerNetworkConnectivityState() async {
-    setNetworkConnectivityState(await _connectivity.checkConnectivity());
-    _connectivityStreamSubscription = _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-      log('LoginController::_registerNetworkConnectivityState(): ConnectivityResult: ${result.name}');
-      setNetworkConnectivityState(result);
-    });
-  }
-
   @override
   void onClose() {
     urlInputController.clear();
-    _connectivityStreamSubscription.cancel();
     super.onClose();
   }
 

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-12T16:44:35.025767",
+  "@@last_modified": "2022-10-18T14:05:06.644786",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -660,6 +660,12 @@
   },
   "discard": "Discard",
   "@discard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "skip": "Skip",
+  "@skip": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

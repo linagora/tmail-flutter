@@ -91,14 +91,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   mobile: ThreadView());
           }
         }),
-        Obx(() {
-          if (controller.isNetworkConnectionAvailable()) {
-            return const SizedBox.shrink();
-          }
-          return Align(
-              alignment: Alignment.bottomCenter,
-              child: buildNetworkConnectionWidget(context));
-        }),
       ]),
     );
   }

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
@@ -63,6 +62,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vac
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
+import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
@@ -85,12 +85,12 @@ class MailboxDashBoardController extends ReloadableController {
   final AppToast _appToast = Get.find<AppToast>();
   final ImagePaths _imagePaths = Get.find<ImagePaths>();
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
-  final Connectivity _connectivity = Get.find<Connectivity>();
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
   final SearchController searchController = Get.find<SearchController>();
   final DownloadController downloadController = Get.find<DownloadController>();
   final AppGridDashboardController _appGridDashboardController = Get.find<AppGridDashboardController>();
+  final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
@@ -128,7 +128,6 @@ class MailboxDashBoardController extends ReloadableController {
   PresentationMailbox? outboxMailbox;
   RouterArguments? routerArguments;
 
-  late StreamSubscription _connectivityStreamSubscription;
   late StreamSubscription _emailReceiveManagerStreamSubscription;
   late StreamSubscription _fileReceiveManagerStreamSubscription;
 
@@ -158,8 +157,6 @@ class MailboxDashBoardController extends ReloadableController {
   @override
   void onInit() {
     _registerProgressState();
-    _registerNetworkConnectivityState();
-
     super.onInit();
   }
 
@@ -286,17 +283,6 @@ class MailboxDashBoardController extends ReloadableController {
 
   @override
   void onError(error) {}
-
-  void _registerNetworkConnectivityState() async {
-    setNetworkConnectivityState(await _connectivity.checkConnectivity());
-    _connectivityStreamSubscription = _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-      log('MailboxDashBoardController::_registerNetworkConnectivityState(): ConnectivityResult: ${result.name}');
-      setNetworkConnectivityState(result);
-      if (userProfile.value == null && result != ConnectivityResult.none) {
-        _getUserProfile();
-      }
-    });
-  }
 
   void _registerPendingEmailAddress() {
     _emailReceiveManagerStreamSubscription =
@@ -1150,7 +1136,6 @@ class MailboxDashBoardController extends ReloadableController {
     _emailReceiveManager.closeEmailReceiveManagerStream();
     _emailReceiveManagerStreamSubscription.cancel();
     _fileReceiveManagerStreamSubscription.cancel();
-    _connectivityStreamSubscription.cancel();
     _progressStateController.close();
     Get.delete<DownloadController>();
     super.onClose();
