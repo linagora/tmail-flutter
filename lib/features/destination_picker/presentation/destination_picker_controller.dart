@@ -112,6 +112,8 @@ class DestinationPickerController extends BaseMailboxController {
         mailboxCategoriesExpandMode.value.folderMailbox = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
+      default:
+        return;
     }
   }
 

@@ -2373,7 +2373,14 @@ class AppLocalizations {
   String get requestReadReceipt {
     return Intl.message(
       'Request read receipt',
-      name: 'requestReadReceipt',
+      name: 'requestReadReceipt'
+    );
+  }
+
+  String get appGridTittle {
+    return Intl.message(
+      'Go to applications',
+      name: 'appGridTittle'
     );
   }
 }

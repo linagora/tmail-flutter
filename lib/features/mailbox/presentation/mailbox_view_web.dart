@@ -16,8 +16,10 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bott
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_search_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_list_dashboard_item.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, PopupMenuWidgetMixin {
 
@@ -159,6 +161,12 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
             return _buildUserInformation(context);
           }),
           _buildLoadingView(),
+          AppConfig.appGridDashboardAvailable && _responsiveUtils.isWebNotDesktop(context)
+            ? _buildAppGridDashboard(context)
+            : const SizedBox.shrink(),
+          const SizedBox(height: 8),
+          const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+          const SizedBox(height: 8),
           Obx(() => controller.defaultMailboxHasChild
               ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultRootNode)
               : const SizedBox.shrink()),
@@ -466,5 +474,91 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                     controller.handleMailboxAction(context, contextMenuItem.action, mailbox)),
           ),
         ));
+  }
+
+  Widget _buildAppGridDashboard(BuildContext context) {
+    return Column(
+      children: [
+        _buildGoToApplicationsCategory(context, MailboxCategories.appGrid),
+        AnimatedContainer(
+          padding: const EdgeInsets.only(top: 8),
+          duration: const Duration(milliseconds: 400),
+          child: controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.EXPAND
+            ? _buildAppGridInMailboxView(context)
+            : const Offstage())
+    ]);
+  }
+
+  Widget _buildGoToApplicationsCategory(BuildContext context, MailboxCategories categories) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: 8,
+        left: _responsiveUtils.isDesktop(context) ? 0 : 36,
+        right: _responsiveUtils.isDesktop(context) ? 0 : 28
+      ),
+      child: Row(
+        children: [
+          buildIconWeb(
+            splashRadius: 5,
+            iconPadding: EdgeInsets.zero,
+            minSize: 12,
+            iconSize: 28,
+            icon: SvgPicture.asset(
+              _imagePaths.icAppDashboard,
+              color: AppColor.primaryColor,
+              fit: BoxFit.fill
+            ),
+            tooltip: AppLocalizations.of(context).appGridTittle),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: Text(categories.getTitle(context),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppColor.colorTextButton,
+                  fontWeight: FontWeight.w500
+                )
+              )
+            )
+          ),
+          buildIconWeb(
+            splashRadius: 5,
+            iconPadding: EdgeInsets.zero,
+            minSize: 12,
+            iconSize: 28,
+            icon: Obx(() => SvgPicture.asset(
+              controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.COLLAPSE
+                ? _imagePaths.icCollapseFolder
+                : _imagePaths.icExpandFolder,
+              color: AppColor.primaryColor,
+              fit: BoxFit.fill
+            )),
+            tooltip: AppLocalizations.of(context).appGridTittle,
+            onTap: () => controller.toggleMailboxCategories(categories)
+          ),
+        ]
+      )
+    );
+  }
+
+  Widget _buildAppGridInMailboxView(BuildContext context) {
+    return Obx(() {
+      final linagoraApps = controller.mailboxDashBoardController.appGridDashboardController.linagoraApplications.value;
+      if (linagoraApps != null && linagoraApps.apps.isNotEmpty) {
+        return ListView.separated(
+          shrinkWrap: true,
+          itemCount: linagoraApps.apps.length,
+          itemBuilder: (context, index) {
+            return AppListDashboardItem(linagoraApps.apps[index]);
+          },
+          separatorBuilder: (context, index) {
+            return const SizedBox.shrink();
+          },
+        );
+      }
+      return const SizedBox.shrink();
+    });
   }
 }

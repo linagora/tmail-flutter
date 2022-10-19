@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-18T14:05:06.644786",
+  "@@last_modified": "2022-10-19T11:34:56.881127",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2292,6 +2292,12 @@
   },
   "requestReadReceipt": "Request read receipt",
   "@requestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "appGridTittle": "Go to applications",
+  "@appGridTittle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

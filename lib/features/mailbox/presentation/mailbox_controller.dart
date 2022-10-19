@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_reque
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
@@ -54,7 +55,6 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -848,7 +848,19 @@ class MailboxController extends BaseMailboxController {
         mailboxCategoriesExpandMode.value.folderMailbox = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
+      case MailboxCategories.appGrid:
+        final currentExpandMode = mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value;
+        if (currentExpandMode == ExpandMode.COLLAPSE) {
+          _showAppDashboardAction();
+        } else {
+          mailboxDashBoardController.appGridDashboardController.toggleAppGridDashboard();
+        }
+        break;
     }
+  }
+
+  void _showAppDashboardAction() {
+    mailboxDashBoardController.showAppDashboardAction();
   }
 
   void handleMailboxAction(BuildContext context, MailboxActions actions,
