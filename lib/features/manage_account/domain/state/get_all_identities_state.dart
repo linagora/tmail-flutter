@@ -2,6 +2,8 @@ import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 
+class GetAllIdentitiesLoading extends UIState {}
+
 class GetAllIdentitiesSuccess extends UIState {
   final List<Identity>? identities;
   final State? state;

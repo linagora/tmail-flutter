@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/login/data/network/config/authorization_i
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
+import 'package:tmail_ui_user/features/manage_account/data/network/identity_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/vacation_api.dart';
 import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
@@ -79,6 +80,7 @@ class NetworkBindings extends Bindings {
     Get.put(ManageAccountAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(VacationAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(ContactAPI(Get.find<JmapHttpClient.HttpClient>()));
+    Get.put(IdentityAPI(Get.find<JmapHttpClient.HttpClient>()));
   }
 
   void _bindingConnection() {

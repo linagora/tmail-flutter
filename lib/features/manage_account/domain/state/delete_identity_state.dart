@@ -1,5 +1,7 @@
 import 'package:core/core.dart';
 
+class DeleteIdentityLoading extends UIState {}
+
 class DeleteIdentitySuccess extends UIState {
 
   DeleteIdentitySuccess();
