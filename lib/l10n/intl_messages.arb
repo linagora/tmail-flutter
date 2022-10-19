@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-19T15:56:55.354560",
+  "@@last_modified": "2022-10-21T10:04:34.240729",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2322,6 +2322,54 @@
   },
   "no": "No",
   "@no": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageNotSupportMdnWhenSendReceipt": "Your account does not support the MDN capability",
+  "@toastMessageNotSupportMdnWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageCannotFoundIdentityWhenSendReceipt": "Identity id given cannot be found",
+  "@toastMessageCannotFoundIdentityWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageCannotFoundEmailIdWhenSendReceipt": "Email id given cannot be found",
+  "@toastMessageCannotFoundEmailIdWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subjectSendReceiptToSender": "Read: {subject}",
+  "@subjectSendReceiptToSender": {
+    "type": "text",
+    "placeholders_order": [
+      "subject"
+    ],
+    "placeholders": {
+      "subject": {}
+    }
+  },
+  "textBodySendReceiptToSender": "Message was read by {sender} on {time} \n\nSubject: {subject} \n\nNote: This Return ReceiptReceipt only acknowledges that the message was displayed on the recipient's computer. There is no guarantee that the recipient has read or understood the message contents.",
+  "@textBodySendReceiptToSender": {
+    "type": "text",
+    "placeholders_order": [
+      "sender",
+      "subject",
+      "time"
+    ],
+    "placeholders": {
+      "sender": {},
+      "subject": {},
+      "time": {}
+    }
+  },
+  "toastMessageSendReceiptSuccess": "A read receipt has been sent.",
+  "@toastMessageSendReceiptSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

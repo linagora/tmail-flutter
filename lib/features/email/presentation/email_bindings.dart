@@ -44,6 +44,8 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
 
 class EmailBindings extends BaseBindings {
 
@@ -58,6 +60,7 @@ class EmailBindings extends BaseBindings {
         Get.find<MoveToMailboxInteractor>(),
         Get.find<MarkAsStarEmailInteractor>(),
         Get.find<DownloadAttachmentForWebInteractor>(),
+        Get.find<GetAllIdentitiesInteractor>(),
     ));
   }
 
@@ -122,6 +125,7 @@ class EmailBindings extends BaseBindings {
       Get.find<AuthenticationOIDCRepository>(),
       Get.find<AccountRepository>(),
     ));
+    IdentityInteractorsBindings().dependencies();
   }
 
   @override

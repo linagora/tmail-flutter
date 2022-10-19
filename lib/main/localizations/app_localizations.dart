@@ -2409,4 +2409,42 @@ class AppLocalizations {
         'No',
         name: 'no');
   }
+
+  String get toastMessageNotSupportMdnWhenSendReceipt {
+    return Intl.message(
+        'Your account does not support the MDN capability',
+        name: 'toastMessageNotSupportMdnWhenSendReceipt');
+  }
+
+  String get toastMessageCannotFoundIdentityWhenSendReceipt {
+    return Intl.message(
+        'Identity id given cannot be found',
+        name: 'toastMessageCannotFoundIdentityWhenSendReceipt');
+  }
+
+  String get toastMessageCannotFoundEmailIdWhenSendReceipt {
+    return Intl.message(
+        'Email id given cannot be found',
+        name: 'toastMessageCannotFoundEmailIdWhenSendReceipt');
+  }
+
+  String subjectSendReceiptToSender(String subject) {
+    return Intl.message(
+        'Read: $subject',
+        name: 'subjectSendReceiptToSender',
+        args: [subject]);
+  }
+
+  String textBodySendReceiptToSender(String sender, String subject, String time) {
+    return Intl.message(
+        'Message was read by $sender on $time \n\nSubject: $subject \n\nNote: This Return ReceiptReceipt only acknowledges that the message was displayed on the recipient\'s computer. There is no guarantee that the recipient has read or understood the message contents.',
+        name: 'textBodySendReceiptToSender',
+        args: [sender, subject, time]);
+  }
+
+  String get toastMessageSendReceiptSuccess {
+    return Intl.message(
+        'A read receipt has been sent.',
+        name: 'toastMessageSendReceiptSuccess');
+  }
 }

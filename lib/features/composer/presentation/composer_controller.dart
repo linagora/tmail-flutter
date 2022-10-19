@@ -1037,7 +1037,7 @@ class ComposerController extends BaseController {
 
     if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty) {
       _emailContents = arguments.emailContents;
-      emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!, [], [], false));
+      emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!, [], [], null));
     } else {
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
       final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
