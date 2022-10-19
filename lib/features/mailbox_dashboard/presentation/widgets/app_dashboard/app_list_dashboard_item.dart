@@ -28,7 +28,7 @@ class _AppListDashboardItemState extends State<AppListDashboardItem> {
           onHover: (value) => setState(() => _isHoverItem = value),
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
               color: _backgroundColorItem(context)),
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
             margin: const EdgeInsets.symmetric(horizontal: 16),
