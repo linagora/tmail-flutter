@@ -13,11 +13,22 @@ class GetEmailContentSuccess extends UIState {
   final List<EmailContent> emailContents;
   final List<EmailContent> emailContentsDisplayed;
   final List<Attachment> attachments;
+  final bool readReceiptRequested;
 
-  GetEmailContentSuccess(this.emailContents, this.emailContentsDisplayed, this.attachments);
+  GetEmailContentSuccess(
+    this.emailContents,
+    this.emailContentsDisplayed,
+    this.attachments,
+    this.readReceiptRequested
+  );
 
   @override
-  List<Object?> get props => [emailContents, emailContentsDisplayed, attachments];
+  List<Object?> get props => [
+    emailContents,
+    emailContentsDisplayed,
+    attachments,
+    readReceiptRequested
+  ];
 }
 
 class GetEmailContentFailure extends FeatureFailure {

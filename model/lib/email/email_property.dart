@@ -14,4 +14,9 @@ class EmailProperty {
   static const String bcc = 'bcc';
   static const String replyTo = 'replyTo';
   static const String mailboxIds = 'mailboxIds';
+  static const String bodyValues = 'bodyValues';
+  static const String htmlBody = 'htmlBody';
+  static const String attachments = 'attachments';
+  static const String headers = 'headers';
+  static final String headerMdnKey = 'Disposition-Notification-To';
 }

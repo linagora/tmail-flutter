@@ -13,7 +13,13 @@ extension EmailExtension on Email {
 
   bool get hasStarred => keywords?.containsKey(KeyWordIdentifier.emailFlagged) == true;
 
+  bool get hasMdnSent => keywords?.containsKey(KeyWordIdentifier.mdnSent) == true;
+
   bool get withAttachments => hasAttachment == true;
+
+  bool get needShowNotificationMessageReadReceipt {
+    return !hasMdnSent && headers.readReceiptHasBeenRequested;
+  }
 
   Set<String> getRecipientEmailAddressList() {
     final listEmailAddress = Set<String>();
