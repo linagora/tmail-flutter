@@ -30,19 +30,11 @@ class GetEmailContentInteractor {
             newEmailContents,
             newEmailContentsDisplayed,
             email.allAttachments,
-            email.needShowNotificationMessageReadReceipt));
+            email));
       } else if (email.allAttachments.isNotEmpty) {
-        yield Right<Failure, Success>(GetEmailContentSuccess(
-            [],
-            [],
-            email.allAttachments,
-            email.needShowNotificationMessageReadReceipt));
+        yield Right<Failure, Success>(GetEmailContentSuccess([], [], email.allAttachments, email));
       } else if (email.headers?.isNotEmpty == true) {
-        yield Right<Failure, Success>(GetEmailContentSuccess(
-            [], 
-            [],
-            [],
-            email.needShowNotificationMessageReadReceipt));
+        yield Right<Failure, Success>(GetEmailContentSuccess([], [], [], email));
       } else {
         yield Left(GetEmailContentFailure(null));
       }

@@ -55,7 +55,8 @@ class EmailAPI {
         EmailProperty.htmlBody,
         EmailProperty.attachments,
         EmailProperty.headers,
-        EmailProperty.keywords
+        EmailProperty.keywords,
+        EmailProperty.mailboxIds,
       }))
       ..addFetchHTMLBodyValues(true);
 
