@@ -1,5 +1,7 @@
 import 'package:core/core.dart';
 
+class EditIdentityLoading extends UIState {}
+
 class EditIdentitySuccess extends UIState {
 
   EditIdentitySuccess();

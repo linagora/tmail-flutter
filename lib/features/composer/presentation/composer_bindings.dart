@@ -41,13 +41,8 @@ import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_reposit
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
-import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/manage_account_datasource_impl.dart';
-import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
-import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
-import 'package:tmail_ui_user/features/manage_account/data/repository/manage_account_repository_impl.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_datasource.dart';
 import 'package:tmail_ui_user/features/upload/data/datasource_impl/attachment_upload_datasource_impl.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
@@ -82,9 +77,6 @@ class ComposerBindings extends BaseBindings {
         Get.find<DioClient>()
     ));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
-    Get.lazyPut(() => ManageAccountDataSourceImpl(
-        Get.find<ManageAccountAPI>(),
-        Get.find<LanguageCacheManager>()));
   }
 
   @override
@@ -96,7 +88,6 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
-    Get.lazyPut<ManageAccountDataSource>(() => Get.find<ManageAccountDataSourceImpl>());
   }
 
   @override
@@ -117,7 +108,6 @@ class ComposerBindings extends BaseBindings {
         Get.find<HtmlDataSource>(),
         Get.find<StateDataSource>(),
     ));
-    Get.lazyPut(() => ManageAccountRepositoryImpl(Get.find<ManageAccountDataSource>()));
   }
 
   @override
@@ -126,7 +116,6 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut<ContactRepository>(() => Get.find<ContactRepositoryImpl>());
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
-    Get.lazyPut<ManageAccountRepository>(() => Get.find<ManageAccountRepositoryImpl>());
   }
 
   @override
@@ -144,10 +133,11 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => UpdateEmailDraftsInteractor(
         Get.find<EmailRepository>(),
         Get.find<MailboxRepository>()));
-    Get.lazyPut(() => GetAllIdentitiesInteractor(Get.find<ManageAccountRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => SaveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => DownloadImageAsBase64Interactor(Get.find<ComposerRepository>()));
+
+    IdentityInteractorsBindings().dependencies();
   }
 
   @override
