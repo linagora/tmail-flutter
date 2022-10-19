@@ -215,6 +215,24 @@ class EmailController extends BaseController with AppLoaderMixin {
     emailContents.value = success.emailContentsDisplayed;
     initialEmailContents = success.emailContents;
     attachments.value = success.attachments;
+
+    if (success.readReceiptRequested) {
+      _handleReadReceipt();
+    }
+  }
+
+  void _handleReadReceipt() {
+    if (currentContext != null) {
+      showConfirmDialogAction(currentContext!,
+        AppLocalizations.of(currentContext!).subTitleReadReceiptRequestNotificationMessage,
+        AppLocalizations.of(currentContext!).yes,
+        onConfirmAction: () => {},
+        showAsBottomSheet: true,
+        title: AppLocalizations.of(currentContext!).titleReadReceiptRequestNotificationMessage,
+        cancelTitle: AppLocalizations.of(currentContext!).no,
+        icon: SvgPicture.asset(imagePaths.icReadReceiptMessage, fit: BoxFit.fill),
+      );
+    }
   }
 
   void _resetToOriginalValue() {

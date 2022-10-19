@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-19T11:34:56.881127",
+  "@@last_modified": "2022-10-19T15:56:55.354560",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2298,6 +2298,30 @@
   },
   "appGridTittle": "Go to applications",
   "@appGridTittle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleReadReceiptRequestNotificationMessage": "Read receipt request",
+  "@titleReadReceiptRequestNotificationMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subTitleReadReceiptRequestNotificationMessage": "The sender has requested a Read receipt for this email. Send Read receipt?",
+  "@subTitleReadReceiptRequestNotificationMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yes": "Yes",
+  "@yes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no": "No",
+  "@no": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

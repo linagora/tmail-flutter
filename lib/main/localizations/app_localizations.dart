@@ -2383,4 +2383,30 @@ class AppLocalizations {
       name: 'appGridTittle'
     );
   }
+
+  String get titleReadReceiptRequestNotificationMessage {
+    return Intl.message(
+      'Read receipt request',
+      name: 'titleReadReceiptRequestNotificationMessage',
+    );
+  }
+
+  String get subTitleReadReceiptRequestNotificationMessage {
+    return Intl.message(
+      'The sender has requested a Read receipt for this email. Send Read receipt?',
+      name: 'subTitleReadReceiptRequestNotificationMessage',
+    );
+  }
+
+  String get yes {
+    return Intl.message(
+        'Yes',
+        name: 'yes');
+  }
+
+  String get no {
+    return Intl.message(
+        'No',
+        name: 'no');
+  }
 }
