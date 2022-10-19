@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 
 class GetEmailContentLoading extends UIState {
@@ -13,13 +14,13 @@ class GetEmailContentSuccess extends UIState {
   final List<EmailContent> emailContents;
   final List<EmailContent> emailContentsDisplayed;
   final List<Attachment> attachments;
-  final bool readReceiptRequested;
+  final Email? emailCurrent;
 
   GetEmailContentSuccess(
     this.emailContents,
     this.emailContentsDisplayed,
     this.attachments,
-    this.readReceiptRequested
+    this.emailCurrent
   );
 
   @override
@@ -27,7 +28,7 @@ class GetEmailContentSuccess extends UIState {
     emailContents,
     emailContentsDisplayed,
     attachments,
-    readReceiptRequested
+    emailCurrent
   ];
 }
 
