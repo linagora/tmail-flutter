@@ -27,17 +27,7 @@ import 'package:jmap_dart_client/jmap/mail/email/submission/envelope.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submission_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
-import 'package:model/account/account_request.dart';
-import 'package:model/account/authentication_type.dart';
-import 'package:model/download/download_task_id.dart';
-import 'package:model/email/attachment.dart';
-import 'package:model/email/mark_star_action.dart';
-import 'package:model/email/read_actions.dart';
-import 'package:model/extensions/email_extension.dart';
-import 'package:model/extensions/keyword_identifier_extension.dart';
-import 'package:model/extensions/list_email_id_extension.dart';
-import 'package:model/extensions/mailbox_id_extension.dart';
-import 'package:model/oidc/token.dart';
+import 'package:model/model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -60,7 +50,13 @@ class EmailAPI {
 
     final getEmailMethod = GetEmailMethod(accountId)
       ..addIds({emailId.id})
-      ..addProperties(Properties({'bodyValues', 'htmlBody', 'attachments'}))
+      ..addProperties(Properties({
+        EmailProperty.bodyValues,
+        EmailProperty.htmlBody,
+        EmailProperty.attachments,
+        EmailProperty.headers,
+        EmailProperty.keywords
+      }))
       ..addFetchHTMLBodyValues(true);
 
     final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);

@@ -26,9 +26,23 @@ class GetEmailContentInteractor {
         final newEmailContentsDisplayed = kIsWeb
             ? await emailRepository.addTooltipWhenHoverOnLink(newEmailContents)
             : newEmailContents;
-        yield Right<Failure, Success>(GetEmailContentSuccess(newEmailContents, newEmailContentsDisplayed, email.allAttachments));
+        yield Right<Failure, Success>(GetEmailContentSuccess(
+            newEmailContents,
+            newEmailContentsDisplayed,
+            email.allAttachments,
+            email.needShowNotificationMessageReadReceipt));
       } else if (email.allAttachments.isNotEmpty) {
-        yield Right<Failure, Success>(GetEmailContentSuccess([], [], email.allAttachments));
+        yield Right<Failure, Success>(GetEmailContentSuccess(
+            [],
+            [],
+            email.allAttachments,
+            email.needShowNotificationMessageReadReceipt));
+      } else if (email.headers?.isNotEmpty == true) {
+        yield Right<Failure, Success>(GetEmailContentSuccess(
+            [], 
+            [],
+            [],
+            email.needShowNotificationMessageReadReceipt));
       } else {
         yield Left(GetEmailContentFailure(null));
       }
