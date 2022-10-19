@@ -17,8 +17,11 @@ extension EmailExtension on Email {
 
   bool get withAttachments => hasAttachment == true;
 
-  bool get needShowNotificationMessageReadReceipt {
-    return !hasMdnSent && headers.readReceiptHasBeenRequested;
+  bool hasReadReceipt(Map<MailboxId, PresentationMailbox> mapMailbox) {
+    final mailboxCurrent = findMailboxContain(mapMailbox);
+    return !hasMdnSent &&
+        headers.readReceiptHasBeenRequested &&
+        mailboxCurrent?.isSent == false;
   }
 
   Set<String> getRecipientEmailAddressList() {
@@ -118,5 +121,18 @@ extension EmailExtension on Email {
         .toList();
     }
     return [];
+  }
+
+  PresentationMailbox? findMailboxContain(Map<MailboxId, PresentationMailbox> mapMailbox) {
+    final newMailboxIds = mailboxIds;
+    newMailboxIds?.removeWhere((key, value) => !value);
+
+    if (newMailboxIds?.isNotEmpty == true) {
+      final firstMailboxId = newMailboxIds!.keys.first;
+      if (mapMailbox.containsKey(firstMailboxId)) {
+        return mapMailbox[firstMailboxId];
+      }
+    }
+    return null;
   }
 }

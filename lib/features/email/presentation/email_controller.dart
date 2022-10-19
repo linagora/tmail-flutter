@@ -10,8 +10,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
+import 'package:jmap_dart_client/jmap/mdn/mdn.dart';
 import 'package:model/model.dart';
 import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:permission_handler/permission_handler.dart';
@@ -23,6 +27,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/email_ac
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/send_receipt_to_sender_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
@@ -30,6 +35,7 @@ import 'package:tmail_ui_user/features/email/domain/state/get_email_content_stat
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
@@ -37,12 +43,16 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -66,12 +76,16 @@ class EmailController extends BaseController with AppLoaderMixin {
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
+  final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
+
+  SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
   final emailContents = <EmailContent>[].obs;
   final attachments = <Attachment>[].obs;
   EmailId? _currentEmailId;
+  Identity? _identitySelected;
   List<EmailContent>? initialEmailContents;
 
   late Worker emailWorker;
@@ -95,6 +109,7 @@ class EmailController extends BaseController with AppLoaderMixin {
     this._moveToMailboxInteractor,
     this._markAsStarEmailInteractor,
     this._downloadAttachmentForWebInteractor,
+    this._getAllIdentitiesInteractor,
   );
 
   @override
@@ -102,6 +117,19 @@ class EmailController extends BaseController with AppLoaderMixin {
     _initWorker();
     _listenDownloadAttachmentProgressState();
     super.onInit();
+  }
+
+  @override
+  void onReady() {
+    injectMdnBindings(
+        mailboxDashBoardController.sessionCurrent,
+        mailboxDashBoardController.accountId.value);
+    try {
+      _sendReceiptToSenderInteractor = Get.find<SendReceiptToSenderInteractor>();
+    } catch (e) {
+      logError('EmailController::onReady(): SendReceiptToSenderInteractor not registered');
+    }
+    super.onReady();
   }
 
   @override
@@ -121,6 +149,7 @@ class EmailController extends BaseController with AppLoaderMixin {
           if (!presentationEmail.hasRead) {
             markAsEmailRead(presentationEmail, ReadActions.markAsRead);
           }
+          _getAllIdentities();
         }
       }
     });
@@ -167,6 +196,26 @@ class EmailController extends BaseController with AppLoaderMixin {
     });
   }
 
+  void _getAllIdentities() {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null) {
+      consumeState(_getAllIdentitiesInteractor.execute(accountId));
+    }
+  }
+
+  void _getAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
+    if (success.identities?.isNotEmpty == true) {
+      try {
+        final identityDefault = success.identities!
+            .firstWhere((identity) => identity.mayDelete == false);
+        _identitySelected = identityDefault;
+      } catch (e) {
+        logError('EmailController::_getAllIdentitiesSuccess(): ${e.toString()}');
+        _identitySelected = success.identities!.first;
+      }
+    }
+  }
+
   void _getEmailContentAction(EmailId emailId) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
@@ -202,6 +251,10 @@ class EmailController extends BaseController with AppLoaderMixin {
           _markAsEmailStarSuccess(success);
         } else if (success is DownloadAttachmentForWebSuccess) {
           _downloadAttachmentForWebSuccessAction(success);
+        } else if (success is GetAllIdentitiesSuccess) {
+          _getAllIdentitiesSuccess(success);
+        } else if (success is SendReceiptToSenderSuccess) {
+          _sendReceiptToSenderSuccess(success);
         }
       });
   }
@@ -216,7 +269,9 @@ class EmailController extends BaseController with AppLoaderMixin {
     initialEmailContents = success.emailContents;
     attachments.value = success.attachments;
 
-    if (success.readReceiptRequested) {
+    final isShowMessageReadReceipt = success.emailCurrent
+        ?.hasReadReceipt(mailboxDashBoardController.mapMailboxById) == true;
+    if (isShowMessageReadReceipt) {
       _handleReadReceipt();
     }
   }
@@ -226,7 +281,7 @@ class EmailController extends BaseController with AppLoaderMixin {
       showConfirmDialogAction(currentContext!,
         AppLocalizations.of(currentContext!).subTitleReadReceiptRequestNotificationMessage,
         AppLocalizations.of(currentContext!).yes,
-        onConfirmAction: () => {},
+        onConfirmAction: () => _handleSendReceiptToSenderAction(currentContext!),
         showAsBottomSheet: true,
         title: AppLocalizations.of(currentContext!).titleReadReceiptRequestNotificationMessage,
         cancelTitle: AppLocalizations.of(currentContext!).no,
@@ -728,9 +783,116 @@ class EmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.deleteEmailPermanently(email);
   }
 
+  void _handleSendReceiptToSenderAction(BuildContext context) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId == null) {
+      return;
+    }
+
+    if (_sendReceiptToSenderInteractor == null) {
+      _appToast.showBottomToast(
+          currentOverlayContext!,
+          AppLocalizations.of(context).toastMessageNotSupportMdnWhenSendReceipt,
+          leadingIcon: SvgPicture.asset(
+              imagePaths.icNotConnection,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastErrorBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          maxWidth: responsiveUtils.getMaxWidthToast(currentContext!));
+      return;
+    }
+
+    if (_identitySelected == null || _identitySelected?.id == null) {
+      _appToast.showBottomToast(
+          currentOverlayContext!,
+          AppLocalizations.of(context).toastMessageCannotFoundIdentityWhenSendReceipt,
+          leadingIcon: SvgPicture.asset(
+              imagePaths.icNotConnection,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastErrorBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          maxWidth: responsiveUtils.getMaxWidthToast(currentContext!));
+      return;
+    }
+
+    if (currentEmail == null || _currentEmailId == null) {
+      _appToast.showBottomToast(
+          currentOverlayContext!,
+          AppLocalizations.of(context).toastMessageCannotFoundEmailIdWhenSendReceipt,
+          leadingIcon: SvgPicture.asset(
+              imagePaths.icNotConnection,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastErrorBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          maxWidth: responsiveUtils.getMaxWidthToast(currentContext!));
+      return;
+    }
+
+    final mdnToSender = _generateMDN(context, currentEmail!);
+    final sendReceiptRequest = SendReceiptToSenderRequest(
+        mdn: mdnToSender,
+        identityId: _identitySelected!.id!,
+        sendId: Id(_uuid.v1()));
+    log('EmailController::_handleSendReceiptToSenderAction(): sendReceiptRequest: $sendReceiptRequest');
+
+    consumeState(_sendReceiptToSenderInteractor!.execute(accountId, sendReceiptRequest));
+  }
+
+  MDN _generateMDN(BuildContext context, PresentationEmail email) {
+    final senderEmailAddress = email.from?.first.asFullString() ?? '';
+    final subjectEmail = email.subject ?? '';
+    final timeCurrent = DateTime.now();
+    final timeAsString = '${timeCurrent.formatDate(
+        pattern: 'EEE, d MMM yyyy HH:mm:ss')} (${timeCurrent.timeZoneName})';
+
+    final mdnToSender = MDN(
+        forEmailId: email.id,
+        subject: AppLocalizations.of(context).subjectSendReceiptToSender(subjectEmail),
+        textBody: AppLocalizations.of(context).textBodySendReceiptToSender(
+            senderEmailAddress,
+            subjectEmail,
+            timeAsString),
+        disposition: Disposition(
+            ActionMode.manual,
+            SendingMode.manually,
+            DispositionType.displayed));
+
+    return mdnToSender;
+  }
+
+  void _sendReceiptToSenderSuccess(SendReceiptToSenderSuccess success) {
+    log('EmailController::_sendReceiptToSenderSuccess(): ${success.mdn.toString()}');
+    if (currentContext != null) {
+      _appToast.showBottomToast(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).toastMessageSendReceiptSuccess,
+          leadingIcon: SvgPicture.asset(
+              imagePaths.icReadReceiptMessage,
+              width: 24,
+              height: 24,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastSuccessBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          maxWidth: responsiveUtils.getMaxWidthToast(currentContext!));
+    }
+  }
+
   void closeEmailView(BuildContext context) {
     mailboxDashBoardController.clearSelectedEmail();
-
+    _currentEmailId = null;
     if (mailboxDashBoardController.searchController.isSearchEmailRunning) {
       if (responsiveUtils.isWebDesktop(context)) {
         mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
