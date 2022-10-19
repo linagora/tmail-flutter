@@ -162,11 +162,13 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
           }),
           _buildLoadingView(),
           AppConfig.appGridDashboardAvailable && _responsiveUtils.isWebNotDesktop(context)
-            ? _buildAppGridDashboard(context)
+            ? Column(children: [
+                _buildAppGridDashboard(context),
+                const SizedBox(height: 8),
+                const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+                const SizedBox(height: 8),
+              ])
             : const SizedBox.shrink(),
-          const SizedBox(height: 8),
-          const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
-          const SizedBox(height: 8),
           Obx(() => controller.defaultMailboxHasChild
               ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultRootNode)
               : const SizedBox.shrink()),
@@ -547,15 +549,12 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
     return Obx(() {
       final linagoraApps = controller.mailboxDashBoardController.appGridDashboardController.linagoraApplications.value;
       if (linagoraApps != null && linagoraApps.apps.isNotEmpty) {
-        return ListView.separated(
+        return ListView.builder(
           shrinkWrap: true,
           itemCount: linagoraApps.apps.length,
           itemBuilder: (context, index) {
             return AppListDashboardItem(linagoraApps.apps[index]);
-          },
-          separatorBuilder: (context, index) {
-            return const SizedBox.shrink();
-          },
+          }
         );
       }
       return const SizedBox.shrink();
