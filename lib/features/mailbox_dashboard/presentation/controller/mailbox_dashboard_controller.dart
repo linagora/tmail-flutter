@@ -89,8 +89,8 @@ class MailboxDashBoardController extends ReloadableController {
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
   final SearchController searchController = Get.find<SearchController>();
   final DownloadController downloadController = Get.find<DownloadController>();
-  final AppGridDashboardController _appGridDashboardController = Get.find<AppGridDashboardController>();
   final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
+  final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
@@ -275,7 +275,7 @@ class MailboxDashBoardController extends ReloadableController {
             || success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
           _deleteMultipleEmailsPermanentlySuccess(success);
         } else if (success is GetAppDashboardConfigurationSuccess) {
-          _appGridDashboardController.handleShowAppDashboard(success.linagoraApplications);
+          appGridDashboardController.handleShowAppDashboard(success.linagoraApplications);
         }
       }
     );
@@ -1123,12 +1123,13 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void showAppDashboardAction() async {
-    final apps = _appGridDashboardController.linagoraApplications.value;
+    log('MailboxDashBoardController::showAppDashboardAction(): begin');
+    final apps = appGridDashboardController.linagoraApplications.value;
     if (apps != null) {
       consumeState(Stream.value(Right(GetAppDashboardConfigurationSuccess(apps))));
       return;
     }
-    consumeState(_appGridDashboardController.showDashboardAction());
+    consumeState(appGridDashboardController.showDashboardAction());
   }
 
   @override

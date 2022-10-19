@@ -7,8 +7,6 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_app.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 
-typedef OnTapCallback = void Function();
-
 class AppGridDashboardItem extends StatelessWidget {
   final LinagoraApp app;
 
