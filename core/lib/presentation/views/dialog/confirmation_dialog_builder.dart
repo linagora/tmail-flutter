@@ -27,12 +27,18 @@ class ConfirmDialogBuilder {
   EdgeInsets? _paddingContent;
   EdgeInsets? _paddingButton;
   EdgeInsets? _marginIcon;
+  EdgeInsets? _margin;
+  double? _widthDialog;
+  bool showAsBottomSheet;
 
   OnConfirmButtonAction? _onConfirmButtonAction;
   OnCancelButtonAction? _onCancelButtonAction;
   OnCloseButtonAction? _onCloseButtonAction;
 
-  ConfirmDialogBuilder(this._imagePath);
+  ConfirmDialogBuilder(
+    this._imagePath,
+    {this.showAsBottomSheet = false}
+  );
 
   void key(Key key) {
     _key = key;
@@ -94,6 +100,14 @@ class ConfirmDialogBuilder {
     _marginIcon = value;
   }
 
+  void margin(EdgeInsets? value) {
+    _margin = value;
+  }
+
+  void widthDialog(double? value) {
+    _widthDialog = value;
+  }
+
   void onConfirmButtonAction(String confirmText, OnConfirmButtonAction? onConfirmButtonAction) {
     _confirmText = confirmText;
     _onConfirmButtonAction = onConfirmButtonAction;
@@ -109,27 +123,38 @@ class ConfirmDialogBuilder {
   }
 
   Widget build() {
-    return Dialog(
-      key: _key,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-      insetPadding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-      child: Container(
-        margin: EdgeInsets.zero,
-        padding: EdgeInsets.zero,
-        width: 400,
+    if (showAsBottomSheet) {
+      return _bodyContent();
+    } else {
+      return Dialog(
+        key: _key,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16))),
+        insetPadding: EdgeInsets.symmetric(
+            horizontal: 24.0,
+            vertical: 16.0),
+        child: _bodyContent(),
+      );
+    }
+  }
+
+  Widget _bodyContent() {
+    return Container(
+        width: _widthDialog ?? 400,
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(16))),
+        margin: _margin,
         child: Wrap(children: [
           if (_onCloseButtonAction != null)
             Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: EdgeInsets.only(top: 8, right: 8),
-                child: buildIconWeb(
-                    icon: SvgPicture.asset(_imagePath.icCloseMailbox, fit: BoxFit.fill),
-                    onTap: () => _onCloseButtonAction?.call())
-              )),
+                alignment: Alignment.centerRight,
+                child: Padding(
+                    padding: EdgeInsets.only(top: 8, right: 8),
+                    child: buildIconWeb(
+                        icon: SvgPicture.asset(_imagePath.icCloseMailbox, fit: BoxFit.fill),
+                        onTap: () => _onCloseButtonAction?.call())
+                )),
           if (_iconWidget != null)
             Container(
               margin: _marginIcon ?? EdgeInsets.only(top: 24),
@@ -138,48 +163,47 @@ class ConfirmDialogBuilder {
             ),
           if (_title.isNotEmpty)
             Padding(
-              padding: _paddingTitle ?? EdgeInsets.only(top: 12),
-              child: Center(
-                child: Text(
-                  _title,
-                  textAlign: TextAlign.center,
-                  style: _styleTitle ?? TextStyle(fontSize: 20.0, color: AppColor.colorActionDeleteConfirmDialog, fontWeight: FontWeight.w500)
+                padding: _paddingTitle ?? EdgeInsets.only(top: 12),
+                child: Center(
+                    child: Text(
+                        _title,
+                        textAlign: TextAlign.center,
+                        style: _styleTitle ?? TextStyle(fontSize: 20.0, color: AppColor.colorActionDeleteConfirmDialog, fontWeight: FontWeight.w500)
+                    )
                 )
-              )
             ),
           if (_content.isNotEmpty)
             Padding(
               padding: _paddingContent ?? EdgeInsets.symmetric(horizontal: 16, vertical: 24),
               child: Center(
                 child: Text(_content,
-                  textAlign: TextAlign.center,
-                  style: _styleContent ?? TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
+                    textAlign: TextAlign.center,
+                    style: _styleContent ?? TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
                 ),
               ),
             ),
           Padding(
-            padding: _paddingButton ?? EdgeInsets.only(bottom: 16, left: 16, right: 16),
-            child: Row(
-              children: [
-                if (_cancelText.isNotEmpty)
-                  Expanded(child: _buildButton(
-                    name: _cancelText,
-                    bgColor: _colorCancelButton,
-                    radius: _radiusButton,
-                    textStyle: _styleTextCancelButton,
-                    action: _onCancelButtonAction)),
-                if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) SizedBox(width: 16),
-                if (_confirmText.isNotEmpty)
-                  Expanded(child: _buildButton(
-                    name: _confirmText,
-                    bgColor: _colorConfirmButton,
-                    radius: _radiusButton,
-                    textStyle: _styleTextConfirmButton,
-                    action: _onConfirmButtonAction))
-              ]
-            ))
+              padding: _paddingButton ?? EdgeInsets.only(bottom: 16, left: 16, right: 16),
+              child: Row(
+                  children: [
+                    if (_cancelText.isNotEmpty)
+                      Expanded(child: _buildButton(
+                          name: _cancelText,
+                          bgColor: _colorCancelButton,
+                          radius: _radiusButton,
+                          textStyle: _styleTextCancelButton,
+                          action: _onCancelButtonAction)),
+                    if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) SizedBox(width: 16),
+                    if (_confirmText.isNotEmpty)
+                      Expanded(child: _buildButton(
+                          name: _confirmText,
+                          bgColor: _colorConfirmButton,
+                          radius: _radiusButton,
+                          textStyle: _styleTextConfirmButton,
+                          action: _onConfirmButtonAction))
+                  ]
+              ))
         ])
-      ),
     );
   }
 

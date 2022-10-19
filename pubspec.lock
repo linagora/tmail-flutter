@@ -21,7 +21,7 @@ packages:
       name: archive
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.3.1"
+    version: "3.3.2"
   args:
     dependency: transitive
     description:
@@ -91,7 +91,7 @@ packages:
       name: build_runner_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.2.4"
+    version: "7.2.6"
   built_collection:
     dependency: "direct main"
     description:
@@ -182,7 +182,7 @@ packages:
       name: connectivity_plus_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.1"
+    version: "1.2.2"
   connectivity_plus_web:
     dependency: transitive
     description:
@@ -365,7 +365,7 @@ packages:
     description:
       path: "."
       ref: email_supported
-      resolved-ref: d81ae0169ae5030c0f250ac203056a2479dfd83a
+      resolved-ref: "241d7ba620137d6534cc9bbb5fd10e182b93b94a"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
@@ -723,7 +723,7 @@ packages:
       name: image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.0"
+    version: "3.2.2"
   infinite_listview:
     dependency: transitive
     description:
@@ -1005,7 +1005,7 @@ packages:
       name: permission_handler_apple
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "9.0.6"
+    version: "9.0.7"
   permission_handler_platform_interface:
     dependency: transitive
     description:
@@ -1019,7 +1019,7 @@ packages:
       name: permission_handler_windows
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.1"
+    version: "0.1.2"
   petitparser:
     dependency: transitive
     description:
@@ -1075,7 +1075,7 @@ packages:
       name: pub_semver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   pubspec_parse:
     dependency: transitive
     description:
@@ -1273,7 +1273,7 @@ packages:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "20.3.49"
+    version: "20.3.50"
   syncfusion_flutter_datepicker:
     dependency: transitive
     description:
@@ -1434,7 +1434,7 @@ packages:
       name: watcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   web_socket_channel:
     dependency: transitive
     description:

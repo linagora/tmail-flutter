@@ -637,7 +637,7 @@ class ComposerController extends BaseController {
       showConfirmDialogAction(context,
           AppLocalizations.of(context).message_dialog_send_email_without_recipient,
           AppLocalizations.of(context).add_recipients,
-          () => {},
+          onConfirmAction: () => {},
           title: AppLocalizations.of(context).sending_failed,
           icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
@@ -652,7 +652,7 @@ class ComposerController extends BaseController {
       showConfirmDialogAction(context,
           AppLocalizations.of(context).message_dialog_send_email_with_email_address_invalid,
           AppLocalizations.of(context).fix_email_addresses,
-          () {
+          onConfirmAction: () {
             toAddressExpandMode.value = ExpandMode.EXPAND;
             ccAddressExpandMode.value = ExpandMode.EXPAND;
             bccAddressExpandMode.value = ExpandMode.EXPAND;
@@ -667,7 +667,7 @@ class ComposerController extends BaseController {
       showConfirmDialogAction(context,
           AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
           AppLocalizations.of(context).send_anyway,
-          () => _handleSendMessages(context),
+          onConfirmAction: () => _handleSendMessages(context),
           title: AppLocalizations.of(context).empty_subject,
           icon: SvgPicture.asset(_imagePaths.icEmpty, fit: BoxFit.fill),
       );
@@ -679,7 +679,7 @@ class ComposerController extends BaseController {
           context,
           AppLocalizations.of(context).messageDialogSendEmailUploadingAttachment,
           AppLocalizations.of(context).got_it,
-              () => {},
+          onConfirmAction: () => {},
           title: AppLocalizations.of(context).sending_failed,
           icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
@@ -692,7 +692,7 @@ class ComposerController extends BaseController {
           AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(
               filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
           AppLocalizations.of(context).got_it,
-          () => {},
+          onConfirmAction: () => {},
           title: AppLocalizations.of(context).sending_failed,
           icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
@@ -707,7 +707,6 @@ class ComposerController extends BaseController {
     final accountId = mailboxDashBoardController.accountId.value;
     final sentMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent];
     final outboxMailboxId = mailboxDashBoardController.outboxMailbox?.id;
-    log('ComposerController::_handleSendMessages(): outboxMailboxId: $outboxMailboxId');
     final userProfile = mailboxDashBoardController.userProfile.value;
     if (arguments != null && accountId != null && userProfile != null) {
       final email = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId);
@@ -842,7 +841,7 @@ class ComposerController extends BaseController {
             AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
                 filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
             AppLocalizations.of(currentContext!).got_it,
-            () => {},
+            onConfirmAction: () => {},
             title: AppLocalizations.of(currentContext!).maximum_files_size,
             hasCancelButton: false);
       }
@@ -1027,7 +1026,7 @@ class ComposerController extends BaseController {
               AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
                   filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
               AppLocalizations.of(currentContext!).got_it,
-                  () => {},
+              onConfirmAction: () => {},
               title: AppLocalizations.of(currentContext!).maximum_files_size,
               hasCancelButton: false,
             );
@@ -1038,7 +1037,7 @@ class ComposerController extends BaseController {
 
     if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty) {
       _emailContents = arguments.emailContents;
-      emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!,[],[]));
+      emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!, [], [], false));
     } else {
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
       final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
@@ -1339,7 +1338,7 @@ class ComposerController extends BaseController {
             AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
                 filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
             AppLocalizations.of(currentContext!).got_it,
-                () => {},
+            onConfirmAction: () => {},
             title: AppLocalizations.of(currentContext!).maximum_files_size,
             hasCancelButton: false);
       }

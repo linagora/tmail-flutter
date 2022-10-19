@@ -15,18 +15,58 @@ mixin MessageDialogActionMixin {
       BuildContext context,
       String message,
       String actionName,
-      Function onConfirmAction,
-      {String? title, bool hasCancelButton = true, Widget? icon}
+      {
+        Function? onConfirmAction,
+        String? title,
+        String? cancelTitle,
+        bool hasCancelButton = true,
+        bool showAsBottomSheet = false,
+        Widget? icon
+      }
   ) {
     if (_responsiveUtils.isMobile(context)) {
-      (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(message)
-        ..styleConfirmButton(const TextStyle(fontSize: 20, fontWeight: FontWeight.normal, color: Colors.black))
-        ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
-        ..onConfirmAction(actionName, () {
-          popBack();
-          onConfirmAction.call();
-        })).show();
+      if (showAsBottomSheet) {
+        showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+            backgroundColor: Colors.transparent,
+            enableDrag: true,
+            builder: (BuildContext context) => PointerInterceptor(
+              child: (ConfirmDialogBuilder(_imagePaths, showAsBottomSheet: true)
+                ..key(const Key('confirm_dialog_action'))
+                ..title(title ?? '')
+                ..content(message)
+                ..addIcon(icon)
+                ..margin(const EdgeInsets.symmetric(vertical: 42, horizontal: 16))
+                ..widthDialog(_responsiveUtils.getSizeScreenWidth(context))
+                ..colorConfirmButton(AppColor.colorTextButton)
+                ..colorCancelButton(AppColor.colorCancelButton)
+                ..paddingTitle(icon != null ? const EdgeInsets.only(top: 34) : EdgeInsets.zero)
+                ..marginIcon(EdgeInsets.zero)
+                ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 8))
+                ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
+                ..styleTitle(const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
+                ..styleContent(const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
+                ..styleTextCancelButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
+                ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
+                ..onConfirmButtonAction(actionName, () {
+                  popBack();
+                  onConfirmAction?.call();
+                })
+                ..onCancelButtonAction(hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '', () => popBack())
+                ..onCloseButtonAction(() => popBack()))
+              .build()));
+      } else {
+        (ConfirmationDialogActionSheetBuilder(context)
+          ..messageText(message)
+          ..styleConfirmButton(const TextStyle(fontSize: 20, fontWeight: FontWeight.normal, color: Colors.black))
+          ..onCancelAction(cancelTitle ?? AppLocalizations.of(context).cancel, () => popBack())
+          ..onConfirmAction(actionName, () {
+            popBack();
+            onConfirmAction?.call();
+          })).show();
+      }
     } else {
       showDialog(
           context: context,
@@ -48,9 +88,9 @@ mixin MessageDialogActionMixin {
               ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
               ..onConfirmButtonAction(actionName, () {
                 popBack();
-                onConfirmAction.call();
+                onConfirmAction?.call();
               })
-              ..onCancelButtonAction(hasCancelButton ? AppLocalizations.of(context).cancel : '', () => popBack())
+              ..onCancelButtonAction(hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '', () => popBack())
               ..onCloseButtonAction(() => popBack()))
             .build()));
     }
