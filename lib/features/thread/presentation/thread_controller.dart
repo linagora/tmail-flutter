@@ -95,6 +95,7 @@ class ThreadController extends BaseController {
   final MoveToMailboxInteractor _moveToMailboxInteractor;
 
   final emailList = <PresentationEmail>[].obs;
+  final listEmailDrag = <PresentationEmail>[].obs;
 
   bool canLoadMore = true;
   bool canSearchMore = true;
@@ -1389,5 +1390,17 @@ class ThreadController extends BaseController {
   void goToSearchView() {
     SearchEmailBindings().dependencies();
     mailboxDashBoardController.dispatchRoute(AppRoutes.SEARCH_EMAIL);
+  }
+
+  void calculateDragValue(PresentationEmail? currentPresentationEmail) {
+    if(currentPresentationEmail != null) {
+      if(mailboxDashBoardController.listEmailSelected.contains(currentPresentationEmail)){
+        listEmailDrag.clear();
+        listEmailDrag.addAll(mailboxDashBoardController.listEmailSelected);
+      } else {
+        listEmailDrag.clear();
+        listEmailDrag.add(currentPresentationEmail);
+      }
+    }
   }
 }

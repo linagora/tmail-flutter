@@ -2447,4 +2447,12 @@ class AppLocalizations {
         'A read receipt has been sent.',
         name: 'toastMessageSendReceiptSuccess');
   }
+
+  String moveConversation(int numberOfConversation) {
+    return Intl.message(
+        'Move $numberOfConversation conversation',
+        name: 'moveConversation',
+        args: [numberOfConversation]
+    );
+  }
 }

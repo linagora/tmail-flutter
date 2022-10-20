@@ -2373,5 +2373,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "moveConversation": "Move {numberOfConversation} conversation",
+  "@moveConversation": {
+    "type": "text",
+    "placeholders_order": [
+      "numberOfConversation"
+    ],
+    "placeholders": {
+      "numberOfConversation": {}
+    }
   }
 }
