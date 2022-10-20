@@ -74,6 +74,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_e
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -650,6 +651,37 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
+  void dragSelectedMultipleEmailToMailbox(
+    List<PresentationEmail> listEmails,
+    PresentationMailbox destinationMailbox
+  ) async {
+    if (accountId.value != null && selectedMailbox.value != null) {
+      if (destinationMailbox.isTrash) {
+        _moveSelectedEmailMultipleToMailboxAction(accountId.value!, MoveToMailboxRequest(
+            listEmails.listEmailIds,
+            selectedMailbox.value!.id,
+            destinationMailbox.id,
+            MoveAction.moving,
+            EmailActionType.moveToTrash));
+      } else if (destinationMailbox.isSpam) {
+        _moveSelectedEmailMultipleToMailboxAction(accountId.value!, MoveToMailboxRequest(
+            listEmails.listEmailIds,
+            selectedMailbox.value!.id,
+            destinationMailbox.id,
+            MoveAction.moving,
+            EmailActionType.moveToSpam));
+      } else {
+        _moveSelectedEmailMultipleToMailboxAction(accountId.value!, MoveToMailboxRequest(
+            listEmails.listEmailIds,
+            selectedMailbox.value!.id,
+            destinationMailbox.id,
+            MoveAction.moving,
+            EmailActionType.moveToMailbox,
+            destinationPath: destinationMailbox.mailboxPath));
+      }
+    }
+  }
+
   void _moveSelectedEmailMultipleToMailboxAction(
       AccountId accountId,
       MoveToMailboxRequest moveRequest
@@ -672,6 +704,9 @@ class MailboxDashBoardController extends ReloadableController {
       destinationMailboxId = success.destinationMailboxId;
       moveAction = success.moveAction;
       emailActionType = success.emailActionType;
+      if (Get.isRegistered<ThreadController>()){
+        Get.find<ThreadController>().refreshEmailChanges(currentEmailState: success.currentEmailState);
+      }
     } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
       destinationPath = success.destinationPath;
       movedEmailIds = success.movedListEmailId;

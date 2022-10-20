@@ -17,6 +17,7 @@ class EmailTileBuilder with BaseEmailItemTile {
   final bool advancedSearchActivated;
   final EdgeInsets? padding;
   final EdgeInsets? paddingDivider;
+  final bool isDrag;
 
   OnPressEmailActionClick? _emailActionClick;
 
@@ -31,6 +32,7 @@ class EmailTileBuilder with BaseEmailItemTile {
       this.mailboxCurrent,
       this.padding,
       this.paddingDivider,
+      this.isDrag = false,
     }
   );
 

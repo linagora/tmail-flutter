@@ -14,6 +14,7 @@ typedef OnExpandFolderActionClick = void Function(MailboxNode);
 typedef OnOpenMailboxFolderClick = void Function(MailboxNode);
 typedef OnSelectMailboxFolderClick = void Function(MailboxNode);
 typedef OnMenuActionClick = void Function(RelativeRect, MailboxNode);
+typedef OnDragItemAccepted = void Function(List<PresentationEmail>, PresentationMailbox);
 
 class MailBoxFolderTileBuilder {
 
@@ -33,6 +34,7 @@ class MailBoxFolderTileBuilder {
   OnOpenMailboxFolderClick? _onOpenMailboxFolderClick;
   OnSelectMailboxFolderClick? _onSelectMailboxFolderClick;
   OnMenuActionClick? _onMenuActionClick;
+  OnDragItemAccepted? _onDragItemAccepted;
 
   bool isHoverItem = false;
 
@@ -62,11 +64,23 @@ class MailBoxFolderTileBuilder {
     _onSelectMailboxFolderClick = onSelectMailboxFolderClick;
   }
 
-  void adOnMenuActionClick(OnMenuActionClick onMenuActionClick) {
+  void addOnMenuActionClick(OnMenuActionClick onMenuActionClick) {
     _onMenuActionClick = onMenuActionClick;
   }
 
-  Widget build() => _buildMailboxItem();
+  void addOnDragItemAccepted(OnDragItemAccepted onDragItemAccepted) {
+    _onDragItemAccepted = onDragItemAccepted;
+  }
+
+  Widget build() => DragTarget<List<PresentationEmail>>(
+    builder: (context, _, __,) {
+      return _buildMailboxItem();
+    },
+    onAccept: (emails) {
+      _onDragItemAccepted?.call(emails, _mailboxNode.item);
+      print(emails);
+    },
+  );
 
   Widget _buildMailboxItem() {
     if (mailboxDisplayed == MailboxDisplayed.mailbox) {
