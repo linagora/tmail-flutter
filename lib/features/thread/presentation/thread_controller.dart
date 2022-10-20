@@ -303,25 +303,25 @@ class ThreadController extends BaseController {
       if (viewState is Either) {
         viewState.map((success) {
           if (success is MarkAsEmailReadSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is MoveToMailboxSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is MarkAsStarEmailSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is DeleteEmailPermanentlySuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is SaveEmailAsDraftsSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is RemoveEmailDraftsSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is SendEmailSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is UpdateEmailDraftsSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is MarkAsMailboxReadAllSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            refreshEmailChanges(currentEmailState: success.currentEmailState);
           }
         });
       }
@@ -424,8 +424,8 @@ class ThreadController extends BaseController {
     }
   }
 
-  void _refreshEmailChanges({jmap.State? currentEmailState}) {
-    log('ThreadController::_refreshEmailChanges(): currentEmailState: $currentEmailState');
+  void refreshEmailChanges({jmap.State? currentEmailState}) {
+    log('ThreadController::refreshEmailChanges(): currentEmailState: $currentEmailState');
     if (isSearchActive()) {
       if (_accountId != null && searchQuery != null) {
         final limit = emailList.isNotEmpty
@@ -436,7 +436,7 @@ class ThreadController extends BaseController {
       }
     } else {
       final newEmailState = currentEmailState ?? _currentEmailState;
-      log('ThreadController::_refreshEmailChanges(): newEmailState: $newEmailState');
+      log('ThreadController::refreshEmailChanges(): newEmailState: $newEmailState');
       if (_accountId != null && newEmailState != null) {
         consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
             _accountId!,
@@ -575,7 +575,7 @@ class ThreadController extends BaseController {
           message: message,
           icon: readActions == ReadActions.markAsUnread ? _imagePaths.icUnreadToast : _imagePaths.icReadToast);
     }
-    _refreshEmailChanges(currentEmailState: currentEmailState);
+    refreshEmailChanges(currentEmailState: currentEmailState);
   }
 
   void _markAsReadSelectedMultipleEmailFailure(Failure failure) {
@@ -732,7 +732,7 @@ class ThreadController extends BaseController {
       );
     }
 
-    _refreshEmailChanges(currentEmailState: currentEmailState);
+    refreshEmailChanges(currentEmailState: currentEmailState);
   }
 
   void moveSelectedMultipleEmailToTrash(
@@ -820,7 +820,7 @@ class ThreadController extends BaseController {
   }
 
   void _markAsStarEmailSuccess(MarkAsStarEmailSuccess success) {
-    _refreshEmailChanges(currentEmailState: success.currentEmailState);
+    refreshEmailChanges(currentEmailState: success.currentEmailState);
   }
 
   void markAsStarSelectedMultipleEmail(
@@ -861,7 +861,7 @@ class ThreadController extends BaseController {
           icon: markStarAction == MarkStarAction.unMarkStar ? _imagePaths.icUnStar : _imagePaths.icStar);
     }
 
-    _refreshEmailChanges(currentEmailState: currentEmailState);
+    refreshEmailChanges(currentEmailState: currentEmailState);
   }
 
   void _markAsStarMultipleEmailFailure(Failure failure) {
@@ -1316,7 +1316,7 @@ class ThreadController extends BaseController {
           icon: _imagePaths.icDeleteToast);
     }
 
-    _refreshEmailChanges(currentEmailState: currentEmailState);
+    refreshEmailChanges(currentEmailState: currentEmailState);
   }
 
   void _emptyTrashFolderAction() {

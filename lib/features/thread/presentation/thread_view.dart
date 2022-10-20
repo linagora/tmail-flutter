@@ -332,7 +332,10 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
         key: const PageStorageKey('list_presentation_email_in_threads'),
         itemExtent: _getItemExtent(context),
         itemCount: listPresentationEmail.length,
-        itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
+        itemBuilder: (context, index) =>
+            Draggable<List<PresentationEmail>>(
+              data: [listPresentationEmail[index]],
+              child: Obx(() => (EmailTileBuilder(
                 context,
                 listPresentationEmail[index],
                 controller.mailboxDashBoardController.currentSelectMode.value,
@@ -340,21 +343,71 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                 controller.searchQuery,
                 mailboxCurrent: controller.searchController.isSearchEmailRunning
                     ? listPresentationEmail[index].findMailboxContain(
-                          controller.mailboxDashBoardController.mapMailboxById)
+                    controller.mailboxDashBoardController.mapMailboxById)
                     : controller.currentMailbox,
                 advancedSearchActivated: controller.searchController.isAdvancedSearchHasApply.isTrue)
-            ..addOnPressEmailActionClick((action, email) =>
-                controller.pressEmailAction(
+                ..addOnPressEmailActionClick((action, email) =>
+                  controller.pressEmailAction(
                     context,
                     action,
                     email,
                     mailboxContain: controller.searchController.isSearchEmailRunning
                       ? email.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
                       : controller.currentMailbox))
-            ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
-              ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
-              : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email))))
-          .build()))
+                ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
+                  ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
+                  : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email))))
+              .build()),
+              feedback: _buildFeedBackWidget(),
+              childWhenDragging: (EmailTileBuilder(
+                context,
+                listPresentationEmail[index],
+                controller.mailboxDashBoardController.currentSelectMode.value,
+                controller.searchController.searchState.value.searchStatus,
+                controller.searchQuery,
+                mailboxCurrent: controller.searchController.isSearchEmailRunning
+                    ? listPresentationEmail[index].findMailboxContain(
+                    controller.mailboxDashBoardController.mapMailboxById)
+                    : controller.currentMailbox,
+                advancedSearchActivated: controller.searchController.isAdvancedSearchHasApply.isTrue,
+                isDrag: true))
+              .build(),
+              dragAnchorStrategy: pointerDragAnchorStrategy,
+        ))
+    );
+  }
+
+  Widget _buildFeedBackWidget() {
+    return SizedBox(
+      height: 60,
+      child: Material(
+        borderRadius: BorderRadius.circular(10),
+        color: AppColor.colorTextButton,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                _imagePaths.icFilterMessageAll,
+                width: 24,
+                height: 24,
+                fit: BoxFit.fill,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 10),
+              const Text(
+                'Move 1 conversation',
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

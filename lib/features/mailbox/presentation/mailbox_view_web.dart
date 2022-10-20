@@ -281,10 +281,11 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                         controller.openMailbox(context, mailboxNode.item))
                     ..addOnExpandFolderActionClick((mailboxNode) =>
                         controller.toggleMailboxFolder(mailboxNode))
-                    ..adOnMenuActionClick((position, mailboxNode) =>
+                    ..addOnMenuActionClick((position, mailboxNode) =>
                         _openMailboxMenuAction(context, position, mailboxNode.item))
                     ..addOnSelectMailboxFolderClick((mailboxNode) =>
-                        controller.selectMailboxNode(mailboxNode)))
+                        controller.selectMailboxNode(mailboxNode))
+                    ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailbox))
                   .build()),
                 children: _buildListChildTileWidget(context, mailboxNode)
             ).build()
@@ -292,10 +293,11 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                   mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
               ..addOnOpenMailboxFolderClick((mailboxNode) =>
                   controller.openMailbox(context, mailboxNode.item))
-              ..adOnMenuActionClick((position, mailboxNode) =>
+              ..addOnMenuActionClick((position, mailboxNode) =>
                   _openMailboxMenuAction(context, position, mailboxNode.item))
               ..addOnSelectMailboxFolderClick((mailboxNode) =>
-                  controller.selectMailboxNode(mailboxNode)))
+                  controller.selectMailboxNode(mailboxNode))
+              ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailbox))
             .build())
     ).toList() ?? <Widget>[];
   }
@@ -361,6 +363,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                       _responsiveUtils,
                       listMailbox[index],
                       lastMailbox: controller.listMailboxSearched.last)
+                  ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailbox)
                   ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox))
                   ..addOnMenuActionClick((position, mailbox) => _openMailboxMenuAction(context, position, mailbox))
                   ..addOnSelectMailboxActionClick((mailbox) => controller.selectMailboxSearched(context, mailbox)))

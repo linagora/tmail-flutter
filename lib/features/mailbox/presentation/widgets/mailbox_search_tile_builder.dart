@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displa
 typedef OnOpenMailboxActionClick = void Function(PresentationMailbox);
 typedef OnSelectMailboxActionClick = void Function(PresentationMailbox);
 typedef OnOpenMenuActionClick = void Function(RelativeRect, PresentationMailbox);
+typedef OnDragItemAccepted = void Function(List<PresentationEmail>, PresentationMailbox);
 
 class MailboxSearchTileBuilder {
 
@@ -28,6 +29,7 @@ class MailboxSearchTileBuilder {
   OnOpenMailboxActionClick? _onOpenMailboxActionClick;
   OnSelectMailboxActionClick? _onSelectMailboxActionClick;
   OnOpenMenuActionClick? _onMenuActionClick;
+  OnDragItemAccepted? _onDragItemAccepted;
 
   MailboxSearchTileBuilder(
     this._context,
@@ -55,12 +57,24 @@ class MailboxSearchTileBuilder {
     _onMenuActionClick = onOpenMenuActionClick;
   }
 
+  void addOnDragItemAccepted(OnDragItemAccepted onDragItemAccepted) {
+    _onDragItemAccepted = onDragItemAccepted;
+  }
+
   Widget build() {
     return Theme(
       data: ThemeData(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent),
-      child: _buildMailboxItem()
+      child: DragTarget<List<PresentationEmail>>(
+        builder: (context, _, __,) {
+          return _buildMailboxItem();
+        },
+        onAccept: (emails) {
+          _onDragItemAccepted?.call(emails, _presentationMailbox);
+          print(emails.first.preview);
+        },
+      ),
     );
   }
 
@@ -73,21 +87,21 @@ class MailboxSearchTileBuilder {
               child: Opacity(
                 opacity: _presentationMailbox.isActivated ? 1.0 : 0.3,
                 child: InkWell(
-                    onTap: () {},
-                    onHover: (value) => setState(() => isHoverItem = value),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: backgroundColorItem),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.only(left: 8),
-                        onTap: () => _onOpenMailboxActionClick?.call(_presentationMailbox),
-                        leading: _buildLeadingIcon(),
-                        title: _buildTitleItem(),
-                        subtitle: _buildSubtitleItem(),
-                        trailing: _buildMenuIcon(),
-                      ),
-                    )
+                  onTap: () {},
+                  onHover: (value) => setState(() => isHoverItem = value),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: backgroundColorItem),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.only(left: 8),
+                      onTap: () => _onOpenMailboxActionClick?.call(_presentationMailbox),
+                      leading: _buildLeadingIcon(),
+                      title: _buildTitleItem(),
+                      subtitle: _buildSubtitleItem(),
+                      trailing: _buildMenuIcon(),
+                    ),
+                  )
                 ),
               ),
             );
