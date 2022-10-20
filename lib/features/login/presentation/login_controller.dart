@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
@@ -40,6 +41,7 @@ class LoginController extends BaseController {
   final AuthenticateOidcOnBrowserInteractor _authenticateOidcOnBrowserInteractor;
   final GetAuthenticationInfoInteractor _getAuthenticationInfoInteractor;
   final GetStoredOidcConfigurationInteractor _getStoredOidcConfigurationInteractor;
+  final SaveLoginUrlOnMobileInteractor _saveLoginUrlOnMobileInteractor;
 
 
   final TextEditingController urlInputController = TextEditingController();
@@ -56,6 +58,7 @@ class LoginController extends BaseController {
     this._authenticateOidcOnBrowserInteractor,
     this._getAuthenticationInfoInteractor,
     this._getStoredOidcConfigurationInteractor,
+    this._saveLoginUrlOnMobileInteractor,
   );
 
   var loginState = LoginState(Right(LoginInitAction())).obs;
