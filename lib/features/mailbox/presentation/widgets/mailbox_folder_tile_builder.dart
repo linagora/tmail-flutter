@@ -78,7 +78,6 @@ class MailBoxFolderTileBuilder {
     },
     onAccept: (emails) {
       _onDragItemAccepted?.call(emails, _mailboxNode.item);
-      print(emails);
     },
   );
 

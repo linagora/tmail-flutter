@@ -342,8 +342,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
               controller.searchController.searchState.value.searchStatus,
               controller.searchQuery,
               mailboxCurrent: controller.searchController.isSearchEmailRunning
-                ? listPresentationEmail[index].findMailboxContain(
-                controller.mailboxDashBoardController.mapMailboxById)
+                ? listPresentationEmail[index].findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
                 : controller.currentMailbox,
               advancedSearchActivated: controller.searchController.isAdvancedSearchHasApply.isTrue)
               ..addOnPressEmailActionClick((action, email) =>

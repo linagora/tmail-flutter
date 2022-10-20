@@ -72,7 +72,6 @@ class MailboxSearchTileBuilder {
         },
         onAccept: (emails) {
           _onDragItemAccepted?.call(emails, _presentationMailbox);
-          print(emails.first.preview);
         },
       ),
     );
