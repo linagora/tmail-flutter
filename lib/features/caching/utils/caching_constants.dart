@@ -11,4 +11,6 @@ class CachingConstants {
   static const int ACCOUNT_HIVE_CACHE_IDENTIFY = 9;
   static const int ENCRYPTION_KEY_HIVE_CACHE_IDENTIFY = 10;
   static const int AUTHENTICATION_INFO_HIVE_CACHE_IDENTIFY = 11;
+  static const int URI_CACHE_IDENTITY = 12;
+  static const int LOGIN_URL_CACHE_IDENTITY = 13;
 }

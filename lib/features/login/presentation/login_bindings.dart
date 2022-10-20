@@ -1,12 +1,15 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/caching/recent_login_url_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
+import 'package:tmail_ui_user/features/login/data/datasource/login_url_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_oidc_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_account_datasource_impl.dart';
+import 'package:tmail_ui_user/features/login/data/datasource_impl/login_url_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
@@ -16,10 +19,12 @@ import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart'
 import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/data/repository/authentication_repository_impl.dart';
+import 'package:tmail_ui_user/features/login/data/repository/login_url_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/login_url_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
@@ -27,6 +32,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 
@@ -45,6 +51,7 @@ class LoginBindings extends BaseBindings {
         Get.find<AuthenticateOidcOnBrowserInteractor>(),
         Get.find<GetAuthenticationInfoInteractor>(),
         Get.find<GetStoredOidcConfigurationInteractor>(),
+        Get.find<SaveLoginUrlOnMobileInteractor>(),
     ));
   }
 
@@ -53,6 +60,7 @@ class LoginBindings extends BaseBindings {
     Get.lazyPut<AuthenticationDataSource>(() => Get.find<AuthenticationDataSourceImpl>());
     Get.lazyPut<AuthenticationOIDCDataSource>(() => Get.find<AuthenticationOIDCDataSourceImpl>());
     Get.lazyPut<AccountDatasource>(() => Get.find<HiveAccountDatasourceImpl>());
+    Get.lazyPut<LoginUrlDataSource>(() => Get.find<LoginUrlDataSourceImpl>());
   }
 
   @override
@@ -66,6 +74,9 @@ class LoginBindings extends BaseBindings {
     ));
     Get.lazyPut(() => HiveAccountDatasourceImpl(
         Get.find<AccountCacheManager>()
+    ));
+    Get.lazyPut(() => LoginUrlDataSourceImpl(
+      Get.find<RecentLoginUrlCacheClient>()
     ));
   }
 
@@ -96,6 +107,9 @@ class LoginBindings extends BaseBindings {
     Get.lazyPut(() => GetStoredOidcConfigurationInteractor(
       Get.find<AuthenticationOIDCRepository>(),
     ));
+    Get.lazyPut(() => SaveLoginUrlOnMobileInteractor(
+      Get.find<LoginUrlRepository>(),
+    ));
   }
 
   @override
@@ -103,6 +117,7 @@ class LoginBindings extends BaseBindings {
     Get.lazyPut<AuthenticationRepository>(() => Get.find<AuthenticationRepositoryImpl>());
     Get.lazyPut<AuthenticationOIDCRepository>(() => Get.find<AuthenticationOIDCRepositoryImpl>());
     Get.lazyPut<AccountRepository>(() => Get.find<AccountRepositoryImpl>());
+    Get.lazyPut<LoginUrlRepository>(() => Get.find<LoginUrlRepositoryImpl>());
   }
 
   @override
@@ -110,5 +125,6 @@ class LoginBindings extends BaseBindings {
     Get.lazyPut(() => AuthenticationRepositoryImpl(Get.find<AuthenticationDataSource>()));
     Get.lazyPut(() => AuthenticationOIDCRepositoryImpl(Get.find<AuthenticationOIDCDataSource>()));
     Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));
+    Get.lazyPut(() => LoginUrlRepositoryImpl(Get.find<LoginUrlDataSource>()));
   }
 }
