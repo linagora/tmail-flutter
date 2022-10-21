@@ -107,7 +107,7 @@ class EditTextModalSheetBuilder {
       isScrollControlled: true,
       context: context,
       constraints: _constraints,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20.0),
             topRight: Radius.circular(20.0))),
@@ -117,15 +117,15 @@ class EditTextModalSheetBuilder {
               key: _key,
               padding: MediaQuery.of(context).viewInsets,
               child: Container(
-                  padding: EdgeInsets.only(left: 50, right: 50, top: 48, bottom: 20),
+                  padding: const EdgeInsets.only(left: 50, right: 50, top: 48, bottom: 20),
                   child: Wrap(
                     children: <Widget>[
                       Text(
                           _title,
-                          style: TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700),
+                          style: const TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700),
                           textAlign: TextAlign.center),
                       Padding(
-                          padding: EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.only(top: 20),
                           child: TextFormField(
                             keyboardType: TextInputType.visiblePassword,
                             onChanged: (value) => _onTextChanged(value, setState),
@@ -133,7 +133,7 @@ class EditTextModalSheetBuilder {
                             controller: _textController,
                             decoration: InputDecoration(
                                 errorText: _error,
-                                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColor.colorDividerMailbox)),
+                                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColor.colorDividerMailbox)),
                                 hintText: _hintText),
                           )
                       ),
@@ -142,7 +142,7 @@ class EditTextModalSheetBuilder {
                         children: [
                           TextButton(
                             onPressed: () => _onCancelButtonPress(context),
-                            child: Text(_cancelText.toUpperCase(), style: TextStyle(color: AppColor.colorTextButton)),
+                            child: Text(_cancelText.toUpperCase(), style: const TextStyle(color: AppColor.colorTextButton)),
                           ),
                           TextButton(
                             onPressed: () => _onConfirmButtonPress(context),

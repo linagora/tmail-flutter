@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LabeledCheckbox extends StatelessWidget {
-  const LabeledCheckbox({
+  const LabeledCheckbox({Key? key,
     required this.label,
     this.contentPadding,
     this.value,
@@ -11,7 +11,7 @@ class LabeledCheckbox extends StatelessWidget {
     this.gap = 4.0,
     this.bold = false,
     this.focusNode,
-  });
+  }) : super(key: key);
 
   final String label;
   final EdgeInsets? contentPadding;

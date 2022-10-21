@@ -104,12 +104,6 @@ export 'presentation/state/success.dart';
 export 'presentation/state/failure.dart';
 export 'presentation/state/app_state.dart';
 
-// Local
-export 'data/local/config/database_config.dart';
-export 'data/local/config/email_address_table.dart';
-export 'data/local/database_client.dart';
-export 'data/local/database_manager.dart';
-
 // Model
 export 'data/model/source_type/data_source_type.dart';
 export 'data/model/query/query_parameter.dart';

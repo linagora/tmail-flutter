@@ -21,7 +21,7 @@ abstract class ContextMenuActionBuilder<T> {
   }
 
   TextStyle actionTextStyle() {
-    return TextStyle(
+    return const TextStyle(
       fontSize: 15,
       color: AppColor.nameUserColor);
   }

@@ -19,13 +19,13 @@ Widget buildIconWeb({
 }) {
   return Material(
       color: colorSelected ?? Colors.transparent,
-      shape: shapeBorder ?? CircleBorder(),
+      shape: shapeBorder ?? const CircleBorder(),
       child: IconButton(
           icon: icon,
           focusColor: colorFocus,
           iconSize: iconSize,
           constraints: minSize != null ? BoxConstraints(minWidth: minSize, minHeight: minSize) : null,
-          padding: iconPadding ?? EdgeInsets.all(8.0),
+          padding: iconPadding ?? const EdgeInsets.all(8.0),
           splashRadius: splashRadius ?? 15,
           tooltip: tooltip ?? '',
           onPressed: onTap)
@@ -40,7 +40,7 @@ Widget buildIconWebHasPosition(BuildContext context, {
 }) {
   return Material(
     color: Colors.transparent,
-    shape: CircleBorder(),
+    shape: const CircleBorder(),
     child: InkWell(
         onTapDown: (detail) {
           final screenSize = MediaQuery.of(context).size;
@@ -54,7 +54,7 @@ Widget buildIconWebHasPosition(BuildContext context, {
           onTapDown?.call(position);
         },
         onTap: () => onTap?.call(),
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: const BorderRadius.all(const Radius.circular(12)),
         child: Tooltip(
           message: tooltip ?? '',
           child: icon,
@@ -68,15 +68,15 @@ Widget buildTextCircleButton(String text, {
   IconWebCallback? onTap,
 }) {
   return Material(
-      shape: CircleBorder(),
+      shape: const CircleBorder(),
       color: Colors.transparent,
       child: TextButton(
           child: Text(
               text,
-              style: textStyle ?? TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.lineItemListColor)),
+              style: textStyle ?? const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.lineItemListColor)),
           style: ButtonStyle(
               overlayColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.colorFocusButton),
-              shape: MaterialStateProperty.all(CircleBorder()),
+              shape: MaterialStateProperty.all(const CircleBorder()),
               padding: MaterialStateProperty.resolveWith<EdgeInsets>((Set<MaterialState> states) => EdgeInsets.zero),
               elevation: MaterialStateProperty.resolveWith<double>((Set<MaterialState> states) => 0)),
           onPressed: () => onTap?.call()
@@ -90,12 +90,12 @@ Widget buildTextIcon(String text, {
   IconWebCallback? onTap,
 }) {
   return Material(
-      shape: CircleBorder(),
+      shape: const CircleBorder(),
       color: Colors.transparent,
       child: InkWell(
           child: Padding(
-              padding: padding ?? EdgeInsets.all(10),
-              child: Text(text, style: textStyle ?? TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.lineItemListColor))),
+              padding: padding ?? const EdgeInsets.all(10),
+              child: Text(text, style: textStyle ?? const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.lineItemListColor))),
           onTap: () => onTap?.call()
       )
   );
@@ -120,12 +120,12 @@ Widget buildTextButton(String text, {
             backgroundColor: MaterialStateProperty.resolveWith((states) => backgroundColor ?? AppColor.colorTextButton),
             elevation: MaterialStateProperty.resolveWith((states) => 0),
             padding: MaterialStateProperty.resolveWith<EdgeInsets>(
-                (Set<MaterialState> states) => padding ?? EdgeInsets.symmetric(horizontal: 8)),
+                (Set<MaterialState> states) => padding ?? const EdgeInsets.symmetric(horizontal: 8)),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius ?? 0)))),
         child: Text(
             text,
             textAlign: TextAlign.center,
-            style: textStyle ?? TextStyle(
+            style: textStyle ?? const TextStyle(
                 fontSize: 17,
                 color: Colors.white,
                 fontWeight: FontWeight.w500)),

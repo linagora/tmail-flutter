@@ -19,7 +19,7 @@ class CustomIndicator extends Decoration {
 
   @override
   _CustomPainter createBoxPainter([VoidCallback? onChanged]) {
-    return new _CustomPainter(this, onChanged);
+    return _CustomPainter(this, onChanged);
   }
 }
 
@@ -53,8 +53,8 @@ class _CustomPainter extends BoxPainter {
       paint.style = PaintingStyle.fill;
       canvas.drawRRect(
         RRect.fromRectAndCorners(rect,
-          topRight: Radius.circular(8),
-          topLeft: Radius.circular(8)),
+          topRight: const Radius.circular(8),
+          topLeft: const Radius.circular(8)),
         paint);
     }
   }

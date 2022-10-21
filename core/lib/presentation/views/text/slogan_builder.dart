@@ -66,7 +66,7 @@ class SloganBuilder {
         child: Column(children: [
           _logoApp(),
           Padding(
-            padding: _padding ?? EdgeInsets.only(top: 16, left: 16, right: 16),
+            padding: _padding ?? const EdgeInsets.only(top: 16, left: 16, right: 16),
             child: Text(_text ?? '', key: _key, style: _textStyle, textAlign: _textAlign),
           ),
         ]),
@@ -77,7 +77,7 @@ class SloganBuilder {
         child: Row(children: [
           _logoApp(),
           Padding(
-            padding: _padding ?? EdgeInsets.symmetric(horizontal: 10),
+            padding: _padding ?? const EdgeInsets.symmetric(horizontal: 10),
             child: Text(_text ?? '', key: _key, style: _textStyle, textAlign: _textAlign),
           ),
         ]),
@@ -96,6 +96,6 @@ class SloganBuilder {
           height: _sizeLogo ?? 150,
           alignment: Alignment.center);
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 }

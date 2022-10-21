@@ -39,18 +39,18 @@ class ContextMenuBuilder {
   }
 
   RoundedRectangleBorder _shape() {
-    return RoundedRectangleBorder(
+    return const RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(20.0),
         topRight: Radius.circular(20.0)));
   }
 
   BoxDecoration _decoration(BuildContext context) {
-    return BoxDecoration(
+    return const BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.only(
-        topLeft: const Radius.circular(20.0),
-        topRight: const Radius.circular(20.0)));
+        topLeft: Radius.circular(20.0),
+        topRight: Radius.circular(20.0)));
   }
 
   void build() {
@@ -68,22 +68,22 @@ class ContextMenuBuilder {
               onTap: () => {},
               child: Wrap(
                 children: [
-                  _header ?? SizedBox.shrink(),
-                  Divider(),
+                  _header ?? const SizedBox.shrink(),
+                  const Divider(),
                   areTilesHorizontal
                       ? Row(children: [
                           ..._actionTiles,
-                          _actionTiles.isNotEmpty && _footer != null ? Divider() : SizedBox.shrink()
+                          _actionTiles.isNotEmpty && _footer != null ? const Divider() : const SizedBox.shrink()
                         ])
                       : Column(children: [
                           ..._actionTiles,
-                          _actionTiles.isNotEmpty && _footer != null ? Divider() : SizedBox.shrink()
+                          _actionTiles.isNotEmpty && _footer != null ? const Divider() : const SizedBox.shrink()
                         ]),
                   _footer != null
                       ? Padding(
-                          padding: EdgeInsets.only(bottom: 10.0),
-                          child: Wrap(children: [_footer ?? SizedBox.shrink()]))
-                      : SizedBox.shrink(),
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Wrap(children: [_footer ?? const SizedBox.shrink()]))
+                      : const SizedBox.shrink(),
                 ],
               ),
             ),

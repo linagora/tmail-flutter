@@ -40,7 +40,7 @@ class ScrollingFloatingButtonAnimated extends StatefulWidget {
   /// Value to indicate if animate or not the icon
   final bool? animateIcon;
 
-  ScrollingFloatingButtonAnimated(
+  const ScrollingFloatingButtonAnimated(
       {Key? key,
       required this.icon,
       required this.text,
@@ -72,10 +72,10 @@ class _ScrollingFloatingButtonAnimatedState
 
   @override
   void initState() {
-    _animationController = new AnimationController(
+    _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 250),
-      reverseDuration: Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 250),
+      reverseDuration: const Duration(milliseconds: 250),
       animationBehavior: AnimationBehavior.normal,
       lowerBound: 0,
       upperBound: 120,
@@ -95,7 +95,6 @@ class _ScrollingFloatingButtonAnimatedState
   void _handleScroll() {
     ScrollController _scrollController = widget.scrollController!;
     _scrollController.addListener(() {
-      print(_scrollController.position.userScrollDirection);
       if (_scrollController.position.pixels > widget.limitIndicator! &&
           _scrollController.position.userScrollDirection ==
               ScrollDirection.reverse) {
@@ -122,7 +121,7 @@ class _ScrollingFloatingButtonAnimatedState
   Widget build(BuildContext context) {
     final shortestSide = MediaQuery.of(context).size.shortestSide;
     if (shortestSide < 60) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return Card(
       elevation: widget.elevation,

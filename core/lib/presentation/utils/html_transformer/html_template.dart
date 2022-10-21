@@ -1,7 +1,7 @@
 
-final nameClassToolTip = 'tmail-tooltip';
+const nameClassToolTip = 'tmail-tooltip';
 
-final tooltipLinkCss = '''
+const tooltipLinkCss = '''
   .$nameClassToolTip .tooltiptext {
     visibility: hidden;
     max-width: 400px;
@@ -54,13 +54,13 @@ String generateHtml(String content, {
     ${javaScripts ?? ''}
     </head>
     <body>
-    <div class="tmail-content">${content}</div>
+    <div class="tmail-content">$content</div>
     </body>
     </html> 
   ''';
 }
 
-final bodyCssStyleForEditor = '''
+const bodyCssStyleForEditor = '''
   <style>
       blockquote {
         margin-left: 8px;

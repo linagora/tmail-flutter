@@ -53,7 +53,7 @@ class AppToast {
         Color? textActionColor,
       }
   ) {
-    var trailingAction;
+    Widget? trailingAction;
 
     if (actionName != null) {
       if (actionIcon == null) {
@@ -80,7 +80,7 @@ class AppToast {
               },
               customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                 child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -156,7 +156,7 @@ class AppToast {
       shadowColor: Colors.black54,
       borderRadius: BorderRadius.all(Radius.circular(radius ?? 10)),
       child: Container(
-        padding: padding ?? EdgeInsets.symmetric(horizontal: 12.0, vertical: 14),
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(radius ?? 10.0),
           color: bgColor ?? Colors.white,
@@ -172,7 +172,7 @@ class AppToast {
                   fit: BoxFit.fill,
                   color: iconColor),
             if (icon != null)
-              SizedBox(width: 10.0),
+              const SizedBox(width: 10.0),
             Expanded(child: Text(
                 message ?? '',
                 style: textStyle ?? TextStyle(fontSize: 15, color: textColor ?? Colors.black))),
@@ -184,7 +184,7 @@ class AppToast {
     fToast.showToast(
       child: toast,
       gravity: ToastGravity.BOTTOM,
-      toastDuration: toastLength ?? Duration(seconds: 3),
+      toastDuration: toastLength ?? const Duration(seconds: 3),
     );
   }
 }

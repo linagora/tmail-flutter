@@ -75,7 +75,7 @@ class DownloadManager {
         await streamController.close();
         return streamController.stream.first;
       } else {
-        throw exception;
+        rethrow;
       }
     }
     return streamController.stream.first;
@@ -100,7 +100,7 @@ class DownloadManager {
       html.Url.revokeObjectUrl(url);
     } catch (exception) {
       log('DownloadManager::createAnchorElementDownloadFileWeb(): ERROR: $exception');
-      throw exception;
+      rethrow;
     }
   }
 

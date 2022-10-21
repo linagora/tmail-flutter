@@ -3,17 +3,17 @@ extension DateTimeExtension on DateTime {
 
   bool isToday() {
     final now = DateTime.now();
-    return now.day == this.day && now.month == this.month && now.year == this.year;
+    return now.day == day && now.month == month && now.year == year;
   }
 
   bool isYesterday() {
-    final yesterday = DateTime.now().subtract(Duration(days: 1));
-    return yesterday.day == this.day && yesterday.month == this.month && yesterday.year == this.year;
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    return yesterday.day == day && yesterday.month == month && yesterday.year == year;
   }
 
   bool isThisYear() {
     final now = DateTime.now();
-    return now.year == this.year;
+    return now.year == year;
   }
 
   int daysBetween(DateTime from) {

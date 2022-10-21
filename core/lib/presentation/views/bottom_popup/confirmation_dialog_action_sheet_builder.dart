@@ -55,7 +55,7 @@ class ConfirmationDialogActionSheetBuilder {
       builder: (context) => PointerInterceptor(child: CupertinoActionSheet(
         actions: [
           Container(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
               color: Colors.white,
               child: MouseRegion(
                 cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
@@ -63,7 +63,7 @@ class ConfirmationDialogActionSheetBuilder {
                   child: Text(
                       _messageText ?? '',
                       textAlign: TextAlign.center,
-                      style: _styleMessage ?? TextStyle(fontSize: 14, color: AppColor.colorMessageConfirmDialog)),
+                      style: _styleMessage ?? const TextStyle(fontSize: 14, color: AppColor.colorMessageConfirmDialog)),
                   onPressed: () => {},
                 ),
               )
@@ -75,7 +75,7 @@ class ConfirmationDialogActionSheetBuilder {
                 child: CupertinoActionSheetAction(
                   child: Text(
                       _confirmText ?? '',
-                      style: _styleConfirmButton ?? TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorActionDeleteConfirmDialog)),
+                      style: _styleConfirmButton ?? const TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorActionDeleteConfirmDialog)),
                   onPressed: () => _onConfirmActionClick?.call(),
                 ),
               )
@@ -86,7 +86,7 @@ class ConfirmationDialogActionSheetBuilder {
           child: CupertinoActionSheetAction(
             child: Text(
                 _cancelText ?? '',
-                style: _styleCancelButton ?? TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorActionCancelDialog)),
+                style: _styleCancelButton ?? const TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorActionCancelDialog)),
             onPressed: () => _onCancelActionClick?.call(),
           ),
         ),

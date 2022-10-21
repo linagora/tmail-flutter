@@ -64,7 +64,7 @@ class AvatarBuilder {
 
   Widget build() {
     return InkWell(
-      onTap: () => _onTapAvatarActionClick != null ? _onTapAvatarActionClick?.call() : null,
+      onTap: () => _onTapAvatarActionClick != null ? _onTapAvatarActionClick!.call() : null,
       onTapDown: (detail) {
         if (_onTapAvatarActionWithPositionClick != null && _context != null) {
           final screenSize = MediaQuery.of(_context!).size;
@@ -96,7 +96,7 @@ class AvatarBuilder {
               color: _bgColor ?? AppColor.avatarColor
           ),
           child: Text(
-              '${_text ?? ''}',
+              _text ?? '',
               style: _textStyle ?? TextStyle(fontSize: 20, color: _textColor ?? AppColor.avatarTextColor, fontWeight: FontWeight.w500)
           )
       ),
