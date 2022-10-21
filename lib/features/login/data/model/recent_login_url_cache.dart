@@ -5,11 +5,11 @@ import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart'
 
 part 'recent_login_url_cache.g.dart';
 
-@HiveType(typeId: CachingConstants.LOGIN_URL_CACHE_IDENTITY)
+@HiveType(typeId: CachingConstants.RECENT_LOGIN_URL_HIVE_CACHE_IDENTITY)
 class RecentLoginUrlCache extends HiveObject with EquatableMixin {
   
   @HiveField(0)
-  final Uri url;
+  final String url;
 
   @HiveField(1)
   final DateTime creationDate;
