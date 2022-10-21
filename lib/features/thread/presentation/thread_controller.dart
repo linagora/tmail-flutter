@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -162,10 +163,31 @@ class ThreadController extends BaseController {
     super.onData(newState);
     newState.fold(
       (failure) {
+        if (currentOverlayContext != null) {
+          TMailToast.showToast(
+            "[ThreadView]: $failure",
+            currentOverlayContext!,
+            backgroundColor: AppColor.toastErrorBackgroundColor,
+            toastDuration: 5 * 1000
+          );
+        } else {
+          _appToast.showToast("[ThreadView]: $failure");
+        }
         if (failure is SearchEmailFailure) {
           emailList.clear();
         } else if (failure is SearchMoreEmailFailure || failure is LoadMoreEmailsFailure) {
           _isLoadingMore = false;
+        } else if (failure is GetAllEmailFailure) {
+          if (currentOverlayContext != null) {
+            TMailToast.showToast(
+              "[GetAllEmailFailure]: ${failure.exception}",
+              currentOverlayContext!,
+              backgroundColor: AppColor.toastErrorBackgroundColor,
+              toastDuration: 10 * 1000
+            );
+          } else {
+            _appToast.showToast("[GetAllEmailFailure]: ${failure.exception}");
+          }
         }
       },
       (success) {
@@ -339,6 +361,17 @@ class ThreadController extends BaseController {
   void _getAllEmail() {
     if (_accountId != null) {
       _getAllEmailAction(_accountId!, mailboxId: _currentMailboxId);
+    } else {
+      if (currentOverlayContext != null) {
+        TMailToast.showToast(
+            "[ThreadView]: can not found accountId",
+            currentOverlayContext!,
+            backgroundColor: AppColor.toastErrorBackgroundColor,
+            toastDuration: 10 * 1000
+        );
+      } else {
+        _appToast.showToast("[ThreadView]: [ThreadView]: can not found accountId");
+      }
     }
   }
 
@@ -373,6 +406,14 @@ class ThreadController extends BaseController {
   }
 
   void _getAllEmailAction(AccountId accountId, {MailboxId? mailboxId}) {
+    Fluttertoast.showToast(
+        msg: 'start fetching emails',
+        fontSize: 16,
+        textColor: Colors.white,
+        backgroundColor: Colors.black,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM);
+
     consumeState(_getEmailsInMailboxInteractor.execute(
       accountId,
       limit: ThreadConstants.defaultLimit,

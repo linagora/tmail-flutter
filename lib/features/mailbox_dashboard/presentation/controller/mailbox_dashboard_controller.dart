@@ -217,6 +217,16 @@ class MailboxDashBoardController extends ReloadableController {
   void onDone() {
     viewState.value.fold(
       (failure) {
+        if (currentOverlayContext != null) {
+          TMailToast.showToast(
+              "[Dashboard]: $failure",
+              currentOverlayContext!,
+              backgroundColor: AppColor.toastErrorBackgroundColor,
+              toastDuration: 5 * 1000
+          );
+        } else {
+          _appToast.showToast("[Dashboard]: $failure");
+        }
         if (failure is SendEmailFailure) {
           if (currentOverlayContext != null && currentContext != null) {
             _appToast.showToastWithIcon(
