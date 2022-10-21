@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
 extension URLExtension on String {
-  static final String prefixUrlHttps = 'https://';
-  static final String prefixUrlHttp = 'http://';
+  static const String prefixUrlHttps = 'https://';
+  static const String prefixUrlHttp = 'http://';
 
   String formatURLValid() {
     if (isNotEmpty) {

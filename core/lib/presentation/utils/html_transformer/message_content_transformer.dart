@@ -43,9 +43,9 @@ class MessageContentTransformer {
 
   String _transformMessage(String message) {
     if (configuration.textTransformers.isNotEmpty) {
-      configuration.textTransformers.forEach((transformer) {
+      for (var transformer in configuration.textTransformers) {
         message = transformer.process(message);
-      });
+      }
     }
     return message;
   }

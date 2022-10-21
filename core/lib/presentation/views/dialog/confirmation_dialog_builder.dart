@@ -128,9 +128,9 @@ class ConfirmDialogBuilder {
     } else {
       return Dialog(
         key: _key,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(16))),
-        insetPadding: EdgeInsets.symmetric(
+        insetPadding: const EdgeInsets.symmetric(
             horizontal: 24.0,
             vertical: 16.0),
         child: _bodyContent(),
@@ -141,49 +141,49 @@ class ConfirmDialogBuilder {
   Widget _bodyContent() {
     return Container(
         width: _widthDialog ?? 400,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(16))),
+            borderRadius: const BorderRadius.all(Radius.circular(16))),
         margin: _margin,
         child: Wrap(children: [
           if (_onCloseButtonAction != null)
             Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
-                    padding: EdgeInsets.only(top: 8, right: 8),
+                    padding: const EdgeInsets.only(top: 8, right: 8),
                     child: buildIconWeb(
                         icon: SvgPicture.asset(_imagePath.icCloseMailbox, fit: BoxFit.fill),
                         onTap: () => _onCloseButtonAction?.call())
                 )),
           if (_iconWidget != null)
             Container(
-              margin: _marginIcon ?? EdgeInsets.only(top: 24),
+              margin: _marginIcon ?? const EdgeInsets.only(top: 24),
               alignment: Alignment.center,
               child: _iconWidget,
             ),
           if (_title.isNotEmpty)
             Padding(
-                padding: _paddingTitle ?? EdgeInsets.only(top: 12),
+                padding: _paddingTitle ?? const EdgeInsets.only(top: 12),
                 child: Center(
                     child: Text(
                         _title,
                         textAlign: TextAlign.center,
-                        style: _styleTitle ?? TextStyle(fontSize: 20.0, color: AppColor.colorActionDeleteConfirmDialog, fontWeight: FontWeight.w500)
+                        style: _styleTitle ?? const TextStyle(fontSize: 20.0, color: AppColor.colorActionDeleteConfirmDialog, fontWeight: FontWeight.w500)
                     )
                 )
             ),
           if (_content.isNotEmpty)
             Padding(
-              padding: _paddingContent ?? EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              padding: _paddingContent ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
               child: Center(
                 child: Text(_content,
                     textAlign: TextAlign.center,
-                    style: _styleContent ?? TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
+                    style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
                 ),
               ),
             ),
           Padding(
-              padding: _paddingButton ?? EdgeInsets.only(bottom: 16, left: 16, right: 16),
+              padding: _paddingButton ?? const EdgeInsets.only(bottom: 16, left: 16, right: 16),
               child: Row(
                   children: [
                     if (_cancelText.isNotEmpty)
@@ -193,7 +193,7 @@ class ConfirmDialogBuilder {
                           radius: _radiusButton,
                           textStyle: _styleTextCancelButton,
                           action: _onCancelButtonAction)),
-                    if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) SizedBox(width: 16),
+                    if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) const SizedBox(width: 16),
                     if (_confirmText.isNotEmpty)
                       Expanded(child: _buildButton(
                           name: _confirmText,
@@ -225,11 +225,11 @@ class ConfirmDialogBuilder {
               side: BorderSide(width: 0, color: bgColor ?? AppColor.colorTextButton),
             )),
             padding: MaterialStateProperty.resolveWith<EdgeInsets>(
-                    (Set<MaterialState> states) => EdgeInsets.symmetric(horizontal: 16)),
+                    (Set<MaterialState> states) => const EdgeInsets.symmetric(horizontal: 16)),
             elevation: MaterialStateProperty.resolveWith<double>((Set<MaterialState> states) => 0)),
         child: Text(name ?? '',
             textAlign: TextAlign.center,
-            style: textStyle ?? TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white)),
+            style: textStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white)),
       )
     );
   }

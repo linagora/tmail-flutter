@@ -12,7 +12,7 @@ class FullScreenActionSheetBuilder {
   final Widget? titleWidget;
   final Widget? cancelWidget;
   OnCloseActionClick? onCloseActionClick;
-  late double _statusBarHeight = MediaQuery.of(context).padding.top;
+  late double _statusBarHeight;
 
   FullScreenActionSheetBuilder({
     required this.context,
@@ -20,7 +20,9 @@ class FullScreenActionSheetBuilder {
     this.titleWidget,
     this.cancelWidget,
     this.onCloseActionClick,
-  });
+  }) {
+    _statusBarHeight = MediaQuery.of(context).padding.top;
+  }
 
   Future show() {
     return showModalBottomSheet(
@@ -44,13 +46,13 @@ class FullScreenActionSheetBuilder {
         child: Padding(
             padding: EdgeInsets.only(top: _statusBarHeight),
             child: ClipRRect(
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topRight: Radius.circular(14),
                 topLeft: Radius.circular(14),
               ),
               child: Scaffold(
                 appBar: AppBar(
-                  leading: SizedBox.shrink(),
+                  leading: const SizedBox.shrink(),
                   title: titleWidget,
                   centerTitle: true,
                   actions: [

@@ -11,7 +11,7 @@ class ButtonBuilder {
   OnPressActionWithPositionClick? _onPressActionWithPositionClick;
 
   BuildContext? _context;
-  String? _icon;
+  final String? _icon;
   String? _text;
   double? _size;
   EdgeInsets? _paddingIcon;
@@ -93,7 +93,7 @@ class ButtonBuilder {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => _onPressActionClick != null ? _onPressActionClick?.call() : null,
+        onTap: () => _onPressActionClick != null ? _onPressActionClick!.call() : null,
         onTapDown: (detail) {
           if (_onPressActionWithPositionClick != null && _context != null) {
             final screenSize = MediaQuery.of(_context!).size;
@@ -147,7 +147,7 @@ class ButtonBuilder {
   }
 
   Widget _buildIcon() => Padding(
-    padding: _paddingIcon ?? EdgeInsets.all(10),
+    padding: _paddingIcon ?? const EdgeInsets.all(10),
     child: SvgPicture.asset(
         _icon ?? '',
         width: _size ?? 24,
@@ -157,11 +157,11 @@ class ButtonBuilder {
 
   Widget _buildText() {
     return Text(
-      '${_text ?? ''}',
+      _text ?? '',
       maxLines: 1,
       softWrap: CommonTextStyle.defaultSoftWrap,
       overflow: CommonTextStyle.defaultTextOverFlow,
-      style: _textStyle ?? TextStyle(
+      style: _textStyle ?? const TextStyle(
           fontSize: 12,
           color: AppColor.colorTextButton),
     );

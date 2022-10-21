@@ -26,21 +26,21 @@ class BackgroundWidgetBuilder {
 
   Widget build() {
     return Center(
-      key: _key ?? Key('BackgroundWidgetBuilder'),
+      key: _key ?? const Key('BackgroundWidgetBuilder'),
       child: CustomScrollView(
         slivers: [
           SliverFillRemaining(
-            child: Container(
+            child: SizedBox(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _image ?? SizedBox.shrink(),
+                  _image ?? const SizedBox.shrink(),
                   Padding(
                     padding: EdgeInsets.only(top: _image != null ? 16 : 0),
                     child: Text(
                       _text ?? '',
-                      style: TextStyle(color: AppColor.baseTextColor, fontSize: 16),
+                      style: const TextStyle(color: AppColor.baseTextColor, fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
                   ),

@@ -28,13 +28,13 @@ class TextBuilder {
   }
 
   Text build() {
-    return Text(_text ?? '', key: _key ?? Key('TextBuilder'), style: _textStyle ?? CommonTextStyle.textStyleNormal, textAlign: _textAlign ?? TextAlign.center);
+    return Text(_text ?? '', key: _key ?? const Key('TextBuilder'), style: _textStyle ?? CommonTextStyle.textStyleNormal, textAlign: _textAlign ?? TextAlign.center);
   }
 }
 
 class CenterTextBuilder extends TextBuilder {
   @override
   Text build() {
-    return Text(_text ?? '', key: _key ?? Key('TextBuilder'), style: _textStyle, textAlign: TextAlign.center);
+    return Text(_text ?? '', key: _key ?? const Key('TextBuilder'), style: _textStyle, textAlign: TextAlign.center);
   }
 }

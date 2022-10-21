@@ -44,7 +44,7 @@ class HtmlViewerControllerForWeb {
   void _evaluateJavascriptWeb({required Map<String, Object?> data}) async {
     if (kIsWeb) {
       data['view'] = _viewId;
-      final jsonEncoder = JsonEncoder();
+      const jsonEncoder = JsonEncoder();
       var json = jsonEncoder.convert(data);
       html.window.postMessage(json, '*');
     } else {

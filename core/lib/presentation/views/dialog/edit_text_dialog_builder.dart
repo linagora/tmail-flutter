@@ -82,26 +82,26 @@ class EditTextDialogBuilder {
   Widget build() {
     return Dialog(
       key: _key,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
-      insetPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
       child: Container(
         margin: EdgeInsets.zero,
         padding: EdgeInsets.zero,
         width: 400,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(20))),
         child: StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
           return Container(
-              padding: EdgeInsets.only(left: 30, right: 30, top: 30, bottom: 24),
+              padding: const EdgeInsets.only(left: 30, right: 30, top: 30, bottom: 24),
               child: Wrap(
                 children: <Widget>[
                   Text(
                       _title,
-                      style: TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700),
+                      style: const TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700),
                       textAlign: TextAlign.center),
                   Padding(
-                      padding: EdgeInsets.only(top: 20),
+                      padding: const EdgeInsets.only(top: 20),
                       child: TextFormField(
                         keyboardType: TextInputType.visiblePassword,
                         onChanged: (value) => _onTextChanged(value, setState),
@@ -109,12 +109,12 @@ class EditTextDialogBuilder {
                         controller: _textController,
                         decoration: InputDecoration(
                             errorText: _error,
-                            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColor.colorDividerMailbox)),
+                            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColor.colorDividerMailbox)),
                             hintText: _hintText),
                       )
                   ),
                   Padding(
-                      padding: EdgeInsets.only(left: 16, right: 16, top: 24),
+                      padding: const EdgeInsets.only(left: 16, right: 16, top: 24),
                       child: Row(
                           children: [
                             Expanded(
@@ -123,7 +123,7 @@ class EditTextDialogBuilder {
                                     bgColor: AppColor.colorContentEmail,
                                     action: () => _onCancelButtonPress(context))
                             ),
-                            SizedBox(width: 20),
+                            const SizedBox(width: 20),
                             Expanded(
                                 child: _buildButton(
                                     name: _confirmText,
@@ -164,7 +164,7 @@ class EditTextDialogBuilder {
               side: BorderSide(width: 0, color: bgColor ?? AppColor.colorTextButton),
             )),
             padding: MaterialStateProperty.resolveWith<EdgeInsets>(
-                    (Set<MaterialState> states) => EdgeInsets.symmetric(horizontal: 16)),
+                    (Set<MaterialState> states) => const EdgeInsets.symmetric(horizontal: 16)),
             elevation: MaterialStateProperty.resolveWith<double>((Set<MaterialState> states) => 0)),
         child: Text(name ?? '',
             textAlign: TextAlign.center,

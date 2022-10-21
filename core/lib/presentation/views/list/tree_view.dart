@@ -6,9 +6,9 @@ class TreeView extends InheritedWidget {
 
   TreeView({
     Key? key,
-    required List<Widget> children,
-    bool startExpanded = false,
-  }) : this.children = children, this.startExpanded = startExpanded, super (
+    required this.children,
+    this.startExpanded = false,
+  }) : super (
     key: key,
     child: _TreeViewData(
       children: children,
@@ -21,8 +21,8 @@ class TreeView extends InheritedWidget {
 
   @override
   bool updateShouldNotify(TreeView oldWidget) {
-    if (oldWidget.children == this.children &&
-        oldWidget.startExpanded == this.startExpanded) {
+    if (oldWidget.children == children &&
+        oldWidget.startExpanded == startExpanded) {
       return false;
     }
     return true;
@@ -39,7 +39,7 @@ class _TreeViewData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      key: PageStorageKey('tree_view'),
+      key: const PageStorageKey('tree_view'),
       shrinkWrap: true,
       primary: false,
       padding: EdgeInsets.zero,
@@ -82,12 +82,12 @@ class TreeViewChild {
           },
         ),
         AnimatedContainer(
-          duration: Duration(milliseconds: 400),
+          duration: const Duration(milliseconds: 400),
           child: isExpanded!
             ? Column(
                 mainAxisSize: MainAxisSize.min,
-                children: children.map((child) => Padding(padding: EdgeInsets.only(left: 20), child: child)).toList())
-            : Offstage(),
+                children: children.map((child) => Padding(padding: const EdgeInsets.only(left: 20), child: child)).toList())
+            : const Offstage(),
         ),
       ],
     );

@@ -14,7 +14,7 @@ class CompressFileUtils {
   static const int MAX_IMAGE_WIDTH = 1000;
 
   bool _exceedMaximumImageSize(Uint8List bytesData) {
-    final maximumSizeBytes = MAXIMUM_IMAGE_SIZE_KB * 1024;
+    const maximumSizeBytes = MAXIMUM_IMAGE_SIZE_KB * 1024;
     final sizeBytesData = bytesData.length;
     log('CompressFileUtils::exceedMaximumImageSize(): maximumSizeBytes: $maximumSizeBytes');
     log('CompressFileUtils::exceedMaximumImageSize(): sizeBytesData: $sizeBytesData');

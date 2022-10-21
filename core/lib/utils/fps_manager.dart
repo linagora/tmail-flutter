@@ -17,7 +17,7 @@ class FpsManager {
 
   /// Threshold time consuming per frame
   /// 1000/60hz ≈ 16.6ms  1000/120hz ≈ 8.3ms
-  Duration _thresholdPerFrame = Duration(microseconds: Duration.microsecondsPerSecond ~/ 60);
+  Duration _thresholdPerFrame = const Duration(microseconds: Duration.microsecondsPerSecond ~/ 60);
 
   /// Refresh rate, default 60
   double _refreshRate = 60;
@@ -31,7 +31,7 @@ class FpsManager {
   }
 
   bool _started = false;
-  List<FpsCallback> _fpsCallbacks = [];
+  final List<FpsCallback> _fpsCallbacks = [];
 
   /// Temporarily save 120 frames
   static const int _queue_capacity = 120;
@@ -102,9 +102,9 @@ class FpsManager {
       int droppedCount = totalCount - drawFramesCount;
       double fps = drawFramesCount / totalCount * _refreshRate;
       FpsInfo fpsInfo = FpsInfo(fps, totalCount, droppedCount, drawFramesCount);
-      _fpsCallbacks.forEach((callBack) {
+      for (var callBack in _fpsCallbacks) {
         callBack(fpsInfo);
-      });
+      }
     }
   }
 }

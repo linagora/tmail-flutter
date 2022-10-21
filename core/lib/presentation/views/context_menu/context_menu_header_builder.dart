@@ -24,7 +24,7 @@ class ContextMenuHeaderBuilder {
         transform: Matrix4.translationValues(12, 5, 0.0),
         child: Text(
           _label ?? '',
-          style: _textStyle ?? TextStyle(fontSize: 20.0, color: AppColor.nameUserColor, fontWeight: FontWeight.w500),
+          style: _textStyle ?? const TextStyle(fontSize: 20.0, color: AppColor.nameUserColor, fontWeight: FontWeight.w500),
         ),
       ));
   }

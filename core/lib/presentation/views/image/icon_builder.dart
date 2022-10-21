@@ -6,7 +6,7 @@ typedef OnPressIconActionClick = void Function();
 class IconBuilder {
   Key? _key;
   double? _size;
-  String? _icon;
+  final String? _icon;
   EdgeInsets? _padding;
   OnPressIconActionClick? _onPressIconActionClick;
 
@@ -34,7 +34,7 @@ class IconBuilder {
       width: _size ?? 40,
       height: _size ?? 40,
       alignment: Alignment.center,
-      padding: _padding ?? EdgeInsets.all(3),
+      padding: _padding ?? const EdgeInsets.all(3),
       child: Material(
           borderRadius: BorderRadius.circular((_size ?? 40) / 2),
           color: Colors.transparent,

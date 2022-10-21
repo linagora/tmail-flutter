@@ -79,7 +79,7 @@ class TextFieldBuilder {
 
   TextField build() {
     return TextField(
-      key: _key ?? Key('TextFieldBuilder'),
+      key: _key ?? const Key('TextFieldBuilder'),
       onChanged: _onTextChange,
       cursorColor: _cursorColor ?? AppColor.primaryColor,
       controller: _textController,
@@ -89,7 +89,7 @@ class TextFieldBuilder {
       maxLines: _maxLines,
       minLines: _minLines,
       keyboardAppearance: Brightness.light,
-      style: _textStyle ?? TextStyle(color: AppColor.textFieldTextColor),
+      style: _textStyle ?? const TextStyle(color: AppColor.textFieldTextColor),
       obscureText: _obscureText ?? false,
       keyboardType: _keyboardType,
       onSubmitted: _onTextSubmitted,

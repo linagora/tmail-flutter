@@ -81,7 +81,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   }
 
   Widget _buildLoadingView() {
-    return Padding(
+    return const Padding(
         padding: EdgeInsets.all(16),
         child: SizedBox(
           width: 30,

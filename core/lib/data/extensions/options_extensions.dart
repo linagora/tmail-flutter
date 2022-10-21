@@ -2,10 +2,10 @@ import 'package:dio/dio.dart';
 
 extension OptionsExtension on Options {
   Options appendHeaders(Map<String, dynamic> additionalHeaders) {
-    if (this.headers != null) {
-      this.headers?.addAll(additionalHeaders);
+    if (headers != null) {
+      headers?.addAll(additionalHeaders);
     } else {
-      this.headers = additionalHeaders;
+      headers = additionalHeaders;
     }
     return this;
   }

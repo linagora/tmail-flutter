@@ -26,7 +26,7 @@ abstract class CupertinoActionSheetActionBuilder<T> {
   }
 
   TextStyle actionTextStyle({TextStyle? textStyle}) {
-    return textStyle ?? TextStyle(fontSize: 17, color: AppColor.colorNameEmail);
+    return textStyle ?? const TextStyle(fontSize: 17, color: AppColor.colorNameEmail);
   }
 
   Widget build();

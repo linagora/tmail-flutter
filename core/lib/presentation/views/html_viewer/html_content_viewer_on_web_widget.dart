@@ -121,7 +121,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       </script>
     ''';
 
-    final scriptsDisableZoom = '''
+    const scriptsDisableZoom = '''
       <script type="text/javascript">
         document.addEventListener('wheel', function(e) {
           e.ctrlKey && e.preventDefault();
@@ -165,7 +165,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         final dataGetHeight = <String, Object>{'type': 'toIframe: getHeight', 'view' : createdViewId};
         final dataGetWidth = <String, Object>{'type': 'toIframe: getWidth', 'view' : createdViewId};
 
-        final jsonEncoder = JsonEncoder();
+        const jsonEncoder = JsonEncoder();
         final jsonGetHeight = jsonEncoder.convert(dataGetHeight);
         final jsonGetWidth = jsonEncoder.convert(dataGetWidth);
 
@@ -220,7 +220,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
               if (urlString.startsWith('mailto:')) {
                 widget.mailtoDelegate?.call(Uri.parse(urlString));
               } else {
-                html.window.open('$urlString', '_blank');
+                html.window.open(urlString, '_blank');
               }
             }
           }
@@ -251,7 +251,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   }
 
   Widget _buildLoadingView() {
-    return Padding(
+    return const Padding(
         padding: EdgeInsets.all(16),
         child: SizedBox(
             width: 30,

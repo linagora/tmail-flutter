@@ -22,7 +22,7 @@ abstract class CupertinoActionSheetNoIconBuilder<T> {
   }
 
   TextStyle actionTextStyle({TextStyle? textStyle}) {
-    return textStyle ?? TextStyle(fontSize: 17, color: Colors.black);
+    return textStyle ?? const TextStyle(fontSize: 17, color: Colors.black);
   }
 
   Widget build();

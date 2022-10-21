@@ -18,7 +18,7 @@ class SearchBarView extends StatelessWidget {
   final Widget? rightButton;
   final double? radius;
 
-  const SearchBarView(this._imagePaths, {
+   const SearchBarView(this._imagePaths, {Key? key,
     this.heightSearchBar,
     this.padding,
     this.margin,
@@ -27,11 +27,12 @@ class SearchBarView extends StatelessWidget {
     this.rightButton,
     this.onOpenSearchViewAction,
     this.radius,
-  });
+  }) : super(key: key);
 
+  @override
   Widget build(BuildContext context) {
     return Container(
-        key: Key('search_bar_widget'),
+        key: const Key('search_bar_widget'),
         alignment: Alignment.center,
         height: heightSearchBar ?? 40,
         width: maxSizeWidth ?? double.infinity,
@@ -46,7 +47,7 @@ class SearchBarView extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               buildIconWeb(
                   splashRadius: 15,
                   minSize: 40,
@@ -63,7 +64,7 @@ class SearchBarView extends StatelessWidget {
                     maxLines: 1,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     softWrap: CommonTextStyle.defaultSoftWrap,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: kIsWeb ? 15 : 17,
                         color: AppColor.colorHintSearchBar)),
               ),
