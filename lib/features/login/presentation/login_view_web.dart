@@ -15,16 +15,12 @@ class LoginView extends BaseLoginView {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.primaryLightColor,
-      body: Stack(children: [
-        SafeArea(
-            child: Center(child: SingleChildScrollView(
-                child: ResponsiveWidget(
-                  responsiveUtils: responsiveUtils,
-                  mobile: _buildMobileForm(context),
-                  desktop: _buildWebForm(context),
-                )))
-        ),
-      ]),
+      body: Center(child: SingleChildScrollView(
+          child: ResponsiveWidget(
+            responsiveUtils: responsiveUtils,
+            mobile: _buildMobileForm(context),
+            desktop: _buildWebForm(context),
+          ))),
     );
   }
 

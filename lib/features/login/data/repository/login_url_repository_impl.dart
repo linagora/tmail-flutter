@@ -11,4 +11,9 @@ class LoginUrlRepositoryImpl implements LoginUrlRepository {
   Future<void> saveRecentLoginUrl(RecentLoginUrl recentLogin) {
     return loginInfoDataSource.saveLoginUrl(recentLogin);
   }
+
+  @override
+  Future<List<RecentLoginUrl>> getAllRecentLoginUrlLatest({int? limit, String? pattern}) {
+    return loginInfoDataSource.getAllRecentLoginUrlLatest(limit: limit, pattern: pattern);
+  }
 }

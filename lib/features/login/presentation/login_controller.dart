@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart'
 import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_all_recent_login_url_latest_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
@@ -17,6 +18,7 @@ import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.d
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
@@ -43,6 +45,7 @@ class LoginController extends BaseController {
   final GetAuthenticationInfoInteractor _getAuthenticationInfoInteractor;
   final GetStoredOidcConfigurationInteractor _getStoredOidcConfigurationInteractor;
   final SaveLoginUrlOnMobileInteractor _saveLoginUrlOnMobileInteractor;
+  final GetAllRecentLoginUrlOnMobileInteractor _getAllRecentLoginUrlOnMobileInteractor;
 
 
   final TextEditingController urlInputController = TextEditingController();
@@ -60,6 +63,7 @@ class LoginController extends BaseController {
     this._getAuthenticationInfoInteractor,
     this._getStoredOidcConfigurationInteractor,
     this._saveLoginUrlOnMobileInteractor,
+    this._getAllRecentLoginUrlOnMobileInteractor,
   );
 
   var loginState = LoginState(Right(LoginInitAction())).obs;
@@ -338,6 +342,17 @@ class LoginController extends BaseController {
       log('LoginController::_saveRecentLoginUrl(): $recentLoginUrl');
       consumeState(_saveLoginUrlOnMobileInteractor.execute(recentLoginUrl));
     }
+  }
+
+  Future<List<RecentLoginUrl>> getAllRecentLoginUrlAction(String pattern) async {
+    return await _getAllRecentLoginUrlOnMobileInteractor
+        .execute(pattern: pattern)
+        .then((result) => result.fold(
+            (failure) => <RecentLoginUrl>[],
+            (success) => success is GetAllRecentLoginUrlLatestSuccess
+                ? success.listRecentLoginUrl
+                : <RecentLoginUrl>[]
+        ));
   }
 
   @override
