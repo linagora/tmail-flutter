@@ -12,15 +12,17 @@ class LoginUrlDataSourceImpl implements LoginUrlDataSource {
   @override
   Future<void> saveLoginUrl(RecentLoginUrl recentLoginUrl) {
     return Future.sync(() async {
-      final tmpRecentLoginUrl = recentLoginUrl.url.toString();
-      if(await _recentLoginUrlCacheClient.isExistItem(tmpRecentLoginUrl)){
-        await _recentLoginUrlCacheClient.updateItem(tmpRecentLoginUrl, recentLoginUrl.toRecentLoginUrlCache());
+      if (await _recentLoginUrlCacheClient.isExistItem(recentLoginUrl.url)) {
+        await _recentLoginUrlCacheClient.updateItem(
+            recentLoginUrl.url,
+            recentLoginUrl.toRecentLoginUrlCache());
       } else {
-        await _recentLoginUrlCacheClient.insertItem(tmpRecentLoginUrl, recentLoginUrl.toRecentLoginUrlCache());
+        await _recentLoginUrlCacheClient.insertItem(
+            recentLoginUrl.url,
+            recentLoginUrl.toRecentLoginUrlCache());
       }
     }).catchError((error) {
       throw error;
     });
   }
-  
 }

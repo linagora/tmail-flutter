@@ -6,7 +6,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
-import 'package:tmail_ui_user/features/caching/adapter/uri_adapter.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
@@ -76,7 +75,6 @@ class HiveCacheConfig {
     Hive.registerAdapter(AccountCacheAdapter());
     Hive.registerAdapter(EncryptionKeyCacheAdapter());
     Hive.registerAdapter(AuthenticationInfoCacheAdapter());
-    Hive.registerAdapter(UriAdapter());
     Hive.registerAdapter(RecentLoginUrlCacheAdapter());
   }
 

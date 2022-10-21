@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
@@ -125,6 +126,7 @@ class LoginController extends BaseController {
   }
 
   void handleNextInUrlInputFormPress() {
+    _saveRecentLoginUrl();
     _checkOIDCIsAvailable();
   }
 
@@ -328,6 +330,14 @@ class LoginController extends BaseController {
       urlInputController.text = url.removePrefix();
     }
     setUrlText(urlInputController.text);
+  }
+
+  void _saveRecentLoginUrl() {
+    if (_urlText?.isNotEmpty == true && !BuildUtils.isWeb) {
+      final recentLoginUrl = RecentLoginUrl.now(_urlText!);
+      log('LoginController::_saveRecentLoginUrl(): $recentLoginUrl');
+      consumeState(_saveLoginUrlOnMobileInteractor.execute(recentLoginUrl));
+    }
   }
 
   @override
