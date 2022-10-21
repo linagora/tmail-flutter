@@ -10,8 +10,10 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/email_cleanup_rule.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/model/recent_login_url_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_search_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cache_interactor.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
@@ -36,6 +38,7 @@ class HomeController extends BaseController {
   final CleanupEmailCacheInteractor _cleanupEmailCacheInteractor;
   final EmailReceiveManager _emailReceiveManager;
   final CleanupRecentSearchCacheInteractor _cleanupRecentSearchCacheInteractor;
+  final CleanupRecentLoginUrlCacheInteractor _cleanupRecentLoginUrlCacheInteractor;
   final DeleteCredentialInteractor _deleteCredentialInteractor;
   final CachingManager _cachingManager;
   final DeleteAuthorityOidcInteractor _deleteAuthorityOidcInteractor;
@@ -49,6 +52,7 @@ class HomeController extends BaseController {
     this._cleanupEmailCacheInteractor,
     this._emailReceiveManager,
     this._cleanupRecentSearchCacheInteractor,
+    this._cleanupRecentLoginUrlCacheInteractor,
     this._deleteCredentialInteractor,
     this._cachingManager,
     this._deleteAuthorityOidcInteractor,
@@ -85,7 +89,8 @@ class HomeController extends BaseController {
   void _cleanupCache() async {
     await Future.wait([
       _cleanupEmailCacheInteractor.execute(EmailCleanupRule(Duration.defaultCacheInternal)),
-      _cleanupRecentSearchCacheInteractor.execute(RecentSearchCleanupRule())
+      _cleanupRecentSearchCacheInteractor.execute(RecentSearchCleanupRule()),
+      _cleanupRecentLoginUrlCacheInteractor.execute(RecentLoginUrlCleanupRule())
     ]).then((value) => _getAuthenticatedAccount());
   }
 

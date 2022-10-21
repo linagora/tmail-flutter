@@ -4,10 +4,12 @@ import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource/cleanup_datasource.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource_impl/cleanup_datasource_impl.dart';
+import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_search_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/repository/cleanup_repository_impl.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/repository/cleanup_repository.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cache_interactor.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
@@ -47,6 +49,7 @@ class HomeBindings extends BaseBindings {
         Get.find<CleanupEmailCacheInteractor>(),
         Get.find<EmailReceiveManager>(),
         Get.find<CleanupRecentSearchCacheInteractor>(),
+        Get.find<CleanupRecentLoginUrlCacheInteractor>(),
         Get.find<DeleteCredentialInteractor>(),
         Get.find<CachingManager>(),
         Get.find<DeleteAuthorityOidcInteractor>(),
@@ -66,6 +69,7 @@ class HomeBindings extends BaseBindings {
     Get.lazyPut(() => CleanupDataSourceImpl(
         Get.find<EmailCacheManager>(),
         Get.find<RecentSearchCacheManager>(),
+        Get.find<RecentLoginUrlCacheManager>(),
     ));
     Get.lazyPut(() => HiveAccountDatasourceImpl(
         Get.find<AccountCacheManager>()
@@ -91,6 +95,7 @@ class HomeBindings extends BaseBindings {
     ));
     Get.lazyPut(() => CleanupEmailCacheInteractor(Get.find<CleanupRepository>()));
     Get.lazyPut(() => CleanupRecentSearchCacheInteractor(Get.find<CleanupRepository>()));
+    Get.lazyPut(() => CleanupRecentLoginUrlCacheInteractor(Get.find<CleanupRepository>()));
     Get.lazyPut(() => DeleteAuthorityOidcInteractor(
         Get.find<AuthenticationOIDCRepository>(),
         Get.find<CredentialRepository>()));
