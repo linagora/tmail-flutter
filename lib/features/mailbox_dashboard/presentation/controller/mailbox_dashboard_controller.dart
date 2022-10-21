@@ -654,31 +654,45 @@ class MailboxDashBoardController extends ReloadableController {
     List<PresentationEmail> listEmails,
     PresentationMailbox destinationMailbox
   ) async {
-    if (accountId.value != null && selectedMailbox.value != null) {
-      if (destinationMailbox.isTrash) {
-        _moveSelectedEmailMultipleToMailboxAction(accountId.value!, MoveToMailboxRequest(
-            listEmails.listEmailIds,
-            selectedMailbox.value!.id,
-            destinationMailbox.id,
-            MoveAction.moving,
-            EmailActionType.moveToTrash));
-      } else if (destinationMailbox.isSpam) {
-        _moveSelectedEmailMultipleToMailboxAction(accountId.value!, MoveToMailboxRequest(
-            listEmails.listEmailIds,
-            selectedMailbox.value!.id,
-            destinationMailbox.id,
-            MoveAction.moving,
-            EmailActionType.moveToSpam));
-      } else {
-        _moveSelectedEmailMultipleToMailboxAction(accountId.value!, MoveToMailboxRequest(
-            listEmails.listEmailIds,
-            selectedMailbox.value!.id,
-            destinationMailbox.id,
-            MoveAction.moving,
-            EmailActionType.moveToMailbox,
-            destinationPath: destinationMailbox.mailboxPath));
+      for (final element in listEmails) {
+        final currentMailBox = searchController.isSearchEmailRunning
+          ? element.findMailboxContain(mapMailboxById)
+          : selectedMailbox.value;
+        if (accountId.value != null && currentMailBox != null) {
+          if (destinationMailbox.isTrash) {
+            moveToMailbox(accountId.value!,
+              MoveToMailboxRequest(
+                [element].listEmailIds,
+                currentMailBox.id,
+                destinationMailbox.id,
+                MoveAction.moving,
+                EmailActionType.moveToTrash,
+              ),
+            );
+          } else if (destinationMailbox.isSpam) {
+            moveToMailbox(accountId.value!,
+              MoveToMailboxRequest(
+                [element].listEmailIds,
+                currentMailBox.id,
+                destinationMailbox.id,
+                MoveAction.moving,
+                EmailActionType.moveToSpam,
+              ),
+            );
+          } else {
+            moveToMailbox(accountId.value!,
+              MoveToMailboxRequest(
+                [element].listEmailIds,
+                currentMailBox.id,
+                destinationMailbox.id,
+                MoveAction.moving,
+                EmailActionType.moveToMailbox,
+                destinationPath: destinationMailbox.mailboxPath,
+              ),
+            );
+          }
+        }
       }
-    }
   }
 
   void _moveSelectedEmailMultipleToMailboxAction(

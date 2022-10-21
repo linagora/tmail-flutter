@@ -324,7 +324,11 @@ class ThreadController extends BaseController {
           } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
             _refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            if(searchController.isSearchEmailRunning) {
+              mailboxDashBoardController.quickSearchEmails();
+            } else {
+              _refreshEmailChanges(currentEmailState: success.currentEmailState);
+            }
           }
         });
       }
