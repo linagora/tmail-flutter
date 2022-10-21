@@ -182,7 +182,7 @@ packages:
       name: connectivity_plus_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.2"
+    version: "1.2.3"
   connectivity_plus_web:
     dependency: transitive
     description:
@@ -1104,7 +1104,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "9a863d1d6392441e7d7aad19d1c9a74da44af3a7"
+      resolved-ref: d6c954206ac885a6f269f8be06dfd914a6393e89
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.1"
