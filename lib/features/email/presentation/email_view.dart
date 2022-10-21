@@ -237,7 +237,8 @@ class EmailView extends GetWidget<EmailController> {
                     fontWeight: FontWeight.bold,
                     fontSize: 21,
                     color: Colors.white))
-                ..backgroundColor(AppColor.colorAvatar))
+                ..backgroundColor(AppColor.colorAvatar)
+                ..avatarColor(presentationEmail.avatarColors))
               .build(),
             const SizedBox(width: 16),
             Expanded(
