@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/login/domain/repository/login_url_reposit
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
@@ -52,6 +53,7 @@ class LoginBindings extends BaseBindings {
         Get.find<GetAuthenticationInfoInteractor>(),
         Get.find<GetStoredOidcConfigurationInteractor>(),
         Get.find<SaveLoginUrlOnMobileInteractor>(),
+        Get.find<GetAllRecentLoginUrlOnMobileInteractor>(),
     ));
   }
 
@@ -110,6 +112,7 @@ class LoginBindings extends BaseBindings {
     Get.lazyPut(() => SaveLoginUrlOnMobileInteractor(
       Get.find<LoginUrlRepository>(),
     ));
+    Get.lazyPut(() => GetAllRecentLoginUrlOnMobileInteractor(Get.find<LoginUrlRepository>()));
   }
 
   @override

@@ -31,8 +31,8 @@ extension RecentLoginUrlCacheExtension on RecentLoginUrlCache {
     return RecentLoginUrl(url, creationDate);
   }
 
-  bool matchUrl(Uri pattern) {
-    return url.toString().toLowerCase().contains(pattern.toString().toLowerCase());
+  bool matchUrl(String pattern) {
+    return url.toLowerCase().contains(pattern.toLowerCase());
   }
 }
 

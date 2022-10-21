@@ -1,7 +1,10 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
@@ -18,38 +21,37 @@ class LoginView extends BaseLoginView {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.primaryLightColor,
-      body: Stack(children: [
-        GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Container(
+          color: Colors.white,
           child: SafeArea(
             child: _supportScrollForm(context)
-                ? Stack(
-                children: [
-                  Center(child: SingleChildScrollView(child: _buildCenterForm(context), scrollDirection: Axis.vertical)),
-                  Obx(() {
-                    if (loginController.loginFormType.value == LoginFormType.credentialForm
-                        || loginController.loginFormType.value == LoginFormType.ssoForm) {
-                      return _buildBackButton(context);
-                    }
-                    return const SizedBox.shrink();
-                  })
-                ]
-            )
-                : Stack(
-                children: [
-                  _buildCenterForm(context),
-                  Obx(() {
-                    if (loginController.loginFormType.value == LoginFormType.credentialForm
-                        || loginController.loginFormType.value == LoginFormType.ssoForm) {
-                      return _buildBackButton(context);
-                    }
-                    return const SizedBox.shrink();
-                  })
-                ]
-            ),
+                ? Stack(children: [
+                    Center(child: SingleChildScrollView(
+                        child: _buildCenterForm(context),
+                        scrollDirection: Axis.vertical)),
+                    Obx(() {
+                      if (loginController.loginFormType.value == LoginFormType.credentialForm
+                          || loginController.loginFormType.value == LoginFormType.ssoForm) {
+                        return _buildBackButton(context);
+                      }
+                      return const SizedBox.shrink();
+                    })
+                  ])
+                : Stack(children: [
+                    _buildCenterForm(context),
+                    Obx(() {
+                      if (loginController.loginFormType.value == LoginFormType.credentialForm
+                          || loginController.loginFormType.value == LoginFormType.ssoForm) {
+                        return _buildBackButton(context);
+                      }
+                      return const SizedBox.shrink();
+                    })
+                  ]),
           ),
         ),
-      ]));
+      ));
   }
 
   Widget _buildCenterForm(BuildContext context) {
@@ -130,21 +132,32 @@ class LoginView extends BaseLoginView {
   Widget _buildUrlInput(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 24, left: 24, bottom: 24),
-      child: Container(
-        child: (TextFieldBuilder()
-            ..key(const Key('login_url_input'))
-            ..onChange((value) => loginController.formatUrl(value))
-            ..textInputAction(TextInputAction.next)
-            ..addController(loginController.urlInputController)
-            ..keyboardType(TextInputType.url)
-            ..onSubmitted((value) {
-                controller.handleNextInUrlInputFormPress();
-              })
-            ..textDecoration((LoginInputDecorationBuilder()
-                  ..setLabelText(AppLocalizations.of(context).prefix_https)
-                  ..setPrefixText(AppLocalizations.of(context).prefix_https))
-               .build()))
-          .build()));
+      child: TypeAheadFormField<RecentLoginUrl>(
+        textFieldConfiguration: TextFieldConfiguration(
+            controller: loginController.urlInputController,
+            textInputAction: TextInputAction.next,
+            keyboardType: TextInputType.url,
+            onSubmitted: (value) => controller.handleNextInUrlInputFormPress(),
+            decoration: (LoginInputDecorationBuilder()
+                ..setLabelText(AppLocalizations.of(context).prefix_https)
+                ..setPrefixText(AppLocalizations.of(context).prefix_https))
+               .build()
+        ),
+        debounceDuration: const Duration(milliseconds: 300),
+        suggestionsCallback: (pattern) async {
+          loginController.formatUrl(pattern);
+          return loginController.getAllRecentLoginUrlAction(pattern);
+        },
+        itemBuilder: (context, loginUrl) =>
+            RecentItemTileWidget(loginUrl, imagePath: imagePaths),
+        onSuggestionSelected: (loginUrl) => controller.formatUrl(loginUrl.url),
+        suggestionsBoxDecoration: const SuggestionsBoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(14))),
+        noItemsFoundBuilder: (context) => const SizedBox(),
+        hideOnEmpty: true,
+        hideOnError: true,
+        hideOnLoading: true,
+      ));
   }
 
   Widget _buildExpandedButton(BuildContext context, Widget child) {
