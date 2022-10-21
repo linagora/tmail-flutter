@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/email/email_address_cache.dart';
 import 'package:core/core.dart';
 import 'package:collection/collection.dart';
 
@@ -31,8 +30,6 @@ extension EmailAddressExtension on EmailAddress {
   String get emailAddress => email ?? '';
 
   String get displayName => name ?? '';
-
-  EmailAddressCache toEmailAddressCache() => EmailAddressCache(displayName, emailAddress);
 
   List<Color> get avatarColors {
     return AppColor.mapGradientColor[_generateIndex()];

@@ -1,5 +1,4 @@
 
-import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/caching/account_cache_client.dart';
@@ -27,12 +26,7 @@ class LocalBindings extends Bindings {
 
   @override
   void dependencies() {
-    _bindingDatabase();
     _bindingCaching();
-  }
-
-  void _bindingDatabase() {
-    Get.put(DatabaseClient());
   }
 
   void _bindingCaching() {
