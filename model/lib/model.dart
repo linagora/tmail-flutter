@@ -16,7 +16,6 @@ export 'contact/device_contact.dart';
 export 'download/download_task_id.dart';
 export 'email/attachment.dart';
 export 'email/email_action_type.dart';
-export 'email/email_address_cache.dart';
 export 'email/email_content.dart';
 export 'email/email_content_type.dart';
 export 'email/email_property.dart';
