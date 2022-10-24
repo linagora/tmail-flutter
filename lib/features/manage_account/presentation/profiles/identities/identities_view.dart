@@ -1,5 +1,10 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/button/button_builder.dart';
+import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -42,7 +47,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
             ..radiusSplash(10)
             ..padding(const EdgeInsets.symmetric(vertical: 12))
             ..textStyle(const TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w500))
-            ..onPressActionClick(() => controller.goToCreateNewIdentity())
+            ..onPressActionClick(() => controller.goToCreateNewIdentity(context))
             ..text(AppLocalizations.of(context).new_identity, isVertical: false))
           .build()
     ]);
@@ -77,7 +82,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
           floatingActionButton: _responsiveUtils.isMobile(context)
             ? FloatingActionButton(
                   key: const Key('add_new_identity'),
-                  onPressed: () => controller.goToCreateNewIdentity(),
+                  onPressed: () => controller.goToCreateNewIdentity(context),
                   backgroundColor: AppColor.primaryColor,
                   child: SvgPicture.asset(_imagePaths.icAddIdentity, width: 24, height: 24))
             : null),
@@ -140,7 +145,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
                   fontWeight: FontWeight.normal,
                   fontSize: 17,
                   color: Colors.black),
-              onCallbackAction: () => controller.goToEditIdentity(identity))),
+              onCallbackAction: () => controller.goToEditIdentity(context, identity))),
       if (identity.mayDelete == true)
         PopupMenuItem(
             padding: EdgeInsets.zero,
@@ -192,7 +197,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
             iconRightPadding: _responsiveUtils.isMobile(context)
                 ? const EdgeInsets.only(right: 12)
                 : EdgeInsets.zero)
-        ..onActionClick((identity) => controller.goToEditIdentity(identity)))
+        ..onActionClick((identity) => controller.goToEditIdentity(context, identity)))
       .build();
   }
 }

@@ -1,8 +1,8 @@
 
-import 'package:core/core.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -10,9 +10,12 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/model.dart';
+import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/extensions/identity_extension.dart';
+import 'package:model/user/user_profile.dart';
 import 'package:rich_text_composer/richtext_controller.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
@@ -23,16 +26,18 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_id
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
+
+typedef OnCreatedIdentityCallback = Function(dynamic arguments);
 
 class IdentityCreatorController extends BaseController {
 
   final VerifyNameInteractor _verifyNameInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
+
+  final _uuid = Get.find<Uuid>();
 
   final noneEmailAddress = EmailAddress(null, 'None');
   final signatureType = SignatureType.plainText.obs;
@@ -43,29 +48,26 @@ class IdentityCreatorController extends BaseController {
   final emailOfIdentity = Rxn<EmailAddress>();
   final replyToOfIdentity = Rxn<EmailAddress>();
   final bccOfIdentity = Rxn<EmailAddress>();
-  final _uuid = Get.find<Uuid>();
-  final _identitiesController = Get.find<IdentitiesController>();
-  final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
+  final actionType = IdentityActionType.create.obs;
 
-  final RichTextController keyboardRichTextController = RichTextController();
-
-  final HtmlEditorController signatureHtmlEditorController = HtmlEditorController(processNewLineAsBr: true);
-  final TextEditingController signaturePlainEditorController = TextEditingController();
-  final TextEditingController inputNameIdentityController = TextEditingController();
-  final TextEditingController inputBccIdentityController = TextEditingController();
-  final FocusNode inputNameIdentityFocusNode = FocusNode();
-
-  late Worker identityCreatorIsActiveWorker;
+  late RichTextController keyboardRichTextController;
+  late HtmlEditorController signatureHtmlEditorController;
+  TextEditingController? signaturePlainEditorController;
+  TextEditingController? inputNameIdentityController;
+  TextEditingController? inputBccIdentityController;
+  FocusNode? inputNameIdentityFocusNode;
 
   HtmlEditorApi? signatureHtmlEditorMobileController;
-  AccountId? get accountId => _identitiesController.identityCreatorArguments.value!.accountId;
-  UserProfile? get userProfile => _identitiesController.identityCreatorArguments.value!.userProfile;
-  Identity? get identity => _identitiesController.identityCreatorArguments.value!.identity;
-  IdentityActionType get actionType => _identitiesController.identityCreatorArguments.value!.actionType;
   String? _nameIdentity;
   String? _contentHtmlEditor;
+  AccountId? accountId;
+  UserProfile? userProfile;
+  Identity? identity;
+  IdentityCreatorArguments? arguments;
+  OnCreatedIdentityCallback? onCreatedIdentityCallback;
+  VoidCallback? onDismissIdentityCreator;
+  ScrollController? scrollController;
 
-  final ScrollController scrollController = ScrollController();
   final GlobalKey htmlKey = GlobalKey();
 
   void updateNameIdentity(BuildContext context, String? value) {
@@ -83,33 +85,34 @@ class IdentityCreatorController extends BaseController {
   );
 
   @override
-  void onReady() {
-    _setUpValueFromIdentity();
-    _getAllIdentities();
-    _initWorker();
-    super.onReady();
+  void onInit() {
+    super.onInit();
+    keyboardRichTextController = RichTextController();
+    signatureHtmlEditorController = HtmlEditorController(processNewLineAsBr: true);
+    signaturePlainEditorController = TextEditingController();
+    inputNameIdentityController = TextEditingController();
+    inputBccIdentityController = TextEditingController();
+    inputNameIdentityFocusNode = FocusNode();
+    scrollController = ScrollController();
   }
 
-  void _initWorker() {
-    identityCreatorIsActiveWorker = ever(_accountDashBoardController.identityCreatorIsActive, (identityCreatorIsActive) {
-      if (identityCreatorIsActive == true) {
-        if (actionType == IdentityActionType.edit && identity != null) {
-          _setUpValueFromIdentity();
-          _setUpAllFieldEmailAddress();
-        }
-      }
-    });
+  @override
+  void onReady() {
+    super.onReady();
+    if (arguments != null) {
+      accountId = arguments!.accountId;
+      userProfile = arguments!.userProfile;
+      identity = arguments!.identity;
+      actionType.value = arguments!.actionType;
+      _setUpValueFromIdentity();
+      _getAllIdentities();
+    }
   }
 
   @override
   void onClose() {
-    signaturePlainEditorController.dispose();
-    inputNameIdentityFocusNode.dispose();
-    inputNameIdentityController.dispose();
-    inputBccIdentityController.dispose();
-    identityCreatorIsActiveWorker.dispose();
     keyboardRichTextController.dispose();
-    scrollController.dispose();
+    _disposeWidget();
     super.onClose();
   }
 
@@ -134,10 +137,10 @@ class IdentityCreatorController extends BaseController {
 
   void _setUpValueFromIdentity() {
     _nameIdentity = identity?.name ?? '';
-    inputNameIdentityController.text = identity?.name ?? '';
+    inputNameIdentityController?.text = identity?.name ?? '';
 
     if (identity?.textSignature?.value.isNotEmpty == true) {
-      signaturePlainEditorController.text = identity?.textSignature?.value ?? '';
+      signaturePlainEditorController?.text = identity?.textSignature?.value ?? '';
     }
 
     if (identity?.htmlSignature?.value.isNotEmpty == true) {
@@ -147,6 +150,7 @@ class IdentityCreatorController extends BaseController {
   }
 
   void _getAllIdentities() {
+    log('IdentityCreatorController::_getAllIdentities() ');
     if (accountId != null) {
       consumeState(_getAllIdentitiesInteractor.execute(
         accountId!,
@@ -163,8 +167,6 @@ class IdentityCreatorController extends BaseController {
           .toList();
       listEmailAddressOfReplyTo.add(noneEmailAddress);
       listEmailAddressOfReplyTo.addAll(listEmailAddressDefault);
-
-      log('IdentityCreatorController::_getALlIdentitiesSuccess(): listEmailAddressOfReplyTo: ${listEmailAddressOfReplyTo.toJson()}');
 
       _setUpAllFieldEmailAddress();
     } else {
@@ -189,7 +191,10 @@ class IdentityCreatorController extends BaseController {
   }
 
   void _setUpAllFieldEmailAddress() {
-    if (actionType == IdentityActionType.edit && identity != null) {
+    listEmailAddressOfReplyTo.value = listEmailAddressOfReplyTo.toSet().toList();
+    listEmailAddressDefault.value = listEmailAddressDefault.toSet().toList();
+
+    if (actionType.value == IdentityActionType.edit && identity != null) {
       if (identity?.replyTo?.isNotEmpty == true) {
         try {
           replyToOfIdentity.value = listEmailAddressOfReplyTo
@@ -200,16 +205,13 @@ class IdentityCreatorController extends BaseController {
       } else {
         replyToOfIdentity.value = noneEmailAddress;
       }
-      log('IdentityCreatorController::_setUpAllFieldEmailAddress(): replyToOfIdentity: ${replyToOfIdentity.value}');
 
       if (identity?.bcc?.isNotEmpty == true) {
         bccOfIdentity.value = identity?.bcc!.first;
-        inputBccIdentityController.text = identity?.bcc!.first.emailAddress ?? '';
+        inputBccIdentityController?.text = identity?.bcc!.first.emailAddress ?? '';
       } else {
         bccOfIdentity.value = null;
       }
-
-      log('IdentityCreatorController::_setUpAllFieldEmailAddress(): bccOfIdentity: ${bccOfIdentity.value}');
 
       if (identity?.email?.isNotEmpty == true) {
         try {
@@ -235,7 +237,6 @@ class IdentityCreatorController extends BaseController {
   void selectSignatureType(BuildContext context, SignatureType newSignatureType) async {
     if (newSignatureType == SignatureType.plainText && !BuildUtils.isWeb) {
       final signatureText = await _getSignatureHtmlText();
-      log('IdentityCreatorController::selectSignatureType(): signatureText: $signatureText');
       updateContentHtmlEditor(signatureText);
     }
     clearFocusEditor(context);
@@ -267,19 +268,17 @@ class IdentityCreatorController extends BaseController {
 
     final error = _getErrorInputNameString(context);
     if (error?.isNotEmpty == true) {
-      log('IdentityCreatorController::createNewIdentity(): error: $error');
       errorNameIdentity.value = error;
       return;
     }
 
     final errorBcc = _getErrorInputAddressString(context);
     if (errorBcc?.isNotEmpty == true) {
-      log('IdentityCreatorController::createNewIdentity(): errorBcc: $errorBcc');
       errorBccIdentity.value = errorBcc;
       return;
     }
 
-    final signaturePlainText = signaturePlainEditorController.text;
+    final signaturePlainText = signaturePlainEditorController?.text ?? '';
     final signatureHtmlText = BuildUtils.isWeb
         ? contentHtmlEditor
         : await _getSignatureHtmlText();
@@ -290,11 +289,6 @@ class IdentityCreatorController extends BaseController {
         ? {replyToOfIdentity.value!}
         : <EmailAddress>{};
 
-    log('IdentityCreatorController::createNewIdentity(): bccAddress: $bccAddress');
-    log('IdentityCreatorController::createNewIdentity(): replyToAddress: $replyToAddress');
-    log('IdentityCreatorController::createNewIdentity(): signaturePlainText: $signaturePlainText');
-    log('IdentityCreatorController::createNewIdentity(): signatureHtmlText: $signatureHtmlText');
-
     final newIdentity = Identity(
       name: _nameIdentity,
       email: emailOfIdentity.value?.email,
@@ -303,29 +297,29 @@ class IdentityCreatorController extends BaseController {
       textSignature: Signature(signaturePlainText),
       htmlSignature: Signature(signatureHtmlText ?? ''));
 
-    log('IdentityCreatorController::createNewIdentity(): $newIdentity');
-
     final generateCreateId = Id(_uuid.v1());
 
-    if(actionType == IdentityActionType.create) {
-      _identitiesController.createNewIdentityAction(
-        accountId!,
-        CreateNewIdentityRequest(generateCreateId, newIdentity),
-      );
-    } else {
-      _identitiesController.editIdentityAction(
-        accountId!,
-        EditIdentityRequest(
-          identityId: identity!.id!,
-          identityRequest: newIdentity.toIdentityRequest(),
-        )
-      );
-    }
+    if (actionType.value == IdentityActionType.create) {
+      final identityRequest = CreateNewIdentityRequest(generateCreateId, newIdentity);
 
-    if(kIsWeb) {
-      _accountDashBoardController.identityCreatorIsActive.toggle();
+      if (BuildUtils.isWeb) {
+        _disposeWidget();
+        onCreatedIdentityCallback?.call(identityRequest);
+      } else {
+        popBack(result: identityRequest);
+      }
+
     } else {
-      popBack();
+      final identityRequest = EditIdentityRequest(
+          identityId: identity!.id!,
+          identityRequest: newIdentity.toIdentityRequest());
+
+      if (BuildUtils.isWeb) {
+        _disposeWidget();
+        onCreatedIdentityCallback?.call(identityRequest);
+      } else {
+        popBack(result: identityRequest);
+      }
     }
   }
 
@@ -346,7 +340,7 @@ class IdentityCreatorController extends BaseController {
   }
 
   String? _getErrorInputAddressString(BuildContext context, {String? value}) {
-    final emailAddress = value ?? inputBccIdentityController.text;
+    final emailAddress = value ?? inputBccIdentityController?.text ?? '';
     if (emailAddress.trim().isEmpty) {
       return null;
     }
@@ -374,9 +368,9 @@ class IdentityCreatorController extends BaseController {
   }
 
   void _clearAll() {
-    signaturePlainEditorController.clear();
-    inputNameIdentityController.clear();
-    inputBccIdentityController.clear();
+    signaturePlainEditorController?.clear();
+    inputNameIdentityController?.clear();
+    inputBccIdentityController?.clear();
   }
 
   List<EmailAddress> getSuggestionEmailAddress(String? pattern) {
@@ -398,28 +392,46 @@ class IdentityCreatorController extends BaseController {
   void closeView(BuildContext context) {
     _clearAll();
     clearFocusEditor(context);
-    if(kIsWeb) {
-      _accountDashBoardController.identityCreatorIsActive.toggle();
+
+    if (BuildUtils.isWeb) {
+      _disposeWidget();
+      onDismissIdentityCreator?.call();
     } else {
       popBack();
     }
   }
 
+  void _disposeWidget() {
+    signaturePlainEditorController?.dispose();
+    signaturePlainEditorController = null;
+    inputNameIdentityFocusNode?.dispose();
+    inputNameIdentityFocusNode = null;
+    inputNameIdentityController?.dispose();
+    inputNameIdentityController = null;
+    inputBccIdentityController?.dispose();
+    inputBccIdentityController = null;
+    scrollController?.dispose();
+    scrollController = null;
+  }
+
   void onFocusHTMLEditor() async {
     await Scrollable.ensureVisible(htmlKey.currentContext!);
     await Future.delayed(const Duration(milliseconds: 500), () {
-      scrollController.animateTo(
-        scrollController.position.pixels + defaultKeyboardToolbarHeight,
-        duration: const Duration(milliseconds: 1),
-        curve: Curves.linear,
-      );
+      if (scrollController != null) {
+        scrollController!.animateTo(
+          scrollController!.position.pixels + defaultKeyboardToolbarHeight,
+          duration: const Duration(milliseconds: 1),
+          curve: Curves.linear,
+        );
+      }
     });
   }
 
   void onEnterKeyDown() {
-    if(scrollController.position.pixels < scrollController.position.maxScrollExtent) {
-      scrollController.animateTo(
-        scrollController.position.pixels + 20,
+    if(scrollController != null &&
+        scrollController!.position.pixels < scrollController!.position.maxScrollExtent) {
+      scrollController!.animateTo(
+        scrollController!.position.pixels + 20,
         duration: const Duration(milliseconds: 1),
         curve: Curves.linear,
       );

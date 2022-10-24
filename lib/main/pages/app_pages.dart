@@ -52,6 +52,11 @@ class AppPages {
         opaque: false,
         page: () => DeferredWidget(contact_view.loadLibrary, () => contact_view.ContactView()),
         binding: ContactBindings()),
+    GetPage(
+        name: AppRoutes.identityCreator,
+        opaque: false,
+        page: () => DeferredWidget(identity_creator.loadLibrary, () => identity_creator.IdentityCreatorView()),
+        binding: IdentityCreatorBindings()),
   ];
 
   static final pages = [
@@ -76,12 +81,6 @@ class AppPages {
         page: () => DeferredWidget(manage_account_dashboard.loadLibrary,
             () => manage_account_dashboard.ManageAccountDashBoardView()),
         binding: ManageAccountDashBoardBindings()),
-    GetPage(
-        name: AppRoutes.identityCreator,
-        opaque: false,
-        page: () => DeferredWidget(identity_creator.loadLibrary,
-            () => identity_creator.IdentityCreatorView()),
-        binding: IdentityCreatorBindings()),
     GetPage(
         name: AppRoutes.rulesFilterCreator,
         opaque: false,

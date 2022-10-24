@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:rich_text_composer/views/keyboard_richtext.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_drop_list_field_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_field_no_editable_builder.dart';
@@ -21,7 +22,23 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  IdentityCreatorView({Key? key}) : super(key: key);
+  @override
+  final controller = Get.find<IdentityCreatorController>();
+
+  IdentityCreatorView({Key? key}) : super(key: key) {
+    controller.arguments = Get.arguments;
+  }
+
+  IdentityCreatorView.fromArguments(
+      IdentityCreatorArguments arguments, {
+      Key? key,
+      OnCreatedIdentityCallback? onCreatedIdentityCallback,
+      VoidCallback? onDismissCallback
+  }) : super(key: key) {
+    controller.arguments = arguments;
+    controller.onCreatedIdentityCallback = onCreatedIdentityCallback;
+    controller.onDismissIdentityCreator = onDismissCallback;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +69,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             )
         ),
         tablet: Scaffold(
-            backgroundColor: Colors.black38,
+            backgroundColor: Colors.black.withAlpha(24),
             body: GestureDetector(
               onTap: () => controller.clearFocusEditor(context),
               child: KeyboardRichText(
@@ -66,7 +83,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
                   titleBack: AppLocalizations.of(context).format,
                 ),
-                child: Align(alignment: Alignment.center, child: Card(
+                child: Center(child: Card(
                     color: Colors.transparent,
                     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
                     child: Container(
@@ -85,7 +102,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             ),
         ),
         tabletLarge: Scaffold(
-            backgroundColor: Colors.black38,
+            backgroundColor: Colors.black.withAlpha(24),
             body: GestureDetector(
               onTap: () => controller.clearFocusEditor(context),
               child: KeyboardRichText(
@@ -99,7 +116,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
                   titleBack: AppLocalizations.of(context).format,
                 ),
-                child: Align(alignment: Alignment.center, child: Card(
+                child: Center(child: Card(
                     color: Colors.transparent,
                     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
                     child: Container(
@@ -118,10 +135,10 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             )
         ),
         desktop: Scaffold(
-            backgroundColor: Colors.black38,
+            backgroundColor: Colors.black.withAlpha(24),
             body: GestureDetector(
               onTap: () => controller.clearFocusEditor(context),
-              child: Align(alignment: Alignment.center, child: Card(
+              child: Center(child: Card(
                   color: Colors.transparent,
                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
                   child: Container(
@@ -135,8 +152,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                           child: _buildBodyDesktop(context)
                       )
                   )
-              )
-              ),
+              )),
             )
         )
     );
@@ -148,7 +164,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Padding(
             padding: const EdgeInsets.only(left: 24, top: 24),
-            child: Obx(() => Text(controller.actionType == IdentityActionType.create
+            child: Obx(() => Text(controller.actionType.value == IdentityActionType.create
                     ? AppLocalizations.of(context).new_identity.inCaps
                     : AppLocalizations.of(context).edit_identity.inCaps,
                 style: const TextStyle(
@@ -173,7 +189,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                     .build())),
                   const SizedBox(width: 24),
                   Expanded(child: Obx(() {
-                    if (controller.actionType == IdentityActionType.create) {
+                    if (controller.actionType.value == IdentityActionType.create) {
                       return (IdentityDropListFieldBuilder(
                             _imagePaths,
                             AppLocalizations.of(context).email.inCaps,
@@ -206,7 +222,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                           controller.errorBccIdentity.value,
                           controller.inputBccIdentityController)
                       ..addOnSelectedSuggestionAction((newEmailAddress) {
-                        controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
+                        controller.inputBccIdentityController?.text = newEmailAddress?.email ?? '';
                         controller.updateBccOfIdentity(newEmailAddress);
                       })
                       ..addOnChangeInputSuggestionAction((pattern) {
@@ -273,7 +289,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                       onTap: () => controller.closeView(context)),
                   const SizedBox(width: 12),
                   Obx(() => buildTextButton(
-                      controller.actionType == IdentityActionType.create
+                      controller.actionType.value == IdentityActionType.create
                           ? AppLocalizations.of(context).create
                           : AppLocalizations.of(context).save,
                       width: 128,
@@ -299,7 +315,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           Column(children: [
             Padding(
                 padding: const EdgeInsets.only(top: 16),
-                child: Text(controller.actionType == IdentityActionType.create
+                child: Text(controller.actionType.value == IdentityActionType.create
                       ? AppLocalizations.of(context).new_identity.inCaps
                       : AppLocalizations.of(context).edit_identity.inCaps,
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 21, color: Colors.black))),
@@ -321,7 +337,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                     .build()),
                     const SizedBox(height: 24),
                     Obx(() {
-                      if (controller.actionType == IdentityActionType.create) {
+                      if (controller.actionType.value == IdentityActionType.create) {
                         return (IdentityDropListFieldBuilder(
                             _imagePaths,
                             AppLocalizations.of(context).email.inCaps,
@@ -352,7 +368,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                         controller.errorBccIdentity.value,
                         controller.inputBccIdentityController)
                       ..addOnSelectedSuggestionAction((newEmailAddress) {
-                        controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
+                        controller.inputBccIdentityController?.text = newEmailAddress?.email ?? '';
                         controller.updateBccOfIdentity(newEmailAddress);
                       })
                       ..addOnChangeInputSuggestionAction((pattern) {
@@ -422,7 +438,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Obx(() => buildTextButton(
-                                controller.actionType == IdentityActionType.create
+                                controller.actionType.value == IdentityActionType.create
                                     ? AppLocalizations.of(context).create
                                     : AppLocalizations.of(context).save,
                                 width: 128,
@@ -459,7 +475,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
   }
 
   Widget _buildSignatureButton(BuildContext context, SignatureType signatureType) {
-    return buildTextButton(
+    return buildButtonWrapText(
         signatureType.getTitle(context),
         textStyle: TextStyle(
             fontWeight: FontWeight.w500,
@@ -467,10 +483,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             color: controller.signatureType.value == signatureType
                 ? AppColor.colorContentEmail
                 : AppColor.colorHintSearchBar),
-        backgroundColor: controller.signatureType.value == signatureType
+        bgColor: controller.signatureType.value == signatureType
             ? AppColor.emailAddressChipColor
             : Colors.transparent,
-        width: signatureType == SignatureType.plainText ? 85 : 110,
         height: 30,
         radius: 10,
         onTap: () => controller.selectSignatureType(context, signatureType));

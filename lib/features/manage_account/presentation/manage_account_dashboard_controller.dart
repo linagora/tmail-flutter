@@ -54,7 +54,6 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   final emailsForwardCreatorIsActive = false.obs;
   final rulesFilterCreatorIsActive = false.obs;
-  final identityCreatorIsActive = false.obs;
 
   ManageAccountDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,

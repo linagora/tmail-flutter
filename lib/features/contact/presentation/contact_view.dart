@@ -36,7 +36,6 @@ class ContactView extends GetWidget<ContactController> {
     controller.arguments = arguments;
     controller.onSelectedContactCallback = onSelectedContactCallback;
     controller.onDismissContactView = onDismissCallback;
-    controller.onInit();
   }
 
   @override
