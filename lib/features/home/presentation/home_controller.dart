@@ -11,9 +11,11 @@ import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/email_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_login_url_cleanup_rule.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/model/recent_login_username_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_search_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
@@ -39,6 +41,7 @@ class HomeController extends BaseController {
   final EmailReceiveManager _emailReceiveManager;
   final CleanupRecentSearchCacheInteractor _cleanupRecentSearchCacheInteractor;
   final CleanupRecentLoginUrlCacheInteractor _cleanupRecentLoginUrlCacheInteractor;
+  final CleanupRecentLoginUsernameCacheInteractor _cleanupRecentLoginUsernameCacheInteractor;
   final DeleteCredentialInteractor _deleteCredentialInteractor;
   final CachingManager _cachingManager;
   final DeleteAuthorityOidcInteractor _deleteAuthorityOidcInteractor;
@@ -53,6 +56,7 @@ class HomeController extends BaseController {
     this._emailReceiveManager,
     this._cleanupRecentSearchCacheInteractor,
     this._cleanupRecentLoginUrlCacheInteractor,
+    this._cleanupRecentLoginUsernameCacheInteractor,
     this._deleteCredentialInteractor,
     this._cachingManager,
     this._deleteAuthorityOidcInteractor,
@@ -90,7 +94,8 @@ class HomeController extends BaseController {
     await Future.wait([
       _cleanupEmailCacheInteractor.execute(EmailCleanupRule(Duration.defaultCacheInternal)),
       _cleanupRecentSearchCacheInteractor.execute(RecentSearchCleanupRule()),
-      _cleanupRecentLoginUrlCacheInteractor.execute(RecentLoginUrlCleanupRule())
+      _cleanupRecentLoginUrlCacheInteractor.execute(RecentLoginUrlCleanupRule()),
+      _cleanupRecentLoginUsernameCacheInteractor.execute(RecentLoginUsernameCleanupRule()),
     ]).then((value) => _getAuthenticatedAccount());
   }
 
