@@ -3,6 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
+import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 
 class RecentItemTileWidget<T> extends StatelessWidget {
 
@@ -39,6 +40,9 @@ class RecentItemTileWidget<T> extends StatelessWidget {
   String _getTitle(T item) {
     if (item is RecentLoginUrl) {
       return item.url;
+    }
+    if(item is RecentLoginUsername) {
+      return item.username;
     }
     return '';
   }

@@ -7,10 +7,12 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
+import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_all_recent_login_url_latest_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_all_recent_login_username_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
@@ -19,11 +21,13 @@ import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_o
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_url_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
@@ -46,9 +50,11 @@ class LoginController extends BaseController {
   final GetStoredOidcConfigurationInteractor _getStoredOidcConfigurationInteractor;
   final SaveLoginUrlOnMobileInteractor _saveLoginUrlOnMobileInteractor;
   final GetAllRecentLoginUrlOnMobileInteractor _getAllRecentLoginUrlOnMobileInteractor;
-
+  final SaveLoginUsernameOnMobileInteractor _saveLoginUsernameOnMobileInteractor;
+  final GetAllRecentLoginUsernameOnMobileInteractor _getAllRecentLoginUsernameOnMobileInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
+  final TextEditingController usernameInputController = TextEditingController();
   final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
 
   LoginController(
@@ -64,6 +70,8 @@ class LoginController extends BaseController {
     this._getStoredOidcConfigurationInteractor,
     this._saveLoginUrlOnMobileInteractor,
     this._getAllRecentLoginUrlOnMobileInteractor,
+    this._saveLoginUsernameOnMobileInteractor,
+    this._getAllRecentLoginUsernameOnMobileInteractor,
   );
 
   var loginState = LoginState(Right(LoginInitAction())).obs;
@@ -170,6 +178,7 @@ class LoginController extends BaseController {
   }
 
   void handleLoginPressed() {
+    _saveRecentLoginUsername();
     log('LoginController::handleLoginPressed(): ${loginFormType.value}');
     if (loginFormType.value == LoginFormType.ssoForm) {
       _getOIDCConfiguration();
@@ -352,6 +361,32 @@ class LoginController extends BaseController {
             (success) => success is GetAllRecentLoginUrlLatestSuccess
                 ? success.listRecentLoginUrl
                 : <RecentLoginUrl>[]
+        ));
+  }
+
+  void setUsername(String username) {
+    log('LoginController::formatUsername(): $username');
+    usernameInputController.text = username;
+    setUserNameText(usernameInputController.text);
+  }
+
+  void _saveRecentLoginUsername() {
+    if(BuildUtils.isWeb || _userNameText == null || _userNameText!.isEmpty || !_userNameText!.isEmail) {
+      return ;
+    }
+    final recentLoginUsername = RecentLoginUsername.now(_userNameText!);
+    log('LoginController::_saveRecentLoginUsername(): $recentLoginUsername');
+    consumeState(_saveLoginUsernameOnMobileInteractor.execute(recentLoginUsername));
+  }
+
+  Future<List<RecentLoginUsername>> getAllRecentLoginUsernameAction(String pattern) async {
+    return await _getAllRecentLoginUsernameOnMobileInteractor
+        .execute(pattern: pattern)
+        .then((result) => result.fold(
+            (failure) => <RecentLoginUsername>[],
+            (success) => success is GetAllRecentLoginUsernameLatestSuccess
+                ? success.listRecentLoginUsername
+                : <RecentLoginUsername>[]
         ));
   }
 
