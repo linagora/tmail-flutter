@@ -7,12 +7,14 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/view_as_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
-abstract class BaseController extends GetxController with MessageDialogActionMixin, PopupContextMenuActionMixin {
+abstract class BaseController extends GetxController
+    with MessageDialogActionMixin, PopupContextMenuActionMixin, ViewAsDialogActionMixin {
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
 

@@ -192,17 +192,33 @@ class RulesFilterCreatorController extends BaseMailboxController {
   }
 
   void selectMailbox(BuildContext context) async {
-    final destinationMailbox = await push(
-        AppRoutes.destinationPicker,
-        arguments: DestinationPickerArguments(
-            _accountId!,
-            MailboxActions.selectForRuleAction));
+    if (_accountId != null) {
+      final arguments = DestinationPickerArguments(
+          _accountId!,
+          MailboxActions.selectForRuleAction);
 
-    if (destinationMailbox is PresentationMailbox) {
-      mailboxSelected.value = destinationMailbox;
-      errorRuleActionValue.value = _getErrorStringByInputValue(
-          context,
-          mailboxSelected.value?.name?.name);
+      if (BuildUtils.isWeb) {
+        showDialogDestinationPicker(
+            context: context,
+            arguments: arguments,
+            onSelectedMailbox: (destinationMailbox) {
+              mailboxSelected.value = destinationMailbox;
+              errorRuleActionValue.value = _getErrorStringByInputValue(
+                  context,
+                  mailboxSelected.value?.name?.name);
+            });
+      } else {
+        final destinationMailbox = await push(
+            AppRoutes.destinationPicker,
+            arguments: arguments);
+
+        if (destinationMailbox is PresentationMailbox) {
+          mailboxSelected.value = destinationMailbox;
+          errorRuleActionValue.value = _getErrorStringByInputValue(
+              context,
+              mailboxSelected.value?.name?.name);
+        }
+      }
     }
   }
 

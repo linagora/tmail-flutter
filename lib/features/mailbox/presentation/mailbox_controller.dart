@@ -538,7 +538,7 @@ class MailboxController extends BaseMailboxController {
   }
 
   void pressMailboxSelectionAction(
-      BuildContext context, 
+      BuildContext context,
       MailboxActions actions,
       List<PresentationMailbox> selectedMailboxList
   ) {
@@ -553,7 +553,7 @@ class MailboxController extends BaseMailboxController {
         _markAsReadMailboxAction(context, selectedMailboxList.first);
         break;
       case MailboxActions.move:
-        _moveMailboxAction(selectedMailboxList.first);
+        _moveMailboxAction(context, selectedMailboxList.first);
         break;
       default:
         break;
@@ -702,7 +702,7 @@ class MailboxController extends BaseMailboxController {
     _cancelSelectMailbox();
     popBack();
   }
-  
+
   void _switchBackToMailboxDefault() {
     final inboxMailbox = findMailboxNodeByRole(PresentationMailbox.roleInbox);
     mailboxDashBoardController.setSelectedMailbox(inboxMailbox?.item);
@@ -812,26 +812,41 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
-  void _moveMailboxAction(PresentationMailbox mailboxSelected) async {
+  void _moveMailboxAction(BuildContext context, PresentationMailbox mailboxSelected) async {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {
-      final destinationMailbox = await push(
-          AppRoutes.destinationPicker,
-          arguments: DestinationPickerArguments(
+      final arguments = DestinationPickerArguments(
+          accountId,
+          MailboxActions.move,
+          mailboxIdSelected: mailboxSelected.id);
+
+      if (BuildUtils.isWeb) {
+        showDialogDestinationPicker(
+            context: context,
+            arguments: arguments,
+            onSelectedMailbox: (destinationMailbox) {
+              _handleMovingMailbox(
+                  accountId,
+                  MoveAction.moving,
+                  mailboxSelected,
+                  destinationMailbox: destinationMailbox == PresentationMailbox.unifiedMailbox ? null : destinationMailbox);
+
+              _cancelSelectMailbox();
+            });
+      } else {
+        final destinationMailbox = await push(
+            AppRoutes.destinationPicker,
+            arguments: arguments);
+
+        if (destinationMailbox is PresentationMailbox) {
+          _handleMovingMailbox(
               accountId,
-              MailboxActions.move,
-              mailboxIdSelected: mailboxSelected.id));
+              MoveAction.moving,
+              mailboxSelected,
+              destinationMailbox: destinationMailbox == PresentationMailbox.unifiedMailbox ? null : destinationMailbox);
 
-      if (destinationMailbox is PresentationMailbox) {
-        final mailboxDestination = destinationMailbox == PresentationMailbox.unifiedMailbox
-            ? null : destinationMailbox;
-        _handleMovingMailbox(
-            accountId,
-            MoveAction.moving,
-            mailboxSelected,
-            destinationMailbox: mailboxDestination);
-
-        _cancelSelectMailbox();
+          _cancelSelectMailbox();
+        }
       }
     }
   }
@@ -944,7 +959,7 @@ class MailboxController extends BaseMailboxController {
   }
 
   void handleMailboxAction(
-      BuildContext context, 
+      BuildContext context,
       MailboxActions actions,
       PresentationMailbox mailbox
   ) {
@@ -958,7 +973,7 @@ class MailboxController extends BaseMailboxController {
         _openDialogRenameMailboxAction(context, mailbox);
         break;
       case MailboxActions.move:
-        _moveMailboxAction(mailbox);
+        _moveMailboxAction(context, mailbox);
         break;
       case MailboxActions.markAsRead:
         _markAsReadMailboxAction(context, mailbox);

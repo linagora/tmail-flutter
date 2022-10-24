@@ -1,9 +1,19 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/list/tree_view.dart';
+import 'package:core/presentation/views/search/search_bar_view.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/model.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
+import 'package:model/mailbox/expand_mode.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
@@ -25,17 +35,29 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  DestinationPickerView({Key? key}) : super(key: key);
+  @override
+  final controller = Get.find<DestinationPickerController>();
+
+  DestinationPickerView({Key? key}) : super(key: key) {
+    controller.arguments = Get.arguments;
+  }
+
+  DestinationPickerView.fromArguments(
+      DestinationPickerArguments arguments, {
+      Key? key,
+      OnSelectedMailboxCallback? onSelectedMailboxCallback,
+      VoidCallback? onDismissCallback
+  }) : super(key: key) {
+    controller.arguments = arguments;
+    controller.onSelectedMailboxCallback = onSelectedMailboxCallback;
+    controller.onDismissDestinationPicker = onDismissCallback;
+    controller.onInit();
+  }
 
   @override
   Widget build(BuildContext context) {
-    MailboxActions? actions;
-    MailboxId? mailboxIdSelected;
-    final arguments = Get.arguments;
-    if (arguments != null && arguments is DestinationPickerArguments) {
-      actions = arguments.mailboxAction;
-      mailboxIdSelected = arguments.mailboxIdSelected;
-    }
+    MailboxActions? actions = controller.arguments?.mailboxAction;
+    MailboxId? mailboxIdSelected = controller.arguments?.mailboxIdSelected;
 
     return PointerInterceptor(
       child: GestureDetector(

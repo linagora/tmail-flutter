@@ -142,21 +142,36 @@ class MailboxCreatorController extends BaseController {
     FocusScope.of(context).unfocus();
 
     if (accountId != null) {
-      final destinationMailbox = await push(
-          AppRoutes.destinationPicker,
-          arguments: DestinationPickerArguments(
-              accountId!,
-              MailboxActions.create,
-              mailboxIdSelected: selectedMailbox.value?.id)
-      );
+      final arguments = DestinationPickerArguments(
+          accountId!,
+          MailboxActions.create,
+          mailboxIdSelected: selectedMailbox.value?.id);
 
-      if (destinationMailbox is PresentationMailbox) {
-        final mailboxDestination = destinationMailbox == PresentationMailbox.unifiedMailbox
-            ? null
-            : destinationMailbox;
+      if (BuildUtils.isWeb) {
+        showDialogDestinationPicker(
+            context: context,
+            arguments: arguments,
+            onSelectedMailbox: (destinationMailbox) {
+              final mailboxDestination = destinationMailbox == PresentationMailbox.unifiedMailbox
+                  ? null
+                  : destinationMailbox;
 
-        selectedMailbox.value = mailboxDestination;
-        _createListMailboxNameAsStringInMailboxLocation();
+              selectedMailbox.value = mailboxDestination;
+              _createListMailboxNameAsStringInMailboxLocation();
+            });
+      } else {
+        final destinationMailbox = await push(
+            AppRoutes.destinationPicker,
+            arguments: arguments);
+
+        if (destinationMailbox is PresentationMailbox) {
+          final mailboxDestination = destinationMailbox == PresentationMailbox.unifiedMailbox
+              ? null
+              : destinationMailbox;
+
+          selectedMailbox.value = mailboxDestination;
+          _createListMailboxNameAsStringInMailboxLocation();
+        }
       }
     }
   }

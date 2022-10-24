@@ -501,10 +501,23 @@ class EmailController extends BaseController with AppLoaderMixin {
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (currentMailbox != null && accountId != null) {
-      final destinationMailbox = await push(
-        AppRoutes.destinationPicker,
-        arguments: DestinationPickerArguments(accountId, MailboxActions.moveEmail)
-      );
+      final arguments = DestinationPickerArguments(accountId, MailboxActions.moveEmail);
+      if (BuildUtils.isWeb) {
+        showDialogDestinationPicker(
+            context: context,
+            arguments: arguments,
+            onSelectedMailbox: (destinationMailbox) {
+              _dispatchMoveToAction(
+                  context,
+                  accountId,
+                  email,
+                  currentMailbox,
+                  destinationMailbox);
+            });
+      } else {
+        final destinationMailbox = await push(
+            AppRoutes.destinationPicker,
+            arguments: arguments);
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox && mailboxDashBoardController.sessionCurrent != null) {
         if (destinationMailbox.isTrash) {
@@ -531,6 +544,47 @@ class EmailController extends BaseController with AppLoaderMixin {
               destinationPath: destinationMailbox.mailboxPath));
         }
       }
+        if (destinationMailbox is PresentationMailbox) {
+          _dispatchMoveToAction(
+              context,
+              accountId,
+              email,
+              currentMailbox,
+              destinationMailbox);
+        }
+      }
+    }
+  }
+
+  void _dispatchMoveToAction(
+      BuildContext context,
+      AccountId accountId,
+      PresentationEmail emailSelected,
+      PresentationMailbox currentMailbox,
+      PresentationMailbox destinationMailbox
+  ) {
+    if (destinationMailbox.isTrash) {
+      _moveToTrashAction(context, accountId, MoveToMailboxRequest(
+          [emailSelected.id],
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToTrash));
+    } else if (destinationMailbox.isSpam) {
+      _moveToSpamAction(context, accountId, MoveToMailboxRequest(
+          [emailSelected.id],
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToSpam));
+    } else {
+      _moveToMailbox(accountId, MoveToMailboxRequest(
+          [emailSelected.id],
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToMailbox,
+          destinationPath: destinationMailbox.mailboxPath));
     }
   }
 

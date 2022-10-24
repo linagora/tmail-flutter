@@ -134,18 +134,34 @@ class AdvancedFilterController extends BaseController {
     );
   }
 
-  void selectedMailBox() async {
-    final destinationMailbox = await push(
-        AppRoutes.destinationPicker,
-        arguments: DestinationPickerArguments(
-            _mailboxDashBoardController.accountId.value!,
-            MailboxActions.select,
-            mailboxIdSelected: searchController.searchEmailFilter.value.mailbox?.id));
+  void selectedMailBox(BuildContext context) async {
+    final accountId = _mailboxDashBoardController.accountId.value;
+    if (accountId != null) {
+      final arguments = DestinationPickerArguments(
+          accountId,
+          MailboxActions.select,
+          mailboxIdSelected: searchController.searchEmailFilter.value.mailbox?.id);
 
-    if (destinationMailbox is PresentationMailbox) {
-      searchController.updateFilterEmail(mailbox: destinationMailbox);
-      mailBoxFilterInputController.text =
-          StringConvert.writeNullToEmpty(destinationMailbox.name?.name);
+      if (BuildUtils.isWeb) {
+        showDialogDestinationPicker(
+            context: context,
+            arguments: arguments,
+            onSelectedMailbox: (destinationMailbox) {
+              searchController.updateFilterEmail(mailbox: destinationMailbox);
+              mailBoxFilterInputController.text =
+                  StringConvert.writeNullToEmpty(destinationMailbox.name?.name);
+            });
+      } else {
+        final destinationMailbox = await push(
+            AppRoutes.destinationPicker,
+            arguments: arguments);
+
+        if (destinationMailbox is PresentationMailbox) {
+          searchController.updateFilterEmail(mailbox: destinationMailbox);
+          mailBoxFilterInputController.text =
+              StringConvert.writeNullToEmpty(destinationMailbox.name?.name);
+        }
+      }
     }
   }
 
