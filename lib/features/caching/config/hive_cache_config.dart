@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/encryption_key_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/recent_login_url_cache.dart';
+import 'package:tmail_ui_user/features/login/data/model/recent_login_username_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/token_oidc_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_rights_cache.dart';
@@ -76,6 +77,7 @@ class HiveCacheConfig {
     Hive.registerAdapter(EncryptionKeyCacheAdapter());
     Hive.registerAdapter(AuthenticationInfoCacheAdapter());
     Hive.registerAdapter(RecentLoginUrlCacheAdapter());
+    Hive.registerAdapter(RecentLoginUsernameCacheAdapter());
   }
 
   Future closeHive() async {
