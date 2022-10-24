@@ -285,7 +285,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                         _openMailboxMenuAction(context, position, mailboxNode.item))
                     ..addOnSelectMailboxFolderClick((mailboxNode) =>
                         controller.selectMailboxNode(mailboxNode))
-                    ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailbox))
+                    ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction))
                   .build()),
                 children: _buildListChildTileWidget(context, mailboxNode)
             ).build()
@@ -297,7 +297,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                   _openMailboxMenuAction(context, position, mailboxNode.item))
               ..addOnSelectMailboxFolderClick((mailboxNode) =>
                   controller.selectMailboxNode(mailboxNode))
-              ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailbox))
+              ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction))
             .build())
     ).toList() ?? <Widget>[];
   }
@@ -363,7 +363,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                       _responsiveUtils,
                       listMailbox[index],
                       lastMailbox: controller.listMailboxSearched.last)
-                  ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailbox)
+                  ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction)
                   ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox))
                   ..addOnMenuActionClick((position, mailbox) => _openMailboxMenuAction(context, position, mailbox))
                   ..addOnSelectMailboxActionClick((mailbox) => controller.selectMailboxSearched(context, mailbox)))

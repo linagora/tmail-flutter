@@ -9,6 +9,8 @@ import 'package:external_path/external_path.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/reference_id.dart';
@@ -38,6 +40,7 @@ import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/oidc/token.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -45,6 +48,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 class EmailAPI {
 
@@ -302,32 +306,73 @@ class EmailAPI {
   }
 
   Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) async {
-    final setEmailMethod = SetEmailMethod(accountId)
-      ..addUpdates(moveRequest.emailIds
-          .generateMapUpdateObjectMoveToMailbox(moveRequest.currentMailboxId, moveRequest.destinationMailboxId));
 
-    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    requireCapability(moveRequest.session, accountId, [CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail]);
 
-    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+    final coreCapability = moveRequest.session.getCapabilityProperties<CoreCapability>(
+        accountId, CapabilityIdentifier.jmapCore);
+    final maxMethodCount = coreCapability.maxCallsInRequest.value.toInt();
 
-    final response = await (requestBuilder
-        ..usings(setEmailMethod.requiredCapabilities))
-      .build()
-      .execute();
+    var start = 0;
+    var end = 0;
 
-    final setEmailResponse = response.parse<SetEmailResponse>(
-        setEmailInvocation.methodCallId,
-        SetEmailResponse.deserialize);
+    final List<EmailId> listEmailIdResult = List.empty(growable: true);
+    final listCurrentMailboxesEntries = moveRequest.currentMailboxes.entries.toList();
 
-    return Future.sync(() async {
-      final mapUpdated = setEmailResponse!.updated!;
-      return moveRequest.emailIds
-        .where((emailId) => mapUpdated.containsKey(emailId.id))
-        .toList();
-    }).catchError((error) {
-      throw error;
-    });
+    while (end < moveRequest.currentMailboxes.length) {
+      start = end;
+      if (moveRequest.currentMailboxes.length - start >= maxMethodCount) {
+        end = maxMethodCount;
+      } else {
+        end = moveRequest.currentMailboxes.length;
+      }
+      log('EmailAPI::moveToMailbox(): move from $start to $end / ${listCurrentMailboxesEntries.length}');
+      final currentExecuteList = listCurrentMailboxesEntries.sublist(start, end);
+
+      final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+      final currentSetEmailInvocations = currentExecuteList.map((currentItem) {
+        return SetEmailMethod(accountId)
+          ..addUpdates(currentItem.value.generateMapUpdateObjectMoveToMailbox(currentItem.key, moveRequest.destinationMailboxId));
+      }).map(requestBuilder.invocation).toList();
+
+      final response = await (requestBuilder..usings({CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail}))
+        .build()
+        .execute();
+
+      Future.sync(() async {
+        final listSetEmailResponse = currentSetEmailInvocations
+          .map((currentInvocation) => response.parse(currentInvocation.methodCallId, SetEmailResponse.deserialize))
+          .toList();
+
+        listEmailIdResult.addAll(_getListEmailIdUpdatedFormSetEmailResponse(listSetEmailResponse, moveRequest));
+
+      }).catchError((error) {
+        throw error;
+      });
+    }
+
+    return listEmailIdResult;
   }
+
+  List<EmailId> _getListEmailIdUpdatedFormSetEmailResponse(List<SetEmailResponse?> listSetEmailResponse, MoveToMailboxRequest moveRequest) {
+    final List<EmailId> listEmailIdResult = List.empty(growable: true);
+    final listUpdated = listSetEmailResponse.map((e) => e!.updated!.keys).toList();
+
+    for (final listEmailId in listUpdated) {
+      List<EmailId> listEmailIdRequest = List.empty(growable: true);
+      for (var itemEmailIdMoveRequest in moveRequest.currentMailboxes.values) {
+        listEmailIdRequest.addAll(itemEmailIdMoveRequest);
+      }
+
+      listEmailIdResult.addAll(listEmailIdRequest
+        .where((emailId) => listEmailId.toList().contains(emailId.id))
+        .toList(),
+      );
+    }
+
+    return listEmailIdResult;
+  }
+
 
   Future<List<Email>> markAsStar(AccountId accountId, List<Email> emails, MarkStarAction markStarAction) async {
     final emailIds = emails.map((email) => email.id).toList();

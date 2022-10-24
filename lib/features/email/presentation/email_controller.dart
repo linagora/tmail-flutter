@@ -505,27 +505,27 @@ class EmailController extends BaseController with AppLoaderMixin {
         arguments: DestinationPickerArguments(accountId, MailboxActions.moveEmail)
       );
 
-      if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
+      if (destinationMailbox != null && destinationMailbox is PresentationMailbox && mailboxDashBoardController.sessionCurrent != null) {
         if (destinationMailbox.isTrash) {
           _moveToTrashAction(context, accountId, MoveToMailboxRequest(
-              [email.id],
-              currentMailbox.id,
+              {currentMailbox.id: [email.id]},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToTrash));
         } else if (destinationMailbox.isSpam) {
           _moveToSpamAction(context, accountId, MoveToMailboxRequest(
-              [email.id],
-              currentMailbox.id,
+              {currentMailbox.id: [email.id]},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToSpam));
         } else {
           _moveToMailbox(accountId, MoveToMailboxRequest(
-              [email.id],
-              currentMailbox.id,
+              {currentMailbox.id: [email.id]},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToMailbox,
               destinationPath: destinationMailbox.mailboxPath));
         }
@@ -547,10 +547,10 @@ class EmailController extends BaseController with AppLoaderMixin {
         actionName: AppLocalizations.of(currentContext!).undo,
         onActionClick: () {
           _revertedToOriginalMailbox(MoveToMailboxRequest(
-              [success.emailId],
-              success.destinationMailboxId,
+              {success.destinationMailboxId: [success.emailId]},
               success.currentMailboxId,
               MoveAction.undo,
+              mailboxDashBoardController.sessionCurrent!,
               success.emailActionType));
         },
         leadingIcon: SvgPicture.asset(
@@ -582,10 +582,10 @@ class EmailController extends BaseController with AppLoaderMixin {
 
     if (accountId != null && currentMailbox != null && trashMailboxId != null) {
       _moveToTrashAction(context, accountId, MoveToMailboxRequest(
-        [email.id],
-        currentMailbox.id,
+        {currentMailbox.id: [email.id]},
         trashMailboxId,
         MoveAction.moving,
+        mailboxDashBoardController.sessionCurrent!,
         EmailActionType.moveToTrash)
       );
     }
@@ -603,10 +603,10 @@ class EmailController extends BaseController with AppLoaderMixin {
 
     if (accountId != null && currentMailbox != null && spamMailboxId != null) {
       _moveToSpamAction(context, accountId, MoveToMailboxRequest(
-          [email.id],
-          currentMailbox.id,
+          {currentMailbox.id: [email.id]},
           spamMailboxId,
           MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.moveToSpam)
       );
     }
@@ -619,10 +619,10 @@ class EmailController extends BaseController with AppLoaderMixin {
 
     if (accountId != null && spamMailboxId != null && inboxMailboxId != null) {
       _moveToSpamAction(context, accountId, MoveToMailboxRequest(
-          [email.id],
-          spamMailboxId,
+          {spamMailboxId: [email.id]},
           inboxMailboxId,
           MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.unSpam)
       );
     }
