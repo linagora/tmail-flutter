@@ -647,24 +647,24 @@ class ThreadController extends BaseController {
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
         if (destinationMailbox.isTrash) {
           _moveSelectedEmailMultipleToTrashAction(_accountId!, MoveToMailboxRequest(
-              listEmailIds,
-              currentMailbox.id,
+              {currentMailbox.id: listEmailIds},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToTrash));
         } else if (destinationMailbox.isSpam) {
           _moveSelectedEmailMultipleToSpamAction(_accountId!, MoveToMailboxRequest(
-              listEmailIds,
-              currentMailbox.id,
+              {currentMailbox.id: listEmailIds},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToSpam));
         } else {
           _moveSelectedEmailMultipleToMailboxAction(_accountId!, MoveToMailboxRequest(
-              listEmailIds,
-              currentMailbox.id,
+              {currentMailbox.id: listEmailIds},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToMailbox,
               destinationPath: destinationMailbox.mailboxPath));
         }
@@ -717,10 +717,10 @@ class ThreadController extends BaseController {
             final newDestinationMailboxId = currentMailboxId;
             if (newCurrentMailboxId != null && newDestinationMailboxId != null) {
               _revertedSelectionEmailToOriginalMailbox(MoveToMailboxRequest(
-                  movedEmailIds,
-                  newCurrentMailboxId,
+                  {newCurrentMailboxId: movedEmailIds},
                   newDestinationMailboxId,
                   MoveAction.undo,
+                  mailboxDashBoardController.sessionCurrent!,
                   emailActionType!,
                   destinationPath: destinationPath));
             }
@@ -751,10 +751,10 @@ class ThreadController extends BaseController {
     if (_accountId != null && trashMailboxId != null) {
       final listEmailIds = listEmail.map((email) => email.id).toList();
       _moveSelectedEmailMultipleToTrashAction(_accountId!, MoveToMailboxRequest(
-          listEmailIds,
-          currentMailbox.id,
+          {currentMailbox.id: listEmailIds},
           trashMailboxId,
           MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.moveToTrash)
       );
     }
@@ -774,10 +774,10 @@ class ThreadController extends BaseController {
     if (_accountId != null && spamMailboxId != null) {
       final listEmailIds = listEmail.map((email) => email.id).toList();
       _moveSelectedEmailMultipleToSpamAction(_accountId!, MoveToMailboxRequest(
-          listEmailIds,
-          currentMailbox.id,
+          {currentMailbox.id: listEmailIds},
           spamMailboxId,
           MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.moveToSpam)
       );
     }
@@ -795,10 +795,10 @@ class ThreadController extends BaseController {
     if (inboxMailboxId != null && _accountId != null && spamMailboxId != null) {
       final listEmailIds = listEmail.map((email) => email.id).toList();
       _moveSelectedEmailMultipleToMailboxAction(_accountId!, MoveToMailboxRequest(
-          listEmailIds,
-          spamMailboxId,
+          {spamMailboxId: listEmailIds},
           inboxMailboxId,
           MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.unSpam)
       );
     }
@@ -1086,24 +1086,24 @@ class ThreadController extends BaseController {
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
         if (destinationMailbox.isTrash) {
           _moveToTrashAction(accountId, MoveToMailboxRequest(
-              [email.id],
-              currentMailbox.id,
+              {currentMailbox.id: [email.id]},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToTrash));
         } else if (destinationMailbox.isSpam) {
           _moveToSpamAction(accountId, MoveToMailboxRequest(
-              [email.id],
-              currentMailbox.id,
+              {currentMailbox.id: [email.id]},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToSpam));
         } else {
           _moveToMailboxAction(accountId, MoveToMailboxRequest(
-              [email.id],
-              currentMailbox.id,
+              {currentMailbox.id: [email.id]},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToMailbox,
               destinationPath: destinationMailbox.mailboxPath));
         }
@@ -1125,10 +1125,10 @@ class ThreadController extends BaseController {
           actionName: AppLocalizations.of(currentContext!).undo,
           onActionClick: () {
             _revertedToOriginalMailbox(MoveToMailboxRequest(
-                [success.emailId],
-                success.destinationMailboxId,
+                {success.destinationMailboxId: [success.emailId]},
                 success.currentMailboxId,
                 MoveAction.undo,
+                mailboxDashBoardController.sessionCurrent!,
                 success.emailActionType));
           },
           leadingIcon: SvgPicture.asset(
@@ -1164,10 +1164,10 @@ class ThreadController extends BaseController {
 
     if (currentMailbox != null && accountId != null && trashMailboxId != null) {
       _moveToTrashAction(accountId, MoveToMailboxRequest(
-          [email.id],
-          currentMailbox.id,
+          {currentMailbox.id: [email.id]},
           trashMailboxId,
           MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.moveToTrash)
       );
     }
@@ -1180,10 +1180,10 @@ class ThreadController extends BaseController {
 
     if (currentMailbox != null && accountId != null && spamMailboxId != null) {
       _moveToSpamAction(accountId, MoveToMailboxRequest(
-          [email.id],
-          currentMailbox.id,
+          {currentMailbox.id: [email.id]},
           spamMailboxId,
           MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.moveToSpam)
       );
     }
@@ -1196,10 +1196,10 @@ class ThreadController extends BaseController {
 
     if (inboxMailboxId != null && accountId != null && spamMailboxId != null) {
       _moveToSpamAction(accountId, MoveToMailboxRequest(
-          [email.id],
-          spamMailboxId,
+          {spamMailboxId: [email.id]},
           inboxMailboxId,
           MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.unSpam)
       );
     }

@@ -52,10 +52,10 @@ mixin EmailActionController {
 
     if (currentMailbox != null && accountId != null && trashMailboxId != null) {
       _moveToTrashAction(accountId, MoveToMailboxRequest(
-          [email.id],
-          currentMailbox.id,
+          {currentMailbox.id: [email.id]},
           trashMailboxId,
           MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.moveToTrash)
       );
     }
@@ -72,10 +72,10 @@ mixin EmailActionController {
 
     if (currentMailbox != null && accountId != null && spamMailboxId != null) {
       moveToSpamAction(accountId, MoveToMailboxRequest(
-          [email.id],
-          currentMailbox.id,
+          {currentMailbox.id: [email.id]},
           spamMailboxId,
           MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.moveToSpam)
       );
     }
@@ -88,10 +88,10 @@ mixin EmailActionController {
 
     if (inboxMailboxId != null && accountId != null && spamMailboxId != null) {
       moveToSpamAction(accountId, MoveToMailboxRequest(
-          [email.id],
-          spamMailboxId,
+          {spamMailboxId: [email.id]},
           inboxMailboxId,
           MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.unSpam)
       );
     }
@@ -114,24 +114,24 @@ mixin EmailActionController {
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
         if (destinationMailbox.isTrash) {
           moveToSpamAction(accountId, MoveToMailboxRequest(
-              [email.id],
-              currentMailbox.id,
+              {currentMailbox.id: [email.id]},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToTrash));
         } else if (destinationMailbox.isSpam) {
           moveToSpamAction(accountId, MoveToMailboxRequest(
-              [email.id],
-              currentMailbox.id,
+              {currentMailbox.id: [email.id]},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToSpam));
         } else {
           _moveToMailboxAction(accountId, MoveToMailboxRequest(
-              [email.id],
-              currentMailbox.id,
+              {currentMailbox.id: [email.id]},
               destinationMailbox.id,
               MoveAction.moving,
+              mailboxDashBoardController.sessionCurrent!,
               EmailActionType.moveToMailbox,
               destinationPath: destinationMailbox.mailboxPath));
         }

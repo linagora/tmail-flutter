@@ -26,7 +26,7 @@ class MoveToMailboxInteractor {
       if (result.isNotEmpty) {
         yield Right(MoveToMailboxSuccess(
           result.first,
-          moveRequest.currentMailboxId,
+          moveRequest.currentMailboxes.keys.first,
           moveRequest.destinationMailboxId,
           moveRequest.moveAction,
           moveRequest.emailActionType,

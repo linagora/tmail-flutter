@@ -25,11 +25,13 @@ class MoveMultipleEmailToMailboxInteractor {
       final currentEmailState = listState.last;
 
       final result = await _emailRepository.moveToMailbox(accountId, moveRequest);
-
-      if (moveRequest.emailIds.length == result.length) {
+      int totalEmail = 0;
+      for (var element in moveRequest.currentMailboxes.values) {
+        totalEmail = totalEmail + element.length;
+      }if (totalEmail == result.length) {
         yield Right(MoveMultipleEmailToMailboxAllSuccess(
           result,
-          moveRequest.currentMailboxId,
+          moveRequest.currentMailboxes.keys.first,
           moveRequest.destinationMailboxId,
           moveRequest.moveAction,
           moveRequest.emailActionType,
@@ -41,7 +43,7 @@ class MoveMultipleEmailToMailboxInteractor {
       } else {
         yield Right(MoveMultipleEmailToMailboxHasSomeEmailFailure(
           result,
-          moveRequest.currentMailboxId,
+          moveRequest.currentMailboxes.keys.first,
           moveRequest.destinationMailboxId,
           moveRequest.moveAction,
           moveRequest.emailActionType,
