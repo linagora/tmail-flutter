@@ -380,20 +380,37 @@ class MailboxController extends BaseMailboxController {
     _openMailboxEventController.add(OpenMailboxViewEvent(context, presentationMailboxSelected));
   }
 
-  void goToCreateNewMailboxView() async {
+  void goToCreateNewMailboxView(BuildContext context) async {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {
-      final newMailboxArguments = await push(
-          AppRoutes.mailboxCreator,
-          arguments: MailboxCreatorArguments(accountId, defaultMailboxTree.value, folderMailboxTree.value)
-      );
+      final arguments = MailboxCreatorArguments(
+          accountId,
+          defaultMailboxTree.value,
+          folderMailboxTree.value);
 
-      if (newMailboxArguments != null && newMailboxArguments is NewMailboxArguments) {
-        final generateCreateId = Id(_uuid.v1());
-        _createNewMailboxAction(accountId, CreateNewMailboxRequest(
-            generateCreateId,
-            newMailboxArguments.newName,
-            parentId: newMailboxArguments.mailboxLocation?.id));
+      if (BuildUtils.isWeb) {
+        showDialogMailboxCreator(
+            context: context,
+            arguments: arguments,
+            onCreatedMailbox: (newMailboxArguments) {
+              final generateCreateId = Id(_uuid.v1());
+              _createNewMailboxAction(accountId, CreateNewMailboxRequest(
+                  generateCreateId,
+                  newMailboxArguments.newName,
+                  parentId: newMailboxArguments.mailboxLocation?.id));
+            });
+      } else {
+        final newMailboxArguments = await push(
+            AppRoutes.mailboxCreator,
+            arguments: arguments);
+
+        if (newMailboxArguments != null && newMailboxArguments is NewMailboxArguments) {
+          final generateCreateId = Id(_uuid.v1());
+          _createNewMailboxAction(accountId, CreateNewMailboxRequest(
+              generateCreateId,
+              newMailboxArguments.newName,
+              parentId: newMailboxArguments.mailboxLocation?.id));
+        }
       }
     }
   }

@@ -42,6 +42,11 @@ class AppPages {
         opaque: false,
         page: () => DeferredWidget(destination_picker.loadLibrary, () => destination_picker.DestinationPickerView()),
         binding: DestinationPickerBindings()),
+    GetPage(
+        name: AppRoutes.mailboxCreator,
+        opaque: false,
+        page: () => DeferredWidget(mailbox_creator.loadLibrary, () => mailbox_creator.MailboxCreatorView()),
+        binding: MailboxCreatorBindings()),
   ];
 
   static final pages = [
@@ -61,11 +66,6 @@ class AppPages {
         name: AppRoutes.dashboard,
         page: () => DeferredWidget(mailbox_dashboard.loadLibrary, () => mailbox_dashboard.MailboxDashBoardView()),
         binding: MailboxDashBoardBindings()),
-    GetPage(
-        name: AppRoutes.mailboxCreator,
-        opaque: false,
-        page: () => DeferredWidget(mailbox_creator.loadLibrary, () => mailbox_creator.MailboxCreatorView()),
-        binding: MailboxCreatorBindings()),
     GetPage(
         name: AppRoutes.settings,
         page: () => DeferredWidget(manage_account_dashboard.loadLibrary,

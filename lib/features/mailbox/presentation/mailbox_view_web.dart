@@ -186,7 +186,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                     splashRadius: 15,
                     icon: SvgPicture.asset(_imagePaths.icAddNewFolder, color: AppColor.colorTextButton, fit: BoxFit.fill),
                     tooltip: AppLocalizations.of(context).new_mailbox,
-                    onTap: () => controller.goToCreateNewMailboxView())),
+                    onTap: () => controller.goToCreateNewMailboxView(context))),
           ]),
           Obx(() => controller.folderMailboxHasChild
               ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderRootNode)

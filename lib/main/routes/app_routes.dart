@@ -7,7 +7,7 @@ abstract class AppRoutes {
 
   static const composer = '/composer';
   static const destinationPicker = '/destination_picker';
-  static const mailboxCreator = '$dashboard/mailbox_creator';
+  static const mailboxCreator = '/mailbox_creator';
   static const contact = '$dashboard/contact';
   static const identityCreator = '$settings/identity_creator';
   static const rulesFilterCreator = '$settings/rules_filter_creator';

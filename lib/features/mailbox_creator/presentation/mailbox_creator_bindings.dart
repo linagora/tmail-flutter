@@ -7,9 +7,7 @@ class MailboxCreatorBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.lazyPut(() => MailboxCreatorController(
-      Get.find<VerifyNameInteractor>(),
-    ));
+    Get.lazyPut(() => MailboxCreatorController(Get.find<VerifyNameInteractor>()));
   }
 
   @override
@@ -28,4 +26,8 @@ class MailboxCreatorBindings extends BaseBindings {
 
   @override
   void bindingsRepositoryImpl() {}
+
+  void dispose() {
+    Get.delete<MailboxCreatorController>();
+  }
 }

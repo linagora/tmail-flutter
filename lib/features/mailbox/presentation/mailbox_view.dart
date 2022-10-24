@@ -147,7 +147,7 @@ class MailboxView extends GetWidget<MailboxController> {
     return buildIconWeb(
         icon: SvgPicture.asset(_imagePaths.icAddNewFolder, width: 28, height: 24, color: AppColor.colorTextButton, fit: BoxFit.fill),
         tooltip: AppLocalizations.of(context).new_mailbox,
-        onTap: () => controller.goToCreateNewMailboxView());
+        onTap: () => controller.goToCreateNewMailboxView(context));
   }
 
   Widget _buildEditMailboxButton(BuildContext context, bool isSelectionEnabled) {

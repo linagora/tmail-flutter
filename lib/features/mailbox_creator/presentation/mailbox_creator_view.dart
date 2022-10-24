@@ -1,10 +1,16 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/text/text_field_builder.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/app_bar_mailbox_creator_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -15,7 +21,24 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  MailboxCreatorView({Key? key}) : super(key: key);
+  @override
+  final controller = Get.find<MailboxCreatorController>();
+
+  MailboxCreatorView({Key? key}) : super(key: key) {
+    controller.arguments = Get.arguments;
+  }
+
+  MailboxCreatorView.fromArguments(
+      MailboxCreatorArguments arguments, {
+      Key? key,
+      OnCreatedMailboxCallback? onCreatedMailboxCallback,
+      VoidCallback? onDismissCallback
+  }) : super(key: key) {
+    controller.arguments = arguments;
+    controller.onCreatedMailboxCallback = onCreatedMailboxCallback;
+    controller.onDismissMailboxCreator = onDismissCallback;
+    controller.onInit();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +118,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
           ..keyboardType(TextInputType.visiblePassword)
           ..cursorColor(AppColor.colorTextButton)
           ..maxLines(1)
-          ..textStyle(TextStyle(
+          ..textStyle(const TextStyle(
               color: AppColor.colorNameEmail,
               fontSize: 16,
               overflow: CommonTextStyle.defaultTextOverFlow))
