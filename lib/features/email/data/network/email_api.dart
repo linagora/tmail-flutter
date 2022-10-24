@@ -355,22 +355,9 @@ class EmailAPI {
   }
 
   List<EmailId> _getListEmailIdUpdatedFormSetEmailResponse(List<SetEmailResponse?> listSetEmailResponse, MoveToMailboxRequest moveRequest) {
-    final List<EmailId> listEmailIdResult = List.empty(growable: true);
     final listUpdated = listSetEmailResponse.map((e) => e!.updated!.keys).toList();
-
-    for (final listEmailId in listUpdated) {
-      List<EmailId> listEmailIdRequest = List.empty(growable: true);
-      for (var itemEmailIdMoveRequest in moveRequest.currentMailboxes.values) {
-        listEmailIdRequest.addAll(itemEmailIdMoveRequest);
-      }
-
-      listEmailIdResult.addAll(listEmailIdRequest
-        .where((emailId) => listEmailId.toList().contains(emailId.id))
-        .toList(),
-      );
-    }
-
-    return listEmailIdResult;
+    List<EmailId> listEmailIdRequest = moveRequest.currentMailboxes.values.expand((e) => e).toList();
+    return listEmailIdRequest.where((emailId) => listUpdated.expand((e) => e).toList().contains(emailId.id)).toList();
   }
 
 
