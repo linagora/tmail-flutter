@@ -37,7 +37,6 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
     controller.arguments = arguments;
     controller.onCreatedMailboxCallback = onCreatedMailboxCallback;
     controller.onDismissMailboxCreator = onDismissCallback;
-    controller.onInit();
   }
 
   @override

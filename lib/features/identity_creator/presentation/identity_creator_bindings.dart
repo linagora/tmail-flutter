@@ -16,4 +16,8 @@ class IdentityCreatorBindings extends Bindings {
       Get.find<GetAllIdentitiesInteractor>(),
     ));
   }
+
+  void dispose() {
+    Get.delete<IdentityCreatorController>();
+  }
 }

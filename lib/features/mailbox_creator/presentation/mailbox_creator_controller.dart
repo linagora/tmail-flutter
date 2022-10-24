@@ -53,6 +53,7 @@ class MailboxCreatorController extends BaseController {
   @override
   void onReady() {
     super.onReady();
+    log('MailboxCreatorController::onReady(): ');
     if (arguments != null) {
       folderMailboxTree = arguments!.folderMailboxTree;
       defaultMailboxTree = arguments!.defaultMailboxTree;

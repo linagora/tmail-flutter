@@ -1,4 +1,5 @@
 
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -8,6 +9,9 @@ import 'package:tmail_ui_user/features/contact/presentation/model/contact_argume
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_view.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
@@ -100,6 +104,35 @@ mixin ViewAsDialogActionMixin {
                 popBack();
 
                 onSelectedContact.call(emailAddress);
+              });
+        });
+  }
+
+  void showDialogIdentityCreator({
+    required BuildContext context,
+    required IdentityCreatorArguments arguments,
+    required Function(dynamic) onCreatedIdentity
+  }) {
+    log('ViewAsDialogActionMixin::showDialogIdentityCreator(): ');
+    IdentityCreatorBindings().dependencies();
+
+    showGeneralDialog(
+        context: context,
+        barrierDismissible: true,
+        barrierLabel: '',
+        barrierColor: Colors.black.withAlpha(24),
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return IdentityCreatorView.fromArguments(
+              arguments,
+              onDismissCallback: () {
+                IdentityCreatorBindings().dispose();
+                popBack();
+              },
+              onCreatedIdentityCallback: (args) {
+                IdentityCreatorBindings().dispose();
+                popBack();
+
+                onCreatedIdentity.call(args);
               });
         });
   }

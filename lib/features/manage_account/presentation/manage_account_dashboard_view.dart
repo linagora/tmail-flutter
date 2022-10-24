@@ -3,7 +3,6 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_view.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -131,8 +130,6 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
             EmailsForwardCreatorView(),
           if(controller.rulesFilterCreatorIsActive.isTrue)
             RuleFilterCreatorView(),
-          if(controller.identityCreatorIsActive.isTrue)
-            IdentityCreatorView()
         ]
     ));
   }

@@ -51,7 +51,6 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
     controller.arguments = arguments;
     controller.onSelectedMailboxCallback = onSelectedMailboxCallback;
     controller.onDismissDestinationPicker = onDismissCallback;
-    controller.onInit();
   }
 
   @override

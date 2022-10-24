@@ -13,7 +13,7 @@ class IdentityInputWithDropListFieldBuilder {
 
   final String _label;
   final String? _error;
-  final TextEditingController editingController;
+  final TextEditingController? editingController;
 
   OnSelectedSuggestionAction? _onSelectedSuggestionAction;
   OnSuggestionCallbackAction? _onSuggestionCallbackAction;

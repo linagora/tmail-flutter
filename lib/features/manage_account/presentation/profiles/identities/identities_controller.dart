@@ -1,6 +1,12 @@
 
-import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
+import 'package:core/presentation/extensions/capitalize_extension.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
+import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -8,7 +14,6 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
@@ -44,8 +49,6 @@ class IdentitiesController extends BaseController {
   final listSelectedIdentities = <Identity>[].obs;
 
   final idIdentityAll = IdentityId(Id('all'));
-
-  final identityCreatorArguments = Rxn<IdentityCreatorArguments>();
 
   late Worker accountIdWorker;
 
@@ -118,7 +121,6 @@ class IdentitiesController extends BaseController {
   }
 
   void _getAllIdentities(AccountId accountId) {
-    log('IdentitiesController::_getAllIdentities(): $accountId');
     consumeState(_getAllIdentitiesInteractor.execute(accountId));
   }
 
@@ -141,11 +143,6 @@ class IdentitiesController extends BaseController {
     }
   }
 
-  void _openIdentityCreatorOverlay() {
-    IdentityCreatorBindings().dependencies();
-    _accountDashBoardController.identityCreatorIsActive.toggle();
-  }
-
   void selectIdentity(Identity? newIdentity) {
     identitySelected.value = newIdentity;
     if (newIdentity != null) {
@@ -161,20 +158,38 @@ class IdentitiesController extends BaseController {
     }
   }
 
-  void goToCreateNewIdentity() async {
+  void goToCreateNewIdentity(BuildContext context) async {
     final accountId = _accountDashBoardController.accountId.value;
     final userProfile = _accountDashBoardController.userProfile.value;
     if (accountId != null && userProfile != null) {
-      identityCreatorArguments.value = IdentityCreatorArguments(accountId, userProfile);
-      if (kIsWeb) {
-        _openIdentityCreatorOverlay();
+      final arguments = IdentityCreatorArguments(accountId, userProfile);
+
+      if (BuildUtils.isWeb) {
+        showDialogIdentityCreator(
+            context: context,
+            arguments: arguments,
+            onCreatedIdentity: (arguments) {
+              if (arguments is CreateNewIdentityRequest) {
+                _createNewIdentityAction(accountId, arguments);
+              } else if (arguments is EditIdentityRequest) {
+                _editIdentityAction(accountId, arguments);
+              }
+            });
       } else {
-        push(AppRoutes.identityCreator);
+        final newIdentityArguments = await push(
+            AppRoutes.identityCreator,
+            arguments: arguments);
+
+        if (newIdentityArguments is CreateNewIdentityRequest) {
+          _createNewIdentityAction(accountId, newIdentityArguments);
+        } else if (newIdentityArguments is EditIdentityRequest) {
+          _editIdentityAction(accountId, newIdentityArguments);
+        }
       }
     }
   }
 
-  void createNewIdentityAction(AccountId accountId, CreateNewIdentityRequest identityRequest) async {
+  void _createNewIdentityAction(AccountId accountId, CreateNewIdentityRequest identityRequest) async {
     consumeState(_createNewIdentityInteractor.execute(accountId, identityRequest));
   }
 
@@ -281,32 +296,48 @@ class IdentitiesController extends BaseController {
     }
   }
 
-  void goToEditIdentity(Identity identity) async {
+  void goToEditIdentity(BuildContext context, Identity identity) async {
     popBack();
 
     final accountId = _accountDashBoardController.accountId.value;
     final userProfile = _accountDashBoardController.userProfile.value;
     if (accountId != null && userProfile != null) {
-      identityCreatorArguments.value = IdentityCreatorArguments(
+      final arguments = IdentityCreatorArguments(
           accountId,
           userProfile,
           identity: identity,
           actionType: IdentityActionType.edit);
-      if (kIsWeb) {
-        _openIdentityCreatorOverlay();
+
+      if (BuildUtils.isWeb) {
+        showDialogIdentityCreator(
+            context: context,
+            arguments: arguments,
+            onCreatedIdentity: (arguments) {
+              if (arguments is CreateNewIdentityRequest) {
+                _createNewIdentityAction(accountId, arguments);
+              } else if (arguments is EditIdentityRequest) {
+                _editIdentityAction(accountId, arguments);
+              }
+            });
       } else {
-        push(AppRoutes.identityCreator);
+        final newIdentityArguments = await push(
+            AppRoutes.identityCreator,
+            arguments: arguments);
+
+        if (newIdentityArguments is CreateNewIdentityRequest) {
+          _createNewIdentityAction(accountId, newIdentityArguments);
+        } else if (newIdentityArguments is EditIdentityRequest) {
+          _editIdentityAction(accountId, newIdentityArguments);
+        }
       }
     }
   }
 
-  void editIdentityAction(AccountId accountId, EditIdentityRequest editIdentityRequest) async {
-    log('IdentitiesController::_editIdentityAction(): $editIdentityRequest');
+  void _editIdentityAction(AccountId accountId, EditIdentityRequest editIdentityRequest) async {
     consumeState(_editIdentityInteractor.execute(accountId, editIdentityRequest));
   }
 
   void _editIdentitySuccess(EditIdentitySuccess success) {
-    log('IdentitiesController::_editIdentitySuccess(): $success');
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastWithIcon(
           currentOverlayContext!,
