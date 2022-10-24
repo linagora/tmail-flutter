@@ -169,7 +169,7 @@ class IdentitiesController extends BaseController {
       if (kIsWeb) {
         _openIdentityCreatorOverlay();
       } else {
-        push(AppRoutes.IDENTITY_CREATOR);
+        push(AppRoutes.identityCreator);
       }
     }
   }
@@ -295,7 +295,7 @@ class IdentitiesController extends BaseController {
       if (kIsWeb) {
         _openIdentityCreatorOverlay();
       } else {
-        push(AppRoutes.IDENTITY_CREATOR);
+        push(AppRoutes.identityCreator);
       }
     }
   }

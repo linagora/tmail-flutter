@@ -1,12 +1,13 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/search/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
@@ -47,8 +48,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       drawerEnableOpenDragGesture: responsiveUtils.hasLeftMenuDrawerActive(context),
       body: Stack(children: [
         Obx(() {
-          switch(controller.routePath.value) {
-            case AppRoutes.THREAD:
+          switch(controller.dashboardRoute.value) {
+            case DashboardRoutes.thread:
               return ResponsiveWidget(
                   responsiveUtils: responsiveUtils,
                   desktop: controller.searchController.isSearchEmailRunning
@@ -61,7 +62,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       ? EmailView()
                       : bodyLandscapeTablet,
                   mobile: ThreadView());
-            case AppRoutes.EMAIL:
+            case DashboardRoutes.emailDetailed:
               return ResponsiveWidget(
                   responsiveUtils: responsiveUtils,
                   desktop: controller.searchController.isSearchEmailRunning
@@ -74,7 +75,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       ? EmailView()
                       : bodyLandscapeTablet,
                   mobile: EmailView());
-            case AppRoutes.SEARCH_EMAIL:
+            case DashboardRoutes.searchEmail:
               return SafeArea(child: SearchEmailView());
             default:
               return ResponsiveWidget(

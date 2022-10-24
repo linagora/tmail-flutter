@@ -245,7 +245,7 @@ class ForwardController extends BaseController {
       if (kIsWeb) {
         _openMailsForwardCreatorOverlay();
       } else {
-       push(AppRoutes.EMAILS_FORWARD_CREATOR);
+       push(AppRoutes.emailsForwardCreator);
       }
     }
   }

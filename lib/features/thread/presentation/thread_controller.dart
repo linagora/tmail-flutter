@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_ema
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -355,7 +356,7 @@ class ThreadController extends BaseController {
     canLoadMore = true;
     _isLoadingMore = false;
     cancelSelectEmail();
-    mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
+    mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
   }
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
@@ -505,7 +506,7 @@ class ThreadController extends BaseController {
 
   void previewEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
     mailboxDashBoardController.setSelectedEmail(presentationEmailSelected);
-    mailboxDashBoardController.dispatchRoute(AppRoutes.EMAIL);
+    mailboxDashBoardController.dispatchRoute(DashboardRoutes.emailDetailed);
   }
 
   void selectEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
@@ -640,7 +641,7 @@ class ThreadController extends BaseController {
     if (_accountId != null) {
       final listEmailIds = listEmail.map((email) => email.id).toList();
       final destinationMailbox = await push(
-          AppRoutes.DESTINATION_PICKER,
+          AppRoutes.destinationPicker,
           arguments: DestinationPickerArguments(_accountId!, MailboxActions.moveEmail)
       );
 
@@ -1079,7 +1080,7 @@ class ThreadController extends BaseController {
 
     if (currentMailbox != null && accountId != null) {
       final destinationMailbox = await push(
-          AppRoutes.DESTINATION_PICKER,
+          AppRoutes.destinationPicker,
           arguments: DestinationPickerArguments(accountId, MailboxActions.moveEmail)
       );
 
@@ -1395,7 +1396,7 @@ class ThreadController extends BaseController {
 
   void goToSearchView() {
     SearchEmailBindings().dependencies();
-    mailboxDashBoardController.dispatchRoute(AppRoutes.SEARCH_EMAIL);
+    mailboxDashBoardController.dispatchRoute(DashboardRoutes.searchEmail);
   }
 
   void calculateDragValue(PresentationEmail? currentPresentationEmail) {

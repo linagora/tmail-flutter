@@ -193,7 +193,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   void selectMailbox(BuildContext context) async {
     final destinationMailbox = await push(
-        AppRoutes.DESTINATION_PICKER,
+        AppRoutes.destinationPicker,
         arguments: DestinationPickerArguments(
             _accountId!,
             MailboxActions.selectForRuleAction));

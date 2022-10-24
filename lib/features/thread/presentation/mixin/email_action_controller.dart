@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -42,7 +43,7 @@ mixin EmailActionController {
 
   void previewEmail(BuildContext context, PresentationEmail presentationEmail) {
     mailboxDashBoardController.setSelectedEmail(presentationEmail);
-    mailboxDashBoardController.dispatchRoute(AppRoutes.EMAIL);
+    mailboxDashBoardController.dispatchRoute(DashboardRoutes.emailDetailed);
   }
 
   void moveToTrash(PresentationEmail email) async {
@@ -107,7 +108,7 @@ mixin EmailActionController {
 
     if (currentMailbox != null && accountId != null) {
       final destinationMailbox = await push(
-          AppRoutes.DESTINATION_PICKER,
+          AppRoutes.destinationPicker,
           arguments: DestinationPickerArguments(accountId, MailboxActions.moveEmail)
       );
 

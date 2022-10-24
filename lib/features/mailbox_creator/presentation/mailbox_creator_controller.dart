@@ -143,7 +143,7 @@ class MailboxCreatorController extends BaseController {
 
     if (accountId != null) {
       final destinationMailbox = await push(
-          AppRoutes.DESTINATION_PICKER,
+          AppRoutes.destinationPicker,
           arguments: DestinationPickerArguments(
               accountId!,
               MailboxActions.create,
