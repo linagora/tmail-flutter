@@ -313,7 +313,7 @@ class LoginController extends BaseController {
     _authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
         newConfig: config);
-    pushAndPop(AppRoutes.SESSION);
+    pushAndPop(AppRoutes.session);
   }
 
   void _loginAction(Uri baseUrl, UserName userName, Password password) async {
@@ -329,7 +329,7 @@ class LoginController extends BaseController {
     _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
     _authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);
     _authorizationIsolateInterceptors.setBasicAuthorization(_userNameText, _passwordText);
-    pushAndPop(AppRoutes.SESSION);
+    pushAndPop(AppRoutes.session);
   }
 
   void _loginFailureAction(FeatureFailure failure) {

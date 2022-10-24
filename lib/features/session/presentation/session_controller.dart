@@ -77,14 +77,14 @@ class SessionController extends GetxController {
       _cachingManager.clearAll()
     ]);
     _authorizationInterceptors.clear();
-    pushAndPopAll(AppRoutes.LOGIN);
+    pushAndPopAll(AppRoutes.login);
   }
 
   void _goToMailboxDashBoard(GetSessionSuccess success) {
     final apiUrl = success.session.apiUrl.toString();
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
-      pushAndPop(AppRoutes.MAILBOX_DASHBOARD, arguments: success.session);
+      pushAndPop(AppRoutes.dashboard, arguments: success.session);
     } else {
       _goToLogin();
     }

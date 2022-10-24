@@ -125,7 +125,7 @@ class HomeController extends BaseController {
   }
 
   void _goToLogin({LoginArguments? arguments}) {
-    pushAndPop(AppRoutes.LOGIN, arguments: arguments);
+    pushAndPop(AppRoutes.login, arguments: arguments);
   }
 
   @override
@@ -198,7 +198,7 @@ class HomeController extends BaseController {
     _authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
         newToken: storedTokenOidcSuccess.tokenOidc.toToken(),
         newConfig: storedTokenOidcSuccess.oidcConfiguration);
-    pushAndPop(AppRoutes.SESSION);
+    pushAndPop(AppRoutes.session);
   }
 
   void _goToSessionWithBasicAuth(GetCredentialViewState credentialViewState) {
@@ -211,6 +211,6 @@ class HomeController extends BaseController {
       credentialViewState.userName.userName,
       credentialViewState.password.value,
     );
-    pushAndPop(AppRoutes.SESSION);
+    pushAndPop(AppRoutes.session);
   }
 }

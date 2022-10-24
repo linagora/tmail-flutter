@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailb
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_overlay.dart';
@@ -25,7 +26,6 @@ import 'package:tmail_ui_user/features/search/presentation/search_email_view.dar
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
@@ -109,8 +109,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         _buildListButtonQuickSearchFilter(context),
                         _buildMarkAsMailboxReadLoading(context),
                         Expanded(child: Obx(() {
-                          switch(controller.routePath.value) {
-                            case AppRoutes.THREAD:
+                          switch(controller.dashboardRoute.value) {
+                            case DashboardRoutes.thread:
                               return Container(
                                 margin: const EdgeInsets.only(right: 16, top: 16, bottom: 16),
                                 decoration: BoxDecoration(
@@ -151,7 +151,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                   ]),
                                 ),
                               );
-                            case AppRoutes.EMAIL:
+                            case DashboardRoutes.emailDetailed:
                               return EmailView();
                             default:
                               return const SizedBox.shrink();
@@ -163,10 +163,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 ]),
               ),
               tabletLarge: Obx(() {
-                switch(controller.routePath.value) {
-                  case AppRoutes.SEARCH_EMAIL:
+                switch(controller.dashboardRoute.value) {
+                  case DashboardRoutes.searchEmail:
                     return SearchEmailView();
-                  case AppRoutes.EMAIL:
+                  case DashboardRoutes.emailDetailed:
                     return controller.searchController.isSearchEmailRunning
                         ? EmailView()
                         : Row(
@@ -191,12 +191,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 }
               }),
               mobile: Obx(() {
-                switch(controller.routePath.value) {
-                  case AppRoutes.THREAD:
+                switch(controller.dashboardRoute.value) {
+                  case DashboardRoutes.thread:
                     return ThreadView();
-                  case AppRoutes.EMAIL:
+                  case DashboardRoutes.emailDetailed:
                     return EmailView();
-                  case AppRoutes.SEARCH_EMAIL:
+                  case DashboardRoutes.searchEmail:
                     return SearchEmailView();
                   default:
                     return ThreadView();
@@ -463,7 +463,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return controller.searchController.isSearchActive()
         && controller.searchController.searchIsActive.isTrue
         && responsiveUtils.isWebDesktop(context)
-        && controller.routePath.value != AppRoutes.EMAIL;
+        && controller.dashboardRoute.value != DashboardRoutes.emailDetailed;
   }
 
   Widget _buildListButtonQuickSearchFilter(BuildContext context) {

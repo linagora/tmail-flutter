@@ -51,6 +51,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
@@ -113,7 +114,7 @@ class MailboxDashBoardController extends ReloadableController {
   final accountId = Rxn<AccountId>();
   final userProfile = Rxn<UserProfile>();
   final dashBoardAction = Rxn<UIAction>();
-  final routePath = AppRoutes.MAILBOX_DASHBOARD.obs;
+  final dashboardRoute = DashboardRoutes.thread.obs;
   final appInformation = Rxn<PackageInfo>();
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final filterMessageOption = FilterMessageOption.all.obs;
@@ -163,7 +164,7 @@ class MailboxDashBoardController extends ReloadableController {
   @override
   void onReady() {
     log('MailboxDashBoardController::onReady()');
-    dispatchRoute(AppRoutes.THREAD);
+    dispatchRoute(DashboardRoutes.thread);
     _registerPendingEmailAddress();
     _registerPendingFileInfo();
     _setSessionCurrent();
@@ -425,7 +426,7 @@ class MailboxDashBoardController extends ReloadableController {
   bool _searchInsideEmailDetailedViewIsActive(BuildContext context) {
     return BuildUtils.isWeb
         && _responsiveUtils.isDesktop(context)
-        && routePath.value == AppRoutes.EMAIL;
+        && dashboardRoute.value == DashboardRoutes.emailDetailed;
   }
 
   void _unSelectedMailbox() {
@@ -433,7 +434,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _closeEmailDetailedView() {
-    dispatchRoute(AppRoutes.THREAD);
+    dispatchRoute(DashboardRoutes.thread);
     clearSelectedEmail();
   }
 
@@ -619,7 +620,7 @@ class MailboxDashBoardController extends ReloadableController {
   ) async {
     if (accountId.value != null) {
       final destinationMailbox = await push(
-          AppRoutes.DESTINATION_PICKER,
+          AppRoutes.destinationPicker,
           arguments: DestinationPickerArguments(accountId.value!, MailboxActions.moveEmail));
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
@@ -968,10 +969,10 @@ class MailboxDashBoardController extends ReloadableController {
     composerOverlayState.value = ComposerOverlayState.inActive;
   }
 
-  void dispatchRoute(String route) {
-    routePath.value = route;
+  void dispatchRoute(DashboardRoutes route) {
+    dashboardRoute.value = route;
 
-    if (routePath.value == AppRoutes.SEARCH_EMAIL) {
+    if (dashboardRoute.value == DashboardRoutes.searchEmail) {
       searchController.enableSearch();
     }
   }
@@ -1072,7 +1073,7 @@ class MailboxDashBoardController extends ReloadableController {
         openComposerOverlay(arguments);
       }
     } else {
-      push(AppRoutes.COMPOSER, arguments: arguments);
+      push(AppRoutes.composer, arguments: arguments);
     }
   }
 
@@ -1084,7 +1085,7 @@ class MailboxDashBoardController extends ReloadableController {
     if (isDrawerOpen) {
       closeMailboxMenuDrawer();
     }
-    final result = await push(AppRoutes.MANAGE_ACCOUNT,
+    final result = await push(AppRoutes.settings,
         arguments: ManageAccountArguments(sessionCurrent));
 
     if (result is VacationResponse) {
@@ -1139,7 +1140,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void goToVacationSetting() async {
-    final result = await push(AppRoutes.MANAGE_ACCOUNT,
+    final result = await push(AppRoutes.settings,
         arguments: ManageAccountArguments(
             sessionCurrent,
             menuSettingCurrent: AccountMenuItem.vacation));

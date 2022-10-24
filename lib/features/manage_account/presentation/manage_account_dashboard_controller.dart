@@ -194,7 +194,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void goToSettings() {
-    pushAndPop(AppRoutes.MANAGE_ACCOUNT,
+    pushAndPop(AppRoutes.settings,
         arguments: ManageAccountArguments(sessionCurrent.value));
   }
 
@@ -206,7 +206,7 @@ class ManageAccountDashBoardController extends ReloadableController {
       popBack(result: vacationResponse.value);
     } else {
       log('ManageAccountDashBoardController::backToMailboxDashBoard(): canBack: FALSE');
-      pushAndPopAll(AppRoutes.MAILBOX_DASHBOARD, arguments: sessionCurrent);
+      pushAndPopAll(AppRoutes.dashboard, arguments: sessionCurrent);
     }
   }
 

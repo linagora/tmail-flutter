@@ -49,6 +49,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -501,7 +502,7 @@ class EmailController extends BaseController with AppLoaderMixin {
 
     if (currentMailbox != null && accountId != null) {
       final destinationMailbox = await push(
-        AppRoutes.DESTINATION_PICKER,
+        AppRoutes.destinationPicker,
         arguments: DestinationPickerArguments(accountId, MailboxActions.moveEmail)
       );
 
@@ -745,10 +746,6 @@ class EmailController extends BaseController with AppLoaderMixin {
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
 
       mailboxDashBoardController.goToComposer(arguments);
-
-      if (BuildUtils.isWeb && Get.currentRoute == AppRoutes.EMAIL) {
-        popBack();
-      }
     }
   }
 
@@ -895,21 +892,18 @@ class EmailController extends BaseController with AppLoaderMixin {
     _currentEmailId = null;
     if (mailboxDashBoardController.searchController.isSearchEmailRunning) {
       if (responsiveUtils.isWebDesktop(context)) {
-        mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
+        mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
       } else {
-        mailboxDashBoardController.dispatchRoute(AppRoutes.SEARCH_EMAIL);
+        mailboxDashBoardController.dispatchRoute(DashboardRoutes.searchEmail);
       }
     } else {
-      mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
+      mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     }
   }
 
   void pressEmailAction(EmailActionType emailActionType) {
     if (emailActionType == EmailActionType.compose) {
       mailboxDashBoardController.goToComposer(ComposerArguments());
-      if (BuildUtils.isWeb && Get.currentRoute == AppRoutes.EMAIL) {
-        popBack();
-      }
     } else {
       final arguments = ComposerArguments(
           emailActionType: emailActionType,
@@ -919,9 +913,6 @@ class EmailController extends BaseController with AppLoaderMixin {
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
 
       mailboxDashBoardController.goToComposer(arguments);
-      if (BuildUtils.isWeb && Get.currentRoute == AppRoutes.EMAIL) {
-        popBack();
-      }
     }
   }
 }

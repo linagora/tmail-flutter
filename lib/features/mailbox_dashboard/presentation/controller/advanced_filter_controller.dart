@@ -136,7 +136,7 @@ class AdvancedFilterController extends BaseController {
 
   void selectedMailBox() async {
     final destinationMailbox = await push(
-        AppRoutes.DESTINATION_PICKER,
+        AppRoutes.destinationPicker,
         arguments: DestinationPickerArguments(
             _mailboxDashBoardController.accountId.value!,
             MailboxActions.select,

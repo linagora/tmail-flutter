@@ -90,7 +90,7 @@ class EmailRulesController extends BaseController {
         _openRulesFilterCreatorOverlay();
       } else {
         push(
-          AppRoutes.RULES_FILTER_CREATOR,
+          AppRoutes.rulesFilterCreator,
         );
       }
     }
@@ -131,7 +131,7 @@ class EmailRulesController extends BaseController {
         _openRulesFilterCreatorOverlay();
       } else {
         push(
-          AppRoutes.RULES_FILTER_CREATOR,
+          AppRoutes.rulesFilterCreator,
         );
       }
     }

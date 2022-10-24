@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbo
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
@@ -368,7 +369,7 @@ class MailboxController extends BaseMailboxController {
     if (_responsiveUtils.hasLeftMenuDrawerActive(context)) {
       mailboxDashBoardController.closeMailboxMenuDrawer();
     } else {
-      mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
+      mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     }
   }
 
@@ -383,7 +384,7 @@ class MailboxController extends BaseMailboxController {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {
       final newMailboxArguments = await push(
-          AppRoutes.MAILBOX_CREATOR,
+          AppRoutes.mailboxCreator,
           arguments: MailboxCreatorArguments(accountId, defaultMailboxTree.value, folderMailboxTree.value)
       );
 
@@ -815,7 +816,7 @@ class MailboxController extends BaseMailboxController {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {
       final destinationMailbox = await push(
-          AppRoutes.DESTINATION_PICKER,
+          AppRoutes.destinationPicker,
           arguments: DestinationPickerArguments(
               accountId,
               MailboxActions.move,

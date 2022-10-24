@@ -91,7 +91,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _goToLogin({LoginArguments? arguments}) {
-    pushAndPopAll(AppRoutes.LOGIN, arguments: arguments);
+    pushAndPopAll(AppRoutes.login, arguments: arguments);
   }
 
   void _setUpInterceptors(GetCredentialViewState credentialViewState) {

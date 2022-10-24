@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/search/domain/state/refresh_changes_search_email_state.dart';
@@ -415,7 +416,7 @@ class SearchEmailController extends BaseController
 
   void selectMailboxForSearchFilter(BuildContext context, PresentationMailbox? mailbox) async {
     final destinationMailbox = await push(
-        AppRoutes.DESTINATION_PICKER,
+        AppRoutes.destinationPicker,
         arguments: DestinationPickerArguments(
             mailboxDashBoardController.accountId.value!,
             MailboxActions.select,
@@ -440,7 +441,7 @@ class SearchEmailController extends BaseController
     if (accountId != null && session != null) {
       final listContactSelected = simpleSearchFilter.value.getContactApplied(prefixEmailAddress);
       final newContact = await push(
-          AppRoutes.CONTACT,
+          AppRoutes.contact,
           arguments: ContactArguments(accountId!, session!, listContactSelected));
 
       if (newContact is EmailAddress) {
@@ -538,7 +539,7 @@ class SearchEmailController extends BaseController
     clearAllResultSearch();
     FocusScope.of(context).unfocus();
     mailboxDashBoardController.searchController.disableSearch();
-    mailboxDashBoardController.dispatchRoute(AppRoutes.THREAD);
+    mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     SearchEmailBindings().disposeBindings();
   }
 
