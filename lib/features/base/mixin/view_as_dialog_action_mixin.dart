@@ -1,6 +1,10 @@
 
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/contact/presentation/contact_bindings.dart';
+import 'package:tmail_ui_user/features/contact/presentation/contact_view.dart';
+import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -68,6 +72,34 @@ mixin ViewAsDialogActionMixin {
                 if (arguments is NewMailboxArguments) {
                   onCreatedMailbox.call(arguments);
                 }
+              });
+        });
+  }
+
+  void showDialogContactView({
+    required BuildContext context,
+    required ContactArguments arguments,
+    required Function(EmailAddress) onSelectedContact
+  }) {
+    ContactBindings().dependencies();
+
+    showGeneralDialog(
+        context: context,
+        barrierDismissible: true,
+        barrierLabel: '',
+        barrierColor: Colors.black.withAlpha(24),
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return ContactView.fromArguments(
+              arguments,
+              onDismissCallback: () {
+                ContactBindings().dispose();
+                popBack();
+              },
+              onSelectedContactCallback: (emailAddress) {
+                ContactBindings().dispose();
+                popBack();
+
+                onSelectedContact.call(emailAddress);
               });
         });
   }

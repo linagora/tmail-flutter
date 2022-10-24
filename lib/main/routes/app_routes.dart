@@ -8,7 +8,7 @@ abstract class AppRoutes {
   static const composer = '/composer';
   static const destinationPicker = '/destination_picker';
   static const mailboxCreator = '/mailbox_creator';
-  static const contact = '$dashboard/contact';
+  static const contact = '/contact';
   static const identityCreator = '$settings/identity_creator';
   static const rulesFilterCreator = '$settings/rules_filter_creator';
   static const emailsForwardCreator = '$settings/emails_forward_creator';
