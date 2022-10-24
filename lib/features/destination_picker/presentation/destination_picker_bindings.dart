@@ -83,4 +83,8 @@ class DestinationPickerBindings extends BaseBindings {
         Get.find<StateDataSource>(),
     ));
   }
+
+  void dispose() {
+    Get.delete<DestinationPickerController>();
+  }
 }

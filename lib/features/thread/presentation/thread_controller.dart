@@ -635,15 +635,28 @@ class ThreadController extends BaseController {
   }
 
   void moveSelectedMultipleEmailToMailbox(
+      BuildContext context,
       List<PresentationEmail> listEmail,
       PresentationMailbox currentMailbox
   ) async {
     if (_accountId != null) {
-      final listEmailIds = listEmail.map((email) => email.id).toList();
-      final destinationMailbox = await push(
-          AppRoutes.destinationPicker,
-          arguments: DestinationPickerArguments(_accountId!, MailboxActions.moveEmail)
-      );
+      final arguments = DestinationPickerArguments(_accountId!, MailboxActions.moveEmail);
+
+      if (BuildUtils.isWeb) {
+        showDialogDestinationPicker(
+            context: context,
+            arguments: arguments,
+            onSelectedMailbox: (destinationMailbox) {
+              _dispatchMoveToMultipleAction(
+                  _accountId!,
+                  listEmail.listEmailIds,
+                  currentMailbox,
+                  destinationMailbox);
+            });
+      } else {
+        final destinationMailbox = await push(
+            AppRoutes.destinationPicker,
+            arguments: arguments);
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
         if (destinationMailbox.isTrash) {
@@ -670,6 +683,45 @@ class ThreadController extends BaseController {
               destinationPath: destinationMailbox.mailboxPath));
         }
       }
+        if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
+          _dispatchMoveToMultipleAction(
+              _accountId!,
+              listEmail.listEmailIds,
+              currentMailbox,
+              destinationMailbox);
+        }
+      }
+    }
+  }
+
+  void _dispatchMoveToMultipleAction(
+      AccountId accountId,
+      List<EmailId> listEmailIds,
+      PresentationMailbox currentMailbox,
+      PresentationMailbox destinationMailbox
+  ) {
+    if (destinationMailbox.isTrash) {
+      _moveSelectedEmailMultipleToTrashAction(accountId, MoveToMailboxRequest(
+          listEmailIds,
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToTrash));
+    } else if (destinationMailbox.isSpam) {
+      _moveSelectedEmailMultipleToSpamAction(accountId, MoveToMailboxRequest(
+          listEmailIds,
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToSpam));
+    } else {
+      _moveSelectedEmailMultipleToMailboxAction(accountId, MoveToMailboxRequest(
+          listEmailIds,
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToMailbox,
+          destinationPath: destinationMailbox.mailboxPath));
     }
   }
 
@@ -984,7 +1036,7 @@ class ThreadController extends BaseController {
             ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
             : currentMailbox;
         if (mailboxContainCurrent != null) {
-          moveSelectedMultipleEmailToMailbox(selectionEmail, mailboxContainCurrent);
+          moveSelectedMultipleEmailToMailbox(context, selectionEmail, mailboxContainCurrent);
         }
         break;
       case EmailActionType.moveToTrash:
@@ -1079,10 +1131,24 @@ class ThreadController extends BaseController {
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (currentMailbox != null && accountId != null) {
-      final destinationMailbox = await push(
-          AppRoutes.destinationPicker,
-          arguments: DestinationPickerArguments(accountId, MailboxActions.moveEmail)
-      );
+      final arguments = DestinationPickerArguments(accountId, MailboxActions.moveEmail);
+
+      if (BuildUtils.isWeb) {
+        showDialogDestinationPicker(
+            context: context,
+            arguments: arguments,
+            onSelectedMailbox: (destinationMailbox) {
+              _dispatchMoveToAction(
+                  context,
+                  accountId,
+                  email,
+                  currentMailbox,
+                  destinationMailbox);
+            });
+      } else {
+        final destinationMailbox = await push(
+            AppRoutes.destinationPicker,
+            arguments: arguments);
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
         if (destinationMailbox.isTrash) {
@@ -1109,6 +1175,47 @@ class ThreadController extends BaseController {
               destinationPath: destinationMailbox.mailboxPath));
         }
       }
+        if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
+          _dispatchMoveToAction(
+              context,
+              accountId,
+              email,
+              currentMailbox,
+              destinationMailbox);
+        }
+      }
+    }
+  }
+
+  void _dispatchMoveToAction(
+      BuildContext context,
+      AccountId accountId,
+      PresentationEmail emailSelected,
+      PresentationMailbox currentMailbox,
+      PresentationMailbox destinationMailbox
+  ) {
+    if (destinationMailbox.isTrash) {
+      _moveToTrashAction(accountId, MoveToMailboxRequest(
+          [emailSelected.id],
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToTrash));
+    } else if (destinationMailbox.isSpam) {
+      _moveToSpamAction(accountId, MoveToMailboxRequest(
+          [emailSelected.id],
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToSpam));
+    } else {
+      _moveToMailboxAction(accountId, MoveToMailboxRequest(
+          [emailSelected.id],
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToMailbox,
+          destinationPath: destinationMailbox.mailboxPath));
     }
   }
 

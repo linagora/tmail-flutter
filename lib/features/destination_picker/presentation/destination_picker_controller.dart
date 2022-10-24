@@ -20,6 +20,8 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_state.da
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
+typedef OnSelectedMailboxCallback = Function(PresentationMailbox? destinationMailbox);
+
 class DestinationPickerController extends BaseMailboxController {
 
   final GetAllMailboxInteractor _getAllMailboxInteractor;
@@ -31,8 +33,12 @@ class DestinationPickerController extends BaseMailboxController {
   final searchQuery = SearchQuery.initial().obs;
   final mailboxCategoriesExpandMode = MailboxCategoriesExpandMode.initial().obs;
 
+  DestinationPickerArguments? arguments;
   AccountId? accountId;
   MailboxId? mailboxIdSelected;
+  OnSelectedMailboxCallback? onSelectedMailboxCallback;
+  VoidCallback? onDismissDestinationPicker;
+
   final searchInputController = TextEditingController();
   final searchFocus = FocusNode();
 
@@ -45,11 +51,10 @@ class DestinationPickerController extends BaseMailboxController {
   @override
   void onReady() {
     super.onReady();
-    final arguments = Get.arguments;
-    if (arguments != null && arguments is DestinationPickerArguments) {
-      mailboxAction.value = arguments.mailboxAction;
-      mailboxIdSelected = arguments.mailboxIdSelected;
-      accountId = arguments.accountId;
+    if (arguments != null) {
+      mailboxAction.value = arguments!.mailboxAction;
+      mailboxIdSelected = arguments!.mailboxIdSelected;
+      accountId = arguments!.accountId;
       getAllMailboxAction();
     }
   }
@@ -160,10 +165,18 @@ class DestinationPickerController extends BaseMailboxController {
   }
 
   void selectMailboxAction(PresentationMailbox? destinationMailbox) {
-    popBack(result: destinationMailbox);
+    if (BuildUtils.isWeb) {
+      onSelectedMailboxCallback?.call(destinationMailbox);
+    } else {
+      popBack(result: destinationMailbox);
+    }
   }
 
   void closeDestinationPicker() {
-    popBack();
+    if (BuildUtils.isWeb) {
+      onDismissDestinationPicker?.call();
+    } else {
+      popBack();
+    }
   }
 }

@@ -1,9 +1,11 @@
 
+
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -14,6 +16,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/mixin/view_as_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -26,7 +29,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-mixin EmailActionController {
+mixin EmailActionController on ViewAsDialogActionMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
@@ -107,10 +110,24 @@ mixin EmailActionController {
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (currentMailbox != null && accountId != null) {
-      final destinationMailbox = await push(
-          AppRoutes.destinationPicker,
-          arguments: DestinationPickerArguments(accountId, MailboxActions.moveEmail)
-      );
+      final arguments = DestinationPickerArguments(accountId, MailboxActions.moveEmail);
+
+      if (BuildUtils.isWeb) {
+        showDialogDestinationPicker(
+            context: context,
+            arguments: arguments,
+            onSelectedMailbox: (destinationMailbox) {
+              _dispatchMoveToAction(
+                  context,
+                  accountId,
+                  email,
+                  currentMailbox,
+                  destinationMailbox);
+            });
+      } else {
+        final destinationMailbox = await push(
+            AppRoutes.destinationPicker,
+            arguments: arguments);
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
         if (destinationMailbox.isTrash) {
@@ -137,6 +154,45 @@ mixin EmailActionController {
               destinationPath: destinationMailbox.mailboxPath));
         }
       }
+        _dispatchMoveToAction(
+            context,
+            accountId,
+            email,
+            currentMailbox,
+            destinationMailbox);
+      }
+    }
+  }
+
+  void _dispatchMoveToAction(
+      BuildContext context,
+      AccountId accountId,
+      PresentationEmail emailSelected,
+      PresentationMailbox currentMailbox,
+      PresentationMailbox destinationMailbox
+  ) {
+    if (destinationMailbox.isTrash) {
+      moveToSpamAction(accountId, MoveToMailboxRequest(
+          [emailSelected.id],
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToTrash));
+    } else if (destinationMailbox.isSpam) {
+      moveToSpamAction(accountId, MoveToMailboxRequest(
+          [emailSelected.id],
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToSpam));
+    } else {
+      _moveToMailboxAction(accountId, MoveToMailboxRequest(
+          [emailSelected.id],
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToMailbox,
+          destinationPath: destinationMailbox.mailboxPath));
     }
   }
 
@@ -200,8 +256,15 @@ mixin EmailActionController {
     mailboxDashBoardController.markAsStarSelectedMultipleEmail(listEmails, markStarAction);
   }
 
-  void moveSelectedMultipleEmailToMailbox(List<PresentationEmail> listEmails, PresentationMailbox mailboxCurrent) {
-    mailboxDashBoardController.moveSelectedMultipleEmailToMailbox(listEmails, mailboxCurrent);
+  void moveSelectedMultipleEmailToMailbox(
+      BuildContext context,
+      List<PresentationEmail> listEmails,
+      PresentationMailbox mailboxCurrent
+  ) {
+    mailboxDashBoardController.moveSelectedMultipleEmailToMailbox(
+        context,
+        listEmails,
+        mailboxCurrent);
   }
 
   void moveSelectedMultipleEmailToTrash(List<PresentationEmail> listEmails, PresentationMailbox mailboxCurrent) {

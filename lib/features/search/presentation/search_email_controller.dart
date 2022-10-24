@@ -1,4 +1,5 @@
 
+import 'package:core/core.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -415,21 +416,33 @@ class SearchEmailController extends BaseController
   }
 
   void selectMailboxForSearchFilter(BuildContext context, PresentationMailbox? mailbox) async {
-    final destinationMailbox = await push(
-        AppRoutes.destinationPicker,
-        arguments: DestinationPickerArguments(
-            mailboxDashBoardController.accountId.value!,
-            MailboxActions.select,
-            mailboxIdSelected: mailbox?.id));
+    final arguments = DestinationPickerArguments(
+        mailboxDashBoardController.accountId.value!,
+        MailboxActions.select,
+        mailboxIdSelected: mailbox?.id);
 
-    if (destinationMailbox is PresentationMailbox) {
-      final mailboxSelected = destinationMailbox == PresentationMailbox.unifiedMailbox
-        ? null
-        : destinationMailbox;
-      if (mailbox?.id != mailboxSelected?.id) {
-        simpleSearchFilter.value = simpleSearchFilter.value
-            .toSimpleSearchFilterByMailbox(newMailbox: mailboxSelected);
-        _searchEmailAction(context);
+    if (BuildUtils.isWeb) {
+      showDialogDestinationPicker(
+          context: context,
+          arguments: arguments,
+          onSelectedMailbox: (destinationMailbox) {
+            final mailboxSelected = destinationMailbox == PresentationMailbox.unifiedMailbox ? null : destinationMailbox;
+            if (mailbox?.id != mailboxSelected?.id) {
+              simpleSearchFilter.value = simpleSearchFilter.value.toSimpleSearchFilterByMailbox(newMailbox: mailboxSelected);
+              _searchEmailAction(context);
+            }
+          });
+    } else {
+      final destinationMailbox = await push(
+          AppRoutes.destinationPicker,
+          arguments: arguments);
+
+      if (destinationMailbox is PresentationMailbox) {
+        final mailboxSelected = destinationMailbox == PresentationMailbox.unifiedMailbox ? null : destinationMailbox;
+        if (mailbox?.id != mailboxSelected?.id) {
+          simpleSearchFilter.value = simpleSearchFilter.value.toSimpleSearchFilterByMailbox(newMailbox: mailboxSelected);
+          _searchEmailAction(context);
+        }
       }
     }
   }
@@ -642,7 +655,7 @@ class SearchEmailController extends BaseController
         cancelSelectionMode(context);
         final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
         if (mailboxContainCurrent != null) {
-          moveSelectedMultipleEmailToMailbox(listEmails, mailboxContainCurrent);
+          moveSelectedMultipleEmailToMailbox(context, listEmails, mailboxContainCurrent);
         }
         break;
       case EmailActionType.moveToTrash:

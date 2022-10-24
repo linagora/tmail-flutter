@@ -70,7 +70,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             currentFocusNode: controller.focusManager.mailboxFieldFocusNode,
             nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
             mouseCursor: SystemMouseCursors.click,
-            onTap: () => controller.selectedMailBox()),
+            onTap: () => controller.selectedMailBox(context)),
         Row(children: [
          Expanded(child: _buildFilterField(
            textEditingController: controller.dateFilterInputController,

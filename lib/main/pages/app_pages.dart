@@ -31,70 +31,70 @@ import 'package:tmail_ui_user/main/pages/deferred_widget.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class AppPages {
-  static final pages = [
+  static final pagesOnlyOnMobile = [
     GetPage(
-      name: AppRoutes.home,
-      page: () => const HomeView(),
-      binding: HomeBindings()),
-    GetPage(
-      name: AppRoutes.login,
-      page: () => DeferredWidget(login.loadLibrary, () => login.LoginView()),
-      binding: LoginBindings()),
-    GetPage(
-      name: AppRoutes.session,
-      page: () => DeferredWidget(session.loadLibrary, () => session.SessionView()),
-      binding: SessionPageBindings()),
-    GetPage(
-      name: AppRoutes.dashboard,
-      page: () => DeferredWidget(mailbox_dashboard.loadLibrary, () => mailbox_dashboard.MailboxDashBoardView()),
-      binding: MailboxDashBoardBindings()),
-    if (!BuildUtils.isWeb)
-      GetPage(
         name: AppRoutes.composer,
         opaque: false,
-        page: () {
-          ComposerBindings().dependencies();
-          return DeferredWidget(composer.loadLibrary, () => composer.ComposerView());
-        }),
+        page: () => DeferredWidget(composer.loadLibrary, () => composer.ComposerView()),
+        binding: ComposerBindings()),
     GetPage(
-      name: AppRoutes.destinationPicker,
-      opaque: false,
-      page: () => DeferredWidget(destination_picker.loadLibrary, () => destination_picker.DestinationPickerView()),
-      binding: DestinationPickerBindings()),
+        name: AppRoutes.destinationPicker,
+        opaque: false,
+        page: () => DeferredWidget(destination_picker.loadLibrary, () => destination_picker.DestinationPickerView()),
+        binding: DestinationPickerBindings()),
+  ];
+
+  static final pages = [
     GetPage(
-      name: AppRoutes.mailboxCreator,
-      opaque: false,
-      page: () => DeferredWidget(mailbox_creator.loadLibrary, () => mailbox_creator.MailboxCreatorView()),
-      binding: MailboxCreatorBindings()),
+        name: AppRoutes.home,
+        page: () => const HomeView(),
+        binding: HomeBindings()),
     GetPage(
-      name: AppRoutes.settings,
-      page: () => DeferredWidget(manage_account_dashboard.loadLibrary, () => manage_account_dashboard.ManageAccountDashBoardView()),
-      binding: ManageAccountDashBoardBindings()),
+        name: AppRoutes.login,
+        page: () => DeferredWidget(login.loadLibrary, () => login.LoginView()),
+        binding: LoginBindings()),
     GetPage(
-      name: AppRoutes.identityCreator,
-      opaque: false,
-      page: () => DeferredWidget(identity_creator.loadLibrary, () => identity_creator.IdentityCreatorView()),
-      binding: IdentityCreatorBindings()),
+        name: AppRoutes.session,
+        page: () => DeferredWidget(session.loadLibrary, () => session.SessionView()),
+        binding: SessionPageBindings()),
     GetPage(
-      name: AppRoutes.rulesFilterCreator,
-      opaque: false,
-      page: () => DeferredWidget(
-          rules_filter_creator.loadLibrary,
-          () => rules_filter_creator.RuleFilterCreatorView()),
-      binding: RulesFilterCreatorBindings()),
+        name: AppRoutes.dashboard,
+        page: () => DeferredWidget(mailbox_dashboard.loadLibrary, () => mailbox_dashboard.MailboxDashBoardView()),
+        binding: MailboxDashBoardBindings()),
     GetPage(
-      name: AppRoutes.emailsForwardCreator,
-      opaque: false,
-      page: () => DeferredWidget(
-          emails_forward_creator.loadLibrary,
-          () => emails_forward_creator.EmailsForwardCreatorView()),
-      binding: EmailsForwardCreatorBindings()),
+        name: AppRoutes.mailboxCreator,
+        opaque: false,
+        page: () => DeferredWidget(mailbox_creator.loadLibrary, () => mailbox_creator.MailboxCreatorView()),
+        binding: MailboxCreatorBindings()),
+    GetPage(
+        name: AppRoutes.settings,
+        page: () => DeferredWidget(manage_account_dashboard.loadLibrary,
+            () => manage_account_dashboard.ManageAccountDashBoardView()),
+        binding: ManageAccountDashBoardBindings()),
+    GetPage(
+        name: AppRoutes.identityCreator,
+        opaque: false,
+        page: () => DeferredWidget(identity_creator.loadLibrary,
+            () => identity_creator.IdentityCreatorView()),
+        binding: IdentityCreatorBindings()),
+    GetPage(
+        name: AppRoutes.rulesFilterCreator,
+        opaque: false,
+        page: () => DeferredWidget(rules_filter_creator.loadLibrary,
+            () => rules_filter_creator.RuleFilterCreatorView()),
+        binding: RulesFilterCreatorBindings()),
+    GetPage(
+        name: AppRoutes.emailsForwardCreator,
+        opaque: false,
+        page: () => DeferredWidget(emails_forward_creator.loadLibrary,
+            () => emails_forward_creator.EmailsForwardCreatorView()),
+        binding: EmailsForwardCreatorBindings()),
     GetPage(
         name: AppRoutes.contact,
         opaque: false,
-        page: () => DeferredWidget(
-            contact_view.loadLibrary,
-            () => contact_view.ContactView()),
+        page: () => DeferredWidget(contact_view.loadLibrary, () => contact_view.ContactView()),
         binding: ContactBindings()),
-];
+    if (!BuildUtils.isWeb)
+      ...pagesOnlyOnMobile
+  ];
 }

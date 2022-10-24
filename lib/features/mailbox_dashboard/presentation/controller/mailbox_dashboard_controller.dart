@@ -611,13 +611,27 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void moveSelectedMultipleEmailToMailbox(
+      BuildContext context,
       List<PresentationEmail> listEmails,
-      PresentationMailbox mailboxCurrent
+      PresentationMailbox currentMailbox
   ) async {
     if (accountId.value != null) {
-      final destinationMailbox = await push(
-          AppRoutes.destinationPicker,
-          arguments: DestinationPickerArguments(accountId.value!, MailboxActions.moveEmail));
+      final arguments = DestinationPickerArguments(accountId.value!, MailboxActions.moveEmail);
+
+      if (BuildUtils.isWeb) {
+        showDialogDestinationPicker(
+            context: context,
+            arguments: arguments,
+            onSelectedMailbox: (destinationMailbox) {
+              _dispatchMoveToMultipleAction(
+                  accountId.value!,
+                  listEmails.listEmailIds,
+                  currentMailbox, destinationMailbox);
+            });
+      } else {
+        final destinationMailbox = await push(
+            AppRoutes.destinationPicker,
+            arguments: arguments);
 
       if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
         if (destinationMailbox.isTrash) {
@@ -644,6 +658,44 @@ class MailboxDashBoardController extends ReloadableController {
               destinationPath: destinationMailbox.mailboxPath));
         }
       }
+        if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
+          _dispatchMoveToMultipleAction(
+              accountId.value!,
+              listEmails.listEmailIds,
+              currentMailbox, destinationMailbox);
+        }
+      }
+    }
+  }
+
+  void _dispatchMoveToMultipleAction(
+      AccountId accountId,
+      List<EmailId> listEmailIds,
+      PresentationMailbox currentMailbox,
+      PresentationMailbox destinationMailbox
+  ) {
+    if (destinationMailbox.isTrash) {
+      _moveSelectedEmailMultipleToMailboxAction(accountId, MoveToMailboxRequest(
+          listEmailIds,
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToTrash));
+    } else if (destinationMailbox.isSpam) {
+      _moveSelectedEmailMultipleToMailboxAction(accountId, MoveToMailboxRequest(
+          listEmailIds,
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToSpam));
+    } else {
+      _moveSelectedEmailMultipleToMailboxAction(accountId, MoveToMailboxRequest(
+          listEmailIds,
+          currentMailbox.id,
+          destinationMailbox.id,
+          MoveAction.moving,
+          EmailActionType.moveToMailbox,
+          destinationPath: destinationMailbox.mailboxPath));
     }
   }
 
