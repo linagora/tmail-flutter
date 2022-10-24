@@ -24,6 +24,7 @@ class LoginTextInputBuilder {
   TextEditingController? _textEditingController;
   bool? _passwordInput;
   OnSubmitted? _onSubmitted;
+  FocusNode? _focusNode;
 
   final BuildContext context;
   final ImagePaths imagePaths;
@@ -100,6 +101,10 @@ class LoginTextInputBuilder {
     _onSubmitted = onSubmitted;
   }
 
+  void setFocusNode(FocusNode? focusNode) {
+    _focusNode = focusNode;
+  }
+
   Widget build() {
     return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
       return Wrap(
@@ -119,6 +124,7 @@ class LoginTextInputBuilder {
                   controller: _textEditingController,
                   cursorColor: AppColor.primaryColor,
                   style: const TextStyle(color: AppColor.loginTextFieldHintColor, fontSize: 16, fontWeight: FontWeight.normal),
+                  focusNode: _focusNode,
                   decoration: (LoginInputDecorationBuilder()
                       ..setHintText(_hintText)
                       ..setPrefixText(_prefixText)

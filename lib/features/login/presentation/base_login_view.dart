@@ -2,9 +2,11 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/text/text_builder.dart';
-import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
@@ -20,6 +22,8 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
   final loginController = Get.find<LoginController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
+
+  final FocusNode passFocusNode = FocusNode();
 
   Widget buildLoginMessage(BuildContext context, LoginState loginState) {
     return Padding(
@@ -106,17 +110,37 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
 
   Widget buildUserNameInput(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16, right: 24, left: 24),
-      child: Container(
-        child: (TextFieldBuilder()..key(const Key('login_username_input'))
-            ..onChange((value) => loginController.setUserNameText(value))
-            ..textInputAction(TextInputAction.next)
-            ..keyboardType(TextInputType.emailAddress)
-            ..textDecoration((LoginInputDecorationBuilder()
-                ..setLabelText(AppLocalizations.of(context).email)
-                ..setHintText(AppLocalizations.of(context).email))
-              .build()))
-          .build()));
+      padding: const EdgeInsets.only(bottom: 24, right: 24, left: 24),
+      child: TypeAheadFormField<RecentLoginUsername>(
+        key: const Key('login_username_input'),
+        textFieldConfiguration: TextFieldConfiguration(
+          controller: loginController.usernameInputController,
+          onChanged: (value) => loginController.setUserNameText(value),
+          textInputAction: TextInputAction.next,
+          keyboardType: TextInputType.emailAddress,
+          decoration: (LoginInputDecorationBuilder()
+              ..setLabelText(AppLocalizations.of(context).email)
+              ..setHintText(AppLocalizations.of(context).email))
+              .build(),
+        ),
+        debounceDuration: const Duration(milliseconds: 300),
+        suggestionsCallback: (pattern) async {
+          return await loginController.getAllRecentLoginUsernameAction(pattern);
+        },
+        itemBuilder: (context, loginUsername) =>
+            RecentItemTileWidget(loginUsername, imagePath: imagePaths),
+        onSuggestionSelected: (recentUsername) {
+          loginController.setUsername(recentUsername.username);
+          passFocusNode.requestFocus();
+        },
+        suggestionsBoxDecoration: const SuggestionsBoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(14))),
+        noItemsFoundBuilder: (context) => const SizedBox(),
+        hideOnEmpty: true,
+        hideOnError: true,
+        hideOnLoading: true,
+      )
+    );
   }
 
   Widget buildPasswordInput(BuildContext context) {
@@ -130,7 +154,8 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
             ..obscureText(true)
             ..onChange((value) => loginController.setPasswordText(value))
             ..textInputAction(TextInputAction.done)
-            ..hintText(AppLocalizations.of(context).password))
+            ..hintText(AppLocalizations.of(context).password)
+            ..setFocusNode(passFocusNode))
           .build()));
   }
 
