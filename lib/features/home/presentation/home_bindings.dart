@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource/cleanup_datasource.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource_impl/cleanup_datasource_impl.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
+import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_username_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_search_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/repository/cleanup_repository_impl.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/repository/cleanup_repository.dart';
@@ -70,6 +71,7 @@ class HomeBindings extends BaseBindings {
         Get.find<EmailCacheManager>(),
         Get.find<RecentSearchCacheManager>(),
         Get.find<RecentLoginUrlCacheManager>(),
+        Get.find<RecentLoginUsernameCacheManager>(),
     ));
     Get.lazyPut(() => HiveAccountDatasourceImpl(
         Get.find<AccountCacheManager>()
