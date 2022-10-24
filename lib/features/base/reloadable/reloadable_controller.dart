@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -63,6 +64,8 @@ abstract class ReloadableController extends BaseController {
           log('ReloadableController::onData(): LogoutOidcFailure: $failure');
         } else if (failure is GetStoredTokenOidcFailure) {
           _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
+        } else if (failure is GetAuthenticatedAccountFailure || failure is NoAuthenticatedAccountFailure) {
+          _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
         }
       },
       (success) {

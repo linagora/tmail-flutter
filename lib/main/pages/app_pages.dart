@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
@@ -47,13 +48,14 @@ class AppPages {
       name: AppRoutes.dashboard,
       page: () => DeferredWidget(mailbox_dashboard.loadLibrary, () => mailbox_dashboard.MailboxDashBoardView()),
       binding: MailboxDashBoardBindings()),
-    GetPage(
-      name: AppRoutes.composer,
-      opaque: false,
-      page: () {
-        ComposerBindings().dependencies();
-        return DeferredWidget(composer.loadLibrary, () => composer.ComposerView());
-      }),
+    if (!BuildUtils.isWeb)
+      GetPage(
+        name: AppRoutes.composer,
+        opaque: false,
+        page: () {
+          ComposerBindings().dependencies();
+          return DeferredWidget(composer.loadLibrary, () => composer.ComposerView());
+        }),
     GetPage(
       name: AppRoutes.destinationPicker,
       opaque: false,
