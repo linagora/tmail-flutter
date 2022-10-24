@@ -8,4 +8,8 @@ class ContactBindings extends Bindings {
   void dependencies() {
     Get.lazyPut(() => ContactController());
   }
+
+  void dispose() {
+    Get.delete<ContactController>();
+  }
 }

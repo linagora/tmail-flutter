@@ -37,7 +37,7 @@ class AppBarContactWidget extends StatelessWidget {
             onTap: onCloseContactView),
       ),
       Center(child: Text(
-          AppLocalizations.of(context).contains,
+          AppLocalizations.of(context).contact,
           style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,

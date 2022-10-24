@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/contact/presentation/contact_controller.dart';
+import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/contact/presentation/utils/contact_utils.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/app_bar_contact_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
@@ -19,16 +20,27 @@ class ContactView extends GetWidget<ContactController> {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
 
-  ContactView({Key? key}) : super(key: key);
+  @override
+  final controller = Get.find<ContactController>();
+
+  ContactView({Key? key}) : super(key: key) {
+    controller.arguments = Get.arguments;
+  }
+
+  ContactView.fromArguments(
+      ContactArguments arguments, {
+      Key? key,
+      OnSelectedContactCallback? onSelectedContactCallback,
+      VoidCallback? onDismissCallback
+  }) : super(key: key) {
+    controller.arguments = arguments;
+    controller.onSelectedContactCallback = onSelectedContactCallback;
+    controller.onDismissContactView = onDismissCallback;
+    controller.onInit();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (_responsiveUtils.isWebDesktop(context)) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        controller.closeContactView(context);
-      });
-    }
-
     return Scaffold(
         backgroundColor: Colors.black38,
         body: GestureDetector(

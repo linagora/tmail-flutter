@@ -453,53 +453,87 @@ class SearchEmailController extends BaseController
   ) async {
     if (accountId != null && session != null) {
       final listContactSelected = simpleSearchFilter.value.getContactApplied(prefixEmailAddress);
-      final newContact = await push(
-          AppRoutes.contact,
-          arguments: ContactArguments(accountId!, session!, listContactSelected));
+      final arguments = ContactArguments(accountId!, session!, listContactSelected);
 
-      if (newContact is EmailAddress) {
-        if (listContactSelected.isNotEmpty) {
-          switch(prefixEmailAddress) {
-            case PrefixEmailAddress.from:
-              listContactSelected.first == newContact.email
-                  ? simpleSearchFilter.value.from.removeWhere((e) => e == newContact.email!)
-                  : simpleSearchFilter.value.from.add(newContact.email!);
-              break;
-            case PrefixEmailAddress.to:
-              listContactSelected.first == newContact.email
-                  ? simpleSearchFilter.value.to.removeWhere((e) => e == newContact.email!)
-                  : simpleSearchFilter.value.to.add(newContact.email!);
-              break;
-            default:
-              break;
-          }
-        } else {
-          switch(prefixEmailAddress) {
-            case PrefixEmailAddress.from:
-              simpleSearchFilter.value.from.add(newContact.email!);
-              break;
-            case PrefixEmailAddress.to:
-              simpleSearchFilter.value.to.add(newContact.email!);
-              break;
-            default:
-              break;
-          }
+      if (BuildUtils.isWeb) {
+        showDialogContactView(
+            context: context,
+            arguments: arguments,
+            onSelectedContact: (newContact) {
+              _dispatchApplyContactAction(
+                  context,
+                  listContactSelected,
+                  prefixEmailAddress,
+                  newContact);
+            });
+      } else {
+        final newContact = await push(
+            AppRoutes.contact,
+            arguments: arguments);
+
+        if (newContact is EmailAddress) {
+          _dispatchApplyContactAction(
+              context,
+              listContactSelected,
+              prefixEmailAddress,
+              newContact);
         }
-
-        switch(prefixEmailAddress) {
-          case PrefixEmailAddress.from:
-            _updateSimpleSearchFilter(from: simpleSearchFilter.value.from);
-            break;
-          case PrefixEmailAddress.to:
-            _updateSimpleSearchFilter(to: simpleSearchFilter.value.to);
-            break;
-          default:
-            break;
-        }
-
-        _searchEmailAction(context);
       }
     }
+  }
+
+  void _dispatchApplyContactAction(
+      BuildContext context,
+      Set<String> listContactSelected,
+      PrefixEmailAddress prefixEmailAddress,
+      EmailAddress newContact
+  ) {
+    if (listContactSelected.isNotEmpty) {
+      switch(prefixEmailAddress) {
+        case PrefixEmailAddress.from:
+          if (listContactSelected.first == newContact.email) {
+            simpleSearchFilter.value.from.clear();
+          } else {
+            simpleSearchFilter.value.from.clear();
+            simpleSearchFilter.value.from.add(newContact.email!);
+          }
+          break;
+        case PrefixEmailAddress.to:
+          if (listContactSelected.first == newContact.email) {
+            simpleSearchFilter.value.to.clear();
+          } else {
+            simpleSearchFilter.value.to.clear();
+            simpleSearchFilter.value.to.add(newContact.email!);
+          }
+          break;
+        default:
+          break;
+      }
+    } else {
+      switch(prefixEmailAddress) {
+        case PrefixEmailAddress.from:
+          simpleSearchFilter.value.from.add(newContact.email!);
+          break;
+        case PrefixEmailAddress.to:
+          simpleSearchFilter.value.to.add(newContact.email!);
+          break;
+        default:
+          break;
+      }
+    }
+
+    switch(prefixEmailAddress) {
+      case PrefixEmailAddress.from:
+        _updateSimpleSearchFilter(from: simpleSearchFilter.value.from);
+        break;
+      case PrefixEmailAddress.to:
+        _updateSimpleSearchFilter(to: simpleSearchFilter.value.to);
+        break;
+      default:
+        break;
+    }
+
+    _searchEmailAction(context);
   }
 
   void _updateSimpleSearchFilter({

@@ -47,6 +47,11 @@ class AppPages {
         opaque: false,
         page: () => DeferredWidget(mailbox_creator.loadLibrary, () => mailbox_creator.MailboxCreatorView()),
         binding: MailboxCreatorBindings()),
+    GetPage(
+        name: AppRoutes.contact,
+        opaque: false,
+        page: () => DeferredWidget(contact_view.loadLibrary, () => contact_view.ContactView()),
+        binding: ContactBindings()),
   ];
 
   static final pages = [
@@ -89,11 +94,6 @@ class AppPages {
         page: () => DeferredWidget(emails_forward_creator.loadLibrary,
             () => emails_forward_creator.EmailsForwardCreatorView()),
         binding: EmailsForwardCreatorBindings()),
-    GetPage(
-        name: AppRoutes.contact,
-        opaque: false,
-        page: () => DeferredWidget(contact_view.loadLibrary, () => contact_view.ContactView()),
-        binding: ContactBindings()),
     if (!BuildUtils.isWeb)
       ...pagesOnlyOnMobile
   ];
