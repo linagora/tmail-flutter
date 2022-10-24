@@ -163,13 +163,9 @@ class MailboxDashBoardController extends ReloadableController {
 
   @override
   void onReady() {
-    log('MailboxDashBoardController::onReady()');
-    dispatchRoute(DashboardRoutes.thread);
     _registerPendingEmailAddress();
     _registerPendingFileInfo();
-    _setSessionCurrent();
-    _getUserProfile();
-    _getVacationResponse();
+    _getSessionCurrent();
     _getAppVersion();
     super.onReady();
   }
@@ -326,18 +322,18 @@ class MailboxDashBoardController extends ReloadableController {
     userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
   }
 
-  void _setSessionCurrent() {
+  void _getSessionCurrent() {
     final arguments = Get.arguments;
     log('MailboxDashBoardController::_setSessionCurrent(): arguments = $arguments');
     if (arguments is Session) {
       sessionCurrent = arguments;
       accountId.value = sessionCurrent?.accounts.keys.first;
+      _getUserProfile();
       injectAutoCompleteBindings(sessionCurrent, accountId.value);
       injectVacationBindings(sessionCurrent, accountId.value);
+      _getVacationResponse();
     } else {
-      if (kIsWeb) {
-        reload();
-      }
+      reload();
     }
   }
 

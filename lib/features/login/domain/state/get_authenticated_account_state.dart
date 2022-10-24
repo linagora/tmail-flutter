@@ -20,7 +20,7 @@ class GetAuthenticatedAccountSuccess extends UIState {
 }
 
 class GetAuthenticatedAccountFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   GetAuthenticatedAccountFailure(this.exception);
 

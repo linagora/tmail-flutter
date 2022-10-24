@@ -59,6 +59,6 @@ class CoreBindings extends Bindings {
   void _bindingUtils() {
     Get.put(const Uuid());
     Get.put(CompressFileUtils());
-    Get.lazyPut(() => AppConfigLoader());
+    Get.put(AppConfigLoader());
   }
 }
