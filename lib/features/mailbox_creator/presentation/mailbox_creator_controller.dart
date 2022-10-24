@@ -20,6 +20,8 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_ma
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
+typedef OnCreatedMailboxCallback = Function(NewMailboxArguments? arguments);
+
 class MailboxCreatorController extends BaseController {
 
   final VerifyNameInteractor _verifyNameInteractor;
@@ -27,27 +29,34 @@ class MailboxCreatorController extends BaseController {
   final selectedMailbox = Rxn<PresentationMailbox>();
   final newNameMailbox = Rxn<String>();
 
-  final nameInputFocusNode = FocusNode();
+  FocusNode? nameInputFocusNode;
 
+  MailboxCreatorArguments? arguments;
   AccountId? accountId;
   MailboxTree? folderMailboxTree;
   MailboxTree? defaultMailboxTree;
+  OnCreatedMailboxCallback? onCreatedMailboxCallback;
+  VoidCallback? onDismissMailboxCreator;
+
   List<String> listMailboxNameAsStringExist = <String>[];
 
-  MailboxCreatorController(
-      this._verifyNameInteractor,
-  );
+  MailboxCreatorController(this._verifyNameInteractor);
 
   void setNewNameMailbox(String newName) => newNameMailbox.value = newName;
 
   @override
+  void onInit() {
+    super.onInit();
+    nameInputFocusNode = FocusNode();
+  }
+
+  @override
   void onReady() {
     super.onReady();
-    final arguments = Get.arguments;
-    if (arguments is MailboxCreatorArguments) {
-      folderMailboxTree = arguments.folderMailboxTree;
-      defaultMailboxTree = arguments.defaultMailboxTree;
-      accountId = arguments.accountId;
+    if (arguments != null) {
+      folderMailboxTree = arguments!.folderMailboxTree;
+      defaultMailboxTree = arguments!.defaultMailboxTree;
+      accountId = arguments!.accountId;
       _createListMailboxNameAsStringInMailboxLocation();
     }
   }
@@ -61,14 +70,14 @@ class MailboxCreatorController extends BaseController {
 
   @override
   void onClose() {
-    nameInputFocusNode.dispose();
+    nameInputFocusNode?.dispose();
     super.onClose();
   }
 
   bool isCreateMailboxValidated(BuildContext context) {
     final nameValidated = getErrorInputNameString(context);
 
-    if (!nameInputFocusNode.hasFocus && newNameMailbox.value == null) {
+    if (nameInputFocusNode?.hasFocus == false && newNameMailbox.value == null) {
       return false;
     }
 
@@ -109,14 +118,12 @@ class MailboxCreatorController extends BaseController {
         listMailboxNameAsStringExist = [];
       }
     }
-
-    log('MailboxCreatorController::_createListMailboxNameAsStringInMailboxLocation(): ${listMailboxNameAsStringExist.toString()}');
   }
 
   String? getErrorInputNameString(BuildContext context) {
     final nameMailbox = newNameMailbox.value;
 
-    if (!nameInputFocusNode.hasFocus && nameMailbox == null) {
+    if (nameInputFocusNode?.hasFocus == false && nameMailbox == null) {
       return null;
     }
 
@@ -178,17 +185,34 @@ class MailboxCreatorController extends BaseController {
 
   void createNewMailbox(BuildContext context) {
     FocusScope.of(context).unfocus();
+
     final nameMailbox = newNameMailbox.value;
     if (nameMailbox != null && nameMailbox.isNotEmpty) {
       final newMailboxArguments = NewMailboxArguments(
           MailboxName(nameMailbox),
           mailboxLocation: selectedMailbox.value);
-      popBack(result: newMailboxArguments);
+
+      if (BuildUtils.isWeb) {
+        nameInputFocusNode?.dispose();
+        nameInputFocusNode = null;
+
+        onCreatedMailboxCallback?.call(newMailboxArguments);
+      } else {
+        popBack(result: newMailboxArguments);
+      }
     }
   }
 
   void closeMailboxCreator(BuildContext context) {
     FocusScope.of(context).unfocus();
-    popBack();
+
+    if (BuildUtils.isWeb) {
+      nameInputFocusNode?.dispose();
+      nameInputFocusNode = null;
+
+      onDismissMailboxCreator?.call();
+    } else {
+      popBack();
+    }
   }
 }
