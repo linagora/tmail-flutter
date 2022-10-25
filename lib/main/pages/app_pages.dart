@@ -35,33 +35,52 @@ class AppPages {
     GetPage(
         name: AppRoutes.composer,
         opaque: false,
-        page: () => DeferredWidget(composer.loadLibrary, () => composer.ComposerView()),
+        page: () => DeferredWidget(
+            composer.loadLibrary,
+            () => composer.ComposerView()),
         binding: ComposerBindings()),
     GetPage(
         name: AppRoutes.destinationPicker,
         opaque: false,
-        page: () => DeferredWidget(destination_picker.loadLibrary, () => destination_picker.DestinationPickerView()),
+        page: () => DeferredWidget(
+            destination_picker.loadLibrary,
+            () => destination_picker.DestinationPickerView()),
         binding: DestinationPickerBindings()),
     GetPage(
         name: AppRoutes.mailboxCreator,
         opaque: false,
-        page: () => DeferredWidget(mailbox_creator.loadLibrary, () => mailbox_creator.MailboxCreatorView()),
+        page: () => DeferredWidget(
+            mailbox_creator.loadLibrary,
+            () => mailbox_creator.MailboxCreatorView()),
         binding: MailboxCreatorBindings()),
     GetPage(
         name: AppRoutes.contact,
         opaque: false,
-        page: () => DeferredWidget(contact_view.loadLibrary, () => contact_view.ContactView()),
+        page: () => DeferredWidget(
+            contact_view.loadLibrary,
+            () => contact_view.ContactView()),
         binding: ContactBindings()),
     GetPage(
         name: AppRoutes.identityCreator,
         opaque: false,
-        page: () => DeferredWidget(identity_creator.loadLibrary, () => identity_creator.IdentityCreatorView()),
+        page: () => DeferredWidget(
+            identity_creator.loadLibrary,
+            () => identity_creator.IdentityCreatorView()),
         binding: IdentityCreatorBindings()),
     GetPage(
         name: AppRoutes.rulesFilterCreator,
         opaque: false,
-        page: () => DeferredWidget(rules_filter_creator.loadLibrary, () => rules_filter_creator.RuleFilterCreatorView()),
+        page: () => DeferredWidget(
+            rules_filter_creator.loadLibrary,
+            () => rules_filter_creator.RuleFilterCreatorView()),
         binding: RulesFilterCreatorBindings()),
+    GetPage(
+        name: AppRoutes.emailsForwardCreator,
+        opaque: false,
+        page: () => DeferredWidget(
+            emails_forward_creator.loadLibrary,
+            () => emails_forward_creator.EmailsForwardCreatorView()),
+        binding: EmailsForwardCreatorBindings()),
   ];
 
   static final pages = [
@@ -79,19 +98,16 @@ class AppPages {
         binding: SessionPageBindings()),
     GetPage(
         name: AppRoutes.dashboard,
-        page: () => DeferredWidget(mailbox_dashboard.loadLibrary, () => mailbox_dashboard.MailboxDashBoardView()),
+        page: () => DeferredWidget(
+            mailbox_dashboard.loadLibrary,
+            () => mailbox_dashboard.MailboxDashBoardView()),
         binding: MailboxDashBoardBindings()),
     GetPage(
         name: AppRoutes.settings,
-        page: () => DeferredWidget(manage_account_dashboard.loadLibrary,
+        page: () => DeferredWidget(
+            manage_account_dashboard.loadLibrary,
             () => manage_account_dashboard.ManageAccountDashBoardView()),
         binding: ManageAccountDashBoardBindings()),
-    GetPage(
-        name: AppRoutes.emailsForwardCreator,
-        opaque: false,
-        page: () => DeferredWidget(emails_forward_creator.loadLibrary,
-            () => emails_forward_creator.EmailsForwardCreatorView()),
-        binding: EmailsForwardCreatorBindings()),
     if (!BuildUtils.isWeb)
       ...pagesOnlyOnMobile
   ];

@@ -59,7 +59,7 @@ class ForwardHeaderWidget extends GetWidget<ForwardController> {
             color: Colors.white,
             fontWeight: FontWeight.w500,
           ))
-          ..onPressActionClick(() => controller.goToAddEmailsForward())
+          ..onPressActionClick(() => controller.goToAddEmailsForward(context))
           ..text(
             AppLocalizations.of(context).addRecipients,
             isVertical: false,
@@ -81,7 +81,7 @@ class ForwardHeaderWidget extends GetWidget<ForwardController> {
             color: Colors.white,
             fontWeight: FontWeight.w500,
           ))
-          ..onPressActionClick(() => controller.goToAddEmailsForward())
+          ..onPressActionClick(() => controller.goToAddEmailsForward(context))
           ..text(
             AppLocalizations.of(context).addRecipients,
             isVertical: false,

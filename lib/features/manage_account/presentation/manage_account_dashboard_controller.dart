@@ -48,11 +48,8 @@ class ManageAccountDashBoardController extends ReloadableController {
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
   final settingsPageLevel = SettingsPageLevel.universal.obs;
-
   final sessionCurrent = Rxn<Session>();
   final vacationResponse = Rxn<VacationResponse>();
-
-  final emailsForwardCreatorIsActive = false.obs;
 
   ManageAccountDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
