@@ -199,7 +199,7 @@ class HomeController extends BaseController {
     _authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
         newToken: storedTokenOidcSuccess.tokenOidc.toToken(),
         newConfig: storedTokenOidcSuccess.oidcConfiguration);
-    pushAndPop(AppRoutes.session);
+    pushAndPop(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
   }
 
   void _goToSessionWithBasicAuth(GetCredentialViewState credentialViewState) {
@@ -212,6 +212,6 @@ class HomeController extends BaseController {
       credentialViewState.userName.userName,
       credentialViewState.password.value,
     );
-    pushAndPop(AppRoutes.session);
+    pushAndPop(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
   }
 }

@@ -73,11 +73,7 @@ class ContactController extends BaseController {
 
   @override
   void onClose() {
-    textInputSearchController?.dispose();
-    textInputSearchController = null;
-    textInputSearchFocus?.dispose();
-    textInputSearchFocus = null;
-    _deBouncerTime.cancel();
+    _disposeWidget();
     super.onClose();
   }
 
@@ -167,16 +163,19 @@ class ContactController extends BaseController {
     }
   }
 
+  void _disposeWidget() {
+    textInputSearchFocus?.dispose();
+    textInputSearchFocus = null;
+    textInputSearchController?.dispose();
+    textInputSearchController = null;
+    _deBouncerTime.cancel();
+  }
+
   void selectContact(BuildContext context, EmailAddress emailAddress) {
     FocusScope.of(context).unfocus();
 
     if (BuildUtils.isWeb) {
-      textInputSearchFocus?.dispose();
-      textInputSearchFocus = null;
-      textInputSearchController?.dispose();
-      textInputSearchController = null;
-      _deBouncerTime.cancel();
-
+      _disposeWidget();
       onSelectedContactCallback?.call(emailAddress);
     } else {
       popBack(result: emailAddress);
@@ -188,12 +187,7 @@ class ContactController extends BaseController {
     FocusScope.of(context).unfocus();
 
     if (BuildUtils.isWeb) {
-      textInputSearchFocus?.dispose();
-      textInputSearchFocus = null;
-      textInputSearchController?.dispose();
-      textInputSearchController = null;
-      _deBouncerTime.cancel();
-
+      _disposeWidget();
       onDismissContactView?.call();
     } else {
       popBack();

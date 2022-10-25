@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -647,45 +648,26 @@ class ThreadController extends BaseController {
             context: context,
             arguments: arguments,
             onSelectedMailbox: (destinationMailbox) {
-              _dispatchMoveToMultipleAction(
-                  _accountId!,
-                  listEmail.listEmailIds,
-                  currentMailbox,
-                  destinationMailbox);
+              if (mailboxDashBoardController.sessionCurrent != null) {
+                _dispatchMoveToMultipleAction(
+                    _accountId!,
+                    mailboxDashBoardController.sessionCurrent!,
+                    listEmail.listEmailIds,
+                    currentMailbox,
+                    destinationMailbox);
+              }
             });
       } else {
         final destinationMailbox = await push(
             AppRoutes.destinationPicker,
             arguments: arguments);
 
-      if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
-        if (destinationMailbox.isTrash) {
-          _moveSelectedEmailMultipleToTrashAction(_accountId!, MoveToMailboxRequest(
-              {currentMailbox.id: listEmailIds},
-              destinationMailbox.id,
-              MoveAction.moving,
-              mailboxDashBoardController.sessionCurrent!,
-              EmailActionType.moveToTrash));
-        } else if (destinationMailbox.isSpam) {
-          _moveSelectedEmailMultipleToSpamAction(_accountId!, MoveToMailboxRequest(
-              {currentMailbox.id: listEmailIds},
-              destinationMailbox.id,
-              MoveAction.moving,
-              mailboxDashBoardController.sessionCurrent!,
-              EmailActionType.moveToSpam));
-        } else {
-          _moveSelectedEmailMultipleToMailboxAction(_accountId!, MoveToMailboxRequest(
-              {currentMailbox.id: listEmailIds},
-              destinationMailbox.id,
-              MoveAction.moving,
-              mailboxDashBoardController.sessionCurrent!,
-              EmailActionType.moveToMailbox,
-              destinationPath: destinationMailbox.mailboxPath));
-        }
-      }
-        if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
+        if (destinationMailbox != null &&
+            destinationMailbox is PresentationMailbox &&
+            mailboxDashBoardController.sessionCurrent != null) {
           _dispatchMoveToMultipleAction(
               _accountId!,
+              mailboxDashBoardController.sessionCurrent!,
               listEmail.listEmailIds,
               currentMailbox,
               destinationMailbox);
@@ -696,30 +678,31 @@ class ThreadController extends BaseController {
 
   void _dispatchMoveToMultipleAction(
       AccountId accountId,
+      Session session,
       List<EmailId> listEmailIds,
       PresentationMailbox currentMailbox,
       PresentationMailbox destinationMailbox
   ) {
     if (destinationMailbox.isTrash) {
       _moveSelectedEmailMultipleToTrashAction(accountId, MoveToMailboxRequest(
-          listEmailIds,
-          currentMailbox.id,
+          {currentMailbox.id: listEmailIds},
           destinationMailbox.id,
           MoveAction.moving,
+          session,
           EmailActionType.moveToTrash));
     } else if (destinationMailbox.isSpam) {
       _moveSelectedEmailMultipleToSpamAction(accountId, MoveToMailboxRequest(
-          listEmailIds,
-          currentMailbox.id,
+          {currentMailbox.id: listEmailIds},
           destinationMailbox.id,
           MoveAction.moving,
+          session,
           EmailActionType.moveToSpam));
     } else {
       _moveSelectedEmailMultipleToMailboxAction(accountId, MoveToMailboxRequest(
-          listEmailIds,
-          currentMailbox.id,
+          {currentMailbox.id: listEmailIds},
           destinationMailbox.id,
           MoveAction.moving,
+          session,
           EmailActionType.moveToMailbox,
           destinationPath: destinationMailbox.mailboxPath));
     }
@@ -1138,47 +1121,28 @@ class ThreadController extends BaseController {
             context: context,
             arguments: arguments,
             onSelectedMailbox: (destinationMailbox) {
-              _dispatchMoveToAction(
-                  context,
-                  accountId,
-                  email,
-                  currentMailbox,
-                  destinationMailbox);
+              if (mailboxDashBoardController.sessionCurrent != null) {
+                _dispatchMoveToAction(
+                    context,
+                    accountId,
+                    mailboxDashBoardController.sessionCurrent!,
+                    email,
+                    currentMailbox,
+                    destinationMailbox);
+              }
             });
       } else {
         final destinationMailbox = await push(
             AppRoutes.destinationPicker,
             arguments: arguments);
 
-      if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
-        if (destinationMailbox.isTrash) {
-          _moveToTrashAction(accountId, MoveToMailboxRequest(
-              {currentMailbox.id: [email.id]},
-              destinationMailbox.id,
-              MoveAction.moving,
-              mailboxDashBoardController.sessionCurrent!,
-              EmailActionType.moveToTrash));
-        } else if (destinationMailbox.isSpam) {
-          _moveToSpamAction(accountId, MoveToMailboxRequest(
-              {currentMailbox.id: [email.id]},
-              destinationMailbox.id,
-              MoveAction.moving,
-              mailboxDashBoardController.sessionCurrent!,
-              EmailActionType.moveToSpam));
-        } else {
-          _moveToMailboxAction(accountId, MoveToMailboxRequest(
-              {currentMailbox.id: [email.id]},
-              destinationMailbox.id,
-              MoveAction.moving,
-              mailboxDashBoardController.sessionCurrent!,
-              EmailActionType.moveToMailbox,
-              destinationPath: destinationMailbox.mailboxPath));
-        }
-      }
-        if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
+        if (destinationMailbox != null &&
+            destinationMailbox is PresentationMailbox &&
+            mailboxDashBoardController.sessionCurrent != null) {
           _dispatchMoveToAction(
               context,
               accountId,
+              mailboxDashBoardController.sessionCurrent!,
               email,
               currentMailbox,
               destinationMailbox);
@@ -1190,30 +1154,31 @@ class ThreadController extends BaseController {
   void _dispatchMoveToAction(
       BuildContext context,
       AccountId accountId,
+      Session session,
       PresentationEmail emailSelected,
       PresentationMailbox currentMailbox,
       PresentationMailbox destinationMailbox
   ) {
     if (destinationMailbox.isTrash) {
       _moveToTrashAction(accountId, MoveToMailboxRequest(
-          [emailSelected.id],
-          currentMailbox.id,
+          {currentMailbox.id: [emailSelected.id]},
           destinationMailbox.id,
           MoveAction.moving,
+          session,
           EmailActionType.moveToTrash));
     } else if (destinationMailbox.isSpam) {
       _moveToSpamAction(accountId, MoveToMailboxRequest(
-          [emailSelected.id],
-          currentMailbox.id,
+          {currentMailbox.id: [emailSelected.id]},
           destinationMailbox.id,
           MoveAction.moving,
+          session,
           EmailActionType.moveToSpam));
     } else {
       _moveToMailboxAction(accountId, MoveToMailboxRequest(
-          [emailSelected.id],
-          currentMailbox.id,
+          {currentMailbox.id: [emailSelected.id]},
           destinationMailbox.id,
           MoveAction.moving,
+          session,
           EmailActionType.moveToMailbox,
           destinationPath: destinationMailbox.mailboxPath));
     }

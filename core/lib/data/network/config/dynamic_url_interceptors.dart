@@ -7,6 +7,8 @@ class DynamicUrlInterceptors extends InterceptorsWrapper {
     _baseUrl = url;
   }
 
+  String? get baseUrl => _baseUrl;
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (_baseUrl != null) {

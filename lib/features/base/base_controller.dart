@@ -14,7 +14,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/t
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 abstract class BaseController extends GetxController
-    with MessageDialogActionMixin, PopupContextMenuActionMixin, ViewAsDialogActionMixin {
+    with MessageDialogActionMixin,
+        PopupContextMenuActionMixin,
+        ViewAsDialogActionMixin {
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
 
