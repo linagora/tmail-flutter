@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_controller.dart';
+import 'package:tmail_ui_user/features/emails_forward_creator/presentation/model/email_forward_creator_arguments.dart';
 import 'package:tmail_ui_user/features/emails_forward_creator/presentation/widgets/email_forward_creator_item_widget.dart';
 import 'package:tmail_ui_user/features/emails_forward_creator/presentation/widgets/emails_forward_input_with_drop_list_field_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -14,82 +15,82 @@ class EmailsForwardCreatorView extends GetWidget<EmailsForwardCreatorController>
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  EmailsForwardCreatorView({Key? key}) : super(key: key);
+  @override
+  final controller = Get.find<EmailsForwardCreatorController>();
+
+  EmailsForwardCreatorView({Key? key}) : super(key: key) {
+    controller.arguments = Get.arguments;
+  }
+
+  EmailsForwardCreatorView.fromArguments(
+      EmailForwardCreatorArguments arguments, {
+      Key? key,
+      OnAddEmailForwardCallback? onAddEmailForwardCallback,
+      VoidCallback? onDismissCallback
+  }) : super(key: key) {
+    controller.arguments = arguments;
+    controller.onAddEmailForwardCallback = onAddEmailForwardCallback;
+    controller.onDismissForwardCreatorCallback = onDismissCallback;
+  }
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveWidget(
         responsiveUtils: _responsiveUtils,
         mobile: Scaffold(
-            backgroundColor: Colors.black38,
+            backgroundColor: BuildUtils.isWeb
+                ? Colors.black.withAlpha(24)
+                : Colors.black38,
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: SafeArea(
-                child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Card(
-                        color: Colors.transparent,
-                        shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              topRight: Radius.circular(16),
-                            )),
-                        child: Container(
-                            decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(16),
-                                  topRight: Radius.circular(16),
-                                )),
-                            width: double.infinity,
-                            height: _responsiveUtils.getSizeScreenHeight(context) - 70,
-                            child: ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(16),
-                                    topRight: Radius.circular(16)),
-                                child: _buildEmailForwardCreatorList(context)
-                            )
-                        )
+                bottom: false,
+                left: false,
+                right: false,
+                child: Container(
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16)),
+                        color: Colors.white),
+                    margin: const EdgeInsets.only(top: BuildUtils.isWeb ? 70 : 0),
+                    child: ClipRRect(
+                        borderRadius: const  BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16)),
+                        child: SafeArea(child: _buildEmailForwardCreatorList(context))
                     )
                 ),
               ),
             )
         ),
         tablet: Scaffold(
-            backgroundColor: Colors.black38,
+            backgroundColor: Colors.black.withAlpha(24),
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
-              child: Align(alignment: Alignment.bottomCenter, child: Card(
-                  color: Colors.transparent,
-                  shape: const RoundedRectangleBorder(
+              child: Align(alignment: Alignment.bottomCenter, child: Container(
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(16),
                         topRight: Radius.circular(16),
                       )),
-                  child: Container(
-                      decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16),
-                          )),
-                      width: double.infinity,
-                      height: _responsiveUtils.getSizeScreenHeight(context) * 0.7,
-                      child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              topRight: Radius.circular(16)),
-                          child: _buildEmailForwardCreatorList(context)
-                      )
+                  width: double.infinity,
+                  height: _responsiveUtils.getSizeScreenHeight(context) * 0.7,
+                  child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16)),
+                      child: _buildEmailForwardCreatorList(context)
                   )
               )),
             )
         ),
         desktop: Scaffold(
-            backgroundColor: Colors.black38,
+            backgroundColor: Colors.black.withAlpha(24),
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
-              child: Align(alignment: Alignment.center, child: Card(
+              child: Center(child: Card(
                   color: Colors.transparent,
                   shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(16))),
@@ -104,8 +105,7 @@ class EmailsForwardCreatorView extends GetWidget<EmailsForwardCreatorController>
                           child: _buildEmailForwardCreatorList(context)
                       )
                   )
-              )
-              ),
+              )),
             )
         )
     );
@@ -125,7 +125,7 @@ class EmailsForwardCreatorView extends GetWidget<EmailsForwardCreatorController>
                       fontSize: 20,
                       color: Colors.black))),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.all(16),
             child: (EmailsForwardInputWithDropListFieldBuilder(
                 AppLocalizations.of(context).recipientsLabel,
                 controller.inputEmailForwardController)
@@ -134,7 +134,7 @@ class EmailsForwardCreatorView extends GetWidget<EmailsForwardCreatorController>
                 controller.clearAll();
               })
               ..addOnSummitedCallbackAction((pattern) {
-                if (pattern != null && pattern.trim().isNotEmpty) {
+                if (pattern != null && pattern.trim().isNotEmpty && pattern.isEmail == true) {
                   controller.addToListEmailForwards(EmailAddress(null, pattern.trim()));
                   controller.clearAll();
                 }
@@ -156,7 +156,7 @@ class EmailsForwardCreatorView extends GetWidget<EmailsForwardCreatorController>
             )),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            padding: const EdgeInsets.all(16),
             child: _buildButtonAddNewEmailsForward(context),
           ),
         ]),
@@ -192,7 +192,7 @@ class EmailsForwardCreatorView extends GetWidget<EmailsForwardCreatorController>
           AppLocalizations.of(context).addRecipients,
           isVertical: false,
         ))
-          .build();
+      .build();
   }
 
 }

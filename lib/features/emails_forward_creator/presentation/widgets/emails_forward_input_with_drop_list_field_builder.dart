@@ -12,7 +12,7 @@ typedef OnSummitedCallbackAction = Function(String? pattern);
 class EmailsForwardInputWithDropListFieldBuilder {
 
   final String hintText;
-  final TextEditingController editingController;
+  final TextEditingController? editingController;
 
   OnSelectedSuggestionAction? _onSelectedSuggestionAction;
   OnSuggestionCallbackAction? _onSuggestionCallbackAction;

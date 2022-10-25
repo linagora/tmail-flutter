@@ -4,23 +4,23 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
-import 'package:flutter/foundation.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/tmail_forward.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_binding.dart';
+import 'package:tmail_ui_user/features/emails_forward_creator/presentation/model/email_forward_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/add_recipients_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_local_copy_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/add_recipient_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:tmail_ui_user/features/emails_forward_creator/presentation/model/mails_forward_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/edit_local_copy_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_forward_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/add_recipients_in_forwarding_interactor.dart';
@@ -49,7 +49,6 @@ class ForwardController extends BaseController {
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
   final listRecipientForward = RxList<RecipientForward>();
   final currentForward = Rxn<TMailForward>();
-  final emailsForwardCreatorArguments = Rxn<MailsForwardCreatorArguments>();
 
   final listForwards = <String>[].obs;
 
@@ -237,28 +236,32 @@ class ForwardController extends BaseController {
         .toList();
   }
 
-  void goToAddEmailsForward() async {
+  void goToAddEmailsForward(BuildContext context) async {
     final accountId = accountDashBoardController.accountId.value;
     final session = accountDashBoardController.sessionCurrent.value;
     if (accountId != null && session != null) {
-      emailsForwardCreatorArguments.value = MailsForwardCreatorArguments(accountId, session);
-      if (kIsWeb) {
-        _openMailsForwardCreatorOverlay();
+      final arguments = EmailForwardCreatorArguments(accountId, session);
+
+      if (BuildUtils.isWeb) {
+        showDialogEmailForwardCreator(
+            context: context,
+            arguments: arguments,
+            onAddEmailForward: (listEmailAddress) => _handleAddRecipients(accountId, listEmailAddress));
       } else {
-       push(AppRoutes.emailsForwardCreator);
+        final newListEmailAddress = await push(
+            AppRoutes.emailsForwardCreator,
+            arguments: arguments);
+
+        if (newListEmailAddress is List<EmailAddress> && newListEmailAddress.isNotEmpty) {
+          _handleAddRecipients(accountId, newListEmailAddress);
+        }
       }
     }
   }
 
-  void _openMailsForwardCreatorOverlay() {
-    EmailsForwardCreatorBindings().dependencies();
-    accountDashBoardController.emailsForwardCreatorIsActive.toggle();
-  }
-
-  void handleAddRecipients(List<EmailAddress> listEmailAddress) {
-    final accountId = accountDashBoardController.accountId.value;
+  void _handleAddRecipients(AccountId accountId, List<EmailAddress> listEmailAddress) {
     final listRecipients = listEmailAddress.map((e) => e.emailAddress).toSet();
-    if (accountId != null && currentForward.value != null) {
+    if (currentForward.value != null) {
       consumeState(_addRecipientsInForwardingInteractor.execute(
           accountId,
           AddRecipientInForwardingRequest(

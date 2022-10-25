@@ -1,8 +1,13 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/image/avatar_builder.dart';
+import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/presentation/views/text/slogan_builder.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -34,101 +39,94 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
       });
     }
 
-    return Obx(
-      () => Stack(
-        children: [
-          Scaffold(
-            key: controller.menuDrawerKey,
-            backgroundColor: Colors.white,
-            drawerEnableOpenDragGesture: false,
-            body: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: ResponsiveWidget(
-                  responsiveUtils: _responsiveUtils,
-                  desktop: Column(children: [
-                    Row(children: [
-                      Container(width: 256, color: Colors.white,
-                          padding: const EdgeInsets.only(top: 25, bottom: 25, left: 32),
-                          child: Row(children: [
-                            (SloganBuilder(arrangedByHorizontal: true)
-                              ..setSloganText(AppLocalizations.of(context).app_name)
-                              ..setSloganTextAlign(TextAlign.center)
-                              ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold))
-                              ..setSizeLogo(24)
-                              ..addOnTapCallback(() => controller.backToMailboxDashBoard(context))
-                              ..setLogo(_imagePaths.icLogoTMail))
-                                .build(),
-                            Obx(() {
-                              if (controller.appInformation.value != null) {
-                                return Padding(padding: const EdgeInsets.only(top: 6),
-                                    child: Text(
-                                      'v.${controller.appInformation.value!.version}',
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
-                                    ));
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            }),
-                          ])
-                      ),
-                      Expanded(child: Padding(
-                          padding: const EdgeInsets.only(right: 10, top: 16, bottom: 10, left: 48),
-                          child: _buildRightHeader(context)))
+    return Scaffold(
+      key: controller.menuDrawerKey,
+      backgroundColor: Colors.white,
+      drawerEnableOpenDragGesture: false,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: ResponsiveWidget(
+            responsiveUtils: _responsiveUtils,
+            desktop: Column(children: [
+              Row(children: [
+                Container(width: 256, color: Colors.white,
+                    padding: const EdgeInsets.only(top: 25, bottom: 25, left: 32),
+                    child: Row(children: [
+                      (SloganBuilder(arrangedByHorizontal: true)
+                        ..setSloganText(AppLocalizations.of(context).app_name)
+                        ..setSloganTextAlign(TextAlign.center)
+                        ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold))
+                        ..setSizeLogo(24)
+                        ..addOnTapCallback(() => controller.backToMailboxDashBoard(context))
+                        ..setLogo(_imagePaths.icLogoTMail))
+                          .build(),
+                      Obx(() {
+                        if (controller.appInformation.value != null) {
+                          return Padding(padding: const EdgeInsets.only(top: 6),
+                              child: Text(
+                                'v.${controller.appInformation.value!.version}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
+                              ));
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
+                    ])
+                ),
+                Expanded(child: Padding(
+                    padding: const EdgeInsets.only(right: 10, top: 16, bottom: 10, left: 48),
+                    child: _buildRightHeader(context)))
+              ]),
+              Expanded(child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeMenu),
+                  Expanded(child: Container(
+                    color: AppColor.colorBgDesktop,
+                    child: Column(children: [
+                      Obx(() {
+                        if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
+                          return VacationNotificationMessageWidget(
+                              margin: const EdgeInsets.only(
+                                  top: 16,
+                                  left: BuildUtils.isWeb ? 24 : 16,
+                                  right: BuildUtils.isWeb ? 24 : 16),
+                              fromAccountDashBoard: true,
+                              vacationResponse: controller.vacationResponse.value!,
+                              actionGotoVacationSetting: !controller.inVacationSettings()
+                                  ? () => controller.selectAccountMenuItem(AccountMenuItem.vacation)
+                                  : null,
+                              actionEndNow: () => controller.disableVacationResponder());
+                        } else if ((controller.vacationResponse.value?.vacationResponderIsWaiting == true
+                            || controller.vacationResponse.value?.vacationResponderIsStopped == true)
+                            && controller.accountMenuItemSelected.value == AccountMenuItem.vacation) {
+                          return VacationNotificationMessageWidget(
+                              margin: const EdgeInsets.only(
+                                  top: 16,
+                                  left: BuildUtils.isWeb ? 24 : 16,
+                                  right: BuildUtils.isWeb ? 24 : 16),
+                              fromAccountDashBoard: true,
+                              vacationResponse: controller.vacationResponse.value!,
+                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                              leadingIcon: const Padding(
+                                padding: EdgeInsets.only(right: 16),
+                                child: Icon(Icons.timer, size: 20),
+                              ));
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
+                      Expanded(child: _viewDisplayedOfAccountMenuItem())
                     ]),
-                    Expanded(child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeMenu),
-                        Expanded(child: Container(
-                          color: AppColor.colorBgDesktop,
-                          child: Column(children: [
-                            Obx(() {
-                              if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
-                                return VacationNotificationMessageWidget(
-                                    margin: const EdgeInsets.only(
-                                        top: 16,
-                                        left: BuildUtils.isWeb ? 24 : 16,
-                                        right: BuildUtils.isWeb ? 24 : 16),
-                                    fromAccountDashBoard: true,
-                                    vacationResponse: controller.vacationResponse.value!,
-                                    actionGotoVacationSetting: !controller.inVacationSettings()
-                                        ? () => controller.selectAccountMenuItem(AccountMenuItem.vacation)
-                                        : null,
-                                    actionEndNow: () => controller.disableVacationResponder());
-                              } else if ((controller.vacationResponse.value?.vacationResponderIsWaiting == true
-                                  || controller.vacationResponse.value?.vacationResponderIsStopped == true)
-                                  && controller.accountMenuItemSelected.value == AccountMenuItem.vacation) {
-                                return VacationNotificationMessageWidget(
-                                    margin: const EdgeInsets.only(
-                                        top: 16,
-                                        left: BuildUtils.isWeb ? 24 : 16,
-                                        right: BuildUtils.isWeb ? 24 : 16),
-                                    fromAccountDashBoard: true,
-                                    vacationResponse: controller.vacationResponse.value!,
-                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                    leadingIcon: const Padding(
-                                      padding: EdgeInsets.only(right: 16),
-                                      child: Icon(Icons.timer, size: 20),
-                                    ));
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            }),
-                            Expanded(child: _viewDisplayedOfAccountMenuItem())
-                          ]),
-                        ))
-                      ],
-                    ))
-                  ]),
-                  mobile: SettingsView(closeAction: () => controller.backToMailboxDashBoard(context))
-              ),
-            ),
-          ),
-          if(controller.emailsForwardCreatorIsActive.isTrue)
-            EmailsForwardCreatorView(),
-        ]
-    ));
+                  ))
+                ],
+              ))
+            ]),
+            mobile: SettingsView(closeAction: () => controller.backToMailboxDashBoard(context))
+        ),
+      ),
+    );
   }
 
   Widget _buildRightHeader(BuildContext context) {

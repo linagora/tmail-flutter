@@ -1,7 +1,7 @@
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -12,35 +12,47 @@ import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
+import 'package:tmail_ui_user/features/emails_forward_creator/presentation/model/email_forward_creator_arguments.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+
+typedef OnAddEmailForwardCallback = Function(List<EmailAddress> listEmailAddress);
 
 class EmailsForwardCreatorController extends BaseController {
 
-  final inputEmailForwardController = TextEditingController();
   final ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
-  final _forwardController = Get.find<ForwardController>();
 
   GetAutoCompleteWithDeviceContactInteractor? _getAutoCompleteWithDeviceContactInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
 
   final listEmailForwards = RxSet<EmailAddress>();
 
-  EmailsForwardCreatorController();
+  TextEditingController? inputEmailForwardController;
 
-  AccountId? get _accountId => _forwardController.emailsForwardCreatorArguments.value?.accountId;
+  EmailForwardCreatorArguments? arguments;
+  OnAddEmailForwardCallback? onAddEmailForwardCallback;
+  VoidCallback? onDismissForwardCreatorCallback;
+  AccountId? _accountId;
+  Session? _session;
 
-  Session? get _session => _forwardController.emailsForwardCreatorArguments.value?.session;
+  @override
+  void onInit() {
+    super.onInit();
+    inputEmailForwardController = TextEditingController();
+  }
 
   @override
   void onReady() {
-    injectAutoCompleteBindings(_session, _accountId);
     super.onReady();
+    if (arguments != null) {
+      _accountId = arguments!.accountId;
+      _session = arguments!.session;
+      injectAutoCompleteBindings(_session, _accountId);
+    }
   }
 
   @override
   void onClose() {
-    inputEmailForwardController.dispose();
+    _disposeWidget();
     super.onClose();
   }
 
@@ -62,7 +74,6 @@ class EmailsForwardCreatorController extends BaseController {
   }
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
-    log('EmailsForwardCreatorController::getAutoCompleteSuggestion(): $word | $_contactSuggestionSource');
     try {
       _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
       _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
@@ -72,7 +83,6 @@ class EmailsForwardCreatorController extends BaseController {
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
       if (_getAutoCompleteWithDeviceContactInteractor == null || _getAutoCompleteInteractor == null) {
-        logError('EmailsForwardCreatorController::_getAutoCompleteWithDeviceContactInteractor(): is null');
         return <EmailAddress>[];
       } else {
         return await _getAutoCompleteWithDeviceContactInteractor!
@@ -85,7 +95,6 @@ class EmailsForwardCreatorController extends BaseController {
       }
     } else {
       if (_getAutoCompleteInteractor == null) {
-        logError('EmailsForwardCreatorController::_getAutoCompleteInteractor(): is null');
         return <EmailAddress>[];
       } else {
         return await _getAutoCompleteInteractor!
@@ -100,26 +109,26 @@ class EmailsForwardCreatorController extends BaseController {
   }
 
   void addToListEmailForwards(EmailAddress emailAddress) {
-    if(emailAddress.email !=null && emailAddress.email!.isNotEmpty) {
+    if (emailAddress.email != null && emailAddress.email!.isNotEmpty) {
       listEmailForwards.add(emailAddress);
     }
   }
 
   void clearAll() {
-    inputEmailForwardController.clear();
+    inputEmailForwardController?.clear();
   }
 
-  void _clearListEmailForwards() {
-    listEmailForwards.clear();
+  void _disposeWidget() {
+    inputEmailForwardController?.dispose();
+    inputEmailForwardController = null;
   }
 
   void closeView(BuildContext context) {
     FocusScope.of(context).unfocus();
-    clearAll();
 
-    if(kIsWeb) {
-      _clearListEmailForwards();
-      _forwardController.accountDashBoardController.emailsForwardCreatorIsActive.toggle();
+    if (BuildUtils.isWeb) {
+      _disposeWidget();
+      onDismissForwardCreatorCallback?.call();
     } else {
       popBack();
     }
@@ -127,21 +136,20 @@ class EmailsForwardCreatorController extends BaseController {
 
   void addEmailForwards(BuildContext context) {
     FocusScope.of(context).unfocus();
-    if(inputEmailForwardController.text.trim().isNotEmpty) {
-      listEmailForwards.add(EmailAddress(null, inputEmailForwardController.text.trim()));
-    }
-    clearAll();
 
-    if (listEmailForwards.isNotEmpty) {
-      final newListEmailForwards = List<EmailAddress>.from(listEmailForwards);
-      _forwardController.handleAddRecipients(newListEmailForwards);
+    final emailInput = inputEmailForwardController?.text.trim();
+    if (emailInput?.isNotEmpty == true && emailInput?.isEmail == true) {
+      listEmailForwards.add(EmailAddress(null, emailInput));
     }
 
-    if(kIsWeb) {
-      _clearListEmailForwards();
-      _forwardController.accountDashBoardController.emailsForwardCreatorIsActive.toggle();
+    final newListEmailForwardNeedAdded = listEmailForwards.toList();
+    log('EmailsForwardCreatorController::addEmailForwards(): newListEmailForwardNeedAdded: $newListEmailForwardNeedAdded');
+
+    if (BuildUtils.isWeb) {
+      _disposeWidget();
+      onAddEmailForwardCallback?.call(newListEmailForwardNeedAdded);
     } else {
-      popBack();
+      popBack(result: newListEmailForwardNeedAdded);
     }
   }
 }
