@@ -94,7 +94,6 @@ class LoginController extends ReloadableController {
     this._getAllRecentLoginUrlOnMobileInteractor,
     this._saveLoginUsernameOnMobileInteractor,
     this._getAllRecentLoginUsernameOnMobileInteractor,
-  );
   ) : super(logoutOidcInteractor,
       deleteAuthorityOidcInteractor,
       getAuthenticatedAccountInteractor);
@@ -312,7 +311,7 @@ class LoginController extends ReloadableController {
     _authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
         newConfig: success.configuration);
-    pushAndPop(AppRoutes.session);
+    pushAndPop(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
   }
 
   void _loginAction(Uri baseUrl, UserName userName, Password password) async {
@@ -324,7 +323,7 @@ class LoginController extends ReloadableController {
     _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
     _authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);
     _authorizationIsolateInterceptors.setBasicAuthorization(_userNameText, _passwordText);
-    pushAndPop(AppRoutes.session);
+    pushAndPop(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
   }
 
   void _loginFailureAction(FeatureFailure failure) {

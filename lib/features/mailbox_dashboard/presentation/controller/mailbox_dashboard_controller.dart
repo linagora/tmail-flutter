@@ -623,46 +623,29 @@ class MailboxDashBoardController extends ReloadableController {
             context: context,
             arguments: arguments,
             onSelectedMailbox: (destinationMailbox) {
-              _dispatchMoveToMultipleAction(
-                  accountId.value!,
-                  listEmails.listEmailIds,
-                  currentMailbox, destinationMailbox);
+              if (sessionCurrent != null) {
+                _dispatchMoveToMultipleAction(
+                    accountId.value!,
+                    sessionCurrent!,
+                    listEmails.listEmailIds,
+                    currentMailbox,
+                    destinationMailbox);
+              }
             });
       } else {
         final destinationMailbox = await push(
             AppRoutes.destinationPicker,
             arguments: arguments);
 
-      if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
-        if (destinationMailbox.isTrash) {
-          _moveSelectedEmailMultipleToMailboxAction(accountId.value!, MoveToMailboxRequest(
-              {mailboxCurrent.id: listEmails.listEmailIds},
-              destinationMailbox.id,
-              MoveAction.moving,
-              sessionCurrent!,
-              EmailActionType.moveToTrash));
-        } else if (destinationMailbox.isSpam) {
-          _moveSelectedEmailMultipleToMailboxAction(accountId.value!, MoveToMailboxRequest(
-              {mailboxCurrent.id: listEmails.listEmailIds},
-              destinationMailbox.id,
-              MoveAction.moving,
-              sessionCurrent!,
-              EmailActionType.moveToSpam));
-        } else {
-          _moveSelectedEmailMultipleToMailboxAction(accountId.value!, MoveToMailboxRequest(
-              {mailboxCurrent.id: listEmails.listEmailIds},
-              destinationMailbox.id,
-              MoveAction.moving,
-              sessionCurrent!,
-              EmailActionType.moveToMailbox,
-              destinationPath: destinationMailbox.mailboxPath));
-        }
-      }
-        if (destinationMailbox != null && destinationMailbox is PresentationMailbox) {
+        if (destinationMailbox != null &&
+            destinationMailbox is PresentationMailbox &&
+            sessionCurrent != null) {
           _dispatchMoveToMultipleAction(
               accountId.value!,
+              sessionCurrent!,
               listEmails.listEmailIds,
-              currentMailbox, destinationMailbox);
+              currentMailbox,
+              destinationMailbox);
         }
       }
     }
@@ -670,30 +653,31 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _dispatchMoveToMultipleAction(
       AccountId accountId,
+      Session session,
       List<EmailId> listEmailIds,
       PresentationMailbox currentMailbox,
       PresentationMailbox destinationMailbox
   ) {
     if (destinationMailbox.isTrash) {
       _moveSelectedEmailMultipleToMailboxAction(accountId, MoveToMailboxRequest(
-          listEmailIds,
-          currentMailbox.id,
+          {currentMailbox.id: listEmailIds},
           destinationMailbox.id,
           MoveAction.moving,
+          session,
           EmailActionType.moveToTrash));
     } else if (destinationMailbox.isSpam) {
       _moveSelectedEmailMultipleToMailboxAction(accountId, MoveToMailboxRequest(
-          listEmailIds,
-          currentMailbox.id,
+          {currentMailbox.id: listEmailIds},
           destinationMailbox.id,
           MoveAction.moving,
+          session,
           EmailActionType.moveToSpam));
     } else {
       _moveSelectedEmailMultipleToMailboxAction(accountId, MoveToMailboxRequest(
-          listEmailIds,
-          currentMailbox.id,
+          {currentMailbox.id: listEmailIds},
           destinationMailbox.id,
           MoveAction.moving,
+          session,
           EmailActionType.moveToMailbox,
           destinationPath: destinationMailbox.mailboxPath));
     }
