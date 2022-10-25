@@ -1,10 +1,21 @@
-import 'package:core/core.dart';
+import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:core/presentation/extensions/url_extension.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:model/account/password.dart';
+import 'package:model/account/user_name.dart';
+import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/request/oidc_request.dart';
+import 'package:model/oidc/response/oidc_response.dart';
+import 'package:model/oidc/token_oidc.dart';
+import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
@@ -15,15 +26,19 @@ import 'package:tmail_ui_user/features/login/domain/state/get_all_recent_login_u
 import 'package:tmail_ui_user/features/login/domain/state/get_all_recent_login_username_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_username_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
@@ -31,18 +46,20 @@ import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
-class LoginController extends BaseController {
+class LoginController extends ReloadableController {
 
   final AuthenticationInteractor _authenticationInteractor;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
   final AuthorizationInterceptors _authorizationInterceptors;
   final AuthorizationInterceptors _authorizationIsolateInterceptors;
   final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
+  final GetOIDCIsAvailableInteractor _getOIDCIsAvailableInteractor;
   final GetOIDCConfigurationInteractor _getOIDCConfigurationInteractor;
   final GetTokenOIDCInteractor _getTokenOIDCInteractor;
   final AuthenticateOidcOnBrowserInteractor _authenticateOidcOnBrowserInteractor;
@@ -53,16 +70,21 @@ class LoginController extends BaseController {
   final SaveLoginUsernameOnMobileInteractor _saveLoginUsernameOnMobileInteractor;
   final GetAllRecentLoginUsernameOnMobileInteractor _getAllRecentLoginUsernameOnMobileInteractor;
 
+
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
   final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
 
   LoginController(
+    LogoutOidcInteractor logoutOidcInteractor,
+    DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
+    GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
     this._authenticationInteractor,
     this._dynamicUrlInterceptors,
     this._authorizationInterceptors,
     this._authorizationIsolateInterceptors,
     this._checkOIDCIsAvailableInteractor,
+    this._getOIDCIsAvailableInteractor,
     this._getOIDCConfigurationInteractor,
     this._getTokenOIDCInteractor,
     this._authenticateOidcOnBrowserInteractor,
@@ -73,6 +95,9 @@ class LoginController extends BaseController {
     this._saveLoginUsernameOnMobileInteractor,
     this._getAllRecentLoginUsernameOnMobileInteractor,
   );
+  ) : super(logoutOidcInteractor,
+      deleteAuthorityOidcInteractor,
+      getAuthenticatedAccountInteractor);
 
   var loginState = LoginState(Right(LoginInitAction())).obs;
   final loginFormType = LoginFormType.baseUrlForm.obs;
@@ -102,39 +127,80 @@ class LoginController extends BaseController {
 
   @override
   void onReady() {
+    super.onReady();
     if (BuildUtils.isWeb) {
       final arguments = Get.arguments;
       if (arguments is LoginArguments) {
         loginFormType.value = arguments.loginFormType;
+        _checkOIDCIsAvailable();
       } else {
         _getAuthenticationInfo();
       }
     }
-    super.onReady();
   }
 
-  void _getAuthenticationInfo() async {
-    await _getAuthenticationInfoInteractor.execute()
-      .then((result) => result.fold(
-        (failure) => _checkOIDCIsAvailable(),
-        (success) {
-          if (success is GetAuthenticationInfoSuccess) {
-            _getStoredOidcConfiguration();
-          } else {
-            _checkOIDCIsAvailable();
-          }
-        }));
+  @override
+  void onData(Either<Failure, Success> newState) {
+    super.onData(newState);
+    viewState.value.fold(
+      (failure) {
+        if (failure is GetAuthenticationInfoFailure) {
+          getAuthenticatedAccountAction();
+        } else if (failure is CheckOIDCIsAvailableFailure ||
+            failure is GetStoredOidcConfigurationFailure) {
+          _showFormLoginWithCredentialAction();
+        } else if (failure is GetOIDCIsAvailableFailure) {
+          loginState.value = LoginState(Left(LoginSSONotAvailableAction()));
+          _showFormLoginWithCredentialAction();
+        } else if (failure is AuthenticationUserFailure) {
+          _loginFailureAction(failure);
+        } else if (failure is GetOIDCConfigurationFailure ||
+            failure is GetTokenOIDCFailure ||
+            failure is AuthenticateOidcOnBrowserFailure) {
+          loginState.value = LoginState(Left(failure));
+        }
+      },
+      (success) {
+        if (success is GetAuthenticationInfoSuccess) {
+          _getStoredOidcConfiguration();
+        } else if (success is GetStoredOidcConfigurationSuccess) {
+          _getTokenOIDCAction(success.oidcConfiguration);
+        } else if (success is CheckOIDCIsAvailableSuccess) {
+          _showFormLoginWithSSOAction(success);
+        } else if (success is GetOIDCIsAvailableSuccess) {
+          loginState.value = LoginState(Right(success));
+          _oidcResponse = success.oidcResponse;
+          _getOIDCConfiguration();
+        } else if (success is GetOIDCConfigurationSuccess) {
+          _getOIDCConfigurationSuccess(success);
+        } else if (success is GetTokenOIDCSuccess) {
+          _getTokenOIDCSuccess(success);
+        } else if (success is AuthenticationUserSuccess) {
+          _loginSuccessAction(success);
+        } else if (success is GetAuthenticationInfoLoading ||
+            success is CheckOIDCIsAvailableLoading ||
+            success is GetStoredOidcConfigurationLoading ||
+            success is GetOIDCConfigurationLoading ||
+            success is GetTokenOIDCLoading ||
+            success is AuthenticationUserLoading ||
+            success is GetOIDCIsAvailableLoading) {
+          loginState.value = LoginState(Right(LoginLoadingAction()));
+        }
+      }
+    );
   }
 
-  void _getStoredOidcConfiguration() async {
-    await _getStoredOidcConfigurationInteractor.execute()
-        .then((result) => result.fold(
-            (failure) => {},
-            (success) {
-              if (success is GetStoredOidcConfigurationSuccess) {
-                _getTokenOIDCAction(success.oidcConfiguration);
-              }
-            }));
+  @override
+  void handleReloaded(Session session) {
+    pushAndPop(AppRoutes.dashboard, arguments: session);
+  }
+
+  void _getAuthenticationInfo() {
+    consumeState(_getAuthenticationInfoInteractor.execute());
+  }
+
+  void _getStoredOidcConfiguration() {
+    consumeState(_getStoredOidcConfigurationInteractor.execute());
   }
 
   void handleNextInUrlInputFormPress() {
@@ -142,21 +208,14 @@ class LoginController extends BaseController {
     _checkOIDCIsAvailable();
   }
 
-  void _checkOIDCIsAvailable() async {
+  void _checkOIDCIsAvailable() {
     final baseUri = BuildUtils.isWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
-    log('LoginController::_checkOIDCIsAvailable(): baseUri: $baseUri');
     if (baseUri == null) {
       loginState.value = LoginState(Left(LoginMissUrlAction()));
     } else {
-      loginState.value = LoginState(Right(LoginLoadingAction()));
-      log('LoginController::_checkOIDCIsAvailable(): origin: + ${baseUri.origin}');
-      await _checkOIDCIsAvailableInteractor
-          .execute(OIDCRequest(baseUrl: baseUri.toString(), resourceUrl: baseUri.origin))
-          .then((response) => response.fold(
-              (failure) => _showFormLoginWithCredentialAction(),
-              (success) => success is CheckOIDCIsAvailableSuccess
-                  ? _showFormLoginWithSSOAction(success)
-                  : _showFormLoginWithCredentialAction()));
+      consumeState(_checkOIDCIsAvailableInteractor.execute(OIDCRequest(
+          baseUrl: baseUri.toString(),
+          resourceUrl: baseUri.origin)));
     }
   }
 
@@ -172,7 +231,6 @@ class LoginController extends BaseController {
   }
 
   void _showFormLoginWithCredentialAction() {
-    log('LoginController::_showFormLoginWithCredentialAction()');
     loginState.value = LoginState(Right(InputUrlCompletion()));
     loginFormType.value = LoginFormType.credentialForm;
   }
@@ -198,49 +256,22 @@ class LoginController extends BaseController {
     }
   }
 
-  void handleSSOPressed() async {
+  void handleSSOPressed() {
     final baseUri = _parseUri(AppConfig.baseUrl);
-
     if (baseUri != null) {
-      log('LoginController::handleSSOPressed(): baseUri: ${baseUri.toString()}');
-      loginState.value = LoginState(Right(LoginLoadingAction()));
-      await _checkOIDCIsAvailableInteractor
-        .execute(OIDCRequest(baseUrl: baseUri.toString(), resourceUrl: baseUri.origin))
-        .then((response) => response.fold(
-          (failure) => loginState.value = LoginState(Left(LoginSSONotAvailableAction())),
-          (success) {
-            if (success is CheckOIDCIsAvailableSuccess) {
-              loginState.value = LoginState(Right(success));
-              _oidcResponse = success.oidcResponse;
-              _getOIDCConfiguration();
-            } else {
-              loginState.value = LoginState(Left(LoginSSONotAvailableAction()));
-            }
-          }));
+      consumeState(_getOIDCIsAvailableInteractor.execute(OIDCRequest(
+          baseUrl: baseUri.toString(),
+          resourceUrl: baseUri.origin)));
+    }  else {
+      loginState.value = LoginState(Left(LoginCanNotAuthenticationSSOAction()));
     }
   }
 
-  void _getOIDCConfiguration() async {
-    loginState.value = LoginState(Right(LoginLoadingAction()));
+  void _getOIDCConfiguration() {
     if (_oidcResponse != null) {
-      await _getOIDCConfigurationInteractor.execute(_oidcResponse!)
-        .then((response) => response.fold(
-          (failure) {
-            if (failure is GetOIDCConfigurationFailure) {
-              loginState.value = LoginState(Left(failure));
-            } else {
-              loginState.value = LoginState(
-                  Left(LoginCanNotVerifySSOConfigurationAction()));
-            }
-          },
-          (success) {
-            if (success is GetOIDCConfigurationSuccess) {
-              _getOIDCConfigurationSuccess(success);
-            } else {
-              loginState.value = LoginState(
-                  Left(LoginCanNotVerifySSOConfigurationAction()));
-            }
-          }));
+      consumeState(_getOIDCConfigurationInteractor.execute(_oidcResponse!));
+    } else {
+      loginState.value = LoginState(Left(LoginCanNotAuthenticationSSOAction()));
     }
   }
 
@@ -254,77 +285,41 @@ class LoginController extends BaseController {
   }
 
   void _getTokenOIDCAction(OIDCConfiguration config) async {
-    loginState.value = LoginState(Right(LoginLoadingAction()));
     final baseUri = kIsWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
     if (baseUri != null) {
-      await _getTokenOIDCInteractor
-        .execute(baseUri, config)
-        .then((response) =>
-          response.fold(
-            (failure) {
-              if (failure is GetTokenOIDCFailure) {
-               loginState.value = LoginState(Left(failure));
-              } else {
-                loginState.value = LoginState(Left(LoginCanNotGetTokenAction()));
-              }
-            },
-            (success) {
-              if (success is GetTokenOIDCSuccess) {
-                _getTokenOIDCSuccess(success, config);
-              } else {
-                loginState.value = LoginState(Left(LoginCanNotGetTokenAction()));
-              }
-            }));
+     consumeState(_getTokenOIDCInteractor.execute(baseUri, config));
     } else {
       loginState.value = LoginState(Left(LoginCanNotGetTokenAction()));
     }
   }
 
   void _authenticateOidcOnBrowserAction(OIDCConfiguration config) async {
-    loginState.value = LoginState(Right(LoginLoadingAction()));
     final baseUri = _parseUri(AppConfig.baseUrl);
     if (baseUri != null) {
-      await _authenticateOidcOnBrowserInteractor.execute(baseUri, config)
-          .then((response) => response.fold(
-              (failure) {
-                if (failure is AuthenticateOidcOnBrowserFailure) {
-                  loginState.value = LoginState(Left(failure));
-                } else {
-                  loginState.value = LoginState(Left(LoginCanNotAuthenticationSSOAction()));
-                }
-              },
-              (success) {
-                if (success is! AuthenticateOidcOnBrowserSuccess) {
-                  loginState.value = LoginState(Left(LoginCanNotAuthenticationSSOAction()));
-                }
-              }));
+      consumeState(_authenticateOidcOnBrowserInteractor.execute(baseUri, config));
     } else {
       loginState.value = LoginState(Left(LoginCanNotAuthenticationSSOAction()));
     }
   }
 
-  void _getTokenOIDCSuccess(GetTokenOIDCSuccess success, OIDCConfiguration config) {
+  void _getTokenOIDCSuccess(GetTokenOIDCSuccess success) {
     log('LoginController::_getTokenOIDCSuccess(): ${success.tokenOIDC.toString()}');
     loginState.value = LoginState(Right(success));
     _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
     _authorizationInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
-        newConfig: config);
+        newConfig: success.configuration);
     _authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
-        newConfig: config);
+        newConfig: success.configuration);
     pushAndPop(AppRoutes.session);
   }
 
   void _loginAction(Uri baseUrl, UserName userName, Password password) async {
-    loginState.value = LoginState(Right(LoginLoadingAction()));
-    await _authenticationInteractor.execute(baseUrl, userName, password)
-      .then((response) => response.fold(
-        (failure) => failure is AuthenticationUserFailure ? _loginFailureAction(failure) : null,
-        (success) => success is AuthenticationUserViewState ? _loginSuccessAction(success) : null));
+    consumeState(_authenticationInteractor.execute(baseUrl, userName, password));
   }
 
-  void _loginSuccessAction(AuthenticationUserViewState success) {
+  void _loginSuccessAction(AuthenticationUserSuccess success) {
     loginState.value = LoginState(Right(success));
     _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
     _authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);

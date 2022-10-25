@@ -2,27 +2,27 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:model/oidc/response/oidc_response.dart';
 
-class CheckOIDCIsAvailableLoading extends LoadingState {
+class GetOIDCIsAvailableLoading extends LoadingState {
 
-  CheckOIDCIsAvailableLoading();
+  GetOIDCIsAvailableLoading();
 
   @override
   List<Object> get props => [];
 }
 
-class CheckOIDCIsAvailableSuccess extends UIState {
+class GetOIDCIsAvailableSuccess extends UIState {
   final OIDCResponse oidcResponse;
 
-  CheckOIDCIsAvailableSuccess(this.oidcResponse);
+  GetOIDCIsAvailableSuccess(this.oidcResponse);
 
   @override
   List<Object> get props => [oidcResponse];
 }
 
-class CheckOIDCIsAvailableFailure extends FeatureFailure {
+class GetOIDCIsAvailableFailure extends FeatureFailure {
   final dynamic exception;
 
-  CheckOIDCIsAvailableFailure(this.exception);
+  GetOIDCIsAvailableFailure(this.exception);
 
   @override
   List<Object> get props => [exception];

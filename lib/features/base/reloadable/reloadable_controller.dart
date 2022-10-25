@@ -86,10 +86,10 @@ abstract class ReloadableController extends BaseController {
   * trigger reload by getting Credential again then setting up Interceptor and retrieving session
   * */
   void reload() {
-    _getAuthenticatedAccountAction();
+    getAuthenticatedAccountAction();
   }
 
-  void _getAuthenticatedAccountAction() {
+  void getAuthenticatedAccountAction() {
     consumeState(_getAuthenticatedAccountInteractor.execute());
   }
 

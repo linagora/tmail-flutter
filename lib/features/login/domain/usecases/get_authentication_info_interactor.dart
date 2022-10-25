@@ -10,18 +10,19 @@ class GetAuthenticationInfoInteractor {
 
   GetAuthenticationInfoInteractor(this._oidcRepository);
 
-  Future<Either<Failure, Success>> execute() async {
+  Stream<Either<Failure, Success>> execute() async* {
     try {
+      yield Right<Failure, Success>(GetAuthenticationInfoLoading());
       final result = await _oidcRepository.getAuthenticationInfo();
       log('GetAuthenticationInfoInteractor::execute(): result: $result');
       if (result?.isNotEmpty == true) {
-        return Right<Failure, Success>(GetAuthenticationInfoSuccess());
+        yield Right<Failure, Success>(GetAuthenticationInfoSuccess());
       } else {
-        return Left<Failure, Success>(GetAuthenticationInfoFailure(null));
+        yield Left<Failure, Success>(GetAuthenticationInfoFailure(null));
       }
     } catch (e) {
       log('GetAuthenticationInfoInteractor::execute(): ERROR: $e');
-      return Left<Failure, Success>(GetAuthenticationInfoFailure(e));
+      yield Left<Failure, Success>(GetAuthenticationInfoFailure(e));
     }
   }
 }

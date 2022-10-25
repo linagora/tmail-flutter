@@ -21,11 +21,14 @@ class GetTokenOIDCInteractor {
 
   GetTokenOIDCInteractor(this._credentialRepository, this.authenticationOIDCRepository, this._accountRepository);
 
-  Future<Either<Failure, Success>> execute(Uri baseUrl, OIDCConfiguration config) async {
+  Stream<Either<Failure, Success>> execute(Uri baseUrl, OIDCConfiguration config) async* {
     try {
-      log('GetTokenOIDCInteractor::execute(): baseUrl: $baseUrl');
-      final tokenOIDC = await authenticationOIDCRepository
-        .getTokenOIDC(config.clientId, config.redirectUrl, config.discoveryUrl, config.scopes);
+      yield Right<Failure, Success>(GetTokenOIDCLoading());
+      final tokenOIDC = await authenticationOIDCRepository.getTokenOIDC(
+          config.clientId,
+          config.redirectUrl,
+          config.discoveryUrl,
+          config.scopes);
       await Future.wait([
         _credentialRepository.saveBaseUrl(baseUrl),
         _accountRepository.setCurrentAccount(Account(
@@ -35,10 +38,10 @@ class GetTokenOIDCInteractor {
         authenticationOIDCRepository.persistTokenOIDC(tokenOIDC),
         authenticationOIDCRepository.persistAuthorityOidc(config.authority),
       ]);
-      return Right<Failure, Success>(GetTokenOIDCSuccess(tokenOIDC));
+      yield Right<Failure, Success>(GetTokenOIDCSuccess(tokenOIDC, config));
     } catch (e) {
       logError('GetTokenOIDCInteractor::execute(): $e');
-      return Left<Failure, Success>(GetTokenOIDCFailure(e));
+      yield Left<Failure, Success>(GetTokenOIDCFailure(e));
     }
   }
 }
