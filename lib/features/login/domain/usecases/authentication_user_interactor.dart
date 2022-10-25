@@ -12,11 +12,15 @@ class AuthenticationInteractor {
   final CredentialRepository credentialRepository;
   final AccountRepository _accountRepository;
 
-  AuthenticationInteractor(this.authenticationRepository, this.credentialRepository, this._accountRepository);
+  AuthenticationInteractor(
+    this.authenticationRepository,
+    this.credentialRepository,
+    this._accountRepository
+  );
 
-  Future<Either<Failure, Success>> execute(Uri baseUrl, UserName userName, Password password) async {
+  Stream<Either<Failure, Success>> execute(Uri baseUrl, UserName userName, Password password) async* {
     try {
-      log('AuthenticationInteractor::execute(): $_accountRepository');
+      yield Right(AuthenticationUserLoading());
       final user = await authenticationRepository.authenticationUser(baseUrl, userName, password);
       await Future.wait([
         credentialRepository.saveBaseUrl(baseUrl),
@@ -28,10 +32,10 @@ class AuthenticationInteractor {
           isSelected: true
         ))
       ]);
-      return Right(AuthenticationUserViewState(user));
+      yield Right(AuthenticationUserSuccess(user));
     } catch (e) {
       logError('AuthenticationInteractor::execute(): $e');
-      return Left(AuthenticationUserFailure(e));
+      yield Left(AuthenticationUserFailure(e));
     }
   }
 }

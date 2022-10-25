@@ -2,6 +2,14 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 
+class GetStoredOidcConfigurationLoading extends LoadingState {
+
+  GetStoredOidcConfigurationLoading();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class GetStoredOidcConfigurationSuccess extends UIState {
   final OIDCConfiguration oidcConfiguration;
 

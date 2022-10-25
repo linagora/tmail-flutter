@@ -14,17 +14,18 @@ class AuthenticateOidcOnBrowserInteractor {
 
   AuthenticateOidcOnBrowserInteractor(this.authenticationOIDCRepository);
 
-  Future<Either<Failure, Success>> execute(Uri baseUrl, OIDCConfiguration config) async {
+  Stream<Either<Failure, Success>> execute(Uri baseUrl, OIDCConfiguration config) async* {
     try {
+      yield Right<Failure, Success>(AuthenticateOidcOnBrowserLoading());
       await authenticationOIDCRepository.authenticateOidcOnBrowser(
           config.clientId,
           config.redirectUrl,
           config.discoveryUrl,
           config.scopes);
-      return Right<Failure, Success>(AuthenticateOidcOnBrowserSuccess());
+      yield Right<Failure, Success>(AuthenticateOidcOnBrowserSuccess());
     } catch (e) {
       logError('AuthenticateOidcOnBrowserInteractor::execute(): $e');
-      return Left<Failure, Success>(AuthenticateOidcOnBrowserFailure(e));
+      yield Left<Failure, Success>(AuthenticateOidcOnBrowserFailure(e));
     }
   }
 }

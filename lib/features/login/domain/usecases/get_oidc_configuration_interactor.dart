@@ -1,6 +1,8 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
-import 'package:model/model.dart';
+import 'package:model/oidc/response/oidc_response.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 
@@ -9,15 +11,15 @@ class GetOIDCConfigurationInteractor {
 
   GetOIDCConfigurationInteractor(this._oidcRepository);
 
-  Future<Either<Failure, Success>> execute(OIDCResponse oidcResponse) async {
+  Stream<Either<Failure, Success>> execute(OIDCResponse oidcResponse) async* {
     try {
+      yield Right<Failure, Success>(GetOIDCConfigurationLoading());
       final oidcConfiguration = await _oidcRepository.getOIDCConfiguration(oidcResponse);
-      log('GetOIDCConfigurationInteractor::execute(): oidcConfiguration: $oidcConfiguration');
       await _oidcRepository.persistAuthorityOidc(oidcConfiguration.authority);
-      return Right<Failure, Success>(GetOIDCConfigurationSuccess(oidcConfiguration));
+      yield Right<Failure, Success>(GetOIDCConfigurationSuccess(oidcConfiguration));
     } catch (e) {
       log('GetOIDCConfigurationInteractor::execute(): ERROR: $e');
-      return Left<Failure, Success>(GetOIDCConfigurationFailure(e));
+      yield Left<Failure, Success>(GetOIDCConfigurationFailure(e));
     }
   }
 }

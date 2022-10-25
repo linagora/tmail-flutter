@@ -144,7 +144,11 @@ class HomeController extends BaseController {
 
   void _handleFailureViewState(Failure failure) async {
     logError('HomeController::_handleFailureViewState(): ${failure.toString()}');
-    _clearAllCacheAndCredential();
+    if (failure is CheckOIDCIsAvailableFailure) {
+      _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
+    } else {
+      _clearAllCacheAndCredential();
+    }
   }
 
   void _handleSuccessViewState(Success success) {
@@ -153,6 +157,8 @@ class HomeController extends BaseController {
       _goToSessionWithTokenOidc(success);
     } else if (success is GetCredentialViewState) {
       _goToSessionWithBasicAuth(success);
+    } else if (success is CheckOIDCIsAvailableSuccess) {
+      _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
     }
   }
 
@@ -176,15 +182,10 @@ class HomeController extends BaseController {
 
   void _checkOIDCIsAvailable() async {
     final baseUri = _parseUri(AppConfig.baseUrl);
-    log('LoginController::_checkOIDCIsAvailable(): baseUri: $baseUri');
     if (baseUri != null) {
-      await _checkOIDCIsAvailableInteractor
-          .execute(OIDCRequest(baseUrl: baseUri.toString(), resourceUrl: baseUri.origin))
-          .then((response) => response.fold(
-              (failure) => _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm)),
-              (success) => success is CheckOIDCIsAvailableSuccess
-                  ? _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm))
-                  : _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm))));
+      consumeState(_checkOIDCIsAvailableInteractor.execute(OIDCRequest(
+          baseUrl: baseUri.toString(),
+          resourceUrl: baseUri.origin)));
     } else {
       _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
     }

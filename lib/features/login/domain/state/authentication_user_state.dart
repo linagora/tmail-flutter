@@ -1,17 +1,24 @@
 import 'package:core/core.dart';
 import 'package:model/model.dart';
 
-class AuthenticationUserViewState extends UIState {
+class AuthenticationUserLoading extends LoadingState {
+  AuthenticationUserLoading();
+
+  @override
+  List<Object> get props => [];
+}
+
+class AuthenticationUserSuccess extends UIState {
   final UserProfile userProfile;
 
-  AuthenticationUserViewState(this.userProfile);
+  AuthenticationUserSuccess(this.userProfile);
 
   @override
   List<Object> get props => [userProfile];
 }
 
 class AuthenticationUserFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   AuthenticationUserFailure(this.exception);
 

@@ -121,7 +121,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                   borderRadius: BorderRadius.circular(20),
                                   child: Column(children: [
                                     Obx(() {
-                                      log('MailboxDashBoardView::build(): ');
                                       if (controller.isSelectionEnabled()) {
                                         return Padding(
                                           padding: const EdgeInsets.all(12.0),

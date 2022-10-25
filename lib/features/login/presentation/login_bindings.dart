@@ -33,15 +33,21 @@ import 'package:tmail_ui_user/features/login/domain/repository/login_username_re
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_username_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 
 class LoginBindings extends BaseBindings {
@@ -49,11 +55,15 @@ class LoginBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.lazyPut(() => LoginController(
+        Get.find<LogoutOidcInteractor>(),
+        Get.find<DeleteAuthorityOidcInteractor>(),
+        Get.find<GetAuthenticatedAccountInteractor>(),
         Get.find<AuthenticationInteractor>(),
         Get.find<DynamicUrlInterceptors>(),
         Get.find<AuthorizationInterceptors>(),
         Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag),
         Get.find<CheckOIDCIsAvailableInteractor>(),
+        Get.find<GetOIDCIsAvailableInteractor>(),
         Get.find<GetOIDCConfigurationInteractor>(),
         Get.find<GetTokenOIDCInteractor>(),
         Get.find<AuthenticateOidcOnBrowserInteractor>(),
@@ -98,12 +108,32 @@ class LoginBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
+    Get.lazyPut(() => LogoutOidcInteractor(
+      Get.find<AccountRepository>(),
+      Get.find<AuthenticationOIDCRepository>(),
+    ));
+    Get.lazyPut(() => DeleteAuthorityOidcInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+      Get.find<CredentialRepository>())
+    );
+    Get.lazyPut(() => GetStoredTokenOidcInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+      Get.find<CredentialRepository>(),
+    ));
+    Get.lazyPut(() => GetAuthenticatedAccountInteractor(
+      Get.find<AccountRepository>(),
+      Get.find<GetCredentialInteractor>(),
+      Get.find<GetStoredTokenOidcInteractor>(),
+    ));
     Get.lazyPut(() => AuthenticationInteractor(
         Get.find<AuthenticationRepository>(),
         Get.find<CredentialRepository>(),
         Get.find<AccountRepository>()
     ));
     Get.lazyPut(() => CheckOIDCIsAvailableInteractor(
+        Get.find<AuthenticationOIDCRepository>(),
+    ));
+    Get.lazyPut(() => GetOIDCIsAvailableInteractor(
         Get.find<AuthenticationOIDCRepository>(),
     ));
     Get.lazyPut(() => GetOIDCConfigurationInteractor(
@@ -142,7 +172,7 @@ class LoginBindings extends BaseBindings {
     Get.lazyPut<AccountRepository>(() => Get.find<AccountRepositoryImpl>());
     Get.lazyPut<LoginUrlRepository>(() => Get.find<LoginUrlRepositoryImpl>());
     Get.lazyPut<LoginUsernameRepository>(() => Get.find<LoginUsernameRepositoryImpl>());
-  
+
   }
 
   @override
