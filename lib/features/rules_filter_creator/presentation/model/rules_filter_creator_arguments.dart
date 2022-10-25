@@ -8,10 +8,12 @@ class RulesFilterCreatorArguments with EquatableMixin {
   final AccountId accountId;
   final CreatorActionType actionType;
   final TMailRule? tMailRule;
+  final List<TMailRule>? listEmailRule;
 
   RulesFilterCreatorArguments(this.accountId, {
     this.actionType = CreatorActionType.create,
-    this.tMailRule
+    this.tMailRule,
+    this.listEmailRule
   });
 
   @override

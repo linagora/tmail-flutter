@@ -4,8 +4,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
-import 'package:core/utils/app_logger.dart';
-import 'package:flutter/foundation.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -28,7 +27,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/w
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_bindings.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -46,8 +44,6 @@ class EmailRulesController extends BaseController {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final listEmailRule = <TMailRule>[].obs;
-
-  final rulesFilterCreatorArguments = Rxn<RulesFilterCreatorArguments>();
 
   EmailRulesController(
     this._getAllRulesInteractor,
@@ -82,21 +78,35 @@ class EmailRulesController extends BaseController {
     super.onInit();
   }
 
-  void goToCreateNewRule() async {
+  void goToCreateNewRule(BuildContext context) async {
     final accountId = _accountDashBoardController.accountId.value;
     if (accountId != null) {
-      rulesFilterCreatorArguments.value = RulesFilterCreatorArguments(accountId);
-      if(kIsWeb) {
-        _openRulesFilterCreatorOverlay();
+      final arguments = RulesFilterCreatorArguments(
+          accountId,
+          listEmailRule: listEmailRule);
+
+      if (BuildUtils.isWeb) {
+        showDialogRuleFilterCreator(
+            context: context,
+            arguments: arguments,
+            onCreatedRuleFilter: (arguments) {
+              if (arguments is CreateNewEmailRuleFilterRequest) {
+                _createNewRuleFilterAction(accountId, arguments);
+              }
+            });
       } else {
-        push(
-          AppRoutes.rulesFilterCreator,
-        );
+        final newRuleFilterRequest = await push(
+            AppRoutes.rulesFilterCreator,
+            arguments: arguments);
+
+        if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
+          _createNewRuleFilterAction(accountId, newRuleFilterRequest);
+        }
       }
     }
   }
 
-  void createNewRuleFilterAction(
+  void _createNewRuleFilterAction(
       AccountId accountId,
       CreateNewEmailRuleFilterRequest ruleFilterRequest
   ) async {
@@ -113,31 +123,42 @@ class EmailRulesController extends BaseController {
             message: AppLocalizations.of(currentContext!).newFilterWasCreated,
             icon: _imagePaths.icSelected);
       }
-      log('EmailRulesController::_createNewRuleFilterSuccess(): ${success.newListRules}');
       listEmailRule.value = success.newListRules;
       listEmailRule.refresh();
     }
   }
 
-  void editEmailRule(TMailRule rule) async {
+  void editEmailRule(BuildContext context, TMailRule rule) async {
     final accountId = _accountDashBoardController.accountId.value;
     if (accountId != null) {
-      rulesFilterCreatorArguments.value = RulesFilterCreatorArguments(
+      final arguments = RulesFilterCreatorArguments(
         accountId,
         actionType: CreatorActionType.edit,
         tMailRule: rule,
-      );
-      if(kIsWeb) {
-        _openRulesFilterCreatorOverlay();
+        listEmailRule: listEmailRule);
+
+      if (BuildUtils.isWeb) {
+        showDialogRuleFilterCreator(
+            context: context,
+            arguments: arguments,
+            onCreatedRuleFilter: (arguments) {
+              if (arguments is EditEmailRuleFilterRequest) {
+                _editEmailRuleFilterAction(accountId, arguments);
+              }
+            });
       } else {
-        push(
-          AppRoutes.rulesFilterCreator,
-        );
+        final newRuleFilterRequest = await push(
+            AppRoutes.rulesFilterCreator,
+            arguments: arguments);
+
+        if (newRuleFilterRequest is EditEmailRuleFilterRequest) {
+          _editEmailRuleFilterAction(accountId, newRuleFilterRequest);
+        }
       }
     }
   }
 
-  void editEmailRuleFilterAction(
+  void _editEmailRuleFilterAction(
       AccountId accountId,
       EditEmailRuleFilterRequest ruleFilterRequest
   ) {
@@ -152,7 +173,6 @@ class EmailRulesController extends BaseController {
             message: AppLocalizations.of(currentContext!).yourFilterHasBeenUpdated,
             icon: _imagePaths.icSelected);
       }
-      log('EmailRulesController::_editEmailRuleFilterSuccess(): ${success.listRulesUpdated}');
       listEmailRule.value = success.listRulesUpdated;
       listEmailRule.refresh();
     }
@@ -225,11 +245,6 @@ class EmailRulesController extends BaseController {
     consumeState(_getAllRulesInteractor.execute(_accountDashBoardController.accountId.value!));
   }
 
-  void _openRulesFilterCreatorOverlay() {
-    RulesFilterCreatorBindings().dependencies();
-    _accountDashBoardController.rulesFilterCreatorIsActive.toggle();
-  }
-
   void openEditRuleMenuAction(BuildContext context, TMailRule rule) {
     openContextMenuAction(
       context,
@@ -267,7 +282,7 @@ class EmailRulesController extends BaseController {
           iconRightPadding: const EdgeInsets.only(right: 12))
       ..onActionClick((rule) {
         popBack();
-        editEmailRule(rule);
+        editEmailRule(context, rule);
       }))
     .build();
   }

@@ -7,6 +7,7 @@ import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_action_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_comparator_bottom_sheet_action_tile_builder.dart';
@@ -21,14 +22,32 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  RuleFilterCreatorView({Key? key}) : super(key: key);
+  @override
+  final controller = Get.find<RulesFilterCreatorController>();
+
+  RuleFilterCreatorView({Key? key}) : super(key: key) {
+    controller.arguments = Get.arguments;
+  }
+
+  RuleFilterCreatorView.fromArguments(
+      RulesFilterCreatorArguments arguments, {
+      Key? key,
+      OnCreatedRuleFilterCallback? onCreatedRuleFilterCallback,
+      VoidCallback? onDismissCallback
+  }) : super(key: key) {
+    controller.arguments = arguments;
+    controller.onCreatedRuleFilterCallback = onCreatedRuleFilterCallback;
+    controller.onDismissRuleFilterCreator = onDismissCallback;
+  }
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveWidget(
         responsiveUtils: _responsiveUtils,
         mobile: Scaffold(
-            backgroundColor: Colors.black38,
+            backgroundColor: BuildUtils.isWeb
+                ? Colors.black.withAlpha(24)
+                : Colors.black38,
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: SafeArea(
@@ -53,7 +72,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             )
         ),
         tablet: Scaffold(
-            backgroundColor: Colors.black38,
+            backgroundColor: Colors.black.withAlpha(24),
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: Align(alignment: Alignment.bottomCenter, child: Container(
@@ -75,7 +94,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             )
         ),
         desktop: Scaffold(
-            backgroundColor: Colors.black38,
+            backgroundColor: Colors.black.withAlpha(24),
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: Align(alignment: Alignment.center, child: Card(
@@ -107,7 +126,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             padding: const EdgeInsets.only(top: 16),
             alignment: Alignment.center,
             child: Obx(() => Text(
-                controller.actionType.getTitle(context),
+                controller.actionType.value.getTitle(context),
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
@@ -237,7 +256,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                   onTap: () => controller.closeView(context)),
                 const SizedBox(width: 12),
                 Obx(() => buildTextButton(
-                  controller.actionType.getActionName(context),
+                  controller.actionType.value.getActionName(context),
                   width: 128,
                   height: 44,
                   backgroundColor: AppColor.colorTextButton,
@@ -266,7 +285,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                 padding: const EdgeInsets.only(top: 16),
                 alignment: Alignment.center,
                 child: Obx(() => Text(
-                    controller.actionType.getTitle(context),
+                    controller.actionType.value.getTitle(context),
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -396,7 +415,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         onTap: () => controller.closeView(context))),
                     const SizedBox(width: 12),
                     Expanded(child: Obx(() => buildTextButton(
-                        controller.actionType.getActionName(context),
+                        controller.actionType.value.getActionName(context),
                         width: 128,
                         height: 44,
                         backgroundColor: AppColor.colorTextButton,
@@ -425,7 +444,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                 padding: const EdgeInsets.only(top: 16),
                 alignment: Alignment.center,
                 child: Obx(() => Text(
-                    controller.actionType.getTitle(context),
+                    controller.actionType.value.getTitle(context),
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -585,7 +604,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         onTap: () => controller.closeView(context))),
                     const SizedBox(width: 12),
                     Expanded(child: Obx(() => buildTextButton(
-                        controller.actionType.getActionName(context),
+                        controller.actionType.value.getActionName(context),
                         width: 128,
                         height: 44,
                         backgroundColor: AppColor.colorTextButton,
