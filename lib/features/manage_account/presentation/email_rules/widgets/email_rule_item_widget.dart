@@ -41,7 +41,7 @@ class EmailRulesItemWidget extends StatelessWidget {
                 fit: BoxFit.fill,
               ),
               onTap: () {
-                _emailRuleController.editEmailRule(rule);
+                _emailRuleController.editEmailRule(context, rule);
               }),
         if (!_responsiveUtils.isMobile(context))
           buildIconWeb(

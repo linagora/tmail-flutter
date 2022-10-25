@@ -15,7 +15,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -128,8 +127,6 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           ),
           if(controller.emailsForwardCreatorIsActive.isTrue)
             EmailsForwardCreatorView(),
-          if(controller.rulesFilterCreatorIsActive.isTrue)
-            RuleFilterCreatorView(),
         ]
     ));
   }

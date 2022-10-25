@@ -57,6 +57,11 @@ class AppPages {
         opaque: false,
         page: () => DeferredWidget(identity_creator.loadLibrary, () => identity_creator.IdentityCreatorView()),
         binding: IdentityCreatorBindings()),
+    GetPage(
+        name: AppRoutes.rulesFilterCreator,
+        opaque: false,
+        page: () => DeferredWidget(rules_filter_creator.loadLibrary, () => rules_filter_creator.RuleFilterCreatorView()),
+        binding: RulesFilterCreatorBindings()),
   ];
 
   static final pages = [
@@ -81,12 +86,6 @@ class AppPages {
         page: () => DeferredWidget(manage_account_dashboard.loadLibrary,
             () => manage_account_dashboard.ManageAccountDashBoardView()),
         binding: ManageAccountDashBoardBindings()),
-    GetPage(
-        name: AppRoutes.rulesFilterCreator,
-        opaque: false,
-        page: () => DeferredWidget(rules_filter_creator.loadLibrary,
-            () => rules_filter_creator.RuleFilterCreatorView()),
-        binding: RulesFilterCreatorBindings()),
     GetPage(
         name: AppRoutes.emailsForwardCreator,
         opaque: false,

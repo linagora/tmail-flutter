@@ -53,7 +53,6 @@ class ManageAccountDashBoardController extends ReloadableController {
   final vacationResponse = Rxn<VacationResponse>();
 
   final emailsForwardCreatorIsActive = false.obs;
-  final rulesFilterCreatorIsActive = false.obs;
 
   ManageAccountDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
