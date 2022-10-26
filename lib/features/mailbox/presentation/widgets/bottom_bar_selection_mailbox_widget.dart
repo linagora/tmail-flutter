@@ -117,8 +117,7 @@ class BottomBarSelectionMailboxWidget {
     );
   }
 
-  bool get _isDeleteMailboxValid => _listSelectionMailbox.length == 1
-      && _isAllFolderMailbox;
+  bool get _isDeleteMailboxValid => _isAllFolderMailbox;
 
   bool get _isRenameMailboxValid => _listSelectionMailbox.length == 1
       && _isAllFolderMailbox;

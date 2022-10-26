@@ -1,19 +1,40 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
-class DeleteMultipleMailboxSuccess extends UIActionState {
+class DeleteMultipleMailboxAllSuccess extends UIActionState {
 
-  final MailboxId mailboxIdDeleted;
+  final List<MailboxId> listMailboxIdDeleted;
 
-  DeleteMultipleMailboxSuccess(this.mailboxIdDeleted, {
+  DeleteMultipleMailboxAllSuccess(this.listMailboxIdDeleted, {
     jmap.State? currentEmailState,
     jmap.State? currentMailboxState,
   }) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object?> get props => [mailboxIdDeleted];
+  List<Object?> get props => [listMailboxIdDeleted];
+}
+
+class DeleteMultipleMailboxHasSomeSuccess extends UIActionState {
+
+  final List<MailboxId> listMailboxIdDeleted;
+
+  DeleteMultipleMailboxHasSomeSuccess(this.listMailboxIdDeleted, {
+    jmap.State? currentEmailState,
+    jmap.State? currentMailboxState,
+  }) : super(currentEmailState, currentMailboxState);
+
+  @override
+  List<Object?> get props => [listMailboxIdDeleted];
+}
+
+class DeleteMultipleMailboxAllFailure extends FeatureFailure {
+
+  DeleteMultipleMailboxAllFailure();
+
+  @override
+  List<Object> get props => [];
 }
 
 class DeleteMultipleMailboxFailure extends FeatureFailure {

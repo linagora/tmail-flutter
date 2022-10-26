@@ -2455,4 +2455,12 @@ class AppLocalizations {
         args: [numberOfConversation]
     );
   }
+
+  String messageConfirmationDialogDeleteMultipleMailbox(int numberOfMailbox) {
+    return Intl.message(
+        '$numberOfMailbox mailbox and all of the sub-folders and messages it contains will be deleted and won\'t be able to recover. Do you want to continue to delete?',
+        name: 'messageConfirmationDialogDeleteMultipleMailbox',
+        args: [numberOfMailbox]
+    );
+  }
 }

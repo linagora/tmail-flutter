@@ -42,6 +42,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_inte
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
@@ -173,8 +174,10 @@ class MailboxController extends BaseMailboxController {
             _createNewMailboxSuccess(success);
           } else if (success is SearchMailboxSuccess) {
             _searchMailboxSuccess(success);
-          } else if (success is DeleteMultipleMailboxSuccess) {
-            _deleteMailboxSuccess(success);
+          } else if (success is DeleteMultipleMailboxAllSuccess) {
+            _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
+          } else if (success is DeleteMultipleMailboxHasSomeSuccess) {
+            _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
           } else if ((success is GetAllMailboxSuccess || success is RefreshChangesAllMailboxSuccess) && isSearchActive()) {
             _searchMailboxAction(allMailboxes, searchQuery.value);
           } else if (success is RenameMailboxSuccess) {
@@ -533,29 +536,35 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
-  void pressMailboxSelectionAction(BuildContext context, MailboxActions actions,
-      List<PresentationMailbox> selectionMailbox) {
+  void pressMailboxSelectionAction(
+      BuildContext context, 
+      MailboxActions actions,
+      List<PresentationMailbox> selectedMailboxList
+  ) {
     switch(actions) {
       case MailboxActions.delete:
-        _openConfirmationDialogDeleteMailboxAction(context, selectionMailbox.first);
+        _openConfirmationDialogDeleteMultipleMailboxAction(context, selectedMailboxList);
         break;
       case MailboxActions.rename:
-        _openDialogRenameMailboxAction(context, selectionMailbox.first);
+        _openDialogRenameMailboxAction(context, selectedMailboxList.first);
         break;
       case MailboxActions.markAsRead:
-        _markAsReadMailboxAction(context, selectionMailbox.first);
+        _markAsReadMailboxAction(context, selectedMailboxList.first);
         break;
       case MailboxActions.move:
-        _moveMailboxAction(selectionMailbox.first);
+        _moveMailboxAction(selectedMailboxList.first);
         break;
       default:
         break;
     }
   }
 
-  void _openConfirmationDialogDeleteMailboxAction(BuildContext context,
-      PresentationMailbox presentationMailbox) {
-    if (_responsiveUtils.isMobile(context)) {
+  void _openConfirmationDialogDeleteMailboxAction(
+      BuildContext context,
+      PresentationMailbox presentationMailbox
+  ) {
+    if (_responsiveUtils.isLandscapeMobile(context) ||
+        _responsiveUtils.isPortraitMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
           ..messageText(AppLocalizations.of(context)
               .message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
@@ -590,42 +599,132 @@ class MailboxController extends BaseMailboxController {
   }
 
   void _deleteMailboxAction(PresentationMailbox presentationMailbox) {
-    final matchedNode = findMailboxNodeById(presentationMailbox.id);
-
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
 
-    if (session != null) {
-      if (matchedNode != null && accountId != null) {
-        final descendantIds = matchedNode.descendantsAsList()
-            .map((node) => node.item.id)
-            .toList();
+    if (session != null && accountId != null) {
+      final tupleMap = _generateMapDescendantIdsAndMailboxIdList([presentationMailbox]);
+      final mapDescendantIds = tupleMap.value1;
+      final listMailboxId = tupleMap.value2;
 
-        final descendantIdsReversed = descendantIds.reversed.toList();
-        consumeState(_deleteMultipleMailboxInteractor.execute(
-            session, accountId, descendantIdsReversed, presentationMailbox.id));
-      } else {
-        _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
-      }
+      consumeState(_deleteMultipleMailboxInteractor.execute(
+          session,
+          accountId,
+          mapDescendantIds,
+          listMailboxId));
+    } else {
+      _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
     }
 
     _cancelSelectMailbox();
     popBack();
   }
 
-  void _deleteMailboxSuccess(DeleteMultipleMailboxSuccess success) {
+  void _deleteMultipleMailboxSuccess(
+      List<MailboxId> listMailboxIdDeleted,
+      jmap.State? currentMailboxState
+  ) {
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastWithIcon(
           currentOverlayContext!,
           message: AppLocalizations.of(currentContext!).delete_mailboxes_successfully,
           icon: _imagePaths.icSelected);
     }
-    if (success.mailboxIdDeleted == mailboxDashBoardController.selectedMailbox.value?.id) {
+    if (listMailboxIdDeleted.contains(mailboxDashBoardController.selectedMailbox.value?.id)) {
       _switchBackToMailboxDefault();
     }
-    refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    refreshMailboxChanges(currentMailboxState: currentMailboxState);
   }
 
+  void _openConfirmationDialogDeleteMultipleMailboxAction(
+      BuildContext context,
+      List<PresentationMailbox> selectedMailboxList
+  ) {
+    if (_responsiveUtils.isLandscapeMobile(context) ||
+        _responsiveUtils.isPortraitMobile(context)) {
+      (ConfirmationDialogActionSheetBuilder(context)
+        ..messageText(AppLocalizations.of(context)
+            .messageConfirmationDialogDeleteMultipleMailbox(selectedMailboxList.length))
+        ..onCancelAction(AppLocalizations.of(context).cancel, () =>
+            popBack())
+        ..onConfirmAction(AppLocalizations.of(context).delete, () =>
+            _deleteMultipleMailboxAction(selectedMailboxList)))
+        .show();
+    } else {
+      showDialog(
+          context: context,
+          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
+            ..key(const Key('confirm_dialog_delete_multiple_mailbox'))
+            ..title(AppLocalizations.of(context).delete_mailboxes)
+            ..content(AppLocalizations.of(context)
+                .messageConfirmationDialogDeleteMultipleMailbox(selectedMailboxList.length))
+            ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog,
+                fit: BoxFit.fill))
+            ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+            ..styleTextConfirmButton(const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w500,
+                color: AppColor.colorActionDeleteConfirmDialog))
+            ..onCloseButtonAction(() => popBack())
+            ..onConfirmButtonAction(AppLocalizations.of(context).delete, () =>
+                _deleteMultipleMailboxAction(selectedMailboxList))
+            ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
+                popBack()))
+            .build()));
+    }
+  }
+
+  Tuple2<Map<MailboxId, List<MailboxId>>, List<MailboxId>> _generateMapDescendantIdsAndMailboxIdList(
+      List<PresentationMailbox> selectedMailboxList
+  ) {
+    Map<MailboxId, List<MailboxId>> mapDescendantIds = {};
+    List<MailboxId> allMailboxIds = [];
+
+    for (var mailbox in selectedMailboxList) {
+      final currentMailboxId = mailbox.id;
+
+      if (allMailboxIds.contains(currentMailboxId)) {
+        continue;
+      } else {
+        final matchedNode = findMailboxNodeById(currentMailboxId);
+
+        if (matchedNode != null)  {
+          final descendantIds = matchedNode.descendantsAsList().mailboxIds;
+          final descendantIdsReversed = descendantIds.reversed.toList();
+
+          mapDescendantIds[currentMailboxId] = descendantIdsReversed;
+          allMailboxIds.addAll(descendantIdsReversed);
+        }
+      }
+    }
+
+    log('MailboxController::_generateMapDescendantIdsByMailboxList(): mapDescendantIds: $mapDescendantIds');
+
+    return Tuple2(mapDescendantIds, allMailboxIds);
+  }
+
+  void _deleteMultipleMailboxAction(List<PresentationMailbox> selectedMailboxList) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+
+    if (session != null && accountId != null) {
+      final tupleMap = _generateMapDescendantIdsAndMailboxIdList(selectedMailboxList);
+      final mapDescendantIds = tupleMap.value1;
+      final listMailboxId = tupleMap.value2;
+      consumeState(_deleteMultipleMailboxInteractor.execute(
+          session,
+          accountId,
+          mapDescendantIds,
+          listMailboxId));
+    } else {
+      _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
+    }
+
+    _cancelSelectMailbox();
+    popBack();
+  }
+  
   void _switchBackToMailboxDefault() {
     final inboxMailbox = findMailboxNodeByRole(PresentationMailbox.roleInbox);
     mailboxDashBoardController.setSelectedMailbox(inboxMailbox?.item);
@@ -817,19 +916,22 @@ class MailboxController extends BaseMailboxController {
       final allChildrenAtMailboxLocation = (defaultMailboxTree.value.root.childrenItems ?? <MailboxNode>[]) + (folderMailboxTree.value.root.childrenItems ?? <MailboxNode>[]);
       if (allChildrenAtMailboxLocation.isNotEmpty) {
         listMailboxNameAsStringExist = allChildrenAtMailboxLocation
-            .where((mailboxNode) => mailboxNode.item.name != null && mailboxNode.item.name?.name.isNotEmpty == true)
-            .map((mailboxNode) => mailboxNode.item.name!.name)
+            .where((mailboxNode) => mailboxNode.nameNotEmpty)
+            .map((mailboxNode) => mailboxNode.mailboxNameAsString)
             .toList();
+      } else {
+        listMailboxNameAsStringExist = [];
       }
     } else {
-      final mailboxNodeLocation = defaultMailboxTree.value.findNode((node) => node.item.id == mailboxRenamed.parentId)
-          ?? folderMailboxTree.value.findNode((node) => node.item.id == mailboxRenamed.parentId);
+      final mailboxNodeLocation = findMailboxNodeById(mailboxRenamed.parentId!);
       if (mailboxNodeLocation != null && mailboxNodeLocation.childrenItems?.isNotEmpty == true) {
         final allChildrenAtMailboxLocation =  mailboxNodeLocation.childrenItems!;
         listMailboxNameAsStringExist = allChildrenAtMailboxLocation
-            .where((mailboxNode) => mailboxNode.item.name != null && mailboxNode.item.name?.name.isNotEmpty == true)
-            .map((mailboxNode) => mailboxNode.item.name!.name)
+            .where((mailboxNode) => mailboxNode.nameNotEmpty)
+            .map((mailboxNode) => mailboxNode.mailboxNameAsString)
             .toList();
+      } else {
+        listMailboxNameAsStringExist = [];
       }
     }
 
@@ -863,8 +965,11 @@ class MailboxController extends BaseMailboxController {
     mailboxDashBoardController.showAppDashboardAction();
   }
 
-  void handleMailboxAction(BuildContext context, MailboxActions actions,
-      PresentationMailbox mailbox) {
+  void handleMailboxAction(
+      BuildContext context, 
+      MailboxActions actions,
+      PresentationMailbox mailbox
+  ) {
     popBack();
 
     switch(actions) {

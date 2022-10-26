@@ -33,6 +33,10 @@ class MailboxNode with EquatableMixin{
     }
   );
 
+  bool get nameNotEmpty => item.name?.name.isNotEmpty == true;
+
+  String get mailboxNameAsString => item.name?.name ?? '';
+
   void addChildNode(MailboxNode node) {
     childrenItems ??= [];
     childrenItems?.add(node);

@@ -48,8 +48,6 @@ class MailboxCreatorController extends BaseController {
       folderMailboxTree = arguments.folderMailboxTree;
       defaultMailboxTree = arguments.defaultMailboxTree;
       accountId = arguments.accountId;
-      log('MailboxCreatorController::onReady(): defaultMailboxTree: $defaultMailboxTree');
-      log('MailboxCreatorController::onReady(): folderMailboxTree: $folderMailboxTree');
       _createListMailboxNameAsStringInMailboxLocation();
     }
   }
@@ -80,24 +78,35 @@ class MailboxCreatorController extends BaseController {
     return true;
   }
 
+  MailboxNode? _findMailboxNodeById(MailboxId mailboxId) {
+    final mailboxNode = defaultMailboxTree?.findNode((node) => node.item.id == mailboxId);
+    if (mailboxNode != null) {
+      return mailboxNode;
+    }
+    return folderMailboxTree?.findNode((node) => node.item.id == mailboxId);
+  }
+
   void _createListMailboxNameAsStringInMailboxLocation() {
     if (selectedMailbox.value == null) {
       final allChildrenAtMailboxLocation = (defaultMailboxTree?.root.childrenItems ?? <MailboxNode>[]) + (folderMailboxTree?.root.childrenItems ?? <MailboxNode>[]);
       if (allChildrenAtMailboxLocation.isNotEmpty) {
         listMailboxNameAsStringExist = allChildrenAtMailboxLocation
-            .where((mailboxNode) => mailboxNode.item.name != null && mailboxNode.item.name?.name.isNotEmpty == true)
-            .map((mailboxNode) => mailboxNode.item.name!.name)
+            .where((mailboxNode) => mailboxNode.nameNotEmpty)
+            .map((mailboxNode) => mailboxNode.mailboxNameAsString)
             .toList();
+      }  else {
+        listMailboxNameAsStringExist = [];
       }
     } else {
-      final mailboxNodeLocation = defaultMailboxTree?.findNode((node) => node.item.id == selectedMailbox.value!.id)
-          ?? folderMailboxTree?.findNode((node) => node.item.id == selectedMailbox.value!.id);
+      final mailboxNodeLocation = _findMailboxNodeById(selectedMailbox.value!.id);
       if (mailboxNodeLocation != null && mailboxNodeLocation.childrenItems?.isNotEmpty == true) {
         final allChildrenAtMailboxLocation =  mailboxNodeLocation.childrenItems!;
         listMailboxNameAsStringExist = allChildrenAtMailboxLocation
-            .where((mailboxNode) => mailboxNode.item.name != null && mailboxNode.item.name?.name.isNotEmpty == true)
-            .map((mailboxNode) => mailboxNode.item.name!.name)
+            .where((mailboxNode) => mailboxNode.nameNotEmpty)
+            .map((mailboxNode) => mailboxNode.mailboxNameAsString)
             .toList();
+      } else {
+        listMailboxNameAsStringExist = [];
       }
     }
 

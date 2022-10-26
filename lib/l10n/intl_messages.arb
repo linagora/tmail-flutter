@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-21T10:04:34.240729",
+  "@@last_modified": "2022-10-26T13:43:22.314355",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2382,6 +2382,16 @@
     ],
     "placeholders": {
       "numberOfConversation": {}
+    }
+  },
+  "messageConfirmationDialogDeleteMultipleMailbox": "{numberOfMailbox} mailbox and all of the sub-folders and messages it contains will be deleted and won't be able to recover. Do you want to continue to delete?",
+  "@messageConfirmationDialogDeleteMultipleMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "numberOfMailbox"
+    ],
+    "placeholders": {
+      "numberOfMailbox": {}
     }
   }
 }
