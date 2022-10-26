@@ -84,6 +84,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                             right: !BuildUtils.isWeb && _responsiveUtils.isLandscapeMobile(context),
                             child: Column(children: [
                               _buildAppBar(context),
+                              const Divider(color: AppColor.colorDividerDestinationPicker, height: 1),
                               _buildCreateMailboxNameInput(context),
                               _buildMailboxLocation(context),
                             ]),
@@ -116,6 +117,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
           ..onChange((value) => controller.setNewNameMailbox(value))
           ..keyboardType(TextInputType.visiblePassword)
           ..cursorColor(AppColor.colorTextButton)
+          ..addController(controller.nameInputController)
           ..maxLines(1)
           ..textStyle(const TextStyle(
               color: AppColor.colorNameEmail,

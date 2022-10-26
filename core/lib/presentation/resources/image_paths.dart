@@ -166,6 +166,7 @@ class ImagePaths {
   String get icAppDashboard => _getImagePath('ic_app_dashboard.svg');
   String get icRequestReadReceipt => _getImagePath('ic_request_read_receipt.svg');
   String get icReadReceiptMessage => _getImagePath('ic_read_receipt_message.svg');
+  String get icCreateNewFolder => _getImagePath('ic_create_new_folder.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

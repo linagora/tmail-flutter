@@ -15,14 +15,15 @@ typedef OnDragItemAccepted = void Function(List<PresentationEmail>, Presentation
 class MailboxSearchTileBuilder {
 
   final PresentationMailbox _presentationMailbox;
-  final PresentationMailbox? lastMailbox;
   final SelectMode allSelectMode;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
   final BuildContext _context;
   final MailboxDisplayed mailboxDisplayed;
   final MailboxActions? mailboxActions;
-  final MailboxId? mailboxIdSelected;
+  final MailboxId? mailboxIdAlreadySelected;
+  final MailboxId? lastMailboxIdInSearchedList;
+  final MailboxId? mailboxIdDestination;
 
   bool isHoverItem = false;
 
@@ -38,10 +39,11 @@ class MailboxSearchTileBuilder {
     this._presentationMailbox,
     {
       this.allSelectMode = SelectMode.INACTIVE,
-      this.lastMailbox,
+      this.lastMailboxIdInSearchedList,
       this.mailboxDisplayed = MailboxDisplayed.mailbox,
       this.mailboxActions,
-      this.mailboxIdSelected,
+      this.mailboxIdAlreadySelected,
+      this.mailboxIdDestination,
     }
   );
 
@@ -111,19 +113,28 @@ class MailboxSearchTileBuilder {
           absorbing: !_presentationMailbox.isActivated,
           child: Opacity(
             opacity: _presentationMailbox.isActivated ? 1.0 : 0.3,
-            child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              onTap: () => allSelectMode == SelectMode.ACTIVE
-                  ? _onSelectMailboxActionClick?.call(_presentationMailbox)
-                  : _onOpenMailboxActionClick?.call(_presentationMailbox),
-              leading: _buildLeadingIcon(),
-              title: _buildTitleItem(),
-              subtitle: _buildSubtitleItem(),
-              trailing: _buildSelectedIcon(),
+            child: Container(
+              color: _presentationMailbox.id == mailboxIdDestination &&
+                  mailboxDisplayed == MailboxDisplayed.destinationPicker
+                ? AppColor.colorItemSelected
+                : Colors.transparent,
+              padding: mailboxDisplayed == MailboxDisplayed.destinationPicker
+                ? const EdgeInsets.only(left: 16, right: 8)
+                : EdgeInsets.zero,
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                onTap: () => allSelectMode == SelectMode.ACTIVE
+                    ? _onSelectMailboxActionClick?.call(_presentationMailbox)
+                    : _onOpenMailboxActionClick?.call(_presentationMailbox),
+                leading: _buildLeadingIcon(),
+                title: _buildTitleItem(),
+                subtitle: _buildSubtitleItem(),
+                trailing: _buildSelectedIcon(),
+              ),
             ),
           ),
         ),
-        if (lastMailbox?.id != _presentationMailbox.id)
+        if (lastMailboxIdInSearchedList != _presentationMailbox.id)
           Padding(
               padding: EdgeInsets.only(left: allSelectMode == SelectMode.ACTIVE ? 50 : 35),
               child: const Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
@@ -221,21 +232,26 @@ class MailboxSearchTileBuilder {
   }
 
   Color get backgroundColorItem {
-    if (isHoverItem) {
-      return AppColor.colorBgMailboxSelected;
+    if (_presentationMailbox.id == mailboxIdDestination &&
+        mailboxDisplayed == MailboxDisplayed.destinationPicker) {
+      return AppColor.colorItemSelected;
     } else {
-      if (mailboxDisplayed == MailboxDisplayed.mailbox) {
-        return _responsiveUtils.isDesktop(_context)
-            ? AppColor.colorBgDesktop
-            : Colors.white;
+      if (isHoverItem) {
+        return AppColor.colorBgMailboxSelected;
       } else {
-        return Colors.white;
+        if (mailboxDisplayed == MailboxDisplayed.mailbox) {
+          return _responsiveUtils.isDesktop(_context)
+              ? AppColor.colorBgDesktop
+              : Colors.white;
+        } else {
+          return Colors.white;
+        }
       }
     }
   }
 
   Widget? _buildSelectedIcon() {
-    if (_presentationMailbox.id == mailboxIdSelected &&
+    if (_presentationMailbox.id == mailboxIdAlreadySelected &&
         mailboxDisplayed == MailboxDisplayed.destinationPicker &&
         (mailboxActions == MailboxActions.select ||
         mailboxActions == MailboxActions.create)) {

@@ -2463,4 +2463,16 @@ class AppLocalizations {
         args: [numberOfMailbox]
     );
   }
+
+  String get toastMessageErrorNotSelectedFolderWhenCreateNewMailbox {
+    return Intl.message(
+        'You have not selected a save folder to save',
+        name: 'toastMessageErrorNotSelectedFolderWhenCreateNewMailbox');
+  }
+
+  String get createNewMailbox {
+    return Intl.message(
+        'Create new mailbox',
+        name: 'createNewMailbox');
+  }
 }

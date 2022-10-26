@@ -74,6 +74,13 @@ abstract class BaseMailboxController extends BaseController {
     }
   }
 
+  void unAllSelectedMailboxNode() {
+    defaultMailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
+    folderMailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
+    defaultMailboxTree.refresh();
+    folderMailboxTree.refresh();
+  }
+
   MailboxNode? findMailboxNodeById(MailboxId mailboxId) {
     final mailboxNode = defaultMailboxTree.value.findNode((node) => node.item.id == mailboxId);
     if (mailboxNode != null) {

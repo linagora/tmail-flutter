@@ -361,8 +361,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                       context,
                       _imagePaths,
                       _responsiveUtils,
-                      listMailbox[index],
-                      lastMailbox: controller.listMailboxSearched.last)
+                      listMailbox[index])
                   ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction)
                   ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox))
                   ..addOnMenuActionClick((position, mailbox) => _openMailboxMenuAction(context, position, mailbox))

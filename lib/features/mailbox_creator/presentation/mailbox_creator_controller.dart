@@ -30,6 +30,7 @@ class MailboxCreatorController extends BaseController {
   final newNameMailbox = Rxn<String>();
 
   FocusNode? nameInputFocusNode;
+  TextEditingController? nameInputController;
 
   MailboxCreatorArguments? arguments;
   AccountId? accountId;
@@ -48,12 +49,12 @@ class MailboxCreatorController extends BaseController {
   void onInit() {
     super.onInit();
     nameInputFocusNode = FocusNode();
+    nameInputController = TextEditingController();
   }
 
   @override
   void onReady() {
     super.onReady();
-    log('MailboxCreatorController::onReady(): ');
     if (arguments != null) {
       folderMailboxTree = arguments!.folderMailboxTree;
       defaultMailboxTree = arguments!.defaultMailboxTree;
@@ -71,7 +72,7 @@ class MailboxCreatorController extends BaseController {
 
   @override
   void onClose() {
-    nameInputFocusNode?.dispose();
+    _disposeWidget();
     super.onClose();
   }
 
@@ -184,6 +185,13 @@ class MailboxCreatorController extends BaseController {
     }
   }
 
+  void _disposeWidget() {
+    nameInputFocusNode?.dispose();
+    nameInputFocusNode = null;
+    nameInputController?.dispose();
+    nameInputController = null;
+  }
+
   void createNewMailbox(BuildContext context) {
     FocusScope.of(context).unfocus();
 
@@ -194,9 +202,7 @@ class MailboxCreatorController extends BaseController {
           mailboxLocation: selectedMailbox.value);
 
       if (BuildUtils.isWeb) {
-        nameInputFocusNode?.dispose();
-        nameInputFocusNode = null;
-
+        _disposeWidget();
         onCreatedMailboxCallback?.call(newMailboxArguments);
       } else {
         popBack(result: newMailboxArguments);
@@ -208,9 +214,7 @@ class MailboxCreatorController extends BaseController {
     FocusScope.of(context).unfocus();
 
     if (BuildUtils.isWeb) {
-      nameInputFocusNode?.dispose();
-      nameInputFocusNode = null;
-
+      _disposeWidget();
       onDismissMailboxCreator?.call();
     } else {
       popBack();

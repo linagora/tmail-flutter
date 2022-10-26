@@ -28,7 +28,7 @@ class MailBoxFolderTileBuilder {
   final MailboxNode? lastNode;
   final PresentationMailbox? mailboxNodeSelected;
   final MailboxActions? mailboxActions;
-  final MailboxId? mailboxIdSelected;
+  final MailboxId? mailboxIdAlreadySelected;
 
   OnExpandFolderActionClick? _onExpandFolderActionClick;
   OnOpenMailboxFolderClick? _onOpenMailboxFolderClick;
@@ -48,7 +48,7 @@ class MailBoxFolderTileBuilder {
       this.lastNode,
       this.mailboxNodeSelected,
       this.mailboxActions,
-      this.mailboxIdSelected,
+      this.mailboxIdAlreadySelected
     }
   );
 
@@ -159,8 +159,10 @@ class MailBoxFolderTileBuilder {
             child: InkWell(
               onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
               child: Container(
-                  color: Colors.transparent,
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  color: mailboxDisplayed == MailboxDisplayed.destinationPicker && _mailboxNode.isSelected
+                    ? AppColor.colorItemSelected
+                    : Colors.transparent,
                   child: Row(children: [
                     _buildLeadingMailboxItem(),
                     const SizedBox(width: 8),
@@ -399,7 +401,7 @@ class MailBoxFolderTileBuilder {
   }
 
   Widget _buildSelectedIcon() {
-    if (_mailboxNode.item.id == mailboxIdSelected &&
+    if (_mailboxNode.item.id == mailboxIdAlreadySelected &&
         mailboxDisplayed == MailboxDisplayed.destinationPicker &&
         (mailboxActions == MailboxActions.select ||
         mailboxActions == MailboxActions.create)) {

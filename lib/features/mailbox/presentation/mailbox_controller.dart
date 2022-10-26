@@ -529,8 +529,7 @@ class MailboxController extends BaseMailboxController {
           .map((mailbox) => mailbox.toSelectedPresentationMailbox(selectMode: SelectMode.INACTIVE))
           .toList();
     } else {
-      defaultMailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
-      folderMailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
+      unAllSelectedMailboxNode();
     }
     currentSelectMode.value = SelectMode.INACTIVE;
   }
