@@ -1,4 +1,6 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -11,17 +13,38 @@ class DeleteMultipleMailboxInteractor {
 
   DeleteMultipleMailboxInteractor(this._mailboxRepository);
 
-  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, List<MailboxId> mailboxIds, MailboxId mailboxIdDeleted) async* {
+  Stream<Either<Failure, Success>> execute(
+      Session session,
+      AccountId accountId,
+      Map<MailboxId, List<MailboxId>> mapMailboxIdToDelete,
+      List<MailboxId> listMailboxIdToDelete
+  ) async* {
     try {
       final currentMailboxState = await _mailboxRepository.getMailboxState();
-      final result = await _mailboxRepository.deleteMultipleMailbox(session, accountId, mailboxIds);
-      if (result) {
-        yield Right<Failure, Success>(DeleteMultipleMailboxSuccess(
-            mailboxIdDeleted,
+
+      final listResult = await Future.wait(
+          mapMailboxIdToDelete.keys.map((mailboxId) {
+            final mailboxIdsToDelete = mapMailboxIdToDelete[mailboxId]!;
+            return _mailboxRepository.deleteMultipleMailbox(
+                session,
+                accountId,
+                mailboxIdsToDelete);
+          })
+      );
+
+      final allSuccess = listResult.every((result) => result);
+      final allFailed = listResult.every((result) => !result);
+
+      if (allSuccess) {
+        yield Right<Failure, Success>(DeleteMultipleMailboxAllSuccess(
+            listMailboxIdToDelete,
             currentMailboxState: currentMailboxState));
+      } else if (allFailed) {
+        yield Left<Failure, Success>(DeleteMultipleMailboxAllFailure());
       } else {
-        logError('DeleteMultipleMailboxInteractor::execute(): failed');
-        yield Left<Failure, Success>(DeleteMultipleMailboxFailure(null));
+        yield Right<Failure, Success>(DeleteMultipleMailboxHasSomeSuccess(
+            listMailboxIdToDelete,
+            currentMailboxState: currentMailboxState));
       }
     } catch (e) {
       logError('DeleteMultipleMailboxInteractor::execute(): exception: $e');
