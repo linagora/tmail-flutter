@@ -154,6 +154,9 @@ extension AppColor on Color {
   static const colorEmailAddressFull = Color(0xFF818C99);
   static const colorTitleHeaderAttachment = Color(0xFF818C99);
   static const colorAttachmentIcon = Color(0xFFAEB7C2);
+  static const colorDividerDestinationPicker = Color(0x1F000000);
+  static const colorItemAlreadySelected = Color(0xFF818C99);
+  static const colorItemSelected = Color(0xFFF2F3F5);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

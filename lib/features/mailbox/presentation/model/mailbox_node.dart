@@ -23,6 +23,8 @@ class MailboxNode with EquatableMixin{
 
   bool get isActivated => nodeState == MailboxState.activated;
 
+  bool get isSelected => selectMode == SelectMode.ACTIVE;
+
   MailboxNode(
     this.item,
     {

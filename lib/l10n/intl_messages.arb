@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-26T13:43:22.314355",
+  "@@last_modified": "2022-10-27T15:02:38.515955",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2393,5 +2393,17 @@
     "placeholders": {
       "numberOfMailbox": {}
     }
+  },
+  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "You have not selected a save folder to save",
+  "@toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewMailbox": "Create new mailbox",
+  "@createNewMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

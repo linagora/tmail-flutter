@@ -361,7 +361,7 @@ class MailboxView extends GetWidget<MailboxController> {
                         _responsiveUtils,
                         controller.listMailboxSearched[index],
                         allSelectMode: controller.currentSelectMode.value,
-                        lastMailbox: controller.listMailboxSearched.last)
+                        lastMailboxIdInSearchedList: controller.listMailboxSearched.last.id)
                     ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox))
                     ..addOnSelectMailboxActionClick((mailbox) => controller.selectMailboxSearched(context, mailbox)))
                   .build())

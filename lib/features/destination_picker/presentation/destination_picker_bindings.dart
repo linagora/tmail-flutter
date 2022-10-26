@@ -16,9 +16,12 @@ import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
@@ -41,6 +44,9 @@ class DestinationPickerBindings extends BaseBindings {
     Get.lazyPut(() => DestinationPickerController(
         Get.find<GetAllMailboxInteractor>(),
         Get.find<SearchMailboxInteractor>(),
+        Get.find<CreateNewMailboxInteractor>(),
+        Get.find<RefreshAllMailboxInteractor>(),
+        Get.find<VerifyNameInteractor>(),
         Get.find<TreeBuilder>(),
     ));
   }
@@ -66,6 +72,9 @@ class DestinationPickerBindings extends BaseBindings {
   void bindingsInteractor() {
     Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => SearchMailboxInteractor());
+    Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => RefreshAllMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => VerifyNameInteractor());
   }
 
   @override
