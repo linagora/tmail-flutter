@@ -42,13 +42,13 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_inte
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
@@ -603,7 +603,10 @@ class MailboxController extends BaseMailboxController {
     final session = mailboxDashBoardController.sessionCurrent;
 
     if (session != null && accountId != null) {
-      final tupleMap = _generateMapDescendantIdsAndMailboxIdList([presentationMailbox]);
+      final tupleMap = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
+          [presentationMailbox],
+          defaultMailboxTree.value,
+          folderMailboxTree.value);
       final mapDescendantIds = tupleMap.value1;
       final listMailboxId = tupleMap.value2;
 
@@ -675,41 +678,15 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
-  Tuple2<Map<MailboxId, List<MailboxId>>, List<MailboxId>> _generateMapDescendantIdsAndMailboxIdList(
-      List<PresentationMailbox> selectedMailboxList
-  ) {
-    Map<MailboxId, List<MailboxId>> mapDescendantIds = {};
-    List<MailboxId> allMailboxIds = [];
-
-    for (var mailbox in selectedMailboxList) {
-      final currentMailboxId = mailbox.id;
-
-      if (allMailboxIds.contains(currentMailboxId)) {
-        continue;
-      } else {
-        final matchedNode = findMailboxNodeById(currentMailboxId);
-
-        if (matchedNode != null)  {
-          final descendantIds = matchedNode.descendantsAsList().mailboxIds;
-          final descendantIdsReversed = descendantIds.reversed.toList();
-
-          mapDescendantIds[currentMailboxId] = descendantIdsReversed;
-          allMailboxIds.addAll(descendantIdsReversed);
-        }
-      }
-    }
-
-    log('MailboxController::_generateMapDescendantIdsByMailboxList(): mapDescendantIds: $mapDescendantIds');
-
-    return Tuple2(mapDescendantIds, allMailboxIds);
-  }
-
   void _deleteMultipleMailboxAction(List<PresentationMailbox> selectedMailboxList) {
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
 
     if (session != null && accountId != null) {
-      final tupleMap = _generateMapDescendantIdsAndMailboxIdList(selectedMailboxList);
+      final tupleMap = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
+          selectedMailboxList,
+          defaultMailboxTree.value,
+          folderMailboxTree.value);
       final mapDescendantIds = tupleMap.value1;
       final listMailboxId = tupleMap.value2;
       consumeState(_deleteMultipleMailboxInteractor.execute(
