@@ -141,13 +141,18 @@ class EmailController extends BaseController with AppLoaderMixin {
   @override
   void onClose() {
     _downloadProgressStateController.close();
+    pageController?.dispose();
     _clearWorker();
     super.onClose();
   }
 
   void _setCurrentPositionEmailInListEmail() {
-    pageController ??= PageController(initialPage: mailboxDashBoardController.emailList.indexOf(mailboxDashBoardController.selectedEmail.value));
     currentIndexPageView = mailboxDashBoardController.emailList.indexOf(mailboxDashBoardController.selectedEmail.value);
+    if(pageController != null && pageController!.page?.toInt() != currentIndexPageView) {
+      pageController!.jumpToPage(currentIndexPageView);
+    } else {
+      pageController = PageController(initialPage: currentIndexPageView);
+    }
     _checkEnableNavigatorPageView();
   }
 

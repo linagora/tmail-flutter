@@ -20,6 +20,7 @@ class EmailTileBuilder with BaseEmailItemTile {
   final EdgeInsets? padding;
   final EdgeInsets? paddingDivider;
   final bool isDrag;
+  final bool _isShowingEmailContent;
 
   OnPressEmailActionClick? _emailActionClick;
   OnMoreActionClick? _onMoreActionClick;
@@ -33,7 +34,8 @@ class EmailTileBuilder with BaseEmailItemTile {
     this._selectModeAll,
     this._searchStatus,
     this._searchQuery,
-    {
+    this._isShowingEmailContent,
+      {
       this.advancedSearchActivated = false,
       this.mailboxCurrent,
       this.padding,
@@ -77,7 +79,7 @@ class EmailTileBuilder with BaseEmailItemTile {
         margin: const EdgeInsets.only(top: 3),
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: (_selectModeAll == SelectMode.ACTIVE &&
-            _presentationEmail.selectMode == SelectMode.ACTIVE) || isDrag
+            _presentationEmail.selectMode == SelectMode.ACTIVE) || isDrag || _isShowingEmailContent
             ? BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
                 color: AppColor.colorItemEmailSelectedDesktop)
@@ -89,7 +91,7 @@ class EmailTileBuilder with BaseEmailItemTile {
           margin: const EdgeInsets.only(top: 3, left: 16, right: 16),
           padding: const EdgeInsets.only(bottom: 8, right: 8, top: 8),
           decoration: (_selectModeAll == SelectMode.ACTIVE &&
-              _presentationEmail.selectMode == SelectMode.ACTIVE) || isDrag
+              _presentationEmail.selectMode == SelectMode.ACTIVE) || isDrag || _isShowingEmailContent
               ? BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
                   color: AppColor.colorItemEmailSelectedDesktop)
