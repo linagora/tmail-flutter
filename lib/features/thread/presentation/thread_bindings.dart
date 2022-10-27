@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
@@ -42,6 +43,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class ThreadBindings extends BaseBindings {
 
@@ -61,6 +63,7 @@ class ThreadBindings extends BaseBindings {
       Get.find<EmptyTrashFolderInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
       Get.find<MoveToMailboxInteractor>(),
+      Get.find<CachingManager>(),
     ));
   }
 
@@ -77,7 +80,10 @@ class ThreadBindings extends BaseBindings {
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>(), Get.find<MailboxIsolateWorker>()));
     Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
-    Get.lazyPut(() => ThreadDataSourceImpl(Get.find<ThreadAPI>(), Get.find<ThreadIsolateWorker>()));
+    Get.lazyPut(() => ThreadDataSourceImpl(
+      Get.find<ThreadAPI>(),
+      Get.find<ThreadIsolateWorker>(),
+      Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => LocalThreadDataSourceImpl(Get.find<EmailCacheManager>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));

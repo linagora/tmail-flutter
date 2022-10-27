@@ -14,13 +14,19 @@ import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class ThreadDataSourceImpl extends ThreadDataSource {
 
   final ThreadAPI threadAPI;
   final ThreadIsolateWorker _threadIsolateWorker;
+  final ExceptionThrower _exceptionThrower;
 
-  ThreadDataSourceImpl(this.threadAPI, this._threadIsolateWorker);
+  ThreadDataSourceImpl(
+    this.threadAPI,
+    this._threadIsolateWorker,
+    this._exceptionThrower
+  );
 
   @override
   Future<EmailsResponse> getAllEmail(
@@ -40,7 +46,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
         filter: filter,
         properties: properties);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -60,7 +66,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
         propertiesCreated: propertiesCreated,
         propertiesUpdated: propertiesUpdated);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
