@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:core/core.dart';
@@ -91,7 +92,7 @@ class EmailController extends BaseController with AppLoaderMixin {
   Identity? _identitySelected;
   List<EmailContent>? initialEmailContents;
   late Worker emailWorker;
-  final Map<EmailId, EmailLoaded> presentationEmailsLoaded = {};
+  final Queue<EmailLoaded> presentationEmailsLoaded = Queue();
   PageController? pageController;
   int currentIndexPageView = 0;
   final canGetNewerEmail = true.obs;
@@ -147,8 +148,8 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void _setCurrentPositionEmailInListEmail() {
-    currentIndexPageView = mailboxDashBoardController.emailList.indexOf(mailboxDashBoardController.selectedEmail.value);
-    if(pageController != null && pageController!.page?.toInt() != currentIndexPageView) {
+    currentIndexPageView = mailboxDashBoardController.emailsInCurrentMailbox.indexOf(mailboxDashBoardController.selectedEmail.value);
+    if(pageController != null && pageController!.hasClients && pageController!.page?.toInt() != currentIndexPageView) {
       pageController!.jumpToPage(currentIndexPageView);
     } else {
       pageController = PageController(initialPage: currentIndexPageView);
@@ -157,12 +158,12 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void onPageChanged(int index) {
-    mailboxDashBoardController.selectedEmail.value = mailboxDashBoardController.emailList[index];
+    mailboxDashBoardController.selectedEmail.value = mailboxDashBoardController.emailsInCurrentMailbox[index];
   }
 
   void _checkEnableNavigatorPageView() {
     canGetNewerEmail.value = currentIndexPageView > 0;
-    canGetOlderEmail.value = mailboxDashBoardController.emailList.length > 1 && currentIndexPageView < mailboxDashBoardController.emailList.length - 1;
+    canGetOlderEmail.value = mailboxDashBoardController.emailsInCurrentMailbox.length > 1 && currentIndexPageView < mailboxDashBoardController.emailsInCurrentMailbox.length - 1;
   }
 
   void getNewerEmail() {
@@ -259,10 +260,10 @@ class EmailController extends BaseController with AppLoaderMixin {
   void _getEmailContentAction(EmailId emailId) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
-    final listEmailIdLoaded = presentationEmailsLoaded.keys.toList();
+    final listEmailIdLoaded = presentationEmailsLoaded.map((e) => e.emailCurrent!.id).toList();
     EmailLoaded? emailLoaded;
     if(listEmailIdLoaded.contains(_currentEmailId)) {
-      emailLoaded = presentationEmailsLoaded[_currentEmailId];
+      emailLoaded = presentationEmailsLoaded.firstWhere((e) => e.emailCurrent!.id == _currentEmailId);
     }
     if (accountId != null && baseDownloadUrl != null) {
       consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl, emailLoaded: emailLoaded));
@@ -305,7 +306,12 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
-    presentationEmailsLoaded[success.emailCurrent!.id] = EmailLoaded(success.emailContents.toList(), success.emailContentsDisplayed.toList(), success.attachments.toList(), success.emailCurrent);
+    if(presentationEmailsLoaded.length > 100) {
+      presentationEmailsLoaded.removeFirst();
+    }
+    final emailLoaded = EmailLoaded(success.emailContents.toList(), success.emailContentsDisplayed.toList(), success.attachments.toList(), success.emailCurrent);
+    presentationEmailsLoaded.removeWhere((e) => e.emailCurrent!.id == emailLoaded.emailCurrent!.id);
+    presentationEmailsLoaded.add(emailLoaded);
     emailContents.value = success.emailContentsDisplayed;
     initialEmailContents = success.emailContents;
     attachments.value = success.attachments;
