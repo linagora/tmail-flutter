@@ -93,7 +93,7 @@ class EmailView extends GetWidget<EmailController> {
       Expanded(
         child: PageView.builder(
           physics: kIsWeb ? const NeverScrollableScrollPhysics() : null,
-          itemCount: controller.mailboxDashBoardController.emailList.length,
+          itemCount: controller.mailboxDashBoardController.emailsInCurrentMailbox.length,
           controller: controller.pageController,
           onPageChanged: controller.onPageChanged,
           itemBuilder: (context, _) {

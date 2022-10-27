@@ -127,7 +127,7 @@ class ThreadController extends BaseController {
 
   SearchQuery? get searchQuery => searchController.searchEmailFilter.value.text;
 
-  RxList<PresentationEmail> get emailList => mailboxDashBoardController.emailList;
+  RxList<PresentationEmail> get emailList => mailboxDashBoardController.emailsInCurrentMailbox;
 
   ThreadController(
     this._getEmailsInMailboxInteractor,
