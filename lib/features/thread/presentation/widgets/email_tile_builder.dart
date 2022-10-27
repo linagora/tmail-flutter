@@ -18,6 +18,7 @@ class EmailTileBuilder with BaseEmailItemTile {
   final EdgeInsets? padding;
   final EdgeInsets? paddingDivider;
   final bool isDrag;
+  final bool _isShowingEmailContent;
 
   OnPressEmailActionClick? _emailActionClick;
 
@@ -27,6 +28,7 @@ class EmailTileBuilder with BaseEmailItemTile {
     this._selectModeAll,
     this._searchStatus,
     this._searchQuery,
+    this._isShowingEmailContent,
     {
       this.advancedSearchActivated = false,
       this.mailboxCurrent,
@@ -48,6 +50,7 @@ class EmailTileBuilder with BaseEmailItemTile {
       child: Column(
         children: [
           ListTile(
+            tileColor: _isShowingEmailContent ? AppColor.colorItemEmailSelectedDesktop : null,
             contentPadding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             onTap: () => _emailActionClick?.call(
                 EmailActionType.preview,

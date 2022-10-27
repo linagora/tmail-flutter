@@ -427,6 +427,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 controller.selectionMode.value,
                 SearchStatus.ACTIVE,
                 controller.searchQuery,
+                controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
                 padding: SearchEmailUtils.getPaddingSearchResultList(context, _responsiveUtils),
                 paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, _responsiveUtils),
                 mailboxCurrent: listPresentationEmail[index].findMailboxContain(

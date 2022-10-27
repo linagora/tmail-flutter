@@ -334,7 +334,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
         itemExtent: _getItemExtent(context),
         itemCount: listPresentationEmail.length,
         itemBuilder: (context, index) {
-          return Draggable<List<PresentationEmail>>(
+          return Obx(() => Draggable<List<PresentationEmail>>(
             maxSimultaneousDrags: kIsWeb ? null : 0,
             data: controller.listEmailDrag,
             child: (EmailTileBuilder(
@@ -343,6 +343,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
               controller.mailboxDashBoardController.currentSelectMode.value,
               controller.searchController.searchState.value.searchStatus,
               controller.searchQuery,
+              controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
               mailboxCurrent: controller.searchController.isSearchEmailRunning
                 ? listPresentationEmail[index].findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
                 : controller.currentMailbox,
@@ -366,6 +367,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                 controller.mailboxDashBoardController.currentSelectMode.value,
                 controller.searchController.searchState.value.searchStatus,
                 controller.searchQuery,
+                controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
                 mailboxCurrent: controller.searchController.isSearchEmailRunning
                   ? listPresentationEmail[index].findMailboxContain(
                   controller.mailboxDashBoardController.mapMailboxById)
@@ -376,7 +378,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
             onDragStarted: () {
               controller.calculateDragValue(listPresentationEmail[index]);
             },
-          );
+          ));
         })
     );
   }
