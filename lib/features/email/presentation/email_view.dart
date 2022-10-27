@@ -48,9 +48,9 @@ class EmailView extends GetWidget<EmailController> {
               child: Container(
                   decoration: responsiveUtils.isWebDesktop(context)
                       ? BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
-                          color: Colors.white)
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
+                      color: Colors.white)
                       : const BoxDecoration(color: Colors.white),
                   margin: _getMarginEmailView(context),
                   child: Obx(() {
@@ -89,7 +89,15 @@ class EmailView extends GetWidget<EmailController> {
       _buildAppBar(context, email),
       _buildVacationNotificationMessage(context),
       const Divider(color: AppColor.colorDividerHorizontal, height: 1),
-      Expanded(child: _buildEmailBody(context, email)),
+      Expanded(
+        child: PageView.builder(
+          itemCount: controller.mailboxDashBoardController.emailList.length,
+          controller: controller.pageController,
+          onPageChanged: controller.onPageChanged,
+          itemBuilder: (context, _) {
+            return _buildEmailBody(context, email);
+        }),
+      ),
       const Divider(color: AppColor.colorDividerHorizontal, height: 1),
       _buildBottomBar(context, email),
     ]);

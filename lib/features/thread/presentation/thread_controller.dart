@@ -99,7 +99,6 @@ class ThreadController extends BaseController {
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final CachingManager _cachingManager;
 
-  final emailList = <PresentationEmail>[].obs;
   final listEmailDrag = <PresentationEmail>[].obs;
 
   bool canLoadMore = true;
@@ -127,6 +126,8 @@ class ThreadController extends BaseController {
   String get currentTextSearch => searchController.searchInputController.text;
 
   SearchQuery? get searchQuery => searchController.searchEmailFilter.value.text;
+
+  RxList<PresentationEmail> get emailList => mailboxDashBoardController.emailList;
 
   ThreadController(
     this._getEmailsInMailboxInteractor,

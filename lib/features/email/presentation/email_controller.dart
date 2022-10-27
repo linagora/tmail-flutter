@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/domain/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/send_receipt_to_sender_request.dart';
@@ -89,9 +90,9 @@ class EmailController extends BaseController with AppLoaderMixin {
   EmailId? _currentEmailId;
   Identity? _identitySelected;
   List<EmailContent>? initialEmailContents;
-
   late Worker emailWorker;
-
+  final Map<EmailId, EmailLoaded> presentationEmailsLoaded = {};
+  PageController? pageController;
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
@@ -141,18 +142,29 @@ class EmailController extends BaseController with AppLoaderMixin {
     super.onClose();
   }
 
+  void _setCurrentPositionEmailInListEmail() {
+    pageController ??= PageController(initialPage: mailboxDashBoardController.emailList.indexOf(mailboxDashBoardController.selectedEmail.value));
+  }
+
+  void onPageChanged(int index) {
+    mailboxDashBoardController.selectedEmail.value = mailboxDashBoardController.emailList[index];
+  }
+
   void _initWorker() {
     emailWorker = ever(mailboxDashBoardController.selectedEmail, (presentationEmail) {
       log('EmailController::_initWorker(): $presentationEmail');
       if (presentationEmail is PresentationEmail) {
-        if (_currentEmailId != presentationEmail.id) {
+        _setCurrentPositionEmailInListEmail();
+      if (_currentEmailId != presentationEmail.id) {
           _currentEmailId = presentationEmail.id;
           _resetToOriginalValue();
           _getEmailContentAction(presentationEmail.id);
           if (!presentationEmail.hasRead) {
             markAsEmailRead(presentationEmail, ReadActions.markAsRead);
           }
-          _getAllIdentities();
+          if(_identitySelected == null) {
+            _getAllIdentities();
+          }
         }
       }
     });
@@ -222,8 +234,13 @@ class EmailController extends BaseController with AppLoaderMixin {
   void _getEmailContentAction(EmailId emailId) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
+    final listEmailIdLoaded = presentationEmailsLoaded.keys.toList();
+    EmailLoaded? emailLoaded;
+    if(listEmailIdLoaded.contains(_currentEmailId)) {
+      emailLoaded = presentationEmailsLoaded[_currentEmailId];
+    }
     if (accountId != null && baseDownloadUrl != null) {
-      consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
+      consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl, emailLoaded: emailLoaded));
     }
   }
 
@@ -263,6 +280,7 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
+    presentationEmailsLoaded[success.emailCurrent!.id] = EmailLoaded(success.emailContents.toList(), success.emailContentsDisplayed.toList(), success.attachments.toList(), success.emailCurrent);
     emailContents.value = success.emailContentsDisplayed;
     initialEmailContents = success.emailContents;
     attachments.value = success.attachments;
