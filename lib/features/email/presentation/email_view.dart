@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -48,9 +49,9 @@ class EmailView extends GetWidget<EmailController> {
               child: Container(
                   decoration: responsiveUtils.isWebDesktop(context)
                       ? BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
-                      color: Colors.white)
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
+                          color: Colors.white)
                       : const BoxDecoration(color: Colors.white),
                   margin: _getMarginEmailView(context),
                   child: Obx(() {
@@ -91,6 +92,7 @@ class EmailView extends GetWidget<EmailController> {
       const Divider(color: AppColor.colorDividerHorizontal, height: 1),
       Expanded(
         child: PageView.builder(
+          physics: kIsWeb ? const NeverScrollableScrollPhysics() : null,
           itemCount: controller.mailboxDashBoardController.emailList.length,
           controller: controller.pageController,
           onPageChanged: controller.onPageChanged,
@@ -153,8 +155,32 @@ class EmailView extends GetWidget<EmailController> {
               position,
               _popupMenuEmailActionTile(context, email));
         }
-      }
+      },
+    optionsWidget: kIsWeb ? _buildNavigatorPageViewWidgets(context) : null,
     ));
+  }
+
+  List<Widget> _buildNavigatorPageViewWidgets(BuildContext context) {
+    return [
+      buildIconWeb(
+        icon: SvgPicture.asset(
+          imagePaths.icNewer,
+          color: controller.canGetNewerEmail.value ? AppColor.primaryColor : AppColor.colorAttachmentIcon,
+          width: IconUtils.defaultIconSize,
+          height: IconUtils.defaultIconSize,
+          fit: BoxFit.fill),
+        tooltip: AppLocalizations.of(context).newer,
+        onTap: controller.canGetNewerEmail.value ? controller.getNewerEmail : null),
+      buildIconWeb(
+        icon: SvgPicture.asset(
+          imagePaths.icOlder,
+          width: IconUtils.defaultIconSize,
+          height: IconUtils.defaultIconSize,
+          color: controller.canGetOlderEmail.value ? AppColor.primaryColor : AppColor.colorAttachmentIcon,
+          fit: BoxFit.fill),
+        tooltip: AppLocalizations.of(context).older,
+        onTap: controller.canGetOlderEmail.value ? controller.getOlderEmail : null),
+    ];
   }
 
   Widget _buildBottomBar(BuildContext context, PresentationEmail presentationEmail) {

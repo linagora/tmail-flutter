@@ -93,6 +93,9 @@ class EmailController extends BaseController with AppLoaderMixin {
   late Worker emailWorker;
   final Map<EmailId, EmailLoaded> presentationEmailsLoaded = {};
   PageController? pageController;
+  int currentIndexPageView = 0;
+  final canGetNewerEmail = true.obs;
+  final canGetOlderEmail = true.obs;
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
@@ -144,10 +147,27 @@ class EmailController extends BaseController with AppLoaderMixin {
 
   void _setCurrentPositionEmailInListEmail() {
     pageController ??= PageController(initialPage: mailboxDashBoardController.emailList.indexOf(mailboxDashBoardController.selectedEmail.value));
+    currentIndexPageView = mailboxDashBoardController.emailList.indexOf(mailboxDashBoardController.selectedEmail.value);
+    _checkEnableNavigatorPageView();
   }
 
   void onPageChanged(int index) {
     mailboxDashBoardController.selectedEmail.value = mailboxDashBoardController.emailList[index];
+  }
+
+  void _checkEnableNavigatorPageView() {
+    canGetNewerEmail.value = currentIndexPageView > 0;
+    canGetOlderEmail.value = mailboxDashBoardController.emailList.length > 1 && currentIndexPageView < mailboxDashBoardController.emailList.length - 1;
+  }
+
+  void getNewerEmail() {
+    currentIndexPageView = currentIndexPageView - 1;
+    pageController?.jumpToPage(currentIndexPageView);
+  }
+
+  void getOlderEmail() {
+    currentIndexPageView = currentIndexPageView + 1;
+    pageController?.jumpToPage(currentIndexPageView);
   }
 
   void _initWorker() {
