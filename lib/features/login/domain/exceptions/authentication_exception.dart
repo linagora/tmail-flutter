@@ -1,5 +1,5 @@
 
-import 'package:core/domain/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 
 abstract class AuthenticationException extends RemoteException {
   static const wrongCredential = 'Credential is wrong';
