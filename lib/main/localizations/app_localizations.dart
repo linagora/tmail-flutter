@@ -2475,4 +2475,16 @@ class AppLocalizations {
         'Create new mailbox',
         name: 'createNewMailbox');
   }
+
+  String get newer {
+    return Intl.message(
+        'Newer',
+        name: 'newer');
+  }
+
+  String get older {
+    return Intl.message(
+        'Older',
+        name: 'older');
+  }
 }

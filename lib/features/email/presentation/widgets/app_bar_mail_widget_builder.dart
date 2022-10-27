@@ -15,6 +15,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final PresentationEmail _presentationEmail;
+  final List<Widget>? optionsWidget;
   final PresentationMailbox? currentMailbox;
   final bool isSearchIsRunning;
   final OnBackActionClick? onBackActionClick;
@@ -29,6 +30,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
       this.onBackActionClick,
       this.onEmailActionClick,
       this.onMoreActionClick,
+      this.optionsWidget,
       this.isSearchIsRunning = false,
     }
   ) : super(key: key);
@@ -102,6 +104,8 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
   Widget _buildListOptionButton(BuildContext context) {
     return Row(
       children: [
+        if(optionsWidget != null)
+          ...optionsWidget!,
         buildIconWeb(
             icon: SvgPicture.asset(
                 _imagePaths.icMoveEmail,
