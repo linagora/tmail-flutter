@@ -1,6 +1,8 @@
 import 'package:contact/contact/model/capability_contact.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -12,18 +14,30 @@ import 'package:tmail_ui_user/features/email/presentation/mdn_interactor_binding
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 abstract class BaseController extends GetxController
     with MessageDialogActionMixin,
         PopupContextMenuActionMixin,
         ViewAsDialogActionMixin {
+
+  final _appToast = Get.find<AppToast>();
+  final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
 
   void consumeState(Stream<Either<Failure, Success>> newStateStream) async {
     newStateStream.listen(
       (state) => onData(state),
-      onError: (error) => onError(error),
+      onError: (error, stackTrace) {
+        logError('BaseController::consumeState():onError:error: $error');
+        logError('BaseController::consumeState():onError:stackTrace: $stackTrace');
+        onError(error);
+      },
       onDone: () => onDone()
     );
   }
@@ -48,7 +62,34 @@ abstract class BaseController extends GetxController
     viewState.value = newState;
   }
 
-  void onError(dynamic error);
+  void onError(dynamic error) {
+    String messageError = '';
+    if (error is MethodLevelErrors) {
+      messageError = error.message ?? error.type.value;
+    } else {
+      if (currentContext != null) {
+        messageError = AppLocalizations
+          .of(currentContext!)
+          .unknown_error_login_message;
+      }
+    }
+
+    if (messageError.isNotEmpty && currentContext != null && currentOverlayContext != null) {
+      _appToast.showBottomToast(
+        currentOverlayContext!,
+        messageError,
+        leadingIcon: SvgPicture.asset(
+          _imagePaths.icNotConnection,
+          width: 24,
+          height: 24,
+          color: Colors.white,
+          fit: BoxFit.fill),
+        backgroundColor: AppColor.toastErrorBackgroundColor,
+        textColor: Colors.white,
+        textActionColor: Colors.white,
+        maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
+    }
+  }
 
   void onDone();
 

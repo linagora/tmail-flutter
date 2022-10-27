@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 
 class CachingManager {
 
@@ -40,5 +41,12 @@ class CachingManager {
         _accountCacheClient.deleteBox(),
       ]);
     }
+  }
+
+  Future<void> cleanEmailCache() async {
+    await Future.wait([
+      _stateCacheClient.deleteItem(StateType.email.value),
+      _emailCacheClient.clearAllData(),
+    ]);
   }
 }

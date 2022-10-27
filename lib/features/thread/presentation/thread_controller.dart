@@ -17,6 +17,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
@@ -71,6 +72,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -95,6 +97,7 @@ class ThreadController extends BaseController {
   final EmptyTrashFolderInteractor _emptyTrashFolderInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
   final MoveToMailboxInteractor _moveToMailboxInteractor;
+  final CachingManager _cachingManager;
 
   final emailList = <PresentationEmail>[].obs;
   final listEmailDrag = <PresentationEmail>[].obs;
@@ -139,6 +142,7 @@ class ThreadController extends BaseController {
     this._emptyTrashFolderInteractor,
     this._markAsEmailReadInteractor,
     this._moveToMailboxInteractor,
+    this._cachingManager,
   );
 
   @override
@@ -199,8 +203,6 @@ class ThreadController extends BaseController {
         } else if (failure is MarkAsStarMultipleEmailAllFailure
             || failure is MarkAsStarMultipleEmailFailure) {
           _markAsStarMultipleEmailFailure(failure);
-        } else if (failure is LoadMoreEmailsFailure) {
-          stopFpsMeter();
         }
       },
       (success) {
@@ -224,15 +226,15 @@ class ThreadController extends BaseController {
           _markAsEmailReadSuccess(success);
         } else if (success is MoveToMailboxSuccess) {
           _moveToMailboxSuccess(success);
-        } else if (success is LoadMoreEmailsSuccess) {
-          stopFpsMeter();
         }
       }
     );
   }
 
   @override
-  void onError(error) {}
+  void onError(error) {
+    _handleErrorGetAllOrRefreshChangesEmail(error);
+  }
 
   void _initWorker() {
     mailboxWorker = ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
@@ -345,6 +347,16 @@ class ThreadController extends BaseController {
     viewStateWorker.call();
   }
 
+  void _handleErrorGetAllOrRefreshChangesEmail(dynamic error) async {
+    logError('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
+    if (error is CannotCalculateChangesMethodResponseException) {
+      await _cachingManager.cleanEmailCache();
+      _getAllEmail();
+    } else {
+      super.onError(error);
+    }
+  }
+
   void _getAllEmail() {
     if (_accountId != null) {
       _getAllEmailAction(_accountId!, mailboxId: _currentMailboxId);
@@ -427,10 +439,7 @@ class ThreadController extends BaseController {
     dispatchState(Right(LoadingState()));
     canLoadMore = true;
     cancelSelectEmail();
-
-    if (_accountId != null) {
-      _getAllEmail();
-    }
+    _getAllEmail();
   }
 
   void _refreshEmailChanges({jmap.State? currentEmailState}) {
