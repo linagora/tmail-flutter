@@ -132,9 +132,6 @@ class IdentityCreatorController extends BaseController {
     );
   }
 
-  @override
-  void onError(error) {}
-
   void _setUpValueFromIdentity() {
     _nameIdentity = identity?.name ?? '';
     inputNameIdentityController?.text = identity?.name ?? '';

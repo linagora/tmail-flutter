@@ -60,9 +60,7 @@ abstract class BaseController extends GetxController
       messageError = error.message ?? error.type.value;
     } else {
       if (currentContext != null) {
-        messageError = AppLocalizations
-          .of(currentContext!)
-          .unknown_error_login_message;
+        messageError = AppLocalizations.of(currentContext!).unknownError;
       }
     }
 

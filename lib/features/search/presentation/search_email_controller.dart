@@ -146,9 +146,6 @@ class SearchEmailController extends BaseController
   @override
   void onDone() {}
 
-  @override
-  void onError(error) {}
-
   void _initializeDebounceTimeTextSearchChange() {
     _deBouncerTime = Debouncer<String>(
         const Duration(milliseconds: 500),

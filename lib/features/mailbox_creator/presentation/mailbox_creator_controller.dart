@@ -64,11 +64,7 @@ class MailboxCreatorController extends BaseController {
   }
 
   @override
-  void onDone() {
-  }
-
-  @override
-  void onError(error) {}
+  void onDone() {}
 
   @override
   void onClose() {

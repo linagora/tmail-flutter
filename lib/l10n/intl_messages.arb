@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-27T15:02:38.515955",
+  "@@last_modified": "2022-10-28T13:12:30.889722",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -108,8 +108,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unknown_error_login_message": "Unknown error occurred, please try again",
-  "@unknown_error_login_message": {
+  "unknownError": "Unknown error occurred, please try again",
+  "@unknownError": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

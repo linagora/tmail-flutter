@@ -114,9 +114,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
       });
   }
 
-  @override
-  void onError(error) {}
-
   void _setUpDefaultValueRuleFilter() {
     switch(actionType.value) {
       case CreatorActionType.create:

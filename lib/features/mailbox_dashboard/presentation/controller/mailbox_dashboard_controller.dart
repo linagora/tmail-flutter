@@ -278,9 +278,6 @@ class MailboxDashBoardController extends ReloadableController {
     );
   }
 
-  @override
-  void onError(error) {}
-
   void _registerPendingEmailAddress() {
     _emailReceiveManagerStreamSubscription =
         _emailReceiveManager.pendingEmailAddressInfo.stream.listen((emailAddress) {

@@ -105,9 +105,9 @@ class AppLocalizations {
     return Intl.message('Multiple integrations', name: 'multipleIntegrations');
   }
 
-  String get unknown_error_login_message {
+  String get unknownError {
     return Intl.message('Unknown error occurred, please try again',
-        name: 'unknown_error_login_message');
+        name: 'unknownError');
   }
 
   String get search_folder {

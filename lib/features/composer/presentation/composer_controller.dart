@@ -281,18 +281,6 @@ class ComposerController extends BaseController {
       });
   }
 
-  @override
-  void onError(error) {
-    if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          textColor: AppColor.toastErrorBackgroundColor,
-          message: AppLocalizations.of(currentContext!).message_has_been_sent_failure,
-          icon: _imagePaths.icSendToast);
-    }
-    popBack();
-  }
-
   void _listenWorker() {
     uploadInlineImageWorker = ever(uploadController.uploadInlineViewState, (state) {
       log('ComposerController::_listenWorker(): $state');

@@ -190,9 +190,6 @@ class MailboxController extends BaseMailboxController {
     );
   }
 
-  @override
-  void onError(error) {}
-
   void _initWorker() {
     accountIdWorker = ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId is AccountId) {

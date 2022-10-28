@@ -261,11 +261,6 @@ class EmailController extends BaseController with AppLoaderMixin {
       });
   }
 
-  @override
-  void onError(error) {
-    log('EmailController::onError(): $error');
-  }
-
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
     emailContents.value = success.emailContentsDisplayed;
     initialEmailContents = success.emailContents;

@@ -392,7 +392,4 @@ class LoginController extends ReloadableController {
 
   @override
   void onDone() {}
-
-  @override
-  void onError(error) {}
 }

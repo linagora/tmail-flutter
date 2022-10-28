@@ -242,9 +242,6 @@ class SearchController extends BaseController {
   void onDone() {}
 
   @override
-  void onError(error) {}
-
-  @override
   void onClose() {
     searchInputController.dispose();
     searchFocus.dispose();

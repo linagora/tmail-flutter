@@ -85,10 +85,6 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   @override
-  void onError(error) {
-  }
-
-  @override
   void handleReloaded(Session session) {
     accountId.value = session.accounts.keys.first;
     sessionCurrent.value = session;
