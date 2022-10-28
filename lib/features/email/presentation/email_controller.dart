@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -94,6 +95,7 @@ class EmailController extends BaseController with AppLoaderMixin {
   Identity? _identitySelected;
   List<EmailContent>? initialEmailContents;
   late Worker emailWorker;
+  late Debouncer<int?> _deBouncerTime;
   final Queue<EmailLoaded> presentationEmailsLoaded = Queue();
   PageController? pageController;
   int currentIndexPageView = 0;
@@ -127,6 +129,7 @@ class EmailController extends BaseController with AppLoaderMixin {
 
   @override
   void onInit() {
+    _initializeDebounceTimeIndexPageViewChange();
     _initWorker();
     _listenDownloadAttachmentProgressState();
     super.onInit();
@@ -149,6 +152,7 @@ class EmailController extends BaseController with AppLoaderMixin {
   void onClose() {
     _downloadProgressStateController.close();
     pageController?.dispose();
+    _deBouncerTime.cancel();
     _clearWorker();
     super.onClose();
   }
@@ -182,6 +186,17 @@ class EmailController extends BaseController with AppLoaderMixin {
     pageController?.jumpToPage(currentIndexPageView);
   }
 
+  void _initializeDebounceTimeIndexPageViewChange() {
+    _deBouncerTime = Debouncer<int?>(
+      const Duration(milliseconds: 800),
+      initialValue: null);
+    _deBouncerTime.values.listen((value) async {
+      if(value !=null) {
+        _getEmailContentAction(listEmail[value].id);
+      }
+    });
+  }
+
   void _initWorker() {
     emailWorker = ever(mailboxDashBoardController.selectedEmail, (presentationEmail) {
       log('EmailController::_initWorker(): $presentationEmail');
@@ -189,8 +204,8 @@ class EmailController extends BaseController with AppLoaderMixin {
       if (_currentEmailId != presentationEmail.id) {
           _currentEmailId = presentationEmail.id;
           _setCurrentPositionEmailInListEmail(_currentEmailId);
+          _deBouncerTime.value = currentIndexPageView;
           _resetToOriginalValue();
-          _getEmailContentAction(presentationEmail.id);
           if (!presentationEmail.hasRead) {
             markAsEmailRead(presentationEmail, ReadActions.markAsRead);
           }
