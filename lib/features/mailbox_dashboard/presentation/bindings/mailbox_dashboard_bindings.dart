@@ -145,7 +145,9 @@ class MailboxDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
+    Get.lazyPut(() => EmailDataSourceImpl(
+      Get.find<EmailAPI>(),
+      Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
         Get.find<HtmlAnalyzer>(),
         Get.find<DioClient>()

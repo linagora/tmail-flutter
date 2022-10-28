@@ -71,7 +71,9 @@ class DestinationPickerBindings extends BaseBindings {
       Get.find<MailboxCacheManager>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
-    Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
+    Get.lazyPut(() => EmailDataSourceImpl(
+      Get.find<EmailAPI>(),
+      Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => ThreadDataSourceImpl(
       Get.find<ThreadAPI>(),
       Get.find<ThreadIsolateWorker>(),
