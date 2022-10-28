@@ -96,9 +96,9 @@ class ThreadBindings extends BaseBindings {
       Get.find<EmailAPI>(),
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
-        Get.find<HtmlAnalyzer>(),
-        Get.find<DioClient>(),
-    ));
+      Get.find<HtmlAnalyzer>(),
+      Get.find<DioClient>(),
+      Get.find<RemoteExceptionThrower>()));
   }
 
   @override

@@ -90,9 +90,9 @@ class EmailBindings extends BaseBindings {
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => HiveAccountDatasourceImpl(Get.find<AccountCacheManager>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
-        Get.find<HtmlAnalyzer>(),
-        Get.find<DioClient>(),
-    ));
+      Get.find<HtmlAnalyzer>(),
+      Get.find<DioClient>(),
+      Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
         Get.find<OIDCHttpClient>(),
