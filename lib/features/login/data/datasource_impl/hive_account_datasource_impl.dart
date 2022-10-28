@@ -1,27 +1,39 @@
-import 'package:core/utils/app_logger.dart';
 import 'package:model/account/account.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class HiveAccountDatasourceImpl extends AccountDatasource {
-  final AccountCacheManager _accountCacheManager;
 
-  HiveAccountDatasourceImpl(this._accountCacheManager);
+  final AccountCacheManager _accountCacheManager;
+  final ExceptionThrower _exceptionThrower;
+
+  HiveAccountDatasourceImpl(this._accountCacheManager, this._exceptionThrower);
 
   @override
   Future<Account> getCurrentAccount() {
-    return _accountCacheManager.getSelectedAccount();
+    return Future.sync(() async {
+      return await _accountCacheManager.getSelectedAccount();
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 
   @override
   Future<void> setCurrentAccount(Account newCurrentAccount) {
-    log('HiveAccountDatasourceImpl::setCurrentAccount(): $newCurrentAccount');
-    log('HiveAccountDatasourceImpl::setCurrentAccount(): $_accountCacheManager');
-    return _accountCacheManager.setSelectedAccount(newCurrentAccount);
+    return Future.sync(() async {
+      return await _accountCacheManager.setSelectedAccount(newCurrentAccount);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 
   @override
   Future<void> deleteCurrentAccount(String accountId) {
-    return _accountCacheManager.deleteSelectedAccount(accountId);
+    return Future.sync(() async {
+      return await _accountCacheManager.deleteSelectedAccount(accountId);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 }
