@@ -22,7 +22,7 @@ class ComposerDataSourceImpl extends ComposerDataSource {
     }
   ) {
     return Future.sync(() async {
-      return downloadClient.downloadImageAsBase64(
+      return await downloadClient.downloadImageAsBase64(
         url,
         cid,
         fileInfo.fileExtension,
