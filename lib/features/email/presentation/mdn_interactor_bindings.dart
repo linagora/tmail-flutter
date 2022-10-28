@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/email/data/network/mdn_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/mdn_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/mdn_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class MdnInteractorBindings extends InteractorsBindings {
 
@@ -16,7 +17,7 @@ class MdnInteractorBindings extends InteractorsBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => MdnDataSourceImpl(Get.find<MdnAPI>()));
+    Get.lazyPut(() => MdnDataSourceImpl(Get.find<MdnAPI>(), Get.find<RemoteExceptionThrower>()));
   }
 
   @override
