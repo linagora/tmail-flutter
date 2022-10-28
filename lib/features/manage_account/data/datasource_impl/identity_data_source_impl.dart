@@ -6,12 +6,14 @@ import 'package:tmail_ui_user/features/manage_account/data/network/identity_api.
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class IdentityDataSourceImpl extends IdentityDataSource {
 
   final IdentityAPI _identityAPI;
+  final ExceptionThrower _exceptionThrower;
 
-  IdentityDataSourceImpl(this._identityAPI);
+  IdentityDataSourceImpl(this._identityAPI, this._exceptionThrower);
 
   @override
   Future<IdentitiesResponse> getAllIdentities(AccountId accountId,
@@ -19,7 +21,7 @@ class IdentityDataSourceImpl extends IdentityDataSource {
     return Future.sync(() async {
       return await _identityAPI.getAllIdentities(accountId, properties: properties);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -28,7 +30,7 @@ class IdentityDataSourceImpl extends IdentityDataSource {
     return Future.sync(() async {
       return await _identityAPI.createNewIdentity(accountId, identityRequest);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -37,7 +39,7 @@ class IdentityDataSourceImpl extends IdentityDataSource {
     return Future.sync(() async {
       return await _identityAPI.deleteIdentity(accountId, identityId);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -46,7 +48,7 @@ class IdentityDataSourceImpl extends IdentityDataSource {
     return Future.sync(() async {
       return await _identityAPI.editIdentity(accountId, editIdentityRequest);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 }

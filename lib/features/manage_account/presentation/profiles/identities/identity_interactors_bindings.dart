@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class IdentityInteractorsBindings extends InteractorsBindings {
 
@@ -19,7 +20,9 @@ class IdentityInteractorsBindings extends InteractorsBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => IdentityDataSourceImpl(Get.find<IdentityAPI>()));
+    Get.lazyPut(() => IdentityDataSourceImpl(
+      Get.find<IdentityAPI>(),
+      Get.find<RemoteExceptionThrower>()));
   }
 
   @override
