@@ -32,7 +32,7 @@ class RemoteExceptionThrower extends ExceptionThrower {
           message: errorResponse.description);
       }
     } else {
-      throw UnknownError(message: error.toString());
+      throw error;
     }
   }
 }

@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
+import 'package:core/data/network/download/downloaded_response.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -13,19 +14,21 @@ import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.da
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class EmailDataSourceImpl extends EmailDataSource {
 
   final EmailAPI emailAPI;
+  final ExceptionThrower _exceptionThrower;
 
-  EmailDataSourceImpl(this.emailAPI);
+  EmailDataSourceImpl(this.emailAPI, this._exceptionThrower);
 
   @override
   Future<Email> getEmailContent(AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
       return await emailAPI.getEmailContent(accountId, emailId);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -34,7 +37,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.sendEmail(accountId, emailRequest, mailboxRequest: mailboxRequest);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -43,7 +46,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.markAsRead(accountId, emails, readActions);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -57,7 +60,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.downloadAttachments(attachments, accountId, baseDownloadUrl, accountRequest);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -72,7 +75,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.exportAttachment(attachment, accountId, baseDownloadUrl, accountRequest, cancelToken);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -81,7 +84,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.moveToMailbox(accountId, moveRequest);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -90,7 +93,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.markAsStar(accountId, emails, markStarAction);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -99,7 +102,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.saveEmailAsDrafts(accountId, email);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -108,7 +111,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.removeEmailDrafts(accountId, emailId);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -117,7 +120,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.updateEmailDrafts(accountId, newEmail, oldEmailId);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -139,7 +142,7 @@ class EmailDataSourceImpl extends EmailDataSource {
           accountRequest,
           onReceiveController);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -148,7 +151,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.deleteMultipleEmailsPermanently(accountId, emailIds);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -157,7 +160,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.deleteEmailPermanently(accountId, emailId);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 }
