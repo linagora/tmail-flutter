@@ -46,14 +46,6 @@ abstract class BaseController extends GetxController
     viewState.value = newState;
   }
 
-  void getState(Future<Either<Failure, Success>> newStateStream) async {
-    final state = await newStateStream;
-    state.fold(
-      (failure) => onError(failure),
-      (success) => onData(state)
-    );
-  }
-
   void clearState() {
     viewState.value = Right(UIState.idle);
   }
