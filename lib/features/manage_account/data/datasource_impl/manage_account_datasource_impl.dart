@@ -12,20 +12,25 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/delete_email_
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_local_copy_in_forwarding_request.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class ManageAccountDataSourceImpl extends ManageAccountDataSource {
 
   final ManageAccountAPI manageAccountAPI;
   final LanguageCacheManager _languageCacheManager;
+  final ExceptionThrower _exceptionThrower;
 
-  ManageAccountDataSourceImpl(this.manageAccountAPI, this._languageCacheManager);
+  ManageAccountDataSourceImpl(
+    this.manageAccountAPI,
+    this._languageCacheManager,
+    this._exceptionThrower);
 
   @override
   Future<void> persistLanguage(Locale localeCurrent) {
     return Future.sync(() async {
       return await _languageCacheManager.persistLanguage(localeCurrent);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -34,7 +39,7 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
     return Future.sync(() async {
       return await manageAccountAPI.getListTMailRule(accountId);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -46,7 +51,7 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
     return Future.sync(() async {
       return await manageAccountAPI.updateListTMailRule(accountId, deleteEmailRuleRequest.currentEmailRules);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -55,7 +60,7 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
     return Future.sync(() async {
       return await manageAccountAPI.updateListTMailRule(accountId, ruleFilterRequest.newListTMailRules);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -64,7 +69,7 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
     return Future.sync(() async {
       return await manageAccountAPI.updateListTMailRule(accountId, ruleFilterRequest.listTMailRulesUpdated);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -73,7 +78,7 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
     return Future.sync(() async {
       return await manageAccountAPI.getForward(accountId);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -82,7 +87,7 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
     return Future.sync(() async {
       return await manageAccountAPI.updateForward(accountId, deleteRequest.newTMailForward);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -91,7 +96,7 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
     return Future.sync(() async {
       return await manageAccountAPI.updateForward(accountId, addRequest.newTMailForward);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -100,7 +105,7 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
     return Future.sync(() async {
       return await manageAccountAPI.updateForward(accountId, editRequest.newTMailForward);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 }
