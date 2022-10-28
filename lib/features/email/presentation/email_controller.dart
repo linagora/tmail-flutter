@@ -142,7 +142,8 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void _initWorker() {
-    emailWorker = ever( mailboxDashBoardController.selectedEmail, (presentationEmail) {
+    emailWorker = ever(mailboxDashBoardController.selectedEmail, (presentationEmail) {
+      log('EmailController::_initWorker(): $presentationEmail');
       if (presentationEmail is PresentationEmail) {
         if (_currentEmailId != presentationEmail.id) {
           _currentEmailId = presentationEmail.id;
@@ -927,6 +928,7 @@ class EmailController extends BaseController with AppLoaderMixin {
   void closeEmailView(BuildContext context) {
     mailboxDashBoardController.clearSelectedEmail();
     _currentEmailId = null;
+    _resetToOriginalValue();
     if (mailboxDashBoardController.searchController.isSearchEmailRunning) {
       if (responsiveUtils.isWebDesktop(context)) {
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);

@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
-import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
@@ -55,6 +54,7 @@ class EmailView extends GetWidget<EmailController> {
                       : const BoxDecoration(color: Colors.white),
                   margin: _getMarginEmailView(context),
                   child: Obx(() {
+                    log('EmailView::_buildLoadingView(): ${controller.currentEmail}');
                     if (controller.currentEmail != null) {
                       return _buildEmailView(context, controller.currentEmail!);
                     } else {
@@ -286,24 +286,21 @@ class EmailView extends GetWidget<EmailController> {
 
   Widget _buildLoadingView() {
     return Obx(() {
-      if (controller.emailContents.isEmpty) {
-        return controller.viewState.value.fold(
-          (failure) => const SizedBox.shrink(),
-          (success) {
-            if (success is GetEmailContentLoading) {
-              return const Align(alignment: Alignment.topCenter, child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: CupertinoActivityIndicator(color: AppColor.colorLoading))));
-            } else {
-              return const SizedBox.shrink();
-            }
-          });
-      } else {
-        return const SizedBox.shrink();
-      }
+      return controller.viewState.value.fold(
+        (failure) => const SizedBox.shrink(),
+        (success) {
+          log('EmailView::_buildLoadingView(): $success');
+          if (success is LoadingState) {
+            return const Align(alignment: Alignment.topCenter, child: Padding(
+                padding: EdgeInsets.all(16),
+                child: SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CupertinoActivityIndicator(color: AppColor.colorLoading))));
+          } else {
+            return const SizedBox.shrink();
+          }
+        });
     });
   }
 
