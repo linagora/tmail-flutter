@@ -3,11 +3,14 @@ import 'package:tmail_ui_user/features/login/data/datasource/login_username_data
 import 'package:tmail_ui_user/features/login/data/model/recent_login_username_cache.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/list_recent_login_username_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class LoginUsernameDataSourceImpl implements LoginUsernameDataSource {
-  final RecentLoginUsernameCacheClient _recentLoginUsernameCacheClient;
 
-  LoginUsernameDataSourceImpl(this._recentLoginUsernameCacheClient);
+  final RecentLoginUsernameCacheClient _recentLoginUsernameCacheClient;
+  final ExceptionThrower _exceptionThrower;
+
+  LoginUsernameDataSourceImpl(this._recentLoginUsernameCacheClient, this._exceptionThrower);
 
   @override
   Future<List<RecentLoginUsername>> getAllRecentLoginUsernamesLatest({int? limit, String? pattern}) {
@@ -26,7 +29,7 @@ class LoginUsernameDataSourceImpl implements LoginUsernameDataSource {
           ? listValidRecentUsername.sublist(0, newLimit)
           : listValidRecentUsername;
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -42,7 +45,7 @@ class LoginUsernameDataSourceImpl implements LoginUsernameDataSource {
             recentLoginUsername.toRecentLoginUsernameCache());
       }
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 

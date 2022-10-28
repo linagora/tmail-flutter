@@ -3,12 +3,14 @@ import 'package:tmail_ui_user/features/login/data/datasource/login_url_datasourc
 import 'package:tmail_ui_user/features/login/data/model/recent_login_url_cache.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/list_recent_login_url_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class LoginUrlDataSourceImpl implements LoginUrlDataSource {
   
   final RecentLoginUrlCacheClient _recentLoginUrlCacheClient;
-  
-  LoginUrlDataSourceImpl(this._recentLoginUrlCacheClient);
+  final ExceptionThrower _exceptionThrower;
+
+  LoginUrlDataSourceImpl(this._recentLoginUrlCacheClient, this._exceptionThrower);
   
   @override
   Future<void> saveLoginUrl(RecentLoginUrl recentLoginUrl) {
@@ -23,7 +25,7 @@ class LoginUrlDataSourceImpl implements LoginUrlDataSource {
             recentLoginUrl.toRecentLoginUrlCache());
       }
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -45,7 +47,7 @@ class LoginUrlDataSourceImpl implements LoginUrlDataSource {
 
       return newListRecentSUrl;
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
