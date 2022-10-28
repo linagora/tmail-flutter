@@ -91,9 +91,6 @@ class VacationController extends BaseController {
     );
   }
 
-  @override
-  void onError(error) {}
-
   void _initWorker() {
     vacationWorker = ever(_accountDashBoardController.vacationResponse, (vacation) {
       if (vacation is VacationResponse) {

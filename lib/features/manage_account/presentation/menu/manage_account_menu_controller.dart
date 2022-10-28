@@ -56,12 +56,7 @@ class ManageAccountMenuController extends BaseController {
   }
 
   @override
-  void onDone() {
-  }
-
-  @override
-  void onError(error) {
-  }
+  void onDone() {}
 
   void selectAccountMenuItem(AccountMenuItem newAccountMenuItem) {
     dashBoardController.selectAccountMenuItem(newAccountMenuItem);

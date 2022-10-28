@@ -79,7 +79,7 @@ class SessionController extends ReloadableController {
         if (sessionException.message != null) {
           _appToast.showErrorToast('[${sessionException.code}] ${sessionException.message}');
         } else {
-          _appToast.showErrorToast(AppLocalizations.of(currentContext!).unknown_error_login_message);
+          _appToast.showErrorToast(AppLocalizations.of(currentContext!).unknownError);
         }
       }
     }
@@ -111,7 +111,4 @@ class SessionController extends ReloadableController {
 
   @override
   void onDone() {}
-
-  @override
-  void onError(error) {}
 }

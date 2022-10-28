@@ -48,7 +48,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
               } else if (failure is GetTokenOIDCFailure || failure is LoginCanNotGetTokenAction) {
                 return AppLocalizations.of(context).canNotGetToken;
               } else {
-                return AppLocalizations.of(context).unknown_error_login_message;
+                return AppLocalizations.of(context).unknownError;
               }
             },
             (success) {

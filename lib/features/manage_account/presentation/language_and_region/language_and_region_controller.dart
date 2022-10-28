@@ -33,9 +33,6 @@ class LanguageAndRegionController extends BaseController {
         });
   }
 
-  @override
-  void onError(error) {}
-
   void _setUpSupportedLanguages() {
     listSupportedLanguages.value = LocalizationService.supportedLocales;
 

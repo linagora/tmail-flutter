@@ -370,7 +370,4 @@ class AdvancedFilterController extends BaseController {
 
   @override
   void onDone() {}
-
-  @override
-  void onError(error) {}
 }

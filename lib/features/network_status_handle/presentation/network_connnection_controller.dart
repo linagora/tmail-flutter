@@ -42,9 +42,6 @@ class NetworkConnectionController extends BaseController {
   @override
   void onDone() {}
 
-  @override
-  void onError(error) {}
-
   void setNetworkConnectivityState(ConnectivityResult newConnectivityResult) {
     connectivityResult.value = newConnectivityResult;
   }

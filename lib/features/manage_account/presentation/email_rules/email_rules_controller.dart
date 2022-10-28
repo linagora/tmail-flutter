@@ -70,9 +70,6 @@ class EmailRulesController extends BaseController {
   }
 
   @override
-  void onError(error) {}
-
-  @override
   void onInit() {
     _getAllRules();
     super.onInit();

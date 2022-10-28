@@ -100,10 +100,6 @@ class IdentitiesController extends BaseController {
     );
   }
 
-  @override
-  void onError(error) {
-  }
-
   void _initWorker() {
     accountIdWorker = ever(_accountDashBoardController.accountId, (accountId) {
       if (accountId is AccountId) {

@@ -149,9 +149,6 @@ class DestinationPickerController extends BaseMailboxController {
   }
 
   @override
-  void onError(error) {}
-
-  @override
   void onClose() {
     _disposeWidget();
     super.onClose();

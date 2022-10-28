@@ -60,9 +60,6 @@ class EmailsForwardCreatorController extends BaseController {
   void onDone() {}
 
   @override
-  void onError(error) {}
-
-  @override
   void injectAutoCompleteBindings(Session? session, AccountId? accountId) {
     try {
       super.injectAutoCompleteBindings(session, accountId);
