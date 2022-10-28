@@ -1,4 +1,4 @@
 
 abstract class ExceptionThrower {
-  void throwException(dynamic exception);
+  void throwException(dynamic error);
 }

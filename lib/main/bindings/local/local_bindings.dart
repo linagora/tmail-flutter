@@ -23,12 +23,14 @@ import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
+import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 
 class LocalBindings extends Bindings {
 
   @override
   void dependencies() {
     _bindingCaching();
+    _bindingException();
   }
 
   void _bindingCaching() {
@@ -60,5 +62,9 @@ class LocalBindings extends Bindings {
       Get.find<RecentSearchCacheClient>(),
       Get.find<AccountCacheClient>(),
     ));
+  }
+
+  void _bindingException() {
+    Get.put(CacheExceptionThrower());
   }
 }

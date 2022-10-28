@@ -46,6 +46,8 @@ import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repositor
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
+import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class EmailBindings extends BaseBindings {
 
@@ -76,8 +78,13 @@ class EmailBindings extends BaseBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>(), Get.find<MailboxIsolateWorker>()));
-    Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
+    Get.lazyPut(() => MailboxDataSourceImpl(
+      Get.find<MailboxAPI>(),
+      Get.find<MailboxIsolateWorker>(),
+      Get.find<RemoteExceptionThrower>()));
+    Get.lazyPut(() => MailboxCacheDataSourceImpl(
+      Get.find<MailboxCacheManager>(),
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut(() => HiveAccountDatasourceImpl(Get.find<AccountCacheManager>()));
     Get.lazyPut(() => HtmlDataSourceImpl(

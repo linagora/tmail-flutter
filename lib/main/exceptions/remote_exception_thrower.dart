@@ -8,22 +8,22 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 class RemoteExceptionThrower extends ExceptionThrower {
 
   @override
-  void throwException(dynamic exception) {
-    if (exception is DioError) {
-      switch (exception.type) {
+  void throwException(dynamic error) {
+    if (error is DioError) {
+      switch (error.type) {
         case DioErrorType.connectTimeout:
           throw const ConnectError();
         default:
-          if (exception.response?.statusCode == 502) {
+          if (error.response?.statusCode == 502) {
             throw BadGateway();
           } else {
             throw UnknownError(
-              code: exception.response?.statusCode,
-              message: exception.response?.statusMessage);
+              code: error.response?.statusCode,
+              message: error.response?.statusMessage);
           }
       }
-    } else if (exception is ErrorMethodResponseException) {
-      final errorResponse = exception.errorResponse as ErrorMethodResponse;
+    } else if (error is ErrorMethodResponseException) {
+      final errorResponse = error.errorResponse as ErrorMethodResponse;
       if (errorResponse is CannotCalculateChangesMethodResponse) {
         throw CannotCalculateChangesMethodResponseException();
       } else {
@@ -32,7 +32,7 @@ class RemoteExceptionThrower extends ExceptionThrower {
           message: errorResponse.description);
       }
     } else {
-      throw UnknownError(message: exception.toString());
+      throw UnknownError(message: error.toString());
     }
   }
 }

@@ -16,12 +16,14 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class MailboxCacheDataSourceImpl extends MailboxDataSource {
 
   final MailboxCacheManager _mailboxCacheManager;
+  final ExceptionThrower _exceptionThrower;
 
-  MailboxCacheDataSourceImpl(this._mailboxCacheManager);
+  MailboxCacheDataSourceImpl(this._mailboxCacheManager, this._exceptionThrower);
 
   @override
   Future<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties}) {
@@ -38,7 +40,7 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
     return Future.sync(() async {
       return await _mailboxCacheManager.update(updated: updated, created: created, destroyed: destroyed);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -48,7 +50,7 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
       final listMailboxes = await _mailboxCacheManager.getAllMailbox();
       return listMailboxes;
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 

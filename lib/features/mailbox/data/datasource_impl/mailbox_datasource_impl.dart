@@ -17,20 +17,22 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class MailboxDataSourceImpl extends MailboxDataSource {
 
   final MailboxAPI mailboxAPI;
   final MailboxIsolateWorker _mailboxIsolateWorker;
+  final ExceptionThrower _exceptionThrower;
 
-  MailboxDataSourceImpl(this.mailboxAPI, this._mailboxIsolateWorker);
+  MailboxDataSourceImpl(this.mailboxAPI, this._mailboxIsolateWorker, this._exceptionThrower);
 
   @override
   Future<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties}) {
     return Future.sync(() async {
       return await mailboxAPI.getAllMailbox(accountId, properties: properties);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -39,7 +41,7 @@ class MailboxDataSourceImpl extends MailboxDataSource {
     return Future.sync(() async {
       return await mailboxAPI.getChanges(accountId, sinceState);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -58,7 +60,7 @@ class MailboxDataSourceImpl extends MailboxDataSource {
     return Future.sync(() async {
       return await mailboxAPI.createNewMailbox(accountId, newMailboxRequest);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -67,7 +69,7 @@ class MailboxDataSourceImpl extends MailboxDataSource {
     return Future.sync(() async {
       return await mailboxAPI.deleteMultipleMailbox(session, accountId, mailboxIds);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -76,7 +78,7 @@ class MailboxDataSourceImpl extends MailboxDataSource {
     return Future.sync(() async {
       return await mailboxAPI.renameMailbox(accountId, request);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -85,7 +87,7 @@ class MailboxDataSourceImpl extends MailboxDataSource {
     return Future.sync(() async {
       return await mailboxAPI.moveMailbox(accountId, request);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -102,7 +104,7 @@ class MailboxDataSourceImpl extends MailboxDataSource {
           totalEmailUnread,
           onProgressController);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 }
