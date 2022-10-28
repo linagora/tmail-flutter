@@ -374,6 +374,7 @@ class ThreadController extends BaseController {
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
     _currentEmailState = success.currentEmailState;
+    log('ThreadController::_getAllEmailSuccess():_currentEmailState: $_currentEmailState');
     emailList.value = success.emailList;
     if (listEmailController.hasClients) {
       listEmailController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);

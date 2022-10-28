@@ -1184,9 +1184,6 @@ class ComposerController extends BaseController {
     }
   }
 
-  void setIdentityDefault() {
-  }
-
   void selectIdentity(Identity? newIdentity) {
     final formerIdentity = identitySelected.value;
     identitySelected.value = newIdentity;
