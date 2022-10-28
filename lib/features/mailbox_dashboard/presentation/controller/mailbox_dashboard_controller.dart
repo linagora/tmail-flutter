@@ -127,6 +127,7 @@ class MailboxDashBoardController extends ReloadableController {
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
   Map<MailboxId, PresentationMailbox> mapMailboxById = {};
   final emailsInCurrentMailbox = <PresentationEmail>[].obs;
+  final listResultSearch = RxList<PresentationEmail>();
   PresentationMailbox? outboxMailbox;
   RouterArguments? routerArguments;
 

@@ -71,7 +71,6 @@ class SearchEmailController extends BaseController
   final currentSearchText = RxString('');
   final listRecentSearch = RxList<RecentSearch>();
   final listSuggestionSearch = RxList<PresentationEmail>();
-  final listResultSearch = RxList<PresentationEmail>();
   final simpleSearchFilter = Rx<SimpleSearchFilter>(SimpleSearchFilter());
   final searchIsRunning = RxBool(false);
   final emailReceiveTimeType = Rxn<EmailReceiveTimeType>();
@@ -91,6 +90,8 @@ class SearchEmailController extends BaseController
   UserProfile? get userProfile => mailboxDashBoardController.userProfile.value;
 
   SearchQuery? get searchQuery => simpleSearchFilter.value.text;
+
+  RxList<PresentationEmail> get listResultSearch => mailboxDashBoardController.listResultSearch;
 
   SearchEmailController(
       this._quickSearchEmailInteractor,

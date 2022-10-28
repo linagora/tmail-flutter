@@ -9,11 +9,11 @@ class EmailLoaded with EquatableMixin {
   final Email? emailCurrent;
 
   EmailLoaded(
-      this.emailContents,
-      this.emailContentsDisplayed,
-      this.attachments,
-      this.emailCurrent
-      );
+    this.emailContents,
+    this.emailContentsDisplayed,
+    this.attachments,
+    this.emailCurrent,
+  );
 
   @override
   List<Object?> get props => [
