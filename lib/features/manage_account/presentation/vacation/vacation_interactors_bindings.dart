@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/manage_account/data/repository/vacation_r
 import 'package:tmail_ui_user/features/manage_account/domain/repository/vacation_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class VacationInteractorsBindings extends BaseBindings {
   @override
@@ -21,7 +22,9 @@ class VacationInteractorsBindings extends BaseBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => VacationDataSourceImpl(Get.find<VacationAPI>()));
+    Get.lazyPut(() => VacationDataSourceImpl(
+      Get.find<VacationAPI>(),
+      Get.find<RemoteExceptionThrower>()));
   }
 
   @override
