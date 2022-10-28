@@ -4,12 +4,14 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/search_
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/recent_search_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/extensions/list_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class SearchDataSourceImpl extends SearchDataSource {
 
   final RecentSearchCacheClient _recentSearchCacheClient;
+  final ExceptionThrower _exceptionThrower;
 
-  SearchDataSourceImpl(this._recentSearchCacheClient);
+  SearchDataSourceImpl(this._recentSearchCacheClient, this._exceptionThrower);
 
   @override
   Future<void> saveRecentSearch(RecentSearch recentSearch) {
@@ -24,7 +26,7 @@ class SearchDataSourceImpl extends SearchDataSource {
             recentSearch.toRecentSearchCache());
       }
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -46,7 +48,7 @@ class SearchDataSourceImpl extends SearchDataSource {
 
       return newListRecentSearch;
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
