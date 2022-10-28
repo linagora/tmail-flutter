@@ -102,11 +102,11 @@ class LoginBindings extends BaseBindings {
       Get.find<AccountCacheManager>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => LoginUrlDataSourceImpl(
-      Get.find<RecentLoginUrlCacheClient>()
-    ));
+      Get.find<RecentLoginUrlCacheClient>(),
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => LoginUsernameDataSourceImpl(
-      Get.find<RecentLoginUsernameCacheClient>()
-    ));
+      Get.find<RecentLoginUsernameCacheClient>(),
+      Get.find<CacheExceptionThrower>()));
   }
 
   @override
