@@ -70,7 +70,7 @@ class ComposerBindings extends BaseBindings {
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => AttachmentUploadDataSourceImpl(Get.find<FileUploader>()));
     Get.lazyPut(() => ComposerDataSourceImpl(Get.find<DownloadClient>(), Get.find<RemoteExceptionThrower>()));
-    Get.lazyPut(() => ContactDataSourceImpl());
+    Get.lazyPut(() => ContactDataSourceImpl(Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => MailboxDataSourceImpl(
       Get.find<MailboxAPI>(),
       Get.find<MailboxIsolateWorker>(),
