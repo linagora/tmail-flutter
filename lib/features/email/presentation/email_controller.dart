@@ -6,6 +6,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,7 +28,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
-import 'package:tmail_ui_user/features/email/domain/model/email_loaded.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/send_receipt_to_sender_request.dart';
@@ -57,6 +58,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/down
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -107,6 +109,10 @@ class EmailController extends BaseController with AppLoaderMixin {
 
   bool get isDisplayFullAttachments => attachmentsExpandMode.value == ExpandMode.EXPAND;
 
+  RxList<PresentationEmail> get listEmail => mailboxDashBoardController.searchController.isSearchEmailRunning && !kIsWeb ?
+    mailboxDashBoardController.listResultSearch : mailboxDashBoardController.emailsInCurrentMailbox;
+
+
   EmailController(
     this._getEmailContentInteractor,
     this._markAsEmailReadInteractor,
@@ -147,8 +153,8 @@ class EmailController extends BaseController with AppLoaderMixin {
     super.onClose();
   }
 
-  void _setCurrentPositionEmailInListEmail() {
-    currentIndexPageView = mailboxDashBoardController.emailsInCurrentMailbox.indexOf(mailboxDashBoardController.selectedEmail.value);
+  void _setCurrentPositionEmailInListEmail(EmailId? currentEmailId) {
+    currentIndexPageView = listEmail.indexWhere((e) => e.id == currentEmailId);
     if(pageController != null && pageController!.hasClients && pageController!.page?.toInt() != currentIndexPageView) {
       pageController!.jumpToPage(currentIndexPageView);
     } else {
@@ -158,12 +164,12 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void onPageChanged(int index) {
-    mailboxDashBoardController.selectedEmail.value = mailboxDashBoardController.emailsInCurrentMailbox[index];
+    mailboxDashBoardController.selectedEmail.value = listEmail[index];
   }
 
   void _checkEnableNavigatorPageView() {
     canGetNewerEmail.value = currentIndexPageView > 0;
-    canGetOlderEmail.value = mailboxDashBoardController.emailsInCurrentMailbox.length > 1 && currentIndexPageView < mailboxDashBoardController.emailsInCurrentMailbox.length - 1;
+    canGetOlderEmail.value = listEmail.length > 1 && currentIndexPageView < listEmail.length - 1;
   }
 
   void getNewerEmail() {
@@ -180,9 +186,9 @@ class EmailController extends BaseController with AppLoaderMixin {
     emailWorker = ever(mailboxDashBoardController.selectedEmail, (presentationEmail) {
       log('EmailController::_initWorker(): $presentationEmail');
       if (presentationEmail is PresentationEmail) {
-        _setCurrentPositionEmailInListEmail();
       if (_currentEmailId != presentationEmail.id) {
           _currentEmailId = presentationEmail.id;
+          _setCurrentPositionEmailInListEmail(_currentEmailId);
           _resetToOriginalValue();
           _getEmailContentAction(presentationEmail.id);
           if (!presentationEmail.hasRead) {
@@ -260,13 +266,19 @@ class EmailController extends BaseController with AppLoaderMixin {
   void _getEmailContentAction(EmailId emailId) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
-    final listEmailIdLoaded = presentationEmailsLoaded.map((e) => e.emailCurrent!.id).toList();
+    final currentEmail = presentationEmailsLoaded.where((e) => e.emailCurrent!.id == emailId);
     EmailLoaded? emailLoaded;
-    if(listEmailIdLoaded.contains(_currentEmailId)) {
-      emailLoaded = presentationEmailsLoaded.firstWhere((e) => e.emailCurrent!.id == _currentEmailId);
-    }
-    if (accountId != null && baseDownloadUrl != null) {
-      consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl, emailLoaded: emailLoaded));
+    if(currentEmail.isNotEmpty) {
+      emailLoaded = currentEmail.first;
+      dispatchState(Right<Failure, Success>(GetEmailContentLoading()));
+      await Future.delayed(const Duration(milliseconds: 300));
+      consumeState(Stream.value(Right<Failure, Success>(GetEmailContentSuccess(
+        emailLoaded.emailContents,
+        emailLoaded.emailContentsDisplayed,
+        emailLoaded.attachments,
+        emailLoaded.emailCurrent))));
+    } else if (accountId != null && baseDownloadUrl != null) {
+      consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
     }
   }
 
@@ -306,11 +318,16 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
-    if(presentationEmailsLoaded.length > 100) {
+    if(presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
       presentationEmailsLoaded.removeFirst();
     }
-    final emailLoaded = EmailLoaded(success.emailContents.toList(), success.emailContentsDisplayed.toList(), success.attachments.toList(), success.emailCurrent);
-    presentationEmailsLoaded.removeWhere((e) => e.emailCurrent!.id == emailLoaded.emailCurrent!.id);
+    final emailLoaded = EmailLoaded(
+      success.emailContents.toList(),
+      success.emailContentsDisplayed.toList(),
+      success.attachments.toList(),
+      success.emailCurrent,
+    );
+    presentationEmailsLoaded.removeWhere((e) => e == emailLoaded);
     presentationEmailsLoaded.add(emailLoaded);
     emailContents.value = success.emailContentsDisplayed;
     initialEmailContents = success.emailContents;

@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/email/domain/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 
@@ -13,41 +12,31 @@ class GetEmailContentInteractor {
 
   GetEmailContentInteractor(this.emailRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, EmailId emailId, String? baseDownloadUrl, {EmailLoaded? emailLoaded}) async* {
+  Stream<Either<Failure, Success>> execute(AccountId accountId, EmailId emailId, String? baseDownloadUrl) async* {
     try {
       yield Right<Failure, Success>(GetEmailContentLoading());
+      final email = await emailRepository.getEmailContent(accountId, emailId);
 
-      if(emailLoaded != null) {
-        await Future.delayed(const Duration(milliseconds: 300));
+      if (email.emailContentList.isNotEmpty) {
+        final newEmailContents = await emailRepository.transformEmailContent(
+            email.emailContentList,
+            email.allAttachments.listAttachmentsDisplayedInContent,
+            baseDownloadUrl,
+            accountId);
+        final newEmailContentsDisplayed = kIsWeb
+            ? await emailRepository.addTooltipWhenHoverOnLink(newEmailContents)
+            : newEmailContents;
         yield Right<Failure, Success>(GetEmailContentSuccess(
-            emailLoaded.emailContents,
-            emailLoaded.emailContentsDisplayed,
-            emailLoaded.attachments,
-            emailLoaded.emailCurrent));
+            newEmailContents,
+            newEmailContentsDisplayed,
+            email.allAttachments,
+            email));
+      } else if (email.allAttachments.isNotEmpty) {
+        yield Right<Failure, Success>(GetEmailContentSuccess([], [], email.allAttachments, email));
+      } else if (email.headers?.isNotEmpty == true) {
+        yield Right<Failure, Success>(GetEmailContentSuccess([], [], [], email));
       } else {
-        final email = await emailRepository.getEmailContent(accountId, emailId);
-
-        if (email.emailContentList.isNotEmpty) {
-          final newEmailContents = await emailRepository.transformEmailContent(
-              email.emailContentList,
-              email.allAttachments.listAttachmentsDisplayedInContent,
-              baseDownloadUrl,
-              accountId);
-          final newEmailContentsDisplayed = kIsWeb
-              ? await emailRepository.addTooltipWhenHoverOnLink(newEmailContents)
-              : newEmailContents;
-          yield Right<Failure, Success>(GetEmailContentSuccess(
-              newEmailContents,
-              newEmailContentsDisplayed,
-              email.allAttachments,
-              email));
-        } else if (email.allAttachments.isNotEmpty) {
-          yield Right<Failure, Success>(GetEmailContentSuccess([], [], email.allAttachments, email));
-        } else if (email.headers?.isNotEmpty == true) {
-          yield Right<Failure, Success>(GetEmailContentSuccess([], [], [], email));
-        } else {
-          yield Left(GetEmailContentFailure(null));
-        }
+        yield Left(GetEmailContentFailure(null));
       }
     } catch (e) {
       log('GetEmailContentInteractor::execute(): exception = $e');
