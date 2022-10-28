@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_inte
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
 class HomeBindings extends BaseBindings {
@@ -74,6 +75,7 @@ class HomeBindings extends BaseBindings {
         Get.find<RecentSearchCacheManager>(),
         Get.find<RecentLoginUrlCacheManager>(),
         Get.find<RecentLoginUsernameCacheManager>(),
+        Get.find<CacheExceptionThrower>(),
     ));
     Get.lazyPut(() => HiveAccountDatasourceImpl(
         Get.find<AccountCacheManager>()
