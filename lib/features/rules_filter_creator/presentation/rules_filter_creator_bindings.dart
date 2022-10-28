@@ -16,6 +16,8 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_i
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
+import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class RulesFilterCreatorBindings extends BaseBindings {
 
@@ -46,8 +48,13 @@ class RulesFilterCreatorBindings extends BaseBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>(), Get.find<MailboxIsolateWorker>()));
-    Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
+    Get.lazyPut(() => MailboxDataSourceImpl(
+      Get.find<MailboxAPI>(),
+      Get.find<MailboxIsolateWorker>(),
+      Get.find<RemoteExceptionThrower>()));
+    Get.lazyPut(() => MailboxCacheDataSourceImpl(
+      Get.find<MailboxCacheManager>(),
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
   }
 

@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
+import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class MailboxBindings extends BaseBindings {
@@ -68,8 +69,13 @@ class MailboxBindings extends BaseBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => MailboxDataSourceImpl(Get.find<MailboxAPI>(), Get.find<MailboxIsolateWorker>()));
-    Get.lazyPut(() => MailboxCacheDataSourceImpl(Get.find<MailboxCacheManager>()));
+    Get.lazyPut(() => MailboxDataSourceImpl(
+      Get.find<MailboxAPI>(),
+      Get.find<MailboxIsolateWorker>(),
+      Get.find<RemoteExceptionThrower>()));
+    Get.lazyPut(() => MailboxCacheDataSourceImpl(
+      Get.find<MailboxCacheManager>(),
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
     Get.lazyPut(() => EmailDataSourceImpl(Get.find<EmailAPI>()));
     Get.lazyPut(() => ThreadDataSourceImpl(
