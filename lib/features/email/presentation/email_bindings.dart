@@ -95,10 +95,11 @@ class EmailBindings extends BaseBindings {
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>(), Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
-        Get.find<OIDCHttpClient>(),
-        Get.find<AuthenticationClientBase>(),
-        Get.find<TokenOidcCacheManager>(),
-        Get.find<OidcConfigurationCacheManager>()
+      Get.find<OIDCHttpClient>(),
+      Get.find<AuthenticationClientBase>(),
+      Get.find<TokenOidcCacheManager>(),
+      Get.find<OidcConfigurationCacheManager>(),
+      Get.find<RemoteExceptionThrower>(),
     ));
   }
 

@@ -4,6 +4,7 @@ import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
 
@@ -11,12 +12,15 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   final AuthenticationClientBase _authenticationClient;
   final TokenOidcCacheManager _tokenOidcCacheManager;
   final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
+  final ExceptionThrower _exceptionThrower;
 
   AuthenticationOIDCDataSourceImpl(
     this._oidcHttpClient,
     this._authenticationClient,
     this._tokenOidcCacheManager,
-    this._oidcConfigurationCacheManager);
+    this._oidcConfigurationCacheManager,
+    this._exceptionThrower
+  );
 
   @override
   Future<OIDCResponse> checkOIDCIsAvailable(OIDCRequest oidcRequest) {
@@ -24,7 +28,7 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
       final oidcResponse = await _oidcHttpClient.checkOIDCIsAvailable(oidcRequest);
       return oidcResponse!;
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -33,7 +37,7 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
     return Future.sync(() async {
       return await _oidcHttpClient.getOIDCConfiguration(oidcResponse);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -42,35 +46,64 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
     return Future.sync(() async {
       return await _authenticationClient.getTokenOIDC(clientId, redirectUrl, discoveryUrl, scopes);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
   @override
   Future<TokenOIDC> getStoredTokenOIDC(String tokenIdHash) {
-    return _tokenOidcCacheManager.getTokenOidc(tokenIdHash);
+    return Future.sync(() async {
+      return await _tokenOidcCacheManager.getTokenOidc(tokenIdHash);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 
   @override
   Future<void> persistTokenOIDC(TokenOIDC tokenOidc) {
-    return _tokenOidcCacheManager.persistOneTokenOidc(tokenOidc);
+    return Future.sync(() async {
+      return await _tokenOidcCacheManager.persistOneTokenOidc(tokenOidc);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 
   @override
   Future<OIDCConfiguration> getStoredOidcConfiguration() {
-    return _oidcConfigurationCacheManager.getOidcConfiguration();
+    return Future.sync(() async {
+      return await _oidcConfigurationCacheManager.getOidcConfiguration();
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 
   @override
   Future<void> persistAuthorityOidc(String authority) {
-    return _oidcConfigurationCacheManager.persistAuthorityOidc(authority);
+    return Future.sync(() async {
+      return await _oidcConfigurationCacheManager.persistAuthorityOidc(authority);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 
   @override
-  Future<TokenOIDC> refreshingTokensOIDC(String clientId, String redirectUrl,
-      String discoveryUrl, List<String> scopes, String refreshToken) {
-    return _authenticationClient.refreshingTokensOIDC(
-        clientId, redirectUrl, discoveryUrl, scopes, refreshToken);
+  Future<TokenOIDC> refreshingTokensOIDC(
+    String clientId,
+    String redirectUrl,
+    String discoveryUrl,
+    List<String> scopes,
+    String refreshToken
+  ) {
+    return Future.sync(() async {
+      return await _authenticationClient.refreshingTokensOIDC(
+        clientId,
+        redirectUrl,
+        discoveryUrl,
+        scopes,
+        refreshToken);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 
   @override
@@ -78,32 +111,52 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
     return Future.sync(() async {
        return await _authenticationClient.logoutOidc(tokenId, config);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
   @override
   Future<void> deleteAuthorityOidc() {
-    return _oidcConfigurationCacheManager.deleteAuthorityOidc();
+    return Future.sync(() async {
+      return await _oidcConfigurationCacheManager.deleteAuthorityOidc();
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 
   @override
-  Future<void> authenticateOidcOnBrowser(String clientId, String redirectUrl,
-      String discoveryUrl, List<String> scopes) {
-    return _authenticationClient.authenticateOidcOnBrowser(
+  Future<void> authenticateOidcOnBrowser(
+    String clientId,
+    String redirectUrl,
+    String discoveryUrl,
+    List<String> scopes
+  ) {
+    return Future.sync(() async {
+      return await _authenticationClient.authenticateOidcOnBrowser(
         clientId,
         redirectUrl,
         discoveryUrl,
         scopes);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 
   @override
   Future<String?> getAuthenticationInfo() {
-    return _authenticationClient.getAuthenticationInfo();
+    return Future.sync(() async {
+      return await _authenticationClient.getAuthenticationInfo();
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 
   @override
   Future<void> deleteTokenOIDC() {
-    return _tokenOidcCacheManager.deleteTokenOidc();
+    return Future.sync(() async {
+      return await _tokenOidcCacheManager.deleteTokenOidc();
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 }

@@ -49,6 +49,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class LoginBindings extends BaseBindings {
 
@@ -90,10 +91,11 @@ class LoginBindings extends BaseBindings {
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => AuthenticationDataSourceImpl());
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
-        Get.find<OIDCHttpClient>(),
-        Get.find<AuthenticationClientBase>(),
-        Get.find<TokenOidcCacheManager>(),
-        Get.find<OidcConfigurationCacheManager>()
+      Get.find<OIDCHttpClient>(),
+      Get.find<AuthenticationClientBase>(),
+      Get.find<TokenOidcCacheManager>(),
+      Get.find<OidcConfigurationCacheManager>(),
+      Get.find<RemoteExceptionThrower>()
     ));
     Get.lazyPut(() => HiveAccountDatasourceImpl(
         Get.find<AccountCacheManager>()
