@@ -95,7 +95,10 @@ class EmailController extends BaseController with AppLoaderMixin {
   Identity? _identitySelected;
   List<EmailContent>? initialEmailContents;
   late Worker emailWorker;
-  late Debouncer<int?> _deBouncerTime;
+  final Debouncer<int?> _getEmailDeBouncer = Debouncer<int?>(
+    const Duration(milliseconds: 800),
+    initialValue: null,
+  );
   final Queue<EmailLoaded> presentationEmailsLoaded = Queue();
   PageController? pageController;
   int currentIndexPageView = 0;
@@ -152,7 +155,7 @@ class EmailController extends BaseController with AppLoaderMixin {
   void onClose() {
     _downloadProgressStateController.close();
     pageController?.dispose();
-    _deBouncerTime.cancel();
+    _getEmailDeBouncer.cancel();
     _clearWorker();
     super.onClose();
   }
@@ -187,10 +190,7 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void _initializeDebounceTimeIndexPageViewChange() {
-    _deBouncerTime = Debouncer<int?>(
-      const Duration(milliseconds: 800),
-      initialValue: null);
-    _deBouncerTime.values.listen((value) async {
+    _getEmailDeBouncer.values.listen((value) async {
       if(value !=null) {
         _getEmailContentAction(listEmail[value].id);
       }
@@ -201,10 +201,10 @@ class EmailController extends BaseController with AppLoaderMixin {
     emailWorker = ever(mailboxDashBoardController.selectedEmail, (presentationEmail) {
       log('EmailController::_initWorker(): $presentationEmail');
       if (presentationEmail is PresentationEmail) {
-      if (_currentEmailId != presentationEmail.id) {
+        if (_currentEmailId != presentationEmail.id) {
           _currentEmailId = presentationEmail.id;
           _setCurrentPositionEmailInListEmail(_currentEmailId);
-          _deBouncerTime.value = currentIndexPageView;
+          _getEmailDeBouncer.value = currentIndexPageView;
           _resetToOriginalValue();
           if (!presentationEmail.hasRead) {
             markAsEmailRead(presentationEmail, ReadActions.markAsRead);
@@ -342,7 +342,7 @@ class EmailController extends BaseController with AppLoaderMixin {
       success.attachments.toList(),
       success.emailCurrent,
     );
-    presentationEmailsLoaded.removeWhere((e) => e == emailLoaded);
+    presentationEmailsLoaded.removeWhere((e) => e.emailCurrent!.id == emailLoaded.emailCurrent!.id);
     presentationEmailsLoaded.add(emailLoaded);
     emailContents.value = success.emailContentsDisplayed;
     initialEmailContents = success.emailContents;

@@ -96,8 +96,8 @@ class EmailView extends GetWidget<EmailController> {
           itemCount: controller.listEmail.length,
           controller: controller.pageController,
           onPageChanged: controller.onPageChanged,
-          itemBuilder: (context, _) {
-            return _buildEmailBody(context, email);
+          itemBuilder: (context, index) {
+            return _buildEmailBody(context, controller.listEmail[index]);
         }),
       ),
       const Divider(color: AppColor.colorDividerHorizontal, height: 1),
