@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/manage_accoun
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_bindings.dart';
+import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class ManageAccountDashBoardBindings extends BaseBindings {
@@ -61,7 +62,9 @@ class ManageAccountDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => HiveAccountDatasourceImpl(Get.find<AccountCacheManager>()));
+    Get.lazyPut(() => HiveAccountDatasourceImpl(
+      Get.find<AccountCacheManager>(),
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
       Get.find<OIDCHttpClient>(),
       Get.find<AuthenticationClientBase>(),

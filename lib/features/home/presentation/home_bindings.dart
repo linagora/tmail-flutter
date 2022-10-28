@@ -79,8 +79,8 @@ class HomeBindings extends BaseBindings {
         Get.find<CacheExceptionThrower>(),
     ));
     Get.lazyPut(() => HiveAccountDatasourceImpl(
-        Get.find<AccountCacheManager>()
-    ));
+      Get.find<AccountCacheManager>(),
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
       Get.find<OIDCHttpClient>(),
       Get.find<AuthenticationClientBase>(),

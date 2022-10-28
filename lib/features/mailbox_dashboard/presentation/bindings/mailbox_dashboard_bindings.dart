@@ -168,7 +168,9 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => MailboxCacheDataSourceImpl(
       Get.find<MailboxCacheManager>(),
       Get.find<CacheExceptionThrower>()));
-    Get.lazyPut(() => HiveAccountDatasourceImpl(Get.find<AccountCacheManager>()));
+    Get.lazyPut(() => HiveAccountDatasourceImpl(
+      Get.find<AccountCacheManager>(),
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
       Get.find<OIDCHttpClient>(),
       Get.find<AuthenticationClientBase>(),
