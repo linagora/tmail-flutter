@@ -13,12 +13,14 @@ import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dar
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class LocalThreadDataSourceImpl extends ThreadDataSource {
 
   final EmailCacheManager _emailCacheManager;
+  final ExceptionThrower _exceptionThrower;
 
-  LocalThreadDataSourceImpl(this._emailCacheManager);
+  LocalThreadDataSourceImpl(this._emailCacheManager, this._exceptionThrower);
 
   @override
   Future<EmailsResponse> getAllEmail(
@@ -46,20 +48,36 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<List<Email>> getAllEmailCache({MailboxId? inMailboxId, Set<Comparator>? sort, FilterMessageOption? filterOption, UnsignedInt? limit}) {
+  Future<List<Email>> getAllEmailCache({
+    MailboxId? inMailboxId,
+    Set<Comparator>? sort,
+    FilterMessageOption? filterOption,
+    UnsignedInt? limit
+  }) {
     return Future.sync(() async {
-      return await _emailCacheManager.getAllEmail(inMailboxId: inMailboxId, sort: sort, filterOption: filterOption ?? FilterMessageOption.all, limit: limit);
+      return await _emailCacheManager.getAllEmail(
+        inMailboxId: inMailboxId,
+        sort: sort,
+        filterOption: filterOption ?? FilterMessageOption.all,
+        limit: limit);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
   @override
-  Future<void> update({List<Email>? updated, List<Email>? created, List<EmailId>? destroyed}) {
+  Future<void> update({
+    List<Email>? updated,
+    List<Email>? created,
+    List<EmailId>? destroyed
+  }) {
     return Future.sync(() async {
-      return await _emailCacheManager.update(updated: updated, created: created, destroyed: destroyed);
+      return await _emailCacheManager.update(
+        updated: updated,
+        created: created,
+        destroyed: destroyed);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
