@@ -55,7 +55,7 @@ class RulesFilterCreatorBindings extends BaseBindings {
     Get.lazyPut(() => MailboxCacheDataSourceImpl(
       Get.find<MailboxCacheManager>(),
       Get.find<CacheExceptionThrower>()));
-    Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
+    Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>(), Get.find<CacheExceptionThrower>()));
   }
 
   @override
