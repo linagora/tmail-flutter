@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oi
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
 class HomeBindings extends BaseBindings {
@@ -81,10 +82,11 @@ class HomeBindings extends BaseBindings {
         Get.find<AccountCacheManager>()
     ));
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
-        Get.find<OIDCHttpClient>(),
-        Get.find<AuthenticationClientBase>(),
-        Get.find<TokenOidcCacheManager>(),
-        Get.find<OidcConfigurationCacheManager>()
+      Get.find<OIDCHttpClient>(),
+      Get.find<AuthenticationClientBase>(),
+      Get.find<TokenOidcCacheManager>(),
+      Get.find<OidcConfigurationCacheManager>(),
+      Get.find<RemoteExceptionThrower>(),
     ));
   }
 

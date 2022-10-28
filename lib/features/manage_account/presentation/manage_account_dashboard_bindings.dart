@@ -63,10 +63,11 @@ class ManageAccountDashBoardBindings extends BaseBindings {
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => HiveAccountDatasourceImpl(Get.find<AccountCacheManager>()));
     Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
-        Get.find<OIDCHttpClient>(),
-        Get.find<AuthenticationClientBase>(),
-        Get.find<TokenOidcCacheManager>(),
-        Get.find<OidcConfigurationCacheManager>()
+      Get.find<OIDCHttpClient>(),
+      Get.find<AuthenticationClientBase>(),
+      Get.find<TokenOidcCacheManager>(),
+      Get.find<OidcConfigurationCacheManager>(),
+      Get.find<RemoteExceptionThrower>()
     ));
     Get.lazyPut(() => ManageAccountDataSourceImpl(
       Get.find<ManageAccountAPI>(),
