@@ -89,7 +89,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
           updateDestroyedEmailCache,
       );
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 }
