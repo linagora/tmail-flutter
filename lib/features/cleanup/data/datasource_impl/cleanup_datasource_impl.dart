@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/cleanup/domain/model/recent_login_url_cle
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_login_username_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_search_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class CleanupDataSourceImpl extends CleanupDataSource {
 
@@ -15,12 +16,14 @@ class CleanupDataSourceImpl extends CleanupDataSource {
   final RecentSearchCacheManager recentSearchCacheManager;
   final RecentLoginUrlCacheManager recentLoginUrlCacheManager;
   final RecentLoginUsernameCacheManager recentLoginUsernameCacheManager;
+  final ExceptionThrower _exceptionThrower;
 
   CleanupDataSourceImpl(
     this.emailCacheManager,
     this.recentSearchCacheManager,
     this.recentLoginUrlCacheManager,
-    this.recentLoginUsernameCacheManager
+    this.recentLoginUsernameCacheManager,
+    this._exceptionThrower
   );
 
   @override
@@ -28,7 +31,7 @@ class CleanupDataSourceImpl extends CleanupDataSource {
     return Future.sync(() async {
       return await emailCacheManager.clean(cleanupRule);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -37,7 +40,7 @@ class CleanupDataSourceImpl extends CleanupDataSource {
     return Future.sync(() async {
       return await recentSearchCacheManager.clean(cleanupRule);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -46,7 +49,7 @@ class CleanupDataSourceImpl extends CleanupDataSource {
     return Future.sync(() async {
       return await recentLoginUrlCacheManager.clean(cleanupRule);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -55,7 +58,7 @@ class CleanupDataSourceImpl extends CleanupDataSource {
     return Future.sync(() async {
       return await recentLoginUsernameCacheManager.clean(cleanupRule);
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 }
