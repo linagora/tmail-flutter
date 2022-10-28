@@ -5,12 +5,14 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.
 import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_cache_extension.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class StateDataSourceImpl extends StateDataSource {
 
   final StateCacheClient _stateCacheClient;
+  final ExceptionThrower _exceptionThrower;
 
-  StateDataSourceImpl(this._stateCacheClient);
+  StateDataSourceImpl(this._stateCacheClient, this._exceptionThrower);
 
   @override
   Future<State?> getState(StateType stateType) {
@@ -18,7 +20,7 @@ class StateDataSourceImpl extends StateDataSource {
       final stateCache = await _stateCacheClient.getItem(stateType.value);
       return stateCache?.toState();
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 
@@ -32,7 +34,7 @@ class StateDataSourceImpl extends StateDataSource {
         return await _stateCacheClient.insertItem(stateCache.type.value, stateCache);
       }
     }).catchError((error) {
-      throw error;
+      _exceptionThrower.throwException(error);
     });
   }
 }

@@ -158,7 +158,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<ThreadIsolateWorker>(),
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => LocalThreadDataSourceImpl(Get.find<EmailCacheManager>()));
-    Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>()));
+    Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>(), Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => MailboxDataSourceImpl(
       Get.find<MailboxAPI>(),
       Get.find<MailboxIsolateWorker>(),
