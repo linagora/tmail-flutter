@@ -344,14 +344,16 @@ class EmailController extends BaseController with AppLoaderMixin {
     );
     presentationEmailsLoaded.removeWhere((e) => e.emailCurrent!.id == emailLoaded.emailCurrent!.id);
     presentationEmailsLoaded.add(emailLoaded);
-    emailContents.value = success.emailContentsDisplayed;
-    initialEmailContents = success.emailContents;
-    attachments.value = success.attachments;
+    if(success.emailCurrent?.id == mailboxDashBoardController.selectedEmail.value?.id) {
+      emailContents.value = success.emailContentsDisplayed;
+      initialEmailContents = success.emailContents;
+      attachments.value = success.attachments;
 
-    final isShowMessageReadReceipt = success.emailCurrent
-        ?.hasReadReceipt(mailboxDashBoardController.mapMailboxById) == true;
-    if (isShowMessageReadReceipt) {
-      _handleReadReceipt();
+      final isShowMessageReadReceipt = success.emailCurrent
+          ?.hasReadReceipt(mailboxDashBoardController.mapMailboxById) == true;
+      if (isShowMessageReadReceipt) {
+        _handleReadReceipt();
+      }
     }
   }
 
