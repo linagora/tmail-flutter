@@ -242,11 +242,11 @@ class EmailView extends GetWidget<EmailController> {
             if (BuildUtils.isWeb)
               Expanded(child: Padding(
                   padding: const EdgeInsets.only(left: 16, bottom: 16),
-                  child: _buildEmailContent(context, constraints)))
+                  child: _buildEmailContent(context, constraints, email)))
             else
               Padding(
                   padding: const EdgeInsets.all(16),
-                  child: _buildEmailContent(context, constraints))
+                  child: _buildEmailContent(context, constraints, email))
           ],
         );
       });
@@ -715,7 +715,10 @@ class EmailView extends GetWidget<EmailController> {
     });
   }
 
-  Widget _buildEmailContent(BuildContext context, BoxConstraints constraints) {
+  Widget _buildEmailContent(BuildContext context, BoxConstraints constraints, PresentationEmail email) {
+    if(email.id != controller.mailboxDashBoardController.selectedEmail.value?.id) {
+      return const SizedBox.shrink();
+    }
     return Obx(() {
       if (controller.emailContents.isNotEmpty) {
         final allEmailContents = controller.emailContents.asHtmlString;
