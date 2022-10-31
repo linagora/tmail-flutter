@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
-import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/controller/email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
@@ -93,11 +93,11 @@ class EmailView extends GetWidget<EmailController> {
       Expanded(
         child: PageView.builder(
           physics: kIsWeb ? const NeverScrollableScrollPhysics() : null,
-          itemCount: controller.listEmail.length,
-          controller: controller.pageController,
-          onPageChanged: controller.onPageChanged,
+          itemCount: controller.emailParentController.listEmail.length,
+          controller: controller.emailParentController.pageController,
+          onPageChanged: controller.emailParentController.onPageChanged,
           itemBuilder: (context, index) {
-            return _buildEmailBody(context, controller.listEmail[index]);
+            return _buildEmailBody(context, controller.emailParentController.listEmail[index]);
         }),
       ),
       const Divider(color: AppColor.colorDividerHorizontal, height: 1),
@@ -165,21 +165,21 @@ class EmailView extends GetWidget<EmailController> {
       buildIconWeb(
         icon: SvgPicture.asset(
           imagePaths.icNewer,
-          color: controller.canGetNewerEmail.value ? AppColor.primaryColor : AppColor.colorAttachmentIcon,
+          color: controller.emailParentController.canGetNewerEmail.value ? AppColor.primaryColor : AppColor.colorAttachmentIcon,
           width: IconUtils.defaultIconSize,
           height: IconUtils.defaultIconSize,
           fit: BoxFit.fill),
         tooltip: AppLocalizations.of(context).newer,
-        onTap: controller.canGetNewerEmail.value ? controller.getNewerEmail : null),
+        onTap: controller.emailParentController.canGetNewerEmail.value ? controller.emailParentController.getNewerEmail : null),
       buildIconWeb(
         icon: SvgPicture.asset(
           imagePaths.icOlder,
           width: IconUtils.defaultIconSize,
           height: IconUtils.defaultIconSize,
-          color: controller.canGetOlderEmail.value ? AppColor.primaryColor : AppColor.colorAttachmentIcon,
+          color: controller.emailParentController.canGetOlderEmail.value ? AppColor.primaryColor : AppColor.colorAttachmentIcon,
           fit: BoxFit.fill),
         tooltip: AppLocalizations.of(context).older,
-        onTap: controller.canGetOlderEmail.value ? controller.getOlderEmail : null),
+        onTap: controller.emailParentController.canGetOlderEmail.value ? controller.emailParentController.getOlderEmail : null),
     ];
   }
 

@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:io';
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,6 +27,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/controller/email_parent_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -69,6 +68,7 @@ import 'package:uuid/uuid.dart';
 class EmailController extends BaseController with AppLoaderMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+  final emailParentController = Get.find<EmailParentController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
   final _appToast = Get.find<AppToast>();
@@ -99,24 +99,15 @@ class EmailController extends BaseController with AppLoaderMixin {
     const Duration(milliseconds: 800),
     initialValue: null,
   );
-  final Queue<EmailLoaded> presentationEmailsLoaded = Queue();
-  PageController? pageController;
-  int currentIndexPageView = -1;
-  final canGetNewerEmail = true.obs;
-  final canGetOlderEmail = true.obs;
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
 
-  PresentationEmail? get currentEmail => mailboxDashBoardController.selectedEmail.value;
+  PresentationEmail? get currentEmail => emailParentController.selectedEmail.value;
 
   bool get isDisplayFullEmailAddress => emailAddressExpandMode.value == ExpandMode.EXPAND;
 
   bool get isDisplayFullAttachments => attachmentsExpandMode.value == ExpandMode.EXPAND;
-
-  RxList<PresentationEmail> get listEmail => mailboxDashBoardController.searchController.isSearchEmailRunning && !kIsWeb ?
-    mailboxDashBoardController.listResultSearch : mailboxDashBoardController.emailsInCurrentMailbox;
-
 
   EmailController(
     this._getEmailContentInteractor,
@@ -141,8 +132,9 @@ class EmailController extends BaseController with AppLoaderMixin {
   @override
   void onReady() {
     injectMdnBindings(
-        mailboxDashBoardController.sessionCurrent,
-        mailboxDashBoardController.accountId.value);
+      emailParentController.sessionCurrent,
+      emailParentController.accountId,
+    );
     try {
       _sendReceiptToSenderInteractor = Get.find<SendReceiptToSenderInteractor>();
     } catch (e) {
@@ -154,57 +146,27 @@ class EmailController extends BaseController with AppLoaderMixin {
   @override
   void onClose() {
     _downloadProgressStateController.close();
-    pageController?.dispose();
     _getEmailDeBouncer.cancel();
     _clearWorker();
     super.onClose();
   }
 
-  void _setCurrentPositionEmailInListEmail(EmailId? currentEmailId) {
-    currentIndexPageView = listEmail.indexWhere((e) => e.id == currentEmailId);
-    if(pageController != null && pageController!.hasClients && pageController!.page?.toInt() != currentIndexPageView) {
-      pageController!.jumpToPage(currentIndexPageView);
-    } else {
-      pageController = PageController(initialPage: currentIndexPageView);
-    }
-    _checkEnableNavigatorPageView();
-  }
-
-  void onPageChanged(int index) {
-    mailboxDashBoardController.selectedEmail.value = listEmail[index];
-  }
-
-  void _checkEnableNavigatorPageView() {
-    canGetNewerEmail.value = currentIndexPageView > 0;
-    canGetOlderEmail.value = listEmail.length > 1 && currentIndexPageView < listEmail.length - 1;
-  }
-
-  void getNewerEmail() {
-    currentIndexPageView = currentIndexPageView - 1;
-    pageController?.jumpToPage(currentIndexPageView);
-  }
-
-  void getOlderEmail() {
-    currentIndexPageView = currentIndexPageView + 1;
-    pageController?.jumpToPage(currentIndexPageView);
-  }
-
   void _initializeDebounceTimeIndexPageViewChange() {
     _getEmailDeBouncer.values.listen((value) async {
       if(value !=null) {
-        _getEmailContentAction(listEmail[value].id);
+        _getEmailContentAction(emailParentController.listEmail[value].id);
       }
     });
   }
 
   void _initWorker() {
-    emailWorker = ever(mailboxDashBoardController.selectedEmail, (presentationEmail) {
+    emailWorker = ever(emailParentController.selectedEmail, (presentationEmail) {
       log('EmailController::_initWorker(): $presentationEmail');
       if (presentationEmail is PresentationEmail) {
         if (_currentEmailId != presentationEmail.id) {
           _currentEmailId = presentationEmail.id;
-          _setCurrentPositionEmailInListEmail(_currentEmailId);
-          _getEmailDeBouncer.value = currentIndexPageView;
+          emailParentController.setCurrentPositionEmailInListEmail(_currentEmailId);
+          _getEmailDeBouncer.value = emailParentController.currentIndexPageView;
           _resetToOriginalValue();
           if (!presentationEmail.hasRead) {
             markAsEmailRead(presentationEmail, ReadActions.markAsRead);
@@ -228,7 +190,7 @@ class EmailController extends BaseController with AppLoaderMixin {
           (failure) => null,
           (success) {
             if (success is StartDownloadAttachmentForWeb) {
-              mailboxDashBoardController.addDownloadTask(
+              emailParentController.mailboxDashBoardController.addDownloadTask(
                   DownloadTaskState(
                     taskId: success.taskId,
                     attachment: success.attachment));
@@ -243,7 +205,7 @@ class EmailController extends BaseController with AppLoaderMixin {
               final percent = success.progress.round();
               log('EmailController::DownloadingAttachmentForWeb(): $percent%');
 
-              mailboxDashBoardController.updateDownloadTask(
+              emailParentController.mailboxDashBoardController.updateDownloadTask(
                   success.taskId,
                   (currentTask) {
                       final newTask = currentTask.copyWith(
@@ -259,7 +221,7 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getAllIdentities() {
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = emailParentController.accountId;
     if (accountId != null) {
       consumeState(_getAllIdentitiesInteractor.execute(accountId));
     }
@@ -279,9 +241,9 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentAction(EmailId emailId) async {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
-    final currentEmail = presentationEmailsLoaded.where((e) => e.emailCurrent!.id == emailId);
+    final accountId = emailParentController.accountId;
+    final baseDownloadUrl = emailParentController.sessionCurrent?.getDownloadUrl();
+    final currentEmail = emailParentController.presentationEmailsLoaded.where((e) => e.emailCurrent!.id == emailId);
     EmailLoaded? emailLoaded;
     if(currentEmail.isNotEmpty) {
       emailLoaded = currentEmail.first;
@@ -333,8 +295,8 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
-    if(presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
-      presentationEmailsLoaded.removeFirst();
+    if(emailParentController.presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
+      emailParentController.presentationEmailsLoaded.removeFirst();
     }
     final emailLoaded = EmailLoaded(
       success.emailContents.toList(),
@@ -342,8 +304,8 @@ class EmailController extends BaseController with AppLoaderMixin {
       success.attachments.toList(),
       success.emailCurrent,
     );
-    presentationEmailsLoaded.removeWhere((e) => e.emailCurrent!.id == emailLoaded.emailCurrent!.id);
-    presentationEmailsLoaded.add(emailLoaded);
+    emailParentController.presentationEmailsLoaded.removeWhere((e) => e.emailCurrent!.id == emailLoaded.emailCurrent!.id);
+    emailParentController.presentationEmailsLoaded.add(emailLoaded);
     if(success.emailCurrent?.id == mailboxDashBoardController.selectedEmail.value?.id) {
       emailContents.value = success.emailContentsDisplayed;
       initialEmailContents = success.emailContents;
@@ -1004,8 +966,8 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void closeEmailView(BuildContext context) {
-    presentationEmailsLoaded.removeWhere((e) => e.emailCurrent?.id == currentEmail?.id);
-    currentIndexPageView = -1;
+    emailParentController.presentationEmailsLoaded.removeWhere((e) => e.emailCurrent?.id == currentEmail?.id);
+    emailParentController.currentIndexPageView = -1;
     _getEmailDeBouncer.value = null;
     mailboxDashBoardController.clearSelectedEmail();
     _currentEmailId = null;

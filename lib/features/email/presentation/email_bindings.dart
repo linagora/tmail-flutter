@@ -17,7 +17,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/presentation/email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/controller/email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/controller/email_parent_controller.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_oidc_datasource_impl.dart';
@@ -53,6 +54,7 @@ class EmailBindings extends BaseBindings {
 
   @override
   void bindingsController() {
+    Get.put(EmailParentController());
     Get.put(EmailController(
         Get.find<GetEmailContentInteractor>(),
         Get.find<MarkAsEmailReadInteractor>(),
