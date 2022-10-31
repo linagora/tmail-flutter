@@ -101,7 +101,7 @@ class EmailController extends BaseController with AppLoaderMixin {
   );
   final Queue<EmailLoaded> presentationEmailsLoaded = Queue();
   PageController? pageController;
-  int currentIndexPageView = 0;
+  int currentIndexPageView = -1;
   final canGetNewerEmail = true.obs;
   final canGetOlderEmail = true.obs;
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
@@ -640,7 +640,7 @@ class EmailController extends BaseController with AppLoaderMixin {
           session,
           EmailActionType.moveToSpam));
     } else {
-      _moveToMailbox(accountId, MoveToMailboxRequest(
+      _moveToMailbox(context, accountId, MoveToMailboxRequest(
           {currentMailbox.id: [emailSelected.id]},
           destinationMailbox.id,
           MoveAction.moving,
@@ -650,13 +650,13 @@ class EmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) {
+  void _moveToMailbox(BuildContext context, AccountId accountId, MoveToMailboxRequest moveRequest) {
+    closeEmailView(context);
     consumeState(_moveToMailboxInteractor.execute(accountId, moveRequest));
   }
 
   void _moveToMailboxSuccess(MoveToMailboxSuccess success) {
     mailboxDashBoardController.dispatchState(Right(success));
-
     if (success.moveAction == MoveAction.moving && currentContext != null && currentOverlayContext != null) {
       _appToast.showBottomToast(
         currentOverlayContext!,
@@ -688,7 +688,7 @@ class EmailController extends BaseController with AppLoaderMixin {
   void _revertedToOriginalMailbox(MoveToMailboxRequest newMoveRequest) {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {
-      _moveToMailbox(accountId, newMoveRequest);
+      _moveToMailbox(currentContext!, accountId, newMoveRequest);
     }
   }
 
@@ -1004,6 +1004,9 @@ class EmailController extends BaseController with AppLoaderMixin {
   }
 
   void closeEmailView(BuildContext context) {
+    presentationEmailsLoaded.removeWhere((e) => e.emailCurrent?.id == currentEmail?.id);
+    currentIndexPageView = -1;
+    _getEmailDeBouncer.value = null;
     mailboxDashBoardController.clearSelectedEmail();
     _currentEmailId = null;
     _resetToOriginalValue();
