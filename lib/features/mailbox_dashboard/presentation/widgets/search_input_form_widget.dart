@@ -17,12 +17,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/re
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
-
   final MailboxDashBoardController dashBoardController;
   final ImagePaths imagePaths;
   final double maxWidth;
 
-  const SearchInputFormWidget({
+  SearchInputFormWidget({
     Key? key,
     required this.dashBoardController,
     required this.imagePaths,
@@ -65,6 +64,8 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
                   if (query.isNotEmpty) {
                     controller.saveRecentSearch(RecentSearch.now(query));
                     dashBoardController.searchEmail(context, query);
+                  } else {
+                    dashBoardController.clearSearchEmail();
                   }
                 },
                 onChanged: controller.onChangeTextSearch,
@@ -92,6 +93,8 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
                       if (keyword.isNotEmpty) {
                         controller.saveRecentSearch(RecentSearch.now(keyword));
                         dashBoardController.searchEmail(context, keyword);
+                      } else {
+                        dashBoardController.clearSearchEmail();
                       }
                     }),
                 clearTextButton: buildIconWeb(
@@ -150,7 +153,10 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
                     if (query.isNotEmpty) {
                       controller.saveRecentSearch(RecentSearch.now(query));
                       dashBoardController.searchEmail(context, query);
+                    } else {
+                      dashBoardController.clearSearchEmail();
                     }
+                    
                   },
                   child: Padding(
                       padding: const EdgeInsets.all(12),

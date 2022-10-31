@@ -57,6 +57,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/v
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -101,7 +102,7 @@ class MailboxController extends BaseMailboxController {
   jmap.State? _currentMailboxState;
   List<String> listMailboxNameAsStringExist = <String>[];
 
-  late Worker accountIdWorker, viewStateWorker;
+  late Worker accountIdWorker, viewStateWorker, dashboardActionWorker;
 
   MailboxController(
     this._getAllMailboxInteractor,
@@ -236,6 +237,14 @@ class MailboxController extends BaseMailboxController {
         });
       }
     });
+
+    dashboardActionWorker = ever(mailboxDashBoardController.dashBoardAction, (action) {
+      if(action is DashBoardAction) {
+        if(action is ClearSearchEmailAction) {
+          _switchBackToMailboxDefault();
+        }
+      }
+    });
   }
 
   void _registerSearchFocusListener() {
@@ -252,6 +261,7 @@ class MailboxController extends BaseMailboxController {
   void _clearWorker() {
     accountIdWorker.call();
     viewStateWorker.call();
+    dashboardActionWorker.call();
   }
 
   void _initCollapseMailboxCategories() {
