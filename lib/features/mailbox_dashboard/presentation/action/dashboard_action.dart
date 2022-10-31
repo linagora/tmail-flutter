@@ -97,3 +97,10 @@ class EmptyTrashAction extends DashBoardAction {
   @override
   List<Object?> get props => [];
 }
+
+class ClearSearchEmailAction extends DashBoardAction {
+  ClearSearchEmailAction();
+
+  @override
+  List<Object?> get props => [];
+}

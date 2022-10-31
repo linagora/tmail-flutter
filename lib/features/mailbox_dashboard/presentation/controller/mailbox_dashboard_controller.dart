@@ -422,6 +422,11 @@ class MailboxDashBoardController extends ReloadableController {
         && dashboardRoute.value == DashboardRoutes.emailDetailed;
   }
 
+  void clearSearchEmail() {
+    dispatchAction(ClearSearchEmailAction());
+    searchController.disableSearch();
+  }
+
   void _unSelectedMailbox() {
     selectedMailbox.value = null;
   }
