@@ -8,11 +8,10 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 
-class EmailParentController extends BaseController with AppLoaderMixin {
+class EmailSupervisorController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
@@ -28,7 +27,6 @@ class EmailParentController extends BaseController with AppLoaderMixin {
 
   RxList<PresentationEmail> get listEmail => mailboxDashBoardController.searchController.isSearchEmailRunning && !kIsWeb ?
   mailboxDashBoardController.listResultSearch : mailboxDashBoardController.emailsInCurrentMailbox;
-
 
   @override
   void onClose() {
@@ -51,7 +49,7 @@ class EmailParentController extends BaseController with AppLoaderMixin {
   }
 
   void _checkEnableNavigatorPageView() {
-    canGetNewerEmail.value = currentIndexPageView > 0;
+    canGetNewerEmail.value = listEmail.length > 1 && currentIndexPageView > 0;
     canGetOlderEmail.value = listEmail.length > 1 && currentIndexPageView < listEmail.length - 1;
   }
 
