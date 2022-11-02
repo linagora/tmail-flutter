@@ -336,20 +336,23 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ..onPressActionClick(() => controller.dispatchAction(SelectionAllEmailAction()))
           ..text(AppLocalizations.of(context).select_all, isVertical: false))
         .build(),
-      const SizedBox(width: 16),
-      (ButtonBuilder(imagePaths.icMarkAllAsRead)
-          ..key(const Key('button_mark_all_as_read'))
-          ..decoration(BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: AppColor.colorButtonHeaderThread))
-          ..paddingIcon(const EdgeInsets.only(right: 8))
-          ..size(16)
-          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-          ..radiusSplash(10)
-          ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
-          ..onPressActionClick(() => controller.markAsReadMailboxAction())
-          ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
-        .build(),
+      if (!searchController.isSearchEmailRunning)
+        Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: (ButtonBuilder(imagePaths.icMarkAllAsRead)
+            ..key(const Key('button_mark_all_as_read'))
+            ..decoration(BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: AppColor.colorButtonHeaderThread))
+            ..paddingIcon(const EdgeInsets.only(right: 8))
+            ..size(16)
+            ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
+            ..radiusSplash(10)
+            ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
+            ..onPressActionClick(() => controller.markAsReadMailboxAction())
+            ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
+          .build(),
+        ),
       const SizedBox(width: 16),
       Obx(() => (ButtonBuilder(imagePaths.icFilterAdvanced)
           ..key(const Key('button_filter_messages'))
@@ -459,10 +462,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   }
 
   bool supportListButtonQuickSearchFilter(BuildContext context) {
-    return controller.searchController.isSearchActive()
-        && controller.searchController.searchIsActive.isTrue
-        && responsiveUtils.isWebDesktop(context)
-        && controller.dashboardRoute.value != DashboardRoutes.emailDetailed;
+    return controller.searchController.isSearchEmailRunning
+      && controller.dashboardRoute.value == DashboardRoutes.thread;
   }
 
   Widget _buildListButtonQuickSearchFilter(BuildContext context) {
@@ -470,10 +471,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       if (supportListButtonQuickSearchFilter(context)) {
         return Padding(
           padding: const EdgeInsets.only(right: 16, top: 16),
-          child: Row(
-              children: QuickSearchFilter.values
-                  .map((filter) => _buildQuickSearchFilterButton(context, filter))
-                  .toList()),
+          child: Row(children: QuickSearchFilter.values
+            .map((filter) => _buildQuickSearchFilterButton(context, filter))
+            .toList()
+          ),
         );
       } else {
         return const SizedBox.shrink();
