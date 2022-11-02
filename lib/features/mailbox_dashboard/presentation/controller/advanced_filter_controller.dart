@@ -33,7 +33,6 @@ class AdvancedFilterController extends BaseController {
 
   final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
   final hasAttachment = false.obs;
-  final listEmailAddressInit = RxList<EmailAddress>();
   final lastTextForm = ''.obs;
   final lastTextTo = ''.obs;
   TextEditingController subjectFilterInputController = TextEditingController();
@@ -82,10 +81,6 @@ class AdvancedFilterController extends BaseController {
       _mailboxDashBoardController.sessionCurrent,
       _mailboxDashBoardController.accountId.value);
     super.onReady();
-  }
-
-  void selectOpenAdvanceSearch() {
-    searchController.isAdvancedSearchViewOpen.toggle();
   }
 
   void cleanSearchFilter(BuildContext context) {
@@ -389,12 +384,12 @@ class AdvancedFilterController extends BaseController {
 
   void _registerWorkerListener() {
     _dashboardActionWorker = ever(
-        _mailboxDashBoardController.dashBoardAction,
-            (action) {
-          if (action is ClearAllFieldOfAdvancedSearchAction) {
-            _handleClearAllFieldOfAdvancedSearch();
-          }
+      _mailboxDashBoardController.dashBoardAction,
+      (action) {
+        if (action is ClearAllFieldOfAdvancedSearchAction) {
+          _handleClearAllFieldOfAdvancedSearch();
         }
+      }
     );
   }
 
