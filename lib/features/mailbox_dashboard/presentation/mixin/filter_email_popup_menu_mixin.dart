@@ -1,5 +1,6 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -8,25 +9,50 @@ import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option
 mixin FilterEmailPopupMenuMixin {
   final _imagePaths = Get.find<ImagePaths>();
 
-  List<PopupMenuEntry> popupMenuFilterEmailActionTile(BuildContext context,
-      FilterMessageOption optionSelected, Function(FilterMessageOption)? onCallBack) {
+  List<PopupMenuEntry> popupMenuFilterEmailActionTile(
+    BuildContext context,
+    FilterMessageOption optionSelected,
+    Function(FilterMessageOption)? onCallBack,
+    {
+      bool isSearchEmailRunning = false
+    }
+  ) {
     return [
+      if (!isSearchEmailRunning)
+       ...[
+         PopupMenuItem(
+           padding: EdgeInsets.zero,
+           child: _filterEmailAction(
+             context,
+             optionSelected,
+             FilterMessageOption.attachments,
+             onCallBack)),
+         const PopupMenuDivider(height: 0.5)
+       ],
       PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: _filterEmailAction(context, optionSelected, FilterMessageOption.attachments, onCallBack)),
+        padding: EdgeInsets.zero,
+        child: _filterEmailAction(
+          context,
+          optionSelected,
+          FilterMessageOption.unread,
+          onCallBack)),
       const PopupMenuDivider(height: 0.5),
       PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: _filterEmailAction(context, optionSelected, FilterMessageOption.unread, onCallBack)),
-      const PopupMenuDivider(height: 0.5),
-      PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: _filterEmailAction(context, optionSelected, FilterMessageOption.starred, onCallBack)),
+        padding: EdgeInsets.zero,
+        child: _filterEmailAction(
+          context,
+          optionSelected,
+          FilterMessageOption.starred,
+          onCallBack)),
     ];
   }
 
-  Widget _filterEmailAction(BuildContext context, FilterMessageOption optionSelected,
-      FilterMessageOption option, Function(FilterMessageOption)? onCallBack) {
+  Widget _filterEmailAction(
+    BuildContext context,
+    FilterMessageOption optionSelected,
+    FilterMessageOption option,
+    Function(FilterMessageOption)? onCallBack
+  ) {
     return InkWell(
       onTap: () => onCallBack?.call(option == optionSelected ? FilterMessageOption.all : option),
       child: Padding(
