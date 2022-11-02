@@ -366,24 +366,17 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           .build(),
         ),
       const SizedBox(width: 16),
-      Obx(() => (ButtonBuilder(imagePaths.icFilterAdvanced)
+      Obx(() => (ButtonBuilder(controller.filterMessageOption.value.getIconSelected(imagePaths))
           ..key(const Key('button_filter_messages'))
           ..context(context)
-          ..decoration(const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              color: AppColor.colorButtonHeaderThread))
+          ..decoration(BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              color: controller.filterMessageOption.value.getBackgroundColor()))
           ..paddingIcon(const EdgeInsets.only(right: 8))
           ..size(16)
           ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
           ..radiusSplash(10)
-          ..textStyle(TextStyle(
-            fontSize: 12,
-            color: controller.filterMessageOption.value == FilterMessageOption.all
-              ? AppColor.colorTextButtonHeaderThread
-              : AppColor.colorNameEmail,
-            fontWeight: controller.filterMessageOption.value == FilterMessageOption.all
-              ? FontWeight.normal
-              : FontWeight.w500))
+          ..textStyle(controller.filterMessageOption.value.getTextStyle())
           ..addIconAction(Padding(
               padding: const EdgeInsets.only(left: 8),
               child: SvgPicture.asset(imagePaths.icArrowDown, fit: BoxFit.fill)))

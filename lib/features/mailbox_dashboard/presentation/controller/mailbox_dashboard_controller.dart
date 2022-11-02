@@ -406,6 +406,7 @@ class MailboxDashBoardController extends ReloadableController {
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
   void searchEmail(BuildContext context, String value) {
+    clearFilterMessageOption();
     searchController.updateFilterEmail(text: SearchQuery(value));
     dispatchAction(StartSearchEmailAction());
     FocusScope.of(context).unfocus();
@@ -1039,16 +1040,8 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  bool filterMessageWithAttachmentIsActive () {
-    return filterMessageOption.value == FilterMessageOption.attachments;
-  }
-
-  bool filterMessageUnreadIsActive () {
-    return filterMessageOption.value == FilterMessageOption.unread;
-  }
-
-  bool filterMessageStarredIsActive () {
-    return filterMessageOption.value == FilterMessageOption.starred;
+  void clearFilterMessageOption() {
+    filterMessageOption.value = FilterMessageOption.all;
   }
 
   void markAsReadMailboxAction() {

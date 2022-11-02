@@ -370,6 +370,7 @@ class MailboxController extends BaseMailboxController {
 
     mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
     mailboxDashBoardController.clearSelectedEmail();
+    mailboxDashBoardController.clearFilterMessageOption();
 
     _disableAllSearchEmail();
 
