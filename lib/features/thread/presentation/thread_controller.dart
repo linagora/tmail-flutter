@@ -635,7 +635,7 @@ class ThreadController extends BaseController {
         icon: newFilterOption.getIconToast(_imagePaths));
 
     if (isSearchActive() || searchController.advancedSearchIsActivated.isTrue) {
-      _searchEmail(filterMessageOption: _getFilterCondition());
+      _searchEmail(filterCondition: _getFilterCondition());
     } else {
       refreshAllEmail();
     }
@@ -928,21 +928,21 @@ class ThreadController extends BaseController {
     searchController.clearTextSearch();
   }
 
-  void _searchEmail({UnsignedInt? limit, EmailFilterCondition? filterMessageOption}) {
+  void _searchEmail({UnsignedInt? limit, EmailFilterCondition? filterCondition}) {
     if (_accountId != null && searchQuery != null) {
       searchController.activateSimpleSearch();
 
-      filterMessageOption = EmailFilterCondition(
-        notKeyword: filterMessageOption?.notKeyword,
-        hasKeyword: filterMessageOption?.hasKeyword,
-        hasAttachment: filterMessageOption?.hasAttachment,
+      filterCondition = EmailFilterCondition(
+        notKeyword: filterCondition?.notKeyword,
+        hasKeyword: filterCondition?.hasKeyword,
+        hasAttachment: filterCondition?.hasAttachment,
       );
 
       consumeState(_searchEmailInteractor.execute(
         _accountId!,
         limit: limit ?? ThreadConstants.defaultLimit,
         sort: _sortOrder,
-        filter: _searchEmailFilter.mappingToEmailFilterCondition(moreFilterCondition: filterMessageOption),
+        filter: _searchEmailFilter.mappingToEmailFilterCondition(moreFilterCondition: filterCondition),
         properties: ThreadConstants.propertiesDefault,
       ));
     }

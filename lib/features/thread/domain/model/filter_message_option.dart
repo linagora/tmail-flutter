@@ -104,4 +104,43 @@ extension FilterMessageOptionExtension on FilterMessageOption {
         return imagePaths.icStar;
     }
   }
+
+  String getIconSelected(ImagePaths imagePaths) {
+    switch(this) {
+      case FilterMessageOption.all:
+        return imagePaths.icFilterAdvanced;
+      case FilterMessageOption.unread:
+      case FilterMessageOption.attachments:
+      case FilterMessageOption.starred:
+        return imagePaths.icSelectedSB;
+    }
+  }
+
+  Color getBackgroundColor() {
+    switch(this) {
+      case FilterMessageOption.all:
+        return AppColor.colorButtonHeaderThread;
+      case FilterMessageOption.unread:
+      case FilterMessageOption.attachments:
+      case FilterMessageOption.starred:
+        return AppColor.colorItemEmailSelectedDesktop;
+    }
+  }
+
+  TextStyle getTextStyle() {
+    switch(this) {
+      case FilterMessageOption.all:
+        return const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.normal,
+          color: AppColor.colorTextButtonHeaderThread);
+      case FilterMessageOption.unread:
+      case FilterMessageOption.attachments:
+      case FilterMessageOption.starred:
+        return const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: AppColor.colorTextButton);
+    }
+  }
 }
