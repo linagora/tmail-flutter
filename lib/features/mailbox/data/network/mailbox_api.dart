@@ -21,6 +21,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart';
+import 'package:model/error/error_type.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -193,11 +194,17 @@ class MailboxAPI {
 
       finalResult = currentSetMailboxInvocations
         .map((currentInvocation) => response.parse(currentInvocation.methodCallId, SetMailboxResponse.deserialize))
-        .map((response) => response?.destroyed?.isNotEmpty ?? false)
+        .map(_validateMailBoxDestroyedSuccess)
         .every((element) => element == true);
     }
 
     return finalResult;
+  }
+
+  bool _validateMailBoxDestroyedSuccess(SetMailboxResponse? response) {
+    return response?.destroyed?.isNotEmpty == true ||
+      response?.notDestroyed?.values
+        .where((e) => e.type == TMailErrorType.notFoundErrorType).isNotEmpty == true;
   }
 
   Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) async {
