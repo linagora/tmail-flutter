@@ -426,7 +426,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void clearSearchEmail() {
     dispatchAction(ClearSearchEmailAction());
-    searchController.disableSearch();
+    searchController.disableSimpleSearch();
   }
 
   void _unSelectedMailbox() {
@@ -1009,7 +1009,7 @@ class MailboxDashBoardController extends ReloadableController {
     dashboardRoute.value = route;
 
     if (dashboardRoute.value == DashboardRoutes.searchEmail) {
-      searchController.enableSearch();
+      searchController.activateSimpleSearch();
     }
   }
 
@@ -1200,6 +1200,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void selectQuickSearchFilterAction(QuickSearchFilter filter) {
+    log('MailboxDashBoardController::selectQuickSearchFilterAction(): filter: $filter');
     selectQuickSearchFilter(quickSearchFilter: filter);
     dispatchAction(StartSearchEmailAction());
   }

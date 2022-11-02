@@ -1,10 +1,12 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:model/model.dart';
+import 'package:model/email/email_action_type.dart';
+import 'package:model/email/presentation_email.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 
 class EmailTileBuilder with BaseEmailItemTile {
 
@@ -12,9 +14,8 @@ class EmailTileBuilder with BaseEmailItemTile {
   final BuildContext _context;
   final SelectMode _selectModeAll;
   final PresentationMailbox? mailboxCurrent;
-  final SearchStatus _searchStatus;
   final SearchQuery? _searchQuery;
-  final bool advancedSearchActivated;
+  final bool isSearchEmailRunning;
   final EdgeInsets? padding;
   final EdgeInsets? paddingDivider;
   final bool isDrag;
@@ -26,11 +27,10 @@ class EmailTileBuilder with BaseEmailItemTile {
     this._context,
     this._presentationEmail,
     this._selectModeAll,
-    this._searchStatus,
     this._searchQuery,
     this._isShowingEmailContent,
     {
-      this.advancedSearchActivated = false,
+      this.isSearchEmailRunning = false,
       this.mailboxCurrent,
       this.padding,
       this.paddingDivider,
@@ -82,11 +82,10 @@ class EmailTileBuilder with BaseEmailItemTile {
                           height: 9,
                           fit: BoxFit.fill)),
                 Expanded(child: buildInformationSender(
-                    _presentationEmail,
-                    mailboxCurrent,
-                    _searchStatus,
-                    advancedSearchActivated,
-                    _searchQuery)),
+                  _presentationEmail,
+                  mailboxCurrent,
+                  isSearchEmailRunning,
+                  _searchQuery)),
                 if (_presentationEmail.hasAttachment == true)
                   Padding(
                       padding: const EdgeInsets.only(left: 8),
@@ -107,14 +106,12 @@ class EmailTileBuilder with BaseEmailItemTile {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Expanded(child: buildEmailTitle(
-                            _presentationEmail,
-                            _searchStatus,
-                            advancedSearchActivated,
-                            _searchQuery)),
+                          _presentationEmail,
+                          isSearchEmailRunning,
+                          _searchQuery)),
                         buildMailboxContain(
-                            _searchStatus,
-                            advancedSearchActivated,
-                            _presentationEmail),
+                          isSearchEmailRunning,
+                          _presentationEmail),
                         if (_presentationEmail.hasStarred)
                           Padding(
                             padding: const EdgeInsets.only(left: 8),
@@ -126,10 +123,9 @@ class EmailTileBuilder with BaseEmailItemTile {
                     padding: const EdgeInsets.only(top: 6),
                     child: Row(children: [
                       Expanded(child: buildEmailPartialContent(
-                          _presentationEmail,
-                          _searchStatus,
-                          advancedSearchActivated,
-                          _searchQuery)),
+                        _presentationEmail,
+                        isSearchEmailRunning,
+                        _searchQuery)),
                     ])
                 ),
               ],

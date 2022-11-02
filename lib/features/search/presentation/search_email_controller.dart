@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
@@ -583,7 +584,8 @@ class SearchEmailController extends BaseController
     clearAllTextInputSearchForm();
     clearAllResultSearch();
     FocusScope.of(context).unfocus();
-    mailboxDashBoardController.searchController.disableSearch();
+    mailboxDashBoardController.searchController.disableAllSearchEmail();
+    mailboxDashBoardController.dispatchAction(SelectMailboxDefaultAction());
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     SearchEmailBindings().disposeBindings();
   }

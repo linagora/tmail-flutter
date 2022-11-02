@@ -84,22 +84,15 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   }
 
   Widget _buildSearchBarView(BuildContext context) {
-    return Obx(() {
-      if (!controller.searchController.isSearchActive()) {
-        return Container(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: _responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
-            margin: const EdgeInsets.only(
-                bottom: !BuildUtils.isWeb ? 16 : 0),
-            child: SearchBarView(_imagePaths,
-                hintTextSearch: AppLocalizations.of(context).search_emails,
-                onOpenSearchViewAction: () => controller.goToSearchView()));
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: _responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
+      margin: const EdgeInsets.only(bottom: !BuildUtils.isWeb ? 16 : 0),
+      child: SearchBarView(_imagePaths,
+        hintTextSearch: AppLocalizations.of(context).search_emails,
+        onOpenSearchViewAction: controller.goToSearchView));
   }
 
   Widget _buildVacationNotificationMessage(BuildContext context) {
@@ -251,7 +244,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) {
-        if (controller.isSearchActive() || controller.isAdvanceSearchActive()) {
+        if (controller.isSearchActive() || controller.searchController.advancedSearchIsActivated.isTrue) {
           return success is SearchingState
               ? Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: loadingWidget)
               : const SizedBox.shrink();
@@ -318,7 +311,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
             && !controller.isLoadingMore
             && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent
         ) {
-          if (controller.isSearchActive() || controller.isAdvanceSearchActive()) {
+          if (controller.isSearchActive() || controller.searchController.advancedSearchIsActivated.isTrue) {
             controller.searchMoreEmails();
           } else {
             controller.loadMoreEmails();
@@ -341,13 +334,12 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
               context,
               listPresentationEmail[index],
               controller.mailboxDashBoardController.currentSelectMode.value,
-              controller.searchController.searchState.value.searchStatus,
               controller.searchQuery,
               controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
               mailboxCurrent: controller.searchController.isSearchEmailRunning
                 ? listPresentationEmail[index].findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
                 : controller.currentMailbox,
-              advancedSearchActivated: controller.searchController.isAdvancedSearchHasApply.isTrue)
+              isSearchEmailRunning: controller.searchController.isSearchEmailRunning)
               ..addOnPressEmailActionClick((action, email) =>
                 controller.pressEmailAction(
                   context,
@@ -358,22 +350,22 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
                     : controller.currentMailbox))
               ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
                 ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
-                : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email))))
-            .build(),
+                : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
+            ).build(),
             feedback: _buildFeedBackWidget(context),
             childWhenDragging: (EmailTileBuilder(
                 context,
                 listPresentationEmail[index],
                 controller.mailboxDashBoardController.currentSelectMode.value,
-                controller.searchController.searchState.value.searchStatus,
                 controller.searchQuery,
                 controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
                 mailboxCurrent: controller.searchController.isSearchEmailRunning
                   ? listPresentationEmail[index].findMailboxContain(
                   controller.mailboxDashBoardController.mapMailboxById)
                   : controller.currentMailbox,
-                advancedSearchActivated: controller.searchController.isAdvancedSearchHasApply.isTrue, isDrag: true))
-            .build(),
+                isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
+                isDrag: true)
+            ).build(),
             dragAnchorStrategy: pointerDragAnchorStrategy,
             onDragStarted: () {
               controller.calculateDragValue(listPresentationEmail[index]);

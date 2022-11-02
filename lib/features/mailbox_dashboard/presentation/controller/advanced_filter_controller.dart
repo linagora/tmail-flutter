@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
@@ -62,6 +63,14 @@ class AdvancedFilterController extends BaseController {
 
   DateTime? get endDate => _endDate;
 
+  late Worker _dashboardActionWorker;
+
+  @override
+  void onInit() {
+    _registerWorkerListener();
+    super.onInit();
+  }
+
   @override
   void onReady() {
     if (!BuildUtils.isWeb) {
@@ -80,7 +89,7 @@ class AdvancedFilterController extends BaseController {
   }
 
   void cleanSearchFilter(BuildContext context) {
-    searchController.cleanSearchFilter();
+    searchController.clearSearchFilter();
     dateFilterSelectedFormAdvancedSearch.value = EmailReceiveTimeType.allTime;
     clearDateRangeOfFilter();
     subjectFilterInputController.text = '';
@@ -88,7 +97,7 @@ class AdvancedFilterController extends BaseController {
     notKeyWordFilterInputController.text = '';
     dateFilterInputController.text = '';
     hasAttachment.value = false;
-    searchController.isAdvancedSearchHasApply.value = false;
+    searchController.deactivateAdvancedSearch();
     searchController.isAdvancedSearchViewOpen.toggle();
     _mailboxDashBoardController.searchEmail(
         context, StringConvert.writeNullToEmpty(searchEmailFilter.text?.value));
@@ -167,7 +176,11 @@ class AdvancedFilterController extends BaseController {
 
   void applyAdvancedSearchFilter(BuildContext context) {
     _updateFilterEmailFromAdvancedSearchView();
-    searchController.isAdvancedSearchHasApply.value = isAdvancedSearchHasApplied;
+    if (isAdvancedSearchHasApplied) {
+      searchController.activateAdvancedSearch();
+    } else {
+      searchController.deactivateAdvancedSearch();
+    }
     if (!isAdvancedSearchHasApplied) {
       final newSearchEmailFilter = searchController.searchEmailFilter.value.clearBeforeDate();
       searchController.searchEmailFilter.value = newSearchEmailFilter;
@@ -357,6 +370,43 @@ class AdvancedFilterController extends BaseController {
           endDate: _endDate.toUTCDate());
   }
 
+  void _resetAllToOriginalValue() {
+    dateFilterSelectedFormAdvancedSearch.value = EmailReceiveTimeType.allTime;
+    hasAttachment.value = false;
+    lastTextForm.value = '';
+    lastTextTo.value = '';
+    _startDate = null;
+    _endDate = null;
+  }
+
+  void _clearAllTextFieldInput() {
+    subjectFilterInputController.clear();
+    hasKeyWordFilterInputController.clear();
+    notKeyWordFilterInputController.clear();
+    dateFilterInputController.clear();
+    mailBoxFilterInputController.clear();
+  }
+
+  void _registerWorkerListener() {
+    _dashboardActionWorker = ever(
+        _mailboxDashBoardController.dashBoardAction,
+            (action) {
+          if (action is ClearAllFieldOfAdvancedSearchAction) {
+            _handleClearAllFieldOfAdvancedSearch();
+          }
+        }
+    );
+  }
+
+  void _unregisterWorkerListener() {
+    _dashboardActionWorker.dispose();
+  }
+
+  void _handleClearAllFieldOfAdvancedSearch() {
+    _resetAllToOriginalValue();
+    _clearAllTextFieldInput();
+  }
+
   @override
   void onClose() {
     focusManager.dispose();
@@ -365,6 +415,7 @@ class AdvancedFilterController extends BaseController {
     notKeyWordFilterInputController.dispose();
     mailBoxFilterInputController.dispose();
     dateFilterInputController.dispose();
+    _unregisterWorkerListener();
     super.onClose();
   }
 
