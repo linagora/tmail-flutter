@@ -550,6 +550,7 @@ class ComposerController extends BaseController {
     }
 
     final userAgent = await userAgentPlatform;
+    log('ComposerController::_generateEmail(): userAgent: $userAgent');
 
     Map<MailboxId, bool> mailboxIds = {};
     if (asDrafts && draftMailboxId != null) {
@@ -615,7 +616,7 @@ class ComposerController extends BaseController {
     } on Exception {
       userAgent = '';
     }
-    return userAgent;
+    return 'Team-Mail/${mailboxDashBoardController.appInformation.value?.version} $userAgent';
   }
 
   void sendEmailAction(BuildContext context) async {
