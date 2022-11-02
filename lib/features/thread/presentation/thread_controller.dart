@@ -324,11 +324,7 @@ class ThreadController extends BaseController {
           } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
             _refreshEmailChanges(currentEmailState: success.currentEmailState);
           } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
-            if(searchController.isSearchEmailRunning) {
-              mailboxDashBoardController.quickSearchEmails();
-            } else {
-              _refreshEmailChanges(currentEmailState: success.currentEmailState);
-            }
+            _refreshEmailChanges(currentEmailState: success.currentEmailState);
           }
         });
       }
@@ -436,19 +432,22 @@ class ThreadController extends BaseController {
     dispatchState(Right(LoadingState()));
     canLoadMore = true;
     cancelSelectEmail();
-    _getAllEmail();
+
+    if (searchController.isSearchEmailRunning) {
+      final limit = emailList.isNotEmpty ? UnsignedInt(emailList.length) : ThreadConstants.defaultLimit;
+      searchController.searchEmailFilter.value = _searchEmailFilter.clearBeforeDate();
+      _searchEmail(limit: limit);
+    } else {
+      _getAllEmail();
+    }
   }
 
   void _refreshEmailChanges({jmap.State? currentEmailState}) {
     log('ThreadController::_refreshEmailChanges(): currentEmailState: $currentEmailState');
-    if (isSearchActive()) {
-      if (_accountId != null && searchQuery != null) {
-        final limit = emailList.isNotEmpty
-            ? UnsignedInt(emailList.length)
-            : ThreadConstants.defaultLimit;
-        searchController.searchEmailFilter.value = _searchEmailFilter.clearBeforeDate();
-        _searchEmail(limit: limit);
-      }
+    if (searchController.isSearchEmailRunning) {
+      final limit = emailList.isNotEmpty ? UnsignedInt(emailList.length) : ThreadConstants.defaultLimit;
+      searchController.searchEmailFilter.value = _searchEmailFilter.clearBeforeDate();
+      _searchEmail(limit: limit);
     } else {
       final newEmailState = currentEmailState ?? _currentEmailState;
       log('ThreadController::_refreshEmailChanges(): newEmailState: $newEmailState');
@@ -634,7 +633,7 @@ class ThreadController extends BaseController {
         message: newFilterOption.getMessageToast(context),
         icon: newFilterOption.getIconToast(_imagePaths));
 
-    if (isSearchActive() || searchController.advancedSearchIsActivated.isTrue) {
+    if (searchController.isSearchEmailRunning) {
       _searchEmail(filterCondition: _getFilterCondition());
     } else {
       refreshAllEmail();
@@ -919,7 +918,7 @@ class ThreadController extends BaseController {
     }
   }
 
-  bool isSearchActive() => searchController.isSearchActive();
+  bool isSearchActive() => searchController.isSearchEmailRunning;
 
   bool get isAllSearchInActive => !searchController.isSearchActive() &&
     searchController.isAdvancedSearchViewOpen.isFalse;
