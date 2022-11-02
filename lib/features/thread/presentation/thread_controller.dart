@@ -243,7 +243,6 @@ class ThreadController extends BaseController {
         if (_currentMailboxId != mailbox.id) {
           _currentMailboxId = mailbox.id;
           _resetToOriginalValue();
-          disableSearch();
           _getAllEmail();
         }
       } else if (mailbox == null) { // disable current mailbox when search active
@@ -291,9 +290,6 @@ class ThreadController extends BaseController {
               EmailActionType.preview,
               action.presentationEmail,
               mailboxContain: mailboxContain);
-          mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is DisableSearchEmailAction) {
-          closeSearchEmailAction();
           mailboxDashBoardController.clearDashBoardAction();
         } else if (action is StartSearchEmailAction) {
           _searchEmail();
@@ -639,7 +635,7 @@ class ThreadController extends BaseController {
         message: newFilterOption.getMessageToast(context),
         icon: newFilterOption.getIconToast(_imagePaths));
 
-    if (isSearchActive() || searchController.isAdvancedSearchHasApply.isTrue) {
+    if (isSearchActive() || searchController.advancedSearchIsActivated.isTrue) {
       _searchEmail(filterMessageOption: _getFilterCondition());
     } else {
       refreshAllEmail();
@@ -926,26 +922,8 @@ class ThreadController extends BaseController {
 
   bool isSearchActive() => searchController.isSearchActive();
 
-  bool isAdvanceSearchActive() => searchController.isAdvanceSearchActive();
-
-
   bool get isAllSearchInActive => !searchController.isSearchActive() &&
     searchController.isAdvancedSearchViewOpen.isFalse;
-
-  void enableSearch(BuildContext context) {
-    searchController.enableSearch();
-  }
-
-  void disableSearch() {
-    searchController.searchIsActive.value = false;
-    searchController.disableSearch();
-  }
-
-  void closeSearchEmailAction() {
-    disableSearch();
-    cancelSelectEmail();
-    refreshAllEmail();
-  }
 
   void clearTextSearch() {
     searchController.clearTextSearch();
@@ -953,7 +931,7 @@ class ThreadController extends BaseController {
 
   void _searchEmail({UnsignedInt? limit, EmailFilterCondition? filterMessageOption}) {
     if (_accountId != null && searchQuery != null) {
-      searchController.searchIsActive.value = true;
+      searchController.activateSimpleSearch();
 
       filterMessageOption = EmailFilterCondition(
         notKeyword: filterMessageOption?.notKeyword,

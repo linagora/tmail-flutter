@@ -34,17 +34,12 @@ class SearchController extends BaseController {
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final searchInputController = TextEditingController();
-  final searchEmailFilter = SearchEmailFilter().obs;
+  final searchEmailFilter = SearchEmailFilter.initial().obs;
   final searchState = SearchState.initial().obs;
   final isAdvancedSearchViewOpen = false.obs;
-  final isAdvancedSearchHasApply = false.obs;
-  final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
-  final mailboxFilterSelectedFormAdvancedSearch = Rxn<PresentationMailbox>();
-  final hasAttachment = false.obs;
   final emailReceiveTimeType = Rxn<EmailReceiveTimeType>();
-  final searchIsActive = RxBool(false);
-
-  SearchEmailFilter get searchEmailFilterValue => searchEmailFilter.value;
+  final simpleSearchIsActivated = RxBool(false);
+  final advancedSearchIsActivated = RxBool(false);
 
   SearchQuery? get searchQuery => searchEmailFilter.value.text;
 
@@ -66,8 +61,8 @@ class SearchController extends BaseController {
     isAdvancedSearchViewOpen.toggle();
   }
 
-  cleanSearchFilter() {
-    searchEmailFilter.value = SearchEmailFilter();
+  void clearSearchFilter() {
+    searchEmailFilter.value = SearchEmailFilter.initial();
   }
 
   void selectQuickSearchFilter({
@@ -145,6 +140,7 @@ class SearchController extends BaseController {
       startDate: startDate,
       endDate: endDate,
     );
+    searchEmailFilter.refresh();
   }
 
   void _registerSearchFocusListener() {
@@ -152,10 +148,10 @@ class SearchController extends BaseController {
       final hasFocus = searchFocus.hasFocus;
       final query = searchEmailFilter.value.text?.value;
       log('SearchController::_registerSearchFocusListener(): hasFocus: $hasFocus | query: $query');
-      if (!hasFocus && (query == null || query.isEmpty) && isAdvancedSearchHasApply.isFalse) {
+      if (!hasFocus && (query == null || query.isEmpty) && advancedSearchIsActivated.isFalse) {
         updateFilterEmail(text: SearchQuery.initial());
         searchInputController.clear();
-        cleanSearchFilter();
+        clearSearchFilter();
         searchFocus.unfocus();
       }
     });
@@ -164,19 +160,16 @@ class SearchController extends BaseController {
   bool isSearchActive() =>
       searchState.value.searchStatus == SearchStatus.ACTIVE;
 
-  bool isAdvanceSearchActive() => isAdvancedSearchHasApply.isTrue;
-
-  bool get isSearchEmailRunning => isSearchActive() || isAdvanceSearchActive();
+  bool get isSearchEmailRunning => simpleSearchIsActivated.isTrue || advancedSearchIsActivated.isTrue;
 
   void enableSearch() {
     searchState.value = searchState.value.enableSearchState();
   }
 
-  void disableSearch() {
-    searchState.value = searchState.value.disableSearchState();
+  void disableSimpleSearch() {
     updateFilterEmail(text: SearchQuery.initial());
-    searchInputController.clear();
-    searchFocus.unfocus();
+    _clearAllTextInputSimpleSearch();
+    hideSimpleSearchFormView();
   }
 
   void clearTextSearch() {
@@ -235,6 +228,46 @@ class SearchController extends BaseController {
       await showAdvancedSearchFilterBottomSheet(context);
       selectOpenAdvanceSearch();
     }
+  }
+
+  void activateSimpleSearch() {
+    simpleSearchIsActivated.value = true;
+  }
+
+  void deactivateSimpleSearch() {
+    simpleSearchIsActivated.value = false;
+  }
+
+  void activateAdvancedSearch() {
+    advancedSearchIsActivated.value = true;
+  }
+
+  void deactivateAdvancedSearch() {
+    advancedSearchIsActivated.value = false;
+  }
+
+  void hideAdvancedSearchFormView() {
+    isAdvancedSearchViewOpen.value = false;
+  }
+
+  void hideSimpleSearchFormView() {
+    searchState.value = searchState.value.disableSearchState();
+  }
+
+  void _clearAllTextInputSimpleSearch() {
+    searchInputController.clear();
+    searchFocus.unfocus();
+    emailReceiveTimeType.value = null;
+  }
+
+  void disableAllSearchEmail() {
+    _clearAllTextInputSimpleSearch();
+    deactivateSimpleSearch();
+    hideSimpleSearchFormView();
+
+    clearSearchFilter();
+    deactivateAdvancedSearch();
+    hideAdvancedSearchFormView();
   }
 
   @override

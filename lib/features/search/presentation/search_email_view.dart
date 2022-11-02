@@ -27,7 +27,6 @@ import 'package:tmail_ui_user/features/search/presentation/widgets/email_receive
 import 'package:tmail_ui_user/features/search/presentation/widgets/email_receive_time_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
@@ -425,9 +424,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 context,
                 listPresentationEmail[index],
                 controller.selectionMode.value,
-                SearchStatus.ACTIVE,
                 controller.searchQuery,
                 controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
+                isSearchEmailRunning: true,
                 padding: SearchEmailUtils.getPaddingSearchResultList(context, _responsiveUtils),
                 paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, _responsiveUtils),
                 mailboxCurrent: listPresentationEmail[index].findMailboxContain(

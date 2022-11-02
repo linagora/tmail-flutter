@@ -239,8 +239,10 @@ class MailboxController extends BaseMailboxController {
     });
 
     dashboardActionWorker = ever(mailboxDashBoardController.dashBoardAction, (action) {
-      if(action is DashBoardAction) {
-        if(action is ClearSearchEmailAction) {
+      if (action is ClearSearchEmailAction) {
+        _switchBackToMailboxDefault();
+      } else if (action is SelectMailboxDefaultAction) {
+        if (mailboxDashBoardController.selectedMailbox.value == null) {
           _switchBackToMailboxDefault();
         }
       }
@@ -369,15 +371,18 @@ class MailboxController extends BaseMailboxController {
     mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
     mailboxDashBoardController.clearSelectedEmail();
 
-    if (mailboxDashBoardController.searchController.isSearchActive()) {
-      mailboxDashBoardController.searchController.disableSearch();
-    }
+    _disableAllSearchEmail();
 
     if (_responsiveUtils.hasLeftMenuDrawerActive(context)) {
       mailboxDashBoardController.closeMailboxMenuDrawer();
     } else {
       mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     }
+  }
+
+  void _disableAllSearchEmail() {
+    mailboxDashBoardController.dispatchAction(ClearAllFieldOfAdvancedSearchAction());
+    mailboxDashBoardController.searchController.disableAllSearchEmail();
   }
 
   void openMailbox(

@@ -14,7 +14,6 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 
 typedef OnPressEmailActionClick = void Function(EmailActionType, PresentationEmail);
 typedef OnMoreActionClick = void Function(PresentationEmail, RelativeRect?);
@@ -25,11 +24,10 @@ mixin BaseEmailItemTile {
   final imagePaths = Get.find<ImagePaths>();
 
   Widget buildMailboxContain(
-      SearchStatus state,
-      bool advancedSearchActivated,
-      PresentationEmail email
+    bool isSearchEmailRunning,
+    PresentationEmail email
   ) {
-    if (hasMailboxLabel(state, advancedSearchActivated, email)) {
+    if (hasMailboxLabel(isSearchEmailRunning, email)) {
       return Container(
           margin: const EdgeInsets.only(left: 8),
           padding: const EdgeInsets.symmetric(
@@ -55,8 +53,9 @@ mixin BaseEmailItemTile {
     }
   }
 
-  bool isSearchEnabled(SearchStatus state, bool advancedSearchActivated, SearchQuery? query) =>
-      (state == SearchStatus.ACTIVE || advancedSearchActivated) && query?.value.isNotEmpty == true;
+  bool isSearchEnabled(bool isSearchEmailRunning, SearchQuery? query) {
+    return isSearchEmailRunning && query?.value.isNotEmpty == true;
+  }
 
   FontWeight buildFontForReadEmail(PresentationEmail email) =>
       !email.hasRead ? FontWeight.w600 : FontWeight.normal;
@@ -64,8 +63,8 @@ mixin BaseEmailItemTile {
   Color buildTextColorForReadEmail(PresentationEmail email) =>
       email.hasRead ? AppColor.colorContentEmail : AppColor.colorNameEmail;
 
-  bool hasMailboxLabel(SearchStatus state, bool advancedSearchActivated, PresentationEmail email) {
-    return (state == SearchStatus.ACTIVE || advancedSearchActivated) && email.mailboxName.isNotEmpty;
+  bool hasMailboxLabel(bool isSearchEmailRunning, PresentationEmail email) {
+    return isSearchEmailRunning && email.mailboxName.isNotEmpty;
   }
 
   String informationSender(PresentationEmail email, PresentationMailbox? mailbox) {
@@ -79,11 +78,10 @@ mixin BaseEmailItemTile {
   Widget buildInformationSender(
       PresentationEmail email,
       PresentationMailbox? mailbox,
-      SearchStatus state,
-      bool advancedSearchActivated,
+      bool isSearchEmailRunning,
       SearchQuery? query
   ) {
-    if (isSearchEnabled(state, advancedSearchActivated, query)) {
+    if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
           informationSender(email, mailbox),
           query?.value ?? '',
@@ -113,12 +111,11 @@ mixin BaseEmailItemTile {
   }
 
   Widget buildEmailTitle(
-      PresentationEmail email,
-      SearchStatus state,
-      bool advancedSearchActivated,
-      SearchQuery? query
+    PresentationEmail email,
+    bool isSearchEmailRunning,
+    SearchQuery? query
   ) {
-    if (isSearchEnabled(state, advancedSearchActivated, query)) {
+    if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
           email.getEmailTitle(),
           query?.value ?? '',
@@ -147,12 +144,11 @@ mixin BaseEmailItemTile {
   }
 
   Widget buildEmailPartialContent(
-      PresentationEmail email,
-      SearchStatus state,
-      bool advancedSearchActivated,
-      SearchQuery? query
+    PresentationEmail email,
+    bool isSearchEmailRunning,
+    SearchQuery? query
   ) {
-    if (isSearchEnabled(state, advancedSearchActivated, query)) {
+    if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
           email.getPartialContent(),
           query?.value ?? '',

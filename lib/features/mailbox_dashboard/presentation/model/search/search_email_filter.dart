@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
@@ -7,7 +8,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
-class SearchEmailFilter {
+class SearchEmailFilter with EquatableMixin {
   final Set<String> from;
   final Set<String> to;
   final SearchQuery? text;
@@ -19,6 +20,8 @@ class SearchEmailFilter {
   final UTCDate? before;
   final UTCDate? startDate;
   final UTCDate? endDate;
+
+  factory SearchEmailFilter.initial() => SearchEmailFilter();
 
   SearchEmailFilter({
     Set<String>? from,
@@ -108,6 +111,21 @@ class SearchEmailFilter {
       ? LogicFilterOperator(Operator.AND, listEmailCondition)
       : null;
   }
+
+  @override
+  List<Object?> get props => [
+    from,
+    to,
+    text,
+    subject,
+    notKeyword,
+    mailbox,
+    emailReceiveTimeType,
+    hasAttachment,
+    before,
+    startDate,
+    endDate
+  ];
 }
 
 extension SearchEmailFilterExtension on SearchEmailFilter {
