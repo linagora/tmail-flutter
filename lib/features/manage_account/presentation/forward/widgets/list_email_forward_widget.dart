@@ -37,6 +37,7 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
               Obx(() {
                 return ListView.separated(
                   shrinkWrap: true,
+                  primary: false,
                   itemCount: controller.listRecipientForward.length,
                   itemBuilder: (context, index) {
                     final recipientForward = controller.listRecipientForward[index];
