@@ -90,6 +90,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     sessionCurrent.value = session;
     _getUserProfile();
     injectAutoCompleteBindings(sessionCurrent.value, accountId.value);
+    injectForwardBindings(sessionCurrent.value, accountId.value);
     injectVacationBindings(sessionCurrent.value, accountId.value);
     _getVacationResponse();
   }
@@ -102,6 +103,7 @@ class ManageAccountDashBoardController extends ReloadableController {
       sessionCurrent.value = arguments.session;
       _getUserProfile();
       injectAutoCompleteBindings(sessionCurrent.value, accountId.value);
+      injectForwardBindings(sessionCurrent.value, accountId.value);
       injectVacationBindings(sessionCurrent.value, accountId.value);
       _getVacationResponse();
       if (arguments.menuSettingCurrent != null) {
