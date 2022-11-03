@@ -1,7 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -23,9 +22,6 @@ class ForwardHeaderWidget extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(
           AppLocalizations.of(context).forwarding,
-          overflow: CommonTextStyle.defaultTextOverFlow,
-          softWrap: CommonTextStyle.defaultSoftWrap,
-          maxLines: 1,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w500,
@@ -33,9 +29,6 @@ class ForwardHeaderWidget extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           AppLocalizations.of(context).forwardingSettingExplanation,
-          overflow: CommonTextStyle.defaultTextOverFlow,
-          softWrap: CommonTextStyle.defaultSoftWrap,
-          maxLines: 3,
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.normal,

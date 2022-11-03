@@ -141,8 +141,6 @@ class ForwardController extends BaseController {
   }
 
   void _handleDeleteRecipientAction(Set<String> listRecipients) {
-    popBack();
-
     final accountId = accountDashBoardController.accountId.value;
     if (accountId != null &&
         currentForward.value != null &&
@@ -236,6 +234,8 @@ class ForwardController extends BaseController {
   }
 
   void addRecipientAction(BuildContext context) {
+    FocusScope.of(context).unfocus();
+
     final accountId = accountDashBoardController.accountId.value;
     final emailAddressSelected = recipientController.emailAddressSelected;
 

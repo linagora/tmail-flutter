@@ -442,7 +442,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
       return html_editor_browser.HtmlEditor(
         key: const Key('vacation_message_html_text_editor_web'),
         controller: controller.richTextControllerForWeb.editorController,
-        htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
+        htmlEditorOptions: const html_editor_browser.HtmlEditorOptions(
             hint: '',
             darkMode: false,
             customBodyCssStyle: bodyCssStyleForEditor),
