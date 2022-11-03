@@ -55,8 +55,8 @@ class TopBarThreadSelection {
       buildIconWeb(
           icon: SvgPicture.asset(
               listEmail.isAllEmailRead
-                  ? imagePaths.icRead
-                  : imagePaths.icUnread,
+                  ? imagePaths.icUnread
+                  : imagePaths.icRead,
               fit: BoxFit.fill),
           tooltip: listEmail.isAllEmailRead
               ? AppLocalizations.of(context).mark_as_unread
