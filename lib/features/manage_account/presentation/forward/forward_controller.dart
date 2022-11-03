@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,10 +37,10 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ForwardController extends BaseController {
 
-  final GetForwardInteractor _getForwardInteractor;
-  final DeleteRecipientInForwardingInteractor _deleteRecipientInForwardingInteractor;
-  final AddRecipientsInForwardingInteractor _addRecipientsInForwardingInteractor;
-  final EditLocalCopyInForwardingInteractor _editLocalCopyInForwardingInteractor;
+  GetForwardInteractor? _getForwardInteractor;
+  DeleteRecipientInForwardingInteractor? _deleteRecipientInForwardingInteractor;
+  AddRecipientsInForwardingInteractor? _addRecipientsInForwardingInteractor;
+  EditLocalCopyInForwardingInteractor? _editLocalCopyInForwardingInteractor;
 
   final accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -54,12 +55,20 @@ class ForwardController extends BaseController {
 
   bool get currentForwardLocalCopyState => currentForward.value?.localCopy ?? false;
 
-  ForwardController(
-    this._getForwardInteractor,
-    this._deleteRecipientInForwardingInteractor,
-    this._addRecipientsInForwardingInteractor,
-    this._editLocalCopyInForwardingInteractor,
-  );
+  ForwardController();
+
+  @override
+  void onInit() {
+    super.onInit();
+    try {
+      _getForwardInteractor = Get.find<GetForwardInteractor>();
+      _deleteRecipientInForwardingInteractor = Get.find<DeleteRecipientInForwardingInteractor>();
+      _addRecipientsInForwardingInteractor = Get.find<AddRecipientsInForwardingInteractor>();
+      _editLocalCopyInForwardingInteractor = Get.find<EditLocalCopyInForwardingInteractor>();
+    } catch (e) {
+      logError('ForwardController::onInit(): ${e.toString()}');
+    }
+  }
 
   @override
   void onDone() {
@@ -84,13 +93,15 @@ class ForwardController extends BaseController {
   }
 
   @override
-  void onInit() {
+  void onReady() {
     _getForward();
-    super.onInit();
+    super.onReady();
   }
 
   void _getForward() {
-    consumeState(_getForwardInteractor.execute(accountDashBoardController.accountId.value!));
+    if (_getForwardInteractor != null) {
+      consumeState(_getForwardInteractor!.execute(accountDashBoardController.accountId.value!));
+    }
   }
 
   void deleteRecipients(BuildContext context, String emailAddress) {
@@ -133,8 +144,10 @@ class ForwardController extends BaseController {
     popBack();
 
     final accountId = accountDashBoardController.accountId.value;
-    if (accountId != null && currentForward.value != null) {
-      consumeState(_deleteRecipientInForwardingInteractor.execute(
+    if (accountId != null &&
+        currentForward.value != null &&
+        _deleteRecipientInForwardingInteractor != null) {
+      consumeState(_deleteRecipientInForwardingInteractor!.execute(
           accountId,
           DeleteRecipientInForwardingRequest(
               currentForward: currentForward.value!,
@@ -258,8 +271,8 @@ class ForwardController extends BaseController {
 
   void _handleAddRecipients(AccountId accountId, List<EmailAddress> listEmailAddress) {
     final listRecipients = listEmailAddress.map((e) => e.emailAddress).toSet();
-    if (currentForward.value != null) {
-      consumeState(_addRecipientsInForwardingInteractor.execute(
+    if (currentForward.value != null && _addRecipientsInForwardingInteractor != null) {
+      consumeState(_addRecipientsInForwardingInteractor!.execute(
           accountId,
           AddRecipientInForwardingRequest(
               currentForward: currentForward.value!,
@@ -282,8 +295,10 @@ class ForwardController extends BaseController {
 
   void handleEditLocalCopy() {
     final accountId = accountDashBoardController.accountId.value;
-    if (accountId != null && currentForward.value != null) {
-      consumeState(_editLocalCopyInForwardingInteractor.execute(
+    if (accountId != null &&
+        currentForward.value != null &&
+        _editLocalCopyInForwardingInteractor != null) {
+      consumeState(_editLocalCopyInForwardingInteractor!.execute(
           accountId,
           EditLocalCopyInForwardingRequest(
               currentForward: currentForward.value!,

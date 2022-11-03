@@ -3,6 +3,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -13,6 +14,7 @@ import 'package:tmail_ui_user/features/base/mixin/view_as_dialog_action_mixin.da
 import 'package:tmail_ui_user/features/email/presentation/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forwarding_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -116,6 +118,15 @@ abstract class BaseController extends GetxController
       MdnInteractorBindings().dependencies();
     } catch(e) {
       logError('ReloadableController::injectVacationBindings(): exception: $e');
+    }
+  }
+
+  void injectForwardBindings(Session? session, AccountId? accountId) {
+    try {
+      requireCapability(session!, accountId!, [capabilityForward]);
+      ForwardingInteractorsBindings().dependencies();
+    } catch(e) {
+      logError('ReloadableController::injectForwardBindings(): exception: $e');
     }
   }
 }
