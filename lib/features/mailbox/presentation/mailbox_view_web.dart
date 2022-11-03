@@ -285,7 +285,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                         _openMailboxMenuAction(context, position, mailboxNode.item))
                     ..addOnSelectMailboxFolderClick((mailboxNode) =>
                         controller.selectMailboxNode(mailboxNode))
-                    ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction))
+                    ..addOnDragItemAccepted(_handleDragItemAccepted))
                   .build()),
                 children: _buildListChildTileWidget(context, mailboxNode)
             ).build()
@@ -297,9 +297,21 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                   _openMailboxMenuAction(context, position, mailboxNode.item))
               ..addOnSelectMailboxFolderClick((mailboxNode) =>
                   controller.selectMailboxNode(mailboxNode))
-              ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction))
+              ..addOnDragItemAccepted(_handleDragItemAccepted))
             .build())
     ).toList() ?? <Widget>[];
+  }
+
+  void _handleDragItemAccepted(List<PresentationEmail> listEmails, PresentationMailbox presentationMailbox) {
+    final mailboxPath = controller.findNodePath(presentationMailbox.id)
+        ?? presentationMailbox.name?.name;
+    log('MailboxView::_handleDragItemAccepted(): mailboxPath: $mailboxPath');
+    if (mailboxPath != null) {
+      final newMailbox = presentationMailbox.toPresentationMailboxWithMailboxPath(mailboxPath);
+      controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction(listEmails, newMailbox);
+    } else {
+      controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction(listEmails, presentationMailbox);
+    }
   }
 
   Widget _buildInputSearchFormWidget(BuildContext context) {
