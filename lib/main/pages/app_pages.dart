@@ -10,8 +10,6 @@ import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_view.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart' deferred as identity_creator;
-import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_binding.dart';
-import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_view.dart' deferred as emails_forward_creator;
 import 'package:tmail_ui_user/features/contact/presentation/contact_view.dart' deferred as contact_view;
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_bindings.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart' deferred as rules_filter_creator;
@@ -99,14 +97,7 @@ class AppPages {
             page: () => DeferredWidget(
                 rules_filter_creator.loadLibrary,
                 () => rules_filter_creator.RuleFilterCreatorView()),
-            binding: RulesFilterCreatorBindings()),
-        GetPage(
-            name: AppRoutes.emailsForwardCreator,
-            opaque: false,
-            page: () => DeferredWidget(
-                emails_forward_creator.loadLibrary,
-                () => emails_forward_creator.EmailsForwardCreatorView()),
-            binding: EmailsForwardCreatorBindings()),
+            binding: RulesFilterCreatorBindings())
       ]
   ];
 }
