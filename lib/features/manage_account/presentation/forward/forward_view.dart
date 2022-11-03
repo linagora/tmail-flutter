@@ -35,17 +35,24 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ForwardHeaderWidget(imagePaths: _imagePaths, responsiveUtils: _responsiveUtils),
-            Container(height: 1, color: AppColor.colorDividerHeaderSetting),
+            if (_responsiveUtils.isWebDesktop(context))
+              ...[
+                ForwardHeaderWidget(imagePaths: _imagePaths, responsiveUtils: _responsiveUtils),
+                Container(height: 1, color: AppColor.colorDividerHeaderSetting)
+              ],
             Expanded(child: SingleChildScrollView(
-              child: Column(children: [
+              physics: const ClampingScrollPhysics(),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                if (!_responsiveUtils.isWebDesktop(context))
+                  _buildTitleHeader(context),
                 _buildLoadingView(),
                 Obx(() {
                   if (controller.currentForward.value != null) {
                     return Column(children: [
                       _buildKeepLocalSwitchButton(context),
                       _buildAddRecipientsFormWidget(context),
-                      ListEmailForwardsWidget()
+                      if (controller.listRecipientForward.isNotEmpty)
+                        ListEmailForwardsWidget()
                     ]);
                   } else {
                     return const SizedBox.shrink();
@@ -55,6 +62,23 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
             ))
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTitleHeader(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      width: double.infinity,
+      margin: SettingsUtils.getMarginTitleHeaderForwarding(context, _responsiveUtils),
+      padding: SettingsUtils.getPaddingTitleHeaderForwarding(context, _responsiveUtils),
+      child: Text(
+        AppLocalizations.of(context).forwardingSettingExplanation,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.normal,
+          color: AppColor.colorSettingExplanation
+        )
       ),
     );
   }
@@ -130,7 +154,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
     ));
   }
 
-  Widget _buildAddRecipientButton(BuildContext context) {
+  Widget _buildAddRecipientButton(BuildContext context, {double? maxWidth}) {
     return (ButtonBuilder(_imagePaths.icAddIdentity)
       ..key(const Key('button_add_recipient'))
       ..decoration(BoxDecoration(
@@ -138,7 +162,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
           color: AppColor.colorTextButton))
       ..paddingIcon(const EdgeInsets.only(right: 8))
       ..iconColor(Colors.white)
-      ..maxWidth(170)
+      ..maxWidth(maxWidth ?? 170)
       ..size(20)
       ..radiusSplash(10)
       ..padding(const EdgeInsets.symmetric(vertical: 12))
@@ -163,7 +187,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
           children: [
             _buildAddRecipientInputField(),
             const SizedBox(height: 16),
-            _buildAddRecipientButton(context)
+            _buildAddRecipientButton(context, maxWidth: double.infinity)
           ],
         ),
       );

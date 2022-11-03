@@ -87,13 +87,25 @@ class SettingsUtils {
   }
 
   static BoxDecoration? getBoxDecorationForListRecipient(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (responsiveUtils.isWebDesktop(context)) {
-      return BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColor.colorBorderSettingContentWeb, width: 1),
-          color: Colors.white);
+    return BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: AppColor.colorBorderSettingContentWeb, width: 1),
+      color: Colors.white);
+  }
+
+  static EdgeInsets getMarginTitleHeaderForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isPortraitMobile(context)) {
+      return EdgeInsets.zero;
     } else {
-      return null;
+      return const EdgeInsets.symmetric(horizontal: 20);
+    }
+  }
+
+  static EdgeInsets getPaddingTitleHeaderForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isPortraitMobile(context)) {
+      return const EdgeInsets.only(left: 16, right: 16);
+    } else {
+      return const EdgeInsets.all(12);
     }
   }
 }
