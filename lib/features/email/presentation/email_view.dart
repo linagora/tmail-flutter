@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:core/core.dart';
+import 'package:core/presentation/views/html_viewer/html_content_viewer_on_windows.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -746,6 +749,11 @@ class EmailView extends GetWidget<SingleEmailController>
               contentHtml: allEmailContents,
               controller: HtmlViewerControllerForWeb(),
               mailtoDelegate: (uri) => controller.openMailToLink(uri));
+        } else if(Platform.isWindows) {
+          return HtmlContentViewerForWindows(
+            contentHtml: allEmailContents, 
+            heightContent: responsiveUtils.getSizeScreenHeight(context), 
+            mailtoDelegate: (uri) async => controller.openMailToLink(uri));
         } else {
           return HtmlContentViewer(
               heightContent: responsiveUtils.getSizeScreenHeight(context),

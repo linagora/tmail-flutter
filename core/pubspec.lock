@@ -511,6 +511,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.9.5"
+  webview_windows:
+    dependency: "direct main"
+    description:
+      name: webview_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
   win32:
     dependency: transitive
     description:
