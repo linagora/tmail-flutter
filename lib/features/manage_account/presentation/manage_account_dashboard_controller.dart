@@ -22,7 +22,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oi
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
