@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -100,7 +101,7 @@ class ThreadController extends BaseController {
   final CachingManager _cachingManager;
 
   final listEmailDrag = <PresentationEmail>[].obs;
-
+  bool shiftSelectedMode = false;
   bool canLoadMore = true;
   bool canSearchMore = true;
   bool _isLoadingMore = false;
@@ -108,6 +109,8 @@ class ThreadController extends BaseController {
   MailboxId? _currentMailboxId;
   jmap.State? _currentEmailState;
   final ScrollController listEmailController = ScrollController();
+  final FocusNode focusNodeKeyBoard = FocusNode();
+  final latestEmailAction = Rxn<PresentationEmail>();
   late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker, advancedSearchFilterWorker;
 
   Set<Comparator>? get _sortOrder => <Comparator>{}
@@ -160,6 +163,7 @@ class ThreadController extends BaseController {
   @override
   void onClose() {
     listEmailController.dispose();
+    focusNodeKeyBoard.dispose();
     _clearWorker();
     super.onClose();
   }
@@ -516,11 +520,45 @@ class ThreadController extends BaseController {
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.emailDetailed);
   }
 
-  void selectEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
-    emailList.value = emailList
-      .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
-      .toList();
+  void _shiftSelectEmail(PresentationEmail presentationEmailSelected) {
+    int startIndexAction = 0;
+    int endIndexAction = 0;
+    final indexOfPresentationEmailSelected = emailList.indexWhere((e) => e.id == presentationEmailSelected.id);
+    final indexOfLatestEmailAction = emailList.indexWhere((e) => e.id == latestEmailAction.value?.id);
+    if (indexOfPresentationEmailSelected > indexOfLatestEmailAction) {
+      startIndexAction = indexOfLatestEmailAction;
+      endIndexAction = indexOfPresentationEmailSelected;
+    } else {
+      startIndexAction = indexOfPresentationEmailSelected;
+      endIndexAction = indexOfLatestEmailAction;
+    }
 
+    final enableChangeSelectModeOfEmailsToActive = latestEmailAction.value?.selectMode == SelectMode.ACTIVE &&
+        !emailList.sublist(startIndexAction, endIndexAction).every((e) => e.selectMode == SelectMode.ACTIVE) ||
+        latestEmailAction.value?.selectMode == SelectMode.INACTIVE &&
+        emailList.sublist(startIndexAction, endIndexAction).every((e) => e.selectMode == SelectMode.INACTIVE);
+
+    if (enableChangeSelectModeOfEmailsToActive) {
+      emailList.value = emailList.asMap().map((index, email) {
+        return MapEntry(index, index >= startIndexAction && index <= endIndexAction ? email.toSelectedEmail(selectMode: SelectMode.ACTIVE) : email);
+      }).values.toList();
+    } else {
+      emailList.value = emailList.asMap().map((index, email) {
+        return MapEntry(index, index >= startIndexAction && index <= endIndexAction ? email.toSelectedEmail(selectMode: SelectMode.INACTIVE) : email);
+      }).values.toList();
+    }
+  }
+
+  void selectEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
+    if (shiftSelectedMode && latestEmailAction.value != null && latestEmailAction.value?.id != presentationEmailSelected.id) {
+      _shiftSelectEmail(presentationEmailSelected);
+    } else {
+      emailList.value = emailList
+        .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
+        .toList();
+    }
+    latestEmailAction.value = emailList.firstWhere((e) => e.id == presentationEmailSelected.id);
+    focusNodeKeyBoard.requestFocus();
     if (_isUnSelectedAll()) {
       mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
       mailboxDashBoardController.listEmailSelected.clear();
@@ -1469,5 +1507,19 @@ class ThreadController extends BaseController {
         listEmailDrag.add(currentPresentationEmail);
       }
     }
+  }
+
+  KeyEventResult handleKeyEvent(FocusNode node, RawKeyEvent event) {
+    final shiftEvent = event.logicalKey == LogicalKeyboardKey.shiftLeft || event.logicalKey == LogicalKeyboardKey.shiftRight;
+    if (event is RawKeyDownEvent && shiftEvent) {
+      shiftSelectedMode = true;
+    }
+
+    if (event is RawKeyUpEvent && shiftEvent) {
+      shiftSelectedMode = false;
+    }
+    return shiftEvent
+        ? KeyEventResult.handled
+        : KeyEventResult.ignored;
   }
 }
