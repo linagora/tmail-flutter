@@ -1,6 +1,7 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/build_utils.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 class SettingsUtils {
   static double getHorizontalPadding(BuildContext context, ResponsiveUtils responsiveUtils) {
@@ -30,7 +31,7 @@ class SettingsUtils {
   static EdgeInsets getMarginViewForSettingDetails(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (BuildUtils.isWeb) {
       if (responsiveUtils.isDesktop(context)) {
-        return const EdgeInsets.only(left: 16, top: 16, right: 24, bottom: 24);
+        return const EdgeInsets.all(16);
       } else if (responsiveUtils.isTabletLarge(context) ||
           responsiveUtils.isTablet(context)) {
         return const EdgeInsets.only(right: 32, top: 16, bottom: 16, left: 32);
@@ -47,6 +48,52 @@ class SettingsUtils {
       } else {
         return const EdgeInsets.only(right: 16, top: 16, bottom: 16, left: 16);
       }
+    }
+  }
+
+  static BoxDecoration? getBoxDecorationForContent(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColor.colorBorderSettingContentWeb, width: 1),
+        color: Colors.white);
+    } else {
+      return null;
+    }
+  }
+
+  static Color? getContentBackgroundColor(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return null;
+    } else {
+      return Colors.white;
+    }
+  }
+
+  static Color? getBackgroundColor(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return AppColor.colorBgDesktop;
+    } else {
+      return Colors.white;
+    }
+  }
+
+  static EdgeInsets getPaddingListRecipientForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isPortraitMobile(context)) {
+      return const EdgeInsets.all(12);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 24, vertical: 12);
+    }
+  }
+
+  static BoxDecoration? getBoxDecorationForListRecipient(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColor.colorBorderSettingContentWeb, width: 1),
+          color: Colors.white);
+    } else {
+      return null;
     }
   }
 }

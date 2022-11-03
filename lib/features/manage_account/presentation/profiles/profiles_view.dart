@@ -16,23 +16,21 @@ class ProfilesView extends GetWidget<ProfilesController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _responsiveUtils.isWebDesktop(context)
-          ? AppColor.colorBgDesktop
-          : Colors.white,
+      backgroundColor: SettingsUtils.getBackgroundColor(context, _responsiveUtils),
       body: Container(
         margin: _responsiveUtils.isWebDesktop(context)
-          ? const EdgeInsets.all(24)
+          ? const EdgeInsets.all(16)
           : EdgeInsets.symmetric(horizontal: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)),
         color: _responsiveUtils.isWebDesktop(context) ? null : Colors.white,
         decoration: _responsiveUtils.isWebDesktop(context)
             ? BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColor.colorBorderSettingContentWeb, width: 1),
                 color: Colors.white)
             : null,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(
-              _responsiveUtils.isWebDesktop(context) ? 20 : 0),
+              _responsiveUtils.isWebDesktop(context) ? 16 : 0),
           child: Padding(
             padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
             child: DefaultTabController(
