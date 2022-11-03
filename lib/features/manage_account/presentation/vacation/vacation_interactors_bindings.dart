@@ -1,6 +1,6 @@
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
-import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/vacation_data_source.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/vacation_data_source_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/vacation_api.dart';
@@ -10,10 +10,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_va
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
-class VacationInteractorsBindings extends BaseBindings {
-  @override
-  void bindingsController() {
-  }
+class VacationInteractorsBindings extends InteractorsBindings {
 
   @override
   void bindingsDataSource() {
