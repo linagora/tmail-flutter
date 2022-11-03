@@ -1,8 +1,8 @@
 
-import 'package:core/core.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
@@ -267,6 +267,7 @@ class SearchEmailController extends BaseController
 
     if (accountId != null) {
       searchIsRunning.value = true;
+      cancelSelectionMode(context);
 
       consumeState(_searchEmailInteractor.execute(
         accountId!,

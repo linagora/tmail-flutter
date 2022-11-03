@@ -368,13 +368,15 @@ class MailboxController extends BaseMailboxController {
   ) {
     FocusScope.of(context).unfocus();
 
-    mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
     mailboxDashBoardController.clearSelectedEmail();
-    mailboxDashBoardController.clearFilterMessageOption();
-
+    if (presentationMailboxSelected.id != mailboxDashBoardController.selectedMailbox.value?.id) {
+      mailboxDashBoardController.clearFilterMessageOption();
+    }
     _disableAllSearchEmail();
 
-    if (_responsiveUtils.hasLeftMenuDrawerActive(context)) {
+    mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
+
+    if (mailboxDashBoardController.isDrawerOpen) {
       mailboxDashBoardController.closeMailboxMenuDrawer();
     } else {
       mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
