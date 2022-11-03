@@ -19,8 +19,17 @@ extension StringExtension on String {
       }
     } else {
       final regexLetter = RegExp("([A-Za-z])");
-      final firstLetter = regexLetter.firstMatch(trim())?.group(0);
-      return firstLetter != null ? '${firstLetter.toUpperCase()}${firstLetter.toUpperCase()}' : '';
+      final listMatch = regexLetter.allMatches(trim()).toList();
+      if (listMatch.length > 1) {
+        final firstLetter = listMatch[0].group(0);
+        final secondLetter = listMatch[1].group(0);
+        return firstLetter != null && secondLetter != null
+          ? '${firstLetter.toUpperCase()}${secondLetter.toUpperCase()}'
+          : '';
+      } else {
+        final firstLetter = listMatch[0].group(0);
+        return firstLetter != null ? firstLetter.toUpperCase() : '';
+      }
     }
   }
 }
