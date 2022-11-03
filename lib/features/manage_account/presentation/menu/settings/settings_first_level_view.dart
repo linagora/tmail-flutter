@@ -103,12 +103,6 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             return const SizedBox.shrink();
           }
         }),
-        Divider(
-          color: AppColor.colorDividerComposer,
-          height: 1,
-          indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-          endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
-        ),
         SettingFirstLevelTileBuilder(
           AccountMenuItem.languageAndRegion.getName(context),
           AccountMenuItem.languageAndRegion.getIcon(_imagePaths),
