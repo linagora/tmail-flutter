@@ -6,79 +6,29 @@ import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/email_forward_item_widget.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/email_forward_item_widget_for_web.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/recipient_forward.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ListEmailForwardsWidget extends GetWidget<ForwardController> {
 
   final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   ListEmailForwardsWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: AppColor.colorBackgroundWrapIconStyleCode,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-            width: 1,
-            color: AppColor.colorBorderListForwardsFilter)
-      ),
+      decoration: SettingsUtils.getBoxDecorationForListRecipient(context, _responsiveUtils),
+      margin: SettingsUtils.getPaddingListRecipientForwarding(context, _responsiveUtils),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Obx(() => Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: AppColor.colorBackgroundHeaderListForwards,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16)),
-                ),
-                padding: controller.selectionMode.value == SelectMode.INACTIVE
-                    ? const EdgeInsets.symmetric(vertical: 17, horizontal: 24)
-                    : const EdgeInsets.symmetric(vertical: 13, horizontal: 24),
-                child: Row(children: [
-                  Expanded(child: Text(
-                      AppLocalizations.of(context).headerRecipients,
-                      overflow: CommonTextStyle.defaultTextOverFlow,
-                      softWrap: CommonTextStyle.defaultSoftWrap,
-                      style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: AppColor.colorTextButtonHeaderThread))),
-                  Obx(() {
-                    if (controller.selectionMode.value == SelectMode.ACTIVE) {
-                      return _buildListButtonSelection(context);
-                    } else {
-                      if (controller.listRecipientForward.isNotEmpty) {
-                        return (ButtonBuilder(_imagePaths.icSelectAll)
-                            ..decoration(BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: AppColor.colorButtonHeaderThread))
-                            ..paddingIcon(const EdgeInsets.only(right: 8))
-                            ..size(16)
-                            ..radiusSplash(10)
-                            ..padding(const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8))
-                            ..textStyle(const TextStyle(
-                                fontSize: 12,
-                                color: AppColor.colorTextButtonHeaderThread))
-                            ..onPressActionClick(() => controller.selectAllRecipientForward())
-                            ..text(AppLocalizations.of(context).select_all, isVertical: false))
-                          .build();
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    }
-                  })
-                ]),
-              )),
+              _buildTitleHeader(context),
               const Divider(
                 color: AppColor.lineItemListColor,
                 height: 1,
@@ -92,13 +42,20 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
                     final recipientForward = controller.listRecipientForward[index];
                     return EmailForwardItemWidget(
                         recipientForward: recipientForward,
+                        isLast: index == controller.listRecipientForward.length - 1,
                         selectionMode: controller.selectionMode.value);
                   },
-                  separatorBuilder: (context, index) => const Divider(
-                      color: AppColor.lineItemListColor,
-                      height: 1,
-                      thickness: 0.2,
-                    ),
+                  separatorBuilder: (context, index) {
+                    if (index != controller.listRecipientForward.length - 1) {
+                       return const Divider(
+                         color: AppColor.lineItemListColor,
+                         height: 1,
+                         thickness: 0.2,
+                       );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
                 );
               }),
             ]),
@@ -106,26 +63,76 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
     );
   }
 
-  Widget _buildListButtonSelection(BuildContext context) {
-    return Row(mainAxisSize: MainAxisSize.min, children: [
-      buildIconWeb(
-          icon: SvgPicture.asset(
-              _imagePaths.icCloseComposer,
-              color: AppColor.colorTextButton,
-              fit: BoxFit.fill),
-          tooltip: AppLocalizations.of(context).cancel,
-          onTap: () => controller.cancelSelectionMode()),
-      const SizedBox(width: 5),
-      buildIconWeb(
-          icon: SvgPicture.asset(
-              _imagePaths.icDelete,
-              color: AppColor.colorActionDeleteConfirmDialog,
-              fit: BoxFit.fill),
-          tooltip: AppLocalizations.of(context).delete_all,
-          onTap: () =>
-              controller.deleteMultipleRecipients(
-                  context,
-                  controller.listRecipientForwardSelected.listEmailAddress))
-    ]);
+  Widget _buildTitleHeader(BuildContext context) {
+    return Obx(() => Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: AppColor.colorBackgroundHeaderListForwards,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16)
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      child: Row(children: [
+        _buildSelectAllButton(),
+        const SizedBox(width: 12),
+        Expanded(child: Text(
+          AppLocalizations.of(context).headerRecipients,
+          overflow: CommonTextStyle.defaultTextOverFlow,
+          softWrap: CommonTextStyle.defaultSoftWrap,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColor.colorTextButtonHeaderThread
+          )
+        )),
+        const SizedBox(width: 12),
+        if (controller.listRecipientForwardSelected.isNotEmpty)
+          _buildDeleteAllButton(context)
+      ]),
+    ));
+  }
+
+  Widget _buildSelectAllButton() {
+    return Material(
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SvgPicture.asset(
+              controller.selectionMode.value == SelectMode.ACTIVE
+                  ? _imagePaths.icCancelSelection
+                  : _imagePaths.icUnSelected,
+              width: 24,
+              height: 24
+          ),
+        ),
+        onTap: () {
+          if (controller.selectionMode.value == SelectMode.ACTIVE) {
+            controller.cancelSelectionMode();
+          } else {
+            controller.selectAllRecipientForward();
+          }
+        },
+      ),
+      color: Colors.transparent,
+    );
+  }
+
+  Widget _buildDeleteAllButton(BuildContext context) {
+    return buildIconWeb(
+      icon: SvgPicture.asset(
+        _imagePaths.icDeleteEmailForward,
+        fit: BoxFit.fill,
+        width: 18,
+        height: 18,
+      ),
+      tooltip: AppLocalizations.of(context).delete_all,
+      onTap: () => controller.deleteMultipleRecipients(
+        context,
+        controller.listRecipientForwardSelected.listEmailAddress
+      )
+    );
   }
 }

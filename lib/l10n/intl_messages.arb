@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-10-28T13:12:30.889722",
+  "@@last_modified": "2022-11-04T00:32:44.924510",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2022,7 +2022,7 @@
       "emailAddress": {}
     }
   },
-  "deleteRecipient": "Delete recipient",
+  "deleteRecipient": "Remove recipients",
   "@deleteRecipient": {
     "type": "text",
     "placeholders_order": [],
@@ -2034,7 +2034,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteAllRecipientForward": "Do you want to delete all email?",
+  "messageConfirmationDialogDeleteAllRecipientForward": "Are you sure you want to remove those recipients? Doing this will remove them from the email chain.",
   "@messageConfirmationDialogDeleteAllRecipientForward": {
     "type": "text",
     "placeholders_order": [],
@@ -2046,7 +2046,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recipientsLabel": "Name or Email address",
+  "recipientsLabel": "Enter name or email address",
   "@recipientsLabel": {
     "type": "text",
     "placeholders_order": [],
@@ -2070,7 +2070,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keepLocalCopyForwardLabel": "Keep local copy",
+  "keepLocalCopyForwardLabel": "Keep a copy of the email in Inbox",
   "@keepLocalCopyForwardLabel": {
     "type": "text",
     "placeholders_order": [],
@@ -2400,20 +2400,44 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newer": "Newer",
-  "@newer": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "createNewMailbox": "Create new mailbox",
   "@createNewMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
+  "newer": "Newer",
+  "@newer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "older": "Older",
   "@older": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardingSettingExplanation": "Allows a new recipient to see the email sent if they were not originally included in the email chain.",
+  "@forwardingSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addRecipientButton": "Add recipient",
+  "@addRecipientButton": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "incorrectEmailFormat": "Incorrect email format",
+  "@incorrectEmailFormat": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "remove": "Remove",
+  "@remove": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

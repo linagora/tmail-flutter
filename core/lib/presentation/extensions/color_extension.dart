@@ -133,7 +133,7 @@ extension AppColor on Color {
   static const colorBackgroundSnackBar = Color(0xFF343438);
   static const colorBackgroundHeaderListRuleFilter = Color(0xFFFAF7F7);
   static const colorBorderListRuleFilter = Color(0xFFE7E8EC);
-  static const colorBackgroundHeaderListForwards = Color(0xFFFAF7F7);
+  static const colorBackgroundHeaderListForwards = Color(0xFFF8F9FA);
   static const colorBorderListForwardsFilter = Color(0xFFE7E8EC);
   static const colorBackgroundFieldConditionRulesFilter = Color(0xFFF2F3F5);
   static const colorDividerRuleFilter = Color(0xFFE7E8EC);
@@ -157,6 +157,9 @@ extension AppColor on Color {
   static const colorDividerDestinationPicker = Color(0x1F000000);
   static const colorItemAlreadySelected = Color(0xFF818C99);
   static const colorItemSelected = Color(0xFFF2F3F5);
+  static const colorBorderSettingContentWeb = Color(0xFFE7E8EC);
+  static const colorDividerHeaderSetting = Color(0xFFE4E4E4);
+  static const colorSettingExplanation = Color(0xFF686E76);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
