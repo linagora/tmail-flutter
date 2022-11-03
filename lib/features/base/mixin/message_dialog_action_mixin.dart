@@ -21,7 +21,12 @@ mixin MessageDialogActionMixin {
         String? cancelTitle,
         bool hasCancelButton = true,
         bool showAsBottomSheet = false,
-        Widget? icon
+        Widget? icon,
+        TextStyle? titleStyle,
+        TextStyle? actionStyle,
+        TextStyle? cancelStyle,
+        Color? actionButtonColor,
+        Color? cancelButtonColor,
       }
   ) {
     if (_responsiveUtils.isMobile(context)) {
@@ -40,16 +45,16 @@ mixin MessageDialogActionMixin {
                 ..addIcon(icon)
                 ..margin(const EdgeInsets.symmetric(vertical: 42, horizontal: 16))
                 ..widthDialog(_responsiveUtils.getSizeScreenWidth(context))
-                ..colorConfirmButton(AppColor.colorTextButton)
-                ..colorCancelButton(AppColor.colorCancelButton)
+                ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
+                ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
                 ..paddingTitle(icon != null ? const EdgeInsets.only(top: 34) : EdgeInsets.zero)
                 ..marginIcon(EdgeInsets.zero)
                 ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 8))
                 ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
-                ..styleTitle(const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
+                ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
                 ..styleContent(const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
-                ..styleTextCancelButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
-                ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
+                ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
+                ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
                 ..onConfirmButtonAction(actionName, () {
                   popBack();
                   onConfirmAction?.call();
@@ -76,16 +81,16 @@ mixin MessageDialogActionMixin {
               ..title(title ?? '')
               ..content(message)
               ..addIcon(icon)
-              ..colorConfirmButton(AppColor.colorTextButton)
-              ..colorCancelButton(AppColor.colorCancelButton)
+              ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
+              ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
               ..paddingTitle(icon != null ? const EdgeInsets.only(top: 34) : EdgeInsets.zero)
               ..marginIcon(EdgeInsets.zero)
               ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 8))
               ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
-              ..styleTitle(const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
+              ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
               ..styleContent(const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
-              ..styleTextCancelButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
-              ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
+              ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
+              ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
               ..onConfirmButtonAction(actionName, () {
                 popBack();
                 onConfirmAction?.call();

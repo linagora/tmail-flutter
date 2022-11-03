@@ -2083,7 +2083,7 @@ class AppLocalizations {
 
   String get deleteRecipient {
     return Intl.message(
-        'Delete recipient',
+        'Remove recipients',
         name: 'deleteRecipient');
   }
 
@@ -2095,7 +2095,7 @@ class AppLocalizations {
 
   String get messageConfirmationDialogDeleteAllRecipientForward {
     return Intl.message(
-        'Do you want to delete all email?',
+        'Are you sure you want to remove those recipients? Doing this will remove them from the email chain.',
         name: 'messageConfirmationDialogDeleteAllRecipientForward'
     );
   }
@@ -2109,7 +2109,7 @@ class AppLocalizations {
 
   String get recipientsLabel {
     return Intl.message(
-      'Name or Email address',
+      'Enter name or email address',
       name: 'recipientsLabel',
     );
   }
@@ -2134,7 +2134,7 @@ class AppLocalizations {
 
   String get keepLocalCopyForwardLabel {
     return Intl.message(
-      'Keep local copy',
+      'Keep a copy of the email in Inbox',
       name: 'keepLocalCopyForwardLabel',
     );
   }
@@ -2486,5 +2486,29 @@ class AppLocalizations {
     return Intl.message(
         'Older',
         name: 'older');
+  }
+
+  String get forwardingSettingExplanation {
+    return Intl.message(
+      'Allows a new recipient to see the email sent if they were not originally included in the email chain.',
+      name: 'forwardingSettingExplanation');
+  }
+
+  String get addRecipientButton {
+    return Intl.message(
+      'Add recipient',
+      name: 'addRecipientButton');
+  }
+
+  String get incorrectEmailFormat {
+    return Intl.message(
+      'Incorrect email format',
+      name: 'incorrectEmailFormat');
+  }
+
+  String get remove {
+    return Intl.message(
+      'Remove',
+      name: 'remove');
   }
 }

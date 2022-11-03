@@ -1,9 +1,10 @@
 
 import 'package:equatable/equatable.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/mailbox/select_mode.dart';
 
 class RecipientForward with EquatableMixin {
-  final String emailAddress;
+  final EmailAddress emailAddress;
   final SelectMode selectMode;
 
   RecipientForward(this.emailAddress, {this.selectMode = SelectMode.INACTIVE});
@@ -35,5 +36,5 @@ extension RecipientForwardExtension on RecipientForward {
 extension ListRecipientForwardExtension on List<RecipientForward> {
 
   Set<String> get listEmailAddress =>
-      map((recipient) => recipient.emailAddress).toSet();
+      map((recipient) => recipient.emailAddress.email!).toSet();
 }

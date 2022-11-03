@@ -1,11 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
-import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/tmail_forward.dart';
@@ -13,9 +9,12 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/emails_forward_creator/presentation/model/email_forward_creator_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/add_recipients_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_local_copy_in_forwarding_request.dart';
@@ -29,13 +28,15 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_rec
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_local_copy_in_forwarding_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_forward_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/tmail_forward_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/controller/forward_recipient_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/recipient_forward.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ForwardController extends BaseController {
+
+  final VerifyNameInteractor _verifyNameInteractor;
 
   GetForwardInteractor? _getForwardInteractor;
   DeleteRecipientInForwardingInteractor? _deleteRecipientInForwardingInteractor;
@@ -43,19 +44,23 @@ class ForwardController extends BaseController {
   EditLocalCopyInForwardingInteractor? _editLocalCopyInForwardingInteractor;
 
   final accountDashBoardController = Get.find<ManageAccountDashBoardController>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
   final _appToast = Get.find<AppToast>();
 
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
   final listRecipientForward = RxList<RecipientForward>();
   final currentForward = Rxn<TMailForward>();
-
-  final listForwards = <String>[].obs;
+  final errorRecipientInputText = RxnString();
 
   bool get currentForwardLocalCopyState => currentForward.value?.localCopy ?? false;
 
-  ForwardController();
+  late ForwardRecipientController recipientController;
+
+  ForwardController(this._verifyNameInteractor) {
+    recipientController = ForwardRecipientController(
+      accountId: accountDashBoardController.accountId.value,
+      session: accountDashBoardController.sessionCurrent.value);
+  }
 
   @override
   void onInit() {
@@ -68,6 +73,12 @@ class ForwardController extends BaseController {
     } catch (e) {
       logError('ForwardController::onInit(): ${e.toString()}');
     }
+  }
+
+  @override
+  void onClose() {
+    recipientController.onClose();
+    super.onClose();
   }
 
   @override
@@ -105,39 +116,28 @@ class ForwardController extends BaseController {
   }
 
   void deleteRecipients(BuildContext context, String emailAddress) {
-    if (_responsiveUtils.isMobile(context)) {
-      (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(AppLocalizations.of(context)
-            .messageConfirmationDialogDeleteRecipientForward(emailAddress))
-        ..onCancelAction(AppLocalizations.of(context).cancel, () =>
-            popBack())
-        ..onConfirmAction(AppLocalizations.of(context).delete, () =>
-            _handleDeleteRecipientAction({emailAddress})))
-      .show();
-    } else {
-      showDialog(
-        context: context,
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        builder: (BuildContext context) =>
-          PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
-            ..title(AppLocalizations.of(context).deleteRecipient)
-            ..content(AppLocalizations.of(context)
-                .messageConfirmationDialogDeleteRecipientForward(emailAddress))
-            ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog,
-                fit: BoxFit.fill))
-            ..marginIcon(EdgeInsets.zero)
-            ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-            ..styleTextConfirmButton(const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w500,
-                color: AppColor.colorActionDeleteConfirmDialog))
-            ..onCloseButtonAction(() => popBack())
-            ..onConfirmButtonAction(AppLocalizations.of(context).delete, () =>
-                _handleDeleteRecipientAction({emailAddress}))
-            ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
-                popBack()))
-          .build()));
-    }
+    showConfirmDialogAction(currentContext!,
+      title: AppLocalizations.of(context).deleteRecipient,
+      AppLocalizations.of(context).messageConfirmationDialogDeleteRecipientForward(emailAddress),
+      AppLocalizations.of(currentContext!).remove,
+      onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
+      showAsBottomSheet: true,
+      icon: SvgPicture.asset(_imagePaths.icDeleteDialogIdentity, fit: BoxFit.fill),
+      titleStyle: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: AppColor.colorDeletePermanentlyButton),
+      actionStyle: const TextStyle(
+        fontSize: 17,
+        fontWeight: FontWeight.w500,
+        color: Colors.white),
+      cancelStyle: const TextStyle(
+        fontSize: 17,
+        fontWeight: FontWeight.w500,
+        color: AppColor.colorTextButton),
+      actionButtonColor: AppColor.colorDeletePermanentlyButton,
+      cancelButtonColor: AppColor.colorButtonCancelDialog,
+    );
   }
 
   void _handleDeleteRecipientAction(Set<String> listRecipients) {
@@ -201,39 +201,28 @@ class ForwardController extends BaseController {
   }
 
   void deleteMultipleRecipients(BuildContext context, Set<String> listEmailAddress) {
-    if (_responsiveUtils.isMobile(context)) {
-      (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward)
-        ..onCancelAction(AppLocalizations.of(context).cancel, () =>
-            popBack())
-        ..onConfirmAction(AppLocalizations.of(context).delete, () {
-          _handleDeleteRecipientAction(listEmailAddress);
-        }))
-      .show();
-    } else {
-      showDialog(
-        context: context,
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        builder: (BuildContext context) =>
-          PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
-            ..title(AppLocalizations.of(context).deleteRecipient)
-            ..content(AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward)
-            ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog,
-                fit: BoxFit.fill))
-            ..marginIcon(EdgeInsets.zero)
-            ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-            ..styleTextConfirmButton(const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w500,
-                color: AppColor.colorActionDeleteConfirmDialog))
-            ..onCloseButtonAction(() => popBack())
-            ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
-              _handleDeleteRecipientAction(listEmailAddress);
-            })
-            ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
-                popBack()))
-          .build()));
-    }
+    showConfirmDialogAction(currentContext!,
+      title: AppLocalizations.of(context).deleteRecipient,
+      AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward,
+      AppLocalizations.of(currentContext!).remove,
+      onConfirmAction: () => _handleDeleteRecipientAction(listEmailAddress),
+      showAsBottomSheet: true,
+      icon: SvgPicture.asset(_imagePaths.icDeleteDialogIdentity, fit: BoxFit.fill),
+      titleStyle: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: AppColor.colorDeletePermanentlyButton),
+      actionStyle: const TextStyle(
+        fontSize: 17,
+        fontWeight: FontWeight.w500,
+        color: Colors.white),
+      cancelStyle: const TextStyle(
+        fontSize: 17,
+        fontWeight: FontWeight.w500,
+        color: AppColor.colorTextButton),
+      actionButtonColor: AppColor.colorDeletePermanentlyButton,
+      cancelButtonColor: AppColor.colorButtonCancelDialog,
+    );
   }
 
   void selectAllRecipientForward() {
@@ -246,26 +235,19 @@ class ForwardController extends BaseController {
         .toList();
   }
 
-  void goToAddEmailsForward(BuildContext context) async {
+  void addRecipientAction(BuildContext context) {
     final accountId = accountDashBoardController.accountId.value;
-    final session = accountDashBoardController.sessionCurrent.value;
-    if (accountId != null && session != null) {
-      final arguments = EmailForwardCreatorArguments(accountId, session);
+    final emailAddressSelected = recipientController.emailAddressSelected;
 
-      if (BuildUtils.isWeb) {
-        showDialogEmailForwardCreator(
-            context: context,
-            arguments: arguments,
-            onAddEmailForward: (listEmailAddress) => _handleAddRecipients(accountId, listEmailAddress));
-      } else {
-        final newListEmailAddress = await push(
-            AppRoutes.emailsForwardCreator,
-            arguments: arguments);
+    updateErrorRecipientInputText(context, emailAddressSelected?.email);
 
-        if (newListEmailAddress is List<EmailAddress> && newListEmailAddress.isNotEmpty) {
-          _handleAddRecipients(accountId, newListEmailAddress);
-        }
-      }
+    if (errorRecipientInputText.value != null) {
+      return;
+    }
+
+    log('ForwardController::addRecipientAction():emailAddressSelected: $emailAddressSelected');
+    if (emailAddressSelected != null && accountId != null) {
+      _handleAddRecipients(accountId, [emailAddressSelected]);
     }
   }
 
@@ -291,6 +273,8 @@ class ForwardController extends BaseController {
 
     currentForward.value = success.forward;
     listRecipientForward.value = currentForward.value!.listRecipientForward;
+
+    recipientController.clearAll();
   }
 
   void handleEditLocalCopy() {
@@ -319,5 +303,25 @@ class ForwardController extends BaseController {
 
     currentForward.value = success.forward;
     listRecipientForward.value = currentForward.value!.listRecipientForward;
+  }
+
+  void updateErrorRecipientInputText(BuildContext context, String? emailAddress) {
+    errorRecipientInputText.value = _getErrorRecipientInputString(context, emailAddress);
+  }
+
+  String? _getErrorRecipientInputString(BuildContext context, String? emailAddress) {
+    return _verifyNameInteractor.execute(
+      emailAddress,
+      [EmptyNameValidator(), EmailAddressValidator()]
+    ).fold(
+      (failure) {
+        if (failure is VerifyNameFailure) {
+          return failure.getMessageForwarding(context);
+        } else {
+          return null;
+        }
+        },
+      (success) => null
+    );
   }
 }
