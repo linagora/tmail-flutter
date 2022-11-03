@@ -8,9 +8,6 @@ import 'package:tmail_ui_user/features/contact/presentation/model/contact_argume
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
-import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_binding.dart';
-import 'package:tmail_ui_user/features/emails_forward_creator/presentation/emails_forward_creator_view.dart';
-import 'package:tmail_ui_user/features/emails_forward_creator/presentation/model/email_forward_creator_arguments.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
@@ -165,36 +162,6 @@ mixin ViewAsDialogActionMixin {
                 popBack();
 
                 onCreatedRuleFilter.call(args);
-              });
-        });
-  }
-
-  void showDialogEmailForwardCreator({
-    required BuildContext context,
-    required EmailForwardCreatorArguments arguments,
-    required Function(List<EmailAddress>) onAddEmailForward
-  }) {
-    EmailsForwardCreatorBindings().dependencies();
-
-    showGeneralDialog(
-        context: context,
-        barrierDismissible: true,
-        barrierLabel: '',
-        barrierColor: Colors.black.withAlpha(24),
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return EmailsForwardCreatorView.fromArguments(
-              arguments,
-              onDismissCallback: () {
-                EmailsForwardCreatorBindings().dispose();
-                popBack();
-              },
-              onAddEmailForwardCallback: (listEmailAddress) {
-                EmailsForwardCreatorBindings().dispose();
-                popBack();
-
-                if (listEmailAddress.isNotEmpty) {
-                  onAddEmailForward.call(listEmailAddress);
-                }
               });
         });
   }
