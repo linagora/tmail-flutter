@@ -70,6 +70,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
               SettingFirstLevelTileBuilder(
                 AccountMenuItem.forward.getName(context),
                 AccountMenuItem.forward.getIcon(_imagePaths),
+                subtitle: AppLocalizations.of(context).forwardingSettingExplanation,
                 () => controller.selectSettings(AccountMenuItem.forward)
               ),
               Divider(
@@ -90,7 +91,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
                 AccountMenuItem.vacation.getName(context),
                 AccountMenuItem.vacation.getIcon(_imagePaths),
                 subtitle: AppLocalizations.of(context).vacationSettingExplanation,
-                  () => controller.selectSettings(AccountMenuItem.vacation)
+                () => controller.selectSettings(AccountMenuItem.vacation)
               ),
               Divider(
                 color: AppColor.colorDividerComposer,
