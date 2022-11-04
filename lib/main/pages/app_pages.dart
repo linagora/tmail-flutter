@@ -43,11 +43,11 @@ class AppPages {
         page: () => DeferredWidget(session.loadLibrary, () => session.SessionView()),
         binding: SessionPageBindings()),
     GetPage(
-        name: AppRoutes.dashboard,
-        page: () => DeferredWidget(
-            mailbox_dashboard.loadLibrary,
-            () => mailbox_dashboard.MailboxDashBoardView()),
-        binding: MailboxDashBoardBindings()),
+      name: AppRoutes.dashboard,
+      page: () => DeferredWidget(
+        mailbox_dashboard.loadLibrary,
+        () => mailbox_dashboard.MailboxDashBoardView()),
+      binding: MailboxDashBoardBindings()),
     GetPage(
       name: AppRoutes.dashboardWithParameter,
       page: () => DeferredWidget(

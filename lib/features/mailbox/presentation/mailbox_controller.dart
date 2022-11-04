@@ -69,6 +69,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_status.d
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:uuid/uuid.dart';
 
 class MailboxController extends BaseMailboxController {
@@ -102,7 +103,10 @@ class MailboxController extends BaseMailboxController {
   jmap.State? _currentMailboxState;
   List<String> listMailboxNameAsStringExist = <String>[];
 
-  late Worker accountIdWorker, viewStateWorker, dashboardActionWorker;
+  late Worker accountIdWorker,
+    viewStateWorker,
+    dashboardActionWorker,
+    routerParametersWorker;
 
   MailboxController(
     this._getAllMailboxInteractor,
@@ -118,7 +122,7 @@ class MailboxController extends BaseMailboxController {
 
   @override
   void onInit() {
-    _initWorker();
+    _registerListenerWorker();
     _registerSearchFocusListener();
     super.onInit();
   }
@@ -139,7 +143,7 @@ class MailboxController extends BaseMailboxController {
     searchFocus.dispose();
     _openMailboxEventController.close();
     mailboxListScrollController.dispose();
-    _clearWorker();
+    _unregisterListenerWorker();
     super.onClose();
   }
 
@@ -151,6 +155,7 @@ class MailboxController extends BaseMailboxController {
         _currentMailboxState = success.currentMailboxState;
         await buildTree(success.mailboxList);
         _setUpMapMailbox(success.mailboxList, defaultMailboxTree.value, folderMailboxTree.value);
+        _selectMailboxById();
       } else if (success is RefreshChangesAllMailboxSuccess) {
         _currentMailboxState = success.currentMailboxState;
         await refreshTree(success.mailboxList);
@@ -191,12 +196,17 @@ class MailboxController extends BaseMailboxController {
     );
   }
 
-  void _initWorker() {
+  void _registerListenerWorker() {
     accountIdWorker = ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId is AccountId) {
         getAllMailboxAction(accountId);
       }
     });
+
+    routerParametersWorker = ever<Map<String, String?>?>(
+      mailboxDashBoardController.routerParameters,
+      _handleNavigationRouteParameters
+    );
 
     viewStateWorker = ever(mailboxDashBoardController.viewState, (state) {
       if (state is Either) {
@@ -260,10 +270,11 @@ class MailboxController extends BaseMailboxController {
     });
   }
 
-  void _clearWorker() {
-    accountIdWorker.call();
-    viewStateWorker.call();
-    dashboardActionWorker.call();
+  void _unregisterListenerWorker() {
+    accountIdWorker.dispose();
+    viewStateWorker.dispose();
+    dashboardActionWorker.dispose();
+    routerParametersWorker.dispose();
   }
 
   void _initCollapseMailboxCategories() {
@@ -982,6 +993,34 @@ class MailboxController extends BaseMailboxController {
           mailboxDashBoardController.appGridDashboardController.toggleAppGridDashboard();
         }
         break;
+    }
+  }
+
+  void _selectMailboxById() {
+    if (mailboxDashBoardController.navigationRouter != null) {
+      final mailboxId = mailboxDashBoardController.navigationRouter?.mailboxId;
+      if (mailboxId != null) {
+        final matchedMailboxNode = findMailboxNodeById(mailboxId);
+        if (matchedMailboxNode != null && currentContext != null) {
+          mailboxDashBoardController.setSelectedMailbox(matchedMailboxNode.item);
+        }
+      }
+
+      final emailId = mailboxDashBoardController.navigationRouter?.emailId;
+      if (emailId != null) {
+        mailboxDashBoardController.dispatchAction(SelectEmailByIdAction(emailId));
+      }
+
+      mailboxDashBoardController.navigationRouter = null;
+    }
+  }
+
+  void _handleNavigationRouteParameters(Map<String, String?>? parameters) {
+    log('MailboxDashBoardController::_handleNavigationRouteParameters(): parameters: $parameters');
+    if (parameters != null) {
+      final navigationRouter = RouteUtils.parsingRouteParametersToNavigationRouter(parameters);
+      log('ThreadController::_handleNavigationRouteParameters():navigationRouter: $navigationRouter');
+      mailboxDashBoardController.navigationRouter = navigationRouter;
     }
   }
 

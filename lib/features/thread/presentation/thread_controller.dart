@@ -54,6 +54,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dar
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
@@ -62,6 +63,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_e
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
@@ -102,6 +104,7 @@ class ThreadController extends BaseController {
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final CachingManager _cachingManager;
+  final GetEmailByIdInteractor _getEmailByIdInteractor;
 
   final listEmailDrag = <PresentationEmail>[].obs;
   bool _rangeSelectionMode = false;
@@ -149,11 +152,12 @@ class ThreadController extends BaseController {
     this._markAsEmailReadInteractor,
     this._moveToMailboxInteractor,
     this._cachingManager,
+    this._getEmailByIdInteractor,
   );
 
   @override
   void onInit() {
-    _initWorker();
+    _registerListenerWorker();
     super.onInit();
   }
 
@@ -167,7 +171,7 @@ class ThreadController extends BaseController {
   void onClose() {
     listEmailController.dispose();
     focusNodeKeyBoard.dispose();
-    _clearWorker();
+    _unregisterListenerWorker();
     super.onClose();
   }
 
@@ -195,6 +199,16 @@ class ThreadController extends BaseController {
           _searchMoreEmailsSuccess(success);
         } else if (success is SearchingMoreState || success is LoadingMoreState) {
           _isLoadingMore = true;
+        } else if (success is GetEmailByIdSuccess) {
+          if (currentContext != null) {
+            final mailboxContain = success.email
+              .findMailboxContain(mailboxDashBoardController.mapMailboxById);
+            pressEmailAction(
+              currentContext!,
+              EmailActionType.preview,
+              success.email,
+              mailboxContain: mailboxContain);
+          }
         }
       }
     );
@@ -243,7 +257,7 @@ class ThreadController extends BaseController {
     _handleErrorGetAllOrRefreshChangesEmail(error);
   }
 
-  void _initWorker() {
+  void _registerListenerWorker() {
     mailboxWorker = ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
       if (mailbox is PresentationMailbox) {
         if (_currentMailboxId != mailbox.id) {
@@ -272,39 +286,40 @@ class ThreadController extends BaseController {
     });
 
     dashboardActionWorker = ever(mailboxDashBoardController.dashBoardAction, (action) {
-      if (action is DashBoardAction) {
-        if (action is RefreshAllEmailAction) {
-          refreshAllEmail();
-          mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is SelectionAllEmailAction) {
-          setSelectAllEmailAction();
-          mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is CancelSelectionAllEmailAction) {
-          cancelSelectEmail();
-          mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is FilterMessageAction) {
-          filterMessagesAction(action.context, action.option);
-          mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is HandleEmailActionTypeAction) {
-          pressEmailSelectionAction(action.context, action.emailAction, action.listEmailSelected);
-          mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is OpenEmailDetailedFromSuggestionQuickSearchAction) {
-          final mailboxContain = action.presentationEmail
-              .findMailboxContain(mailboxDashBoardController.mapMailboxById);
-          pressEmailAction(
-              action.context,
-              EmailActionType.preview,
-              action.presentationEmail,
-              mailboxContain: mailboxContain);
-          mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is StartSearchEmailAction) {
-          cancelSelectEmail();
-          _searchEmail();
-          mailboxDashBoardController.clearDashBoardAction();
-        } else if (action is EmptyTrashAction) {
-          deleteSelectionEmailsPermanently(action.context, DeleteActionType.all);
-          mailboxDashBoardController.clearDashBoardAction();
-        }
+      if (action is RefreshAllEmailAction) {
+        refreshAllEmail();
+        mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is SelectionAllEmailAction) {
+        setSelectAllEmailAction();
+        mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is CancelSelectionAllEmailAction) {
+        cancelSelectEmail();
+        mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is FilterMessageAction) {
+        filterMessagesAction(action.context, action.option);
+        mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is HandleEmailActionTypeAction) {
+        pressEmailSelectionAction(action.context, action.emailAction, action.listEmailSelected);
+        mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is OpenEmailDetailedFromSuggestionQuickSearchAction) {
+        final mailboxContain = action.presentationEmail
+            .findMailboxContain(mailboxDashBoardController.mapMailboxById);
+        pressEmailAction(
+            action.context,
+            EmailActionType.preview,
+            action.presentationEmail,
+            mailboxContain: mailboxContain);
+        mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is StartSearchEmailAction) {
+        cancelSelectEmail();
+        _searchEmail();
+        mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is EmptyTrashAction) {
+        deleteSelectionEmailsPermanently(action.context, DeleteActionType.all);
+        mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is SelectEmailByIdAction) {
+        _openEmailDetailedView(action.emailId);
+        mailboxDashBoardController.clearDashBoardAction();
       }
     });
 
@@ -339,12 +354,12 @@ class ThreadController extends BaseController {
     });
   }
 
-  void _clearWorker() {
-    mailboxWorker.call();
-    dashboardActionWorker.call();
-    searchWorker.call();
-    advancedSearchFilterWorker.call();
-    viewStateWorker.call();
+  void _unregisterListenerWorker() {
+    mailboxWorker.dispose();
+    dashboardActionWorker.dispose();
+    searchWorker.dispose();
+    advancedSearchFilterWorker.dispose();
+    viewStateWorker.dispose();
   }
 
   void _handleErrorGetAllOrRefreshChangesEmail(dynamic error) async {
@@ -1528,5 +1543,14 @@ class ThreadController extends BaseController {
     return shiftEvent
         ? KeyEventResult.handled
         : KeyEventResult.ignored;
+  }
+
+  void _openEmailDetailedView(EmailId emailId) {
+    if (_accountId != null) {
+      consumeState(_getEmailByIdInteractor.execute(
+        _accountId!,
+        emailId,
+        properties: ThreadConstants.propertiesDefault));
+    }
   }
 }

@@ -16,7 +16,9 @@ import 'package:tmail_ui_user/features/session/domain/usecases/get_session_inter
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class SessionController extends ReloadableController {
   final GetSessionInteractor _getSessionInteractor;
@@ -55,7 +57,9 @@ class SessionController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
-    pushAndPop(AppRoutes.dashboard, arguments: session);
+    pushAndPop(
+      RouteUtils.generateRoutePathMobile(AppRoutes.dashboard, NavigationRouter()),
+      arguments: session);
   }
 
   void _getSession() async {
@@ -103,7 +107,9 @@ class SessionController extends ReloadableController {
     final apiUrl = success.session.apiUrl.toString();
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
-      pushAndPop(AppRoutes.dashboard, arguments: success.session);
+      pushAndPop(
+        RouteUtils.generateRoutePathMobile(AppRoutes.dashboard, NavigationRouter()),
+        arguments: success.session);
     } else {
       _goToLogin();
     }
