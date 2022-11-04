@@ -12,8 +12,8 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/main/routes/browser_route_utils.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:url_launcher/link.dart';
 
 class EmailTileBuilder with BaseEmailItemTile {
@@ -91,7 +91,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                 color: AppColor.colorItemEmailSelectedDesktop)
             : null,
         child: Link(
-          uri: BrowserRouteUtils.generateRoutePathBrowser(
+          uri: RouteUtils.generateRoutePathBrowser(
             AppRoutes.dashboard,
             NavigationRouter(
               emailId: _presentationEmail.id,
@@ -118,7 +118,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                   color: Colors.white),
           alignment: Alignment.center,
           child: Link(
-            uri: BrowserRouteUtils.generateRoutePathBrowser(
+            uri: RouteUtils.generateRoutePathBrowser(
               AppRoutes.dashboard,
               NavigationRouter(
                 emailId: _presentationEmail.id,

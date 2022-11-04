@@ -49,7 +49,9 @@ import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class LoginController extends ReloadableController {
@@ -191,7 +193,9 @@ class LoginController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
-    pushAndPop(AppRoutes.dashboard, arguments: session);
+    pushAndPop(
+      RouteUtils.generateRoutePathMobile(AppRoutes.dashboard, NavigationRouter()),
+      arguments: session);
   }
 
   void _getAuthenticationInfo() {
