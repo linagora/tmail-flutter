@@ -1,5 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
@@ -109,4 +110,14 @@ class SelectMailboxDefaultAction extends DashBoardAction {
 
   @override
   List<Object?> get props => [];
+}
+
+class SelectEmailByIdAction extends DashBoardAction {
+
+  final EmailId emailId;
+
+  SelectEmailByIdAction(this.emailId);
+
+  @override
+  List<Object?> get props => [emailId];
 }

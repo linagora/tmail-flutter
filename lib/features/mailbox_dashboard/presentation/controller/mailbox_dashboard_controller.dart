@@ -77,6 +77,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_emai
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -122,6 +123,7 @@ class MailboxDashBoardController extends ReloadableController {
   final composerOverlayState = ComposerOverlayState.inActive.obs;
   final viewStateMarkAsReadMailbox = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final vacationResponse = Rxn<VacationResponse>();
+  final routerParameters = Rxn<Map<String, String?>>();
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -130,6 +132,7 @@ class MailboxDashBoardController extends ReloadableController {
   final listResultSearch = RxList<PresentationEmail>();
   PresentationMailbox? outboxMailbox;
   RouterArguments? routerArguments;
+  NavigationRouter? navigationRouter;
 
   late StreamSubscription _emailReceiveManagerStreamSubscription;
   late StreamSubscription _fileReceiveManagerStreamSubscription;
@@ -1025,6 +1028,13 @@ class MailboxDashBoardController extends ReloadableController {
     injectRuleFilterBindings(sessionCurrent, accountId.value);
     injectVacationBindings(sessionCurrent, accountId.value);
     _getVacationResponse();
+    _getRouteParameters();
+  }
+
+  void _getRouteParameters() {
+    final parameters = Get.parameters;
+    log('MailboxDashBoardController::_getRouteParameters(): parameters: $parameters');
+    routerParameters.value = parameters;
   }
 
   UnsignedInt? get maxSizeAttachmentsPerEmail {
