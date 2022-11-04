@@ -49,6 +49,12 @@ class AppPages {
             () => mailbox_dashboard.MailboxDashBoardView()),
         binding: MailboxDashBoardBindings()),
     GetPage(
+      name: AppRoutes.dashboardWithParameter,
+      page: () => DeferredWidget(
+        mailbox_dashboard.loadLibrary,
+        () => mailbox_dashboard.MailboxDashBoardView()),
+    binding: MailboxDashBoardBindings()),
+    GetPage(
         name: AppRoutes.settings,
         page: () => DeferredWidget(
             manage_account_dashboard.loadLibrary,
