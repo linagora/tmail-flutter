@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -158,7 +160,7 @@ class MailboxAPI {
     }
   }
 
-  Future<bool> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {
+  Future<dartz.Tuple2<bool,Map<Id,SetError>>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {
     requireCapability(session, accountId, [CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail]);
 
     final coreCapability = session.getCapabilityProperties<CoreCapability>(
@@ -166,6 +168,7 @@ class MailboxAPI {
     final maxMethodCount = coreCapability.maxCallsInRequest.value.toInt();
 
     var finalResult = true;
+    final Map<Id,SetError> deleteMailboxErrors = {};
     var start = 0;
     var end = 0;
     while (end < mailboxIds.length) {
@@ -194,11 +197,15 @@ class MailboxAPI {
 
       finalResult = currentSetMailboxInvocations
         .map((currentInvocation) => response.parse(currentInvocation.methodCallId, SetMailboxResponse.deserialize))
-        .map(_validateMailBoxDestroyedSuccess)
-        .every((element) => element == true);
+        .map((response) {
+          if(response?.notDestroyed != null) {
+            deleteMailboxErrors.addAll(response!.notDestroyed!);
+          }
+          return _validateMailBoxDestroyedSuccess(response);
+        }).every((element) => element == true);
     }
 
-    return finalResult;
+    return dartz.Tuple2(finalResult, deleteMailboxErrors);
   }
 
   bool _validateMailBoxDestroyedSuccess(SetMailboxResponse? response) {

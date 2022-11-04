@@ -32,8 +32,9 @@ class DeleteMultipleMailboxInteractor {
           })
       );
 
-      final allSuccess = listResult.every((result) => result);
-      final allFailed = listResult.every((result) => !result);
+      log('DeleteMultipleMailboxInteractor::execute(): setErrors: ${listResult.map((element) => element.value2).toList().toString()}');
+      final allSuccess = listResult.every((result) => result.value1);
+      final allFailed = listResult.every((result) => !result.value1);
 
       if (allSuccess) {
         yield Right<Failure, Success>(DeleteMultipleMailboxAllSuccess(
