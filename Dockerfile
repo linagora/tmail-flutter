@@ -49,4 +49,5 @@ COPY --from=build-env /app/build/web /usr/share/nginx/html
 # Record the exposed port
 EXPOSE 80
 
-CMD gzip -k -f /usr/share/nginx/html/assets/env.file && nginx -g 'daemon off;'
+# Before stating NGinx, re-zip all the content to ensure customizations are propagated
+CMD gzip -k -r /usr/share/nginx/html/ && nginx -g 'daemon off;'
