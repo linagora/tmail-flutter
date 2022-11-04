@@ -2,7 +2,8 @@ abstract class AppRoutes {
   static const home = '/';
   static const login = '/login';
   static const session = '/session';
-  static const dashboard = '/dashboard';
+  static const dashboard = '/dashboard/';
+  static const dashboardWithParameter = '/dashboard/:id';
   static const settings = '/settings';
   static const composer = '/composer';
   static const destinationPicker = '/destination_picker';

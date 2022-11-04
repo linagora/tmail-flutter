@@ -19,11 +19,15 @@ extension ServicePathExtension on ServicePath {
         .map((query) => '${query.queryName}=${query.queryValue}').join('&')}');
   }
 
-  ServicePath withPathParameter([String? pathParameter]) {
+  ServicePath withPathParameter(String? pathParameter) {
     if (pathParameter == null || pathParameter.isEmpty) {
       return this;
     }
 
-    return ServicePath('$path/$pathParameter');
+    if (path.lastIndexOf('/') == path.length - 1) {
+      return ServicePath('$path$pathParameter');
+    } else {
+      return ServicePath('$path/$pathParameter');
+    }
   }
 }
