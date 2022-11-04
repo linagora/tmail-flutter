@@ -8,6 +8,8 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
@@ -88,6 +90,16 @@ class ThreadDataSourceImpl extends ThreadDataSource {
           mailboxId,
           updateDestroyedEmailCache,
       );
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
+  }
+
+  @override
+  Future<PresentationEmail> getEmailById(AccountId accountId, EmailId emailId, {Properties? properties}) {
+    return Future.sync(() async {
+      final email = await threadAPI.getEmailById(accountId, emailId, properties: properties);
+      return email.toPresentationEmail();
     }).catchError((error) {
       _exceptionThrower.throwException(error);
     });
