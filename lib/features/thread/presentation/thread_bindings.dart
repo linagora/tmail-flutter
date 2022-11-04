@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker
 import 'package:tmail_ui_user/features/thread/data/repository/thread_repository_impl.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
@@ -65,6 +66,7 @@ class ThreadBindings extends BaseBindings {
       Get.find<MarkAsEmailReadInteractor>(),
       Get.find<MoveToMailboxInteractor>(),
       Get.find<CachingManager>(),
+      Get.find<GetEmailByIdInteractor>(),
     ));
   }
 
@@ -135,6 +137,7 @@ class ThreadBindings extends BaseBindings {
     Get.lazyPut(() => MoveToMailboxInteractor(
         Get.find<EmailRepository>(),
         Get.find<MailboxRepository>()));
+    Get.lazyPut(() => GetEmailByIdInteractor(Get.find<ThreadRepository>()));
   }
 
   @override
