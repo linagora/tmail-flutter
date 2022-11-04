@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
@@ -87,6 +88,11 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
     MailboxId mailboxId,
     Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache
   ) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<PresentationEmail> getEmailById(AccountId accountId, EmailId emailId, {Properties? properties}) {
     throw UnimplementedError();
   }
 }
