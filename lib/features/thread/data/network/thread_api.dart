@@ -139,4 +139,29 @@ class ThreadAPI {
       hasMoreChanges: resultChanges?.hasMoreChanges ?? false,
       updatedProperties: propertiesUpdated);
   }
+
+  Future<Email> getEmailById(AccountId accountId, EmailId emailId, {Properties? properties}) async {
+    final processingInvocation = ProcessingInvocation();
+    final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+
+    final getEmailMethod = GetEmailMethod(accountId)
+      ..addIds({emailId.id});
+
+    if (properties != null) {
+      getEmailMethod.addProperties(properties);
+    }
+
+    final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
+
+    final result = await (jmapRequestBuilder
+        ..usings(getEmailMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final resultList = result.parse<GetEmailResponse>(
+      getEmailInvocation.methodCallId,
+      GetEmailResponse.deserialize);
+
+    return resultList!.list.first;
+  }
 }

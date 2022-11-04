@@ -335,4 +335,9 @@ class ThreadRepositoryImpl extends ThreadRepository {
       }
     }
   }
+
+  @override
+  Future<PresentationEmail> getEmailById(AccountId accountId, EmailId emailId, {Properties? properties}) {
+    return mapDataSource[DataSourceType.network]!.getEmailById(accountId, emailId, properties: properties);
+  }
 }
