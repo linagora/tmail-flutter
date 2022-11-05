@@ -112,8 +112,8 @@ class AppBarThreadWidgetBuilder extends StatelessWidget {
           splashRadius: 15,
           icon: SvgPicture.asset(
               _listSelectionEmail.isAllEmailRead
-                  ? _imagePaths.icUnread
-                  : _imagePaths.icRead,
+                  ? _imagePaths.icRead
+                  : _imagePaths.icUnread,
               fit: BoxFit.fill),
           tooltip: _listSelectionEmail.isAllEmailRead
               ? AppLocalizations.of(context).unread

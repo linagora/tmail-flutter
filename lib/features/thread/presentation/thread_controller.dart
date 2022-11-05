@@ -101,7 +101,7 @@ class ThreadController extends BaseController {
   final CachingManager _cachingManager;
 
   final listEmailDrag = <PresentationEmail>[].obs;
-  bool shiftSelectedMode = false;
+  bool _rangeSelectionMode = false;
   bool canLoadMore = true;
   bool canSearchMore = true;
   bool _isLoadingMore = false;
@@ -110,7 +110,7 @@ class ThreadController extends BaseController {
   jmap.State? _currentEmailState;
   final ScrollController listEmailController = ScrollController();
   final FocusNode focusNodeKeyBoard = FocusNode();
-  final latestEmailAction = Rxn<PresentationEmail>();
+  final latestEmailInteracted = Rxn<PresentationEmail>();
   late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker, advancedSearchFilterWorker;
 
   Set<Comparator>? get _sortOrder => <Comparator>{}
@@ -520,44 +520,48 @@ class ThreadController extends BaseController {
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.emailDetailed);
   }
 
-  void _shiftSelectEmail(PresentationEmail presentationEmailSelected) {
-    int startIndexAction = 0;
-    int endIndexAction = 0;
-    final indexOfPresentationEmailSelected = emailList.indexWhere((e) => e.id == presentationEmailSelected.id);
-    final indexOfLatestEmailAction = emailList.indexWhere((e) => e.id == latestEmailAction.value?.id);
-    if (indexOfPresentationEmailSelected > indexOfLatestEmailAction) {
-      startIndexAction = indexOfLatestEmailAction;
-      endIndexAction = indexOfPresentationEmailSelected;
+  Tuple2<int,int> _getSelectionEmailsRange(PresentationEmail presentationEmailSelected) {
+    final emailSelectedIndex = emailList.indexWhere((e) => e.id == presentationEmailSelected.id);
+    final latestEmailInteractedIndex = emailList.indexWhere((e) => e.id == latestEmailInteracted.value?.id);
+    if (emailSelectedIndex > latestEmailInteractedIndex) {
+      return Tuple2(latestEmailInteractedIndex, emailSelectedIndex);
     } else {
-      startIndexAction = indexOfPresentationEmailSelected;
-      endIndexAction = indexOfLatestEmailAction;
+      return Tuple2(emailSelectedIndex, latestEmailInteractedIndex);
     }
+  }
 
-    final enableChangeSelectModeOfEmailsToActive = latestEmailAction.value?.selectMode == SelectMode.ACTIVE &&
-        !emailList.sublist(startIndexAction, endIndexAction).every((e) => e.selectMode == SelectMode.ACTIVE) ||
-        latestEmailAction.value?.selectMode == SelectMode.INACTIVE &&
-        emailList.sublist(startIndexAction, endIndexAction).every((e) => e.selectMode == SelectMode.INACTIVE);
+  bool _checkAllowMakeRangeEmailsSelected(Tuple2<int,int> selectionEmailsRange) {
+    return latestEmailInteracted.value?.selectMode == SelectMode.ACTIVE &&
+      !emailList.sublist(selectionEmailsRange.value1, selectionEmailsRange.value2).every((e) => e.selectMode == SelectMode.ACTIVE) ||
+      latestEmailInteracted.value?.selectMode == SelectMode.INACTIVE &&
+      emailList.sublist(selectionEmailsRange.value1, selectionEmailsRange.value2).every((e) => e.selectMode == SelectMode.INACTIVE);
+  }
 
-    if (enableChangeSelectModeOfEmailsToActive) {
-      emailList.value = emailList.asMap().map((index, email) {
-        return MapEntry(index, index >= startIndexAction && index <= endIndexAction ? email.toSelectedEmail(selectMode: SelectMode.ACTIVE) : email);
-      }).values.toList();
+  void _applySelectModeToRangeEmails(Tuple2<int,int> selectionEmailsRange, SelectMode selectMode) {
+    emailList.value = emailList.asMap().map((index, email) {
+      return MapEntry(index, index >= selectionEmailsRange.value1 && index <= selectionEmailsRange.value2 ? email.toSelectedEmail(selectMode: selectMode) : email);
+    }).values.toList();
+  }
+
+  void _rangeSelectionEmailsAction(PresentationEmail presentationEmailSelected) {
+    final selectionEmailsRange = _getSelectionEmailsRange(presentationEmailSelected);
+
+    if (_checkAllowMakeRangeEmailsSelected(selectionEmailsRange)) {
+      _applySelectModeToRangeEmails(selectionEmailsRange, SelectMode.ACTIVE);
     } else {
-      emailList.value = emailList.asMap().map((index, email) {
-        return MapEntry(index, index >= startIndexAction && index <= endIndexAction ? email.toSelectedEmail(selectMode: SelectMode.INACTIVE) : email);
-      }).values.toList();
+      _applySelectModeToRangeEmails(selectionEmailsRange, SelectMode.INACTIVE);
     }
   }
 
   void selectEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
-    if (shiftSelectedMode && latestEmailAction.value != null && latestEmailAction.value?.id != presentationEmailSelected.id) {
-      _shiftSelectEmail(presentationEmailSelected);
+    if (_rangeSelectionMode && latestEmailInteracted.value != null && latestEmailInteracted.value?.id != presentationEmailSelected.id) {
+      _rangeSelectionEmailsAction(presentationEmailSelected);
     } else {
       emailList.value = emailList
         .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
         .toList();
     }
-    latestEmailAction.value = emailList.firstWhere((e) => e.id == presentationEmailSelected.id);
+    latestEmailInteracted.value = emailList.firstWhere((e) => e.id == presentationEmailSelected.id);
     focusNodeKeyBoard.requestFocus();
     if (_isUnSelectedAll()) {
       mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
@@ -1512,11 +1516,11 @@ class ThreadController extends BaseController {
   KeyEventResult handleKeyEvent(FocusNode node, RawKeyEvent event) {
     final shiftEvent = event.logicalKey == LogicalKeyboardKey.shiftLeft || event.logicalKey == LogicalKeyboardKey.shiftRight;
     if (event is RawKeyDownEvent && shiftEvent) {
-      shiftSelectedMode = true;
+      _rangeSelectionMode = true;
     }
 
     if (event is RawKeyUpEvent && shiftEvent) {
-      shiftSelectedMode = false;
+      _rangeSelectionMode = false;
     }
     return shiftEvent
         ? KeyEventResult.handled

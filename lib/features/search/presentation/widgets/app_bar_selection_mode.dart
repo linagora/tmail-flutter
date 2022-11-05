@@ -60,8 +60,8 @@ class AppBarSelectionMode extends StatelessWidget {
           splashRadius: 15,
           icon: SvgPicture.asset(
               listEmail.isAllEmailRead
-                  ? _imagePaths.icUnread
-                  : _imagePaths.icRead,
+                  ? _imagePaths.icRead
+                  : _imagePaths.icUnread,
               fit: BoxFit.fill),
           tooltip: listEmail.isAllEmailRead
               ? AppLocalizations.of(context).unread

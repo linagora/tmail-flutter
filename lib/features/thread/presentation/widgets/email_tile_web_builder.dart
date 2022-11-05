@@ -393,8 +393,8 @@ class EmailTileBuilder with BaseEmailItemTile {
           splashRadius: 10,
           icon: SvgPicture.asset(
               _presentationEmail.hasRead
-                  ? imagePaths.icUnread
-                  : imagePaths.icRead,
+                  ? imagePaths.icRead
+                  : imagePaths.icUnread,
               color: AppColor.colorActionButtonHover,
               width: 16,
               height: 16,

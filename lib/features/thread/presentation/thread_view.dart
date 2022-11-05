@@ -319,59 +319,64 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
         }
         return false;
       },
-      child: ListView.builder(
-        controller: controller.listEmailController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.zero,
-        key: const PageStorageKey('list_presentation_email_in_threads'),
-        itemExtent: _getItemExtent(context),
-        itemCount: listPresentationEmail.length,
-        itemBuilder: (context, index) {
-          return Obx(() => Draggable<List<PresentationEmail>>(
-            maxSimultaneousDrags: kIsWeb ? null : 0,
-            data: controller.listEmailDrag,
-            child: (EmailTileBuilder(
-              context,
-              listPresentationEmail[index],
-              controller.mailboxDashBoardController.currentSelectMode.value,
-              controller.searchQuery,
-              controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
-              mailboxCurrent: controller.searchController.isSearchEmailRunning
-                ? listPresentationEmail[index].findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
-                : controller.currentMailbox,
-              isSearchEmailRunning: controller.searchController.isSearchEmailRunning)
-              ..addOnPressEmailActionClick((action, email) =>
-                controller.pressEmailAction(
-                  context,
-                  action,
-                  email,
-                  mailboxContain: controller.searchController.isSearchEmailRunning
-                    ? email.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
-                    : controller.currentMailbox))
-              ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
-                ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
-                : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
-            ).build(),
-            feedback: _buildFeedBackWidget(context),
-            childWhenDragging: (EmailTileBuilder(
+      child: Focus(
+        focusNode: controller.focusNodeKeyBoard,
+        autofocus: kIsWeb,
+        onKey: kIsWeb ? controller.handleKeyEvent : null,
+        child: ListView.builder(
+          controller: controller.listEmailController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          key: const PageStorageKey('list_presentation_email_in_threads'),
+          itemExtent: _getItemExtent(context),
+          itemCount: listPresentationEmail.length,
+          itemBuilder: (context, index) {
+            return Obx(() => Draggable<List<PresentationEmail>>(
+              maxSimultaneousDrags: kIsWeb ? null : 0,
+              data: controller.listEmailDrag,
+              child: (EmailTileBuilder(
                 context,
                 listPresentationEmail[index],
                 controller.mailboxDashBoardController.currentSelectMode.value,
                 controller.searchQuery,
                 controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
                 mailboxCurrent: controller.searchController.isSearchEmailRunning
-                  ? listPresentationEmail[index].findMailboxContain(
-                  controller.mailboxDashBoardController.mapMailboxById)
+                  ? listPresentationEmail[index].findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
                   : controller.currentMailbox,
-                isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
-                isDrag: true)
-            ).build(),
-            dragAnchorStrategy: pointerDragAnchorStrategy,
-            onDragStarted: () {
-              controller.calculateDragValue(listPresentationEmail[index]);
-            },
-          ));
-        })
+                isSearchEmailRunning: controller.searchController.isSearchEmailRunning)
+                ..addOnPressEmailActionClick((action, email) =>
+                  controller.pressEmailAction(
+                    context,
+                    action,
+                    email,
+                    mailboxContain: controller.searchController.isSearchEmailRunning
+                      ? email.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
+                      : controller.currentMailbox))
+                ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
+                  ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
+                  : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
+              ).build(),
+              feedback: _buildFeedBackWidget(context),
+              childWhenDragging: (EmailTileBuilder(
+                  context,
+                  listPresentationEmail[index],
+                  controller.mailboxDashBoardController.currentSelectMode.value,
+                  controller.searchQuery,
+                  controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
+                  mailboxCurrent: controller.searchController.isSearchEmailRunning
+                    ? listPresentationEmail[index].findMailboxContain(
+                    controller.mailboxDashBoardController.mapMailboxById)
+                    : controller.currentMailbox,
+                  isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
+                  isDrag: true)
+              ).build(),
+              dragAnchorStrategy: pointerDragAnchorStrategy,
+              onDragStarted: () {
+                controller.calculateDragValue(listPresentationEmail[index]);
+              },
+            ));
+          }),
+      )
     );
   }
 
