@@ -757,7 +757,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "45ea109f70be0d868b005aadf11a39e2ac816c38"
+      resolved-ref: ea636193b15a49e9d59dab143e957f529e1bd836
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.0.1"
@@ -1184,7 +1184,7 @@ packages:
       name: shelf_web_socket
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   simple_observable:
     dependency: transitive
     description:
@@ -1252,7 +1252,7 @@ packages:
       name: stream_transform
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "2.1.0"
   string_scanner:
     dependency: transitive
     description:
@@ -1364,7 +1364,7 @@ packages:
       name: url_launcher_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.20"
+    version: "6.0.21"
   url_launcher_ios:
     dependency: transitive
     description:

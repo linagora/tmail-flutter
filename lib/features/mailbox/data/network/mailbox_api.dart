@@ -23,7 +23,6 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart';
-import 'package:model/error/error_type.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -143,6 +142,14 @@ class MailboxAPI {
     }
   }
 
+  Map<Id,SetError> _filterErrorsSpecified(Map<Id,SetError> errors) {
+    if(!SetError.errorTypesJMAPSupport.containsAll(errors.values.map((e) => e.type).toSet())) {
+      return errors;
+    }
+    logError('MailboxAPI::_filterErrorsSpecified():errors: ${errors.toString()}');
+    return {};
+  }
+
   _parseErrorForSetMailboxResponse(SetMailboxResponse? response, Id requestId) {
     final mapError = response?.notCreated ?? response?.notUpdated ?? response?.notDestroyed;
     if (mapError != null && mapError.containsKey(requestId)) {
@@ -198,8 +205,8 @@ class MailboxAPI {
       finalResult = currentSetMailboxInvocations
         .map((currentInvocation) => response.parse(currentInvocation.methodCallId, SetMailboxResponse.deserialize))
         .map((response) {
-          if(response?.notDestroyed != null) {
-            deleteMailboxErrors.addAll(response!.notDestroyed!);
+          if(response != null && response.notDestroyed != null) {
+            deleteMailboxErrors.addAll(_filterErrorsSpecified(response.notDestroyed!));
           }
           return _validateMailBoxDestroyedSuccess(response);
         }).every((element) => element == true);
@@ -211,7 +218,7 @@ class MailboxAPI {
   bool _validateMailBoxDestroyedSuccess(SetMailboxResponse? response) {
     return response?.destroyed?.isNotEmpty == true ||
       response?.notDestroyed?.values
-        .where((e) => e.type == TMailErrorType.notFoundErrorType).isNotEmpty == true;
+        .where((e) => e.type == SetError.notFound).isNotEmpty == true;
   }
 
   Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) async {
