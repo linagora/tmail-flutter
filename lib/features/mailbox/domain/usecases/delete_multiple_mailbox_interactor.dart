@@ -3,6 +3,8 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
@@ -32,7 +34,11 @@ class DeleteMultipleMailboxInteractor {
           })
       );
 
-      logError('DeleteMultipleMailboxInteractor::execute(): setErrors: ${listResult.map((element) => element.value2).toList().toString()}');
+      final List<Map<Id, SetError>> errors = listResult.where((e) => e.value2.isNotEmpty).map((e) => e.value2).toList();
+
+      if (errors.isNotEmpty) {
+        logError('DeleteMultipleMailboxInteractor::execute(): setErrors: ${errors.toString()}');
+      }
       final allSuccess = listResult.every((result) => result.value1);
       final allFailed = listResult.every((result) => !result.value1);
 

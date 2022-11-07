@@ -24,6 +24,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/mailbox/data/mixin/error_handle_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
@@ -31,7 +32,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
-class MailboxAPI {
+class MailboxAPI with ErrorHandleMixin {
 
   final HttpClient httpClient;
 
@@ -142,14 +143,6 @@ class MailboxAPI {
     }
   }
 
-  Map<Id,SetError> _filterErrorsSpecified(Map<Id,SetError> errors) {
-    if(!SetError.errorTypesJMAPSupport.containsAll(errors.values.map((e) => e.type).toSet())) {
-      return errors;
-    }
-    logError('MailboxAPI::_filterErrorsSpecified():errors: ${errors.toString()}');
-    return {};
-  }
-
   _parseErrorForSetMailboxResponse(SetMailboxResponse? response, Id requestId) {
     final mapError = response?.notCreated ?? response?.notUpdated ?? response?.notDestroyed;
     if (mapError != null && mapError.containsKey(requestId)) {
@@ -205,20 +198,26 @@ class MailboxAPI {
       finalResult = currentSetMailboxInvocations
         .map((currentInvocation) => response.parse(currentInvocation.methodCallId, SetMailboxResponse.deserialize))
         .map((response) {
+          bool deleteSuccess = false;
           if(response != null && response.notDestroyed != null) {
-            deleteMailboxErrors.addAll(_filterErrorsSpecified(response.notDestroyed!));
+            remoteHandleError(
+              errors: response.notDestroyed!,
+              handleNotFoundError: (e) {
+                logError('MailboxAPI::deleteMultipleMailbox():handleNotFoundError: ${e.toString()}');
+                deleteSuccess = true;
+              },
+              handleUnKnowErrorNotFound: (e) {
+                deleteMailboxErrors.addAll(e);
+              }
+            );
+          } else {
+            deleteSuccess = response?.destroyed?.isNotEmpty == true;
           }
-          return _validateMailBoxDestroyedSuccess(response);
+          return deleteSuccess;
         }).every((element) => element == true);
     }
 
     return dartz.Tuple2(finalResult, deleteMailboxErrors);
-  }
-
-  bool _validateMailBoxDestroyedSuccess(SetMailboxResponse? response) {
-    return response?.destroyed?.isNotEmpty == true ||
-      response?.notDestroyed?.values
-        .where((e) => e.type == SetError.notFound).isNotEmpty == true;
   }
 
   Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) async {
