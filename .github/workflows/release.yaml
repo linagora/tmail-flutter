@@ -23,6 +23,8 @@ jobs:
             runner: ubuntu-latest
           - os: ios
             runner: macos-latest
+      fail-fast: false
+
     environment: prod
 
     steps:
