@@ -155,6 +155,11 @@ No we do not plan to support such extensions, that are currently not standardize
   ```
 
   Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the TMail web-app.
+  
+  #### More configurations for TMail web
+  
+    - [Enable and customize the Application grid](docs/configuration/app_grid_configuration.md)
+    - [Change logos](docs/configuration/tmail-web-logo.md)
 
 </details>
 
