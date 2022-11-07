@@ -78,6 +78,9 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
+typedef StartRangeSelection = int;
+typedef EndRangeSelection = int;
+
 class ThreadController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
@@ -110,7 +113,7 @@ class ThreadController extends BaseController {
   jmap.State? _currentEmailState;
   final ScrollController listEmailController = ScrollController();
   final FocusNode focusNodeKeyBoard = FocusNode();
-  final latestEmailInteracted = Rxn<PresentationEmail>();
+  final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
   late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker, advancedSearchFilterWorker;
 
   Set<Comparator>? get _sortOrder => <Comparator>{}
@@ -520,24 +523,24 @@ class ThreadController extends BaseController {
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.emailDetailed);
   }
 
-  Tuple2<int,int> _getSelectionEmailsRange(PresentationEmail presentationEmailSelected) {
+  Tuple2<StartRangeSelection,EndRangeSelection> _getSelectionEmailsRange(PresentationEmail presentationEmailSelected) {
     final emailSelectedIndex = emailList.indexWhere((e) => e.id == presentationEmailSelected.id);
-    final latestEmailInteractedIndex = emailList.indexWhere((e) => e.id == latestEmailInteracted.value?.id);
-    if (emailSelectedIndex > latestEmailInteractedIndex) {
-      return Tuple2(latestEmailInteractedIndex, emailSelectedIndex);
+    final latestEmailSelectedOrUnselectedIndex = emailList.indexWhere((e) => e.id == latestEmailSelectedOrUnselected.value?.id);
+    if (emailSelectedIndex > latestEmailSelectedOrUnselectedIndex) {
+      return Tuple2(latestEmailSelectedOrUnselectedIndex, emailSelectedIndex);
     } else {
-      return Tuple2(emailSelectedIndex, latestEmailInteractedIndex);
+      return Tuple2(emailSelectedIndex, latestEmailSelectedOrUnselectedIndex);
     }
   }
 
-  bool _checkAllowMakeRangeEmailsSelected(Tuple2<int,int> selectionEmailsRange) {
-    return latestEmailInteracted.value?.selectMode == SelectMode.ACTIVE &&
+  bool _checkAllowMakeRangeEmailsSelected(Tuple2<StartRangeSelection,EndRangeSelection> selectionEmailsRange) {
+    return latestEmailSelectedOrUnselected.value?.selectMode == SelectMode.ACTIVE &&
       !emailList.sublist(selectionEmailsRange.value1, selectionEmailsRange.value2).every((e) => e.selectMode == SelectMode.ACTIVE) ||
-      latestEmailInteracted.value?.selectMode == SelectMode.INACTIVE &&
+      latestEmailSelectedOrUnselected.value?.selectMode == SelectMode.INACTIVE &&
       emailList.sublist(selectionEmailsRange.value1, selectionEmailsRange.value2).every((e) => e.selectMode == SelectMode.INACTIVE);
   }
 
-  void _applySelectModeToRangeEmails(Tuple2<int,int> selectionEmailsRange, SelectMode selectMode) {
+  void _applySelectModeToRangeEmails(Tuple2<StartRangeSelection,EndRangeSelection> selectionEmailsRange, SelectMode selectMode) {
     emailList.value = emailList.asMap().map((index, email) {
       return MapEntry(index, index >= selectionEmailsRange.value1 && index <= selectionEmailsRange.value2 ? email.toSelectedEmail(selectMode: selectMode) : email);
     }).values.toList();
@@ -554,14 +557,14 @@ class ThreadController extends BaseController {
   }
 
   void selectEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
-    if (_rangeSelectionMode && latestEmailInteracted.value != null && latestEmailInteracted.value?.id != presentationEmailSelected.id) {
+    if (_rangeSelectionMode && latestEmailSelectedOrUnselected.value != null && latestEmailSelectedOrUnselected.value?.id != presentationEmailSelected.id) {
       _rangeSelectionEmailsAction(presentationEmailSelected);
     } else {
       emailList.value = emailList
         .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
         .toList();
     }
-    latestEmailInteracted.value = emailList.firstWhere((e) => e.id == presentationEmailSelected.id);
+    latestEmailSelectedOrUnselected.value = emailList.firstWhereOrNull((e) => e.id == presentationEmailSelected.id);
     focusNodeKeyBoard.requestFocus();
     if (_isUnSelectedAll()) {
       mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
