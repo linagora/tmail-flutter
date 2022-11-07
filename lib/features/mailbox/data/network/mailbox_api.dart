@@ -23,8 +23,9 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart';
+import 'package:model/error_type_handler/error_type_handler.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/mailbox/data/mixin/error_handle_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
@@ -32,7 +33,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
-class MailboxAPI with ErrorHandleMixin {
+class MailboxAPI with HandleErrorMixin {
 
   final HttpClient httpClient;
 
@@ -200,13 +201,15 @@ class MailboxAPI with ErrorHandleMixin {
         .map((response) {
           bool deleteSuccess = false;
           if(response != null && response.notDestroyed != null) {
-            remoteHandleError(
-              errors: response.notDestroyed!,
-              handleNotFoundError: (e) {
-                logError('MailboxAPI::deleteMultipleMailbox():handleNotFoundError: ${e.toString()}');
-                deleteSuccess = true;
+            handleError(
+              error: response.notDestroyed!,
+              errorDefineHandlers: {
+                NotFoundErrorTypeHandler(handler: (e) {
+                  logError('MailboxAPI::deleteMultipleMailbox():handleNotFoundError: ${e.toString()}');
+                  deleteSuccess = true;
+                }),
               },
-              handleUnKnowErrorNotFound: (e) {
+              errorUndefineHandlers: (e) {
                 deleteMailboxErrors.addAll(e);
               }
             );
