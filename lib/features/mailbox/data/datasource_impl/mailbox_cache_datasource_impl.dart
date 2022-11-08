@@ -4,6 +4,8 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
@@ -60,7 +62,7 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<bool> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) {
+  Future<Map<Id,SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) {
     throw UnimplementedError();
   }
 
