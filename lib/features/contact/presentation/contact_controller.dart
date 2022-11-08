@@ -15,10 +15,9 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_st
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
+import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-
-typedef OnSelectedContactCallback = Function(EmailAddress emailAddress);
 
 class ContactController extends BaseController {
 
@@ -38,7 +37,7 @@ class ContactController extends BaseController {
 
   ContactArguments? arguments;
   EmailAddress? contactSelected;
-  OnSelectedContactCallback? onSelectedContactCallback;
+  SelectedContactCallbackAction? onSelectedContactCallback;
   VoidCallback? onDismissContactView;
 
   @override

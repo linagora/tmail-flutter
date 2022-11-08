@@ -63,6 +63,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   void onReady() {
     _getArguments();
     _getAppVersion();
+    _initialPageLevel();
     super.onReady();
   }
 
@@ -113,6 +114,14 @@ class ManageAccountDashBoardController extends ReloadableController {
       if (kIsWeb) {
         reload();
       }
+    }
+  }
+
+  void _initialPageLevel() {
+    if (currentContext != null && _responsiveUtils.isWebDesktop(currentContext!)) {
+      settingsPageLevel.value = SettingsPageLevel.level1;
+    } else {
+      settingsPageLevel.value = SettingsPageLevel.universal;
     }
   }
 

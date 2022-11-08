@@ -1,66 +1,61 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/recipient_forward.dart';
+
+typedef OnSelectRecipientCallbackAction = Function(RecipientForward recipientForward);
+typedef OnDeleteRecipientCallbackAction = Function(RecipientForward recipientForward);
 
 class EmailForwardItemWidget extends StatelessWidget {
 
-  final _imagePaths = Get.find<ImagePaths>();
-  final _emailForwardController = Get.find<ForwardController>();
-
   final RecipientForward recipientForward;
   final SelectMode selectionMode;
-  final bool isLast;
+  final OnSelectRecipientCallbackAction? onSelectRecipientCallback;
+  final OnDeleteRecipientCallbackAction? onDeleteRecipientCallback;
 
-  EmailForwardItemWidget({
+  const EmailForwardItemWidget(this.recipientForward, {
     Key? key,
-    required this.recipientForward,
-    this.isLast = false,
     this.selectionMode = SelectMode.INACTIVE,
+    this.onSelectRecipientCallback,
+    this.onDeleteRecipientCallback,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onLongPress: () => _emailForwardController.selectRecipientForward(recipientForward),
-      onTap: () {
-        if (selectionMode == SelectMode.ACTIVE) {
-          _emailForwardController.selectRecipientForward(recipientForward);
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: recipientForward.selectMode == SelectMode.ACTIVE
-            ? AppColor.colorItemEmailSelectedDesktop
-            : Colors.white,
-          borderRadius: BorderRadius.only(
-            bottomLeft: isLast ? const Radius.circular(12) : Radius.zero,
-            bottomRight: isLast ? const Radius.circular(12) : Radius.zero,
-          )
-        ),
-        child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Container(
-            width: 54,
-            height: 54,
-            color: Colors.transparent,
-            alignment: Alignment.center,
-            child: _buildAvatarIcon()
-          ),
-          const SizedBox(width: 12),
-          Expanded(child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (recipientForward.emailAddress.displayName.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text(
-                    recipientForward.emailAddress.displayName,
+    final _imagePaths = Get.find<ImagePaths>();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {},
+          customBorder: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12))),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _getBackgroundColor(),
+              borderRadius: BorderRadius.all(Radius.circular(
+                recipientForward.selectMode == SelectMode.ACTIVE ? 12 : 0))
+            ),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+              _buildAvatarIcon(_imagePaths),
+              const SizedBox(width: 12),
+              Expanded(child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    recipientForward.emailAddress.asString(),
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     softWrap: CommonTextStyle.defaultSoftWrap,
                     maxLines: 1,
@@ -70,59 +65,74 @@ class EmailForwardItemWidget extends StatelessWidget {
                       color: Colors.black
                     )
                   ),
+                  if (recipientForward.emailAddress.displayName.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        recipientForward.emailAddress.email ?? '',
+                        overflow: CommonTextStyle.defaultTextOverFlow,
+                        softWrap: CommonTextStyle.defaultSoftWrap,
+                        maxLines: 1,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                          color: AppColor.colorContentEmail
+                        )
+                      ),
+                    )
+                ],
+              )),
+              const SizedBox(width: 12),
+              if (selectionMode == SelectMode.INACTIVE)
+                buildIconWeb(
+                  iconSize: 34,
+                  splashRadius: 25,
+                  icon: SvgPicture.asset(_imagePaths.icDeleteRecipient),
+                  onTap: () => onDeleteRecipientCallback?.call(recipientForward)
                 ),
-              Text(
-                recipientForward.emailAddress.email ?? '',
-                overflow: CommonTextStyle.defaultTextOverFlow,
-                softWrap: CommonTextStyle.defaultSoftWrap,
-                maxLines: 1,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal,
-                  color: AppColor.colorContentEmail
-                )
-              )
-            ],
-          )),
-          const SizedBox(width: 12),
-          buildIconWeb(
-            icon: SvgPicture.asset(
-              _imagePaths.icDeleteEmailForward,
-              fit: BoxFit.fill,
-              width: 18,
-              height: 18,
-            ),
-            onTap: () => _emailForwardController.deleteRecipients(
-              context,
-              recipientForward.emailAddress.email ?? ''
-            )
+            ]),
           ),
-        ]),
+        ),
       ),
     );
   }
 
-  Widget _buildAvatarIcon() {
-    if (selectionMode == SelectMode.ACTIVE) {
-      return Container(
-        alignment: Alignment.center,
-        child: SvgPicture.asset(
-          recipientForward.selectMode == SelectMode.ACTIVE
-            ? _imagePaths.icSelected
-            : _imagePaths.icUnSelected,
-          width: 24,
-          height: 24
-        )
+  Color _getBackgroundColor() {
+    if (recipientForward.selectMode == SelectMode.ACTIVE) {
+      return AppColor.colorItemRecipientSelected;
+    } else {
+      return Colors.transparent;
+    }
+  }
+
+  Widget _buildAvatarIcon(ImagePaths imagePaths) {
+    if (recipientForward.selectMode == SelectMode.ACTIVE) {
+      return InkWell(
+        customBorder: const CircleBorder(),
+        onTap: () => onSelectRecipientCallback?.call(recipientForward),
+        child: Container(
+          width: 40,
+          height: 40,
+          color: Colors.transparent,
+          alignment: Alignment.center,
+          child: SvgPicture.asset(
+            imagePaths.icSelectedRecipient,
+            width: 40,
+            height: 40,
+            fit: BoxFit.fill,
+          ),
+        ),
       );
     } else {
       return (AvatarBuilder()
         ..text(recipientForward.emailAddress.asString().firstLetterToUpperCase)
-        ..size(54)
+        ..size(40)
         ..addTextStyle(const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
             color: Colors.white))
         ..avatarColor(recipientForward.emailAddress.avatarColors)
+        ..addOnTapActionClick(() => onSelectRecipientCallback?.call(recipientForward))
       ).build();
     }
   }
