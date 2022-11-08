@@ -18,21 +18,20 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 class ForwardRecipientController {
 
   final ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
-  final TextEditingController inputEmailForwardController = TextEditingController();
+  final TextEditingController inputRecipientController = TextEditingController();
 
   GetAutoCompleteWithDeviceContactInteractor? _getAutoCompleteWithDeviceContactInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   AccountId? _accountId;
   Session? _session;
-  EmailAddress? _emailAddressSelected;
+
+  final listRecipients = RxList<EmailAddress>();
 
   ForwardRecipientController({AccountId? accountId, Session? session}) {
     _accountId = accountId;
     _session = session;
     injectAutoCompleteBindings(_session, _accountId);
   }
-
-  EmailAddress? get emailAddressSelected => _emailAddressSelected;
 
   void onClose() {
     clearAll();
@@ -82,16 +81,16 @@ class ForwardRecipientController {
     }
   }
 
-  void selectEmailAddress(EmailAddress? emailAddress) {
-    _emailAddressSelected = emailAddress;
+  void updateListRecipient(List<EmailAddress> listEmailAddress) {
+    listRecipients.value = listEmailAddress;
   }
 
   void clearAll() {
-    inputEmailForwardController.clear();
-    _emailAddressSelected = null;
+    inputRecipientController.clear();
+    listRecipients.clear();
   }
 
   void _disposeWidget() {
-    inputEmailForwardController.dispose();
+    inputRecipientController.dispose();
   }
 }

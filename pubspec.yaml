@@ -96,7 +96,7 @@ dependencies:
   filesize: 2.0.1
 
   # super_tag_editor
-  super_tag_editor: 0.0.1
+  super_tag_editor: 0.0.3+2
 
   # uuid
   uuid: 3.0.4

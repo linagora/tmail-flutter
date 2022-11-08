@@ -80,9 +80,9 @@ class SettingsUtils {
 
   static EdgeInsets getPaddingListRecipientForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isPortraitMobile(context)) {
-      return const EdgeInsets.all(12);
+      return const EdgeInsets.only(left: 12, right: 12, bottom: 12);
     } else {
-      return const EdgeInsets.symmetric(horizontal: 24, vertical: 12);
+      return const EdgeInsets.only(left: 24, right: 24, bottom: 24);
     }
   }
 

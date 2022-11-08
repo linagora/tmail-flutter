@@ -159,7 +159,10 @@ extension AppColor on Color {
   static const colorItemSelected = Color(0xFFF2F3F5);
   static const colorBorderSettingContentWeb = Color(0xFFE7E8EC);
   static const colorDividerHeaderSetting = Color(0xFFE4E4E4);
-  static const colorSettingExplanation = Color(0xFF686E76);
+  static const colorSettingExplanation = Color(0xFF818C99);
+  static const colorBackgroundContactTagItem = Color(0xFFDCE0E5);
+  static const colorDeleteContactIcon = Color(0xFFAEB7C2);
+  static const colorItemRecipientSelected = Color(0xFFDFEEFF);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
@@ -167,7 +170,11 @@ extension AppColor on Color {
     [Color(0xFF11E6F0), Color(0xFF4FACFE)],
     [Color(0xFFE88395), Color(0xFFEF9C8F)],
     [Color(0xFF8DDAD5), Color(0xFF00CDAC)],
-    [Color(0xFFDE9AF5), Color(0xFFD670EE)],
+    [Color(0xFFE4ABF0), Color(0xFFD96EED)],
+    [Color(0xFFF0FF00), Color(0xFF58CFFB)],
+    [Color(0xFFEFC0D7), Color(0xFF1AD5E4)],
+    [Color(0xFFFFD26F), Color(0xFF3677FF)],
+    [Color(0xFF87A6F8), Color(0xFF645FF6)],
   ];
 
   String toHexTriplet() => '#${(value & 0xFFFFFF)
