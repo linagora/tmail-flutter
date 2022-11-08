@@ -21,8 +21,10 @@ class SettingsUtils {
   }
 
   static EdgeInsets getPaddingAppBar(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (responsiveUtils.isMobile(context)) {
+    if (responsiveUtils.isPortraitMobile(context)) {
       return const EdgeInsets.symmetric(horizontal: 16);
+    } else if (responsiveUtils.isLandscapeMobile(context)) {
+      return const EdgeInsets.symmetric(horizontal: 12);
     } else {
       return const EdgeInsets.symmetric(horizontal: 32);
     }
@@ -80,9 +82,11 @@ class SettingsUtils {
 
   static EdgeInsets getPaddingListRecipientForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isPortraitMobile(context)) {
-      return const EdgeInsets.only(left: 12, right: 12, bottom: 12);
+      return const EdgeInsets.symmetric(horizontal: 16);
+    } if (responsiveUtils.isLandscapeMobile(context)) {
+      return const EdgeInsets.all(12);
     } else {
-      return const EdgeInsets.only(left: 24, right: 24, bottom: 24);
+      return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
     }
   }
 
@@ -93,19 +97,49 @@ class SettingsUtils {
       color: Colors.white);
   }
 
-  static EdgeInsets getMarginTitleHeaderForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
+  static EdgeInsets getPaddingTitleHeaderForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isPortraitMobile(context)) {
-      return EdgeInsets.zero;
+      return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
+    } if (responsiveUtils.isLandscapeMobile(context)) {
+      return const EdgeInsets.all(12);
     } else {
-      return const EdgeInsets.symmetric(horizontal: 20);
+      return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
     }
   }
 
-  static EdgeInsets getPaddingTitleHeaderForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
+  static EdgeInsets getPaddingHeaderWidgetForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isPortraitMobile(context)) {
       return const EdgeInsets.only(left: 16, right: 16);
     } else {
       return const EdgeInsets.all(12);
+    }
+  }
+
+  static EdgeInsets getPaddingKeepLocalSwitchButtonForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isPortraitMobile(context)) {
+      return const EdgeInsets.symmetric(horizontal: 18, vertical: 14);
+    } if (responsiveUtils.isLandscapeMobile(context)) {
+      return const EdgeInsets.all(14);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 34, vertical: 14);
+    }
+  }
+
+  static EdgeInsets getPaddingInputRecipientForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isPortraitMobile(context)) {
+      return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
+    } if (responsiveUtils.isLandscapeMobile(context)) {
+      return const EdgeInsets.all(12);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
+    }
+  }
+
+  static EdgeInsets getMarginViewForForwardSettingDetails(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return const EdgeInsets.all(16);
+    } else {
+      return EdgeInsets.zero;
     }
   }
 }

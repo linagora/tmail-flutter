@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -37,17 +38,21 @@ class EmailForwardItemWidget extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onLongPress: () {
+            if (!BuildUtils.isWeb) {
+              onSelectRecipientCallback?.call(recipientForward);
+            }
+          },
           customBorder: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12))),
           child: Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.only(left: 12, bottom: 12, top: 12),
             decoration: BoxDecoration(
               color: _getBackgroundColor(),
               borderRadius: BorderRadius.all(Radius.circular(
                 recipientForward.selectMode == SelectMode.ACTIVE ? 12 : 0))
             ),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            child: Row(children: [
               _buildAvatarIcon(_imagePaths),
               const SizedBox(width: 12),
               Expanded(child: Column(
@@ -85,11 +90,11 @@ class EmailForwardItemWidget extends StatelessWidget {
               const SizedBox(width: 12),
               if (selectionMode == SelectMode.INACTIVE)
                 buildIconWeb(
-                  iconSize: 34,
-                  splashRadius: 25,
+                  iconSize: 30,
+                  splashRadius: 20,
                   icon: SvgPicture.asset(_imagePaths.icDeleteRecipient),
                   onTap: () => onDeleteRecipientCallback?.call(recipientForward)
-                ),
+                )
             ]),
           ),
         ),

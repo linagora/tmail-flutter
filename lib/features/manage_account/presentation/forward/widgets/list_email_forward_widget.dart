@@ -23,29 +23,35 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
-      margin: SettingsUtils.getPaddingListRecipientForwarding(context, _responsiveUtils),
+      color: Colors.transparent,
+      padding: SettingsUtils.getPaddingListRecipientForwarding(context, _responsiveUtils),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildTitleHeader(context),
           Obx(() {
-            return ListView.builder(
-              shrinkWrap: true,
-              primary: false,
-              itemCount: controller.listRecipientForward.length,
-              itemBuilder: (context, index) {
-                return EmailForwardItemWidget(
-                  controller.listRecipientForward[index],
-                  selectionMode: controller.selectionMode.value,
-                  onSelectRecipientCallback: controller.selectRecipientForward,
-                  onDeleteRecipientCallback: (recipientForward) {
-                    controller.deleteRecipients(context, recipientForward.emailAddress.emailAddress);
-                  },
-                );
-              }
-            );
+            if (controller.listRecipientForward.isEmpty) {
+              return const SizedBox.shrink();
+            } else {
+              return ListView.builder(
+                shrinkWrap: true,
+                primary: false,
+                itemCount: controller.listRecipientForward.length,
+                padding: EdgeInsets.zero,
+                itemExtent: 75,
+                itemBuilder: (context, index) {
+                  return EmailForwardItemWidget(
+                    controller.listRecipientForward[index],
+                    selectionMode: controller.selectionMode.value,
+                    onSelectRecipientCallback: controller.selectRecipientForward,
+                    onDeleteRecipientCallback: (recipientForward) {
+                      controller.deleteRecipients(context, recipientForward.emailAddress.emailAddress);
+                    },
+                  );
+                }
+              );
+            }
           }),
         ]
       ),
@@ -127,7 +133,7 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
       child: InkWell(
         customBorder: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
           child: Text(
             AppLocalizations.of(context).remove,
             style: const TextStyle(
