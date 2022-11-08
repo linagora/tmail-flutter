@@ -31,7 +31,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
         height: double.infinity,
         color: SettingsUtils.getContentBackgroundColor(context, _responsiveUtils),
         decoration: SettingsUtils.getBoxDecorationForContent(context, _responsiveUtils),
-        margin: SettingsUtils.getMarginViewForSettingDetails(context, _responsiveUtils),
+        margin: SettingsUtils.getMarginViewForForwardSettingDetails(context, _responsiveUtils),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -45,15 +45,12 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 if (!_responsiveUtils.isWebDesktop(context))
                   _buildTitleHeader(context),
+                _buildKeepLocalSwitchButton(context),
+                _buildAddRecipientsFormWidget(context),
                 _buildLoadingView(),
                 Obx(() {
-                  if (controller.currentForward.value != null) {
-                    return Column(children: [
-                      _buildKeepLocalSwitchButton(context),
-                      _buildAddRecipientsFormWidget(context),
-                      if (controller.listRecipientForward.isNotEmpty)
-                        ListEmailForwardsWidget()
-                    ]);
+                  if (controller.listRecipientForward.isNotEmpty) {
+                    return ListEmailForwardsWidget();
                   } else {
                     return const SizedBox.shrink();
                   }
@@ -68,9 +65,8 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
 
   Widget _buildTitleHeader(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Colors.transparent,
       width: double.infinity,
-      margin: SettingsUtils.getMarginTitleHeaderForwarding(context, _responsiveUtils),
       padding: SettingsUtils.getPaddingTitleHeaderForwarding(context, _responsiveUtils),
       child: Text(
         AppLocalizations.of(context).forwardingSettingExplanation,
@@ -86,7 +82,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
   Widget _buildKeepLocalSwitchButton(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      padding: const EdgeInsets.only(left: 24, top: 24, right: 24, bottom: 11),
+      padding: SettingsUtils.getPaddingKeepLocalSwitchButtonForwarding(context, _responsiveUtils),
       child: Row(children: [
         Obx(() {
           return InkWell(

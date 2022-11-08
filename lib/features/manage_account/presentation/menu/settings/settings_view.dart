@@ -32,18 +32,34 @@ class SettingsView extends GetWidget<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox.fromSize(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SafeArea(
+          bottom: false,
+          child: SizedBox.fromSize(
             size: const Size.fromHeight(52),
             child: Padding(
               padding: SettingsUtils.getPaddingAppBar(context, _responsiveUtils),
               child: _buildAppbar(context))),
-          const Divider(color: AppColor.colorDividerComposer, height: 1),
-          Obx(() {
+        ),
+        const Divider(color: AppColor.colorDividerComposer, height: 1),
+        SafeArea(
+          bottom: false,
+          top: false,
+          child: Obx(() {
             if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
+              return VacationNotificationMessageWidget(
+                  margin: const EdgeInsets.only(
+                      left: BuildUtils.isWeb ? 24 : 16,
+                      right: BuildUtils.isWeb ? 24 : 16,
+                      top: 16),
+                  fromAccountDashBoard: true,
+                  vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
+                  actionEndNow: () => controller.manageAccountDashboardController.disableVacationResponder());
+            } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
+                || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
+                && controller.manageAccountDashboardController.inVacationSettings()) {
               return VacationNotificationMessageWidget(
                 margin: const EdgeInsets.only(
                   left: BuildUtils.isWeb ? 24 : 16,
@@ -51,29 +67,22 @@ class SettingsView extends GetWidget<SettingsController> {
                   top: 16),
                 fromAccountDashBoard: true,
                 vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
-                actionEndNow: () => controller.manageAccountDashboardController.disableVacationResponder());
-            } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
-                || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
-                && controller.manageAccountDashboardController.inVacationSettings()) {
-              return VacationNotificationMessageWidget(
-                  margin: const EdgeInsets.only(
-                    left: BuildUtils.isWeb ? 24 : 16,
-                    right: BuildUtils.isWeb ? 24 : 16,
-                    top: 16),
-                  fromAccountDashBoard: true,
-                  vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                  leadingIcon: const Padding(
-                    padding: EdgeInsets.only(right: 16),
-                    child: Icon(Icons.timer, size: 20),
-                  ));
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                leadingIcon: const Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: Icon(Icons.timer, size: 20),
+                )
+              );
             } else {
               return const SizedBox.shrink();
             }
-          }),
-          Expanded(child: _bodySettingsScreen())
-        ]
-      )
+          })
+        ),
+        Expanded(child: SafeArea(
+          top: false,
+          child: _bodySettingsScreen()
+        ))
+      ]
     );
   }
 
@@ -110,16 +119,14 @@ class SettingsView extends GetWidget<SettingsController> {
 
   Widget _buildSettingLevel1AppBar(BuildContext context) {
     return Stack(children: [
-      if (_responsiveUtils.isPortraitMobile(context))
-        _buildBackButton(context)
-      else
-        Align(
+      Align(
         alignment: Alignment.centerLeft,
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: controller.backToUniversalSettings,
-            borderRadius: BorderRadius.circular(15),
+            customBorder: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(15))),
             child: Tooltip(
               message: AppLocalizations.of(context).back,
               child: Container(
@@ -158,21 +165,6 @@ class SettingsView extends GetWidget<SettingsController> {
           softWrap: CommonTextStyle.defaultSoftWrap,
           style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold)))
     ]);
-  }
-
-  Widget _buildBackButton(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icBack,
-              width: 18,
-              height: 18,
-              color: AppColor.colorTextButton,
-              fit: BoxFit.fill),
-          tooltip: AppLocalizations.of(context).back,
-          onTap: controller.backToUniversalSettings
-      ),
-    );
   }
 
   Widget _buildCloseSettingButton(BuildContext context) {

@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -29,6 +30,7 @@ class ContactInputTagItem extends StatelessWidget {
     final imagePaths = Get.find<ImagePaths>();
 
     final itemChild = Chip(
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       avatar: contact.displayName.isNotEmpty
         ? GradientColorAvatarIcon(
             contact.avatarColors,
@@ -72,10 +74,17 @@ class ContactInputTagItem extends StatelessWidget {
       onDeleted: () => deleteContactCallbackAction?.call(contact),
     );
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: itemChild
-    );
+    if (BuildUtils.isWeb) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: itemChild
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: itemChild
+      );
+    }
   }
 
   bool _isValidEmailAddress(String value) => value.isEmail;

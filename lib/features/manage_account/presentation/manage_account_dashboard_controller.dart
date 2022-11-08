@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
+import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
@@ -20,6 +21,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacati
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
@@ -50,6 +52,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   final settingsPageLevel = SettingsPageLevel.universal.obs;
   final sessionCurrent = Rxn<Session>();
   final vacationResponse = Rxn<VacationResponse>();
+  final dashboardSettingAction = Rxn<UIAction>();
 
   ManageAccountDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
@@ -169,6 +172,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   bool get isMenuDrawerOpen => menuDrawerKey.currentState?.isDrawerOpen == true;
 
   void selectAccountMenuItem(AccountMenuItem newAccountMenuItem) {
+    clearInputFormView();
     if(newAccountMenuItem == AccountMenuItem.emailRules) {
       EmailRulesBindings().dependencies();
     }
@@ -180,7 +184,17 @@ class ManageAccountDashBoardController extends ReloadableController {
       closeMenuDrawer();
     }
   }
-  
+
+  void clearInputFormView() {
+    switch(accountMenuItemSelected.value) {
+      case AccountMenuItem.forward:
+        dispatchAction(ClearAllInputForwarding());
+        break;
+      default:
+        break;
+    }
+  }
+
   void _goToSettingMenuCurrent(AccountMenuItem accountMenuItem) {
     if(accountMenuItem == AccountMenuItem.emailRules) {
       EmailRulesBindings().dependencies();
@@ -266,5 +280,16 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   bool inVacationSettings() {
     return accountMenuItemSelected.value == AccountMenuItem.vacation;
+  }
+
+  void dispatchAction(UIAction newAction) {
+    log('ManageAccountDashBoardController::dispatchAction(): ${newAction.runtimeType}');
+    final previousAction = dashboardSettingAction.value;
+    if (newAction == previousAction) {
+      dashboardSettingAction.value = newAction;
+      dashboardSettingAction.refresh();
+    } else {
+      dashboardSettingAction.value = newAction;
+    }
   }
 }
