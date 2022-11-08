@@ -563,6 +563,7 @@ class ComposerController extends BaseController {
     Map<KeyWordIdentifier, bool>? mapKeywords = {};
     if (asDrafts) {
       mapKeywords[KeyWordIdentifier.emailDraft] = true;
+      mapKeywords[KeyWordIdentifier.emailSeen] = true;
     }
 
     final generateEmailId = EmailId(Id(_uuid.v1()));
