@@ -32,8 +32,8 @@ class DeleteMultipleMailboxInteractor {
           })
       );
 
-      final allSuccess = listResult.every((result) => result);
-      final allFailed = listResult.every((result) => !result);
+      final allSuccess = listResult.every((result) => result.isEmpty);
+      final allFailed = listResult.every((result) => result.isNotEmpty);
 
       if (allSuccess) {
         yield Right<Failure, Success>(DeleteMultipleMailboxAllSuccess(
