@@ -170,6 +170,8 @@ class ImagePaths {
   String get icOlder => _getImagePath('ic_older.svg');
   String get icNewer => _getImagePath('ic_newer.svg');
   String get icCancelSelection => _getImagePath('ic_cancel_selection.svg');
+  String get icSelectedRecipient => _getImagePath('ic_selected_recipient.svg');
+  String get icDeleteRecipient => _getImagePath('ic_delete_recipient.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

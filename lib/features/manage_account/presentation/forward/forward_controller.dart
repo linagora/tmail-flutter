@@ -10,11 +10,6 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/add_recipients_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_local_copy_in_forwarding_request.dart';
@@ -36,8 +31,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ForwardController extends BaseController {
 
-  final VerifyNameInteractor _verifyNameInteractor;
-
   GetForwardInteractor? _getForwardInteractor;
   DeleteRecipientInForwardingInteractor? _deleteRecipientInForwardingInteractor;
   AddRecipientsInForwardingInteractor? _addRecipientsInForwardingInteractor;
@@ -50,13 +43,12 @@ class ForwardController extends BaseController {
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
   final listRecipientForward = RxList<RecipientForward>();
   final currentForward = Rxn<TMailForward>();
-  final errorRecipientInputText = RxnString();
 
   bool get currentForwardLocalCopyState => currentForward.value?.localCopy ?? false;
 
   late ForwardRecipientController recipientController;
 
-  ForwardController(this._verifyNameInteractor) {
+  ForwardController() {
     recipientController = ForwardRecipientController(
       accountId: accountDashBoardController.accountId.value,
       session: accountDashBoardController.sessionCurrent.value);
@@ -84,23 +76,23 @@ class ForwardController extends BaseController {
   @override
   void onDone() {
     viewState.value.fold(
-        (failure) {
-          if (failure is DeleteRecipientInForwardingFailure) {
-            cancelSelectionMode();
-          }
-        },
-        (success) {
-          if (success is GetForwardSuccess) {
-            currentForward.value = success.forward;
-            listRecipientForward.value = currentForward.value!.listRecipientForward;
-          } else if (success is DeleteRecipientInForwardingSuccess) {
-            _handleDeleteRecipientSuccess(success);
-          } else if (success is AddRecipientsInForwardingSuccess) {
-            _handleAddRecipientsSuccess(success);
-          } else if (success is EditLocalCopyInForwardingSuccess) {
-            _handleEditLocalCopySuccess(success);
-          }
-        });
+      (failure) {
+        if (failure is DeleteRecipientInForwardingFailure) {
+          cancelSelectionMode();
+        }
+      },
+      (success) {
+        if (success is GetForwardSuccess) {
+          currentForward.value = success.forward;
+          listRecipientForward.value = currentForward.value!.listRecipientForward;
+        } else if (success is DeleteRecipientInForwardingSuccess) {
+          _handleDeleteRecipientSuccess(success);
+        } else if (success is AddRecipientsInForwardingSuccess) {
+          _handleAddRecipientsSuccess(success);
+        } else if (success is EditLocalCopyInForwardingSuccess) {
+          _handleEditLocalCopySuccess(success);
+        }
+      });
   }
 
   @override
@@ -116,10 +108,10 @@ class ForwardController extends BaseController {
   }
 
   void deleteRecipients(BuildContext context, String emailAddress) {
-    showConfirmDialogAction(currentContext!,
+    showConfirmDialogAction(context,
       title: AppLocalizations.of(context).deleteRecipient,
       AppLocalizations.of(context).messageConfirmationDialogDeleteRecipientForward(emailAddress),
-      AppLocalizations.of(currentContext!).remove,
+      AppLocalizations.of(context).remove,
       onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
       showAsBottomSheet: true,
       icon: SvgPicture.asset(_imagePaths.icDeleteDialogIdentity, fit: BoxFit.fill),
@@ -167,22 +159,27 @@ class ForwardController extends BaseController {
     selectionMode.value = SelectMode.INACTIVE;
   }
 
-  List<RecipientForward> get listRecipientForwardSelected => listRecipientForward
-        .where((recipient) => recipient.selectMode == SelectMode.ACTIVE)
-        .toList();
+  List<RecipientForward> get listRecipientForwardSelected =>
+    listRecipientForward
+      .where((recipient) => recipient.selectMode == SelectMode.ACTIVE)
+      .toList();
 
   bool get isAllUnSelected =>
-      listRecipientForward.every((recipient) => recipient.selectMode == SelectMode.INACTIVE);
+    listRecipientForward.every((recipient) => recipient.selectMode == SelectMode.INACTIVE);
+
+  bool get isAllSelected =>
+    listRecipientForward.every((recipient) => recipient.selectMode == SelectMode.ACTIVE);
 
   void selectRecipientForward(RecipientForward recipientForward) {
     if (selectionMode.value == SelectMode.INACTIVE) {
       selectionMode.value = SelectMode.ACTIVE;
     }
 
-    final matchRecipientForward = listRecipientForward.indexOf(recipientForward);
-    if (matchRecipientForward >= 0) {
+    final matchedRecipientForward = listRecipientForward.indexOf(recipientForward);
+    log('ForwardController::selectRecipientForward(): matchedRecipientForward: $matchedRecipientForward');
+    if (matchedRecipientForward >= 0) {
       final newRecipientForward = recipientForward.toggleSelection();
-      listRecipientForward[matchRecipientForward] = newRecipientForward;
+      listRecipientForward[matchedRecipientForward] = newRecipientForward;
       listRecipientForward.refresh();
     }
 
@@ -194,8 +191,8 @@ class ForwardController extends BaseController {
   void cancelSelectionMode() {
     selectionMode.value = SelectMode.INACTIVE;
     listRecipientForward.value = listRecipientForward
-        .map((recipient) => recipient.cancelSelection())
-        .toList();
+      .map((recipient) => recipient.cancelSelection())
+      .toList();
   }
 
   void deleteMultipleRecipients(BuildContext context, Set<String> listEmailAddress) {
@@ -233,21 +230,13 @@ class ForwardController extends BaseController {
         .toList();
   }
 
-  void addRecipientAction(BuildContext context) {
+  void addRecipientAction(BuildContext context, List<EmailAddress> listRecipientsSelected) {
+    log('ForwardController::addRecipientAction():listRecipientsSelected: $listRecipientsSelected');
     FocusScope.of(context).unfocus();
 
     final accountId = accountDashBoardController.accountId.value;
-    final emailAddressSelected = recipientController.emailAddressSelected;
-
-    updateErrorRecipientInputText(context, emailAddressSelected?.email);
-
-    if (errorRecipientInputText.value != null) {
-      return;
-    }
-
-    log('ForwardController::addRecipientAction():emailAddressSelected: $emailAddressSelected');
-    if (emailAddressSelected != null && accountId != null) {
-      _handleAddRecipients(accountId, [emailAddressSelected]);
+    if (accountId != null) {
+      _handleAddRecipients(accountId, listRecipientsSelected);
     }
   }
 
@@ -303,25 +292,5 @@ class ForwardController extends BaseController {
 
     currentForward.value = success.forward;
     listRecipientForward.value = currentForward.value!.listRecipientForward;
-  }
-
-  void updateErrorRecipientInputText(BuildContext context, String? emailAddress) {
-    errorRecipientInputText.value = _getErrorRecipientInputString(context, emailAddress);
-  }
-
-  String? _getErrorRecipientInputString(BuildContext context, String? emailAddress) {
-    return _verifyNameInteractor.execute(
-      emailAddress,
-      [EmptyNameValidator(), EmailAddressValidator()]
-    ).fold(
-      (failure) {
-        if (failure is VerifyNameFailure) {
-          return failure.getMessageForwarding(context);
-        } else {
-          return null;
-        }
-        },
-      (success) => null
-    );
   }
 }

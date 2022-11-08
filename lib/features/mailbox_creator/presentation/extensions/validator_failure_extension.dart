@@ -50,14 +50,4 @@ extension ValicatorFailureExtension on VerifyNameFailure {
       return '';
     }
   }
-
-  String getMessageForwarding(BuildContext context) {
-    if (exception is EmptyNameException) {
-      return AppLocalizations.of(context).this_field_cannot_be_blank;
-    } else if (exception is EmailAddressInvalidException) {
-      return AppLocalizations.of(context).incorrectEmailFormat;
-    } else {
-      return '';
-    }
-  }
 }

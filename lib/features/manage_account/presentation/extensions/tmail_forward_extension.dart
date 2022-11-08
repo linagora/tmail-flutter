@@ -7,7 +7,7 @@ extension TMailForwardExtension on TMailForward {
 
   List<RecipientForward> get listRecipientForward {
     return forwards
-        .map((emailAddress) => RecipientForward(EmailAddress(emailAddress, emailAddress)))
+        .map((value) => RecipientForward(EmailAddress(value, value)))
         .toList();
   }
 }
