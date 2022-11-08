@@ -2110,7 +2110,7 @@ class AppLocalizations {
   String get hintInputAutocompleteContact {
     return Intl.message(
       'Enter name or email address',
-      name: 'recipientsLabel',
+      name: 'hintInputAutocompleteContact',
     );
   }
 
