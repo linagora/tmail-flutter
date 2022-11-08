@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-11-04T00:32:44.924510",
+  "@@last_modified": "2022-11-08T16:55:51.988372",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2046,8 +2046,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recipientsLabel": "Enter name or email address",
-  "@recipientsLabel": {
+  "hintInputAutocompleteContact": "Enter name or email address",
+  "@hintInputAutocompleteContact": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2441,5 +2441,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "totalEmailSelected": "Deselect all ({count})",
+  "@totalEmailSelected": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
   }
 }

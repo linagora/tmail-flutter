@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/add_recipi
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_recipient_in_forwarding_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_local_copy_in_forwarding_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_forward_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/tmail_forward_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/controller/forward_recipient_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
@@ -47,6 +48,7 @@ class ForwardController extends BaseController {
   bool get currentForwardLocalCopyState => currentForward.value?.localCopy ?? false;
 
   late ForwardRecipientController recipientController;
+  late Worker dashboardActionWorker;
 
   ForwardController() {
     recipientController = ForwardRecipientController(
@@ -57,6 +59,7 @@ class ForwardController extends BaseController {
   @override
   void onInit() {
     super.onInit();
+    registerListenerWorker();
     try {
       _getForwardInteractor = Get.find<GetForwardInteractor>();
       _deleteRecipientInForwardingInteractor = Get.find<DeleteRecipientInForwardingInteractor>();
@@ -70,6 +73,7 @@ class ForwardController extends BaseController {
   @override
   void onClose() {
     recipientController.onClose();
+    unregisterListenerWorker();
     super.onClose();
   }
 
@@ -176,7 +180,6 @@ class ForwardController extends BaseController {
     }
 
     final matchedRecipientForward = listRecipientForward.indexOf(recipientForward);
-    log('ForwardController::selectRecipientForward(): matchedRecipientForward: $matchedRecipientForward');
     if (matchedRecipientForward >= 0) {
       final newRecipientForward = recipientForward.toggleSelection();
       listRecipientForward[matchedRecipientForward] = newRecipientForward;
@@ -231,7 +234,6 @@ class ForwardController extends BaseController {
   }
 
   void addRecipientAction(BuildContext context, List<EmailAddress> listRecipientsSelected) {
-    log('ForwardController::addRecipientAction():listRecipientsSelected: $listRecipientsSelected');
     FocusScope.of(context).unfocus();
 
     final accountId = accountDashBoardController.accountId.value;
@@ -292,5 +294,21 @@ class ForwardController extends BaseController {
 
     currentForward.value = success.forward;
     listRecipientForward.value = currentForward.value!.listRecipientForward;
+  }
+
+  void registerListenerWorker() {
+    dashboardActionWorker = ever(
+      accountDashBoardController.dashboardSettingAction,
+      (action) {
+        if (action is ClearAllInputForwarding) {
+          cancelSelectionMode();
+          recipientController.clearAll();
+        }
+      }
+    );
+  }
+
+  void unregisterListenerWorker() {
+    dashboardActionWorker.dispose();
   }
 }
