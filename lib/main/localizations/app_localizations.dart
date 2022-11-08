@@ -2107,7 +2107,7 @@ class AppLocalizations {
     );
   }
 
-  String get recipientsLabel {
+  String get hintInputAutocompleteContact {
     return Intl.message(
       'Enter name or email address',
       name: 'recipientsLabel',
@@ -2510,5 +2510,13 @@ class AppLocalizations {
     return Intl.message(
       'Remove',
       name: 'remove');
+  }
+
+  String totalEmailSelected(int count) {
+    return Intl.message(
+        'Deselect all ($count)',
+        name: 'totalEmailSelected',
+        args: [count]
+    );
   }
 }

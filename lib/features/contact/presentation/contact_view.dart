@@ -2,16 +2,16 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/extensions/email_address_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/contact/presentation/contact_controller.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/contact/presentation/utils/contact_utils.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/app_bar_contact_widget.dart';
+import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -30,7 +30,7 @@ class ContactView extends GetWidget<ContactController> {
   ContactView.fromArguments(
       ContactArguments arguments, {
       Key? key,
-      OnSelectedContactCallback? onSelectedContactCallback,
+      SelectedContactCallbackAction? onSelectedContactCallback,
       VoidCallback? onDismissCallback
   }) : super(key: key) {
     controller.arguments = arguments;
@@ -117,7 +117,17 @@ class ContactView extends GetWidget<ContactController> {
                                     },
                                     itemBuilder: (context, index) {
                                       final emailAddress = controller.listContactSearched[index];
-                                      return _buildItemSearchContact(context, emailAddress);
+                                      final suggestionEmailAddress = _toSuggestionEmailAddress(
+                                        emailAddress,
+                                        controller.contactSelected != null
+                                          ? [controller.contactSelected!]
+                                          : []
+                                      );
+                                      return ContactSuggestionBoxItem(
+                                        suggestionEmailAddress,
+                                        padding: ContactUtils.getPaddingSearchResultList(context, _responsiveUtils),
+                                        selectedContactCallbackAction: (contact) => controller.selectContact(context, contact),
+                                      );
                                     }
                                 )
                             );
@@ -134,68 +144,11 @@ class ContactView extends GetWidget<ContactController> {
     );
   }
 
-  Widget _buildItemSearchContact(BuildContext context, EmailAddress emailAddress) {
-    return Material(
-      color: Colors.transparent,
-      child: ListTile(
-        onTap: () => controller.selectContact(context, emailAddress),
-        contentPadding: ContactUtils.getPaddingSearchInputForm(context, _responsiveUtils),
-        leading: Container(
-            width: 44,
-            height: 44,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(44) * 0.5,
-                border: Border.all(color: Colors.transparent),
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: const [0.0, 1.0],
-                    colors: emailAddress.avatarColors),
-                color: AppColor.avatarColor
-            ),
-            child: Text(
-                emailAddress.asString().isNotEmpty
-                    ? emailAddress.asString()[0].toUpperCase()
-                    : '',
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600))),
-        title: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-                Text(
-                    emailAddress.asString(),
-                    maxLines: 1,
-                    overflow: CommonTextStyle.defaultTextOverFlow,
-                    softWrap: CommonTextStyle.defaultSoftWrap,
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal)),
-                if (emailAddress.displayName.isNotEmpty && emailAddress.emailAddress.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                          emailAddress.emailAddress,
-                          maxLines: 1,
-                          overflow: CommonTextStyle.defaultTextOverFlow,
-                          softWrap: CommonTextStyle.defaultSoftWrap,
-                          style: const TextStyle(
-                              color: AppColor.colorContentEmail,
-                              fontSize: 13,
-                              fontWeight: FontWeight.normal)))
-            ]
-        ),
-        trailing: controller.contactSelected?.email == emailAddress.email
-            ? SvgPicture.asset(_imagePaths.icFilterSelected,
-                width: 24,
-                height: 24,
-                fit: BoxFit.fill)
-            : null,
-      ),
-    );
+  SuggestionEmailAddress _toSuggestionEmailAddress(EmailAddress item, List<EmailAddress> addedEmailAddresses) {
+    if (addedEmailAddresses.contains(item)) {
+      return SuggestionEmailAddress(item, state: SuggestionEmailState.duplicated);
+    } else {
+      return SuggestionEmailAddress(item);
+    }
   }
 }

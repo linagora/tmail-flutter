@@ -24,14 +24,14 @@ class ForwardHeaderWidget extends StatelessWidget {
           AppLocalizations.of(context).forwarding,
           style: const TextStyle(
             fontSize: 20,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.bold,
             color: Colors.black)),
         const SizedBox(height: 8),
         Text(
           AppLocalizations.of(context).forwardingSettingExplanation,
           style: const TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.normal,
+            fontWeight: FontWeight.w500,
             color: AppColor.colorSettingExplanation)),
       ]),
     );

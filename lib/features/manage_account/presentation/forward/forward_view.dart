@@ -1,24 +1,24 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
-import 'package:core/presentation/views/button/button_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/contact/presentation/widgets/autocomplete_contact_text_field_with_tags.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/forward_header_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/list_email_forward_widget.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/recipient_input_field_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
+  final _appToast = Get.find<AppToast>();
 
   ForwardView({Key? key}) : super(key: key);
 
@@ -76,7 +76,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
         AppLocalizations.of(context).forwardingSettingExplanation,
         style: const TextStyle(
           fontSize: 16,
-          fontWeight: FontWeight.normal,
+          fontWeight: FontWeight.w500,
           color: AppColor.colorSettingExplanation
         )
       ),
@@ -96,7 +96,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
                 ? _imagePaths.icSwitchOn
                 : _imagePaths.icSwitchOff,
               fit: BoxFit.fill,
-              width: 24,
+              width: 36,
               height: 24)
           );
         }),
@@ -108,7 +108,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
             softWrap: CommonTextStyle.defaultSoftWrap,
             style: const TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.w500,
                 color: Colors.black)
           ),
         )
@@ -127,84 +127,30 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
     ));
   }
 
-  Widget _buildAddRecipientInputField() {
-    return Obx(() => RecipientInputFieldBuilder(
-      editingController: controller.recipientController.inputEmailForwardController,
-      onSelectedSuggestionAction: (newEmailAddress) {
-        controller.recipientController.selectEmailAddress(newEmailAddress);
-        controller.recipientController.inputEmailForwardController.text = newEmailAddress.email ?? '';
-      },
-      onRecipientInputTextChange: (pattern) {
-        if (pattern.trim().isNotEmpty) {
-          controller.recipientController.selectEmailAddress(EmailAddress(null, pattern.trim()));
-        } else {
-          controller.recipientController.selectEmailAddress(null);
-        }
-        controller.errorRecipientInputText.value = null;
-      },
-      onSummitedCallbackAction: (pattern) {
-        if (pattern.trim().isNotEmpty) {
-          controller.recipientController.selectEmailAddress(EmailAddress(null, pattern.trim()));
-        } else {
-          controller.recipientController.selectEmailAddress(null);
-        }
-      },
-      onSuggestionCallbackAction: controller.recipientController.getAutoCompleteSuggestion,
-      errorText: controller.errorRecipientInputText.value,
-    ));
-  }
-
-  Widget _buildAddRecipientButton(BuildContext context, {double? maxWidth}) {
-    return (ButtonBuilder(_imagePaths.icAddIdentity)
-      ..key(const Key('button_add_recipient'))
-      ..decoration(BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: AppColor.colorTextButton))
-      ..paddingIcon(const EdgeInsets.only(right: 8))
-      ..iconColor(Colors.white)
-      ..maxWidth(maxWidth ?? 170)
-      ..size(20)
-      ..radiusSplash(10)
-      ..padding(const EdgeInsets.symmetric(vertical: 12))
-      ..textStyle(const TextStyle(
-          fontSize: 17,
-          color: Colors.white,
-          fontWeight: FontWeight.w500))
-      ..onPressActionClick(() => controller.addRecipientAction(context))
-      ..text(AppLocalizations.of(context).addRecipientButton, isVertical: false)
-    ).build();
-  }
-
   Widget _buildAddRecipientsFormWidget(BuildContext context) {
-    if (_responsiveUtils.isPortraitMobile(context)) {
-      return Container(
-        color: Colors.transparent,
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildAddRecipientInputField(),
-            const SizedBox(height: 16),
-            _buildAddRecipientButton(context, maxWidth: double.infinity)
-          ],
-        ),
-      );
-    } else {
-      return Container(
-        color: Colors.transparent,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(child: _buildAddRecipientInputField()),
-            Padding(
-              padding: const EdgeInsets.only(left: 24, right: 12),
-              child: _buildAddRecipientButton(context))
-          ],
-        ),
-      );
-    }
+    return AutocompleteContactTextFieldWithTags(
+      controller.recipientController.listRecipients,
+      controller: controller.recipientController.inputRecipientController,
+      onSuggestionCallback: controller.recipientController.getAutoCompleteSuggestion,
+      hasAddContactButton: true,
+      onAddContactCallback: (listRecipientsSelected) {
+        controller.addRecipientAction(context, listRecipientsSelected);
+      },
+      onExceptionCallback: () {
+        _appToast.showBottomToast(
+          context,
+          AppLocalizations.of(context).incorrectEmailFormat,
+          leadingIcon: SvgPicture.asset(
+            _imagePaths.icNotConnection,
+            width: 24,
+            height: 24,
+            color: Colors.white,
+            fit: BoxFit.fill),
+          backgroundColor: AppColor.toastErrorBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          maxWidth: _responsiveUtils.getMaxWidthToast(context));
+      },
+    );
   }
 }

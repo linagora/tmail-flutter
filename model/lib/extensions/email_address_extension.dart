@@ -31,6 +31,8 @@ extension EmailAddressExtension on EmailAddress {
 
   String get displayName => name ?? '';
 
+  String get labelAvatar => asString().isNotEmpty ? asString()[0].toUpperCase() : '';
+
   List<Color> get avatarColors {
     return AppColor.mapGradientColor[_generateIndex()];
   }
