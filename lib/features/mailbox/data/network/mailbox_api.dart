@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -21,7 +22,9 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart';
+import 'package:model/error_type_handler/set_method_error_handler_mixin.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
@@ -29,7 +32,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
-class MailboxAPI {
+class MailboxAPI with HandleSetErrorMixin {
 
   final HttpClient httpClient;
 
@@ -157,14 +160,14 @@ class MailboxAPI {
     }
   }
 
-  Future<bool> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {
+  Future<Map<Id, SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {
     requireCapability(session, accountId, [CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail]);
 
     final coreCapability = session.getCapabilityProperties<CoreCapability>(
         accountId, CapabilityIdentifier.jmapCore);
     final maxMethodCount = coreCapability.maxCallsInRequest.value.toInt();
 
-    var finalResult = true;
+    final Map<Id,SetError> finalDeletedMailboxErrors = {};
     var start = 0;
     var end = 0;
     while (end < mailboxIds.length) {
@@ -191,13 +194,38 @@ class MailboxAPI {
         .build()
         .execute();
 
-      finalResult = currentSetMailboxInvocations
+      final deleteMailboxErrors = currentSetMailboxInvocations
         .map((currentInvocation) => response.parse(currentInvocation.methodCallId, SetMailboxResponse.deserialize))
-        .map((response) => response?.destroyed?.isNotEmpty ?? false)
-        .every((element) => element == true);
+        .map(_handleDeleteMailboxResponse)
+        .expand((entries) => entries);
+      finalDeletedMailboxErrors.addAll(Map.fromEntries(deleteMailboxErrors));
     }
 
-    return finalResult;
+    return finalDeletedMailboxErrors;
+  }
+
+  List<MapEntry<Id, SetError>> _handleDeleteMailboxResponse(SetMailboxResponse? response) {
+    final List<MapEntry<Id,SetError>> remainedErrors = [];
+    if (response != null) {
+      handleSetErrors(
+          notDestroyedError: response.notDestroyed,
+          notUpdatedError: response.notUpdated,
+          notCreatedError: response.notCreated,
+          notDestroyedHandlers: <SetMethodErrorHandler>{
+                (entry) {
+              if (entry.value.type == SetError.notFound) {
+                return true;
+              }
+              return false;
+            }
+          },
+          unCatchErrorHandler: (setErrorEntry) {
+            remainedErrors.add(setErrorEntry);
+            return false;
+          }
+      );
+    }
+    return remainedErrors;
   }
 
   Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) async {
