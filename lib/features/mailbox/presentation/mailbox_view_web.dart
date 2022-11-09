@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_fold
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_search_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_list_dashboard_item.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_footer_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -72,6 +73,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                 })),
               ]),
             )),
+            const QuotasFooterWidget(),
           ]),
         )
     );

@@ -2519,4 +2519,34 @@ class AppLocalizations {
         args: [count]
     );
   }
+
+  String get storageQuotas {
+    return Intl.message(
+      'Storage',
+      name: 'storageQuotas',
+    );
+  }
+
+  String textQuotasUsed(num used, num softLimit) {
+    return Intl.message(
+      '$used GB of $softLimit GB Used',
+      name: 'textQuotasUsed',
+      args: [used, softLimit],
+    );
+  }
+
+  String textQuotasWarningTitle(num progress) {
+    return Intl.message(
+      'You are running out of storage ($progress%).',
+      name: 'textQuotasWarningTitle',
+      args: [progress],
+    );
+  }
+
+  String get textQuotasWarningContent {
+    return Intl.message(
+      "Soon you won't be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.",
+      name: 'textQuotasWarningTitle',
+    );
+  }
 }
