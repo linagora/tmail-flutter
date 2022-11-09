@@ -1,0 +1,41 @@
+on:
+  pull_request:
+    paths:
+      - "Dockerfile"
+
+name: Image scan
+
+jobs:
+  image-scan:
+    name: Build and scan image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build image
+        uses: docker/build-push-action@v3
+        with:
+          tags: tmail-web:${{ github.sha }}
+          load: true
+          cache-to: |
+            type=gha,mode=max
+          cache-from: |
+            type=gha
+
+      - name: Scan image
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "image"
+          image-ref: "tmail-web:${{ github.sha }}"
+          format: "sarif"
+          output: "trivy-results.sarif"
+          severity: "HIGH,CRITICAL"
+
+      - name: Upload scan results to Github Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: "trivy-results.sarif"
