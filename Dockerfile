@@ -40,7 +40,7 @@ RUN cd core \
   && flutter build web --profile
 
 # Stage 2 - Create the run-time image
-FROM nginx:stable
+FROM nginx:mainline
 RUN chmod -R 755 /usr/share/nginx/html && apt install -y gzip
 COPY --from=build-env /app/server/nginx.conf /etc/nginx
 COPY --from=build-env /app/build/web /usr/share/nginx/html
