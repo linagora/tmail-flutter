@@ -28,6 +28,8 @@ class NetworkConnectionController extends BaseController {
      connectivityResult.value = result;
      if (_isEnableShowToastDisconnection && result == ConnectivityResult.none) {
        _showToastLostConnection();
+     } else {
+       ToastView.dismiss();
      }
     }) ;
    super.onReady();
