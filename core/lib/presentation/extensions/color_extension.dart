@@ -163,6 +163,9 @@ extension AppColor on Color {
   static const colorBackgroundContactTagItem = Color(0xFFDCE0E5);
   static const colorDeleteContactIcon = Color(0xFFAEB7C2);
   static const colorItemRecipientSelected = Color(0xFFDFEEFF);
+  static const colorBackgroundQuotasWarning = Color(0xFFFFC107);
+  static const colorTitleQuotasWarning = Color(0xFFF05C44);
+  static const colorProgressQuotasWarning = Color(0xFFFFA000);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

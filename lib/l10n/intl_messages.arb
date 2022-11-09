@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "@@last_modified": "2022-11-08T16:55:51.988372",
+=======
+  "@@last_modified": "2022-11-09T17:10:23.172672",
+>>>>>>> 24967b2c (TF-1014: [Dev] Show quota at the bottom of mailbox)
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2418,12 +2422,18 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+<<<<<<< HEAD
   "forwardingSettingExplanation": "Allows a new recipient to see the email sent if they were not originally included in the email chain.",
   "@forwardingSettingExplanation": {
+=======
+  "storageQuotas": "Storage",
+  "@storageQuotas": {
+>>>>>>> 24967b2c (TF-1014: [Dev] Show quota at the bottom of mailbox)
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
+<<<<<<< HEAD
   "addRecipientButton": "Add recipient",
   "@addRecipientButton": {
     "type": "text",
@@ -2450,6 +2460,28 @@
     ],
     "placeholders": {
       "count": {}
+=======
+  "textQuotasUsed": "{used} GB of {softLimit} GB Used",
+  "@textQuotasUsed": {
+    "type": "text",
+    "placeholders_order": [
+      "used",
+      "softLimit"
+    ],
+    "placeholders": {
+      "used": {},
+      "softLimit": {}
+    }
+  },
+  "textQuotasWarningTitle": "You are running out of storage ({progress}%).",
+  "@textQuotasWarningTitle": {
+    "type": "text",
+    "placeholders_order": [
+      "progress"
+    ],
+    "placeholders": {
+      "progress": {}
+>>>>>>> 24967b2c (TF-1014: [Dev] Show quota at the bottom of mailbox)
     }
   }
 }

@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/se
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_warning_banner_widget.dart';
 import 'package:tmail_ui_user/features/search/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
@@ -111,6 +112,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
                       Expanded(child: Column(children: [
                         _buildEmptyTrashButton(context),
+                        const QuotasWarningBannerWidget(),
                         _buildVacationNotificationMessage(context),
                         _buildListButtonQuickSearchFilter(context),
                         _buildMarkAsMailboxReadLoading(context),

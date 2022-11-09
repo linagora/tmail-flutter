@@ -71,6 +71,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/quotas_bindings.dart';
 import 'package:tmail_ui_user/features/search/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
@@ -100,6 +101,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     ThreadBindings().dependencies();
     EmailBindings().dependencies();
     SearchEmailBindings().dependencies();
+    QuotasBindings().dependencies();
   }
 
   @override
