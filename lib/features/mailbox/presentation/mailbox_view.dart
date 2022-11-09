@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_s
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_search_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_footer_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -84,7 +85,7 @@ class MailboxView extends GetWidget<MailboxController> {
                       } else {
                         return const SizedBox.shrink();
                       }
-                    })
+                    }),
                   ]),
                 )
             )
@@ -228,6 +229,7 @@ class MailboxView extends GetWidget<MailboxController> {
         Obx(() => controller.folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
             ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderMailboxTree.value.root)
             : const SizedBox.shrink()),
+        const QuotasFooterWidget(),
       ])
     );
   }
