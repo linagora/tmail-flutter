@@ -2356,5 +2356,169 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "myFolders": "Le mie cartelle",
+  "@myFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unknownError": "Si è verificato un errore sconosciuto, riprova",
+  "@unknownError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleHeaderAttachment": "{count} Allegati ({totalSize}):",
+  "@titleHeaderAttachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "totalSize"
+    ],
+    "placeholders": {
+      "count": {},
+      "totalSize": {}
+    }
+  },
+  "undo": "Annullare",
+  "@undo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "skip": "Saltare",
+  "@skip": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showAll": "Mostra tutti",
+  "@showAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectParentFolder": "Seleziona la cartella principale",
+  "@selectParentFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceipt": "Richiedi conferma di lettura",
+  "@requestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "appGridTittle": "Vai alle applicazioni",
+  "@appGridTittle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleReadReceiptRequestNotificationMessage": "Richiesto di conferma di lettura",
+  "@titleReadReceiptRequestNotificationMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subTitleReadReceiptRequestNotificationMessage": "Il mittente ha richiesto una conferma di lettura per questa email. Invia la conferma?",
+  "@subTitleReadReceiptRequestNotificationMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yes": "Sì",
+  "@yes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no": "No",
+  "@no": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageNotSupportMdnWhenSendReceipt": "Il tuo account non supporta la funzionalità MDN",
+  "@toastMessageNotSupportMdnWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageCannotFoundIdentityWhenSendReceipt": "Impossibile trovare l'identificativo fornito",
+  "@toastMessageCannotFoundIdentityWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageCannotFoundEmailIdWhenSendReceipt": "Impossibile trovare l'e-mail ID fornito",
+  "@toastMessageCannotFoundEmailIdWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subjectSendReceiptToSender": "Leggere: {subject}",
+  "@subjectSendReceiptToSender": {
+    "type": "text",
+    "placeholders_order": [
+      "subject"
+    ],
+    "placeholders": {
+      "subject": {}
+    }
+  },
+  "textBodySendReceiptToSender": "Il messaggio è stato letto da {sender} il {time} \n\nOggetto: {subject} \n\nNota: questa notifica conferma solo che il messaggio è stato visualizzato sul computer del destinatario. Non vi è alcuna garanzia che il destinatario abbia letto o compreso il contenuto del messaggio.",
+  "@textBodySendReceiptToSender": {
+    "type": "text",
+    "placeholders_order": [
+      "sender",
+      "subject",
+      "time"
+    ],
+    "placeholders": {
+      "sender": {},
+      "subject": {},
+      "time": {}
+    }
+  },
+  "toastMessageSendReceiptSuccess": "È stata inviata una conferma di lettura.",
+  "@toastMessageSendReceiptSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveConversation": "Sposta {numberOfConversation} conversazione",
+  "@moveConversation": {
+    "type": "text",
+    "placeholders_order": [
+      "numberOfConversation"
+    ],
+    "placeholders": {
+      "numberOfConversation": {}
+    }
+  },
+  "messageConfirmationDialogDeleteMultipleMailbox": "{numberOfMailbox} caselli di posta e tutte le sottocartelle e i messaggi in essa contenuti verranno eliminati e non sarà possibile ripristinarli. Vuoi continuare a cancellare?",
+  "@messageConfirmationDialogDeleteMultipleMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "numberOfMailbox"
+    ],
+    "placeholders": {
+      "numberOfMailbox": {}
+    }
+  },
+  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "Non hai selezionato una cartella di salvataggio",
+  "@toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewMailbox": "Crea nuova casella di posta",
+  "@createNewMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
