@@ -1,23 +1,15 @@
 import 'dart:ui';
 
-import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
-import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/delete_email_rule_request.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class ManageAccountDataSourceImpl extends ManageAccountDataSource {
 
-  final ManageAccountAPI manageAccountAPI;
   final LanguageCacheManager _languageCacheManager;
   final ExceptionThrower _exceptionThrower;
 
   ManageAccountDataSourceImpl(
-    this.manageAccountAPI,
     this._languageCacheManager,
     this._exceptionThrower
   );
@@ -26,45 +18,6 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   Future<void> persistLanguage(Locale localeCurrent) {
     return Future.sync(() async {
       return await _languageCacheManager.persistLanguage(localeCurrent);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
-  }
-
-  @override
-  Future<List<TMailRule>> getAllTMailRule(AccountId accountId) {
-    return Future.sync(() async {
-      return await manageAccountAPI.getListTMailRule(accountId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
-  }
-
-  @override
-  Future<List<TMailRule>> deleteTMailRule(AccountId accountId, DeleteEmailRuleRequest deleteEmailRuleRequest) {
-
-    deleteEmailRuleRequest.currentEmailRules.remove(deleteEmailRuleRequest.emailRuleDelete);
-
-    return Future.sync(() async {
-      return await manageAccountAPI.updateListTMailRule(accountId, deleteEmailRuleRequest.currentEmailRules);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
-  }
-
-  @override
-  Future<List<TMailRule>> createNewEmailRuleFilter(AccountId accountId, CreateNewEmailRuleFilterRequest ruleFilterRequest) {
-    return Future.sync(() async {
-      return await manageAccountAPI.updateListTMailRule(accountId, ruleFilterRequest.newListTMailRules);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
-  }
-
-  @override
-  Future<List<TMailRule>> editEmailRuleFilter(AccountId accountId, EditEmailRuleFilterRequest ruleFilterRequest) {
-    return Future.sync(() async {
-      return await manageAccountAPI.updateListTMailRule(accountId, ruleFilterRequest.listTMailRulesUpdated);
     }).catchError((error) {
       _exceptionThrower.throwException(error);
     });

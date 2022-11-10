@@ -11,11 +11,11 @@ import 'package:rule_filter/rule_filter/set/set_rule_filter_method.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/manage_account/data/extensions/list_tmail_rule_extensions.dart';
 
-class ManageAccountAPI {
+class RuleFilterAPI {
 
   final HttpClient _httpClient;
 
-  ManageAccountAPI(this._httpClient);
+  RuleFilterAPI(this._httpClient);
 
   Future<List<TMailRule>> getListTMailRule(AccountId accountId) async {
     final processingInvocation = ProcessingInvocation();
