@@ -1,5 +1,5 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
@@ -7,7 +7,8 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/model.dart';
+import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/mailbox/select_mode.dart';
 
 class PresentationEmail with EquatableMixin {
 
@@ -27,6 +28,7 @@ class PresentationEmail with EquatableMixin {
   final Map<MailboxId, bool>? mailboxIds;
   final List<MailboxName?>? mailboxNames;
   final SelectMode selectMode;
+  final Uri? routeWeb;
 
   PresentationEmail(
     this.id,
@@ -46,6 +48,7 @@ class PresentationEmail with EquatableMixin {
       this.mailboxIds,
       this.mailboxNames,
       this.selectMode = SelectMode.INACTIVE,
+      this.routeWeb
     }
   );
 
@@ -72,6 +75,8 @@ class PresentationEmail with EquatableMixin {
 
   String get mailboxName => mailboxNames?.first?.name ?? '';
 
+  String get routeWebAsString => routeWeb.toString();
+
   @override
   List<Object?> get props => [
     id,
@@ -86,6 +91,10 @@ class PresentationEmail with EquatableMixin {
     sentAt,
     replyTo,
     preview,
-    hasAttachment
+    hasAttachment,
+    mailboxIds,
+    mailboxNames,
+    selectMode,
+    routeWeb
   ];
 }

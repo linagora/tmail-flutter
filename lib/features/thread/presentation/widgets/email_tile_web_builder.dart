@@ -11,9 +11,6 @@ import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/main/routes/navigation_router.dart';
-import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:url_launcher/link.dart';
 
 class EmailTileBuilder with BaseEmailItemTile {
@@ -21,7 +18,7 @@ class EmailTileBuilder with BaseEmailItemTile {
   final PresentationEmail _presentationEmail;
   final BuildContext _context;
   final SelectMode _selectModeAll;
-  final PresentationMailbox? mailboxCurrent;
+  final PresentationMailbox? mailboxContain;
   final SearchQuery? _searchQuery;
   final bool isSearchEmailRunning;
   final EdgeInsets? padding;
@@ -43,7 +40,7 @@ class EmailTileBuilder with BaseEmailItemTile {
     this._isShowingEmailContent,
       {
       this.isSearchEmailRunning = false,
-      this.mailboxCurrent,
+      this.mailboxContain,
       this.padding,
       this.paddingDivider,
       this.isDrag = false,
@@ -80,56 +77,43 @@ class EmailTileBuilder with BaseEmailItemTile {
   }
 
   Widget _wrapContainerForTile(Widget tile) {
+    return Container(
+      margin: _getMarginItem(),
+      padding: _getPaddingItem(),
+      decoration: _getDecorationItem(),
+      alignment: Alignment.center,
+      child: Link(
+        uri: _presentationEmail.routeWeb,
+        builder: (_, __) => tile
+      )
+    );
+  }
+
+  EdgeInsets _getMarginItem() {
     if (responsiveUtils.isDesktop(_context)) {
-      return Container(
-        margin: const EdgeInsets.only(top: 3),
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: (_selectModeAll == SelectMode.ACTIVE &&
-            _presentationEmail.selectMode == SelectMode.ACTIVE) || isDrag || _isShowingEmailContent
-            ? BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                color: AppColor.colorItemEmailSelectedDesktop)
-            : null,
-        child: Link(
-          uri: RouteUtils.generateRoutePathBrowser(
-            AppRoutes.dashboard,
-            NavigationRouter(
-              emailId: _presentationEmail.id,
-              mailboxId: mailboxCurrent?.id,
-              dashboardType: isSearchEmailRunning
-                ? DashboardType.search
-                : DashboardType.normal
-            )
-          ),
-          builder: (_, __) => tile
-        )
-      );
+      return const EdgeInsets.only(top: 3);
     } else {
-      return Container(
-          margin: const EdgeInsets.only(top: 3, left: 16, right: 16),
-          padding: const EdgeInsets.only(bottom: 8, right: 8, top: 8),
-          decoration: (_selectModeAll == SelectMode.ACTIVE &&
-              _presentationEmail.selectMode == SelectMode.ACTIVE) || isDrag || _isShowingEmailContent
-              ? BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  color: AppColor.colorItemEmailSelectedDesktop)
-              : BoxDecoration(
-                  borderRadius: BorderRadius.circular(0),
-                  color: Colors.white),
-          alignment: Alignment.center,
-          child: Link(
-            uri: RouteUtils.generateRoutePathBrowser(
-              AppRoutes.dashboard,
-              NavigationRouter(
-                emailId: _presentationEmail.id,
-                mailboxId: mailboxCurrent?.id,
-                dashboardType: isSearchEmailRunning
-                  ? DashboardType.search
-                  : DashboardType.normal
-              )
-            ),
-            builder: (_, __) => tile
-          ));
+      return const EdgeInsets.only(top: 3, left: 16, right: 16);
+    }
+  }
+
+  EdgeInsets _getPaddingItem() {
+    if (responsiveUtils.isDesktop(_context)) {
+      return const EdgeInsets.symmetric(vertical: 8);
+    } else {
+      return const EdgeInsets.only(bottom: 8, right: 8, top: 8);
+    }
+  }
+
+  BoxDecoration _getDecorationItem() {
+    if ((_selectModeAll == SelectMode.ACTIVE && _presentationEmail.selectMode == SelectMode.ACTIVE) || isDrag || _isShowingEmailContent) {
+      return BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: AppColor.colorItemEmailSelectedDesktop);
+    } else {
+      return BoxDecoration(
+        borderRadius: BorderRadius.circular(0),
+        color: Colors.white);
     }
   }
 
@@ -168,7 +152,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                             fit: BoxFit.fill)),
                   Expanded(child: buildInformationSender(
                     _presentationEmail,
-                    mailboxCurrent,
+                    mailboxContain,
                     isSearchEmailRunning,
                     _searchQuery
                   )),
@@ -264,7 +248,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                                 fit: BoxFit.fill)),
                       Expanded(child: buildInformationSender(
                         _presentationEmail,
-                        mailboxCurrent,
+                        mailboxContain,
                         isSearchEmailRunning,
                         _searchQuery
                       )),
@@ -385,7 +369,7 @@ class EmailTileBuilder with BaseEmailItemTile {
               width: 160,
               child: buildInformationSender(
                 _presentationEmail,
-                mailboxCurrent,
+                mailboxContain,
                 isSearchEmailRunning,
                 _searchQuery
               )),
@@ -437,7 +421,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                     : EmailActionType.markAsRead,
                 _presentationEmail)),
       const SizedBox(width: 5),
-      if (mailboxCurrent?.isDrafts == false)
+      if (mailboxContain?.isDrafts == false)
         ... [
           buildIconWeb(
               minSize: 18,
@@ -476,7 +460,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                   : EmailActionType.moveToTrash,
               _presentationEmail)),
       const SizedBox(width: 5),
-      if (mailboxCurrent?.isDrafts == false)
+      if (mailboxContain?.isDrafts == false)
         buildIconWebHasPosition(
             _context,
             icon: SvgPicture.asset(
@@ -501,7 +485,7 @@ class EmailTileBuilder with BaseEmailItemTile {
   }
 
   bool get canDeletePermanently {
-    return mailboxCurrent?.isTrash == true || mailboxCurrent?.isDrafts == true;
+    return mailboxContain?.isTrash == true || mailboxContain?.isDrafts == true;
   }
 
   Widget _buildDateTimeForDesktopScreen() {

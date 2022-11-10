@@ -227,7 +227,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     } else {
       log('ManageAccountDashBoardController::backToMailboxDashBoard(): canBack: FALSE');
       pushAndPopAll(
-        RouteUtils.generateRoutePathMobile(AppRoutes.dashboard, NavigationRouter()),
+        RouteUtils.generateRouteMobile(AppRoutes.dashboard, NavigationRouter()),
         arguments: sessionCurrent);
     }
   }
