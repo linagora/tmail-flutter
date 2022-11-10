@@ -420,29 +420,31 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             key: const PageStorageKey('list_presentation_email_in_search_view'),
             itemExtent: _getItemExtent(context),
             itemCount: listPresentationEmail.length,
-            itemBuilder: (context, index) => Obx(() => (EmailTileBuilder(
-                context,
-                listPresentationEmail[index],
-                controller.selectionMode.value,
-                controller.searchQuery,
-                controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
-                isSearchEmailRunning: true,
-                padding: SearchEmailUtils.getPaddingSearchResultList(context, _responsiveUtils),
-                paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, _responsiveUtils),
-                mailboxCurrent: listPresentationEmail[index].findMailboxContain(
-                    controller.mailboxDashBoardController.mapMailboxById))
-              ..addOnPressEmailActionClick((action, email) =>
-                  controller.pressEmailAction(
-                      context,
-                      action,
-                      email,
-                      mailboxContain: email.findMailboxContain(
-                          controller.mailboxDashBoardController.mapMailboxById)))
-              ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
-                  ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
-                  : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email))))
-              .build()))
+            itemBuilder: (context, index) {
+              final mailboxContain = _getMailboxContain(listPresentationEmail[index]);
+              final newPresentationEmail = controller.generateEmailByPlatform(listPresentationEmail[index]);
+              return Obx(() => (EmailTileBuilder(
+                    context,
+                    newPresentationEmail,
+                    controller.selectionMode.value,
+                    controller.searchQuery,
+                    controller.mailboxDashBoardController.selectedEmail.value?.id == newPresentationEmail.id,
+                    isSearchEmailRunning: true,
+                    padding: SearchEmailUtils.getPaddingSearchResultList(context, _responsiveUtils),
+                    paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, _responsiveUtils),
+                    mailboxContain: mailboxContain)
+                ..addOnPressEmailActionClick((action, email) =>
+                    controller.pressEmailAction(context, action, email, mailboxContain: mailboxContain))
+                ..addOnMoreActionClick((email, position) => _responsiveUtils.isScreenWithShortestSide(context)
+                    ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
+                    : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
+              ).build());
+            })
     );
+  }
+
+  PresentationMailbox? _getMailboxContain(PresentationEmail currentEmail) {
+    return currentEmail.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById);
   }
 
   double? _getItemExtent(BuildContext context) {
@@ -470,7 +472,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
-    final mailboxContain = email.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById);
+    final mailboxContain = _getMailboxContain(email);
 
     return (EmailActionCupertinoActionSheetActionBuilder(
         const Key('mark_as_spam_or_un_spam_action'),

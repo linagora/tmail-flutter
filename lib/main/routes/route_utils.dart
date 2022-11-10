@@ -1,17 +1,21 @@
 
 import 'package:core/data/model/query/query_parameter.dart';
 import 'package:core/data/network/config/service_path.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
+import 'package:universal_html/html.dart' as html;
 
-class RouteUtils {
+abstract class RouteUtils {
 
   static String get baseOriginUrl => Uri.base.origin;
 
-  static String generateRoutePathMobile(String route, NavigationRouter router) {
+  static String get baseUrl => Uri.base.path;
+
+  static String generateRouteMobile(String route, NavigationRouter router) {
     ServicePath servicePath = ServicePath(route);
     if (router.emailId != null) {
       servicePath = servicePath.withPathParameter(router.emailId!.id.value);
@@ -25,7 +29,7 @@ class RouteUtils {
     return servicePath.path;
   }
 
-  static Uri generateRoutePathBrowser(String route, NavigationRouter router) {
+  static Uri generateRouteBrowser(String route, NavigationRouter router) {
     final baseRoutePath = '$baseOriginUrl/#$route';
     ServicePath servicePath = ServicePath(baseRoutePath);
     if (router.emailId != null) {
@@ -56,5 +60,11 @@ class RouteUtils {
       mailboxId: mailboxId,
       dashboardType: dashboardType,
     );
+  }
+
+  static void updateRouteOnBrowser(String title, Uri newRoute) {
+    log('RouteUtils::updateRouteOnBrowser(): title: $title');
+    log('RouteUtils::updateRouteOnBrowser(): newRoute: $newRoute');
+    html.window.history.replaceState(null, title, newRoute.toString());
   }
 }
