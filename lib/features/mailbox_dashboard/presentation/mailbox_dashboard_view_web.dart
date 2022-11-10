@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dar
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -38,6 +39,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   final SearchController searchController = Get.find<SearchController>();
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
+  final mailBoxDashboardController = Get.find<MailboxDashBoardController>();
 
   @override
   Widget build(BuildContext context) {
@@ -350,7 +352,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ..onPressActionClick(() => controller.dispatchAction(SelectionAllEmailAction()))
           ..text(AppLocalizations.of(context).select_all, isVertical: false))
         .build(),
-      if (!searchController.isSearchEmailRunning)
+      if (mailBoxDashboardController.isAbleMarkAllAsRead())
         Padding(
           padding: const EdgeInsets.only(left: 16),
           child: (ButtonBuilder(imagePaths.icMarkAllAsRead)
