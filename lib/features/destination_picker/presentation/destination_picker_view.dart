@@ -318,12 +318,11 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   ) {
     return Obx(() => Container(
         margin: const EdgeInsets.only(
-            right: 8,
-            bottom: 12,
+            bottom: 8,
             top: BuildUtils.isWeb ? 8 : 0),
         decoration: _responsiveUtils.isDesktop(context)
             ? BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(10),
                 color: Colors.white)
             : null,
         child: ListView.builder(

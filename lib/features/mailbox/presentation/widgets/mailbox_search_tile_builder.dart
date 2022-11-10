@@ -95,7 +95,7 @@ class MailboxSearchTileBuilder {
                       borderRadius: BorderRadius.circular(10),
                       color: backgroundColorItem),
                     child: ListTile(
-                      contentPadding: const EdgeInsets.only(left: 8),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 24),
                       onTap: () => _onOpenMailboxActionClick?.call(_presentationMailbox),
                       leading: _buildLeadingIcon(),
                       title: _buildTitleItem(),
