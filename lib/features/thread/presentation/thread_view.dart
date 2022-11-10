@@ -335,7 +335,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
           itemExtent: _getItemExtent(context),
           itemCount: listPresentationEmail.length,
           itemBuilder: (context, index) {
-            final mailboxContain = _getMailboxContain(listPresentationEmail[index]);
+            final mailboxContain = controller.getMailboxContain(listPresentationEmail[index]);
             final newPresentationEmail = controller.generateEmailByPlatform(listPresentationEmail[index]);
             return Obx(() => Draggable<List<PresentationEmail>>(
               maxSimultaneousDrags: kIsWeb ? null : 0,
@@ -373,12 +373,6 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
           }),
       )
     );
-  }
-
-  PresentationMailbox? _getMailboxContain(PresentationEmail currentEmail) {
-    return controller.searchController.isSearchEmailRunning
-      ? currentEmail.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
-      : controller.currentMailbox;
   }
 
   Widget _buildFeedBackWidget(BuildContext context) {
@@ -508,7 +502,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   }
 
   Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
-    final mailboxContain = _getMailboxContain(email);
+    final mailboxContain = controller.getMailboxContain(email);
     return (EmailActionCupertinoActionSheetActionBuilder(
             const Key('mark_as_spam_or_un_spam_action'),
             SvgPicture.asset(

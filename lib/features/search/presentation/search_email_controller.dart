@@ -584,6 +584,7 @@ class SearchEmailController extends BaseController
   }
 
   void closeSearchView(BuildContext context) {
+    log('SearchEmailController::closeSearchView(): ');
     clearAllTextInputSearchForm();
     clearAllResultSearch();
     FocusScope.of(context).unfocus();
@@ -623,17 +624,17 @@ class SearchEmailController extends BaseController
         markAsStarEmail(selectedEmail, MarkStarAction.unMarkStar);
         break;
       case EmailActionType.moveToMailbox:
-        moveToMailbox(context, selectedEmail);
+        moveToMailbox(context, selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.moveToTrash:
-        moveToTrash(selectedEmail);
+        moveToTrash(selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.deletePermanently:
         deleteEmailPermanently(context, selectedEmail);
         break;
       case EmailActionType.moveToSpam:
         popBack();
-        moveToSpam(selectedEmail);
+        moveToSpam(selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.unSpam:
         popBack();
@@ -735,6 +736,7 @@ class SearchEmailController extends BaseController
         AppRoutes.dashboard,
         NavigationRouter(
           emailId: currentEmail.id,
+          searchQuery: searchQuery,
           dashboardType: DashboardType.search
         )
       );

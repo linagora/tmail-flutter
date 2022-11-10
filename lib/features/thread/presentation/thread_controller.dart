@@ -90,9 +90,9 @@ class ThreadController extends BaseController with EmailActionController {
   bool canLoadMore = true;
   bool canSearchMore = true;
   bool _isLoadingMore = false;
-    get isLoadingMore => _isLoadingMore;
   MailboxId? _currentMailboxId;
   jmap.State? _currentEmailState;
+  NavigationRouter? _navigationRouter;
   final ScrollController listEmailController = ScrollController();
   final FocusNode focusNodeKeyBoard = FocusNode();
   final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
@@ -101,6 +101,8 @@ class ThreadController extends BaseController with EmailActionController {
   Set<Comparator>? get _sortOrder => <Comparator>{}
     ..add(EmailComparator(EmailComparatorProperty.receivedAt)
       ..setIsAscending(false));
+
+  bool get isLoadingMore => _isLoadingMore;
 
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
 
@@ -157,6 +159,7 @@ class ThreadController extends BaseController with EmailActionController {
           _isLoadingMore = false;
         } else if (failure is GetEmailByIdFailure) {
           openingEmail.value = false;
+          _navigationRouter = null;
         }
       },
       (success) {
@@ -176,7 +179,7 @@ class ThreadController extends BaseController with EmailActionController {
           openingEmail.value = true;
         } else if (success is GetEmailByIdSuccess) {
           openingEmail.value = false;
-          _openEmailDetailView(success.email, success.mailboxId, success.dashboardType);
+          _openEmailDetailView(success.email);
         }
       }
     );
@@ -246,13 +249,22 @@ class ThreadController extends BaseController with EmailActionController {
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is StartSearchEmailAction) {
         cancelSelectEmail();
+        _updateSearchRouteOnBrowser();
         _searchEmail();
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is EmptyTrashAction) {
         deleteSelectionEmailsPermanently(action.context, DeleteActionType.all);
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is SelectEmailByIdAction) {
-        _getEmailByIdAction(action.emailId, action.mailboxId, action.dashboardType);
+        _navigationRouter = action.navigationRouter;
+        if (_navigationRouter!.searchQuery != null) {
+          _activateSearchFromRouter();
+        }
+        _getEmailByIdAction(_navigationRouter!.emailId!);
+        mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is SearchEmailByQueryAction) {
+        _navigationRouter = action.navigationRouter;
+        _activateSearchFromRouter();
         mailboxDashBoardController.clearDashBoardAction();
       }
     });
@@ -312,6 +324,18 @@ class ThreadController extends BaseController with EmailActionController {
     viewStateWorker.dispose();
   }
 
+  void _activateSearchFromRouter() {
+    searchController.autoFocus.value = false;
+    searchController.enableSearch();
+    searchController.updateTextSearch(_navigationRouter!.searchQuery!.value);
+    searchController.updateFilterEmail(text: _navigationRouter!.searchQuery!);
+    if (currentContext != null) {
+      FocusScope.of(currentContext!).unfocus();
+    }
+    searchController.searchFocus.unfocus();
+    _searchEmail();
+  }
+
   void _handleErrorGetAllOrRefreshChangesEmail(dynamic error) async {
     logError('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
     if (error is CannotCalculateChangesMethodResponseException) {
@@ -334,7 +358,6 @@ class ThreadController extends BaseController with EmailActionController {
     canLoadMore = true;
     _isLoadingMore = false;
     cancelSelectEmail();
-    mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
   }
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
@@ -613,6 +636,18 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
+  void _updateSearchRouteOnBrowser() {
+    if (BuildUtils.isWeb) {
+      final route = RouteUtils.generateRouteBrowser(
+        AppRoutes.dashboard,
+        NavigationRouter(
+          searchQuery: searchQuery,
+          dashboardType: DashboardType.search)
+      );
+      RouteUtils.updateRouteOnBrowser('SearchEmail', route);
+    }
+  }
+
   void _searchEmailsSuccess(SearchEmailSuccess success) {
     final resultEmailSearchList = success.emailList
         .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
@@ -622,6 +657,7 @@ class ThreadController extends BaseController with EmailActionController {
     final emailsSearchAfterChanges = resultEmailSearchList;
     final newListEmailSearch = emailsSearchAfterChanges.combine(emailsSearchBeforeChanges);
     emailList.value = newListEmailSearch;
+    searchController.autoFocus.value = true;
   }
 
   void searchMoreEmails() {
@@ -750,17 +786,17 @@ class ThreadController extends BaseController with EmailActionController {
         markAsStarEmail(selectedEmail, MarkStarAction.unMarkStar);
         break;
       case EmailActionType.moveToMailbox:
-        moveToMailbox(context, selectedEmail);
+        moveToMailbox(context, selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.moveToTrash:
-        moveToTrash(selectedEmail);
+        moveToTrash(selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.deletePermanently:
         deleteEmailPermanently(context, selectedEmail);
         break;
       case EmailActionType.moveToSpam:
         popBack();
-        moveToSpam(selectedEmail);
+        moveToSpam(selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.unSpam:
         popBack();
@@ -815,6 +851,9 @@ class ThreadController extends BaseController with EmailActionController {
         NavigationRouter(
           emailId: currentEmail.id,
           mailboxId: currentMailbox?.id,
+          searchQuery: searchController.isSearchEmailRunning
+            ? searchQuery
+            : null,
           dashboardType: searchController.isSearchEmailRunning
             ? DashboardType.search
             : DashboardType.normal
@@ -827,30 +866,29 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void _getEmailByIdAction(EmailId emailId, MailboxId? mailboxId, DashboardType dashboardType) {
+  PresentationMailbox? getMailboxContain(PresentationEmail currentEmail) {
+    return currentEmail.findMailboxContain(mailboxDashBoardController.mapMailboxById);
+  }
+
+  void _getEmailByIdAction(EmailId emailId) {
     if (_accountId != null) {
       consumeState(_getEmailByIdInteractor.execute(
         _accountId!,
         emailId,
-        mailboxId: mailboxId,
-        dashboardType: dashboardType,
         properties: ThreadConstants.propertiesDefault));
     }
   }
 
-  void _openEmailDetailView(
-    PresentationEmail email,
-    MailboxId? mailboxId,
-    DashboardType dashboardType
-  ) {
+  void _openEmailDetailView(PresentationEmail email) {
     if (currentContext != null) {
       final mailboxContain = email.findMailboxContain(mailboxDashBoardController.mapMailboxById);
       final route = RouteUtils.generateRouteBrowser(
         AppRoutes.dashboard,
         NavigationRouter(
           emailId: email.id,
-          mailboxId: mailboxId,
-          dashboardType: dashboardType
+          mailboxId: _navigationRouter?.mailboxId,
+          searchQuery: _navigationRouter?.searchQuery,
+          dashboardType: _navigationRouter?.dashboardType ?? DashboardType.normal
         )
       );
       pressEmailAction(
@@ -860,5 +898,6 @@ class ThreadController extends BaseController with EmailActionController {
         mailboxContain: mailboxContain
       );
     }
+    _navigationRouter = null;
   }
 }
