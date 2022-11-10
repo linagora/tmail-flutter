@@ -194,7 +194,7 @@ class LoginController extends ReloadableController {
   @override
   void handleReloaded(Session session) {
     pushAndPop(
-      RouteUtils.generateRouteMobile(AppRoutes.dashboard, NavigationRouter()),
+      RouteUtils.generateNavigationRoute(AppRoutes.dashboard, NavigationRouter()),
       arguments: session);
   }
 

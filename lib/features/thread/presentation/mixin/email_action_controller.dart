@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -46,6 +47,7 @@ mixin EmailActionController on ViewAsDialogActionMixin {
   }
 
   void previewEmail(BuildContext context, PresentationEmail presentationEmail) {
+    log('EmailActionController::previewEmail():presentationEmailId: ${presentationEmail.id}');
     mailboxDashBoardController.setSelectedEmail(presentationEmail);
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.emailDetailed);
     if (BuildUtils.isWeb && presentationEmail.routeWeb != null) {
@@ -55,14 +57,13 @@ mixin EmailActionController on ViewAsDialogActionMixin {
     }
   }
 
-  void moveToTrash(PresentationEmail email) async {
-    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+  void moveToTrash(PresentationEmail email, {PresentationMailbox? mailboxContain}) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
 
-    if (currentMailbox != null && accountId != null && trashMailboxId != null) {
+    if (mailboxContain != null && accountId != null && trashMailboxId != null) {
       _moveToTrashAction(accountId, MoveToMailboxRequest(
-        {currentMailbox.id: [email.id]},
+        {mailboxContain.id: [email.id]},
         trashMailboxId,
         MoveAction.moving,
         mailboxDashBoardController.sessionCurrent!,
@@ -75,14 +76,13 @@ mixin EmailActionController on ViewAsDialogActionMixin {
     mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
   }
 
-  void moveToSpam(PresentationEmail email) async {
-    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+  void moveToSpam(PresentationEmail email, {PresentationMailbox? mailboxContain}) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
 
-    if (currentMailbox != null && accountId != null && spamMailboxId != null) {
+    if (mailboxContain != null && accountId != null && spamMailboxId != null) {
       moveToSpamAction(accountId, MoveToMailboxRequest(
-        {currentMailbox.id: [email.id]},
+        {mailboxContain.id: [email.id]},
         spamMailboxId,
         MoveAction.moving,
         mailboxDashBoardController.sessionCurrent!,
@@ -111,11 +111,14 @@ mixin EmailActionController on ViewAsDialogActionMixin {
     mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
   }
 
-  void moveToMailbox(BuildContext context, PresentationEmail email) async {
-    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+  void moveToMailbox(
+    BuildContext context,
+    PresentationEmail email,
+    {PresentationMailbox? mailboxContain}
+  ) async {
     final accountId = mailboxDashBoardController.accountId.value;
 
-    if (currentMailbox != null && accountId != null) {
+    if (mailboxContain != null && accountId != null) {
       final arguments = DestinationPickerArguments(accountId, MailboxActions.moveEmail);
 
       if (BuildUtils.isWeb) {
@@ -129,7 +132,7 @@ mixin EmailActionController on ViewAsDialogActionMixin {
                 accountId,
                 mailboxDashBoardController.sessionCurrent!,
                 email,
-                currentMailbox,
+                mailboxContain,
                 destinationMailbox);
             }
           });
@@ -146,7 +149,7 @@ mixin EmailActionController on ViewAsDialogActionMixin {
             accountId,
             mailboxDashBoardController.sessionCurrent!,
             email,
-            currentMailbox,
+            mailboxContain,
             destinationMailbox);
         }
       }

@@ -55,7 +55,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             suggestionsBoxVerticalOffset: 0.0,
             textFieldConfiguration: QuickSearchTextFieldConfiguration(
                 controller: controller.searchInputController,
-                autofocus: true,
+                autofocus: controller.autoFocus.value,
                 enabled: controller.isAdvancedSearchViewOpen.isFalse,
                 focusNode: controller.searchFocus,
                 textInputAction: TextInputAction.done,

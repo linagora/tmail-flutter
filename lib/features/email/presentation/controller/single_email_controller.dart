@@ -181,10 +181,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       if (presentationEmail is PresentationEmail) {
         if (_currentEmailId != presentationEmail.id) {
           _currentEmailId = presentationEmail.id;
-          if (emailSupervisorController.supportedPageView) {
+          if (emailSupervisorController.listEmail.isNotEmpty) {
+            emailSupervisorController.supportedPageView.value = true;
             emailSupervisorController.setCurrentPositionEmailInListEmail(_currentEmailId);
             _getEmailDeBouncer.value = emailSupervisorController.currentIndexPageView;
           } else {
+            emailSupervisorController.supportedPageView.value = false;
             _getEmailContentAction(presentationEmail.id);
           }
           _resetToOriginalValue();
@@ -364,9 +366,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   PresentationMailbox? getMailboxContain(PresentationEmail email) {
-    return mailboxDashBoardController.searchController.isSearchEmailRunning
+    if (mailboxDashBoardController.selectedMailbox.value == null) {
+      return email.findMailboxContain(mailboxDashBoardController.mapMailboxById);
+    } else {
+      return mailboxDashBoardController.searchController.isSearchEmailRunning
         ? email.findMailboxContain(mailboxDashBoardController.mapMailboxById)
         : mailboxDashBoardController.selectedMailbox.value;
+    }
   }
 
   void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions) async {
@@ -378,6 +384,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _markAsEmailReadSuccess(Success success) {
+    log('SingleEmailController::_markAsEmailReadSuccess(): $success');
     mailboxDashBoardController.dispatchState(Right(success));
 
     if (success is MarkAsEmailReadSuccess
@@ -744,7 +751,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _markAsEmailStarSuccess(Success success) {
     if (success is MarkAsStarEmailSuccess) {
-      mailboxDashBoardController.setSelectedEmail(success.updatedEmail.toPresentationEmail(selectMode: SelectMode.ACTIVE));
+      final selectedEmail = mailboxDashBoardController.selectedEmail.value;
+      mailboxDashBoardController.setSelectedEmail(selectedEmail?.updateKeywords(success.updatedEmail.keywords));
     }
     mailboxDashBoardController.dispatchState(Right(success));
   }
@@ -992,7 +1000,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void closeEmailView(BuildContext context) {
     log('SingleEmailController::closeEmailView(): ');
-    if (emailSupervisorController.supportedPageView) {
+    if (emailSupervisorController.supportedPageView.isTrue) {
       emailSupervisorController.presentationEmailsLoaded.removeWhere((e) => e.emailCurrent?.id == currentEmail?.id);
       emailSupervisorController.currentIndexPageView = -1;
       _getEmailDeBouncer.value = null;
@@ -1015,10 +1023,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  bool get isOpenEmailNotMailboxFromRoute => !emailSupervisorController.supportedPageView
+  bool get isOpenEmailNotMailboxFromRoute => emailSupervisorController.supportedPageView.isFalse
     && mailboxDashBoardController.selectedMailbox.value == null;
 
   void _updateRouteOnBrowser() {
+    log('SingleEmailController::_updateRouteOnBrowser(): isSearchEmailRunning: ${mailboxDashBoardController.searchController.isSearchEmailRunning}');
     if (BuildUtils.isWeb) {
       final selectedMailboxId = mailboxDashBoardController.selectedMailbox.value?.id;
       final route = RouteUtils.generateRouteBrowser(

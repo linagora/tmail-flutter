@@ -5,6 +5,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -175,6 +176,28 @@ extension PresentationEmailExtension on PresentationEmail {
     return PresentationEmail(
       this.id,
       keywords: keywords,
+      size: size,
+      receivedAt: receivedAt,
+      hasAttachment: hasAttachment,
+      preview: preview,
+      subject: subject,
+      sentAt: sentAt,
+      from: from,
+      to: to,
+      cc: cc,
+      bcc: bcc,
+      replyTo: replyTo,
+      mailboxIds: mailboxIds,
+      mailboxNames: mailboxNames,
+      selectMode: selectMode,
+      routeWeb: routeWeb
+    );
+  }
+
+  PresentationEmail updateKeywords(Map<KeyWordIdentifier, bool>? newKeywords) {
+    return PresentationEmail(
+      this.id,
+      keywords: newKeywords,
       size: size,
       receivedAt: receivedAt,
       hasAttachment: hasAttachment,

@@ -16,7 +16,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
 
   final PresentationEmail _presentationEmail;
   final List<Widget>? optionsWidget;
-  final PresentationMailbox? currentMailbox;
+  final PresentationMailbox? mailboxContain;
   final bool isSearchIsRunning;
   final OnBackActionClick? onBackActionClick;
   final OnEmailActionClick? onEmailActionClick;
@@ -26,7 +26,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
     this._presentationEmail,
     {
       Key? key,
-      this.currentMailbox,
+      this.mailboxContain,
       this.onBackActionClick,
       this.onEmailActionClick,
       this.onMoreActionClick,
@@ -70,7 +70,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
                         constraints: BoxConstraints(
                             maxWidth: _responsiveUtils.getSizeScreenWidth(context) - 250),
                         child: Text(
-                            currentMailbox?.name?.name.capitalizeFirstEach ?? '',
+                            mailboxContain?.name?.name.capitalizeFirstEach ?? '',
                             maxLines: 1,
                             overflow: CommonTextStyle.defaultTextOverFlow,
                             softWrap: CommonTextStyle.defaultSoftWrap,
@@ -134,17 +134,17 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
         buildIconWeb(
             icon: SvgPicture.asset(
                 _imagePaths.icDeleteComposer,
-                color: currentMailbox?.role != PresentationMailbox.roleTrash
+                color: mailboxContain?.isTrash == false
                   ? AppColor.colorTextButton
                   : AppColor.colorDeletePermanentlyButton,
                 width: BuildUtils.isWeb ? 18 : 20,
                 height: BuildUtils.isWeb ? 18 : 20,
                 fit: BoxFit.fill),
-            tooltip: currentMailbox?.role != PresentationMailbox.roleTrash
+            tooltip: mailboxContain?.isTrash == false
                 ? AppLocalizations.of(context).move_to_trash
                 : AppLocalizations.of(context).delete_permanently,
             onTap: () {
-              if (currentMailbox?.role != PresentationMailbox.roleTrash) {
+              if (mailboxContain?.isTrash == false) {
                 onEmailActionClick?.call(
                     _presentationEmail,
                     EmailActionType.moveToTrash);
