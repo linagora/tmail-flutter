@@ -20,6 +20,7 @@ class EmailSupervisorController extends BaseController {
   int currentIndexPageView = -1;
   final canGetNewerEmail = true.obs;
   final canGetOlderEmail = true.obs;
+  final supportedPageView = RxBool(true);
 
   Rxn<PresentationEmail> get selectedEmail => mailboxDashBoardController.selectedEmail;
   Session? get sessionCurrent => mailboxDashBoardController.sessionCurrent;
@@ -32,8 +33,6 @@ class EmailSupervisorController extends BaseController {
       return mailboxDashBoardController.emailsInCurrentMailbox;
     }
   }
-
-  bool get supportedPageView => listEmail.isNotEmpty;
 
   @override
   void onClose() {

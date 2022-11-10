@@ -391,6 +391,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void setSelectedEmail(PresentationEmail? newPresentationEmail) {
+    log('MailboxDashBoardController::setSelectedEmail(): $newPresentationEmail');
     selectedEmail.value = newPresentationEmail;
   }
 
@@ -440,6 +441,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _closeEmailDetailedView() {
+    log('MailboxDashBoardController::_closeEmailDetailedView(): ');
     dispatchRoute(DashboardRoutes.thread);
     clearSelectedEmail();
   }
@@ -1012,6 +1014,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void dispatchRoute(DashboardRoutes route) {
+    log('MailboxDashBoardController::dispatchRoute(): $route');
     dashboardRoute.value = route;
 
     if (dashboardRoute.value == DashboardRoutes.searchEmail) {

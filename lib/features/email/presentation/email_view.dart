@@ -88,9 +88,11 @@ class EmailView extends GetWidget<SingleEmailController> {
       _buildAppBar(context, email),
       _buildVacationNotificationMessage(context),
       const Divider(color: AppColor.colorDividerHorizontal, height: 1),
-      Expanded(child: controller.emailSupervisorController.supportedPageView
-        ? _buildMultipleEmailView(controller.emailSupervisorController.listEmail)
-        : _buildSingleEmailView(context, email),
+      Expanded(child: Obx(() {
+        return controller.emailSupervisorController.supportedPageView.isTrue
+          ? _buildMultipleEmailView(controller.emailSupervisorController.listEmail)
+          : _buildSingleEmailView(context, email);
+      }),
       ),
       const Divider(color: AppColor.colorDividerHorizontal, height: 1),
       _buildBottomBar(context, email),
@@ -98,6 +100,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   }
 
   Widget _buildMultipleEmailView(List<PresentationEmail> listEmails) {
+    log('EmailView::_buildMultipleEmailView(): ');
     return PageView.builder(
       physics: BuildUtils.isWeb ? const NeverScrollableScrollPhysics() : null,
       itemCount: listEmails.length,
@@ -108,6 +111,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   }
 
   Widget _buildSingleEmailView(BuildContext context, PresentationEmail email) {
+    log('EmailView::_buildSingleEmailView(): ');
     return _buildEmailBody(context, email);
   }
 
@@ -144,7 +148,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   Widget _buildAppBar(BuildContext context, PresentationEmail presentationEmail) {
     return Obx(() => AppBarMailWidgetBuilder(
       presentationEmail,
-      currentMailbox: controller.mailboxDashBoardController.selectedMailbox.value,
+      mailboxContain: _getMailboxContain(presentationEmail),
       isSearchIsRunning: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
       onBackActionClick: () => controller.closeEmailView(context),
       onEmailActionClick: (email, action) =>
@@ -161,12 +165,16 @@ class EmailView extends GetWidget<SingleEmailController> {
               _popupMenuEmailActionTile(context, email));
         }
       },
-      optionsWidget: BuildUtils.isWeb && controller.emailSupervisorController.supportedPageView
+      optionsWidget: BuildUtils.isWeb && controller.emailSupervisorController.supportedPageView.isTrue
         ? _buildNavigatorPageViewWidgets(context)
         : null,
     ));
   }
 
+  PresentationMailbox? _getMailboxContain(PresentationEmail currentEmail) {
+    return currentEmail.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById);
+  }
+  
   List<Widget> _buildNavigatorPageViewWidgets(BuildContext context) {
     return [
       buildIconWeb(

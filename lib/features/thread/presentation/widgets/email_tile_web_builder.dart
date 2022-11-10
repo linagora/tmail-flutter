@@ -421,7 +421,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                     : EmailActionType.markAsRead,
                 _presentationEmail)),
       const SizedBox(width: 5),
-      if (mailboxContain?.isDrafts == false)
+      if (mailboxContain != null && mailboxContain?.isDrafts == false)
         ... [
           buildIconWeb(
               minSize: 18,
