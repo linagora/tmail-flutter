@@ -1,4 +1,6 @@
-import 'package:core/core.dart';
+import 'package:core/data/model/source_type/data_source_type.dart';
+import 'package:core/data/network/dio_client.dart';
+import 'package:core/utils/config/app_config_loader.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
@@ -274,7 +276,6 @@ class MailboxDashBoardBindings extends BaseBindings {
         DataSourceType.local: Get.find<LocalThreadDataSourceImpl>()
       },
       Get.find<StateDataSource>(),
-      Get.find<EmailDataSource>(),
     ));
     Get.lazyPut(() => MailboxRepositoryImpl(
       {
