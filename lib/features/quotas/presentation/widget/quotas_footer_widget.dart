@@ -46,7 +46,7 @@ class QuotasFooterWidget extends GetWidget<QuotasController> {
                     controller.quotasState.value.getQuotasFooterText(
                       context,
                       controller.usedCapacity.value,
-                      controller.softLimitCapacity.value,
+                      controller.limitCapacity.value,
                     ),
                     style: TextStyle(
                       fontSize: 13,
