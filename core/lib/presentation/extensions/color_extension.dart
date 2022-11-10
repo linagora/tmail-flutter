@@ -166,6 +166,7 @@ extension AppColor on Color {
   static const colorBackgroundQuotasWarning = Color(0xFFFFC107);
   static const colorTitleQuotasWarning = Color(0xFFF05C44);
   static const colorProgressQuotasWarning = Color(0xFFFFA000);
+  static const colorOutOfStorageQuotasWarning = Color(0xffE64646);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
