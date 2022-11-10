@@ -20,7 +20,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
-import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_warning_banner_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -86,7 +85,6 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                   Expanded(child: Container(
                     color: AppColor.colorBgDesktop,
                     child: Column(children: [
-                      const QuotasWarningBannerWidget(),
                       Obx(() {
                         if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
                           return VacationNotificationMessageWidget(

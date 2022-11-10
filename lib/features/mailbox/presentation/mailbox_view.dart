@@ -41,36 +41,44 @@ class MailboxView extends GetWidget<MailboxController> {
             child: Drawer(
                 child: Scaffold(
                   backgroundColor: Colors.white,
-                  body: Stack(children: [
-                    Column(children: [
-                      _buildHeaderMailbox(context),
-                      Obx(() => controller.isSearchActive()
-                          ? SafeArea(bottom: false, top: false, right: false,
-                                child: _buildInputSearchFormWidget(context))
-                          : const SizedBox.shrink()),
-                      Expanded(child: Obx(() => Container(
-                        color: controller.isSearchActive()
-                            ? Colors.white
-                            : AppColor.colorBgMailbox,
-                        child: RefreshIndicator(
-                          color: AppColor.primaryColor,
-                          onRefresh: () async => controller.refreshAllMailbox(),
-                          child: SafeArea(top: false, right: false,
-                            bottom: !controller.isSelectionEnabled(),
-                            child: controller.isSearchActive()
-                                ? _buildListMailboxSearched(context)
-                                : Padding(
-                                    padding: EdgeInsets.only(
-                                        bottom: _responsiveUtils.isLandscapeMobile(context)
-                                            || controller.isSelectionEnabled() ? 0 : 55),
-                                    child: _buildListMailbox(context))
-                          )
-                        ),
-                      ))),
-                      Obx(() => controller.isSelectionEnabled()
-                          ? _buildOptionSelectionMailbox(context)
-                          : const SizedBox.shrink()),
-                    ]),
+                  body: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Expanded(
+                      child: Column(children: [
+                        _buildHeaderMailbox(context),
+                        Obx(() => controller.isSearchActive()
+                            ? SafeArea(bottom: false, top: false, right: false,
+                                  child: _buildInputSearchFormWidget(context))
+                            : const SizedBox.shrink()),
+                        Expanded(child: Obx(() => Container(
+                          color: controller.isSearchActive()
+                              ? Colors.white
+                              : AppColor.colorBgMailbox,
+                          child: RefreshIndicator(
+                            color: AppColor.primaryColor,
+                            onRefresh: () async => controller.refreshAllMailbox(),
+                            child: SafeArea(top: false, right: false,
+                              bottom: !controller.isSelectionEnabled(),
+                              child: controller.isSearchActive()
+                                  ? _buildListMailboxSearched(context)
+                                  : Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: _responsiveUtils.isLandscapeMobile(context)
+                                              || controller.isSelectionEnabled() ? 0 : 24),
+                                      child: _buildListMailbox(context))
+                            )
+                          ),
+                        ))),
+                        Obx(() => controller.isSelectionEnabled()
+                            ? _buildOptionSelectionMailbox(context)
+                            : const SizedBox.shrink()),
+                      ]),
+                    ),
+                    Obx(() => controller.isSelectionEnabled()
+                        ? const SizedBox.shrink()
+                        : const QuotasFooterWidget(padding: EdgeInsets.only(left: 24, right: 24, bottom: 8)),
+                    ),
                     Obx(() {
                       final appInformation = controller.mailboxDashBoardController.appInformation.value;
                       if (appInformation != null
@@ -85,7 +93,7 @@ class MailboxView extends GetWidget<MailboxController> {
                       } else {
                         return const SizedBox.shrink();
                       }
-                    }),
+                    })
                   ]),
                 )
             )
@@ -229,7 +237,6 @@ class MailboxView extends GetWidget<MailboxController> {
         Obx(() => controller.folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
             ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderMailboxTree.value.root)
             : const SizedBox.shrink()),
-        const QuotasFooterWidget(),
       ])
     );
   }
@@ -390,13 +397,18 @@ class MailboxView extends GetWidget<MailboxController> {
   }
 
   Widget _buildVersionInformation(BuildContext context, PackageInfo packageInfo) {
-    return SafeArea(child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      child: Text(
-        '${AppLocalizations.of(context).version} ${packageInfo.version}',
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 16, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
+    return SafeArea(
+      top: false,
+      child: Container(
+        color: AppColor.colorBgMailbox,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        child: Text(
+          '${AppLocalizations.of(context).version} ${packageInfo.version}',
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 16, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
+        ),
       ),
-    ));
+    );
   }
 }

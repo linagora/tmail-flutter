@@ -117,13 +117,6 @@ class AppLocalizations {
     );
   }
 
-  String get storage {
-    return Intl.message(
-      'STORAGE',
-      name: 'storage',
-    );
-  }
-
   String get myFolders {
     return Intl.message(
       'My Folders',
@@ -2527,7 +2520,7 @@ class AppLocalizations {
     );
   }
 
-  String textQuotasUsed(num used, num softLimit) {
+  String textQuotasUsed(double used, double softLimit) {
     return Intl.message(
       '$used GB of $softLimit GB Used',
       name: 'textQuotasUsed',
@@ -2535,18 +2528,39 @@ class AppLocalizations {
     );
   }
 
-  String textQuotasWarningTitle(num progress) {
+  String textQuotasRunningOutOfStorageTitle(double progress) {
     return Intl.message(
       'You are running out of storage ($progress%).',
-      name: 'textQuotasWarningTitle',
+      name: 'textQuotasRunningOutOfStorageTitle',
       args: [progress],
     );
   }
 
-  String get textQuotasWarningContent {
+  String get textQuotasRunningOutOfStorageContent {
     return Intl.message(
-      "Soon you won't be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.",
-      name: 'textQuotasWarningTitle',
+      "Soon you won't be able to email in Team Mail. Please clean your storage or upgrade your storage to get full features in Team Mail.",
+      name: 'textQuotasRunningOutOfStorageContent',
+    );
+  }
+
+  String get textQuotasOutOfStorage {
+    return Intl.message(
+      'Out of storage',
+      name: 'textQuotasOutOfStorage',
+    );
+  }
+
+  String get textQuotasRunOutOfStorageTitle {
+    return Intl.message(
+      'You have run out of storage space',
+      name: 'textQuotasRunOutOfStorageTitle',
+    );
+  }
+
+  String get textQuotasRunOutOfStorageContent {
+    return Intl.message(
+      "Now you temporarily can't send or get an email.  Please free up or upgrade your storage to get the full features of Team Mail.",
+      name: 'textQuotasRunOutOfStorageContent',
     );
   }
 }
