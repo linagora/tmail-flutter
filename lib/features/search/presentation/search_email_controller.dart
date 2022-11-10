@@ -53,7 +53,9 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class SearchEmailController extends BaseController
     with EmailActionController {
@@ -724,6 +726,22 @@ class SearchEmailController extends BaseController
         break;
       default:
         break;
+    }
+  }
+
+  PresentationEmail generateEmailByPlatform(PresentationEmail currentEmail) {
+    if (BuildUtils.isWeb) {
+      final route = RouteUtils.generateRouteBrowser(
+        AppRoutes.dashboard,
+        NavigationRouter(
+          emailId: currentEmail.id,
+          dashboardType: DashboardType.search
+        )
+      );
+      final emailOnWeb = currentEmail.withRouteWeb(route);
+      return emailOnWeb;
+    } else {
+      return currentEmail;
     }
   }
 

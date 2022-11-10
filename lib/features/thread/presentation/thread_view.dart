@@ -251,7 +251,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
               ? Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: loadingWidget)
               : const SizedBox.shrink();
         } else {
-          return success is LoadingState
+          return success is LoadingState || controller.openingEmail.isTrue
               ? Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: loadingWidget)
               : const SizedBox.shrink();
         }
@@ -283,7 +283,9 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
       padding: EdgeInsets.zero,
       color: Colors.white,
       child: Obx(() {
-        return _buildResultListEmail(context, controller.emailList);
+        return Visibility(
+          visible: controller.openingEmail.isFalse,
+          child: _buildResultListEmail(context, controller.emailList));
       })
     );
   }
@@ -333,53 +335,50 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
           itemExtent: _getItemExtent(context),
           itemCount: listPresentationEmail.length,
           itemBuilder: (context, index) {
+            final mailboxContain = _getMailboxContain(listPresentationEmail[index]);
+            final newPresentationEmail = controller.generateEmailByPlatform(listPresentationEmail[index]);
             return Obx(() => Draggable<List<PresentationEmail>>(
               maxSimultaneousDrags: kIsWeb ? null : 0,
               data: controller.listEmailDrag,
               child: (EmailTileBuilder(
-                context,
-                listPresentationEmail[index],
-                controller.mailboxDashBoardController.currentSelectMode.value,
-                controller.searchQuery,
-                controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
-                mailboxCurrent: controller.searchController.isSearchEmailRunning
-                  ? listPresentationEmail[index].findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
-                  : controller.currentMailbox,
-                isSearchEmailRunning: controller.searchController.isSearchEmailRunning)
-                ..addOnPressEmailActionClick((action, email) =>
-                  controller.pressEmailAction(
                     context,
-                    action,
-                    email,
-                    mailboxContain: controller.searchController.isSearchEmailRunning
-                      ? email.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
-                      : controller.currentMailbox))
-                ..addOnMoreActionClick((email, position) => _responsiveUtils.isMobile(context)
-                  ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
-                  : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
+                    newPresentationEmail,
+                    controller.mailboxDashBoardController.currentSelectMode.value,
+                    controller.searchQuery,
+                    controller.mailboxDashBoardController.selectedEmail.value?.id == newPresentationEmail.id,
+                    mailboxContain: mailboxContain,
+                    isSearchEmailRunning: controller.searchController.isSearchEmailRunning)
+                ..addOnPressEmailActionClick((action, email) =>
+                    controller.pressEmailAction(context, action, email, mailboxContain: mailboxContain))
+                ..addOnMoreActionClick((email, position) => _responsiveUtils.isScreenWithShortestSide(context)
+                    ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
+                    : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
               ).build(),
               feedback: _buildFeedBackWidget(context),
               childWhenDragging: (EmailTileBuilder(
                   context,
-                  listPresentationEmail[index],
+                  newPresentationEmail,
                   controller.mailboxDashBoardController.currentSelectMode.value,
                   controller.searchQuery,
-                  controller.mailboxDashBoardController.selectedEmail.value?.id == listPresentationEmail[index].id,
-                  mailboxCurrent: controller.searchController.isSearchEmailRunning
-                    ? listPresentationEmail[index].findMailboxContain(
-                    controller.mailboxDashBoardController.mapMailboxById)
-                    : controller.currentMailbox,
+                  controller.mailboxDashBoardController.selectedEmail.value?.id == newPresentationEmail.id,
+                  mailboxContain: mailboxContain,
                   isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
                   isDrag: true)
               ).build(),
               dragAnchorStrategy: pointerDragAnchorStrategy,
               onDragStarted: () {
-                controller.calculateDragValue(listPresentationEmail[index]);
+                controller.calculateDragValue(newPresentationEmail);
               },
             ));
           }),
       )
     );
+  }
+
+  PresentationMailbox? _getMailboxContain(PresentationEmail currentEmail) {
+    return controller.searchController.isSearchEmailRunning
+      ? currentEmail.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
+      : controller.currentMailbox;
   }
 
   Widget _buildFeedBackWidget(BuildContext context) {
@@ -509,9 +508,7 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   }
 
   Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
-    final mailboxContain = controller.searchController.isSearchEmailRunning
-        ? email.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById)
-        : controller.currentMailbox;
+    final mailboxContain = _getMailboxContain(email);
     return (EmailActionCupertinoActionSheetActionBuilder(
             const Key('mark_as_spam_or_un_spam_action'),
             SvgPicture.asset(

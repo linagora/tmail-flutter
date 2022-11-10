@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -55,7 +54,6 @@ class EmailView extends GetWidget<SingleEmailController> {
                       : const BoxDecoration(color: Colors.white),
                   margin: _getMarginEmailView(context),
                   child: Obx(() {
-                    log('EmailView::_buildLoadingView(): ${controller.currentEmail}');
                     if (controller.currentEmail != null) {
                       return _buildEmailView(context, controller.currentEmail!);
                     } else {
@@ -90,21 +88,28 @@ class EmailView extends GetWidget<SingleEmailController> {
       _buildAppBar(context, email),
       _buildVacationNotificationMessage(context),
       const Divider(color: AppColor.colorDividerHorizontal, height: 1),
-      Expanded(
-        child: PageView.builder(
-          physics: kIsWeb ? const NeverScrollableScrollPhysics() : null,
-          itemCount: controller.emailSupervisorController.listEmail.length,
-          controller: controller.emailSupervisorController.pageController,
-          onPageChanged: controller.emailSupervisorController.onPageChanged,
-          itemBuilder: (context, index) {
-            return _buildEmailBody(context, controller.emailSupervisorController.listEmail[index]);
-        }),
+      Expanded(child: controller.emailSupervisorController.supportedPageView
+        ? _buildMultipleEmailView(controller.emailSupervisorController.listEmail)
+        : _buildSingleEmailView(context, email),
       ),
       const Divider(color: AppColor.colorDividerHorizontal, height: 1),
       _buildBottomBar(context, email),
     ]);
   }
 
+  Widget _buildMultipleEmailView(List<PresentationEmail> listEmails) {
+    return PageView.builder(
+      physics: BuildUtils.isWeb ? const NeverScrollableScrollPhysics() : null,
+      itemCount: listEmails.length,
+      controller: controller.emailSupervisorController.pageController,
+      onPageChanged: controller.emailSupervisorController.onPageChanged,
+      itemBuilder: (context, index) => _buildSingleEmailView(context, listEmails[index])
+    );
+  }
+
+  Widget _buildSingleEmailView(BuildContext context, PresentationEmail email) {
+    return _buildEmailBody(context, email);
+  }
 
   bool _supportVerticalDivider(BuildContext context) {
     if (BuildUtils.isWeb) {
@@ -156,7 +161,9 @@ class EmailView extends GetWidget<SingleEmailController> {
               _popupMenuEmailActionTile(context, email));
         }
       },
-    optionsWidget: kIsWeb ? _buildNavigatorPageViewWidgets(context) : null,
+      optionsWidget: BuildUtils.isWeb && controller.emailSupervisorController.supportedPageView
+        ? _buildNavigatorPageViewWidgets(context)
+        : null,
     ));
   }
 
@@ -323,7 +330,6 @@ class EmailView extends GetWidget<SingleEmailController> {
       return controller.viewState.value.fold(
         (failure) => const SizedBox.shrink(),
         (success) {
-          log('EmailView::_buildLoadingView(): $success');
           if (success is LoadingState) {
             return const Align(alignment: Alignment.topCenter, child: Padding(
                 padding: EdgeInsets.all(16),

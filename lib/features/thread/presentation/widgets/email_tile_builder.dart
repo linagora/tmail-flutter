@@ -13,7 +13,7 @@ class EmailTileBuilder with BaseEmailItemTile {
   final PresentationEmail _presentationEmail;
   final BuildContext _context;
   final SelectMode _selectModeAll;
-  final PresentationMailbox? mailboxCurrent;
+  final PresentationMailbox? mailboxContain;
   final SearchQuery? _searchQuery;
   final bool isSearchEmailRunning;
   final EdgeInsets? padding;
@@ -31,7 +31,7 @@ class EmailTileBuilder with BaseEmailItemTile {
     this._isShowingEmailContent,
     {
       this.isSearchEmailRunning = false,
-      this.mailboxCurrent,
+      this.mailboxContain,
       this.padding,
       this.paddingDivider,
       this.isDrag = false,
@@ -83,7 +83,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                           fit: BoxFit.fill)),
                 Expanded(child: buildInformationSender(
                   _presentationEmail,
-                  mailboxCurrent,
+                  mailboxContain,
                   isSearchEmailRunning,
                   _searchQuery)),
                 if (_presentationEmail.hasAttachment == true)

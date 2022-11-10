@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_t
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 mixin EmailActionController on ViewAsDialogActionMixin {
 
@@ -47,6 +48,11 @@ mixin EmailActionController on ViewAsDialogActionMixin {
   void previewEmail(BuildContext context, PresentationEmail presentationEmail) {
     mailboxDashBoardController.setSelectedEmail(presentationEmail);
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.emailDetailed);
+    if (BuildUtils.isWeb && presentationEmail.routeWeb != null) {
+      RouteUtils.updateRouteOnBrowser(
+        'Email-${presentationEmail.id.id.value}',
+        presentationEmail.routeWeb!);
+    }
   }
 
   void moveToTrash(PresentationEmail email) async {

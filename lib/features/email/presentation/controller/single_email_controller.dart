@@ -52,6 +52,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -66,7 +67,9 @@ import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:uuid/uuid.dart';
 
 class SingleEmailController extends BaseController with AppLoaderMixin {
@@ -129,7 +132,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   @override
   void onInit() {
     _initializeDebounceTimeIndexPageViewChange();
-    _initWorker();
+    _registerListenerWorker();
     _listenDownloadAttachmentProgressState();
     injectRuleFilterBindings(
       emailSupervisorController.sessionCurrent,
@@ -160,7 +163,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void onClose() {
     _downloadProgressStateController.close();
     _getEmailDeBouncer.cancel();
-    _clearWorker();
+    _unregisterListenerWorker();
     super.onClose();
   }
 
@@ -172,14 +175,18 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     });
   }
 
-  void _initWorker() {
+  void _registerListenerWorker() {
     emailWorker = ever(emailSupervisorController.selectedEmail, (presentationEmail) {
       log('SingleEmailController::_initWorker(): $presentationEmail');
       if (presentationEmail is PresentationEmail) {
         if (_currentEmailId != presentationEmail.id) {
           _currentEmailId = presentationEmail.id;
-          emailSupervisorController.setCurrentPositionEmailInListEmail(_currentEmailId);
-          _getEmailDeBouncer.value = emailSupervisorController.currentIndexPageView;
+          if (emailSupervisorController.supportedPageView) {
+            emailSupervisorController.setCurrentPositionEmailInListEmail(_currentEmailId);
+            _getEmailDeBouncer.value = emailSupervisorController.currentIndexPageView;
+          } else {
+            _getEmailContentAction(presentationEmail.id);
+          }
           _resetToOriginalValue();
           if (!presentationEmail.hasRead) {
             markAsEmailRead(presentationEmail, ReadActions.markAsRead);
@@ -192,8 +199,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     });
   }
 
-  void _clearWorker() {
-    emailWorker.call();
+  void _unregisterListenerWorker() {
+    emailWorker.dispose();
   }
 
   void _listenDownloadAttachmentProgressState() {
@@ -984,12 +991,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void closeEmailView(BuildContext context) {
-    emailSupervisorController.presentationEmailsLoaded.removeWhere((e) => e.emailCurrent?.id == currentEmail?.id);
-    emailSupervisorController.currentIndexPageView = -1;
-    _getEmailDeBouncer.value = null;
+    log('SingleEmailController::closeEmailView(): ');
+    if (emailSupervisorController.supportedPageView) {
+      emailSupervisorController.presentationEmailsLoaded.removeWhere((e) => e.emailCurrent?.id == currentEmail?.id);
+      emailSupervisorController.currentIndexPageView = -1;
+      _getEmailDeBouncer.value = null;
+    }
     mailboxDashBoardController.clearSelectedEmail();
     _currentEmailId = null;
     _resetToOriginalValue();
+    _updateRouteOnBrowser();
     if (mailboxDashBoardController.searchController.isSearchEmailRunning) {
       if (responsiveUtils.isWebDesktop(context)) {
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
@@ -998,6 +1009,28 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       }
     } else {
       mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
+      if (isOpenEmailNotMailboxFromRoute) {
+        mailboxDashBoardController.dispatchAction(SelectMailboxDefaultAction());
+      }
+    }
+  }
+
+  bool get isOpenEmailNotMailboxFromRoute => !emailSupervisorController.supportedPageView
+    && mailboxDashBoardController.selectedMailbox.value == null;
+
+  void _updateRouteOnBrowser() {
+    if (BuildUtils.isWeb) {
+      final selectedMailboxId = mailboxDashBoardController.selectedMailbox.value?.id;
+      final route = RouteUtils.generateRouteBrowser(
+        AppRoutes.dashboard,
+        NavigationRouter(
+          mailboxId: selectedMailboxId,
+          dashboardType: mailboxDashBoardController.searchController.isSearchEmailRunning
+            ? DashboardType.search
+            : DashboardType.normal
+        )
+      );
+      RouteUtils.updateRouteOnBrowser('Mailbox-${selectedMailboxId?.id.value}', route);
     }
   }
 
