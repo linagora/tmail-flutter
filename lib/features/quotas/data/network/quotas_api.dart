@@ -22,7 +22,9 @@ class QuotasAPI {
         .execute();
 
     final getQuotaResponse = response.parse<GetQuotaResponse>(
-        getQuotaInvocation.methodCallId, GetQuotaResponse.deserialize);
+      getQuotaInvocation.methodCallId,
+      GetQuotaResponse.deserialize,
+    );
 
     if(getQuotaResponse != null) {
       return QuotasResponse(

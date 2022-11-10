@@ -15,7 +15,6 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mai
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
-import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_warning_banner_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EmailView extends GetWidget<SingleEmailController> {
@@ -89,7 +88,6 @@ class EmailView extends GetWidget<SingleEmailController> {
   Widget _buildEmailView(BuildContext context, PresentationEmail email) {
     return Column(children: [
       _buildAppBar(context, email),
-      const QuotasWarningBannerWidget(),
       _buildVacationNotificationMessage(context),
       const Divider(color: AppColor.colorDividerHorizontal, height: 1),
       Expanded(

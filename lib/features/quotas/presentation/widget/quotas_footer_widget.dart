@@ -6,15 +6,15 @@ import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dar
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class QuotasFooterWidget extends GetWidget<QuotasController> {
-  const QuotasFooterWidget({Key? key}) : super(key: key);
-
+  const QuotasFooterWidget({Key? key, this.padding}) : super(key: key);
+  final EdgeInsetsGeometry? padding;
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => controller.enableShowQuotas.value
         ? Container(
             color: AppColor.colorBgDesktop,
-            padding: const EdgeInsets.all(24),
+            padding: padding ?? const EdgeInsets.all(24),
             alignment: Alignment.centerLeft,
             child: IntrinsicWidth(
               child: Column(
@@ -36,21 +36,23 @@ class QuotasFooterWidget extends GetWidget<QuotasController> {
                   ),
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
-                    color: controller.enableShowWarningQuotas ? AppColor.colorProgressQuotasWarning:  AppColor.primaryColor,
+                    color: controller.quotasState.value.getColorProgress(),
                     minHeight: 3,
                     backgroundColor: AppColor.colorDivider,
                     value: controller.progressUsedCapacity,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    AppLocalizations.of(context).textQuotasUsed(
+                    controller.quotasState.value.getQuotasFooterText(
+                      context,
                       controller.usedCapacity.value,
                       controller.softLimitCapacity.value,
                     ),
-                    style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                        color: AppColor.loginTextFieldHintColor),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: controller.quotasState.value.getColorQuotasFooterText(),
+                    ),
                   )
                 ],
               ),
