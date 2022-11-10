@@ -3,10 +3,10 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -85,6 +85,8 @@ class ThreadController extends BaseController with EmailActionController {
 
   final listEmailDrag = <PresentationEmail>[].obs;
   bool _rangeSelectionMode = false;
+  final openingEmail = RxBool(false);
+
   bool canLoadMore = true;
   bool canSearchMore = true;
   bool _isLoadingMore = false;
@@ -153,6 +155,8 @@ class ThreadController extends BaseController with EmailActionController {
           emailList.clear();
         } else if (failure is SearchMoreEmailFailure || failure is LoadMoreEmailsFailure) {
           _isLoadingMore = false;
+        } else if (failure is GetEmailByIdFailure) {
+          openingEmail.value = false;
         }
       },
       (success) {
@@ -168,26 +172,11 @@ class ThreadController extends BaseController with EmailActionController {
           _searchMoreEmailsSuccess(success);
         } else if (success is SearchingMoreState || success is LoadingMoreState) {
           _isLoadingMore = true;
+        } else if (success is GetEmailByIdLoading) {
+          openingEmail.value = true;
         } else if (success is GetEmailByIdSuccess) {
-          if (currentContext != null) {
-            final mailboxContain = success.email
-              .findMailboxContain(mailboxDashBoardController.mapMailboxById);
-            final route = RouteUtils.generateRouteBrowser(
-              AppRoutes.dashboard,
-              NavigationRouter(
-                emailId: success.email.id,
-                mailboxId: mailboxContain?.id,
-                dashboardType: searchController.isSearchEmailRunning
-                  ? DashboardType.search
-                  : DashboardType.normal
-              )
-            );
-            pressEmailAction(
-              currentContext!,
-              EmailActionType.preview,
-              success.email.withRouteWeb(route),
-              mailboxContain: mailboxContain);
-          }
+          openingEmail.value = false;
+          _openEmailDetailView(success.email, success.mailboxId, success.dashboardType);
         }
       }
     );
@@ -246,23 +235,14 @@ class ThreadController extends BaseController with EmailActionController {
         pressEmailSelectionAction(action.context, action.emailAction, action.listEmailSelected);
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is OpenEmailDetailedFromSuggestionQuickSearchAction) {
-        final mailboxContain = action.presentationEmail
-            .findMailboxContain(mailboxDashBoardController.mapMailboxById);
-        final route = RouteUtils.generateRouteBrowser(
-          AppRoutes.dashboard,
-          NavigationRouter(
-            emailId: action.presentationEmail.id,
-            mailboxId: mailboxContain?.id,
-            dashboardType: searchController.isSearchEmailRunning
-              ? DashboardType.search
-              : DashboardType.normal
-          )
-        );
+        final mailboxContain = action.presentationEmail.findMailboxContain(mailboxDashBoardController.mapMailboxById);
+        final newEmail = generateEmailByPlatform(action.presentationEmail);
         pressEmailAction(
-            action.context,
-            EmailActionType.preview,
-            action.presentationEmail.withRouteWeb(route),
-            mailboxContain: mailboxContain);
+          action.context,
+          EmailActionType.preview,
+          newEmail,
+          mailboxContain: mailboxContain
+        );
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is StartSearchEmailAction) {
         cancelSelectEmail();
@@ -272,7 +252,7 @@ class ThreadController extends BaseController with EmailActionController {
         deleteSelectionEmailsPermanently(action.context, DeleteActionType.all);
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is SelectEmailByIdAction) {
-        _openEmailDetailedView(action.emailId);
+        _getEmailByIdAction(action.emailId, action.mailboxId, action.dashboardType);
         mailboxDashBoardController.clearDashBoardAction();
       }
     });
@@ -501,11 +481,6 @@ class ThreadController extends BaseController with EmailActionController {
     return presentationEmail.id == selectedEmail?.id
       ? SelectMode.ACTIVE
       : SelectMode.INACTIVE;
-  }
-
-  void previewEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
-    mailboxDashBoardController.setSelectedEmail(presentationEmailSelected);
-    mailboxDashBoardController.dispatchRoute(DashboardRoutes.emailDetailed);
   }
 
   Tuple2<StartRangeSelection,EndRangeSelection> _getSelectionEmailsRange(PresentationEmail presentationEmailSelected) {
@@ -833,12 +808,57 @@ class ThreadController extends BaseController with EmailActionController {
         : KeyEventResult.ignored;
   }
 
-  void _openEmailDetailedView(EmailId emailId) {
+  PresentationEmail generateEmailByPlatform(PresentationEmail currentEmail) {
+    if (BuildUtils.isWeb) {
+      final route = RouteUtils.generateRouteBrowser(
+        AppRoutes.dashboard,
+        NavigationRouter(
+          emailId: currentEmail.id,
+          mailboxId: currentMailbox?.id,
+          dashboardType: searchController.isSearchEmailRunning
+            ? DashboardType.search
+            : DashboardType.normal
+        )
+      );
+      final emailOnWeb = currentEmail.withRouteWeb(route);
+      return emailOnWeb;
+    } else {
+      return currentEmail;
+    }
+  }
+
+  void _getEmailByIdAction(EmailId emailId, MailboxId? mailboxId, DashboardType dashboardType) {
     if (_accountId != null) {
       consumeState(_getEmailByIdInteractor.execute(
         _accountId!,
         emailId,
+        mailboxId: mailboxId,
+        dashboardType: dashboardType,
         properties: ThreadConstants.propertiesDefault));
+    }
+  }
+
+  void _openEmailDetailView(
+    PresentationEmail email,
+    MailboxId? mailboxId,
+    DashboardType dashboardType
+  ) {
+    if (currentContext != null) {
+      final mailboxContain = email.findMailboxContain(mailboxDashBoardController.mapMailboxById);
+      final route = RouteUtils.generateRouteBrowser(
+        AppRoutes.dashboard,
+        NavigationRouter(
+          emailId: email.id,
+          mailboxId: mailboxId,
+          dashboardType: dashboardType
+        )
+      );
+      pressEmailAction(
+        currentContext!,
+        EmailActionType.preview,
+        email.withRouteWeb(route),
+        mailboxContain: mailboxContain
+      );
     }
   }
 }

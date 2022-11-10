@@ -1,6 +1,6 @@
 import 'dart:collection';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -25,8 +25,15 @@ class EmailSupervisorController extends BaseController {
   Session? get sessionCurrent => mailboxDashBoardController.sessionCurrent;
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
 
-  RxList<PresentationEmail> get listEmail => mailboxDashBoardController.searchController.isSearchEmailRunning && !kIsWeb ?
-  mailboxDashBoardController.listResultSearch : mailboxDashBoardController.emailsInCurrentMailbox;
+  RxList<PresentationEmail> get listEmail {
+    if (mailboxDashBoardController.searchController.isSearchEmailRunning && !BuildUtils.isWeb) {
+      return mailboxDashBoardController.listResultSearch;
+    } else {
+      return mailboxDashBoardController.emailsInCurrentMailbox;
+    }
+  }
+
+  bool get supportedPageView => listEmail.isNotEmpty;
 
   @override
   void onClose() {

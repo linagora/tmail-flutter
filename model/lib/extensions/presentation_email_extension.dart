@@ -1,11 +1,18 @@
 import 'dart:ui';
 
-import 'package:core/core.dart';
+import 'package:core/domain/extensions/datetime_extension.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/model.dart';
+import 'package:model/email/email_action_type.dart';
+import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/extensions/list_email_address_extension.dart';
+import 'package:model/extensions/utc_date_extension.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/mailbox/select_mode.dart';
 
 extension PresentationEmailExtension on PresentationEmail {
 
@@ -43,6 +50,7 @@ extension PresentationEmailExtension on PresentationEmail {
         mailboxIds: mailboxIds,
         mailboxNames: mailboxNames,
         selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
+        routeWeb: routeWeb
     );
   }
 
@@ -64,6 +72,7 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       mailboxNames: mailboxNames,
       selectMode: selectMode,
+      routeWeb: routeWeb
     );
   }
 
@@ -111,7 +120,7 @@ extension PresentationEmailExtension on PresentationEmail {
       case EmailActionType.edit:
         return Tuple3(to.asList(), cc.asList(), bcc.asList());
       default:
-        return Tuple3([], [], []);
+        return const Tuple3([], [], []);
     }
   }
 
@@ -145,6 +154,7 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       mailboxNames: listMailboxName,
       selectMode: selectMode,
+        routeWeb: routeWeb
     );
   }
 
@@ -159,5 +169,27 @@ extension PresentationEmailExtension on PresentationEmail {
       }
     }
     return null;
+  }
+
+  PresentationEmail withRouteWeb(Uri routeWeb) {
+    return PresentationEmail(
+      this.id,
+      keywords: keywords,
+      size: size,
+      receivedAt: receivedAt,
+      hasAttachment: hasAttachment,
+      preview: preview,
+      subject: subject,
+      sentAt: sentAt,
+      from: from,
+      to: to,
+      cc: cc,
+      bcc: bcc,
+      replyTo: replyTo,
+      mailboxIds: mailboxIds,
+      mailboxNames: mailboxNames,
+      selectMode: selectMode,
+      routeWeb: routeWeb
+    );
   }
 }

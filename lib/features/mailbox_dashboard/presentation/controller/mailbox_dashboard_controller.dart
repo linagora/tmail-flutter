@@ -326,7 +326,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _getSessionCurrent() {
     final arguments = Get.arguments;
-    log('MailboxDashBoardController::_setSessionCurrent(): arguments = $arguments');
+    log('MailboxDashBoardController::_getSessionCurrent(): arguments = $arguments');
     if (arguments is Session) {
       sessionCurrent = arguments;
       accountId.value = sessionCurrent?.accounts.keys.first;
@@ -381,12 +381,13 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
-    selectedMailbox.value = newPresentationMailbox;
-  }
-
-  void setNewFirstSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
-    selectedMailbox.firstRebuild = true;
-    selectedMailbox.value = newPresentationMailbox;
+    final previousMailbox = selectedMailbox.value;
+    if (previousMailbox == newPresentationMailbox) {
+      selectedMailbox.value = newPresentationMailbox;
+      selectedMailbox.refresh();
+    } else {
+      selectedMailbox.value = newPresentationMailbox;
+    }
   }
 
   void setSelectedEmail(PresentationEmail? newPresentationEmail) {
@@ -885,7 +886,7 @@ class MailboxDashBoardController extends ReloadableController {
         Function? onCancelSelectionEmail,
       }
   ) {
-    if (_responsiveUtils.isMobile(context)) {
+    if (_responsiveUtils.isScreenWithShortestSide(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
         ..messageText(actionType.getContentDialog(
             context,
@@ -1020,6 +1021,8 @@ class MailboxDashBoardController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
+    log('MailboxDashBoardController::handleReloaded():');
+    _getRouteParameters();
     sessionCurrent = session;
     accountId.value = sessionCurrent?.accounts.keys.first;
     _getUserProfile();
@@ -1028,7 +1031,6 @@ class MailboxDashBoardController extends ReloadableController {
     injectRuleFilterBindings(sessionCurrent, accountId.value);
     injectVacationBindings(sessionCurrent, accountId.value);
     _getVacationResponse();
-    _getRouteParameters();
   }
 
   void _getRouteParameters() {
