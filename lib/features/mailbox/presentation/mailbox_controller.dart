@@ -439,6 +439,7 @@ class MailboxController extends BaseMailboxController {
       _clearNavigationRouter();
     } else {
       _clearNavigationRouter();
+      pushAndPop(AppRoutes.unknownRoutePage);
     }
   }
 
