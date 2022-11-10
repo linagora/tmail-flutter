@@ -105,7 +105,8 @@ class AppBarThreadWidgetBuilder extends StatelessWidget {
             fontSize: 17,
             fontWeight: FontWeight.w500,
             color: AppColor.colorTextButton))),
-      buildIconWeb(
+      if(_currentMailbox?.isDrafts == false)
+        buildIconWeb(
           minSize: 25,
           iconSize: 25,
           iconPadding: const EdgeInsets.all(5),

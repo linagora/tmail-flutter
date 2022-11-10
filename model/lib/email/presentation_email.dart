@@ -66,6 +66,8 @@ class PresentationEmail with EquatableMixin {
 
   bool get hasStarred => keywords?.containsKey(KeyWordIdentifier.emailFlagged) == true;
 
+  bool get isDraft => keywords?.containsKey(KeyWordIdentifier.emailDraft) == true;
+
   bool get withAttachments => hasAttachment == true;
 
   String get mailboxName => mailboxNames?.first?.name ?? '';
