@@ -112,20 +112,7 @@ class TopBarDestinationPickerBuilder extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                if (_destinationScreenType == DestinationScreenType.destinationPicker &&
-                    _mailboxAction != MailboxActions.create)
-                  _buildIconCreateButton(context),
-                if (_destinationScreenType == DestinationScreenType.destinationPicker)
-                  _buildDoneButton(context)
-                else
-                  _buildSaveButton(context),
-                const SizedBox(width: 8)
-              ]),
-            )
+              )
           ]
       ),
     );
