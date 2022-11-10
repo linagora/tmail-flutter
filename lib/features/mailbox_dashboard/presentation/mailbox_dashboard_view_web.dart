@@ -112,7 +112,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
                       Expanded(child: Column(children: [
                         _buildEmptyTrashButton(context),
-                        const QuotasWarningBannerWidget(),
+                        const QuotasWarningBannerWidget(
+                          margin: EdgeInsets.only(right: 16, top: 8),
+                        ),
                         _buildVacationNotificationMessage(context),
                         _buildListButtonQuickSearchFilter(context),
                         _buildMarkAsMailboxReadLoading(context),
