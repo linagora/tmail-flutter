@@ -185,7 +185,7 @@ mixin EmailActionController on ViewAsDialogActionMixin {
   }
 
   void deleteEmailPermanently(BuildContext context, PresentationEmail email) {
-    if (responsiveUtils.isMobile(context)) {
+    if (responsiveUtils.isScreenWithShortestSide(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
         ..messageText(DeleteActionType.single.getContentDialog(context))
         ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())

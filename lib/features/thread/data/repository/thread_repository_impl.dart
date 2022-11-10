@@ -11,7 +11,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
@@ -28,9 +27,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   final Map<DataSourceType, ThreadDataSource> mapDataSource;
   final StateDataSource stateDataSource;
-  final EmailDataSource emailDataSource;
 
-  ThreadRepositoryImpl(this.mapDataSource, this.stateDataSource, this.emailDataSource);
+  ThreadRepositoryImpl(this.mapDataSource, this.stateDataSource);
 
   @override
   Stream<EmailsResponse> getAllEmail(
