@@ -58,7 +58,7 @@ class SessionController extends ReloadableController {
   @override
   void handleReloaded(Session session) {
     pushAndPop(
-      RouteUtils.generateRouteMobile(AppRoutes.dashboard, NavigationRouter()),
+      RouteUtils.generateNavigationRoute(AppRoutes.dashboard, NavigationRouter()),
       arguments: session);
   }
 
@@ -108,7 +108,7 @@ class SessionController extends ReloadableController {
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
       pushAndPop(
-        RouteUtils.generateRouteMobile(AppRoutes.dashboard, NavigationRouter()),
+        RouteUtils.generateNavigationRoute(AppRoutes.dashboard, NavigationRouter()),
         arguments: success.session);
     } else {
       _goToLogin();

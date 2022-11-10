@@ -40,6 +40,7 @@ class SearchController extends BaseController {
   final emailReceiveTimeType = Rxn<EmailReceiveTimeType>();
   final simpleSearchIsActivated = RxBool(false);
   final advancedSearchIsActivated = RxBool(false);
+  final autoFocus = RxBool(true);
 
   SearchQuery? get searchQuery => searchEmailFilter.value.text;
 

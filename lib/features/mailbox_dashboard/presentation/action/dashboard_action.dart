@@ -1,7 +1,5 @@
 
 import 'package:flutter/cupertino.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
@@ -116,12 +114,20 @@ class SelectMailboxDefaultAction extends DashBoardAction {
 
 class SelectEmailByIdAction extends DashBoardAction {
 
-  final EmailId emailId;
-  final MailboxId? mailboxId;
-  final DashboardType dashboardType;
+  final NavigationRouter navigationRouter;
 
-  SelectEmailByIdAction(this.emailId, this.mailboxId, this.dashboardType);
+  SelectEmailByIdAction(this.navigationRouter);
 
   @override
-  List<Object?> get props => [emailId, mailboxId, dashboardType];
+  List<Object?> get props => [navigationRouter];
+}
+
+class SearchEmailByQueryAction extends DashBoardAction {
+
+  final NavigationRouter navigationRouter;
+
+  SearchEmailByQueryAction(this.navigationRouter);
+
+  @override
+  List<Object?> get props => [navigationRouter];
 }
