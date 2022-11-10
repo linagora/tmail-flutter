@@ -212,12 +212,7 @@ class MailboxAPI with HandleSetErrorMixin {
           notUpdatedError: response.notUpdated,
           notCreatedError: response.notCreated,
           notDestroyedHandlers: <SetMethodErrorHandler>{
-                (entry) {
-              if (entry.value.type == SetError.notFound) {
-                return true;
-              }
-              return false;
-            }
+            (entry) => entry.value.type == SetError.notFound,
           },
           unCatchErrorHandler: (setErrorEntry) {
             remainedErrors.add(setErrorEntry);
