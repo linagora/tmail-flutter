@@ -386,27 +386,28 @@ class EmailTileBuilder with BaseEmailItemTile {
 
   Widget _buildListActionButtonWhenHover() {
     return Row(children: [
-      buildIconWeb(
-          minSize: 18,
-          iconSize: 18,
-          iconPadding: const EdgeInsets.all(5),
-          splashRadius: 10,
-          icon: SvgPicture.asset(
-              _presentationEmail.hasRead
-                  ? imagePaths.icUnread
-                  : imagePaths.icRead,
-              color: AppColor.colorActionButtonHover,
-              width: 16,
-              height: 16,
-              fit: BoxFit.fill),
-          tooltip: _presentationEmail.hasRead
-              ? AppLocalizations.of(_context).mark_as_unread
-              : AppLocalizations.of(_context).mark_as_read,
-          onTap: () => _emailActionClick?.call(
-              _presentationEmail.hasRead
-                  ? EmailActionType.markAsUnread
-                  : EmailActionType.markAsRead,
-              _presentationEmail)),
+      if(!_presentationEmail.isDraft)
+        buildIconWeb(
+            minSize: 18,
+            iconSize: 18,
+            iconPadding: const EdgeInsets.all(5),
+            splashRadius: 10,
+            icon: SvgPicture.asset(
+                _presentationEmail.hasRead
+                    ? imagePaths.icRead
+                    : imagePaths.icUnread,
+                color: AppColor.colorActionButtonHover,
+                width: 16,
+                height: 16,
+                fit: BoxFit.fill),
+            tooltip: _presentationEmail.hasRead
+                ? AppLocalizations.of(_context).mark_as_unread
+                : AppLocalizations.of(_context).mark_as_read,
+            onTap: () => _emailActionClick?.call(
+                _presentationEmail.hasRead
+                    ? EmailActionType.markAsUnread
+                    : EmailActionType.markAsRead,
+                _presentationEmail)),
       const SizedBox(width: 5),
       if (mailboxCurrent?.isDrafts == false)
         ... [

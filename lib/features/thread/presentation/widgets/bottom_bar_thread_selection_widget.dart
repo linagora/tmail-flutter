@@ -44,18 +44,19 @@ class BottomBarThreadSelectionWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(child: (ButtonBuilder(_listSelectionEmail.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead)
-            ..key(const Key('button_mark_read_email'))
-            ..paddingIcon(const EdgeInsets.symmetric(horizontal: 8, vertical: 4))
-            ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
-            ..onPressActionClick(() {
-              if (_onPressEmailSelectionActionClick != null) {
-                _onPressEmailSelectionActionClick!(
-                    _listSelectionEmail.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
-                    _listSelectionEmail);
-              }})
-            ..text(_textButtonMarkAsRead, isVertical: _responsiveUtils.isMobile(_context)))
-          .build()),
+        if(_currentMailbox?.isDrafts == false)
+          Expanded(child: (ButtonBuilder(_listSelectionEmail.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead)
+              ..key(const Key('button_mark_read_email'))
+              ..paddingIcon(const EdgeInsets.symmetric(horizontal: 8, vertical: 4))
+              ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
+              ..onPressActionClick(() {
+                if (_onPressEmailSelectionActionClick != null) {
+                  _onPressEmailSelectionActionClick!(
+                      _listSelectionEmail.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
+                      _listSelectionEmail);
+                }})
+              ..text(_textButtonMarkAsRead, isVertical: _responsiveUtils.isMobile(_context)))
+            .build()),
         Expanded(child: (ButtonBuilder(_listSelectionEmail.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar)
             ..key(const Key('button_mark_as_star_email'))
             ..paddingIcon(const EdgeInsets.symmetric(horizontal: 8, vertical: 4))

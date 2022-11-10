@@ -1230,6 +1230,10 @@ class MailboxDashBoardController extends ReloadableController {
     consumeState(appGridDashboardController.showDashboardAction());
   }
 
+  bool isAbleMarkAllAsRead(){
+    return !searchController.isSearchEmailRunning && selectedMailbox.value != null && selectedMailbox.value!.isDrafts;
+  }
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
