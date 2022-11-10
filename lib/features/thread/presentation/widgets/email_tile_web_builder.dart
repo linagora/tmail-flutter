@@ -11,7 +11,6 @@ import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:url_launcher/link.dart';
 
 class EmailTileBuilder with BaseEmailItemTile {
 
@@ -82,10 +81,7 @@ class EmailTileBuilder with BaseEmailItemTile {
       padding: _getPaddingItem(),
       decoration: _getDecorationItem(),
       alignment: Alignment.center,
-      child: Link(
-        uri: _presentationEmail.routeWeb,
-        builder: (_, __) => tile
-      )
+      child: tile
     );
   }
 
