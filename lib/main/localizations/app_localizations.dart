@@ -2569,4 +2569,22 @@ class AppLocalizations {
         'Create a rule with this email',
         name: 'quickCreatingRule');
   }
+
+  String get titlePageNotFound {
+    return Intl.message(
+      'Oops, we can’t find that page',
+      name: 'titlePageNotFound');
+  }
+
+  String get subTitlePageNotFound {
+    return Intl.message(
+      'It is possible that your destination page has disappeared or belongs to another account.',
+      name: 'subTitlePageNotFound');
+  }
+
+  String get page404 {
+    return Intl.message(
+        'Page 404',
+        name: 'page404');
+  }
 }
