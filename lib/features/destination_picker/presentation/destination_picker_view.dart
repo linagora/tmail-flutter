@@ -282,7 +282,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                     mailboxActions: actions,
                     mailboxIdAlreadySelected: mailboxIdSelected,
                     mailboxDisplayed: MailboxDisplayed.destinationPicker)
-                ..addOnOpenMailboxFolderClick(_handleOpenMailboxNodeClick)
+                ..addOnOpenMailboxFolderClick((node) => _pickMailboxNode(context, node))
                 ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
               ).build(),
             children: _buildListChildTileWidget(
@@ -300,10 +300,15 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 mailboxDisplayed: MailboxDisplayed.destinationPicker,
                 mailboxIdAlreadySelected: mailboxIdSelected,
                 mailboxActions: actions)
-            ..addOnOpenMailboxFolderClick(_handleOpenMailboxNodeClick)
+            ..addOnOpenMailboxFolderClick((node) => _pickMailboxNode(context, node))
           ).build();
         }})
       .toList() ?? <Widget>[];
+  }
+
+  void _pickMailboxNode(BuildContext context, MailboxNode mailboxNode) {
+    _handleOpenMailboxNodeClick(mailboxNode);
+    controller.dispatchSelectMailboxDestination(context);
   }
 
   Widget _buildListMailboxSearched(
@@ -336,11 +341,15 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                         mailboxIdAlreadySelected: mailboxIdSelected,
                         mailboxDisplayed: MailboxDisplayed.destinationPicker,
                         mailboxIdDestination: controller.mailboxDestination.value?.id)
-                    ..addOnOpenMailboxAction((mailbox) =>
-                        _handleOpenPresentationMailboxClick(context, mailbox)))
+                    ..addOnOpenMailboxAction((mailbox) => _pickPresentationMailbox(context, mailbox)))
                   .build())
         )
     ));
+  }
+
+  void _pickPresentationMailbox(BuildContext context, PresentationMailbox mailbox) {
+    _handleOpenPresentationMailboxClick(context, mailbox);
+    controller.dispatchSelectMailboxDestination(context);
   }
 
   Widget _buildAllMailboxes(
@@ -352,9 +361,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
       return Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => _handleOpenPresentationMailboxClick(
-              context,
-              PresentationMailbox.unifiedMailbox),
+          onTap: () {
+            controller.selectMailboxAction(PresentationMailbox.unifiedMailbox);
+            controller.dispatchSelectMailboxDestination(context);
+          },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
             color: controller.mailboxDestination.value == PresentationMailbox.unifiedMailbox
