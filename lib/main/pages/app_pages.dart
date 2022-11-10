@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/manage_accoun
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_view.dart' deferred as manage_account_dashboard;
 import 'package:tmail_ui_user/features/session/presentation/session_page_bindings.dart';
 import 'package:tmail_ui_user/features/session/presentation/session_view.dart' deferred as session;
+import 'package:tmail_ui_user/features/unknown_route_page/unknown_route_page_view.dart';
 import 'package:tmail_ui_user/main/pages/deferred_widget.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
@@ -60,6 +61,7 @@ class AppPages {
             manage_account_dashboard.loadLibrary,
             () => manage_account_dashboard.ManageAccountDashBoardView()),
         binding: ManageAccountDashBoardBindings()),
+    unknownRoutePage,
     if (!BuildUtils.isWeb)
       ...[
         GetPage(
@@ -106,4 +108,9 @@ class AppPages {
             binding: RulesFilterCreatorBindings())
       ]
   ];
+
+  static final unknownRoutePage = GetPage(
+    name: AppRoutes.unknownRoutePage,
+    page: () => UnknownRoutePageView(),
+  );
 }

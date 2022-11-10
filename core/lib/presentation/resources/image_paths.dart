@@ -176,6 +176,7 @@ class ImagePaths {
   String get icQuotasWarning => _getImagePath('ic_quotas_warning.svg');
   String get icQuotasOutOfStorage => _getImagePath('ic_quotas_out_of_storage.svg');
   String get icQuickCreatingRule => _getImagePath('ic_quick_creating_rule.svg');
+  String get icPageNotFound => _getImagePath('ic_page_not_found.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

@@ -57,7 +57,14 @@ class TMailApp extends StatelessWidget {
       locale: LocalizationService.locale,
       fallbackLocale: LocalizationService.fallbackLocale,
       translations: LocalizationService(),
-      onGenerateTitle: (context) => AppLocalizations.of(context).page_name,
+      onGenerateTitle: (context) {
+        if (Get.currentRoute == AppRoutes.unknownRoutePage) {
+          return AppLocalizations.of(context).page404;
+        } else {
+          return AppLocalizations.of(context).page_name;
+        }
+      },
+      unknownRoute: AppPages.unknownRoutePage,
       defaultTransition: Transition.fade,
       initialRoute: AppRoutes.home,
       getPages: AppPages.pages);
