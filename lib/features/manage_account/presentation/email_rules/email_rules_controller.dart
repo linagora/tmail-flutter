@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -33,10 +34,10 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class EmailRulesController extends BaseController {
 
-  final GetAllRulesInteractor _getAllRulesInteractor;
-  final DeleteEmailRuleInteractor _deleteEmailRuleInteractor;
-  final CreateNewEmailRuleFilterInteractor _createNewEmailRuleFilterInteractor;
-  final EditEmailRuleFilterInteractor _editEmailRuleFilterInteractor;
+  GetAllRulesInteractor? _getAllRulesInteractor;
+  DeleteEmailRuleInteractor? _deleteEmailRuleInteractor;
+  CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
+  EditEmailRuleFilterInteractor? _editEmailRuleFilterInteractor;
 
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -45,12 +46,7 @@ class EmailRulesController extends BaseController {
 
   final listEmailRule = <TMailRule>[].obs;
 
-  EmailRulesController(
-    this._getAllRulesInteractor,
-    this._deleteEmailRuleInteractor,
-    this._createNewEmailRuleFilterInteractor,
-    this._editEmailRuleFilterInteractor,
-  );
+  EmailRulesController();
 
   @override
   void onDone() {
@@ -71,16 +67,28 @@ class EmailRulesController extends BaseController {
 
   @override
   void onInit() {
-    _getAllRules();
     super.onInit();
+    try {
+      _getAllRulesInteractor = Get.find<GetAllRulesInteractor>();
+      _deleteEmailRuleInteractor = Get.find<DeleteEmailRuleInteractor>();
+      _createNewEmailRuleFilterInteractor = Get.find<CreateNewEmailRuleFilterInteractor>();
+      _editEmailRuleFilterInteractor = Get.find<EditEmailRuleFilterInteractor>();
+    } catch (e) {
+      logError('EmailRulesController::onInit(): ${e.toString()}');
+    }
+  }
+
+  @override
+  void onReady() {
+    _getAllRules();
+    super.onReady();
   }
 
   void goToCreateNewRule(BuildContext context) async {
     final accountId = _accountDashBoardController.accountId.value;
-    if (accountId != null) {
-      final arguments = RulesFilterCreatorArguments(
-          accountId,
-          listEmailRule: listEmailRule);
+    final session = _accountDashBoardController.sessionCurrent.value;
+    if (accountId != null && session != null) {
+      final arguments = RulesFilterCreatorArguments(accountId, session);
 
       if (BuildUtils.isWeb) {
         showDialogRuleFilterCreator(
@@ -107,9 +115,9 @@ class EmailRulesController extends BaseController {
       AccountId accountId,
       CreateNewEmailRuleFilterRequest ruleFilterRequest
   ) async {
-    consumeState(_createNewEmailRuleFilterInteractor.execute(
-        accountId,
-        ruleFilterRequest));
+    if (_createNewEmailRuleFilterInteractor != null) {
+      consumeState(_createNewEmailRuleFilterInteractor!.execute(accountId, ruleFilterRequest));
+    }
   }
 
   void _createNewRuleFilterSuccess(CreateNewRuleFilterSuccess success) {
@@ -127,12 +135,13 @@ class EmailRulesController extends BaseController {
 
   void editEmailRule(BuildContext context, TMailRule rule) async {
     final accountId = _accountDashBoardController.accountId.value;
-    if (accountId != null) {
+    final session = _accountDashBoardController.sessionCurrent.value;
+    if (accountId != null && session != null) {
       final arguments = RulesFilterCreatorArguments(
         accountId,
+        session,
         actionType: CreatorActionType.edit,
-        tMailRule: rule,
-        listEmailRule: listEmailRule);
+        tMailRule: rule);
 
       if (BuildUtils.isWeb) {
         showDialogRuleFilterCreator(
@@ -159,7 +168,9 @@ class EmailRulesController extends BaseController {
       AccountId accountId,
       EditEmailRuleFilterRequest ruleFilterRequest
   ) {
-    consumeState(_editEmailRuleFilterInteractor.execute(accountId, ruleFilterRequest));
+    if (_editEmailRuleFilterInteractor != null) {
+      consumeState(_editEmailRuleFilterInteractor!.execute(accountId, ruleFilterRequest));
+    }
   }
 
   void _editEmailRuleFilterSuccess(EditEmailRuleFilterSuccess success) {
@@ -214,13 +225,16 @@ class EmailRulesController extends BaseController {
   void _handleDeleteEmailRuleAction(TMailRule emailRule) {
     popBack();
 
-    final deleteEmailRuleRequest = DeleteEmailRuleRequest(
-      emailRuleDelete : emailRule,
-      currentEmailRules: listEmailRule,
-    );
-    consumeState(_deleteEmailRuleInteractor.execute(
+    if (_deleteEmailRuleInteractor != null) {
+      final deleteEmailRuleRequest = DeleteEmailRuleRequest(
+        emailRuleDelete : emailRule,
+        currentEmailRules: listEmailRule,
+      );
+
+      consumeState(_deleteEmailRuleInteractor!.execute(
         _accountDashBoardController.accountId.value!,
         deleteEmailRuleRequest));
+    }
   }
 
   void _handleDeleteEmailRuleSuccess(DeleteEmailRuleSuccess success) {
@@ -239,7 +253,9 @@ class EmailRulesController extends BaseController {
   }
 
   void _getAllRules() {
-    consumeState(_getAllRulesInteractor.execute(_accountDashBoardController.accountId.value!));
+    if (_getAllRulesInteractor != null) {
+      consumeState(_getAllRulesInteractor!.execute(_accountDashBoardController.accountId.value!));
+    }
   }
 
   void openEditRuleMenuAction(BuildContext context, TMailRule rule) {

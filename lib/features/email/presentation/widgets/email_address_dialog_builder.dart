@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 typedef OnCloseDialogAction = void Function();
 typedef OnCopyEmailAddressDialogAction = void Function(EmailAddress);
 typedef OnComposeEmailDialogAction = void Function(EmailAddress);
+typedef OnQuickCreatingRuleEmailDialogAction = void Function(EmailAddress);
 
 class EmailAddressDialogBuilder extends StatelessWidget {
 
@@ -17,6 +18,7 @@ class EmailAddressDialogBuilder extends StatelessWidget {
   final OnCloseDialogAction? onCloseDialogAction;
   final OnCopyEmailAddressDialogAction? onCopyEmailAddressAction;
   final OnComposeEmailDialogAction? onComposeEmailAction;
+  final OnQuickCreatingRuleEmailDialogAction? onQuickCreatingRuleEmailDialogAction;
 
   const EmailAddressDialogBuilder(
       this._emailAddress, {
@@ -24,6 +26,7 @@ class EmailAddressDialogBuilder extends StatelessWidget {
       this.onCloseDialogAction,
       this.onCopyEmailAddressAction,
       this.onComposeEmailAction,
+      this.onQuickCreatingRuleEmailDialogAction,
   }) : super(key: key);
 
   @override
@@ -43,7 +46,8 @@ class EmailAddressDialogBuilder extends StatelessWidget {
         decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(16))),
-        child: Wrap(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Align(
                 alignment: Alignment.centerRight,
@@ -115,28 +119,54 @@ class EmailAddressDialogBuilder extends StatelessWidget {
                       onPressed: () => onCopyEmailAddressAction?.call(_emailAddress)
                   )
               ))),
-            SizedBox(height: _emailAddress.displayName.isNotEmpty ? 100 : 130),
+            const SizedBox(height: 24),
             Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
+              padding: const EdgeInsets.only(left: 24, right: 24, bottom: 12),
+              child: SizedBox(
+                key: const Key('quick_creating_rule_email_button'),
+                width: double.infinity,
+                height: 44,
+                child: TextButton(
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) => AppColor.colorTextButton),
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) => AppColor.colorItemEmailSelectedDesktop),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: const BorderSide(
+                        width: 0,
+                        color: AppColor.colorItemEmailSelectedDesktop)))),
+                  child: Text(
+                    AppLocalizations.of(context).quickCreatingRule,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      color: AppColor.colorTextButton,
+                      fontWeight: FontWeight.w500)),
+                  onPressed: () => onQuickCreatingRuleEmailDialogAction?.call(_emailAddress)),
+              )
+            ),
+            Padding(
+                padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
                 child: SizedBox(
                   key: const Key('compose_email_button'),
                   width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
+                  height: 44,
+                  child: TextButton(
                       style: ButtonStyle(
                           foregroundColor: MaterialStateProperty.resolveWith<Color>(
                               (Set<MaterialState> states) => Colors.white),
                           backgroundColor: MaterialStateProperty.resolveWith<Color>(
                               (Set<MaterialState> states) => AppColor.colorTextButton),
                           shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(8),
                               side: const BorderSide(
                                   width: 0,
                                   color: AppColor.colorTextButton)))),
                       child: Text(
                           AppLocalizations.of(context).compose_email,
                           style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 17,
                               color: Colors.white,
                               fontWeight: FontWeight.w500)),
                       onPressed: () => onComposeEmailAction?.call(_emailAddress)),

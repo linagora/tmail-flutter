@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oi
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/manage_account_datasource_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
-import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/repository/manage_account_repository_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
@@ -73,7 +72,6 @@ class ManageAccountDashBoardBindings extends BaseBindings {
       Get.find<RemoteExceptionThrower>()
     ));
     Get.lazyPut(() => ManageAccountDataSourceImpl(
-      Get.find<ManageAccountAPI>(),
       Get.find<LanguageCacheManager>(),
       Get.find<RemoteExceptionThrower>()));
   }

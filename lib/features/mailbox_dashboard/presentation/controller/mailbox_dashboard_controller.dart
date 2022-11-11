@@ -329,6 +329,7 @@ class MailboxDashBoardController extends ReloadableController {
       accountId.value = sessionCurrent?.accounts.keys.first;
       _getUserProfile();
       injectAutoCompleteBindings(sessionCurrent, accountId.value);
+      injectRuleFilterBindings(sessionCurrent, accountId.value);
       injectVacationBindings(sessionCurrent, accountId.value);
       _getVacationResponse();
     } else {
@@ -1021,6 +1022,7 @@ class MailboxDashBoardController extends ReloadableController {
     _getUserProfile();
     _handleComposerCache();
     injectAutoCompleteBindings(sessionCurrent, accountId.value);
+    injectRuleFilterBindings(sessionCurrent, accountId.value);
     injectVacationBindings(sessionCurrent, accountId.value);
     _getVacationResponse();
   }
