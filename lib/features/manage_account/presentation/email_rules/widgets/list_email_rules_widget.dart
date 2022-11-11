@@ -56,6 +56,7 @@ class ListEmailRulesWidget extends GetWidget<EmailRulesController> {
                   shrinkWrap: true,
                   itemCount: controller.listEmailRule.length,
                   primary: false,
+                  padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
                     final ruleWithId = controller.listEmailRule[index]
                         .copyWith(id: RuleId(id: Id(index.toString())));
