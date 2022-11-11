@@ -19,7 +19,7 @@ import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_aut
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/forwarding_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/identity_api.dart';
-import 'package:tmail_ui_user/features/manage_account/data/network/manage_account_api.dart';
+import 'package:tmail_ui_user/features/manage_account/data/network/rule_filter_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/vacation_api.dart';
 import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
@@ -81,7 +81,7 @@ class NetworkBindings extends Bindings {
       Get.find<JmapHttpClient.HttpClient>(),
       Get.find<DownloadManager>(),
       Get.find<DioClient>()));
-    Get.put(ManageAccountAPI(Get.find<JmapHttpClient.HttpClient>()));
+    Get.put(RuleFilterAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(VacationAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(ContactAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(IdentityAPI(Get.find<JmapHttpClient.HttpClient>()));

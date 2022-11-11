@@ -55,9 +55,13 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -85,6 +89,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
 
+  CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
@@ -126,6 +131,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _initializeDebounceTimeIndexPageViewChange();
     _initWorker();
     _listenDownloadAttachmentProgressState();
+    injectRuleFilterBindings(
+      emailSupervisorController.sessionCurrent,
+      emailSupervisorController.accountId);
+    try {
+      _createNewEmailRuleFilterInteractor = Get.find<CreateNewEmailRuleFilterInteractor>();
+    } catch (e) {
+      logError('SingleEmailController::onInit(): ${e.toString()}');
+    }
     super.onInit();
   }
 
@@ -138,7 +151,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     try {
       _sendReceiptToSenderInteractor = Get.find<SendReceiptToSenderInteractor>();
     } catch (e) {
-      logError('EmailController::onReady(): SendReceiptToSenderInteractor not registered');
+      logError('SingleEmailController::onReady(): SendReceiptToSenderInteractor not registered');
     }
     super.onReady();
   }
@@ -161,7 +174,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _initWorker() {
     emailWorker = ever(emailSupervisorController.selectedEmail, (presentationEmail) {
-      log('EmailController::_initWorker(): $presentationEmail');
+      log('SingleEmailController::_initWorker(): $presentationEmail');
       if (presentationEmail is PresentationEmail) {
         if (_currentEmailId != presentationEmail.id) {
           _currentEmailId = presentationEmail.id;
@@ -185,7 +198,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _listenDownloadAttachmentProgressState() {
     downloadProgressState.listen((state) {
-        log('EmailController::_listenDownloadAttachmentProgressState(): $state');
+        log('SingleEmailController::_listenDownloadAttachmentProgressState(): $state');
         state.fold(
           (failure) => null,
           (success) {
@@ -203,7 +216,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               }
             } else if (success is DownloadingAttachmentForWeb) {
               final percent = success.progress.round();
-              log('EmailController::DownloadingAttachmentForWeb(): $percent%');
+              log('SingleEmailController::DownloadingAttachmentForWeb(): $percent%');
 
               emailSupervisorController.mailboxDashBoardController.updateDownloadTask(
                   success.taskId,
@@ -234,7 +247,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             .firstWhere((identity) => identity.mayDelete == false);
         _identitySelected = identityDefault;
       } catch (e) {
-        logError('EmailController::_getAllIdentitiesSuccess(): ${e.toString()}');
+        logError('SingleEmailController::_getAllIdentitiesSuccess(): ${e.toString()}');
         _identitySelected = success.identities!.first;
       }
     }
@@ -290,6 +303,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           _getAllIdentitiesSuccess(success);
         } else if (success is SendReceiptToSenderSuccess) {
           _sendReceiptToSenderSuccess(success);
+        } else if (success is CreateNewRuleFilterSuccess) {
+          _createNewRuleFilterSuccess(success);
         }
       });
   }
@@ -479,7 +494,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _openDownloadedPreviewWorkGroupDocument(DownloadedResponse downloadedResponse) async {
-    log('EmailController::_openDownloadedPreviewWorkGroupDocument(): $downloadedResponse');
+    log('SingleEmailController::_openDownloadedPreviewWorkGroupDocument(): $downloadedResponse');
     if (downloadedResponse.mediaType == null) {
       await share_library.Share.shareFiles([downloadedResponse.filePath]);
     }
@@ -490,7 +505,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         uti: Platform.isIOS ? downloadedResponse.mediaType!.getDocumentUti().value : null);
 
     if (openResult.type != open_file.ResultType.done) {
-      logError('EmailController::_openDownloadedPreviewWorkGroupDocument(): no preview available');
+      logError('SingleEmailController::_openDownloadedPreviewWorkGroupDocument(): no preview available');
       if (currentContext != null) {
         _appToast.showErrorToast(AppLocalizations.of(currentContext!).noPreviewAvailable);
       }
@@ -516,7 +531,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _downloadAttachmentForWebSuccessAction(DownloadAttachmentForWebSuccess success) {
-    log('EmailController::_downloadAttachmentForWebSuccessAction():');
+    log('SingleEmailController::_downloadAttachmentForWebSuccessAction():');
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
 
     _downloadManager.createAnchorElementDownloadFileWeb(
@@ -525,7 +540,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _downloadAttachmentForWebFailureAction(DownloadAttachmentForWebFailure failure) {
-    log('EmailController::_downloadAttachmentForWebFailureAction(): $failure');
+    log('SingleEmailController::_downloadAttachmentForWebFailureAction(): $failure');
     mailboxDashBoardController.deleteDownloadTask(failure.taskId);
 
     if (currentOverlayContext != null &&  currentContext != null) {
@@ -772,22 +787,25 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void openEmailAddressDialog(BuildContext context, EmailAddress emailAddress) {
     if (responsiveUtils.isScreenWithShortestSide(context)) {
       (EmailAddressBottomSheetBuilder(context, imagePaths, emailAddress)
-          ..addOnCloseContextMenuAction(() => popBack())
-          ..addOnCopyEmailAddressAction((emailAddress) => copyEmailAddress(context, emailAddress))
-          ..addOnComposeEmailAction((emailAddress) => composeEmailFromEmailAddress(emailAddress)))
-        .show();
+        ..addOnCloseContextMenuAction(() => popBack())
+        ..addOnCopyEmailAddressAction((emailAddress) => copyEmailAddress(context, emailAddress))
+        ..addOnComposeEmailAction((emailAddress) => composeEmailFromEmailAddress(emailAddress))
+        ..addOnQuickCreatingRuleEmailBottomSheetAction((emailAddress) => quickCreatingRule(context, emailAddress))
+      ).show();
     } else {
       showDialog(
-          context: context,
-          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => PointerInterceptor(
-              child: EmailAddressDialogBuilder(
-                  emailAddress,
-                  onCloseDialogAction: () => popBack(),
-                  onCopyEmailAddressAction: (emailAddress) =>
-                      copyEmailAddress(context, emailAddress),
-                  onComposeEmailAction: (emailAddress) =>
-                      composeEmailFromEmailAddress(emailAddress))));
+        context: context,
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        builder: (BuildContext context) => PointerInterceptor(
+          child: EmailAddressDialogBuilder(
+            emailAddress,
+            onCloseDialogAction: () => popBack(),
+            onCopyEmailAddressAction: (emailAddress) => copyEmailAddress(context, emailAddress),
+            onComposeEmailAction: (emailAddress) => composeEmailFromEmailAddress(emailAddress),
+            onQuickCreatingRuleEmailDialogAction: (emailAddress) => quickCreatingRule(context, emailAddress)
+          )
+        )
+      );
     }
   }
 
@@ -813,9 +831,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void openMailToLink(Uri? uri) {
-    log('EmailController::openMailToLink(): ${uri.toString()}');
+    log('SingleEmailController::openMailToLink(): ${uri.toString()}');
     String address = uri?.path ?? '';
-    log('EmailController::openMailToLink(): address: $address');
+    log('SingleEmailController::openMailToLink(): address: $address');
     if (address.isNotEmpty) {
       final emailAddress = EmailAddress(null, address);
       final arguments = ComposerArguments(
@@ -920,7 +938,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mdn: mdnToSender,
         identityId: _identitySelected!.id!,
         sendId: Id(_uuid.v1()));
-    log('EmailController::_handleSendReceiptToSenderAction(): sendReceiptRequest: $sendReceiptRequest');
+    log('SingleEmailController::_handleSendReceiptToSenderAction(): sendReceiptRequest: $sendReceiptRequest');
 
     consumeState(_sendReceiptToSenderInteractor!.execute(accountId, sendReceiptRequest));
   }
@@ -948,7 +966,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _sendReceiptToSenderSuccess(SendReceiptToSenderSuccess success) {
-    log('EmailController::_sendReceiptToSenderSuccess(): ${success.mdn.toString()}');
+    log('SingleEmailController::_sendReceiptToSenderSuccess(): ${success.mdn.toString()}');
     if (currentContext != null) {
       _appToast.showBottomToast(
           currentOverlayContext!,
@@ -995,6 +1013,65 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
 
       mailboxDashBoardController.goToComposer(arguments);
+    }
+  }
+
+  void quickCreatingRule(BuildContext context, EmailAddress emailAddress) async {
+    popBack();
+
+    final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (accountId != null && session != null) {
+      final arguments = RulesFilterCreatorArguments(
+        accountId,
+        session,
+        emailAddress: emailAddress);
+
+      if (BuildUtils.isWeb) {
+        showDialogRuleFilterCreator(
+          context: context,
+          arguments: arguments,
+          onCreatedRuleFilter: (arguments) {
+            if (arguments is CreateNewEmailRuleFilterRequest) {
+              _createNewRuleFilterAction(accountId, arguments);
+            }
+          }
+        );
+      } else {
+        final newRuleFilterRequest = await push(
+          AppRoutes.rulesFilterCreator,
+          arguments: arguments
+        );
+
+        if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
+          _createNewRuleFilterAction(accountId, newRuleFilterRequest);
+        }
+      }
+    }
+  }
+
+  void _createNewRuleFilterAction(
+      AccountId accountId,
+      CreateNewEmailRuleFilterRequest ruleFilterRequest
+  ) async {
+    try {
+      _createNewEmailRuleFilterInteractor = Get.find<CreateNewEmailRuleFilterInteractor>();
+    } catch (e) {
+      logError('SingleEmailController::onInit(): ${e.toString()}');
+    }
+    if (_createNewEmailRuleFilterInteractor != null) {
+      consumeState(_createNewEmailRuleFilterInteractor!.execute(accountId, ruleFilterRequest));
+    }
+  }
+
+  void _createNewRuleFilterSuccess(CreateNewRuleFilterSuccess success) {
+    if (success.newListRules.isNotEmpty == true) {
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastWithIcon(
+          currentOverlayContext!,
+          message: AppLocalizations.of(currentContext!).newFilterWasCreated,
+          icon: imagePaths.icSelected);
+      }
     }
   }
 }

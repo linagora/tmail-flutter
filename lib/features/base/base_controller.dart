@@ -8,12 +8,14 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/view_as_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forwarding_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
@@ -127,6 +129,15 @@ abstract class BaseController extends GetxController
       ForwardingInteractorsBindings().dependencies();
     } catch(e) {
       logError('ReloadableController::injectForwardBindings(): exception: $e');
+    }
+  }
+
+  void injectRuleFilterBindings(Session? session, AccountId? accountId) {
+    try {
+      requireCapability(session!, accountId!, [capabilityRuleFilter]);
+      EmailRulesInteractorBindings().dependencies();
+    } catch(e) {
+      logError('ReloadableController::injectRuleFilterBindings(): exception: $e');
     }
   }
 }

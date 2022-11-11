@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-11-10T15:16:34.946211",
+  "@@last_modified": "2022-11-11T04:08:42.994169",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2494,6 +2494,12 @@
   },
   "textQuotasRunOutOfStorageContent": "Now you temporarily can't send or get an email.  Please free up or upgrade your storage to get the full features of Team Mail.",
   "@textQuotasRunOutOfStorageContent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quickCreatingRule": "Create a rule with this email",
+  "@quickCreatingRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
