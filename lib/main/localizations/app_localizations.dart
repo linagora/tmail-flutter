@@ -2563,4 +2563,10 @@ class AppLocalizations {
       name: 'textQuotasRunOutOfStorageContent',
     );
   }
+
+  String get quickCreatingRule {
+    return Intl.message(
+        'Create a rule with this email',
+        name: 'quickCreatingRule');
+  }
 }

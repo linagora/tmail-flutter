@@ -22,7 +22,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_va
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
@@ -95,6 +95,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     _getUserProfile();
     injectAutoCompleteBindings(sessionCurrent.value, accountId.value);
     injectForwardBindings(sessionCurrent.value, accountId.value);
+    injectRuleFilterBindings(sessionCurrent.value, accountId.value);
     injectVacationBindings(sessionCurrent.value, accountId.value);
     _getVacationResponse();
   }
@@ -108,6 +109,7 @@ class ManageAccountDashBoardController extends ReloadableController {
       _getUserProfile();
       injectAutoCompleteBindings(sessionCurrent.value, accountId.value);
       injectForwardBindings(sessionCurrent.value, accountId.value);
+      injectRuleFilterBindings(sessionCurrent.value, accountId.value);
       injectVacationBindings(sessionCurrent.value, accountId.value);
       _getVacationResponse();
       if (arguments.menuSettingCurrent != null) {
