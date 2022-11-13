@@ -47,7 +47,6 @@ class QuotasController extends BaseController {
   void _getQuotasAction(AccountId accountId, Session session) {
     try {
       requireCapability(session, accountId, [CapabilityIdentifier.jmapQuota]);
-      enableShowQuotas.value = true;
       consumeState(_getQuotasInteractor.execute(mailboxDashBoardController.accountId.value!));
     } catch (e) {
       logError('QuotasController::_getQuotasAction():$e');
@@ -83,7 +82,9 @@ class QuotasController extends BaseController {
       } else {
         quotasState.value = QuotasState.normal;
       }
+      enableShowQuotas.value = true;
     } catch (e) {
+      enableShowQuotas.value = false;
       logError('QuotasController::_handleGetQuotasSuccess():[NotFoundException]: $e');
     }
   }
