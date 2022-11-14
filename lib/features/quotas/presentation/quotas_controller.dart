@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:core/utils/double_convert.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -17,8 +18,7 @@ class QuotasController extends BaseController {
   final usedCapacity = Rx<num>(0);
   final limitCapacity = Rx<num>(0);
   final warningLimitCapacity = Rx<num>(0);
-  final enableShowQuotas = false.obs;
-  final quotasState = QuotasState.normal.obs;
+  final quotasState = QuotasState.notAvailable.obs;
   final warningProgressConstant = 0.9;
   late Worker accountIdWorker;
 
@@ -27,7 +27,7 @@ class QuotasController extends BaseController {
       : 0;
 
   bool get enableShowWarningQuotas =>
-      enableShowQuotas.isTrue &&
+      quotasState.value != QuotasState.notAvailable &&
           (quotasState.value == QuotasState.runningOutOfStorage
               || quotasState.value == QuotasState.runOutOfStorage);
 
@@ -35,14 +35,6 @@ class QuotasController extends BaseController {
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
 
   QuotasController(this._getQuotasInteractor);
-
-  void _initWorker() {
-    accountIdWorker = ever(mailboxDashBoardController.accountId, (accountId) {
-      if (accountId is AccountId && mailboxDashBoardController.sessionCurrent!= null) {
-        _getQuotasAction(accountId, mailboxDashBoardController.sessionCurrent!);
-      }
-    });
-  }
 
   void _getQuotasAction(AccountId accountId, Session session) {
     try {
@@ -72,9 +64,9 @@ class QuotasController extends BaseController {
   void _handleGetQuotasSuccess(GetQuotasSuccess success) {
     try {
       final quotas = success.quotas.firstWhere((e) => e.resourceType == ResourceType.octets);
-      usedCapacity.value = quotas.used.value;
-      warningLimitCapacity.value = quotas.limit.value * warningProgressConstant;
-      limitCapacity.value = quotas.limit.value;
+      usedCapacity.value = DoubleConvert.bytesToGigaBytes(quotas.used.value);
+      warningLimitCapacity.value =  DoubleConvert.bytesToGigaBytes(quotas.limit.value * warningProgressConstant);
+      limitCapacity.value = DoubleConvert.bytesToGigaBytes(quotas.limit.value);
       if(usedCapacity.value >= limitCapacity.value) {
         quotasState.value = QuotasState.runOutOfStorage;
       } else if (usedCapacity.value >= warningLimitCapacity.value) {
@@ -82,11 +74,22 @@ class QuotasController extends BaseController {
       } else {
         quotasState.value = QuotasState.normal;
       }
-      enableShowQuotas.value = true;
     } catch (e) {
-      enableShowQuotas.value = false;
+      quotasState.value = QuotasState.notAvailable;
       logError('QuotasController::_handleGetQuotasSuccess():[NotFoundException]: $e');
     }
+  }
+
+  void covertBytesToGB() {
+
+  }
+
+  void _initWorker() {
+    accountIdWorker = ever(mailboxDashBoardController.accountId, (accountId) {
+      if (accountId is AccountId && mailboxDashBoardController.sessionCurrent!= null) {
+        _getQuotasAction(accountId, mailboxDashBoardController.sessionCurrent!);
+      }
+    });
   }
 
   @override

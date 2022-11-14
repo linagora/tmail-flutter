@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/model/quotas_state.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -11,7 +12,7 @@ class QuotasFooterWidget extends GetWidget<QuotasController> {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => controller.enableShowQuotas.value
+      () => controller.quotasState.value != QuotasState.notAvailable
         ? Container(
             color: AppColor.colorBgDesktop,
             padding: padding ?? const EdgeInsets.all(24),
