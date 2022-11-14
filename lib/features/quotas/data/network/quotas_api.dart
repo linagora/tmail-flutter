@@ -36,6 +36,5 @@ class QuotasAPI {
     } else {
       throw NotFoundQuotasException();
     }
-
   }
 }

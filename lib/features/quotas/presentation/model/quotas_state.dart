@@ -1,16 +1,16 @@
-import 'dart:ui';
-
 import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum QuotasState {
+  notAvailable,
   normal,
   runningOutOfStorage,
   runOutOfStorage;
 
   Color getColorProgress() {
     switch(this) {
+      case QuotasState.notAvailable:
       case QuotasState.normal:
         return AppColor.primaryColor;
       case QuotasState.runningOutOfStorage:
@@ -22,6 +22,7 @@ enum QuotasState {
 
   Color getColorQuotasFooterText() {
     switch(this) {
+      case QuotasState.notAvailable:
       case QuotasState.normal:
       case QuotasState.runningOutOfStorage:
         return AppColor.loginTextFieldHintColor;
@@ -32,6 +33,7 @@ enum QuotasState {
 
   String getQuotasFooterText(BuildContext context, num usedCapacity, num softLimitCapacity) {
     switch(this) {
+      case QuotasState.notAvailable:
       case QuotasState.normal:
       case QuotasState.runningOutOfStorage:
         return AppLocalizations.of(context).textQuotasUsed(
@@ -45,6 +47,7 @@ enum QuotasState {
 
   String getIconWarningBanner(ImagePaths imagePaths) {
     switch(this) {
+      case QuotasState.notAvailable:
       case QuotasState.normal:
       case QuotasState.runningOutOfStorage:
         return imagePaths.icQuotasWarning;
@@ -55,6 +58,7 @@ enum QuotasState {
 
   Color getBackgroundColorWarningBanner() {
     switch(this) {
+      case QuotasState.notAvailable:
       case QuotasState.normal:
       case QuotasState.runningOutOfStorage:
         return AppColor.colorBackgroundQuotasWarning.withOpacity(0.12);
@@ -65,6 +69,7 @@ enum QuotasState {
 
   String getTitleWarningBanner(BuildContext context, num progress) {
     switch(this) {
+      case QuotasState.notAvailable:
       case QuotasState.normal:
       case QuotasState.runningOutOfStorage:
         return AppLocalizations.of(context).textQuotasRunningOutOfStorageTitle(progress.toDouble() * 100);
@@ -75,6 +80,7 @@ enum QuotasState {
 
   String getContentWarningBanner(BuildContext context) {
     switch(this) {
+      case QuotasState.notAvailable:
       case QuotasState.normal:
       case QuotasState.runningOutOfStorage:
         return AppLocalizations.of(context).textQuotasRunningOutOfStorageContent;

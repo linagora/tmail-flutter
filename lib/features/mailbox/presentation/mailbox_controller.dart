@@ -80,7 +80,7 @@ class MailboxController extends BaseMailboxController {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _uuid = Get.find<Uuid>();
-
+  final isMailboxListScrollable = false.obs;
   final GetAllMailboxInteractor _getAllMailboxInteractor;
   final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
@@ -198,6 +198,10 @@ class MailboxController extends BaseMailboxController {
         }
       }
     );
+  }
+
+  void handleScrollEnable() {
+    isMailboxListScrollable.value = mailboxListScrollController.hasClients && mailboxListScrollController.position.maxScrollExtent > 0;
   }
 
   void _registerListenerWorker() {
