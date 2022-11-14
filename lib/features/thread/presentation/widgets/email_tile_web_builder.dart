@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/tap_down_details_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
@@ -392,90 +393,84 @@ class EmailTileBuilder with BaseEmailItemTile {
     });
   }
 
+  double _getIconSize() {
+    return responsiveUtils.isDesktop(_context) ? 18 : 16;
+  }
+
+  EdgeInsets _getPaddingIcon() {
+    return responsiveUtils.isDesktop(_context)
+      ? const EdgeInsets.all(8)
+      : const EdgeInsets.all(5);
+  }
+
   Widget _buildListActionButtonWhenHover() {
     return Row(children: [
+      buildSVGIconButton(
+        icon: imagePaths.icOpenInNewTab,
+        iconColor: AppColor.colorActionButtonHover,
+        iconSize: _getIconSize(),
+        padding: _getPaddingIcon(),
+        tooltip: AppLocalizations.of(_context).openInNewTab,
+        onTap: () => _emailActionClick?.call(
+          EmailActionType.openInNewTab,
+          _presentationEmail
+        )
+      ),
       if(!_presentationEmail.isDraft)
-        buildIconWeb(
-            minSize: 18,
-            iconSize: 18,
-            iconPadding: const EdgeInsets.all(5),
-            splashRadius: 10,
-            icon: SvgPicture.asset(
-                _presentationEmail.hasRead
-                    ? imagePaths.icRead
-                    : imagePaths.icUnread,
-                color: AppColor.colorActionButtonHover,
-                width: 16,
-                height: 16,
-                fit: BoxFit.fill),
-            tooltip: _presentationEmail.hasRead
-                ? AppLocalizations.of(_context).mark_as_unread
-                : AppLocalizations.of(_context).mark_as_read,
-            onTap: () => _emailActionClick?.call(
-                _presentationEmail.hasRead
-                    ? EmailActionType.markAsUnread
-                    : EmailActionType.markAsRead,
-                _presentationEmail)),
-      const SizedBox(width: 5),
+        buildSVGIconButton(
+          icon: _presentationEmail.hasRead ? imagePaths.icRead: imagePaths.icUnread,
+          iconColor: AppColor.colorActionButtonHover,
+          iconSize: _getIconSize(),
+          padding: _getPaddingIcon(),
+          tooltip: _presentationEmail.hasRead
+            ? AppLocalizations.of(_context).mark_as_unread
+            : AppLocalizations.of(_context).mark_as_read,
+          onTap: () => _emailActionClick?.call(
+            _presentationEmail.hasRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
+            _presentationEmail
+          )
+        ),
       if (mailboxContain != null && mailboxContain?.isDrafts == false)
         ... [
-          buildIconWeb(
-              minSize: 18,
-              iconSize: 18,
-              iconPadding: const EdgeInsets.all(5),
-              splashRadius: 10,
-              icon: SvgPicture.asset(
-                  imagePaths.icMove,
-                  width: 16,
-                  height: 16,
-                  color: AppColor.colorActionButtonHover,
-                  fit: BoxFit.fill),
-              tooltip: AppLocalizations.of(_context).move,
-              onTap: () => _emailActionClick?.call(
-                  EmailActionType.moveToMailbox,
-                  _presentationEmail)),
-          const SizedBox(width: 5),
+          buildSVGIconButton(
+            icon: imagePaths.icMove,
+            iconColor: AppColor.colorActionButtonHover,
+            iconSize: _getIconSize(),
+            padding: _getPaddingIcon(),
+            tooltip: AppLocalizations.of(_context).move,
+            onTap: () => _emailActionClick?.call(
+              EmailActionType.moveToMailbox,
+              _presentationEmail
+            )
+          ),
         ],
-      buildIconWeb(
-          minSize: 18,
-          iconSize: 18,
-          iconPadding: const EdgeInsets.all(5),
-          splashRadius: 10,
-          icon: SvgPicture.asset(
-              canDeletePermanently ? imagePaths.icDeleteComposer : imagePaths.icDelete,
-              width: canDeletePermanently ? 14 : 16,
-              height: canDeletePermanently ? 14 : 16,
-              color: AppColor.colorActionButtonHover,
-              fit: BoxFit.fill),
-          tooltip: canDeletePermanently
-              ? AppLocalizations.of(_context).delete_permanently
-              : AppLocalizations.of(_context).move_to_trash,
-          onTap: () => _emailActionClick?.call(
-              canDeletePermanently
-                  ? EmailActionType.deletePermanently
-                  : EmailActionType.moveToTrash,
-              _presentationEmail)),
-      const SizedBox(width: 5),
-      if (mailboxContain?.isDrafts == false)
-        buildIconWebHasPosition(
-            _context,
-            icon: SvgPicture.asset(
-                imagePaths.icMore,
-                width: 16,
-                height: 16,
-                color: AppColor.colorActionButtonHover,
-                fit: BoxFit.fill),
-            tooltip: AppLocalizations.of(_context).more,
-            onTap: () {
-              if (responsiveUtils.isMobile(_context)) {
-                _onMoreActionClick?.call(_presentationEmail, null);
-              }
-            },
-            onTapDown: (position) {
-              if (!responsiveUtils.isMobile(_context)) {
-                _onMoreActionClick?.call(_presentationEmail, position);
-              }
-            }),
+      buildSVGIconButton(
+        icon: imagePaths.icDeleteComposer,
+        iconColor: AppColor.colorActionButtonHover,
+        iconSize: responsiveUtils.isDesktop(_context) ? 16 : 14,
+        padding: _getPaddingIcon(),
+        tooltip: canDeletePermanently
+          ? AppLocalizations.of(_context).delete_permanently
+          : AppLocalizations.of(_context).move_to_trash,
+        onTap: () => _emailActionClick?.call(
+          canDeletePermanently ? EmailActionType.deletePermanently : EmailActionType.moveToTrash,
+          _presentationEmail
+        )
+      ),
+      buildSVGIconButton(
+        icon: imagePaths.icMore,
+        iconColor: AppColor.colorActionButtonHover,
+        iconSize: _getIconSize(),
+        padding: _getPaddingIcon(),
+        tooltip: AppLocalizations.of(_context).more,
+        onTapDown: (tapDetails) {
+          if (responsiveUtils.isScreenWithShortestSide(_context)) {
+            _onMoreActionClick?.call(_presentationEmail, null);
+          } else {
+            _onMoreActionClick?.call(_presentationEmail, tapDetails.getPosition(_context));
+          }
+        }
+      ),
       if (responsiveUtils.isDesktop(_context)) const SizedBox(width: 16),
     ]);
   }
@@ -510,7 +505,6 @@ class EmailTileBuilder with BaseEmailItemTile {
           padding: const EdgeInsets.only(right: 4, left: 8),
           child: buildDateTime(_context, _presentationEmail)),
       buildIconChevron()
-
     ]);
   }
 
