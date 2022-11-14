@@ -1,9 +1,12 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 typedef IconWebCallback = void Function();
 typedef IconWebHasPositionCallback = void Function(RelativeRect);
+typedef OnTapIconButtonCallbackAction = void Function();
+typedef OnTapDownIconButtonCallbackAction = void Function(TapDownDetails TapDetails);
 
 Widget buildIconWeb({
   required Widget icon,
@@ -32,6 +35,47 @@ Widget buildIconWeb({
   );
 }
 
+Widget buildSVGIconButton({
+  required String icon,
+  String? tooltip,
+  EdgeInsets? padding,
+  double? iconSize,
+  Color? iconColor,
+  OnTapIconButtonCallbackAction? onTap,
+  OnTapDownIconButtonCallbackAction? onTapDown,
+}) {
+  Widget iconWidget = Padding(
+    padding: padding ?? const EdgeInsets.all(8),
+    child: SvgPicture.asset(
+      icon,
+      width: iconSize,
+      height: iconSize,
+      fit: BoxFit.fill,
+      color: iconColor,
+    ),
+  );
+
+  Widget itemChild;
+  if (tooltip != null) {
+    itemChild = Tooltip(
+      message: tooltip,
+      child: iconWidget,
+    );
+  } else {
+    itemChild = iconWidget;
+  }
+
+  return Material(
+    color: Colors.transparent,
+    child: InkWell(
+      onTap: onTap,
+      onTapDown: onTapDown,
+      customBorder: const CircleBorder(),
+      child: itemChild,
+    )
+  );
+}
+
 Widget buildIconWebHasPosition(BuildContext context, {
   required Widget icon,
   String? tooltip,
@@ -43,18 +87,10 @@ Widget buildIconWebHasPosition(BuildContext context, {
     shape: const CircleBorder(),
     child: InkWell(
         onTapDown: (detail) {
-          final screenSize = MediaQuery.of(context).size;
-          final offset = detail.globalPosition;
-          final position = RelativeRect.fromLTRB(
-            offset.dx,
-            offset.dy,
-            screenSize.width - offset.dx,
-            screenSize.height - offset.dy,
-          );
-          onTapDown?.call(position);
+          onTapDown?.call(detail.getPosition(context));
         },
         onTap: () => onTap?.call(),
-        borderRadius: const BorderRadius.all(const Radius.circular(12)),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
         child: Tooltip(
           message: tooltip ?? '',
           child: icon,
