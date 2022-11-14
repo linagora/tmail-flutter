@@ -17,19 +17,22 @@ mixin HandleSetErrorMixin {
     if (notDestroyedError != null && notDestroyedError.isNotEmpty) {
       notDestroyedError.entries
         .map((e) => _handleInChain(e, notDestroyedHandlers))
-        .map((optionError) => _handleRemainedError(unCatchErrorHandler, optionError));
+        .map((optionError) => _handleRemainedError(unCatchErrorHandler, optionError))
+        .toSet();
     }
 
     if (notCreatedError != null && notCreatedError.isNotEmpty) {
       notCreatedError.entries
         .map((e) => _handleInChain(e, notCreatedHandlers))
-        .map((optionError) => _handleRemainedError(unCatchErrorHandler, optionError));
+        .map((optionError) => _handleRemainedError(unCatchErrorHandler, optionError))
+        .toSet();
     }
 
     if (notUpdatedError != null && notUpdatedError.isNotEmpty) {
       notUpdatedError.entries
         .map((e) => _handleInChain(e, notUpdatedHandlers))
-        .map((optionError) => _handleRemainedError(unCatchErrorHandler, optionError));
+        .map((optionError) => _handleRemainedError(unCatchErrorHandler, optionError))
+        .toSet();
     }
   }
 
