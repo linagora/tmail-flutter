@@ -1,20 +1,14 @@
 import 'package:core/presentation/resources/assets_paths.dart';
 
 class ImagePaths {
-  String get icSearch => _getImagePath('ic_search.svg');
   String get icMailboxAllMail => _getImagePath('ic_mailbox_allmail.svg');
   String get icMailboxTemplate => _getImagePath('ic_mailbox_template.svg');
   String get icExpandFolder => _getImagePath('ic_expand_folder.svg');
   String get icCollapseFolder => _getImagePath('ic_collapse_folder.svg');
   String get icBack => _getImagePath('ic_back.svg');
-  String get icEyeDisable => _getImagePath('ic_eye_disable.svg');
   String get icShare => _getImagePath('ic_share.svg');
-  String get icMoreReceiver => _getImagePath('ic_more_receiver.svg');
   String get icComposerClose => _getImagePath('ic_composer_close.svg');
-  String get icComposerSend => _getImagePath('ic_composer_send.svg');
   String get icComposerMenu => _getImagePath('ic_composer_menu.svg');
-  String get icExpandAddress => _getImagePath('ic_expand_address.svg');
-  String get icExpandAttachment => _getImagePath('ic_expand_attachment.svg');
   String get icDownload => _getImagePath('ic_download.svg');
   String get icMore => _getImagePath('ic_more.svg');
   String get icPhotoLibrary => _getImagePath('ic_photo_library.svg');
@@ -34,7 +28,6 @@ class ImagePaths {
   String get icDelete => _getImagePath('ic_delete.svg');
   String get icSpam => _getImagePath('ic_spam.svg');
   String get icMove => _getImagePath('ic_move.svg');
-  String get icFlag => _getImagePath('ic_flag.svg');
   String get icReadToast => _getImagePath('ic_read_toast.svg');
   String get icUnreadToast => _getImagePath('ic_unread_toast.svg');
   String get icReplyAll => _getImagePath('ic_reply_all.svg');
@@ -60,17 +53,13 @@ class ImagePaths {
   String get icRenameMailbox => _getImagePath('ic_rename_mailbox.svg');
   String get icDeleteToast => _getImagePath('ic_delete_toast.svg');
   String get icRemoveDialog => _getImagePath('ic_remove_dialog.svg');
-  String get icDeleteEmailAddress => _getImagePath('ic_delete_email_address.svg');
-  String get icDeleteEmail => _getImagePath('ic_delete_email.svg');
   String get icNewMessage => _getImagePath('ic_new_message.svg');
   String get icUnreadStatus => _getImagePath('ic_unread_status.svg');
   String get icAttachmentsComposer => _getImagePath('ic_attachments_composer.svg');
   String get icCloseComposer => _getImagePath('ic_close_composer.svg');
   String get icFullScreenComposer => _getImagePath('ic_fullscreen_composer.svg');
   String get icMinimize => _getImagePath('ic_minimize.svg');
-  String get icSendComposer => _getImagePath('ic_send_composer.svg');
   String get icDeleteComposer => _getImagePath('ic_delete_composer.svg');
-  String get icFileAttachment => _getImagePath('ic_file_attachment.svg');
   String get icDeleteAttachment => _getImagePath('ic_delete_attachment.svg');
   String get icSendMobile => _getImagePath('ic_send_mobile.svg');
   String get icSendDisable => _getImagePath('ic_send_disable.svg');
@@ -81,17 +70,13 @@ class ImagePaths {
   String get icSelectAll => _getImagePath('ic_select_all.svg');
   String get icFullScreenExit => _getImagePath('ic_fullscreen_exit.svg');
   String get icChevronUp => _getImagePath('ic_chevron_up.svg');
-  String get icAddEmailAddress => _getImagePath('ic_add_email_address.svg');
   String get icClose => _getImagePath('ic_close.svg');
   String get icSendToastError => _getImagePath('ic_send_toast_error.svg');
   String get icEmpty => _getImagePath('ic_empty.svg');
   String get icNotConnection => _getImagePath('ic_not_connection.svg');
   String get icDeleteTrash => _getImagePath('ic_delete_trash.svg');
   String get icMenuDrawer => _getImagePath('ic_menu_drawer.svg');
-  String get icToastSpam => _getImagePath('ic_toast_spam.svg');
-  String get icToastNotSpam => _getImagePath('ic_toast_not_spam.svg');
-  String get icNotSpam => _getImagePath('ic_not_spam.svg');
-  String get icAvatarSpam => _getImagePath('ic_avatar_spam.svg');
+  String get icNotSpam => _getImagePath('ic_unspam.svg');
   String get icLogout => _getImagePath('ic_logout.svg');
   String get icSetting => _getImagePath('ic_setting.svg');
   String get icProfiles => _getImagePath('ic_profiles.svg');
@@ -177,6 +162,7 @@ class ImagePaths {
   String get icQuotasOutOfStorage => _getImagePath('ic_quotas_out_of_storage.svg');
   String get icQuickCreatingRule => _getImagePath('ic_quick_creating_rule.svg');
   String get icPageNotFound => _getImagePath('ic_page_not_found.svg');
+  String get icOpenInNewTab => _getImagePath('ic_open_in_new_tab.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
