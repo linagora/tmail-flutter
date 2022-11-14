@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-11-11T02:15:40.658946",
+  "@@last_modified": "2022-11-14T16:25:49.764077",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2518,6 +2518,12 @@
   },
   "page404": "Page 404",
   "@page404": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openInNewTab": "Open in New Tab",
+  "@openInNewTab": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

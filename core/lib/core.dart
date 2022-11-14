@@ -10,6 +10,7 @@ export 'presentation/extensions/html_extension.dart';
 export 'presentation/extensions/compare_string_extension.dart';
 export 'presentation/extensions/compare_list_extensions.dart';
 export 'presentation/extensions/string_extension.dart';
+export 'presentation/extensions/tap_down_details_extension.dart';
 export 'domain/extensions/media_type_extension.dart';
 
 // Exceptions

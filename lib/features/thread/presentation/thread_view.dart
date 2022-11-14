@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
@@ -24,9 +25,12 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
-    FilterEmailPopupMenuMixin {
+class ThreadView extends GetWidget<ThreadController>
+  with AppLoaderMixin,
+    FilterEmailPopupMenuMixin,
+    PopupMenuWidgetMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -496,44 +500,130 @@ class ThreadView extends GetWidget<ThreadController> with AppLoaderMixin,
   }
 
   List<Widget> _contextMenuActionTile(BuildContext context, PresentationEmail email) {
+    final mailboxContain = controller.getMailboxContain(email);
+
     return <Widget>[
-      _markAsEmailSpamOrUnSpamAction(context, email),
+      _openInNewTabContextMenuItemAction(context, email),
+      if (mailboxContain?.isDrafts == false)
+        _markAsEmailSpamOrUnSpamContextMenuItemAction(context, email, mailboxContain),
     ];
   }
 
-  Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
-    final mailboxContain = controller.getMailboxContain(email);
+  Widget _markAsEmailSpamOrUnSpamContextMenuItemAction(
+    BuildContext context,
+    PresentationEmail email,
+    PresentationMailbox? mailboxContain
+  ) {
     return (EmailActionCupertinoActionSheetActionBuilder(
-            const Key('mark_as_spam_or_un_spam_action'),
-            SvgPicture.asset(
-                mailboxContain?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
-                width: 28,
-                height: 28,
-                fit: BoxFit.fill,
-                color: AppColor.colorTextButton),
-            mailboxContain?.isSpam == true
-                ? AppLocalizations.of(context).remove_from_spam
-                : AppLocalizations.of(context).mark_as_spam,
-            email,
-            iconLeftPadding: _responsiveUtils.isMobile(context)
-                ? const EdgeInsets.only(left: 12, right: 16)
-                : const EdgeInsets.only(right: 12),
-            iconRightPadding: _responsiveUtils.isMobile(context)
-                ? const EdgeInsets.only(right: 12)
-                : EdgeInsets.zero)
-        ..onActionClick((email) => controller.pressEmailAction(context,
-            mailboxContain?.isSpam == true
-                ? EmailActionType.unSpam
-                : EmailActionType.moveToSpam,
-            email,
-            mailboxContain: mailboxContain)))
-      .build();
+        const Key('mark_as_spam_or_un_spam_action'),
+        SvgPicture.asset(
+          mailboxContain?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
+          width: 24,
+          height: 24,
+          fit: BoxFit.fill,
+          color: AppColor.colorTextButton),
+        mailboxContain?.isSpam == true
+          ? AppLocalizations.of(context).remove_from_spam
+          : AppLocalizations.of(context).mark_as_spam,
+        email,
+        iconLeftPadding: _responsiveUtils.isMobile(context)
+          ? const EdgeInsets.only(left: 12, right: 16)
+          : const EdgeInsets.only(right: 12),
+        iconRightPadding: _responsiveUtils.isMobile(context)
+          ? const EdgeInsets.only(right: 12)
+          : EdgeInsets.zero)
+      ..onActionClick((email) => controller.pressEmailAction(context,
+        mailboxContain?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam,
+        email,
+        mailboxContain: mailboxContain)
+      )
+    ).build();
+  }
+
+  Widget _openInNewTabContextMenuItemAction(BuildContext context, PresentationEmail email) {
+    return (EmailActionCupertinoActionSheetActionBuilder(
+      const Key('open_in_new_tab_action'),
+      SvgPicture.asset(
+        _imagePaths.icOpenInNewTab,
+        width: 24,
+        height: 24,
+        fit: BoxFit.fill,
+        color: AppColor.colorTextButton),
+      AppLocalizations.of(context).openInNewTab,
+      email,
+      iconLeftPadding: _responsiveUtils.isMobile(context)
+        ? const EdgeInsets.only(left: 12, right: 16)
+        : const EdgeInsets.only(right: 12),
+      iconRightPadding: _responsiveUtils.isMobile(context)
+        ? const EdgeInsets.only(right: 12)
+        : EdgeInsets.zero)
+      ..onActionClick((email) {
+        popBack();
+        controller.openEmailInNewTabAction(context, email);
+      })
+    ).build();
   }
 
   List<PopupMenuEntry> _popupMenuActionTile(BuildContext context, PresentationEmail email) {
+    final mailboxContain = controller.getMailboxContain(email);
+
     return [
-      PopupMenuItem(padding: const EdgeInsets.symmetric(horizontal: 8), child: _markAsEmailSpamOrUnSpamAction(context, email)),
+      _buildOpenInNewTabPopupMenuItem(context, email, mailboxContain),
+      if (mailboxContain?.isDrafts == false)
+        _buildMarkAsSpamPopupMenuItem(context, email, mailboxContain)
     ];
+  }
+
+  PopupMenuEntry _buildMarkAsSpamPopupMenuItem(
+    BuildContext context,
+    PresentationEmail email,
+    PresentationMailbox? mailboxContain
+  ) {
+    return PopupMenuItem(
+      padding: EdgeInsets.zero,
+      child: popupItem(
+        mailboxContain?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
+        mailboxContain?.isSpam == true
+          ? AppLocalizations.of(context).remove_from_spam
+          : AppLocalizations.of(context).mark_as_spam,
+        colorIcon: AppColor.colorTextButton,
+        styleName: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+          color: Colors.black
+        ),
+        onCallbackAction: () => controller.pressEmailAction(
+          context,
+          mailboxContain?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam,
+          email,
+          mailboxContain: mailboxContain
+        )
+      )
+    );
+  }
+
+  PopupMenuEntry _buildOpenInNewTabPopupMenuItem(
+    BuildContext context,
+    PresentationEmail email,
+    PresentationMailbox? mailboxContain
+  ) {
+    return PopupMenuItem(
+      padding: EdgeInsets.zero,
+      child: popupItem(
+        _imagePaths.icOpenInNewTab,
+        AppLocalizations.of(context).openInNewTab,
+        colorIcon: AppColor.colorTextButton,
+        styleName: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+          color: Colors.black
+        ),
+        onCallbackAction: () {
+          popBack();
+          controller.openEmailInNewTabAction(context, email);
+        }
+      )
+    );
   }
 
   Widget _buildMarkAsMailboxReadLoading(BuildContext context) {
