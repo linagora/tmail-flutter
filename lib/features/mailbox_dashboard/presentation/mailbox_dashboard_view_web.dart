@@ -49,21 +49,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       });
     }
 
-    return Scaffold(
-      key: controller.scaffoldKey,
-      backgroundColor: Colors.white,
-      drawer: ResponsiveWidget(
-          responsiveUtils: responsiveUtils,
-          mobile: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
-          tablet: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
-          tabletLarge: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeLeftMenuMobile),
-          desktop: const SizedBox.shrink()),
-      drawerEnableOpenDragGesture: !responsiveUtils.isDesktop(context),
-      body: Portal(
-        child: Stack(children: [
-          ResponsiveWidget(
-              responsiveUtils: responsiveUtils,
-              desktop: Container(
+    return Portal(
+      child: Stack(children: [
+        ResponsiveWidget(
+            responsiveUtils: responsiveUtils,
+            desktop: Scaffold(
+              body: Container(
                 color: AppColor.colorBgDesktop,
                 child: Column(children: [
                   Row(children: [
@@ -135,14 +126,16 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   ))
                 ]),
               ),
-              tabletLarge: Obx(() {
-                switch(controller.dashboardRoute.value) {
-                  case DashboardRoutes.searchEmail:
-                    return SearchEmailView();
-                  case DashboardRoutes.emailDetailed:
-                    return controller.searchController.isSearchEmailRunning
-                        ? EmailView()
-                        : Row(
+            ),
+            tabletLarge: Obx(() {
+              switch(controller.dashboardRoute.value) {
+                case DashboardRoutes.searchEmail:
+                  return SearchEmailView();
+                case DashboardRoutes.emailDetailed:
+                  return controller.searchController.isSearchEmailRunning
+                      ? EmailView()
+                      : _buildScaffoldHaveDrawer(
+                        body: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
@@ -150,9 +143,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                   child: ThreadView()),
                               Expanded(child: EmailView()),
                             ],
-                          );
-                  default:
-                    return Row(
+                          ),
+                      );
+                default:
+                  return _buildScaffoldHaveDrawer(
+                    body: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
@@ -160,28 +155,41 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             child: ThreadView()),
                         Expanded(child: EmailView()),
                       ],
-                    );
-                }
-              }),
-              mobile: Obx(() {
-                switch(controller.dashboardRoute.value) {
-                  case DashboardRoutes.thread:
-                    return ThreadView();
-                  case DashboardRoutes.emailDetailed:
-                    return EmailView();
-                  case DashboardRoutes.searchEmail:
-                    return SearchEmailView();
-                  default:
-                    return ThreadView();
-                }
-              }),
-          ),
-          Obx(() => controller.composerOverlayState.value == ComposerOverlayState.active
-              ? ComposerView()
-              : const SizedBox.shrink()),
-          _buildDownloadTaskStateWidget(),
-        ]),
-      ),
+                    ),
+                  );
+              }
+            }),
+            mobile: Obx(() {
+              switch(controller.dashboardRoute.value) {
+                case DashboardRoutes.thread:
+                  return _buildScaffoldHaveDrawer(body: ThreadView());
+                case DashboardRoutes.emailDetailed:
+                  return EmailView();
+                case DashboardRoutes.searchEmail:
+                  return SearchEmailView();
+                default:
+                  return _buildScaffoldHaveDrawer(body: ThreadView());
+              }
+            }),
+        ),
+        Obx(() => controller.composerOverlayState.value == ComposerOverlayState.active
+            ? ComposerView()
+            : const SizedBox.shrink()),
+        _buildDownloadTaskStateWidget(),
+      ]),
+    );
+  }
+
+  Widget _buildScaffoldHaveDrawer({required Widget body}) {
+    return Scaffold(
+      key: controller.scaffoldKey,
+      drawer: ResponsiveWidget(
+      responsiveUtils: responsiveUtils,
+      mobile: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
+      tablet: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
+      tabletLarge: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeLeftMenuMobile),
+      desktop: const SizedBox.shrink()),
+      body: body,
     );
   }
 
