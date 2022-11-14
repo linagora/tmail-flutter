@@ -803,6 +803,9 @@ class ThreadController extends BaseController with EmailActionController {
         popBack();
         unSpam(selectedEmail);
         break;
+      case EmailActionType.openInNewTab:
+        openEmailInNewTabAction(context, selectedEmail);
+        break;
       default:
         break;
     }
@@ -821,7 +824,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   void calculateDragValue(PresentationEmail? currentPresentationEmail) {
     if(currentPresentationEmail != null) {
-      if(mailboxDashBoardController.listEmailSelected.contains(currentPresentationEmail)){
+      if(mailboxDashBoardController.listEmailSelected.findEmail(currentPresentationEmail.id) != null){
         listEmailDrag.clear();
         listEmailDrag.addAll(mailboxDashBoardController.listEmailSelected);
       } else {

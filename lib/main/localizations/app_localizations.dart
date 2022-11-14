@@ -2587,4 +2587,11 @@ class AppLocalizations {
         'Page 404',
         name: 'page404');
   }
+
+  String get openInNewTab {
+    return Intl.message(
+      'Open in New Tab',
+      name: 'openInNewTab',
+    );
+  }
 }

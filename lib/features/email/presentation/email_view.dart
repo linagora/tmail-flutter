@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
@@ -16,7 +17,8 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class EmailView extends GetWidget<SingleEmailController> {
+class EmailView extends GetWidget<SingleEmailController>
+    with PopupMenuWidgetMixin {
 
   static const double maxSizeFullDisplayEmailAddressArrowDownButton = 30.0;
 
@@ -766,49 +768,58 @@ class EmailView extends GetWidget<SingleEmailController> {
 
   Widget _markAsEmailUnreadAction(BuildContext context, PresentationEmail email) {
     return (EmailActionCupertinoActionSheetActionBuilder(
-            const Key('mark_as_unread_action'),
-            SvgPicture.asset(
-              imagePaths.icUnreadEmail,
-              width: 24,
-              height: 24,
-              fit: BoxFit.fill,
-              color: AppColor.colorTextButton),
-            AppLocalizations.of(context).mark_as_unread,
-            email,
-            iconLeftPadding: responsiveUtils.isMobile(context)
-              ? const EdgeInsets.only(left: 12, right: 16)
-              : const EdgeInsets.only(right: 12),
-            iconRightPadding: responsiveUtils.isMobile(context)
-              ? const EdgeInsets.only(right: 12)
-              : EdgeInsets.zero)
-        ..onActionClick((email) => controller.handleEmailAction(context, email, EmailActionType.markAsUnread)))
-      .build();
+          const Key('mark_as_unread_action'),
+          SvgPicture.asset(
+            imagePaths.icUnreadEmail,
+            width: 24,
+            height: 24,
+            fit: BoxFit.fill,
+            color: AppColor.colorTextButton
+          ),
+          AppLocalizations.of(context).mark_as_unread,
+          email,
+          iconLeftPadding: responsiveUtils.isMobile(context)
+            ? const EdgeInsets.only(left: 12, right: 16)
+            : const EdgeInsets.only(right: 12),
+          iconRightPadding: responsiveUtils.isMobile(context)
+            ? const EdgeInsets.only(right: 12)
+            : EdgeInsets.zero)
+      ..onActionClick((email) => controller.handleEmailAction(
+        context,
+        email,
+        EmailActionType.markAsUnread)
+      )
+    ).build();
   }
 
   Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
     final currentMailbox = controller.getMailboxContain(email);
 
     return (EmailActionCupertinoActionSheetActionBuilder(
-            const Key('mark_as_spam_or_un_spam_action'),
-            SvgPicture.asset(
-              currentMailbox?.isSpam == true ? imagePaths.icNotSpam : imagePaths.icMailboxSpam,
-              width: 24,
-              height: 24,
-              fit: BoxFit.fill,
-              color: AppColor.colorTextButton),
-            currentMailbox?.isSpam == true
-              ? AppLocalizations.of(context).remove_from_spam
-              : AppLocalizations.of(context).mark_as_spam,
-            email,
-            iconLeftPadding: responsiveUtils.isMobile(context)
-              ? const EdgeInsets.only(left: 12, right: 16)
-              : const EdgeInsets.only(right: 12),
-            iconRightPadding: responsiveUtils.isMobile(context)
-              ? const EdgeInsets.only(right: 12)
-              : EdgeInsets.zero)
-        ..onActionClick((email) => controller.handleEmailAction(context, email,
-            currentMailbox?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam)))
-      .build();
+          const Key('mark_as_spam_or_un_spam_action'),
+          SvgPicture.asset(
+            currentMailbox?.isSpam == true ? imagePaths.icNotSpam : imagePaths.icSpam,
+            width: 24,
+            height: 24,
+            fit: BoxFit.fill,
+            color: AppColor.colorTextButton
+          ),
+          currentMailbox?.isSpam == true
+            ? AppLocalizations.of(context).remove_from_spam
+            : AppLocalizations.of(context).mark_as_spam,
+          email,
+          iconLeftPadding: responsiveUtils.isMobile(context)
+            ? const EdgeInsets.only(left: 12, right: 16)
+            : const EdgeInsets.only(right: 12),
+          iconRightPadding: responsiveUtils.isMobile(context)
+            ? const EdgeInsets.only(right: 12)
+            : EdgeInsets.zero)
+      ..onActionClick((email) => controller.handleEmailAction(
+        context,
+        email,
+        currentMailbox?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam)
+      )
+    ).build();
   }
 
   Widget _quickCreatingRuleAction(BuildContext context, PresentationEmail email) {
@@ -833,85 +844,76 @@ class EmailView extends GetWidget<SingleEmailController> {
   }
 
   List<PopupMenuEntry> _popupMenuEmailActionTile(BuildContext context, PresentationEmail email) {
+    final mailboxContain = controller.getMailboxContain(email);
     return [
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: _markAsEmailUnreadPopupItemAction(context, email)),
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: _markAsEmailSpamOrUnSpamPopupItemAction(context, email)),
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: _quickCreatingRulePopupItemAction(context, email)),
+      _markAsEmailUnreadPopupItemAction(context, email),
+      _markAsEmailSpamOrUnSpamPopupItemAction(context, email, mailboxContain),
+      _quickCreatingRulePopupItemAction(context, email)
     ];
   }
 
-  Widget _markAsEmailUnreadPopupItemAction(BuildContext context, PresentationEmail email) {
-    return _popupMenuItem(
-      icon: imagePaths.icUnreadEmail,
-      title: AppLocalizations.of(context).mark_as_unread,
-      onTapCallback: () => controller.handleEmailAction(context, email, EmailActionType.markAsUnread)
-    );
-  }
-
-  Widget _markAsEmailSpamOrUnSpamPopupItemAction(BuildContext context, PresentationEmail email) {
-    final currentMailbox = controller.getMailboxContain(email);
-
-    return _popupMenuItem(
-      icon:  currentMailbox?.isSpam == true
-        ? imagePaths.icNotSpam
-        : imagePaths.icMailboxSpam,
-      title: currentMailbox?.isSpam == true
-        ? AppLocalizations.of(context).remove_from_spam
-        : AppLocalizations.of(context).mark_as_spam,
-      onTapCallback: () => controller.handleEmailAction(
-        context,
-        email,
-        currentMailbox?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam)
-    );
-  }
-
-  Widget _quickCreatingRulePopupItemAction(BuildContext context, PresentationEmail email) {
-    return _popupMenuItem(
-      icon: imagePaths.icQuickCreatingRule,
-      title: AppLocalizations.of(context).quickCreatingRule,
-      onTapCallback: () => controller.quickCreatingRule(context, email.from!.first)
-    );
-  }
-
-  Widget _popupMenuItem({
-    required String icon,
-    required String title,
-    Function()? onTapCallback
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTapCallback,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SizedBox(
-            width: 300,
-            height: 44,
-            child: Row(children: [
-              SvgPicture.asset(
-                icon,
-                width: 20,
-                height: 20,
-                color: AppColor.colorTextButton,
-                fit: BoxFit.fill),
-              const SizedBox(width: 12),
-              Expanded(child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal)
-              )),
-            ])
-          ),
+  PopupMenuEntry _markAsEmailUnreadPopupItemAction(BuildContext context, PresentationEmail email) {
+    return PopupMenuItem(
+      padding: EdgeInsets.zero,
+      child: popupItem(
+        imagePaths.icUnreadEmail,
+        AppLocalizations.of(context).mark_as_unread,
+        colorIcon: AppColor.colorTextButton,
+        styleName: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+          color: Colors.black
+        ),
+        onCallbackAction: () => controller.handleEmailAction(
+          context,
+          email,
+          EmailActionType.markAsUnread
         )
-      ),
+      )
+    );
+  }
+
+  PopupMenuEntry _markAsEmailSpamOrUnSpamPopupItemAction(
+    BuildContext context,
+    PresentationEmail email,
+    PresentationMailbox? mailboxContain
+  ) {
+    return PopupMenuItem(
+      padding: EdgeInsets.zero,
+      child: popupItem(
+        mailboxContain?.isSpam == true ? imagePaths.icNotSpam : imagePaths.icSpam,
+        mailboxContain?.isSpam == true
+          ? AppLocalizations.of(context).remove_from_spam
+          : AppLocalizations.of(context).mark_as_spam,
+        colorIcon: AppColor.colorTextButton,
+        styleName: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+          color: Colors.black
+        ),
+        onCallbackAction: () => controller.handleEmailAction(
+          context,
+          email,
+          mailboxContain?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam
+        )
+      )
+    );
+  }
+
+  PopupMenuEntry _quickCreatingRulePopupItemAction(BuildContext context, PresentationEmail email) {
+    return PopupMenuItem(
+      padding: EdgeInsets.zero,
+      child: popupItem(
+        imagePaths.icQuickCreatingRule,
+        AppLocalizations.of(context).quickCreatingRule,
+        colorIcon: AppColor.colorTextButton,
+        styleName: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+          color: Colors.black
+        ),
+        onCallbackAction: () => controller.quickCreatingRule(context, email.from!.first)
+      )
     );
   }
 }
