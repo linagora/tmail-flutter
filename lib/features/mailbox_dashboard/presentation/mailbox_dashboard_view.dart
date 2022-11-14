@@ -20,31 +20,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       children: [
         SizedBox(
             width: ResponsiveUtils.defaultSizeLeftMenuMobile,
-            child: ThreadView()),
+            child: _buildScaffoldHaveDrawer(body: ThreadView())),
         Expanded(child: EmailView()),
       ],
     );
 
     return Scaffold(
-      key: controller.scaffoldKey,
-      drawer: ResponsiveWidget(
-        responsiveUtils: responsiveUtils,
-        mobile: SizedBox(child: MailboxView(), width: double.infinity),
-        landscapeMobile: SizedBox(
-            child: MailboxView(),
-            width: ResponsiveUtils.defaultSizeDrawer),
-        tablet: SizedBox(
-            child: MailboxView(),
-            width: ResponsiveUtils.defaultSizeDrawer),
-        landscapeTablet: SizedBox(
-            child: MailboxView(),
-            width: ResponsiveUtils.defaultSizeLeftMenuMobile),
-        tabletLarge: SizedBox(
-            child: MailboxView(),
-            width: ResponsiveUtils.defaultSizeLeftMenuMobile),
-        desktop: SizedBox(
-            child: MailboxView(),
-            width: ResponsiveUtils.defaultSizeLeftMenuMobile)),
       drawerEnableOpenDragGesture: responsiveUtils.hasLeftMenuDrawerActive(context),
       body: Stack(children: [
         Obx(() {
@@ -61,7 +42,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   landscapeTablet: controller.searchController.isSearchEmailRunning
                       ? EmailView()
                       : bodyLandscapeTablet,
-                  mobile: ThreadView());
+                  mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
             case DashboardRoutes.emailDetailed:
               return ResponsiveWidget(
                   responsiveUtils: responsiveUtils,
@@ -89,10 +70,35 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   landscapeTablet: controller.searchController.isSearchEmailRunning
                       ? EmailView()
                       : bodyLandscapeTablet,
-                  mobile: ThreadView());
+                  mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
           }
         }),
       ]),
+    );
+  }
+
+  _buildScaffoldHaveDrawer({required Widget body}) {
+    return Scaffold(
+      key: controller.scaffoldKey,
+      body: body,
+      drawer: ResponsiveWidget(
+        responsiveUtils: responsiveUtils,
+        mobile: SizedBox(child: MailboxView(), width: double.infinity),
+        landscapeMobile: SizedBox(
+            child: MailboxView(),
+            width: ResponsiveUtils.defaultSizeDrawer),
+        tablet: SizedBox(
+            child: MailboxView(),
+            width: ResponsiveUtils.defaultSizeDrawer),
+        landscapeTablet: SizedBox(
+            child: MailboxView(),
+            width: ResponsiveUtils.defaultSizeLeftMenuMobile),
+        tabletLarge: SizedBox(
+            child: MailboxView(),
+            width: ResponsiveUtils.defaultSizeLeftMenuMobile),
+        desktop: SizedBox(
+            child: MailboxView(),
+            width: ResponsiveUtils.defaultSizeLeftMenuMobile)),
     );
   }
 }
