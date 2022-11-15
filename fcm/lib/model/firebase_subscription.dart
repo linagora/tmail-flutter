@@ -2,33 +2,33 @@
 import 'package:equatable/equatable.dart';
 import 'package:fcm/converter/device_client_id_nullable_converter.dart';
 import 'package:fcm/converter/firebase_expired_time_nullable_converter.dart';
-import 'package:fcm/converter/firebase_registration_id_nullable_converter.dart';
+import 'package:fcm/converter/firebase_subscription_id_nullable_converter.dart';
 import 'package:fcm/converter/firebase_token_nullable_converter.dart';
 import 'package:fcm/converter/type_name_converter.dart';
 import 'package:fcm/model/device_client_id.dart';
 import 'package:fcm/model/firebase_expired_time.dart';
-import 'package:fcm/model/firebase_registration_id.dart';
+import 'package:fcm/model/firebase_subscription_id.dart';
 import 'package:fcm/model/firebase_token.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'firebase_registration.g.dart';
+part 'firebase_subscription.g.dart';
 
 @DeviceClientIdNullableConverter()
-@FirebaseRegistrationIdNullableConverter()
+@FirebaseSubscriptionIdNullableConverter()
 @FirebaseTokenNullableConverter()
 @FirebaseExpiredTimeNullableConverter()
 @TypeNameConverter()
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class FirebaseRegistration with EquatableMixin {
+class FirebaseSubscription with EquatableMixin {
 
-  final FirebaseRegistrationId? id;
+  final FirebaseSubscriptionId? id;
   final FirebaseToken? token;
   final DeviceClientId? deviceClientId;
   final FirebaseExpiredTime? expires;
   final List<TypeName>? types;
 
-  FirebaseRegistration({
+  FirebaseSubscription({
     this.id,
     this.token,
     this.deviceClientId,
@@ -36,9 +36,9 @@ class FirebaseRegistration with EquatableMixin {
     this.types
   });
 
-  factory FirebaseRegistration.fromJson(Map<String, dynamic> json) => _$FirebaseRegistrationFromJson(json);
+  factory FirebaseSubscription.fromJson(Map<String, dynamic> json) => _$FirebaseSubscriptionFromJson(json);
 
-  Map<String, dynamic> toJson() => _$FirebaseRegistrationToJson(this);
+  Map<String, dynamic> toJson() => _$FirebaseSubscriptionToJson(this);
 
   @override
   List<Object?> get props => [id, token, deviceClientId, expires, types];
