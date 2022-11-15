@@ -1188,27 +1188,27 @@ class ThreadController extends BaseController {
       BuildContext context,
       AccountId accountId,
       Session session,
-      PresentationEmail emailSelected,
-      PresentationMailbox currentMailbox,
+      EmailId emailId,
+      MailboxId mailboxId,
       PresentationMailbox destinationMailbox
   ) {
     if (destinationMailbox.isTrash) {
       _moveToTrashAction(accountId, MoveToMailboxRequest(
-          {currentMailbox.id: [emailSelected.id]},
+          {mailboxId: [emailId]},
           destinationMailbox.id,
           MoveAction.moving,
           session,
           EmailActionType.moveToTrash));
     } else if (destinationMailbox.isSpam) {
       _moveToSpamAction(accountId, MoveToMailboxRequest(
-          {currentMailbox.id: [emailSelected.id]},
+          {mailboxId: [emailId]},
           destinationMailbox.id,
           MoveAction.moving,
           session,
           EmailActionType.moveToSpam));
     } else {
       _moveToMailboxAction(accountId, MoveToMailboxRequest(
-          {currentMailbox.id: [emailSelected.id]},
+          {mailboxId: [emailId]},
           destinationMailbox.id,
           MoveAction.moving,
           session,
