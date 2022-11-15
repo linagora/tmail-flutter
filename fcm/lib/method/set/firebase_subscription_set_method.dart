@@ -1,14 +1,14 @@
-import 'package:fcm/model/firebase_registration.dart';
-import 'package:fcm/utils/firebase_utils.dart';
+import 'package:fcm/model/firebase_subscription.dart';
+import 'package:fcm/model/firebase_capability.dart';
 import 'package:jmap_dart_client/http/converter/id_converter.dart';
 import 'package:jmap_dart_client/http/converter/set/set_method_properties_converter.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/method/request/set_method.dart';
 import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 
-class FirebaseRegistrationSetMethod extends SetMethodNoNeedAccountId<FirebaseRegistration> {
+class FirebaseSubscriptionSetMethod extends SetMethodNoNeedAccountId<FirebaseSubscription> {
 
-  FirebaseRegistrationSetMethod() : super();
+  FirebaseSubscriptionSetMethod() : super();
 
   @override
   MethodName get methodName => MethodName('FirebaseRegistration/set');
@@ -16,7 +16,7 @@ class FirebaseRegistrationSetMethod extends SetMethodNoNeedAccountId<FirebaseReg
   @override
   Set<CapabilityIdentifier> get requiredCapabilities => {
     CapabilityIdentifier.jmapCore,
-    FirebaseUtils.capabilityLinagoraFirebase,
+    FirebaseCapability.identifier
   };
 
   @override
