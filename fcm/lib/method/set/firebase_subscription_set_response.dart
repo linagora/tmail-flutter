@@ -1,13 +1,13 @@
-import 'package:fcm/model/firebase_registration.dart';
+import 'package:fcm/model/firebase_subscription.dart';
 import 'package:jmap_dart_client/http/converter/id_converter.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/method/response/set_response.dart';
 
-class FirebaseRegistrationSetResponse extends SetResponseNoAccount<FirebaseRegistration> {
-  FirebaseRegistrationSetResponse({
-    Map<Id, FirebaseRegistration>? created,
-    Map<Id, FirebaseRegistration?>? updated,
+class FirebaseSubscriptionSetResponse extends SetResponseNoAccount<FirebaseSubscription> {
+  FirebaseSubscriptionSetResponse({
+    Map<Id, FirebaseSubscription>? created,
+    Map<Id, FirebaseSubscription?>? updated,
     Set<Id>? destroyed,
     Map<Id, SetError>? notCreated,
     Map<Id, SetError>? notUpdated,
@@ -21,15 +21,15 @@ class FirebaseRegistrationSetResponse extends SetResponseNoAccount<FirebaseRegis
     notDestroyed: notDestroyed
   );
 
-  static FirebaseRegistrationSetResponse deserialize(Map<String, dynamic> json) {
-    return FirebaseRegistrationSetResponse(
+  static FirebaseSubscriptionSetResponse deserialize(Map<String, dynamic> json) {
+    return FirebaseSubscriptionSetResponse(
       created: (json['created'] as Map<String, dynamic>?)?.map((key, value) => MapEntry(
         const IdConverter().fromJson(key),
-        FirebaseRegistration.fromJson(value as Map<String, dynamic>)
+        FirebaseSubscription.fromJson(value as Map<String, dynamic>)
       )),
       updated: (json['updated'] as Map<String, dynamic>?)?.map((key, value) => MapEntry(
         const IdConverter().fromJson(key),
-        value != null ? FirebaseRegistration.fromJson(value as Map<String, dynamic>) : null
+        value != null ? FirebaseSubscription.fromJson(value as Map<String, dynamic>) : null
       )),
       destroyed: (json['destroyed'] as List<dynamic>?)?.map((id) => const IdConverter().fromJson(id)).toSet(),
       notCreated: (json['notCreated'] as Map<String, dynamic>?)?.map((key, value) => MapEntry(
