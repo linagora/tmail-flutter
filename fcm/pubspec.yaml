@@ -11,9 +11,25 @@ dependencies:
   flutter:
     sdk: flutter
 
+  equatable: 2.0.3
+
+  json_annotation: 4.5.0
+
+  jmap_dart_client:
+    git:
+      url: https://github.com/linagora/jmap-dart-client.git
+      ref: master
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  flutter_lints: 1.0.4
+
+  build_runner: 2.1.11
+
+  json_serializable: 6.2.0
+
 flutter:
+
   uses-material-design: true
