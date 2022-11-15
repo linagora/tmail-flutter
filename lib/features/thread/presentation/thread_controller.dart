@@ -1143,10 +1143,10 @@ class ThreadController extends BaseController {
   }
 
   void moveToMailbox(BuildContext context, PresentationEmail email) async {
-    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    final currentMailboxId = mailboxDashBoardController.selectedMailbox.value?.id ?? _getEmailMailboxId(email);
     final accountId = mailboxDashBoardController.accountId.value;
 
-    if (currentMailbox != null && accountId != null) {
+    if (currentMailboxId != null && accountId != null) {
       final arguments = DestinationPickerArguments(accountId, MailboxActions.moveEmail);
 
       if (BuildUtils.isWeb) {
@@ -1159,8 +1159,8 @@ class ThreadController extends BaseController {
                     context,
                     accountId,
                     mailboxDashBoardController.sessionCurrent!,
-                    email,
-                    currentMailbox,
+                    email.id,
+                    currentMailboxId,
                     destinationMailbox);
               }
             });
@@ -1176,12 +1176,23 @@ class ThreadController extends BaseController {
               context,
               accountId,
               mailboxDashBoardController.sessionCurrent!,
-              email,
-              currentMailbox,
+              email.id,
+              currentMailboxId,
               destinationMailbox);
         }
       }
     }
+  }
+
+  MailboxId? _getEmailMailboxId(PresentationEmail email) {
+    if(email.mailboxIds != null) {
+      for(var entry in email.mailboxIds!.entries) {
+        if(entry.value) {
+          return entry.key;
+        }
+      }
+    }
+    return null;
   }
 
   void _dispatchMoveToAction(
