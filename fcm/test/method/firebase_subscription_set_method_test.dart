@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:fcm/method/set/firebase_registration_set_method.dart';
-import 'package:fcm/method/set/firebase_registration_set_response.dart';
+import 'package:fcm/method/set/firebase_subscription_set_method.dart';
+import 'package:fcm/method/set/firebase_subscription_set_response.dart';
 import 'package:fcm/model/device_client_id.dart';
 import 'package:fcm/model/firebase_expired_time.dart';
-import 'package:fcm/model/firebase_registration.dart';
-import 'package:fcm/model/firebase_registration_id.dart';
+import 'package:fcm/model/firebase_subscription.dart';
+import 'package:fcm/model/firebase_subscription_id.dart';
 import 'package:fcm/model/firebase_token.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,13 +15,13 @@ import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 
 void main() {
-  group('test to json firebase registration set method', () {
-    final expectedFirebaseRegistrationCreated = FirebaseRegistration(
-      id: FirebaseRegistrationId(Id('175dbd70-93d1-11ec-984e-e3f8b83572b4')),
+  group('test to json firebase subscription set method', () {
+    final expectedFirebaseSubscriptionCreated = FirebaseSubscription(
+      id: FirebaseSubscriptionId(Id('175dbd70-93d1-11ec-984e-e3f8b83572b4')),
       expires: FirebaseExpiredTime(UTCDate(DateTime.parse('2022-03-31T02:14:29Z'))),
     );
 
-    test('firebase registration set method and response parsing', () async {
+    test('firebase subscription set method and response parsing', () async {
       final baseOption  = BaseOptions(method: 'POST');
       final dio = Dio(baseOption)
         ..options.baseUrl = 'http://domain.com/jmap';
@@ -75,10 +75,10 @@ void main() {
 
       final createRequestId = Id('dab246');
 
-      final firebaseRegistrationSetMethod = FirebaseRegistrationSetMethod()
+      final firebaseSubscriptionSetMethod = FirebaseSubscriptionSetMethod()
         ..addCreate(
           createRequestId,
-          FirebaseRegistration(
+          FirebaseSubscription(
             deviceClientId: DeviceClientId('a123-b123-c123'),
             token: FirebaseToken('token1'),
             types: [TypeName.mailboxType]
@@ -87,19 +87,19 @@ void main() {
 
       final httpClient = HttpClient(dio);
       final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
-      final firebaseRegistrationSetInvocation = requestBuilder.invocation(firebaseRegistrationSetMethod);
+      final firebaseSubscriptionSetInvocation = requestBuilder.invocation(firebaseSubscriptionSetMethod);
       final response = await (requestBuilder
-          ..usings(firebaseRegistrationSetMethod.requiredCapabilities))
+          ..usings(firebaseSubscriptionSetMethod.requiredCapabilities))
         .build()
         .execute();
 
-      final firebaseRegistrationSetResponse = response.parse<FirebaseRegistrationSetResponse>(
-        firebaseRegistrationSetInvocation.methodCallId,
-        FirebaseRegistrationSetResponse.deserialize);
+      final firebaseSubscriptionSetResponse = response.parse<FirebaseSubscriptionSetResponse>(
+        firebaseSubscriptionSetInvocation.methodCallId,
+        FirebaseSubscriptionSetResponse.deserialize);
 
       expect(
-        firebaseRegistrationSetResponse!.created![createRequestId]!.id,
-        equals(expectedFirebaseRegistrationCreated.id)
+        firebaseSubscriptionSetResponse!.created![createRequestId]!.id,
+        equals(expectedFirebaseSubscriptionCreated.id)
       );
     });
   });
