@@ -20,6 +20,8 @@ dependencies:
       url: https://github.com/linagora/jmap-dart-client.git
       ref: master
 
+  http_mock_adapter: 0.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -30,6 +32,7 @@ dev_dependencies:
 
   json_serializable: 6.2.0
 
+  mockito: 5.2.0
 flutter:
 
   uses-material-design: true
