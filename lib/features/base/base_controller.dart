@@ -119,7 +119,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [CapabilityIdentifier.jmapMdn]);
       MdnInteractorBindings().dependencies();
     } catch(e) {
-      logError('ReloadableController::injectVacationBindings(): exception: $e');
+      logError('BaseController::injectMdnBindings(): exception: $e');
     }
   }
 
@@ -128,7 +128,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [capabilityForward]);
       ForwardingInteractorsBindings().dependencies();
     } catch(e) {
-      logError('ReloadableController::injectForwardBindings(): exception: $e');
+      logError('BaseController::injectForwardBindings(): exception: $e');
     }
   }
 
@@ -137,7 +137,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [capabilityRuleFilter]);
       EmailRulesInteractorBindings().dependencies();
     } catch(e) {
-      logError('ReloadableController::injectRuleFilterBindings(): exception: $e');
+      logError('BaseController::injectRuleFilterBindings(): exception: $e');
     }
   }
 }
