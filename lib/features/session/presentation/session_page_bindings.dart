@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/save_firebase_cache_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/session/presentation/session_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
@@ -44,6 +45,7 @@ class SessionPageBindings extends BaseBindings {
       Get.find<AuthorizationInterceptors>(),
       Get.find<AppToast>(),
       Get.find<DynamicUrlInterceptors>(),
+      Get.find<SaveFirebaseCacheInteractor>(),
     ));
   }
 
