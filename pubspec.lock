@@ -397,6 +397,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
+  fcm:
+    dependency: "direct main"
+    description:
+      path: fcm
+      relative: true
+    source: path
+    version: "1.0.0+1"
   ffi:
     dependency: transitive
     description:
@@ -1273,7 +1280,7 @@ packages:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "20.3.56"
+    version: "20.3.57"
   syncfusion_flutter_datepicker:
     dependency: transitive
     description:
