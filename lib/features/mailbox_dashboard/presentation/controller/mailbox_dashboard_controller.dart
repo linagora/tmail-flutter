@@ -124,7 +124,6 @@ class MailboxDashBoardController extends ReloadableController {
   final viewStateMarkAsReadMailbox = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final vacationResponse = Rxn<VacationResponse>();
   final routerParameters = Rxn<Map<String, String?>>();
-
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
   Map<MailboxId, PresentationMailbox> mapMailboxById = {};

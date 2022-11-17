@@ -1,19 +1,19 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:tmail_ui_user/features/caching/account_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/firebase_config_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 
 class CachingManager {
-
   final MailboxCacheClient _mailboxCacheClient;
   final StateCacheClient _stateCacheClient;
   final EmailCacheClient _emailCacheClient;
   final RecentSearchCacheClient _recentSearchCacheClient;
   final AccountCacheClient _accountCacheClient;
+  final FirebaseCacheClient _firebaseCacheClient;
 
   CachingManager(
     this._mailboxCacheClient,
@@ -21,6 +21,7 @@ class CachingManager {
     this._emailCacheClient,
     this._recentSearchCacheClient,
     this._accountCacheClient,
+    this._firebaseCacheClient,
   );
 
   Future<void> clearAll() async {
@@ -39,6 +40,7 @@ class CachingManager {
         _emailCacheClient.deleteBox(),
         _recentSearchCacheClient.deleteBox(),
         _accountCacheClient.deleteBox(),
+        _firebaseCacheClient.deleteBox(),
       ]);
     }
   }
