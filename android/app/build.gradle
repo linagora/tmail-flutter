@@ -22,6 +22,7 @@ if (flutterVersionName == null) {
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
@@ -32,7 +33,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -40,8 +41,8 @@ android {
 
     defaultConfig {
         applicationId "com.linagora.android.teammail"
-        minSdkVersion 16
-        targetSdkVersion 31
+        minSdkVersion 19
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         // The number of method references in a .dex file cannot exceed 64K
@@ -49,6 +50,12 @@ android {
         manifestPlaceholders = [
                 'appAuthRedirectScheme': 'teammail.mobile'
         ]
+    }
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     // Use key information file
@@ -74,7 +81,9 @@ flutter {
 }
 
 dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.work:work-runtime-ktx:2.7.0'
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.window:window:1.0.0'
 }

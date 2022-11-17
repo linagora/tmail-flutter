@@ -1,10 +1,14 @@
 import 'package:core/core.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notification_service.dart';
+import 'package:tmail_ui_user/firebase_options.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
@@ -22,6 +26,13 @@ void main() async {
       statusBarColor: Colors.black,
       statusBarIconBrightness: Brightness.light,
     ));
+
+    try {
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    } on FirebaseException catch (e) {
+      debugPrint(e.toString());
+    }
     await MainBindings().dependencies();
     await HiveCacheConfig().setUp();
     await HiveCacheConfig.initializeEncryptionKey();
