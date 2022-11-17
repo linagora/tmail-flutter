@@ -102,7 +102,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   EmailId? _currentEmailId;
   Identity? _identitySelected;
   List<EmailContent>? initialEmailContents;
-  late Worker emailWorker;
+  late Worker emailWorker, accountIdWorker;
   final Debouncer<int?> _getEmailDeBouncer = Debouncer<int?>(
     const Duration(milliseconds: 800),
     initialValue: null,
@@ -134,29 +134,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _initializeDebounceTimeIndexPageViewChange();
     _registerListenerWorker();
     _listenDownloadAttachmentProgressState();
-    injectRuleFilterBindings(
-      emailSupervisorController.sessionCurrent,
-      emailSupervisorController.accountId);
-    try {
-      _createNewEmailRuleFilterInteractor = Get.find<CreateNewEmailRuleFilterInteractor>();
-    } catch (e) {
-      logError('SingleEmailController::onInit(): ${e.toString()}');
-    }
     super.onInit();
-  }
-
-  @override
-  void onReady() {
-    injectMdnBindings(
-      emailSupervisorController.sessionCurrent,
-      emailSupervisorController.accountId,
-    );
-    try {
-      _sendReceiptToSenderInteractor = Get.find<SendReceiptToSenderInteractor>();
-    } catch (e) {
-      logError('SingleEmailController::onReady(): SendReceiptToSenderInteractor not registered');
-    }
-    super.onReady();
   }
 
   @override
@@ -176,6 +154,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _registerListenerWorker() {
+    accountIdWorker = ever(mailboxDashBoardController.accountId, (accountId) {
+      if (accountId is AccountId) {
+        _injectAndGetInteractorBindings(
+          mailboxDashBoardController.sessionCurrent,
+          accountId
+        );
+      }
+    });
+
     emailWorker = ever(emailSupervisorController.selectedEmail, (presentationEmail) {
       log('SingleEmailController::_initWorker(): $presentationEmail');
       if (presentationEmail is PresentationEmail) {
@@ -240,6 +227,18 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             }
           });
     });
+  }
+
+  void _injectAndGetInteractorBindings(Session? session, AccountId accountId) {
+    injectRuleFilterBindings(session, accountId);
+    injectMdnBindings(session, accountId);
+
+    if (Get.isRegistered<CreateNewEmailRuleFilterInteractor>()) {
+      _createNewEmailRuleFilterInteractor = Get.find<CreateNewEmailRuleFilterInteractor>();
+    }
+    if (Get.isRegistered<SendReceiptToSenderInteractor>()) {
+      _sendReceiptToSenderInteractor = Get.find<SendReceiptToSenderInteractor>();
+    }
   }
 
   void _getAllIdentities() {
