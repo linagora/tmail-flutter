@@ -1,0 +1,2 @@
+class NotFoundStoredFirebaseException implements Exception {}
+
