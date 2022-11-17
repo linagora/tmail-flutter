@@ -2428,11 +2428,11 @@ class AppLocalizations {
         args: [subject]);
   }
 
-  String textBodySendReceiptToSender(String sender, String subject, String time) {
+  String textBodySendReceiptToSender(String receiver, String subject, String time) {
     return Intl.message(
-        'Message was read by $sender on $time \n\nSubject: $subject \n\nNote: This Return ReceiptReceipt only acknowledges that the message was displayed on the recipient\'s computer. There is no guarantee that the recipient has read or understood the message contents.',
+        'Message was read by $receiver on $time \n\nSubject: $subject \n\nNote: This Return Read Receipt only acknowledges that the message was displayed on the recipient\'s computer. There is no guarantee that the recipient has read or understood the message contents.',
         name: 'textBodySendReceiptToSender',
-        args: [sender, subject, time]);
+        args: [receiver, subject, time]);
   }
 
   String get toastMessageSendReceiptSuccess {

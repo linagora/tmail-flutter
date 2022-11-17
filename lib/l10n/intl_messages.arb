@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-11-14T16:25:49.764077",
+  "@@last_modified": "2022-11-17T14:21:04.763049",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2348,16 +2348,16 @@
       "subject": {}
     }
   },
-  "textBodySendReceiptToSender": "Message was read by {sender} on {time} \n\nSubject: {subject} \n\nNote: This Return ReceiptReceipt only acknowledges that the message was displayed on the recipient's computer. There is no guarantee that the recipient has read or understood the message contents.",
+  "textBodySendReceiptToSender": "Message was read by {receiver} on {time} \n\nSubject: {subject} \n\nNote: This Return Read Receipt only acknowledges that the message was displayed on the recipient's computer. There is no guarantee that the recipient has read or understood the message contents.",
   "@textBodySendReceiptToSender": {
     "type": "text",
     "placeholders_order": [
-      "sender",
+      "receiver",
       "subject",
       "time"
     ],
     "placeholders": {
-      "sender": {},
+      "receiver": {},
       "subject": {},
       "time": {}
     }
