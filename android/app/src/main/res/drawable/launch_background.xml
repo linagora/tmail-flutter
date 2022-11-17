@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <bitmap android:gravity="fill" android:src="@drawable/background"/>
-    </item>
-    <item>
-        <bitmap android:gravity="center" android:src="@drawable/splash"/>
-    </item>
-    <item android:bottom="20dp">
-        <bitmap android:gravity="bottom" android:src="@drawable/branding"/>
-    </item>
+    <item android:drawable="@drawable/background" android:gravity="fill"/>
+    <item android:drawable="@drawable/splash" android:gravity="center" android:height="104dp" android:width="104dp"/>
+    <item android:bottom="20dp"  android:gravity="bottom|center_horizontal" android:drawable="@drawable/branding" android:height="69dp" android:width="139dp"/>
 </layer-list>
