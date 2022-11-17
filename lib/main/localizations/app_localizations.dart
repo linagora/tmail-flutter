@@ -835,7 +835,7 @@ class AppLocalizations {
 
   String get app_name {
     return Intl.message(
-        'Tmail',
+        'Team Mail',
         name: 'app_name');
   }
 
