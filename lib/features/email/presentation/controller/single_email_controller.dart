@@ -893,7 +893,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _handleSendReceiptToSenderAction(BuildContext context) {
     final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId == null) {
+    final userProfile = mailboxDashBoardController.userProfile.value;
+    if (accountId == null || userProfile == null) {
       return;
     }
 
@@ -948,7 +949,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
-    final mdnToSender = _generateMDN(context, currentEmail!);
+    final mdnToSender = _generateMDN(context, currentEmail!, userProfile);
     final sendReceiptRequest = SendReceiptToSenderRequest(
         mdn: mdnToSender,
         identityId: _identitySelected!.id!,
@@ -958,8 +959,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     consumeState(_sendReceiptToSenderInteractor!.execute(accountId, sendReceiptRequest));
   }
 
-  MDN _generateMDN(BuildContext context, PresentationEmail email) {
-    final senderEmailAddress = email.from?.first.asFullString() ?? '';
+  MDN _generateMDN(BuildContext context, PresentationEmail email, UserProfile userProfile) {
+    final receiverEmailAddress = userProfile.email;
     final subjectEmail = email.subject ?? '';
     final timeCurrent = DateTime.now();
     final timeAsString = '${timeCurrent.formatDate(
@@ -969,7 +970,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         forEmailId: email.id,
         subject: AppLocalizations.of(context).subjectSendReceiptToSender(subjectEmail),
         textBody: AppLocalizations.of(context).textBodySendReceiptToSender(
-            senderEmailAddress,
+            receiverEmailAddress,
             subjectEmail,
             timeAsString),
         disposition: Disposition(
