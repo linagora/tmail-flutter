@@ -13,4 +13,5 @@ class CachingConstants {
   static const int AUTHENTICATION_INFO_HIVE_CACHE_IDENTIFY = 11;
   static const int RECENT_LOGIN_URL_HIVE_CACHE_IDENTITY = 12;
   static const int RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY = 13;
+  static const int FIREBASE_CONFIG_CACHE_IDENTITY = 14;
 }
