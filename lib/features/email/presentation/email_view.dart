@@ -497,13 +497,13 @@ class EmailView extends GetWidget<SingleEmailController>
                 presentationEmail,
                 PrefixEmailAddress.to,
                 isDisplayFull),
-          if (presentationEmail.cc.numberEmailAddress() > 0 && isDisplayFull)
+          if (presentationEmail.cc.numberEmailAddress() > 0)
             _buildEmailAddressByPrefix(
                 context,
                 presentationEmail,
                 PrefixEmailAddress.cc,
                 isDisplayFull),
-          if (presentationEmail.bcc.numberEmailAddress() > 0 && isDisplayFull)
+          if (presentationEmail.bcc.numberEmailAddress() > 0)
             _buildEmailAddressByPrefix(
                 context,
                 presentationEmail,
