@@ -15,6 +15,7 @@ jobs:
           - contact
           - forward
           - rule_filter
+          - fcm
       fail-fast: false
 
     steps:
