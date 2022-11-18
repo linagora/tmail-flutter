@@ -35,5 +35,4 @@ COPY --from=build-env /app/build/web /usr/share/nginx/html
 EXPOSE 80
 
 # Before stating NGinx, re-zip all the content to ensure customizations are propagated
-RUN gzip -k -f -r /usr/share/nginx/html/ 
-CMD ["nginx", "-g", "daemon off;"]
+CMD gzip -k -r /usr/share/nginx/html/ && nginx -g 'daemon off;'
