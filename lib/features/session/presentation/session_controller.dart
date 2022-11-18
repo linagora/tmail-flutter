@@ -3,7 +3,6 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:model/firebase/firebase_dto.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
@@ -12,8 +11,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oi
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/save_firebase_cache_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/notification_service.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
@@ -29,7 +26,6 @@ class SessionController extends ReloadableController {
   final CachingManager _cachingManager;
   final DeleteAuthorityOidcInteractor _deleteAuthorityOidcInteractor;
   final AuthorizationInterceptors _authorizationInterceptors;
-  final SaveFirebaseCacheInteractor _saveFirebaseCacheInteractor;
   final AppToast _appToast;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
 
@@ -44,19 +40,13 @@ class SessionController extends ReloadableController {
     this._authorizationInterceptors,
     this._appToast,
     this._dynamicUrlInterceptors,
-      this._saveFirebaseCacheInteractor,
   ) : super(logoutOidcInteractor,
       deleteAuthorityOidcInteractor,
       getAuthenticatedAccountInteractor);
 
   @override
-  Future<void> onReady() async {
+  void onReady() {
     super.onReady();
-    NotificationService.initializeNotificationService(
-        onDidReceiveNotificationResponse);
-    NotificationService.onTokenRefresh.listen((token) {
-      _saveFirebaseCacheInteractor.execute(FirebaseDto(token));
-    });
     final arguments = Get.arguments;
     if (arguments != null && arguments is String) {
       _getSession();
