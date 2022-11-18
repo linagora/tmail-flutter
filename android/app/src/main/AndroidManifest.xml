@@ -91,6 +91,11 @@
             </intent-filter>
         </activity>
 
+       <provider android:authorities="${applicationId}.firebaseinitprovider"
+           android:name="com.google.firebase.provider.FirebaseInitProvider"
+           android:exported="false"
+           tools:node="remove"/>
+
        <provider
            android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
            android:authorities="${applicationId}.flutter_downloader.provider"

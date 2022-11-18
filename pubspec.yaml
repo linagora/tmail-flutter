@@ -196,9 +196,8 @@ dependencies:
       ref: master
 
   url_launcher: 6.1.5
-  firebase_core: ^2.2.0
+  firebase_core: 2.2.0
   firebase_messaging: 14.0.4
-  flutter_local_notifications: ^12.0.3
 
 dev_dependencies:
   flutter_test:

@@ -1,8 +1,6 @@
 import 'package:contact/contact/model/capability_contact.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/capability_forward.dart';
@@ -21,8 +19,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/b
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forwarding_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/capability_push_notification.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/firebase_bindings.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/firebase_options.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/notification_service.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -147,11 +143,9 @@ abstract class BaseController extends GetxController
     }
   }
 
-  Future<void> injectFirebaseBindings(Session? session, AccountId? accountId) async {
+  void injectFirebaseBindings(Session? session, AccountId? accountId) {
     try {
       requireCapability(session!, accountId!, [capabilityPushNotification]);
-      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
       FireBaseBindings().dependencies();
     } catch(e) {
       logError('BaseController::injectFirebaseBindings(): exception: $e');
