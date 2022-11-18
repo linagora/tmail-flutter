@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:model/firebase/firebase_dto.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/save_firebase_cache_interactor.dart';
-import 'package:tmail_ui_user/firebase_options.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/firebase_options.dart';
 import 'notification_strings.dart';
 
 final StreamController<NotificationResponse?> selectNotificationStream =
@@ -17,6 +17,7 @@ StreamController<NotificationResponse?>.broadcast();
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await dotenv.load(fileName: 'env.file');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService.displayPushNotification(message);
 }
@@ -43,13 +44,6 @@ class NotificationService {
 
   static get _flutterLocalNotificationsPlugin =>
       FlutterLocalNotificationsPlugin();
-
-  static final BehaviorSubject<NotificationResponse?>
-      _notificationActionStream =
-      BehaviorSubject<NotificationResponse?>.seeded(null);
-
-  static Stream<NotificationResponse?> get notificationActionStream =>
-      _notificationActionStream.stream;
 
   static Stream<String> get onTokenRefresh => _firebaseMessaging.onTokenRefresh;
   static bool _isFlutterLocalNotificationsInitialized = false;
@@ -130,7 +124,6 @@ class NotificationService {
     selectNotificationStream.stream
         .listen((event) => event)
         .onData((data) async {
-      _notificationActionStream.add(data);
       switch (data?.notificationResponseType) {
         case NotificationResponseType.selectedNotification:
           break;
