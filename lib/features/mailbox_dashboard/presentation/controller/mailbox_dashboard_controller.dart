@@ -358,10 +358,9 @@ class MailboxDashBoardController extends ReloadableController {
   @override
   Future<void> injectFirebaseBindings(Session? session, AccountId? accountId) async {
     try {
-      await super.injectFirebaseBindings(session, accountId);
+      super.injectFirebaseBindings(session, accountId);
       _saveFirebaseCacheInteractor = Get.find<SaveFirebaseCacheInteractor>();
-      NotificationService.initializeNotificationService(
-          onDidReceiveNotificationResponse);
+      await NotificationService.initializeNotificationService();
       NotificationService.onTokenRefresh.listen((token) {
         _saveFirebaseCacheInteractor?.execute(FirebaseDto(token));
       });
