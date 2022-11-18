@@ -12,7 +12,11 @@ import 'package:tmail_ui_user/features/push_notification/presentation/firebase_o
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await dotenv.load(fileName: 'env.file');
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    log('NotificationService::initializeNotificationService(): $e');
+  }
   log('firebaseMessagingBackgroundHandler: ${message.data}');
 }
 
@@ -29,7 +33,11 @@ class NotificationService {
   static bool _isFlutterLocalNotificationsInitialized = false;
 
   static Future<void> initializeNotificationService() async {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    try {
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    } catch (e) {
+      log('NotificationService::initializeNotificationService(): $e');
+    }
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     if (_isFlutterLocalNotificationsInitialized) return;
     final _saveFirebaseCacheInteractor = Get.find<SaveFirebaseCacheInteractor>();
