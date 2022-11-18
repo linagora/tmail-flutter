@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-11-17T14:21:04.763049",
+  "@@last_modified": "2022-11-18T14:33:10.063321",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -950,7 +950,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "page_name": "Team - Mail",
+  "page_name": "Team Mail",
   "@page_name": {
     "type": "text",
     "placeholders_order": [],
