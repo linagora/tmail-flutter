@@ -990,7 +990,7 @@ class AppLocalizations {
 
   String get page_name {
     return Intl.message(
-        'Team - Mail',
+        'Team Mail',
         name: 'page_name');
   }
 
