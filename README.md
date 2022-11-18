@@ -1,23 +1,23 @@
-# Tmail Flutter mobile application
+# Team Mail Flutter mobile application
 
 [![Gitter](https://badges.gitter.im/linagora/team-mail.svg)](https://gitter.im/linagora/team-mail?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-![LOGO](https://user-images.githubusercontent.com/6462404/169949991-bd72462e-fdb8-4a07-9c35-1d2c0c28f4ee.png)
+![LOGO](https://user-images.githubusercontent.com/6462404/202656316-8b77a7b6-0c1f-4f3e-932b-72bd446b6605.png)
 
 This project aims at providing a multi-platform mobile email application, running the [JMAP protocol](https://jmap.io/) and will also deliver additional 
-features to the [TMail back-end](https://github.com/linagora/tmail-backend).
+features to the [Team Mail back-end](https://github.com/linagora/tmail-backend).
 
-Here is how TMail looks like on a phone:
+Here is how Team Mail looks like on a phone:
 
 ![Screenshots Mobile](https://user-images.githubusercontent.com/6462404/169979675-85893fa4-325a-426b-a1a8-0751a585954a.png)
 
 
-Here is how TMail looks like on a tablet:
+Here is how Team Mail looks like on a tablet:
 
 ![Screenshot Tablet](https://user-images.githubusercontent.com/6462404/169980415-513fb58c-004e-4946-a4dd-179b49c65470.png)
 
 
-![Screenshot_Web](https://user-images.githubusercontent.com/6462404/169980055-b1ef5ff4-daee-4f58-84d4-9703e25f38d9.png)
+![Screenshot_Web](https://user-images.githubusercontent.com/6462404/202659097-1163a4f4-e9bd-47eb-b8ac-9226cd963ea6.png)
 
 ## Build app
 1. Go to root folder of project
@@ -63,9 +63,9 @@ We are not alone to say this! Big players of the field started their own [propri
 This, is where **[JMAP](https://jmap.io/)** comes to play! **JMAP** builds on decades of experience, and beautifully addresses these challenges using `HTTP` and `JSON` standards. Not only does it make applications easier to develop, we also strongly believes it results in an improved experience for the end user.
 </details>
 
-### **Can I use TMail with *any* JMAP server?**
+### **Can I use Team Mail with *any* JMAP server?**
 
-Yes, you can use the TMail application with any JMAP server and benefits from **Tmail** ergonomy and ease of use.
+Yes, you can use the Team Mail application with any JMAP server and benefits from **Team Mail** ergonomy and ease of use.
 
 ### **I don't understand your app... I need help using it! HELP MEEEEEE...**
 
@@ -97,9 +97,9 @@ First, we plan to write a simple, multi-platform JMAP email client. This include
 
 Then, we have plan for multiple features including:
 
-  - Support for TMail encrypted mailbox (GPG)
-  - Support for TMail shared mailboxes
-  - Support for TMail filters
+  - Support for Team Mail encrypted mailbox (GPG)
+  - Support for Team Mail shared mailboxes
+  - Support for Team Mail filters
   - Interactions with some other software from [Linagora](https://linagora.com) including:
       - Sending attachments via [LinShare]() file sharing platform.
       - Transfering some attachments you received to [LinShare](https://www.linshare.org/fr/accueil/) file sharing platform.
@@ -108,9 +108,9 @@ Then, we have plan for multiple features including:
 
 ### **Any chance to support JMAP extension for calendar, contacts?**
 
-No we do not plan to support such extensions, that are currently not standardized as RFCs, nor implemented on the TMail backend.
+No we do not plan to support such extensions, that are currently not standardized as RFCs, nor implemented on the Team Mail backend.
 
-### **Do you have a web application for TMail?**
+### **Do you have a web application for Team Mail?**
 
 <details>
   <summary>Read more...</summary>
@@ -137,7 +137,7 @@ No we do not plan to support such extensions, that are currently not standardize
   docker run -d -ti -p 8080:80 --name web tmail-web:latest
   ```
 
-  Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the TMail web-app.
+  Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the Team Mail web-app.
 
   #### Mount an environment file when running the container
 
@@ -154,9 +154,9 @@ No we do not plan to support such extensions, that are currently not standardize
   docker run -d -ti -p 8080:80 --mount type=bind,source="$(pwd)"/env.dev.file,target=/usr/share/nginx/html/assets/env.file --name web tmail-web:latest
   ```
 
-  Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the TMail web-app.
+  Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the Team Mail web-app.
   
-  #### More configurations for TMail web
+  #### More configurations for Team Mail web
   
     - [Enable and customize the Application grid](docs/configuration/app_grid_configuration.md)
     - [Change logos](docs/configuration/tmail-web-logo.md)
@@ -171,7 +171,7 @@ Thanks for the enthousiasm!
 
 There are many ways to help us, and amongst them:
 
-   - **Spread the word**: Tell people you like **TMail**, on social medias, via blog posts etc... 
+   - **Spread the word**: Tell people you like **Team Mail**, on social medias, via blog posts etc... 
    - **Give us feedbacks**... It's hard to make all good decisions from the first time. It is very likely we can benefit from *your* experience. Did you encountered annoying bugs? Do you think we can better arrange the layout? Do you think we are missing some features critical to you? Tell us in the [issues](https://github.com/linagora/tmail-flutter/issues).
  - I can code! **I wanna help ;-)**. Wow thanks! Let's discuss your project together in the [issues](https://github.com/linagora/tmail-flutter/issues) to get you on track!
 </details>
