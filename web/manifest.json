@@ -1,11 +1,11 @@
 {
-    "name": "teammail_mobile",
-    "short_name": "teammail_mobile",
+    "name": "Team Mail - JMAP Email Client",
+    "short_name": "Team Mail",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Team Mail - JMAP Email Client",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
