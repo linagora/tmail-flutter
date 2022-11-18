@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/firebase_bindings.dart';
 import 'package:tmail_ui_user/main/bindings/core/core_bindings.dart';
 import 'package:tmail_ui_user/main/bindings/credential/credential_bindings.dart';
 import 'package:tmail_ui_user/main/bindings/local/local_bindings.dart';
@@ -18,6 +17,5 @@ class MainBindings extends Bindings {
     CredentialBindings().dependencies();
     NetWorkConnectionBindings().dependencies();
     SessionBindings().dependencies();
-    FireBaseBindings().dependencies();
   }
 }
