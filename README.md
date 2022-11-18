@@ -154,7 +154,33 @@ No we do not plan to support such extensions, that are currently not standardize
   docker run -d -ti -p 8080:80 --mount type=bind,source="$(pwd)"/env.dev.file,target=/usr/share/nginx/html/assets/env.file --name web tmail-web:latest
   ```
 
-  Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the Team Mail web-app.
+  Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the TMail web-app.
+
+  #### Using the docker-compose file
+
+  We also include a [docker-compose.yaml](docker-compose.yaml) file so you can get a testing environment up quickly. This use our [tmail-backend](https://hub.docker.com/r/linagora/tmail-backend) image for the JMAP server.
+
+  Here are the steps to setup:
+
+  1. Generate JWT keys for `tmail-backend`:
+  ```bash
+  openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey
+  openssl rsa -in jwt_privatekey -pubout -out jwt_publickey
+  ```
+  2. Edit the `env.file` and set `SERVER_URL` to `http://localhost/` (with the trailing slash)
+  3. Run `docker compose up -d` to bring up both the frontend and the backend.
+  4. Run `docker compose exec tmail-backend /root/provisioning/provisioning.sh` to provision some demo accounts (you don't have to let it run all the way).
+  5. The TMail web-app should be available at `http://localhost:8080`. The credentials for demo accounts are:
+  ```
+  User: alice@localhost
+  Password: aliceSecret
+
+  User: bob@localhost
+  Password: bobSecret
+
+  User: empty@localhost
+  Password: emptrySecret
+  ```
   
   #### More configurations for Team Mail web
   
