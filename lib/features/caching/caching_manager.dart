@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:tmail_ui_user/features/caching/account_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/firebase_config_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/fcm_token_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
@@ -13,7 +13,7 @@ class CachingManager {
   final EmailCacheClient _emailCacheClient;
   final RecentSearchCacheClient _recentSearchCacheClient;
   final AccountCacheClient _accountCacheClient;
-  final FirebaseCacheClient _firebaseCacheClient;
+  final FcmTokenCacheClient _firebaseCacheClient;
 
   CachingManager(
     this._mailboxCacheClient,
