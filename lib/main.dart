@@ -1,11 +1,10 @@
 import 'package:core/core.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/firebase_options.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
@@ -15,7 +14,6 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 void main() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   initLogger(() async {
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -28,6 +26,7 @@ void main() async {
     await HiveCacheConfig().setUp();
     await HiveCacheConfig.initializeEncryptionKey();
     await Executor().warmUp();
+    await dotenv.load(fileName: 'env.file');
     runApp(const TMailApp());
   });
 }
