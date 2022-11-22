@@ -14,7 +14,6 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
-import 'package:model/firebase/firebase_dto.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -65,8 +64,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/save_firebase_cache_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/notification_service.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
@@ -111,7 +108,6 @@ class MailboxDashBoardController extends ReloadableController {
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
-  SaveFirebaseCacheInteractor? _saveFirebaseCacheInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -337,7 +333,7 @@ class MailboxDashBoardController extends ReloadableController {
       injectAutoCompleteBindings(sessionCurrent, accountId.value);
       injectRuleFilterBindings(sessionCurrent, accountId.value);
       injectVacationBindings(sessionCurrent, accountId.value);
-      injectFirebaseBindings(sessionCurrent, accountId.value);
+      injectFCMBindings(sessionCurrent, accountId.value);
       _getVacationResponse();
     } else {
       reload();
@@ -354,21 +350,6 @@ class MailboxDashBoardController extends ReloadableController {
       logError('MailboxDashBoardController::injectVacationBindings(): $e');
     }
   }
-
-  @override
-  Future<void> injectFirebaseBindings(Session? session, AccountId? accountId) async {
-    try {
-      super.injectFirebaseBindings(session, accountId);
-      _saveFirebaseCacheInteractor = Get.find<SaveFirebaseCacheInteractor>();
-      await NotificationService.initializeNotificationService();
-      NotificationService.onTokenRefresh.listen((token) {
-        _saveFirebaseCacheInteractor?.execute(FirebaseDto(token));
-      });
-    } catch (e) {
-      logError('MailboxDashBoardController::injectVacationBindings(): $e');
-    }
-  }
-
 
   Future<void> _getAppVersion() async {
     final info = await PackageInfo.fromPlatform();

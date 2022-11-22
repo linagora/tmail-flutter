@@ -1,18 +1,18 @@
 import 'package:core/core.dart';
 
-class DeleteFirebaseSuccess extends UIState {
+class SaveFCMTokenSuccess extends UIState {
 
 
-  DeleteFirebaseSuccess();
+  SaveFCMTokenSuccess();
 
   @override
   List<Object> get props => [];
 }
 
-class DeleteFirebaseFailure extends FeatureFailure {
+class SaveFCMTokenFailure extends FeatureFailure {
   final dynamic exception;
 
-  DeleteFirebaseFailure(this.exception);
+  SaveFCMTokenFailure(this.exception);
 
   @override
   List<Object> get props => [exception];
