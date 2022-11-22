@@ -6,7 +6,7 @@
 - Now only support to Android
 ### How to config
 
-1.Add environment of FCM service in [env.file](https://github.com/linagora/tmail-flutter/blob/master/env.file)
+1.Add environment of FCM service in [env.fcm](https://github.com/linagora/tmail-flutter/blob/master/configurations/env.fcm)
 ```
 FIREBASE_ANDROID_API_KEY=abc
 FIREBASE_ANDROID_APP_ID=abc
