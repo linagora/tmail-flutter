@@ -1,7 +1,9 @@
 import 'package:contact/contact/model/capability_contact.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
@@ -17,12 +19,15 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/c
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forwarding_interactors_bindings.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/capability_push_notification.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/firebase_bindings.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/firebase_options.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 abstract class BaseController extends GetxController
     with MessageDialogActionMixin,
@@ -143,10 +148,16 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void injectFirebaseBindings(Session? session, AccountId? accountId) {
+  Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
     try {
       requireCapability(session!, accountId!, [capabilityPushNotification]);
-      FireBaseBindings().dependencies();
+      if(AppConfig.appFCMAvailable) {
+        await dotenv.load(fileName: AppConfig.appFCMConfigurationPath);
+        await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+        FCMBindings().dependencies();
+      } else {
+        throw NotSupportFCMException();
+      }
     } catch(e) {
       logError('BaseController::injectFirebaseBindings(): exception: $e');
     }

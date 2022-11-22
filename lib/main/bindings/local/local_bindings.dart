@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/caching/authentication_info_cache_client.
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/encryption_key_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/firebase_config_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/fcm_token_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_login_url_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_login_username_cache_client.dart';
@@ -23,7 +23,7 @@ import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
-import 'package:tmail_ui_user/features/push_notification/data/local/firebase_cache_manager.dart';
+import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 
@@ -57,15 +57,15 @@ class LocalBindings extends Bindings {
     Get.put(RecentLoginUrlCacheManager((Get.find<RecentLoginUrlCacheClient>())));
     Get.put(RecentLoginUsernameCacheClient());
     Get.put(RecentLoginUsernameCacheManager(Get.find<RecentLoginUsernameCacheClient>()));
-    Get.put(FirebaseCacheClient());
-    Get.put(FirebaseCacheManager(Get.find<FirebaseCacheClient>()));
+    Get.put(FcmTokenCacheClient());
+    Get.put(FCMCacheManager(Get.find<FcmTokenCacheClient>()));
     Get.put(CachingManager(
       Get.find<MailboxCacheClient>(),
       Get.find<StateCacheClient>(),
       Get.find<EmailCacheClient>(),
       Get.find<RecentSearchCacheClient>(),
       Get.find<AccountCacheClient>(),
-      Get.find<FirebaseCacheClient>(),
+      Get.find<FcmTokenCacheClient>(),
     ));
   }
 
