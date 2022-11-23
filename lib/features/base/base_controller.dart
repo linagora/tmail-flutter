@@ -1,9 +1,15 @@
 import 'package:contact/contact/model/capability_contact.dart';
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/fps_manager.dart';
 import 'package:dartz/dartz.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:fcm/model/firebase_capability.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
@@ -20,23 +26,21 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/t
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forwarding_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/model/capability_push_notification.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/firebase_bindings.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/firebase_options.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 abstract class BaseController extends GetxController
     with MessageDialogActionMixin,
         PopupContextMenuActionMixin,
         ViewAsDialogActionMixin {
-
-  final _appToast = Get.find<AppToast>();
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
@@ -66,6 +70,10 @@ abstract class BaseController extends GetxController
   }
 
   void onError(dynamic error) {
+    final _appToast = Get.find<AppToast>();
+    final _imagePaths = Get.find<ImagePaths>();
+    final _responsiveUtils = Get.find<ResponsiveUtils>();
+
     String messageError = '';
     if (error is MethodLevelErrors) {
       messageError = error.message ?? error.type.value;
@@ -126,7 +134,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [CapabilityIdentifier.jmapMdn]);
       MdnInteractorBindings().dependencies();
     } catch(e) {
-      logError('BaseController::injectVacationBindings(): exception: $e');
+      logError('BaseController::injectMdnBindings(): exception: $e');
     }
   }
 
@@ -150,11 +158,13 @@ abstract class BaseController extends GetxController
 
   Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
     try {
-      requireCapability(session!, accountId!, [capabilityPushNotification]);
+      requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
       if(AppConfig.fcmAvailable) {
-        await dotenv.load(fileName: AppConfig.appFCMConfigurationPath);
-        await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-        FCMBindings().dependencies();
+        AppUtils.loadFcmConfigFile();
+        FcmConfiguration.initialize();
+        await LocalNotificationManager.instance.setUp();
+        FcmInteractorBindings().dependencies();
+        FcmController.instance.initialize(accountId: accountId);
       } else {
         throw NotSupportFCMException();
       }
