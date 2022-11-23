@@ -267,6 +267,11 @@ class ThreadController extends BaseController with EmailActionController {
         _navigationRouter = action.navigationRouter;
         _activateSearchFromRouter();
         mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is RefreshChangedEmailAction) {
+        if (action.newState != _currentEmailState) {
+          _refreshEmailChanges();
+        }
+        mailboxDashBoardController.clearDashBoardAction();
       }
     });
 
