@@ -16,7 +16,7 @@ class FirebaseSubscriptionSetMethod extends SetMethodNoNeedAccountId<FirebaseSub
   @override
   Set<CapabilityIdentifier> get requiredCapabilities => {
     CapabilityIdentifier.jmapCore,
-    FirebaseCapability.identifier
+    FirebaseCapability.fcmIdentifier
   };
 
   @override
