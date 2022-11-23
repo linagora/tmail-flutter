@@ -13,7 +13,7 @@ class CachingManager {
   final EmailCacheClient _emailCacheClient;
   final RecentSearchCacheClient _recentSearchCacheClient;
   final AccountCacheClient _accountCacheClient;
-  final FcmTokenCacheClient _firebaseCacheClient;
+  final FcmTokenCacheClient _fcmTokenCacheClient;
 
   CachingManager(
     this._mailboxCacheClient,
@@ -21,7 +21,7 @@ class CachingManager {
     this._emailCacheClient,
     this._recentSearchCacheClient,
     this._accountCacheClient,
-    this._firebaseCacheClient,
+    this._fcmTokenCacheClient,
   );
 
   Future<void> clearAll() async {
@@ -32,6 +32,7 @@ class CachingManager {
         _emailCacheClient.clearAllData(),
         _recentSearchCacheClient.clearAllData(),
         _accountCacheClient.clearAllData(),
+        _fcmTokenCacheClient.clearAllData(),
       ]);
     } else {
       await Future.wait([
@@ -40,15 +41,22 @@ class CachingManager {
         _emailCacheClient.deleteBox(),
         _recentSearchCacheClient.deleteBox(),
         _accountCacheClient.deleteBox(),
-        _firebaseCacheClient.deleteBox(),
+        _fcmTokenCacheClient.deleteBox(),
       ]);
     }
   }
 
   Future<void> cleanEmailCache() async {
-    await Future.wait([
-      _stateCacheClient.deleteItem(StateType.email.value),
-      _emailCacheClient.clearAllData(),
-    ]);
+    if (kIsWeb) {
+      await Future.wait([
+        _stateCacheClient.deleteItem(StateType.email.value),
+        _emailCacheClient.clearAllData(),
+      ]);
+    } else {
+      await Future.wait([
+        _stateCacheClient.deleteItem(StateType.email.value),
+        _emailCacheClient.deleteBox(),
+      ]);
+    }
   }
 }

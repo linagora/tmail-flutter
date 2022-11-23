@@ -15,8 +15,9 @@ abstract class HiveCacheClient<T> {
   Future<Box<T>> openBox() async {
     if (Hive.isBoxOpen(tableName)) {
       return Hive.box<T>(tableName);
+    } else {
+      return Hive.openBox<T>(tableName);
     }
-    return Hive.openBox<T>(tableName);
   }
 
   Future<Box<T>> openBoxEncryption() async {
