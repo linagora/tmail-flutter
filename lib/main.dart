@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
@@ -11,6 +10,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 void main() async {
@@ -26,7 +26,7 @@ void main() async {
     await HiveCacheConfig().setUp();
     await HiveCacheConfig.initializeEncryptionKey();
     await Executor().warmUp();
-    await dotenv.load(fileName: 'env.file');
+    AppUtils.loadEnvFile();
     runApp(const TMailApp());
   });
 }
