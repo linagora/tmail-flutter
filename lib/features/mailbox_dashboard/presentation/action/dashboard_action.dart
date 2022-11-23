@@ -5,6 +5,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
 class DashBoardAction extends UIAction {
   static final idle = DashBoardAction();
@@ -130,4 +131,14 @@ class SearchEmailByQueryAction extends DashBoardAction {
 
   @override
   List<Object?> get props => [navigationRouter];
+}
+
+class RefreshChangedEmailAction extends DashBoardAction {
+
+  final jmap.State? newState;
+
+  RefreshChangedEmailAction(this.newState);
+
+  @override
+  List<Object?> get props => [newState];
 }
