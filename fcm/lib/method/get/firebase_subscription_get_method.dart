@@ -22,7 +22,7 @@ class FirebaseSubscriptionGetMethod extends GetMethodNoNeedAccountId {
   @override
   Set<CapabilityIdentifier> get requiredCapabilities => {
     CapabilityIdentifier.jmapCore,
-    FirebaseCapability.identifier,
+    FirebaseCapability.fcmIdentifier,
   };
 
   @override
