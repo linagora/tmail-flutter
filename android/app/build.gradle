@@ -41,7 +41,7 @@ android {
     defaultConfig {
         applicationId "com.linagora.android.teammail"
         minSdkVersion 19
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         // The number of method references in a .dex file cannot exceed 64K
