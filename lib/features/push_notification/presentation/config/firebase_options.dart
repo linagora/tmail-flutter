@@ -49,11 +49,11 @@ class DefaultFirebaseOptions {
 
   static FirebaseOptions android = FirebaseOptions(
     apiKey: dotenv.get('FIREBASE_ANDROID_API_KEY', fallback: ''),
-    appId:  dotenv.get('FIREBASE_ANDROID_APP_ID', fallback: ''),
-    messagingSenderId:  dotenv.get('FIREBASE_ANDROID_MESSAGING_SENDER_ID', fallback: ''),
-    projectId:  dotenv.get('FIREBASE_ANDROID_PROJECT_ID', fallback: ''),
-    databaseURL:  dotenv.get('FIREBASE_ANDROID_DATABASE_URL', fallback: ''),
-    storageBucket:  dotenv.get('FIREBASE_ANDROID_STORAGE_BUCKET', fallback: ''),
+    appId: dotenv.get('FIREBASE_ANDROID_APP_ID', fallback: ''),
+    messagingSenderId: dotenv.get('FIREBASE_ANDROID_MESSAGING_SENDER_ID', fallback: ''),
+    projectId: dotenv.get('FIREBASE_ANDROID_PROJECT_ID', fallback: ''),
+    databaseURL: dotenv.get('FIREBASE_ANDROID_DATABASE_URL', fallback: ''),
+    storageBucket: dotenv.get('FIREBASE_ANDROID_STORAGE_BUCKET', fallback: ''),
   );
 
   static FirebaseOptions ios = FirebaseOptions(
