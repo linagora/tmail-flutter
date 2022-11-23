@@ -6,6 +6,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
@@ -66,20 +67,68 @@ class HiveCacheConfig {
   }
 
   void registerAdapter() {
-    Hive.registerAdapter(MailboxCacheAdapter());
-    Hive.registerAdapter(MailboxRightsCacheAdapter());
-    Hive.registerAdapter(StateCacheAdapter());
-    Hive.registerAdapter(StateTypeAdapter());
-    Hive.registerAdapter(EmailAddressHiveCacheAdapter());
-    Hive.registerAdapter(EmailCacheAdapter());
-    Hive.registerAdapter(RecentSearchCacheAdapter());
-    Hive.registerAdapter(TokenOidcCacheAdapter());
-    Hive.registerAdapter(AccountCacheAdapter());
-    Hive.registerAdapter(EncryptionKeyCacheAdapter());
-    Hive.registerAdapter(AuthenticationInfoCacheAdapter());
-    Hive.registerAdapter(RecentLoginUrlCacheAdapter());
-    Hive.registerAdapter(RecentLoginUsernameCacheAdapter());
-    Hive.registerAdapter(FCMTokenCacheAdapter());
+    registerCacheAdapter<MailboxCache>(
+      MailboxCacheAdapter(),
+      CachingConstants.MAILBOX_CACHE_IDENTIFY
+    );
+    registerCacheAdapter<MailboxRightsCache>(
+      MailboxRightsCacheAdapter(),
+      CachingConstants.MAILBOX_RIGHTS_CACHE_IDENTIFY
+    );
+    registerCacheAdapter<StateCache>(
+      StateCacheAdapter(),
+      CachingConstants.STATE_CACHE_IDENTIFY
+    );
+    registerCacheAdapter<StateType>(
+      StateTypeAdapter(),
+      CachingConstants.STATE_TYPE_IDENTIFY
+    );
+    registerCacheAdapter<EmailAddressHiveCache>(
+      EmailAddressHiveCacheAdapter(),
+      CachingConstants.EMAIL_ADDRESS_HIVE_CACHE_IDENTIFY
+    );
+    registerCacheAdapter<EmailCache>(
+      EmailCacheAdapter(),
+      CachingConstants.EMAIL_CACHE_IDENTIFY
+    );
+    registerCacheAdapter<RecentSearchCache>(
+      RecentSearchCacheAdapter(),
+      CachingConstants.RECENT_SEARCH_HIVE_CACHE_IDENTIFY
+    );
+    registerCacheAdapter<TokenOidcCache>(
+      TokenOidcCacheAdapter(),
+      CachingConstants.TOKEN_OIDC_HIVE_CACHE_IDENTIFY
+    );
+    registerCacheAdapter<AccountCache>(
+      AccountCacheAdapter(),
+      CachingConstants.ACCOUNT_HIVE_CACHE_IDENTIFY
+    );
+    registerCacheAdapter<EncryptionKeyCache>(
+      EncryptionKeyCacheAdapter(),
+      CachingConstants.ENCRYPTION_KEY_HIVE_CACHE_IDENTIFY
+    );
+    registerCacheAdapter<AuthenticationInfoCache>(
+      AuthenticationInfoCacheAdapter(),
+      CachingConstants.AUTHENTICATION_INFO_HIVE_CACHE_IDENTIFY
+    );
+    registerCacheAdapter<RecentLoginUrlCache>(
+      RecentLoginUrlCacheAdapter(),
+      CachingConstants.RECENT_LOGIN_URL_HIVE_CACHE_IDENTITY
+    );
+    registerCacheAdapter<RecentLoginUsernameCache>(
+      RecentLoginUsernameCacheAdapter(),
+      CachingConstants.RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY
+    );
+    registerCacheAdapter<FCMTokenCache>(
+      FCMTokenCacheAdapter(),
+      CachingConstants.FCM_TOKEN_CACHE_IDENTITY
+    );
+  }
+
+  void registerCacheAdapter<T>(TypeAdapter<T> typeAdapter, int typeId) {
+    if (!Hive.isAdapterRegistered(typeId)) {
+      Hive.registerAdapter<T>(typeAdapter);
+    }
   }
 
   Future closeHive() async {
