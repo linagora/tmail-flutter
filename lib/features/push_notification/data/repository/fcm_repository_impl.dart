@@ -16,7 +16,7 @@ class FCMRepositoryImpl extends FCMRepository {
 
   @override
   Future<void> setFCMToken(FCMTokenDto fcmTokenDto) {
-    log('FCMRepositoryImpl::setCurrentFCM(): $fcmTokenDto');
+    log('FCMRepositoryImpl::setFCMToken(): $fcmTokenDto');
     return _fcmDatasource.setFCMToken(fcmTokenDto);
   }
 
