@@ -64,6 +64,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
@@ -1258,6 +1259,7 @@ class MailboxDashBoardController extends ReloadableController {
     _fileReceiveManagerStreamSubscription.cancel();
     _progressStateController.close();
     Get.delete<DownloadController>();
+    FcmController.instance.dispose();
     super.onClose();
   }
 }
