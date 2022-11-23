@@ -8,9 +8,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin MessageDialogActionMixin {
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
-
   void showConfirmDialogAction(
       BuildContext context,
       String message,
@@ -29,6 +26,9 @@ mixin MessageDialogActionMixin {
         Color? cancelButtonColor,
       }
   ) {
+    final _responsiveUtils = Get.find<ResponsiveUtils>();
+    final _imagePaths = Get.find<ImagePaths>();
+
     if (_responsiveUtils.isMobile(context)) {
       if (showAsBottomSheet) {
         showModalBottomSheet(

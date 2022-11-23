@@ -18,5 +18,5 @@ class FCMTokenCache extends HiveObject with EquatableMixin {
   );
 
   @override
-  List<Object?> get props => [token];
+  List<Object?> get props => [token, accountId];
 }
