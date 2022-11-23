@@ -83,7 +83,7 @@ class SettingsUtils {
   static EdgeInsets getPaddingListRecipientForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isPortraitMobile(context)) {
       return const EdgeInsets.symmetric(horizontal: 16);
-    } if (responsiveUtils.isLandscapeMobile(context)) {
+    } else if (responsiveUtils.isLandscapeMobile(context)) {
       return const EdgeInsets.all(12);
     } else {
       return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
@@ -100,7 +100,7 @@ class SettingsUtils {
   static EdgeInsets getPaddingTitleHeaderForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isPortraitMobile(context)) {
       return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
-    } if (responsiveUtils.isLandscapeMobile(context)) {
+    } else if (responsiveUtils.isLandscapeMobile(context)) {
       return const EdgeInsets.all(12);
     } else {
       return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
@@ -118,7 +118,7 @@ class SettingsUtils {
   static EdgeInsets getPaddingKeepLocalSwitchButtonForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isPortraitMobile(context)) {
       return const EdgeInsets.symmetric(horizontal: 18, vertical: 14);
-    } if (responsiveUtils.isLandscapeMobile(context)) {
+    } else if (responsiveUtils.isLandscapeMobile(context)) {
       return const EdgeInsets.all(14);
     } else {
       return const EdgeInsets.symmetric(horizontal: 34, vertical: 14);
@@ -128,7 +128,7 @@ class SettingsUtils {
   static EdgeInsets getPaddingInputRecipientForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isPortraitMobile(context)) {
       return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
-    } if (responsiveUtils.isLandscapeMobile(context)) {
+    } else if (responsiveUtils.isLandscapeMobile(context)) {
       return const EdgeInsets.all(12);
     } else {
       return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
