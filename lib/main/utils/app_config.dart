@@ -12,7 +12,7 @@ class AppConfig {
     return false;
   }
   static String appDashboardConfigurationPath = "configurations/app_dashboard.json";
-  static bool get appFCMAvailable {
+  static bool get fcmAvailable {
     final supported = dotenv.get('FCM_AVAILABLE', fallback: 'unsupported');
     if (supported == 'supported') {
       return true;

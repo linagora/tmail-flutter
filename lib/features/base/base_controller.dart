@@ -151,7 +151,7 @@ abstract class BaseController extends GetxController
   Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
     try {
       requireCapability(session!, accountId!, [capabilityPushNotification]);
-      if(AppConfig.appFCMAvailable) {
+      if(AppConfig.fcmAvailable) {
         await dotenv.load(fileName: AppConfig.appFCMConfigurationPath);
         await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
         FCMBindings().dependencies();
