@@ -28,7 +28,7 @@ packages:
       name: archive
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.3.4"
+    version: "3.3.5"
   args:
     dependency: transitive
     description:
@@ -385,9 +385,9 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "feature/update_inapp_webview"
-      resolved-ref: a805acd03aae48997b4e9625412a02aff975747e
-      url: "https://github.com/ManhNTX/enough_html_editor.git"
+      ref: firebase_integration
+      resolved-ref: "45560a2d06dd8fac93d6936b9cb835c84f0617a3"
+      url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
   enough_platform_widgets:
@@ -1173,8 +1173,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: demo
-      resolved-ref: "70cea1832b0e93bce515d4641f96cd1b12366725"
+      ref: firebase_integration
+      resolved-ref: "0250e2d4bbd5bd79c5b5fdca840f0a573f645ac4"
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.1"
@@ -1343,7 +1343,7 @@ packages:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "20.3.57"
+    version: "20.3.58"
   syncfusion_flutter_datepicker:
     dependency: transitive
     description:
@@ -1434,7 +1434,7 @@ packages:
       name: url_launcher_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.21"
+    version: "6.0.22"
   url_launcher_ios:
     dependency: transitive
     description:
