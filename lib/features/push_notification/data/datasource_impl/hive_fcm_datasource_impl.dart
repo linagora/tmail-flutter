@@ -1,3 +1,5 @@
+import 'package:fcm/model/type_name.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/fcm/fcm_token_dto.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
@@ -32,6 +34,33 @@ class HiveFCMDatasourceImpl extends FCMDatasource {
   Future<void> deleteFCMToken(String accountId) {
     return Future.sync(() async {
       return await _firebaseCacheManager.deleteFCMToken(accountId);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
+  }
+
+  @override
+  Future<bool> storeStateToRefresh(TypeName typeName, jmap.State newState) {
+    return Future.sync(() async {
+      return await _firebaseCacheManager.storeStateToRefresh(typeName, newState);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
+  }
+
+  @override
+  Future<jmap.State> getStateToRefresh(TypeName typeName) {
+    return Future.sync(() async {
+      return await _firebaseCacheManager.getStateToRefresh(typeName);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
+  }
+
+  @override
+  Future<bool> deleteStateToRefresh(TypeName typeName) {
+    return Future.sync(() async {
+      return await _firebaseCacheManager.deleteStateToRefresh(typeName);
     }).catchError((error) {
       _exceptionThrower.throwException(error);
     });
