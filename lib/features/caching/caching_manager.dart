@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 
 class CachingManager {
   final MailboxCacheClient _mailboxCacheClient;
@@ -14,6 +15,7 @@ class CachingManager {
   final RecentSearchCacheClient _recentSearchCacheClient;
   final AccountCacheClient _accountCacheClient;
   final FcmTokenCacheClient _fcmTokenCacheClient;
+  final FCMCacheManager _fcmCacheManager;
 
   CachingManager(
     this._mailboxCacheClient,
@@ -22,6 +24,7 @@ class CachingManager {
     this._recentSearchCacheClient,
     this._accountCacheClient,
     this._fcmTokenCacheClient,
+    this._fcmCacheManager,
   );
 
   Future<void> clearAll() async {
@@ -33,6 +36,7 @@ class CachingManager {
         _recentSearchCacheClient.clearAllData(),
         _accountCacheClient.clearAllData(),
         _fcmTokenCacheClient.clearAllData(),
+        _fcmCacheManager.clearAllStateToRefresh()
       ]);
     } else {
       await Future.wait([
@@ -42,6 +46,7 @@ class CachingManager {
         _recentSearchCacheClient.deleteBox(),
         _accountCacheClient.deleteBox(),
         _fcmTokenCacheClient.deleteBox(),
+        _fcmCacheManager.clearAllStateToRefresh()
       ]);
     }
   }
