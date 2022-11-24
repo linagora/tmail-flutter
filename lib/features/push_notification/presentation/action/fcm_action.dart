@@ -32,11 +32,11 @@ class PushNotificationAction extends FcmStateChangeAction {
   List<Object?> get props => [typeName, newState, accountId];
 }
 
-class StoreEmailStateChangeToRefreshAction extends FcmStateChangeAction {
+class StoreEmailStateToRefreshAction extends FcmStateChangeAction {
 
   final AccountId accountId;
 
-  StoreEmailStateChangeToRefreshAction(
+  StoreEmailStateToRefreshAction(
     TypeName typeName,
     jmap.State newState,
     this.accountId
