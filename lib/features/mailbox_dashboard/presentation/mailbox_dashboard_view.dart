@@ -1,6 +1,7 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:focus_detector/focus_detector.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
@@ -25,55 +26,58 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       ],
     );
 
-    return Scaffold(
-      drawerEnableOpenDragGesture: responsiveUtils.hasLeftMenuDrawerActive(context),
-      body: Stack(children: [
-        Obx(() {
-          switch(controller.dashboardRoute.value) {
-            case DashboardRoutes.thread:
-              return ResponsiveWidget(
-                  responsiveUtils: responsiveUtils,
-                  desktop: controller.searchController.isSearchEmailRunning
-                      ? EmailView()
-                      : bodyLandscapeTablet,
-                  tabletLarge: controller.searchController.isSearchEmailRunning
-                      ? EmailView()
-                      : bodyLandscapeTablet,
-                  landscapeTablet: controller.searchController.isSearchEmailRunning
-                      ? EmailView()
-                      : bodyLandscapeTablet,
-                  mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
-            case DashboardRoutes.emailDetailed:
-              return ResponsiveWidget(
-                  responsiveUtils: responsiveUtils,
-                  desktop: controller.searchController.isSearchEmailRunning
-                      ? EmailView()
-                      : bodyLandscapeTablet,
-                  tabletLarge: controller.searchController.isSearchEmailRunning
-                      ? EmailView()
-                      : bodyLandscapeTablet,
-                  landscapeTablet: controller.searchController.isSearchEmailRunning
-                      ? EmailView()
-                      : bodyLandscapeTablet,
-                  mobile: EmailView());
-            case DashboardRoutes.searchEmail:
-              return SafeArea(child: SearchEmailView());
-            default:
-              return ResponsiveWidget(
-                  responsiveUtils: responsiveUtils,
-                  desktop: controller.searchController.isSearchEmailRunning
-                      ? EmailView()
-                      : bodyLandscapeTablet,
-                  tabletLarge: controller.searchController.isSearchEmailRunning
-                      ? EmailView()
-                      : bodyLandscapeTablet,
-                  landscapeTablet: controller.searchController.isSearchEmailRunning
-                      ? EmailView()
-                      : bodyLandscapeTablet,
-                  mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
-          }
-        }),
-      ]),
+    return FocusDetector(
+      onFocusGained: controller.refreshActionWhenBackToApp,
+      child: Scaffold(
+        drawerEnableOpenDragGesture: responsiveUtils.hasLeftMenuDrawerActive(context),
+        body: Stack(children: [
+          Obx(() {
+            switch(controller.dashboardRoute.value) {
+              case DashboardRoutes.thread:
+                return ResponsiveWidget(
+                    responsiveUtils: responsiveUtils,
+                    desktop: controller.searchController.isSearchEmailRunning
+                        ? EmailView()
+                        : bodyLandscapeTablet,
+                    tabletLarge: controller.searchController.isSearchEmailRunning
+                        ? EmailView()
+                        : bodyLandscapeTablet,
+                    landscapeTablet: controller.searchController.isSearchEmailRunning
+                        ? EmailView()
+                        : bodyLandscapeTablet,
+                    mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
+              case DashboardRoutes.emailDetailed:
+                return ResponsiveWidget(
+                    responsiveUtils: responsiveUtils,
+                    desktop: controller.searchController.isSearchEmailRunning
+                        ? EmailView()
+                        : bodyLandscapeTablet,
+                    tabletLarge: controller.searchController.isSearchEmailRunning
+                        ? EmailView()
+                        : bodyLandscapeTablet,
+                    landscapeTablet: controller.searchController.isSearchEmailRunning
+                        ? EmailView()
+                        : bodyLandscapeTablet,
+                    mobile: EmailView());
+              case DashboardRoutes.searchEmail:
+                return SafeArea(child: SearchEmailView());
+              default:
+                return ResponsiveWidget(
+                    responsiveUtils: responsiveUtils,
+                    desktop: controller.searchController.isSearchEmailRunning
+                        ? EmailView()
+                        : bodyLandscapeTablet,
+                    tabletLarge: controller.searchController.isSearchEmailRunning
+                        ? EmailView()
+                        : bodyLandscapeTablet,
+                    landscapeTablet: controller.searchController.isSearchEmailRunning
+                        ? EmailView()
+                        : bodyLandscapeTablet,
+                    mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
+            }
+          }),
+        ]),
+      ),
     );
   }
 

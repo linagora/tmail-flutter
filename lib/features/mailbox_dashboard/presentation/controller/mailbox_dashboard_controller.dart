@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:fcm/model/type_name.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,6 +18,7 @@ import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
@@ -53,6 +55,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refresh_action_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
@@ -64,7 +67,11 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_state_to_refresh_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
@@ -109,6 +116,8 @@ class MailboxDashBoardController extends ReloadableController {
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
+  GetEmailStateToRefreshInteractor? _getEmailStateToRefreshInteractor;
+  DeleteEmailStateToRefreshInteractor? _deleteEmailStateToRefreshInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -141,6 +150,9 @@ class MailboxDashBoardController extends ReloadableController {
     StreamController<Either<Failure, Success>>.broadcast();
   Stream<Either<Failure, Success>> get progressState => _progressStateController.stream;
 
+  final StreamController<RefreshActionViewEvent> _refreshActionEventController =
+    StreamController<RefreshActionViewEvent>.broadcast();
+
   MailboxDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
     DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
@@ -162,7 +174,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   @override
   void onInit() {
-    _registerProgressState();
+    _registerStreamListener();
     super.onInit();
   }
 
@@ -203,16 +215,25 @@ class MailboxDashBoardController extends ReloadableController {
   @override
   void onData(Either<Failure, Success> newState) {
     super.onData(newState);
-    viewState.value.map((success) {
-      if (success is SendingEmailState) {
-        if (currentOverlayContext != null && currentContext != null) {
-          _appToast.showToastWithIcon(
-              currentOverlayContext!,
-              message: AppLocalizations.of(currentContext!).your_email_being_sent,
-              icon: _imagePaths.icSendToast);
+    viewState.value.fold(
+      (failure) {
+        log('MailboxDashBoardController::onData():failure $failure');
+      },
+      (success) {
+        log('MailboxDashBoardController::onData():success $success');
+        if (success is SendingEmailState) {
+          if (currentOverlayContext != null && currentContext != null) {
+            _appToast.showToastWithIcon(
+                currentOverlayContext!,
+                message: AppLocalizations.of(currentContext!).your_email_being_sent,
+                icon: _imagePaths.icSendToast);
+          }
+        } else if (success is GetEmailStateToRefreshSuccess) {
+          dispatchAction(RefreshChangeEmailAction(success.storedState));
+          _deleteEmailStateToRefreshAction();
         }
       }
-    });
+    );
   }
 
   @override
@@ -314,10 +335,14 @@ class MailboxDashBoardController extends ReloadableController {
         });
   }
 
-  void _registerProgressState() async {
+  void _registerStreamListener() {
     progressState.listen((state) {
       viewStateMarkAsReadMailbox.value = state;
     });
+
+    _refreshActionEventController.stream
+      .debounceTime(const Duration(milliseconds: FcmService.durationMessageComing))
+      .listen(_handleRefreshActionWhenBackToApp);
   }
 
   void _getUserProfile() async {
@@ -1252,12 +1277,42 @@ class MailboxDashBoardController extends ReloadableController {
     return !searchController.isSearchEmailRunning && selectedMailbox.value != null && selectedMailbox.value!.isDrafts;
   }
 
+  void refreshActionWhenBackToApp() {
+    log('MailboxDashBoardController::refreshActionWhenBackToApp():');
+    _refreshActionEventController.add(RefreshActionViewEvent());
+  }
+
+  void _handleRefreshActionWhenBackToApp(RefreshActionViewEvent viewEvent) {
+    log('MailboxDashBoardController::_handleRefreshActionWhenBackToApp():');
+    try {
+      _getEmailStateToRefreshInteractor = Get.find<GetEmailStateToRefreshInteractor>();
+    } catch (e) {
+      logError('MailboxDashBoardController::_handleRefreshActionWhenBackToApp(): $e');
+    }
+    if (_getEmailStateToRefreshInteractor != null) {
+      consumeState(_getEmailStateToRefreshInteractor!.execute());
+    }
+  }
+
+  void _deleteEmailStateToRefreshAction() {
+    log('MailboxDashBoardController::_deleteEmailStateToRefreshAction():');
+    try {
+      _deleteEmailStateToRefreshInteractor = Get.find<DeleteEmailStateToRefreshInteractor>();
+    } catch (e) {
+      logError('MailboxDashBoardController::_deleteEmailStateToRefreshAction(): $e');
+    }
+    if (_deleteEmailStateToRefreshInteractor != null) {
+      consumeState(_deleteEmailStateToRefreshInteractor!.execute(TypeName.emailType));
+    }
+  }
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
     _emailReceiveManagerStreamSubscription.cancel();
     _fileReceiveManagerStreamSubscription.cancel();
     _progressStateController.close();
+    _refreshActionEventController.close();
     Get.delete<DownloadController>();
     FcmController.instance.dispose();
     super.onClose();

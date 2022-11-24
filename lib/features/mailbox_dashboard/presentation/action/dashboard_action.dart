@@ -133,11 +133,11 @@ class SearchEmailByQueryAction extends DashBoardAction {
   List<Object?> get props => [navigationRouter];
 }
 
-class RefreshChangedEmailAction extends DashBoardAction {
+class RefreshChangeEmailAction extends DashBoardAction {
 
   final jmap.State? newState;
 
-  RefreshChangedEmailAction(this.newState);
+  RefreshChangeEmailAction(this.newState);
 
   @override
   List<Object?> get props => [newState];
