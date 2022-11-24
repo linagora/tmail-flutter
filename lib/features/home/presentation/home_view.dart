@@ -1,7 +1,6 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
 
@@ -10,12 +9,7 @@ class HomeView extends GetWidget<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-      statusBarColor: Colors.white,
-      statusBarIconBrightness: Brightness.dark,
-    ));
+    ThemeUtils.setSystemDarkUIStyle();
 
     return Container(
       color: AppColor.primaryLightColor,

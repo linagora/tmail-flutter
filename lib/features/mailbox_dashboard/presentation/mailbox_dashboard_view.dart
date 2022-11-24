@@ -1,4 +1,5 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:focus_detector/focus_detector.dart';
@@ -27,7 +28,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     );
 
     return FocusDetector(
-      onFocusGained: controller.refreshActionWhenBackToApp,
+      onFocusGained: () {
+        ThemeUtils.setSystemDarkUIStyle();
+        if (controller.isDrawerOpen) {
+          ThemeUtils.setStatusBarTransparentColor();
+        }
+        controller.refreshActionWhenBackToApp();
+      },
       child: Scaffold(
         drawerEnableOpenDragGesture: responsiveUtils.hasLeftMenuDrawerActive(context),
         body: Stack(children: [
