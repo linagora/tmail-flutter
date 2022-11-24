@@ -1,14 +1,12 @@
 
 import 'dart:io';
 
+import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
-
-@pragma('vm:entry-point')
-void _handleReceiveBackgroundNotificationResponse(NotificationResponse notificationResponse) {
-  log('LocalNotificationManager::_handleReceiveBackgroundNotificationResponse():notificationResponse: $notificationResponse');
-}
 
 class LocalNotificationManager {
 
@@ -26,7 +24,8 @@ class LocalNotificationManager {
       await _initLocalNotification();
       _checkLocalNotificationPermission();
       if (Platform.isAndroid) {
-        await _createAndroidNotificationChannels();
+        await _createAndroidNotificationChannelGroup();
+        await _createAndroidNotificationChannel();
       }
     } catch (e) {
       logError('LocalNotificationManager::setUp(): ERROR: ${e.toString()}');
@@ -39,8 +38,7 @@ class LocalNotificationManager {
         android: LocalNotificationConfig.androidInitializationSettings,
         iOS: LocalNotificationConfig.iosInitializationSettings
       ),
-      onDidReceiveNotificationResponse: _handleReceiveNotificationResponse,
-      onDidReceiveBackgroundNotificationResponse: _handleReceiveBackgroundNotificationResponse
+      onDidReceiveNotificationResponse: _handleReceiveNotificationResponse
     );
   }
 
@@ -81,21 +79,56 @@ class LocalNotificationManager {
     }
   }
 
-  Future<void> _createAndroidNotificationChannels() async {
+  Future<void> _createAndroidNotificationChannel() async {
     return await _localNotificationsPlugin
       .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(LocalNotificationConfig.androidNotificationChannel);
   }
 
-  void showPushNotification({String? title, String? message, String? payload}) async {
-    final generateNotificationId = DateTime.now().millisecondsSinceEpoch.remainder(100000);
+  Future<void> _createAndroidNotificationChannelGroup() async {
+    await _localNotificationsPlugin
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!
+      .createNotificationChannelGroup(LocalNotificationConfig.androidNotificationChannelGroup);
+  }
+
+  void showPushNotification({
+    required String id,
+    required String title,
+    String? message,
+    EmailAddress? emailAddress,
+    String? payload
+  }) async {
+    final inboxStyleInformation = InboxStyleInformation(
+      [title, message ?? ''],
+      contentTitle: (emailAddress?.asString() ?? '').addBlockTag('b'),
+      summaryText: (emailAddress?.asString() ?? '').addBlockTag('b'),
+      htmlFormatTitle: true,
+      htmlFormatContent: true,
+      htmlFormatContentTitle: true,
+      htmlFormatSummaryText: true,
+    );
 
     await _localNotificationsPlugin.show(
-      generateNotificationId,
-      title ?? LocalNotificationConfig.channelName,
-      message ?? LocalNotificationConfig.channelDescription,
-      LocalNotificationConfig.pushNotificationDetails,
+      id.hashCode,
+      title.addBlockTag('b'),
+      message ?? '',
+      LocalNotificationConfig.instance.generateNotificationDetails(styleInformation: inboxStyleInformation),
       payload: payload
     );
+  }
+
+  void groupPushNotification() async {
+    final activeNotifications = await _localNotificationsPlugin
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+      ?.getActiveNotifications();
+
+    if (activeNotifications != null && activeNotifications.isNotEmpty) {
+      await _localNotificationsPlugin.show(
+        1995,
+        '',
+        '',
+        LocalNotificationConfig.instance.generateNotificationDetails(setAsGroup: true)
+      );
+    }
   }
 }

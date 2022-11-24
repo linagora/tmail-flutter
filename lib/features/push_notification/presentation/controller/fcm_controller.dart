@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/fcm_action.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
@@ -119,7 +120,7 @@ class FcmController extends BaseController {
       if (isForeground) {
         return SynchronizeEmailOnForegroundAction(typeName, newState, accountId);
       } else {
-        return StoreEmailStateChangeToRefreshAction(typeName, newState, accountId);
+        return StoreEmailStateToRefreshAction(typeName, newState, accountId);
       }
     } else if (typeName == TypeName.emailDelivery) {
       if (!isForeground) {
@@ -138,6 +139,7 @@ class FcmController extends BaseController {
     await Future.sync(() {
       HomeBindings().dependencies();
       MailboxDashBoardBindings().dependencies();
+      FcmInteractorBindings().dependencies();
     });
 
     _getInteractorBindings();
