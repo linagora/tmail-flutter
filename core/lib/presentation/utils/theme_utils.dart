@@ -3,44 +3,57 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-ThemeData appTheme() {
-  return ThemeData(
-    scaffoldBackgroundColor: Colors.white,
-    fontFamily: ConstantsUI.fontApp,
-    appBarTheme: appBarTheme(),
-    textTheme: textTheme(),
-    visualDensity: VisualDensity.adaptivePlatformDensity,
-  );
-}
+class ThemeUtils {
 
-InputDecorationTheme inputDecorationTheme() {
-  OutlineInputBorder outlineInputBorder = OutlineInputBorder(
-    borderRadius: BorderRadius.circular(28),
-    borderSide: const BorderSide(color: AppColor.baseTextColor),
-    gapPadding: 10,
-  );
-  return InputDecorationTheme(
-    floatingLabelBehavior: FloatingLabelBehavior.always,
-    contentPadding: const EdgeInsets.symmetric(horizontal: 42, vertical: 20),
-    enabledBorder: outlineInputBorder,
-    focusedBorder: outlineInputBorder,
-    border: outlineInputBorder,
-  );
-}
+  static ThemeData get appTheme {
+    return ThemeData(
+      scaffoldBackgroundColor: Colors.white,
+      fontFamily: ConstantsUI.fontApp,
+      appBarTheme: _appBarTheme,
+      textTheme: _textTheme,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+    );
+  }
 
-TextTheme textTheme() {
-  return const TextTheme(
-    bodyText1: TextStyle(color: AppColor.baseTextColor),
-    bodyText2: TextStyle(color: AppColor.baseTextColor),
-  );
-}
+  static TextTheme get _textTheme {
+    return const TextTheme(
+      bodyText1: TextStyle(color: AppColor.baseTextColor),
+      bodyText2: TextStyle(color: AppColor.baseTextColor),
+    );
+  }
 
-AppBarTheme appBarTheme() {
-  return const AppBarTheme(
-    color: Colors.white,
-    elevation: 0,
-    systemOverlayStyle: SystemUiOverlayStyle.light,
-    iconTheme: IconThemeData(color: Colors.black),
-    titleTextStyle: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
-  );
+  static AppBarTheme get _appBarTheme {
+    return const AppBarTheme(
+      color: Colors.white,
+      elevation: 0,
+      systemOverlayStyle: SystemUiOverlayStyle.light,
+      iconTheme: IconThemeData(color: Colors.black),
+      titleTextStyle: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
+    );
+  }
+
+  static void setSystemLightUIStyle() {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarColor: Colors.black,
+      statusBarIconBrightness: Brightness.light,
+    ));
+  }
+
+  static void setSystemDarkUIStyle() {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.dark,
+    ));
+  }
+
+  static void setStatusBarTransparentColor() {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
+  }
 }
