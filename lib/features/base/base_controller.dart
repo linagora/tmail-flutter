@@ -156,11 +156,11 @@ abstract class BaseController extends GetxController
     }
   }
 
-  Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
+  void injectFCMBindings(Session? session, AccountId? accountId) async {
     try {
       requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
-      if(AppConfig.fcmAvailable) {
-        AppUtils.loadFcmConfigFile();
+      if (AppConfig.fcmAvailable) {
+        await AppUtils.loadFcmConfigFile();
         FcmConfiguration.initialize();
         await LocalNotificationManager.instance.setUp();
         FcmInteractorBindings().dependencies();
