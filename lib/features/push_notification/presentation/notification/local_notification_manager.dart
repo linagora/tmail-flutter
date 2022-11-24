@@ -99,19 +99,18 @@ class LocalNotificationManager {
     String? payload
   }) async {
     final inboxStyleInformation = InboxStyleInformation(
-      [title, message ?? ''],
-      contentTitle: (emailAddress?.asString() ?? '').addBlockTag('b'),
-      summaryText: (emailAddress?.asString() ?? '').addBlockTag('b'),
-      htmlFormatTitle: true,
-      htmlFormatContent: true,
+      [message?.addBlockTag('p', attribute: 'style="color:#6D7885;"') ?? ''],
+      htmlFormatLines: true,
+      contentTitle: title,
       htmlFormatContentTitle: true,
+      summaryText: (emailAddress?.asString() ?? '').addBlockTag('b'),
       htmlFormatSummaryText: true,
     );
 
     await _localNotificationsPlugin.show(
       id.hashCode,
-      title.addBlockTag('b'),
-      message ?? '',
+      null,
+      null,
       LocalNotificationConfig.instance.generateNotificationDetails(styleInformation: inboxStyleInformation),
       payload: payload
     );
@@ -123,11 +122,20 @@ class LocalNotificationManager {
       ?.getActiveNotifications();
 
     if (activeNotifications != null && activeNotifications.isNotEmpty) {
+      final inboxStyleInformation = InboxStyleInformation(
+        [''],
+        summaryText: '${activeNotifications.length - 1} new emails'.addBlockTag('b'),
+        htmlFormatSummaryText: true,
+      );
+
       await _localNotificationsPlugin.show(
         1995,
-        '',
-        '',
-        LocalNotificationConfig.instance.generateNotificationDetails(setAsGroup: true)
+        null,
+        null,
+        LocalNotificationConfig.instance.generateNotificationDetails(
+          setAsGroup: true,
+          styleInformation: inboxStyleInformation
+        ),
       );
     }
   }
