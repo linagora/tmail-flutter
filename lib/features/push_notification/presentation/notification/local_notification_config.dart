@@ -44,7 +44,10 @@ class LocalNotificationConfig {
         importance: Importance.max,
         priority: Priority.high,
         setAsGroupSummary: setAsGroup,
-        styleInformation: styleInformation
+        styleInformation: styleInformation,
+        channelShowBadge: true,
+        showWhen: true,
+        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_large_notification')
       ),
       iOS: const DarwinNotificationDetails(
         presentSound: true,

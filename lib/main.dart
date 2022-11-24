@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
@@ -16,12 +15,7 @@ import 'package:worker_manager/worker_manager.dart';
 void main() async {
   initLogger(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.black,
-      systemNavigationBarIconBrightness: Brightness.light,
-      statusBarColor: Colors.black,
-      statusBarIconBrightness: Brightness.light,
-    ));
+    ThemeUtils.setSystemLightUIStyle();
     await MainBindings().dependencies();
     await HiveCacheConfig().setUp();
     await HiveCacheConfig.initializeEncryptionKey();
@@ -38,7 +32,7 @@ class TMailApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: appTheme(),
+      theme: ThemeUtils.appTheme,
       supportedLocales: LocalizationService.supportedLocales,
       localizationsDelegates: const [
         AppLocalizationsDelegate(),
