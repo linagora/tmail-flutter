@@ -715,6 +715,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "8.0.8"
+  focus_detector:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "4b3107b16a93f7c91eed93f0aac1eb1b205f4a45"
+      url: "https://github.com/ifnyas/focus_detector.git"
+    source: git
+    version: "2.0.1"
   forward:
     dependency: "direct main"
     description:
