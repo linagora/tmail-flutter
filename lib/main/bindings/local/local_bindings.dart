@@ -58,7 +58,7 @@ class LocalBindings extends Bindings {
     Get.put(RecentLoginUsernameCacheClient());
     Get.put(RecentLoginUsernameCacheManager(Get.find<RecentLoginUsernameCacheClient>()));
     Get.put(FcmTokenCacheClient());
-    Get.put(FCMCacheManager((Get.find<FcmTokenCacheClient>())));
+    Get.put(FCMCacheManager(Get.find<FcmTokenCacheClient>(), Get.find<SharedPreferences>()));
     Get.put(CachingManager(
       Get.find<MailboxCacheClient>(),
       Get.find<StateCacheClient>(),
@@ -66,6 +66,7 @@ class LocalBindings extends Bindings {
       Get.find<RecentSearchCacheClient>(),
       Get.find<AccountCacheClient>(),
       Get.find<FcmTokenCacheClient>(),
+      Get.find<FCMCacheManager>()
     ));
   }
 
