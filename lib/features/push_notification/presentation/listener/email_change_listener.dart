@@ -123,7 +123,7 @@ class EmailChangeListener extends ChangeListener {
     );
   }
 
-  void consumeState(Stream<Either<Failure, Success>> newStateStream) async {
+  void consumeState(Stream<Either<Failure, Success>> newStateStream) {
     newStateStream.listen(
       _handleStateStream,
       onError: (error, stackTrace) {

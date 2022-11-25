@@ -142,10 +142,10 @@ class FcmController extends BaseController {
       FcmInteractorBindings().dependencies();
     });
 
-    _getInteractorBindings();
+    return await _getInteractorBindings();
   }
 
-  void _getInteractorBindings() {
+  Future<void> _getInteractorBindings() {
     try {
       _getAuthenticatedAccountInteractor = Get.find<GetAuthenticatedAccountInteractor>();
       _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
@@ -154,9 +154,10 @@ class FcmController extends BaseController {
     } catch (e) {
       logError('FcmController::_getBindings(): ${e.toString()}');
     }
+    return Future.value(null);
   }
 
-  void _getAuthenticatedAccount() async {
+  void _getAuthenticatedAccount() {
     if (_getAuthenticatedAccountInteractor != null) {
       consumeState(_getAuthenticatedAccountInteractor!.execute());
     } else {
@@ -171,6 +172,7 @@ class FcmController extends BaseController {
   }
 
   void _handleSuccessViewState(Success success) {
+    log('FcmController::_handleSuccessViewState(): $success');
     if (success is GetStoredTokenOidcSuccess) {
       _getSessionWithTokenOidc(success);
     } else if (success is GetCredentialViewState) {
@@ -198,7 +200,7 @@ class FcmController extends BaseController {
     _getSession();
   }
 
-  void _getSession() async {
+  void _getSession() {
     if (_getSessionInteractor != null) {
       consumeState(_getSessionInteractor!.execute().asStream());
     } else {
