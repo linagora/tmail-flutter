@@ -21,10 +21,6 @@ class FcmReceiver {
     FirebaseMessaging.onMessage.listen(FcmService.instance.handleFirebaseForegroundMessage);
   }
 
-  void onMessageOpenedApp() {
-    FirebaseMessaging.onMessageOpenedApp.listen(FcmService.instance.handleFirebaseMessageOpenedApp);
-  }
-
   void onBackgroundMessage() {
     FirebaseMessaging.onBackgroundMessage(handleFirebaseBackgroundMessage);
   }

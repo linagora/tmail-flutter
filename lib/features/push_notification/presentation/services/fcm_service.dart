@@ -17,7 +17,6 @@ class FcmService {
   Stream<RemoteMessage> get backgroundMessageStream => backgroundMessageStreamController.stream;
 
   FirebaseToken? currentToken;
-  int semaphore = 0;
 
   FcmService._internal();
 
@@ -26,22 +25,14 @@ class FcmService {
   static FcmService get instance => _instance;
 
   void handleFirebaseForegroundMessage(RemoteMessage newRemoteMessage) {
-    if (semaphore != 0) {
-      return;
-    }
-    semaphore = 1;
-    Future.delayed(const Duration(milliseconds: durationMessageComing)).then((_) => semaphore = 0);
-
+    log('FcmService::handleFirebaseForegroundMessage():messageId: ${newRemoteMessage.messageId}');
+    log('FcmService::handleFirebaseForegroundMessage():message: ${newRemoteMessage.data}');
     foregroundMessageStreamController.add(newRemoteMessage);
   }
 
   void handleFirebaseBackgroundMessage(RemoteMessage newRemoteMessage) {
     FcmController.instance.initialize();
     backgroundMessageStreamController.add(newRemoteMessage);
-  }
-
-  void handleFirebaseMessageOpenedApp(RemoteMessage newRemoteMessage) {
-    log('FcmService::handleFirebaseMessageOpenedApp():newRemoteMessage: ${newRemoteMessage.data}');
   }
 
   void _closeStream() {
