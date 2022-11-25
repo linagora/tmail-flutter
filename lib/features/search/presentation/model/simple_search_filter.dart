@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -33,23 +34,31 @@ class SimpleSearchFilter with EquatableMixin {
         emailReceiveTimeType = emailReceiveTimeType ?? EmailReceiveTimeType.allTime;
 
   SimpleSearchFilter copyWith({
-    Set<String>? from,
-    Set<String>? to,
-    SearchQuery? text,
-    PresentationMailbox? mailbox,
-    EmailReceiveTimeType? emailReceiveTimeType,
-    bool? hasAttachment,
-    UTCDate? before,
+    Option<Set<String>>? fromOption,
+    Option<Set<String>>? toOption,
+    Option<SearchQuery>? textOption,
+    Option<PresentationMailbox>? mailboxOption,
+    Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
+    Option<bool>? hasAttachmentOption,
+    Option<UTCDate>? beforeOption,
   }) {
     return SimpleSearchFilter(
-      from: from ?? this.from,
-      to: to ?? this.to,
-      text: text ?? this.text,
-      mailbox: mailbox ?? this.mailbox,
-      emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
-      hasAttachment: hasAttachment ?? this.hasAttachment,
-      before: before ?? this.before,
+      from: _getOptionParam(fromOption, from),
+      to: _getOptionParam(toOption, to),
+      text: _getOptionParam(textOption, text),
+      mailbox: _getOptionParam(mailboxOption, mailbox),
+      emailReceiveTimeType: _getOptionParam(emailReceiveTimeTypeOption, emailReceiveTimeType),
+      hasAttachment: _getOptionParam(hasAttachmentOption, hasAttachment),
+      before: _getOptionParam(beforeOption, before),
     );
+  }
+
+  T? _getOptionParam<T>(Option<T?>? option, T? defaultValue) {
+    if (option != null) {
+      return option.toNullable();
+    } else {
+      return defaultValue;
+    }
   }
 
   Filter? mappingToEmailFilterCondition() {
@@ -86,30 +95,6 @@ class SimpleSearchFilter with EquatableMixin {
 }
 
 extension SearchEmailFilterExtension on SimpleSearchFilter {
-
-  SimpleSearchFilter toSimpleSearchFilterByBefore({UTCDate? newBefore}) {
-    return SimpleSearchFilter(
-      from: from,
-      to: to,
-      text: text,
-      mailbox: mailbox,
-      emailReceiveTimeType: emailReceiveTimeType,
-      hasAttachment: hasAttachment,
-      before: newBefore,
-    );
-  }
-
-  SimpleSearchFilter toSimpleSearchFilterByMailbox({PresentationMailbox? newMailbox}) {
-    return SimpleSearchFilter(
-      from: from,
-      text: text,
-      mailbox: newMailbox,
-      emailReceiveTimeType: emailReceiveTimeType,
-      hasAttachment: hasAttachment,
-      before: before,
-    );
-  }
-
   bool get searchFilterByMailboxApplied => mailbox != null;
 
   bool get searchFilterByFromApplied => from.isNotEmpty;
