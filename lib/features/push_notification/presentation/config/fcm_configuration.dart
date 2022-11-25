@@ -12,7 +12,6 @@ class FcmConfiguration {
 
   static void _initMessageListener() {
     FcmReceiver.instance.onForegroundMessage();
-    FcmReceiver.instance.onMessageOpenedApp();
     FcmReceiver.instance.onBackgroundMessage();
     FcmReceiver.instance.getFcmToken();
   }
