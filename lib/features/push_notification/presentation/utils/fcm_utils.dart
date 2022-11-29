@@ -14,6 +14,8 @@ class FcmUtils {
 
   static FcmUtils get instance => _instance;
 
+  static const String hashCodeKey = 'TeamMail';
+
   StateChange? convertFirebaseDataMessageToStateChange(Map<String, dynamic> dataMessage) {
     log('FcmUtils::convertFirebaseDataMessageToStateChange():dataMessage: $dataMessage');
     Map<String, dynamic> mapData;
@@ -72,5 +74,13 @@ class FcmUtils {
 
   bool isEmpty(dynamic object) {
     return object == null || (object is String && object.isEmpty);
+  }
+
+  String hashTokenToDeviceId(String token) {
+    final deviceId = '$hashCodeKey-$token';
+    log('FcmUtils::hashCodeTokenToDeviceId():deviceId: $deviceId');
+    final deviceIdHashed = deviceId.hashCode.toString();
+    log('FcmUtils::hashCodeTokenToDeviceId():deviceIdHashCoded: $deviceIdHashed');
+    return deviceIdHashed;
   }
 }
