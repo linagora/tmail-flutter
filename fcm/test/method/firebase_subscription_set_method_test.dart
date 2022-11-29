@@ -48,6 +48,7 @@ void main() {
         data: {
           "using": [
             "urn:ietf:params:jmap:core",
+            "urn:ietf:params:jmap:mail",
             "com:linagora:params:jmap:firebase:push"
           ],
           "methodCalls": [
@@ -69,7 +70,7 @@ void main() {
         headers: {
           "accept": "application/json;jmapVersion=rfc-8621",
           "content-type": "application/json; charset=utf-8",
-          "content-length": 225
+          "content-length": 253
         }
       );
 
