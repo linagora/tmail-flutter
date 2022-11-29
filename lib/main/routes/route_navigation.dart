@@ -25,3 +25,11 @@ bool canBack(BuildContext context) {
 BuildContext? get currentContext => Get.context;
 
 BuildContext? get currentOverlayContext => Get.overlayContext;
+
+T? getBinding<T>() {
+  if (Get.isRegistered<T>()) {
+    return Get.find<T>();
+  } else {
+    return null;
+  }
+}

@@ -1,3 +1,4 @@
+import 'package:fcm/model/firebase_subscription.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/fcm/fcm_token_dto.dart';
@@ -73,5 +74,10 @@ class HiveFCMDatasourceImpl extends FCMDatasource {
     }).catchError((error) {
       _exceptionThrower.throwException(error);
     });
+  }
+
+  @override
+  Future<FirebaseSubscription> getFirebaseSubscriptionByDeviceId(String deviceId) {
+    throw UnimplementedError();
   }
 }
