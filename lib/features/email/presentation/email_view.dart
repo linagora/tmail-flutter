@@ -1,4 +1,17 @@
-import 'package:core/core.dart';
+import 'package:core/domain/extensions/datetime_extension.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/icon_utils.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
+import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
+import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
+import 'package:core/presentation/views/image/avatar_builder.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -102,18 +115,19 @@ class EmailView extends GetWidget<SingleEmailController>
   }
 
   Widget _buildMultipleEmailView(List<PresentationEmail> listEmails) {
-    log('EmailView::_buildMultipleEmailView(): ');
-    return PageView.builder(
-      physics: BuildUtils.isWeb ? const NeverScrollableScrollPhysics() : null,
-      itemCount: listEmails.length,
-      controller: controller.emailSupervisorController.pageController,
-      onPageChanged: controller.emailSupervisorController.onPageChanged,
-      itemBuilder: (context, index) => _buildSingleEmailView(context, listEmails[index])
+    return Obx(
+      () => PageView.builder(
+        physics: controller.emailSupervisorController.scrollPhysicsPageView.value,
+        itemCount: listEmails.length,
+        allowImplicitScrolling: true,
+        controller: controller.emailSupervisorController.pageController,
+        onPageChanged: controller.emailSupervisorController.onPageChanged,
+        itemBuilder: (context, index) => _buildSingleEmailView(context, listEmails[index])
+      ),
     );
   }
 
   Widget _buildSingleEmailView(BuildContext context, PresentationEmail email) {
-    log('EmailView::_buildSingleEmailView(): ');
     return _buildEmailBody(context, email);
   }
 
@@ -211,6 +225,7 @@ class EmailView extends GetWidget<SingleEmailController>
       return _buildEmailMessage(context, email);
     } else {
       return SingleChildScrollView(
+          primary: true,
           physics : const ClampingScrollPhysics(),
           child: Container(
               margin: EdgeInsets.zero,
@@ -748,9 +763,15 @@ class EmailView extends GetWidget<SingleEmailController>
               mailtoDelegate: (uri) => controller.openMailToLink(uri));
         } else {
           return HtmlContentViewer(
-              heightContent: responsiveUtils.getSizeScreenHeight(context),
-              contentHtml: allEmailContents,
-              mailtoDelegate: (uri) async => controller.openMailToLink(uri));
+            heightContent: responsiveUtils.getSizeScreenHeight(context),
+            contentHtml: allEmailContents,
+            mailtoDelegate: (uri) async => controller.openMailToLink(uri),
+            onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
+            onWebViewLoaded: (isScrollPageViewActivated) {
+              log('EmailView::_buildEmailContent(): isScrollPageViewActivated: $isScrollPageViewActivated');
+              controller.emailSupervisorController.updateScrollPhysicPageView(isScrollPageViewActivated: isScrollPageViewActivated);
+            },
+          );
         }
       } else {
         return const SizedBox.shrink();
