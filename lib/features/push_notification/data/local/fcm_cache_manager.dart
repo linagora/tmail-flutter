@@ -75,4 +75,14 @@ class FCMCacheManager {
   Future<bool> storeDeviceId(String deviceId) {
     return _sharedPreferences.setString(fcmDeviceIdKey, deviceId);
   }
+
+  Future<String> getDeviceId() async {
+    await _sharedPreferences.reload();
+    final deviceId = _sharedPreferences.getString(fcmDeviceIdKey);
+    if (deviceId != null) {
+      return deviceId;
+    } else {
+      throw NotFoundDeviceIdException();
+    }
+  }
 }

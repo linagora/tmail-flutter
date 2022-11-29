@@ -1285,7 +1285,7 @@ class MailboxDashBoardController extends ReloadableController {
   void _handleRefreshActionWhenBackToApp(RefreshActionViewEvent viewEvent) {
     log('MailboxDashBoardController::_handleRefreshActionWhenBackToApp():');
     try {
-      _getEmailStateToRefreshInteractor = Get.find<GetEmailStateToRefreshInteractor>();
+      _getEmailStateToRefreshInteractor = getBinding<GetEmailStateToRefreshInteractor>();
     } catch (e) {
       logError('MailboxDashBoardController::_handleRefreshActionWhenBackToApp(): $e');
     }
@@ -1297,7 +1297,7 @@ class MailboxDashBoardController extends ReloadableController {
   void _deleteEmailStateToRefreshAction() {
     log('MailboxDashBoardController::_deleteEmailStateToRefreshAction():');
     try {
-      _deleteEmailStateToRefreshInteractor = Get.find<DeleteEmailStateToRefreshInteractor>();
+      _deleteEmailStateToRefreshInteractor = getBinding<DeleteEmailStateToRefreshInteractor>();
     } catch (e) {
       logError('MailboxDashBoardController::_deleteEmailStateToRefreshAction(): $e');
     }
