@@ -88,4 +88,9 @@ class FCMRepositoryImpl extends FCMRepository {
   Future<bool> deleteStateToRefresh(TypeName typeName) {
     return _fcmDatasource.deleteStateToRefresh(typeName);
   }
+
+  @override
+  Future<bool> storeDeviceId(String deviceId) {
+    return _fcmDatasource.storeDeviceId(deviceId);
+  }
 }
