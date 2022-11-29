@@ -83,7 +83,16 @@ class HiveFCMDatasourceImpl extends FCMDatasource {
   }
 
   @override
-  Future<FirebaseSubscription> registerNewToken(RegisterNewTokenRequest registerNewTokenRequest) {
+  Future<FirebaseSubscription> registerNewToken(RegisterNewTokenRequest newTokenRequest) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getDeviceId() {
+    return Future.sync(() async {
+      return await _firebaseCacheManager.getDeviceId();
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 }

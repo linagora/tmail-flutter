@@ -23,4 +23,6 @@ abstract class FCMDatasource {
   Future<FirebaseSubscription> getFirebaseSubscriptionByDeviceId(String deviceId);
 
   Future<FirebaseSubscription> registerNewToken(RegisterNewTokenRequest newTokenRequest);
+
+  Future<String> getDeviceId();
 }
