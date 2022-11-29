@@ -16,6 +16,9 @@ class FcmService {
   final StreamController<RemoteMessage> backgroundMessageStreamController = StreamController<RemoteMessage>.broadcast();
   Stream<RemoteMessage> get backgroundMessageStream => backgroundMessageStreamController.stream;
 
+  final StreamController<String> fcmTokenStreamController = StreamController<String>.broadcast();
+  Stream<String> get fcmTokenStream => fcmTokenStreamController.stream;
+
   FirebaseToken? currentToken;
 
   FcmService._internal();
@@ -33,6 +36,10 @@ class FcmService {
   void handleFirebaseBackgroundMessage(RemoteMessage newRemoteMessage) {
     FcmController.instance.initialize();
     backgroundMessageStreamController.add(newRemoteMessage);
+  }
+
+  void handleRefreshToken(String newToken) {
+    fcmTokenStreamController.add(newToken);
   }
 
   void _closeStream() {
