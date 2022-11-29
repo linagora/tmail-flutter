@@ -36,8 +36,6 @@ jobs:
 
       - name: Analyze
         uses: zgosalvez/github-actions-analyze-dart@v1
-        with:
-          analysis-options-file: "placeholder"
 
       - name: Test
         run: |
