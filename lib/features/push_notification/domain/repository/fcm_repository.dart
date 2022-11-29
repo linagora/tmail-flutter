@@ -1,3 +1,4 @@
+import 'package:fcm/model/firebase_subscription.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -28,4 +29,6 @@ abstract class FCMRepository {
   Future<bool> deleteStateToRefresh(TypeName typeName);
 
   Future<bool> storeDeviceId(String deviceId);
+
+  Future<FirebaseSubscription> getFirebaseSubscriptionByDeviceId(String deviceId);
 }
