@@ -21,6 +21,7 @@ class EmailSupervisorController extends BaseController {
   final canGetNewerEmail = true.obs;
   final canGetOlderEmail = true.obs;
   final supportedPageView = RxBool(true);
+  final scrollPhysicsPageView = Rxn<ScrollPhysics>();
 
   Rxn<PresentationEmail> get selectedEmail => mailboxDashBoardController.selectedEmail;
   Session? get sessionCurrent => mailboxDashBoardController.sessionCurrent;
@@ -32,6 +33,12 @@ class EmailSupervisorController extends BaseController {
     } else {
       return mailboxDashBoardController.emailsInCurrentMailbox;
     }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    updateScrollPhysicPageView();
   }
 
   @override
@@ -51,6 +58,7 @@ class EmailSupervisorController extends BaseController {
   }
 
   void onPageChanged(int index) {
+    updateScrollPhysicPageView();
     mailboxDashBoardController.selectedEmail.value = listEmail[index];
   }
 
@@ -61,12 +69,31 @@ class EmailSupervisorController extends BaseController {
 
   void getNewerEmail() {
     currentIndexPageView = currentIndexPageView - 1;
-    pageController?.jumpToPage(currentIndexPageView);
+    _jumpToPage();
   }
 
   void getOlderEmail() {
     currentIndexPageView = currentIndexPageView + 1;
-    pageController?.jumpToPage(currentIndexPageView);
+    _jumpToPage();
+  }
+
+  void _jumpToPage() {
+    if (BuildUtils.isWeb) {
+      pageController?.jumpToPage(currentIndexPageView);
+    } else {
+      pageController?.animateToPage(
+        currentIndexPageView,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInToLinear);
+    }
+  }
+
+  void updateScrollPhysicPageView({bool isScrollPageViewActivated = false}) {
+    if (BuildUtils.isWeb || !isScrollPageViewActivated) {
+      scrollPhysicsPageView.value = const NeverScrollableScrollPhysics();
+    } else {
+      scrollPhysicsPageView.value = null;
+    }
   }
 
   @override
