@@ -1,4 +1,5 @@
-import 'package:core/utils/app_logger.dart';
+import 'package:core/data/model/source_type/data_source_type.dart';
+import 'package:fcm/model/firebase_subscription.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -12,7 +13,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 
 class FCMRepositoryImpl extends FCMRepository {
 
-  final FCMDatasource _fcmDatasource;
+  final Map<DataSourceType, FCMDatasource> _fcmDatasource;
   final ThreadDataSource _threadDataSource;
 
   FCMRepositoryImpl(
@@ -22,18 +23,17 @@ class FCMRepositoryImpl extends FCMRepository {
 
   @override
   Future<FCMTokenDto> getFCMToken(String accountId) {
-    return _fcmDatasource.getFCMToken(accountId);
+    return _fcmDatasource[DataSourceType.local]!.getFCMToken(accountId);
   }
 
   @override
   Future<void> setFCMToken(FCMTokenDto fcmTokenDto) {
-    log('FCMRepositoryImpl::setFCMToken(): $fcmTokenDto');
-    return _fcmDatasource.setFCMToken(fcmTokenDto);
+    return _fcmDatasource[DataSourceType.local]!.setFCMToken(fcmTokenDto);
   }
 
   @override
   Future<void> deleteFCMToken(String accountId) {
-    return _fcmDatasource.deleteFCMToken(accountId);
+    return _fcmDatasource[DataSourceType.local]!.deleteFCMToken(accountId);
   }
 
   @override
@@ -76,21 +76,26 @@ class FCMRepositoryImpl extends FCMRepository {
 
   @override
   Future<bool> storeStateToRefresh(TypeName typeName, jmap.State newState) {
-    return _fcmDatasource.storeStateToRefresh(typeName, newState);
+    return _fcmDatasource[DataSourceType.local]!.storeStateToRefresh(typeName, newState);
   }
 
   @override
   Future<jmap.State> getStateToRefresh(TypeName typeName) {
-    return _fcmDatasource.getStateToRefresh(typeName);
+    return _fcmDatasource[DataSourceType.local]!.getStateToRefresh(typeName);
   }
 
   @override
   Future<bool> deleteStateToRefresh(TypeName typeName) {
-    return _fcmDatasource.deleteStateToRefresh(typeName);
+    return _fcmDatasource[DataSourceType.local]!.deleteStateToRefresh(typeName);
   }
 
   @override
   Future<bool> storeDeviceId(String deviceId) {
-    return _fcmDatasource.storeDeviceId(deviceId);
+    return _fcmDatasource[DataSourceType.local]!.storeDeviceId(deviceId);
+  }
+
+  @override
+  Future<FirebaseSubscription> getFirebaseSubscriptionByDeviceId(String deviceId) {
+    return _fcmDatasource[DataSourceType.network]!.getFirebaseSubscriptionByDeviceId(deviceId);
   }
 }
