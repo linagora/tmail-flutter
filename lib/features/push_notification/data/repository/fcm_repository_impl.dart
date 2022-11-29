@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:model/fcm/fcm_token_dto.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
@@ -97,5 +98,10 @@ class FCMRepositoryImpl extends FCMRepository {
   @override
   Future<FirebaseSubscription> getFirebaseSubscriptionByDeviceId(String deviceId) {
     return _fcmDatasource[DataSourceType.network]!.getFirebaseSubscriptionByDeviceId(deviceId);
+  }
+
+  @override
+  Future<FirebaseSubscription> registerNewToken(RegisterNewTokenRequest newTokenRequest) {
+    return _fcmDatasource[DataSourceType.network]!.registerNewToken(newTokenRequest);
   }
 }

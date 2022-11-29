@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/fcm/fcm_token_dto.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class HiveFCMDatasourceImpl extends FCMDatasource {
@@ -78,6 +79,11 @@ class HiveFCMDatasourceImpl extends FCMDatasource {
 
   @override
   Future<FirebaseSubscription> getFirebaseSubscriptionByDeviceId(String deviceId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<FirebaseSubscription> registerNewToken(RegisterNewTokenRequest registerNewTokenRequest) {
     throw UnimplementedError();
   }
 }
