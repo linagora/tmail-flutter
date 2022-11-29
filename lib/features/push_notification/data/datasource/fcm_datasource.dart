@@ -15,4 +15,6 @@ abstract class FCMDatasource {
   Future<jmap.State> getStateToRefresh(TypeName typeName);
 
   Future<bool> deleteStateToRefresh(TypeName typeName);
+
+  Future<bool> storeDeviceId(String deviceId);
 }
