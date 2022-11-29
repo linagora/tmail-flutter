@@ -12,7 +12,10 @@ import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_device_id_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_firebase_subscription_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/register_new_token_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_device_id_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_firebase_subscription_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/register_new_token_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_device_id_interactor.dart';
@@ -28,9 +31,13 @@ class FcmTokenHandler {
 
   static FcmTokenHandler get instance => _instance;
 
+  static const int limitedTimeToExpire = 3;
+  static const int extensionTimeExpire = 7;
+
   StoreDeviceIdInteractor? _storeDeviceIdInteractor;
   GetFirebaseSubscriptionInteractor? _getFirebaseSubscriptionInteractor;
   RegisterNewTokenInteractor? _registerNewTokenInteractor;
+  GetDeviceIdInteractor? _getDeviceIdInteractor;
 
   FirebaseToken? _fcmToken;
   DeviceClientId? _deviceClientId;
@@ -40,6 +47,7 @@ class FcmTokenHandler {
       _storeDeviceIdInteractor = getBinding<StoreDeviceIdInteractor>();
       _getFirebaseSubscriptionInteractor = getBinding<GetFirebaseSubscriptionInteractor>();
       _registerNewTokenInteractor = getBinding<RegisterNewTokenInteractor>();
+      _getDeviceIdInteractor = getBinding<GetDeviceIdInteractor>();
     } catch (e) {
       logError('FcmTokenHandler::initialize(): ${e.toString()}');
     }
@@ -54,6 +62,8 @@ class FcmTokenHandler {
       log('FcmTokenHandler::handle(): fcmToken: $_fcmToken');
       log('FcmTokenHandler::handle(): deviceId: $deviceId');
       _getFcmTokenFromBackend(deviceId);
+    } else {
+      _getDeviceIdAction();
     }
   }
 
@@ -66,6 +76,12 @@ class FcmTokenHandler {
   void _storeDeviceIdAction(String deviceId) {
     if (_storeDeviceIdInteractor != null) {
       _consumeState(_storeDeviceIdInteractor!.execute(deviceId));
+    }
+  }
+
+  void _getDeviceIdAction() {
+    if (_getDeviceIdInteractor != null) {
+      _consumeState(_getDeviceIdInteractor!.execute());
     }
   }
 
@@ -95,13 +111,20 @@ class FcmTokenHandler {
   void _handleSuccessViewState(Success success) {
     log('FcmTokenHandler::_handleSuccessViewState(): $success');
     if (success is GetFirebaseSubscriptionSuccess) {
-      _fcmToken = success.firebaseSubscription.token;
       _deviceClientId = success.firebaseSubscription.deviceClientId;
       final expireTime = success.firebaseSubscription.expires;
       log('FcmTokenHandler::_handleSuccessViewState():_fcmToken: $_fcmToken');
       if (_isTokenExpired(expireTime))  {
-        _handleWhenTokenExpired(_fcmToken!, _deviceClientId!);
+        log('FcmTokenHandler::_handleSuccessViewState(): _isTokenExpired true');
+        _handleWhenTokenExpired();
       }
+    } else if (success is RegisterNewTokenSuccess) {
+      final deviceId = success.firebaseSubscription.deviceClientId?.value;
+      if (deviceId != null) {
+        _storeDeviceIdAction(deviceId);
+      }
+    } else if (success is GetDeviceIdSuccess) {
+      _getFcmTokenFromBackend(success.deviceId);
     }
   }
 
@@ -115,21 +138,26 @@ class FcmTokenHandler {
       log('FcmTokenHandler::_isTokenExpired():currentTime: $currentTime');
 
       return currentTime.isBefore(expireTimeLocal) &&
-        expireTimeLocal.daysBetween(currentTime) == 3;
+        expireTimeLocal.daysBetween(currentTime) <= limitedTimeToExpire;
     } else {
       return true;
     }
   }
 
-  void _handleWhenTokenExpired(FirebaseToken fcmToken, DeviceClientId deviceClientId) {
+  void _handleWhenTokenExpired() {
+    if (_fcmToken == null || _deviceClientId == null) {
+      log('FcmTokenHandler::_handleSuccessViewState():_fcmToken or _deviceClientId is null');
+      return;
+    }
+
     final generateCreationId = Id(const Uuid().v4());
-    final newExpireTime = DateTime.now().add(const Duration(days: 7));
+    final newExpireTime = DateTime.now().add(const Duration(days: extensionTimeExpire));
 
     log('FcmTokenHandler::_handleSuccessViewState():newExpireTime: $newExpireTime');
     final firebaseSubscription = FirebaseSubscription(
-        token: fcmToken,
+        token: _fcmToken!,
         expires: FirebaseExpiredTime(newExpireTime.toUTCDate()!),
-        deviceClientId: deviceClientId,
+        deviceClientId: _deviceClientId!,
         types: [TypeName.emailType, TypeName.mailboxType, TypeName.emailDelivery]
     );
 

@@ -66,4 +66,9 @@ class FcmDatasourceImpl extends FCMDatasource {
       _exceptionThrower.throwException(error);
     });
   }
+
+  @override
+  Future<String> getDeviceId() {
+    throw UnimplementedError();
+  }
 }
