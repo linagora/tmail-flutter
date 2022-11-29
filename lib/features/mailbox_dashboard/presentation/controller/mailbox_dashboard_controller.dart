@@ -1058,6 +1058,7 @@ class MailboxDashBoardController extends ReloadableController {
     _handleComposerCache();
     injectAutoCompleteBindings(sessionCurrent, accountId.value);
     injectRuleFilterBindings(sessionCurrent, accountId.value);
+    injectFCMBindings(sessionCurrent, accountId.value);
     injectVacationBindings(sessionCurrent, accountId.value);
     _getVacationResponse();
   }
