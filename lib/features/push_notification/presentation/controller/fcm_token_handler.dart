@@ -86,7 +86,9 @@ class FcmTokenHandler {
   void _handleFailureViewState(Failure failure) {
     log('FcmTokenHandler::_handleFailureViewState(): $failure');
     if (failure is GetFirebaseSubscriptionFailure) {
-      // Register new token
+      if (_fcmToken != null && _deviceClientId != null) {
+        _handleRegisterNewToken(_fcmToken!, _deviceClientId!);
+      }
     }
   }
 
@@ -132,13 +134,27 @@ class FcmTokenHandler {
     );
 
     log('FcmTokenHandler::_handleSuccessViewState():firebaseSubscription: $firebaseSubscription');
-    _registerNewTokenAction(RegisterNewTokenRequest(
-        generateCreationId,
-        firebaseSubscription
+    _invokeRegisterNewTokenAction(RegisterNewTokenRequest(
+      generateCreationId,
+      firebaseSubscription
     ));
   }
 
-  void _registerNewTokenAction(RegisterNewTokenRequest newTokenRequest) {
+  void _handleRegisterNewToken(FirebaseToken fcmToken, DeviceClientId deviceClientId) {
+    final generateCreationId = Id(const Uuid().v4());
+    final firebaseSubscription = FirebaseSubscription(
+      token: fcmToken,
+      deviceClientId: deviceClientId,
+      types: [TypeName.emailType, TypeName.mailboxType, TypeName.emailDelivery]
+    );
+    log('FcmTokenHandler::_handleSuccessViewState():firebaseSubscription: $firebaseSubscription');
+    _invokeRegisterNewTokenAction(RegisterNewTokenRequest(
+      generateCreationId,
+      firebaseSubscription
+    ));
+  }
+
+  void _invokeRegisterNewTokenAction(RegisterNewTokenRequest newTokenRequest) {
     if (_registerNewTokenInteractor != null) {
       _consumeState(_registerNewTokenInteractor!.execute(newTokenRequest));
     }
