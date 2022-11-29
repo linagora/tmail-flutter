@@ -12,6 +12,8 @@ class FCMCacheManager {
   final FcmTokenCacheClient _fcmTokenCacheClient;
   final SharedPreferences _sharedPreferences;
 
+  static const String fcmDeviceIdKey = 'FCM_DEVICE_ID';
+
   FCMCacheManager(this._fcmTokenCacheClient, this._sharedPreferences);
 
   Future<FCMTokenDto> getFCMToken(String accountId) async {
@@ -68,5 +70,9 @@ class FCMCacheManager {
       _sharedPreferences.remove(TypeName.mailboxType.value),
       _sharedPreferences.remove(TypeName.emailDelivery.value)
     ]).then((listResult) => listResult.every((result) => result));
+  }
+
+  Future<bool> storeDeviceId(String deviceId) {
+    return _sharedPreferences.setString(fcmDeviceIdKey, deviceId);
   }
 }

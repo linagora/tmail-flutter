@@ -65,4 +65,13 @@ class HiveFCMDatasourceImpl extends FCMDatasource {
       _exceptionThrower.throwException(error);
     });
   }
+
+  @override
+  Future<bool> storeDeviceId(String deviceId) {
+    return Future.sync(() async {
+      return await _firebaseCacheManager.storeDeviceId(deviceId);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
+  }
 }
