@@ -15,8 +15,8 @@ class FcmService {
   final StreamController<RemoteMessage> backgroundMessageStreamController = StreamController<RemoteMessage>.broadcast();
   Stream<RemoteMessage> get backgroundMessageStream => backgroundMessageStreamController.stream;
 
-  final StreamController<String> fcmTokenStreamController = StreamController<String>.broadcast();
-  Stream<String> get fcmTokenStream => fcmTokenStreamController.stream;
+  final StreamController<String?> fcmTokenStreamController = StreamController<String?>.broadcast();
+  Stream<String?> get fcmTokenStream => fcmTokenStreamController.stream;
 
   FcmService._internal();
 
@@ -35,13 +35,14 @@ class FcmService {
     backgroundMessageStreamController.add(newRemoteMessage);
   }
 
-  void handleRefreshToken(String newToken) {
+  void handleRefreshToken(String? newToken) {
     fcmTokenStreamController.add(newToken);
   }
 
   void _closeStream() {
     foregroundMessageStreamController.close();
     backgroundMessageStreamController.close();
+    fcmTokenStreamController.close();
   }
 
   void dispose() {
