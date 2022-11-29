@@ -14,5 +14,6 @@ class FcmConfiguration {
     FcmReceiver.instance.onForegroundMessage();
     FcmReceiver.instance.onBackgroundMessage();
     FcmReceiver.instance.getFcmToken();
+    FcmReceiver.instance.onRefreshFcmToken();
   }
 }
