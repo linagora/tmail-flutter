@@ -28,5 +28,12 @@ class FcmReceiver {
   void getFcmToken() async {
     final token = await FirebaseMessaging.instance.getToken();
     log('FcmReceiver::onFcmToken():token: $token');
+    if (token?.isNotEmpty == true) {
+      FcmService.instance.handleRefreshToken(token!);
+    }
+  }
+
+  void onRefreshFcmToken() {
+    FirebaseMessaging.instance.onTokenRefresh.listen(FcmService.instance.handleRefreshToken);
   }
 }
