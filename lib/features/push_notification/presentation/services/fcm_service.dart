@@ -2,7 +2,6 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
-import 'package:fcm/model/firebase_token.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_controller.dart';
 
@@ -18,8 +17,6 @@ class FcmService {
 
   final StreamController<String> fcmTokenStreamController = StreamController<String>.broadcast();
   Stream<String> get fcmTokenStream => fcmTokenStreamController.stream;
-
-  FirebaseToken? currentToken;
 
   FcmService._internal();
 

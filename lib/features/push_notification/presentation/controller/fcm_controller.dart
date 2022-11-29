@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/fcm_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_handler.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
@@ -54,6 +55,7 @@ class FcmController extends BaseController {
 
   void initialize({AccountId? accountId}) {
     _currentAccountId = accountId;
+    FcmTokenHandler.instance.initialize();
   }
 
   void _listenFcmMessageStream() {
@@ -65,6 +67,8 @@ class FcmController extends BaseController {
     FcmService.instance.backgroundMessageStream
       .throttleTime(const Duration(milliseconds: FcmService.durationMessageComing))
       .listen(_handleBackgroundMessageAction);
+
+    FcmService.instance.fcmTokenStream.listen(FcmTokenHandler.instance.handle);
   }
 
   void _handleForegroundMessageAction(RemoteMessage newRemoteMessage) {
@@ -151,6 +155,7 @@ class FcmController extends BaseController {
       _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
       _authorizationInterceptors = Get.find<AuthorizationInterceptors>();
       _getSessionInteractor = Get.find<GetSessionInteractor>();
+      FcmTokenHandler.instance.initialize();
     } catch (e) {
       logError('FcmController::_getBindings(): ${e.toString()}');
     }
