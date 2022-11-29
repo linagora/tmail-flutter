@@ -1116,4 +1116,20 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       }
     }
   }
+
+  void toggleScrollPhysicsPagerView(bool leftDirection) {
+    log('SingleEmailController::toggleScrollPhysicsPagerView():leftDirection: $leftDirection');
+    log('SingleEmailController::toggleScrollPhysicsPagerView():canGetOlderEmail: ${emailSupervisorController.canGetOlderEmail.isTrue}');
+    log('SingleEmailController::toggleScrollPhysicsPagerView():canGetNewerEmail: ${emailSupervisorController.canGetNewerEmail.isTrue}');
+
+    if (leftDirection) {
+      if (emailSupervisorController.canGetNewerEmail.isTrue) {
+        emailSupervisorController.getNewerEmail();
+      }
+    } else {
+      if (emailSupervisorController.canGetOlderEmail.isTrue) {
+        emailSupervisorController.getOlderEmail();
+      }
+    }
+  }
 }
