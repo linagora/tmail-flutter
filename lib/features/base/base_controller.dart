@@ -9,6 +9,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/fps_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/capability_forward.dart';
@@ -162,14 +163,16 @@ abstract class BaseController extends GetxController
       if (AppConfig.fcmAvailable) {
         await AppUtils.loadFcmConfigFile();
         FcmConfiguration.initialize();
-        await LocalNotificationManager.instance.setUp();
+        if (!kIsWeb) {
+          await LocalNotificationManager.instance.setUp();
+        }
         FcmInteractorBindings().dependencies();
         FcmController.instance.initialize(accountId: accountId);
       } else {
         throw NotSupportFCMException();
       }
     } catch(e) {
-      logError('BaseController::injectFirebaseBindings(): exception: $e');
+      logError('BaseController::injectFCMBindings(): exception: $e');
     }
   }
 }
