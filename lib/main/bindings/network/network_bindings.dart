@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/manage_account/data/network/forwarding_ap
 import 'package:tmail_ui_user/features/manage_account/data/network/identity_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/rule_filter_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/vacation_api.dart';
+import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.dart';
 import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
@@ -88,6 +89,7 @@ class NetworkBindings extends Bindings {
     Get.put(MdnAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(ForwardingAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(QuotasAPI(Get.find<JmapHttpClient.HttpClient>()));
+    Get.put(FcmApi(Get.find<JmapHttpClient.HttpClient>()));
   }
 
   void _bindingConnection() {

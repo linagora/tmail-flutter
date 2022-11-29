@@ -1,8 +1,11 @@
+import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
+import 'package:tmail_ui_user/features/push_notification/data/datasource_impl/fcm_datasource_impl.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource_impl/hive_fcm_datasource_impl.dart';
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
+import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.dart';
 import 'package:tmail_ui_user/features/push_notification/data/repository/fcm_repository_impl.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
@@ -10,6 +13,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_push_notification_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm_token_cache_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_firebase_subscription_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/save_fcm_token_cache_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_device_id_interactor.dart';
@@ -26,7 +30,7 @@ class FcmInteractorBindings extends InteractorsBindings {
 
   @override
   void bindingsDataSource() {
-    Get.lazyPut<FCMDatasource>(() => Get.find<HiveFCMDatasourceImpl>());
+    Get.lazyPut<FCMDatasource>(() => Get.find<FcmDatasourceImpl>());
     Get.lazyPut<ThreadDataSource>(() => Get.find<ThreadDataSourceImpl>());
   }
 
@@ -35,6 +39,10 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => HiveFCMDatasourceImpl(
       Get.find<FCMCacheManager>(),
       Get.find<CacheExceptionThrower>(),
+    ));
+    Get.lazyPut(() => FcmDatasourceImpl(
+      Get.find<FcmApi>(),
+      Get.find<RemoteExceptionThrower>(),
     ));
     Get.lazyPut(() => ThreadDataSourceImpl(
       Get.find<ThreadAPI>(),
@@ -55,6 +63,7 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => GetEmailStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => DeleteEmailStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => StoreDeviceIdInteractor(Get.find<FCMRepositoryImpl>()));
+    Get.lazyPut(() => GetFirebaseSubscriptionInteractor(Get.find<FCMRepositoryImpl>()));
   }
 
   @override
@@ -65,7 +74,10 @@ class FcmInteractorBindings extends InteractorsBindings {
   @override
   void bindingsRepositoryImpl() {
     Get.lazyPut(() => FCMRepositoryImpl(
-      Get.find<FCMDatasource>(),
+      {
+        DataSourceType.local: Get.find<HiveFCMDatasourceImpl>(),
+        DataSourceType.network: Get.find<FCMDatasource>(),
+      },
       Get.find<ThreadDataSource>()
     ));
   }
