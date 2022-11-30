@@ -2,7 +2,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/email/presentation_email.dart';
@@ -22,6 +21,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/action/fcm
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class EmailChangeListener extends ChangeListener {
 
@@ -37,12 +37,12 @@ class EmailChangeListener extends ChangeListener {
 
   EmailChangeListener._internal() {
     try {
-      _dashBoardController = Get.find<MailboxDashBoardController>();
-      _getStoredEmailStateInteractor = Get.find<GetStoredEmailStateInteractor>();
-      _getStoredEmailDeliveryStateInteractor = Get.find<GetStoredEmailDeliveryStateInteractor>();
-      _storeEmailDeliveryStateInteractor = Get.find<StoreEmailDeliveryStateInteractor>();
-      _getEmailChangesToPushNotificationInteractor = Get.find<GetEmailChangesToPushNotificationInteractor>();
-      _storeEmailStateToRefreshInteractor = Get.find<StoreEmailStateToRefreshInteractor>();
+      _dashBoardController = getBinding<MailboxDashBoardController>();
+      _getStoredEmailStateInteractor = getBinding<GetStoredEmailStateInteractor>();
+      _getStoredEmailDeliveryStateInteractor = getBinding<GetStoredEmailDeliveryStateInteractor>();
+      _storeEmailDeliveryStateInteractor = getBinding<StoreEmailDeliveryStateInteractor>();
+      _getEmailChangesToPushNotificationInteractor = getBinding<GetEmailChangesToPushNotificationInteractor>();
+      _storeEmailStateToRefreshInteractor = getBinding<StoreEmailStateToRefreshInteractor>();
     } catch (e) {
       logError('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }

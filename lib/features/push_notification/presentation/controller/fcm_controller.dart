@@ -9,7 +9,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
@@ -35,6 +34,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class FcmController extends BaseController {
 
@@ -171,10 +171,10 @@ class FcmController extends BaseController {
 
   Future<void> _getInteractorBindings() {
     try {
-      _getAuthenticatedAccountInteractor = Get.find<GetAuthenticatedAccountInteractor>();
-      _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
-      _authorizationInterceptors = Get.find<AuthorizationInterceptors>();
-      _getSessionInteractor = Get.find<GetSessionInteractor>();
+      _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
+      _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
+      _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
+      _getSessionInteractor = getBinding<GetSessionInteractor>();
       FcmTokenHandler.instance.initialize();
     } catch (e) {
       logError('FcmController::_getBindings(): ${e.toString()}');
