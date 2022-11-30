@@ -19,7 +19,6 @@ import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_rights_cache.d
 import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/recent_search_cache.dart';
-import 'package:tmail_ui_user/features/push_notification/data/model/fcm_token_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_address_hive_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 
@@ -118,10 +117,6 @@ class HiveCacheConfig {
     registerCacheAdapter<RecentLoginUsernameCache>(
       RecentLoginUsernameCacheAdapter(),
       CachingConstants.RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY
-    );
-    registerCacheAdapter<FCMTokenCache>(
-      FCMTokenCacheAdapter(),
-      CachingConstants.FCM_TOKEN_CACHE_IDENTITY
     );
   }
 
