@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/bindings/f
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_handler.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
@@ -102,6 +103,7 @@ class FcmController extends BaseController {
       .toList();
 
     final listEmailActions = listTypeName
+      .where((typeName) => typeName == TypeName.emailType || typeName == TypeName.emailDelivery)
       .map((typeName) => toFcmAction(typeName, accountId, mapTypeState, isForeground))
       .whereNotNull()
       .toList();
@@ -110,6 +112,18 @@ class FcmController extends BaseController {
 
     if (listEmailActions.isNotEmpty) {
        EmailChangeListener.instance.dispatchActions(listEmailActions);
+    }
+
+    final listMailboxActions = listTypeName
+      .where((typeName) => typeName == TypeName.mailboxType)
+      .map((typeName) => toFcmAction(typeName, accountId, mapTypeState, isForeground))
+      .whereNotNull()
+      .toList();
+
+    log('FcmController::_mappingTypeStateToAction():listMailboxActions: $listEmailActions');
+
+    if (listMailboxActions.isNotEmpty) {
+      MailboxChangeListener.instance.dispatchActions(listMailboxActions);
     }
   }
 
@@ -129,6 +143,10 @@ class FcmController extends BaseController {
     } else if (typeName == TypeName.emailDelivery) {
       if (!isForeground) {
         return PushNotificationAction(typeName, newState, accountId);
+      }
+    } else if (typeName == TypeName.mailboxType) {
+      if (isForeground) {
+        return SynchronizeMailboxOnForegroundAction(typeName, newState, accountId);
       }
     }
     return null;
