@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:core/core.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
@@ -21,6 +23,7 @@ import 'package:tmail_ui_user/features/upload/presentation/extensions/list_uploa
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:html_editor_windows/html_editor_windows.dart' as htmlEditorWindow;
 
 class ComposerView extends GetWidget<ComposerController>
     with AppLoaderMixin, RichTextButtonMixin, ComposerLoadingMixin {
@@ -596,18 +599,23 @@ class ComposerView extends GetWidget<ComposerController>
     final richTextMobileTabletController = controller.richTextMobileTabletController;
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
-      child: HtmlEditor(
-        key: const Key('composer_editor'),
-        minHeight: 550,
-        addDefaultSelectionMenuItems: false,
-        initialContent: initialContent ?? '',
-        onCreated: (editorApi) {
-          richTextMobileTabletController.htmlEditorApi = editorApi;
-            controller.keyboardRichTextController.onCreateHTMLEditor(
-              editorApi,
-              onEnterKeyDown: controller.onEnterKeyDown,
-              context: context,
-            );
+      child: Platform.isWindows 
+        ? htmlEditorWindow.HtmlEditor(
+          key: const Key('composer_editor'), 
+          initialContent: initialContent ?? '',
+          height: 550,) 
+        : HtmlEditor(
+          key: const Key('composer_editor'),
+          minHeight: 550,
+          addDefaultSelectionMenuItems: false,
+          initialContent: initialContent ?? '',
+          onCreated: (editorApi) {
+            richTextMobileTabletController.htmlEditorApi = editorApi;
+              controller.keyboardRichTextController.onCreateHTMLEditor(
+                editorApi,
+                onEnterKeyDown: controller.onEnterKeyDown,
+                context: context,
+              );
         },
       ),
     );

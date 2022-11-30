@@ -140,6 +140,10 @@ dependencies:
       url: https://github.com/linagora/html-editor-enhanced.git
       ref: email_supported
 
+  html_editor_windows:
+    git:
+      url: https://github.com/sherlockvn/html_editor_windows.git
+      ref: main
   # fk_user_agent
   fk_user_agent: 2.1.0
 
@@ -179,7 +183,7 @@ dependencies:
   # Isolate
   worker_manager: 4.4.0
 
-  async: 2.8.2
+  async: 2.9.0
 
   # HTML5 parser
   html: 0.15.0
