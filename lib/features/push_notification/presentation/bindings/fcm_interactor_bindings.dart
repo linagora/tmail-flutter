@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/registe
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_device_id_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_state_to_refresh_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
@@ -62,6 +63,7 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => GetFirebaseSubscriptionInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => RegisterNewTokenInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetDeviceIdInteractor(Get.find<FCMRepositoryImpl>()));
+    Get.lazyPut(() => StoreMailboxStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
   }
 
   @override
