@@ -68,8 +68,10 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_state_to_refresh_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailbox_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -118,6 +120,7 @@ class MailboxDashBoardController extends ReloadableController {
   UpdateVacationInteractor? _updateVacationInteractor;
   GetEmailStateToRefreshInteractor? _getEmailStateToRefreshInteractor;
   DeleteEmailStateToRefreshInteractor? _deleteEmailStateToRefreshInteractor;
+  GetMailboxStateToRefreshInteractor? _getMailboxStateToRefreshInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -231,6 +234,8 @@ class MailboxDashBoardController extends ReloadableController {
         } else if (success is GetEmailStateToRefreshSuccess) {
           dispatchAction(RefreshChangeEmailAction(success.storedState));
           _deleteEmailStateToRefreshAction();
+        } else if (success is GetMailboxStateToRefreshSuccess) {
+          dispatchAction(RefreshChangeMailboxAction(success.storedState));
         }
       }
     );
@@ -1286,11 +1291,15 @@ class MailboxDashBoardController extends ReloadableController {
     log('MailboxDashBoardController::_handleRefreshActionWhenBackToApp():');
     try {
       _getEmailStateToRefreshInteractor = getBinding<GetEmailStateToRefreshInteractor>();
+      _getMailboxStateToRefreshInteractor = getBinding<GetMailboxStateToRefreshInteractor>();
     } catch (e) {
       logError('MailboxDashBoardController::_handleRefreshActionWhenBackToApp(): $e');
     }
     if (_getEmailStateToRefreshInteractor != null) {
       consumeState(_getEmailStateToRefreshInteractor!.execute());
+    }
+    if (_getMailboxStateToRefreshInteractor != null) {
+      consumeState(_getMailboxStateToRefreshInteractor!.execute());
     }
   }
 
