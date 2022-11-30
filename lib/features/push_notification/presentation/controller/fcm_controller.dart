@@ -147,6 +147,8 @@ class FcmController extends BaseController {
     } else if (typeName == TypeName.mailboxType) {
       if (isForeground) {
         return SynchronizeMailboxOnForegroundAction(typeName, newState, accountId);
+      } else {
+        return StoreMailboxStateToRefreshAction(typeName, newState, accountId);
       }
     }
     return null;

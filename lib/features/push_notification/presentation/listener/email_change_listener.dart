@@ -2,8 +2,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
-import 'package:fcm/model/type_name.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
@@ -123,21 +121,8 @@ class EmailChangeListener extends ChangeListener {
     );
   }
 
-  void consumeState(Stream<Either<Failure, Success>> newStateStream) {
-    newStateStream.listen(
-      _handleStateStream,
-      onError: (error, stackTrace) {
-        logError('EmailChangeListener::consumeState():onError:error: $error');
-        logError('EmailChangeListener::consumeState():onError:stackTrace: $stackTrace');
-      }
-    );
-  }
-
-  void _handleStateStream(Either<Failure, Success> newState) {
-    newState.fold(_handleFailureViewState, _handleSuccessViewState);
-  }
-
-  void _handleFailureViewState(Failure failure) {
+  @override
+  void handleFailureViewState(Failure failure) {
     log('EmailChangeListener::_handleFailureViewState(): $failure');
     if (failure is GetStoredEmailDeliveryStateFailure &&
         failure.exception is NotFoundEmailDeliveryStateException) {
@@ -145,7 +130,8 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _handleSuccessViewState(Success success) {
+  @override
+  void handleSuccessViewState(Success success) {
     log('EmailChangeListener::_handleSuccessViewState(): $success');
     if (success is GetStoredEmailDeliveryStateSuccess) {
       if (_newState != success.state) {
@@ -169,7 +155,7 @@ class EmailChangeListener extends ChangeListener {
   void _handleStoreEmailStateToRefreshAction(jmap.State newState) {
     log('EmailChangeListener::_handleStoreEmailStateToRefreshAction():newState: $newState');
     if (_storeEmailStateToRefreshInteractor != null) {
-      consumeState(_storeEmailStateToRefreshInteractor!.execute(TypeName.emailType, newState));
+      consumeState(_storeEmailStateToRefreshInteractor!.execute(newState));
     } else {
       logError('EmailChangeListener::_handleStoreEmailStateToRefreshAction():_storeEmailStateToRefreshInteractor is null');
     }
