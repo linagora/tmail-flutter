@@ -9,15 +9,12 @@ import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.da
 import 'package:tmail_ui_user/features/push_notification/data/repository/fcm_repository_impl.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_fcm_token_cache_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_device_id_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_push_notification_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm_token_cache_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_firebase_subscription_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/register_new_token_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/save_fcm_token_cache_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_device_id_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_state_to_refresh_interactor.dart';
@@ -55,9 +52,6 @@ class FcmInteractorBindings extends InteractorsBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => DeleteFCMTokenCacheInteractor(Get.find<FCMRepositoryImpl>()));
-    Get.lazyPut(() => SaveFCMTokenCacheInteractor(Get.find<FCMRepositoryImpl>()));
-    Get.lazyPut(() => GetFCMTokenCacheInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetStoredEmailDeliveryStateInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => StoreEmailDeliveryStateInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetEmailChangesToPushNotificationInteractor(Get.find<FCMRepositoryImpl>()));
