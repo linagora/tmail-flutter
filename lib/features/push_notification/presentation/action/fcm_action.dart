@@ -45,3 +45,17 @@ class StoreEmailStateToRefreshAction extends FcmStateChangeAction {
   @override
   List<Object?> get props => [typeName, newState, accountId];
 }
+
+class SynchronizeMailboxOnForegroundAction extends FcmStateChangeAction {
+
+  final AccountId accountId;
+
+  SynchronizeMailboxOnForegroundAction(
+      TypeName typeName,
+      jmap.State newState,
+      this.accountId
+  ) : super(typeName, newState);
+
+  @override
+  List<Object?> get props => [typeName, newState, accountId];
+}
