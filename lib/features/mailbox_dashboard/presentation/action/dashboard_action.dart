@@ -142,3 +142,13 @@ class RefreshChangeEmailAction extends DashBoardAction {
   @override
   List<Object?> get props => [newState];
 }
+
+class RefreshChangeMailboxAction extends DashBoardAction {
+
+  final jmap.State? newState;
+
+  RefreshChangeMailboxAction(this.newState);
+
+  @override
+  List<Object?> get props => [newState];
+}

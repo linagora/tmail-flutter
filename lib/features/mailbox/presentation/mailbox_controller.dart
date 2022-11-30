@@ -257,11 +257,16 @@ class MailboxController extends BaseMailboxController {
     });
 
     dashboardActionWorker = ever(mailboxDashBoardController.dashBoardAction, (action) {
+      log('MailboxController::_registerListenerWorker():action: $action');
       if (action is ClearSearchEmailAction) {
         _switchBackToMailboxDefault();
       } else if (action is SelectMailboxDefaultAction) {
         if (mailboxDashBoardController.selectedMailbox.value == null) {
           _switchBackToMailboxDefault();
+        }
+      } else if (action is RefreshChangeMailboxAction) {
+        if (action.newState != _currentMailboxState) {
+          refreshMailboxChanges();
         }
       }
     });
