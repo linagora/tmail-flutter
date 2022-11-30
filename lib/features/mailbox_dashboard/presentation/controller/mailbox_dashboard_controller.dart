@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
-import 'package:fcm/model/type_name.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -70,6 +69,7 @@ import 'package:tmail_ui_user/features/network_status_handle/presentation/networ
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailbox_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_controller.dart';
@@ -121,6 +121,7 @@ class MailboxDashBoardController extends ReloadableController {
   GetEmailStateToRefreshInteractor? _getEmailStateToRefreshInteractor;
   DeleteEmailStateToRefreshInteractor? _deleteEmailStateToRefreshInteractor;
   GetMailboxStateToRefreshInteractor? _getMailboxStateToRefreshInteractor;
+  DeleteMailboxStateToRefreshInteractor? _deleteMailboxStateToRefreshInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -236,6 +237,7 @@ class MailboxDashBoardController extends ReloadableController {
           _deleteEmailStateToRefreshAction();
         } else if (success is GetMailboxStateToRefreshSuccess) {
           dispatchAction(RefreshChangeMailboxAction(success.storedState));
+          _deleteMailboxStateToRefreshAction();
         }
       }
     );
@@ -1311,7 +1313,19 @@ class MailboxDashBoardController extends ReloadableController {
       logError('MailboxDashBoardController::_deleteEmailStateToRefreshAction(): $e');
     }
     if (_deleteEmailStateToRefreshInteractor != null) {
-      consumeState(_deleteEmailStateToRefreshInteractor!.execute(TypeName.emailType));
+      consumeState(_deleteEmailStateToRefreshInteractor!.execute());
+    }
+  }
+
+  void _deleteMailboxStateToRefreshAction() {
+    log('MailboxDashBoardController::_deleteMailboxStateToRefreshAction():');
+    try {
+      _deleteMailboxStateToRefreshInteractor = getBinding<DeleteMailboxStateToRefreshInteractor>();
+    } catch (e) {
+      logError('MailboxDashBoardController::_deleteMailboxStateToRefreshAction(): $e');
+    }
+    if (_deleteMailboxStateToRefreshInteractor != null) {
+      consumeState(_deleteMailboxStateToRefreshInteractor!.execute());
     }
   }
 
