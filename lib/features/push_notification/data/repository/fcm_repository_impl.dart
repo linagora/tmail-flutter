@@ -3,7 +3,6 @@ import 'package:fcm/model/firebase_subscription.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
-import 'package:model/fcm/fcm_token_dto.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
@@ -21,21 +20,6 @@ class FCMRepositoryImpl extends FCMRepository {
     this._fcmDatasource,
     this._threadDataSource
   );
-
-  @override
-  Future<FCMTokenDto> getFCMToken(String accountId) {
-    return _fcmDatasource[DataSourceType.local]!.getFCMToken(accountId);
-  }
-
-  @override
-  Future<void> setFCMToken(FCMTokenDto fcmTokenDto) {
-    return _fcmDatasource[DataSourceType.local]!.setFCMToken(fcmTokenDto);
-  }
-
-  @override
-  Future<void> deleteFCMToken(String accountId) {
-    return _fcmDatasource[DataSourceType.local]!.deleteFCMToken(accountId);
-  }
 
   @override
   Future<EmailsResponse> getEmailChangesToPushNotification(

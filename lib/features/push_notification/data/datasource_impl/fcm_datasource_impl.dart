@@ -1,7 +1,6 @@
 import 'package:fcm/model/firebase_subscription.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
-import 'package:model/fcm/fcm_token_dto.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
@@ -24,27 +23,12 @@ class FcmDatasourceImpl extends FCMDatasource {
   }
 
   @override
-  Future<void> deleteFCMToken(String accountId) {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<bool> deleteStateToRefresh(TypeName typeName) {
     throw UnimplementedError();
   }
 
   @override
-  Future<FCMTokenDto> getFCMToken(String accountId) {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<jmap.State> getStateToRefresh(TypeName typeName) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> setFCMToken(FCMTokenDto fcmToken) {
     throw UnimplementedError();
   }
 
