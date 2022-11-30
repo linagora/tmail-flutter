@@ -1,5 +1,8 @@
 
+import 'dart:io';
+
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -76,11 +79,33 @@ class FcmUtils {
     return object == null || (object is String && object.isEmpty);
   }
 
+  String get platformOS {
+    var platformName = '';
+    if (BuildUtils.isWeb) {
+      platformName = "Web";
+    } else {
+      if (Platform.isAndroid) {
+        platformName = "Android";
+      } else if (Platform.isIOS) {
+        platformName = "IOS";
+      } else if (Platform.isFuchsia) {
+        platformName = "Fuchsia";
+      } else if (Platform.isLinux) {
+        platformName = "Linux";
+      } else if (Platform.isMacOS) {
+        platformName = "MacOS";
+      } else if (Platform.isWindows) {
+        platformName = "Windows";
+      }
+    }
+    log('FcmUtils::platformOS():$platformName');
+    return platformName;
+  }
+
   String hashTokenToDeviceId(String token) {
-    final deviceId = '$hashCodeKey-$token';
+    final tokenHashCode = token.hashCode.toString();
+    final deviceId = '$hashCodeKey-$platformOS-$tokenHashCode';
     log('FcmUtils::hashCodeTokenToDeviceId():deviceId: $deviceId');
-    final deviceIdHashed = deviceId.hashCode.toString();
-    log('FcmUtils::hashCodeTokenToDeviceId():deviceIdHashCoded: $deviceIdHashed');
-    return deviceIdHashed;
+    return deviceId;
   }
 }
