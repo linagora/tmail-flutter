@@ -9,9 +9,12 @@ import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:rxdart/rxdart.dart';
@@ -23,27 +26,40 @@ import 'package:tmail_ui_user/features/login/data/network/config/authorization_i
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/fcm_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_handler.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class FcmController extends BaseController {
 
   AccountId? _currentAccountId;
   RemoteMessage? _remoteMessageBackground;
 
+  MailboxDashBoardController? mailboxDashBoardController;
+
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   AuthorizationInterceptors? _authorizationInterceptors;
   GetSessionInteractor? _getSessionInteractor;
+  GetEmailByIdInteractor? _getEmailByIdInteractor;
 
   FcmController._internal() {
     _listenFcmMessageStream();
@@ -69,6 +85,8 @@ class FcmController extends BaseController {
       .listen(_handleBackgroundMessageAction);
 
     FcmService.instance.fcmTokenStream.listen(FcmTokenHandler.instance.handle);
+
+    LocalNotificationManager.instance.localNotificationStream.listen(_handleLocalNotificationResponse);
   }
 
   void _handleForegroundMessageAction(RemoteMessage newRemoteMessage) {
@@ -85,6 +103,14 @@ class FcmController extends BaseController {
     _remoteMessageBackground = newRemoteMessage;
     await _initialAppConfig();
     _getAuthenticatedAccount();
+  }
+
+  void _handleLocalNotificationResponse(NotificationResponse response) {
+    if(response.payload != null) {
+      _getEmailByIdInteractor = Get.find<GetEmailByIdInteractor>();
+      mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+      _getPresentationEmailFromLocalNotification(EmailId(Id(response.payload!)));
+    }
   }
 
   StateChange? _convertRemoteMessageToStateChange(RemoteMessage newRemoteMessage) {
@@ -155,6 +181,7 @@ class FcmController extends BaseController {
       _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
       _authorizationInterceptors = Get.find<AuthorizationInterceptors>();
       _getSessionInteractor = Get.find<GetSessionInteractor>();
+
       FcmTokenHandler.instance.initialize();
     } catch (e) {
       logError('FcmController::_getBindings(): ${e.toString()}');
@@ -171,6 +198,14 @@ class FcmController extends BaseController {
     }
   }
 
+  void _getPresentationEmailFromLocalNotification(EmailId emailId) {
+    if(_getEmailByIdInteractor != null && _currentAccountId != null) {
+      consumeState(_getEmailByIdInteractor!.execute(_currentAccountId!, emailId, properties: ThreadConstants.propertiesDefault));
+    } else {
+      logError('FcmController::_getPresentationEmailFromLocalNotification(): _getEmailByIdInteractor is null');
+    }
+  }
+
   void _handleFailureViewState(Failure failure) {
     log('FcmController::_handleFailureViewState(): $failure');
     _clearRemoteMessageBackground();
@@ -184,6 +219,8 @@ class FcmController extends BaseController {
       _getSessionWithBasicAuth(success);
     }  else if (success is GetSessionSuccess) {
       _handleGetSessionSuccess(success);
+    } else if(success is GetEmailByIdSuccess) {
+      _moveToEmailDetailedView(success);
     }
   }
 
@@ -227,6 +264,17 @@ class FcmController extends BaseController {
       _mappingTypeStateToAction(mapTypeState, _currentAccountId!, isForeground: false);
     }
     _clearRemoteMessageBackground();
+  }
+
+  void _moveToEmailDetailedView(GetEmailByIdSuccess success) async {
+    if(mailboxDashBoardController != null) {
+      // clear view before move to email view
+      mailboxDashBoardController!.dispatchAction(ClearSearchEmailAction());
+      mailboxDashBoardController!.setSelectedEmail(success.email);
+      mailboxDashBoardController!.dispatchRoute(DashboardRoutes.emailDetailed);
+    } else {
+      logError('FcmController::_handleLocalNotification(): mailboxDashBoardController is null');
+    }  
   }
 
   void _clearRemoteMessageBackground() {

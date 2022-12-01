@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:core/presentation/extensions/html_extension.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
+
 
 class LocalNotificationManager {
 
@@ -18,6 +20,9 @@ class LocalNotificationManager {
 
   final _localNotificationsPlugin = FlutterLocalNotificationsPlugin();
   bool notificationsEnabled = false;
+
+  final StreamController<NotificationResponse> localNotificationsController = StreamController<NotificationResponse>.broadcast();
+  Stream<NotificationResponse> get localNotificationStream => localNotificationsController.stream;
 
   Future<void> setUp() async {
     try {
@@ -44,6 +49,7 @@ class LocalNotificationManager {
 
   void _handleReceiveNotificationResponse(NotificationResponse response) {
     log('LocalNotificationManager::handleReceiveNotificationResponse(): $response');
+    localNotificationsController.add(response);
   }
 
   void _checkLocalNotificationPermission() async {
@@ -138,5 +144,13 @@ class LocalNotificationManager {
         ),
       );
     }
+  }
+
+  void _closeStream() {
+    localNotificationsController.close();
+  }
+
+  void dispose() {
+    _closeStream();
   }
 }

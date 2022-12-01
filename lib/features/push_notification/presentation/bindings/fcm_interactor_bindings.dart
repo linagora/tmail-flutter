@@ -22,6 +22,8 @@ import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
+import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
@@ -62,6 +64,7 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => GetFirebaseSubscriptionInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => RegisterNewTokenInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetDeviceIdInteractor(Get.find<FCMRepositoryImpl>()));
+    Get.lazyPut(() => GetEmailByIdInteractor(Get.find<ThreadRepository>()));
   }
 
   @override
