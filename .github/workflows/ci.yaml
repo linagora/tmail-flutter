@@ -3,6 +3,9 @@ on:
   pull_request:
     paths-ignore:
       - ".github/**"
+      - "docs"
+      - "Jenkinsfile"
+      - "**/*.md"
 
 name: CI
 
@@ -38,14 +41,17 @@ jobs:
           cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
           cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
 
+      - name: Setup Firebase env
+        env:
+          FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
+        run: echo "$FIREBASE_ENV" > ./configurations/env.fcm
+
       - name: Setup Android environment
         if: matrix.os == 'android'
         env:
-          # GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
           PLAY_STORE_UPLOAD_KEY_BASE64: ${{ secrets.PLAY_STORE_UPLOAD_KEY_BASE64 }}
           PLAY_STORE_KEY_INFO_BASE64: ${{ secrets.PLAY_STORE_KEY_INFO_BASE64 }}
         run: |
-          # echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
           echo "$PLAY_STORE_UPLOAD_KEY_BASE64" | base64 --decode > app/keystore.jks
           echo "$PLAY_STORE_KEY_INFO_BASE64" | base64 --decode > key.properties
         working-directory: ${{ matrix.os }}
@@ -60,12 +66,10 @@ jobs:
       - name: Setup iOS environment
         if: matrix.os == 'ios'
         env:
-          # GOOGLE_SERVICES_PLIST: ${{ secrets.GOOGLE_SERVICES_PLIST }}
           CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
           PROVISION_PROFILE_BASE64: ${{ secrets.PROVISION_PROFILE_BASE64 }}
           SHAREEXT_PROVISION_PROFILE_BASE64: ${{ secrets.SHAREEXT_PROVISION_PROFILE_BASE64 }}
         run: |
-          # echo -n "$GOOGLE_SERVICES_PLIST" > Runner/GoogleService-Info.plist
           echo -n "$CERTIFICATE_BASE64" | base64 --decode --output cert.p12
           echo -n "$PROVISION_PROFILE_BASE64" | base64 --decode --output buildpp.mobileprovision
           echo -n "$SHAREEXT_PROVISION_PROFILE_BASE64" | base64 --decode --output shareextpp.mobileprovision
