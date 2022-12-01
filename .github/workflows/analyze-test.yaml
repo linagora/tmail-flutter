@@ -31,6 +31,11 @@ jobs:
           cache-key: "deps-${{ hashFiles('**/pubspec.lock') }}"
           cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
 
+      - name: Setup Firebase env
+        env:
+          FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
+        run: echo "$FIREBASE_ENV" > ./configurations/env.fcm
+
       - name: Run prebuild
         run: bash prebuild.sh
 
