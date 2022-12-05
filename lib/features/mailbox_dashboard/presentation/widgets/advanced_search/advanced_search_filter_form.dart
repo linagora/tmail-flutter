@@ -277,9 +277,11 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               onAddTag: (value) {
                 if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
                   controller.searchEmailFilter.from.add(value.trim());
+                  controller.lastTextForm.value = '';
                 }
                 if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
                   controller.searchEmailFilter.to.add(value.trim());
+                  controller.lastTextTo.value = '';
                 }
               },
               onDeleteTag: (tag) {
@@ -311,9 +313,11 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
                 onAddTag: (value) {
                   if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
                     controller.searchEmailFilter.from.add(value.trim());
+                    controller.lastTextForm.value = '';
                   }
                   if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
                     controller.searchEmailFilter.to.add(value.trim());
+                    controller.lastTextTo.value = '';
                   }
                 },
                 onChange: (value) {
