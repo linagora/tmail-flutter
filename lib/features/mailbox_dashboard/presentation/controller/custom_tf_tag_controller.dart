@@ -48,4 +48,10 @@ class CustomController extends TextfieldTagsController {
     }
     super.onChanged(value);
   }
+
+  @override
+  void onSubmitted(String value) {
+    super.onSubmitted(value);
+    actionAddTag?.call(value);
+  }
 }
