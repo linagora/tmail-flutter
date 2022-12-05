@@ -47,7 +47,7 @@ class LocalNotificationConfig {
         styleInformation: styleInformation,
         channelShowBadge: true,
         showWhen: true,
-        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_large_notification')
+        largeIcon: const DrawableResourceAndroidBitmap('ic_large_notification')
       ),
       iOS: const DarwinNotificationDetails(
         presentSound: true,
