@@ -1,39 +1,35 @@
 import 'dart:collection';
+import 'package:collection/collection.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/list_presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/page_view_navigator_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 
-class EmailSupervisorController extends BaseController {
+class EmailSupervisorController extends GetxController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
   final Queue<EmailLoaded> presentationEmailsLoaded = Queue();
   PageController? pageController;
-  int currentIndexPageView = -1;
-  final canGetNewerEmail = true.obs;
-  final canGetOlderEmail = true.obs;
-  final supportedPageView = RxBool(true);
+
+  int _currentEmailIndex = -1;
+  final List<PresentationEmail> _currentListEmail = <PresentationEmail>[];
+
+  final pageViewNavigatorState = PageViewNavigatorState.none.obs;
+  final supportedPageView = RxBool(false);
   final scrollPhysicsPageView = Rxn<ScrollPhysics>();
 
-  Rxn<PresentationEmail> get selectedEmail => mailboxDashBoardController.selectedEmail;
-  Session? get sessionCurrent => mailboxDashBoardController.sessionCurrent;
-  AccountId? get accountId => mailboxDashBoardController.accountId.value;
+  List<PresentationEmail> get currentListEmail => _currentListEmail;
 
-  RxList<PresentationEmail> get listEmail {
-    if (mailboxDashBoardController.searchController.isSearchEmailRunning && !BuildUtils.isWeb) {
-      return mailboxDashBoardController.listResultSearch;
-    } else {
-      return mailboxDashBoardController.emailsInCurrentMailbox;
-    }
-  }
+  int get currentEmailIndex => _currentEmailIndex;
+
+  void setCurrentEmailIndex(int index) => _currentEmailIndex = index;
 
   @override
   void onInit() {
@@ -44,45 +40,85 @@ class EmailSupervisorController extends BaseController {
   @override
   void onClose() {
     pageController?.dispose();
+    pageController = null;
     super.onClose();
   }
 
-  void setCurrentPositionEmailInListEmail(EmailId? currentEmailId) {
-    currentIndexPageView = listEmail.indexWhere((e) => e.id == currentEmailId);
-    if(pageController != null && pageController!.hasClients && pageController!.page?.toInt() != currentIndexPageView) {
-      pageController!.jumpToPage(currentIndexPageView);
+  void updateNewCurrentListEmail() {
+    _currentListEmail.clear();
+    if (isSearchActivatedOnMobile) {
+      _currentListEmail.addAll(mailboxDashBoardController.listResultSearch);
     } else {
-      pageController = PageController(initialPage: currentIndexPageView);
+      _currentListEmail.addAll(mailboxDashBoardController.emailsInCurrentMailbox);
     }
-    _checkEnableNavigatorPageView();
+  }
+
+  bool get isSearchActivatedOnMobile {
+    return mailboxDashBoardController.searchController.isSearchEmailRunning
+      && !BuildUtils.isWeb;
+  }
+
+  void createPageControllerAndJumpToEmailById(EmailId currentEmailId) {
+    _currentEmailIndex = _currentListEmail.matchedIndex(currentEmailId);
+    if (pageController != null && pageController?.hasClients == true) {
+      _jumpToPage(_currentEmailIndex);
+    } else {
+      pageController = PageController(initialPage: _currentEmailIndex);
+    }
+    if (BuildUtils.isWeb) {
+      _updateStatePageViewNavigator();
+    }
   }
 
   void onPageChanged(int index) {
     updateScrollPhysicPageView();
-    mailboxDashBoardController.selectedEmail.value = listEmail[index];
+    mailboxDashBoardController.openEmailDetailedView(currentListEmail[index]);
   }
 
-  void _checkEnableNavigatorPageView() {
-    canGetNewerEmail.value = listEmail.length > 1 && currentIndexPageView > 0;
-    canGetOlderEmail.value = listEmail.length > 1 && currentIndexPageView < listEmail.length - 1;
+  void _updateStatePageViewNavigator() {
+    if (_currentListEmail.length <= 1) {
+      pageViewNavigatorState.value = PageViewNavigatorState.none;
+    } else {
+      if (_currentEmailIndex > 0 && _currentEmailIndex < _currentListEmail.length - 1) {
+        pageViewNavigatorState.value = PageViewNavigatorState.all;
+      } else if (_currentEmailIndex <= 0) {
+        pageViewNavigatorState.value = PageViewNavigatorState.previous;
+      } else if (_currentEmailIndex >= _currentListEmail.length - 1) {
+        pageViewNavigatorState.value = PageViewNavigatorState.next;
+      }
+    }
   }
 
-  void getNewerEmail() {
-    currentIndexPageView = currentIndexPageView - 1;
-    _jumpToPage();
+  bool get nextEmailActivated {
+    return pageViewNavigatorState.value == PageViewNavigatorState.next ||
+      pageViewNavigatorState.value == PageViewNavigatorState.all;
   }
 
-  void getOlderEmail() {
-    currentIndexPageView = currentIndexPageView + 1;
-    _jumpToPage();
+  bool get previousEmailActivated {
+    return pageViewNavigatorState.value == PageViewNavigatorState.previous ||
+      pageViewNavigatorState.value == PageViewNavigatorState.all;
   }
 
-  void _jumpToPage() {
+  void moveToNextEmail() {
+    if (nextEmailActivated) {
+      _currentEmailIndex--;
+      _jumpToPage(_currentEmailIndex);
+    }
+  }
+
+  void backToPreviousEmail() {
+    if (previousEmailActivated) {
+      _currentEmailIndex++;
+      _jumpToPage(_currentEmailIndex);
+    }
+  }
+
+  void _jumpToPage(int page) {
     if (BuildUtils.isWeb) {
-      pageController?.jumpToPage(currentIndexPageView);
+      pageController?.jumpToPage(page);
     } else {
       pageController?.animateToPage(
-        currentIndexPageView,
+        page,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInToLinear);
     }
@@ -96,7 +132,24 @@ class EmailSupervisorController extends BaseController {
     }
   }
 
-  @override
-  void onDone() {
+  EmailLoaded? getEmailInQueueByEmailId(EmailId emailId) {
+    return presentationEmailsLoaded.firstWhereOrNull((e) => e.emailCurrent!.id == emailId);
+  }
+
+  void popFirstEmailQueue() {
+    presentationEmailsLoaded.removeFirst();
+  }
+
+  void popEmailQueue(EmailId? emailId) {
+    presentationEmailsLoaded.removeWhere((e) => e.emailCurrent!.id == emailId);
+  }
+
+  void pushEmailQueue(EmailLoaded emailLoaded) {
+    presentationEmailsLoaded.add(emailLoaded);
+  }
+
+  void disposePageViewController() {
+    pageController?.dispose();
+    pageController = null;
   }
 }

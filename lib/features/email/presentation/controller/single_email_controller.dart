@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -49,6 +48,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/page_view_navigator_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -102,16 +102,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   EmailId? _currentEmailId;
   Identity? _identitySelected;
   List<EmailContent>? initialEmailContents;
-  late Worker emailWorker, accountIdWorker;
-  final Debouncer<int?> _getEmailDeBouncer = Debouncer<int?>(
-    const Duration(milliseconds: 800),
-    initialValue: null,
-  );
+  late Worker selectedEmailWorker, accountIdWorker;
+
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
 
-  PresentationEmail? get currentEmail => emailSupervisorController.selectedEmail.value;
+  PresentationEmail? get currentEmail => mailboxDashBoardController.selectedEmail.value;
 
   bool get isDisplayFullEmailAddress => emailAddressExpandMode.value == ExpandMode.EXPAND;
 
@@ -131,7 +128,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void onInit() {
-    _initializeDebounceTimeIndexPageViewChange();
     _registerListenerWorker();
     _listenDownloadAttachmentProgressState();
     super.onInit();
@@ -140,17 +136,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   @override
   void onClose() {
     _downloadProgressStateController.close();
-    _getEmailDeBouncer.cancel();
     _unregisterListenerWorker();
     super.onClose();
-  }
-
-  void _initializeDebounceTimeIndexPageViewChange() {
-    _getEmailDeBouncer.values.listen((value) async {
-      if(value !=null) {
-        _getEmailContentAction(emailSupervisorController.listEmail[value].id);
-      }
-    });
   }
 
   void _registerListenerWorker() {
@@ -163,33 +150,57 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       }
     });
 
-    emailWorker = ever(emailSupervisorController.selectedEmail, (presentationEmail) {
-      log('SingleEmailController::_initWorker(): $presentationEmail');
-      if (presentationEmail is PresentationEmail) {
-        if (_currentEmailId != presentationEmail.id) {
-          _currentEmailId = presentationEmail.id;
-          if (emailSupervisorController.listEmail.isNotEmpty) {
-            emailSupervisorController.supportedPageView.value = true;
-            emailSupervisorController.setCurrentPositionEmailInListEmail(_currentEmailId);
-            _getEmailDeBouncer.value = emailSupervisorController.currentIndexPageView;
-          } else {
-            emailSupervisorController.supportedPageView.value = false;
-            _getEmailContentAction(presentationEmail.id);
-          }
-          _resetToOriginalValue();
-          if (!presentationEmail.hasRead) {
-            markAsEmailRead(presentationEmail, ReadActions.markAsRead);
-          }
-          if(_identitySelected == null) {
-            _getAllIdentities();
-          }
-        }
-      }
-    });
+    selectedEmailWorker = ever<PresentationEmail?>(
+      mailboxDashBoardController.selectedEmail,
+      _handleOpenEmailDetailedView
+    );
   }
 
   void _unregisterListenerWorker() {
-    emailWorker.dispose();
+    accountIdWorker.dispose();
+    selectedEmailWorker.dispose();
+  }
+
+  void _handleOpenEmailDetailedView(PresentationEmail? selectedEmail) {
+    if (selectedEmail == null || _currentEmailId == selectedEmail.id) {
+      log('SingleEmailController::_handleOpenEmailDetailedView(): email unselected');
+      return;
+    }
+
+    emailSupervisorController.updateNewCurrentListEmail();
+    _updateCurrentEmailId(selectedEmail.id);
+    _resetToOriginalValue();
+
+    if (emailSupervisorController.currentListEmail.isNotEmpty) {
+      _createMultipleEmailViewAsPageView(selectedEmail.id);
+    } else {
+      _createSingleEmailView(selectedEmail.id);
+    }
+
+    if (!selectedEmail.hasRead) {
+      markAsEmailRead(selectedEmail, ReadActions.markAsRead);
+    }
+
+    if (_identitySelected == null) {
+      _getAllIdentities();
+    }
+  }
+
+  void _updateCurrentEmailId(EmailId? emailId) {
+    _currentEmailId = emailId;
+  }
+
+  void _createMultipleEmailViewAsPageView(EmailId emailId) {
+    log('SingleEmailController::_createMultipleEmailViewAsPageView():');
+    emailSupervisorController.supportedPageView.value = true;
+    emailSupervisorController.createPageControllerAndJumpToEmailById(emailId);
+    _getEmailContentAction(emailId);
+  }
+
+  void _createSingleEmailView(EmailId emailId) {
+    log('SingleEmailController::_createSingleEmailView():');
+    emailSupervisorController.supportedPageView.value = false;
+    _getEmailContentAction(emailId);
   }
 
   void _listenDownloadAttachmentProgressState() {
@@ -242,7 +253,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getAllIdentities() {
-    final accountId = emailSupervisorController.accountId;
+    final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {
       consumeState(_getAllIdentitiesInteractor.execute(accountId));
     }
@@ -262,12 +273,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentAction(EmailId emailId) async {
-    final accountId = emailSupervisorController.accountId;
-    final baseDownloadUrl = emailSupervisorController.sessionCurrent?.getDownloadUrl();
-    final currentEmail = emailSupervisorController.presentationEmailsLoaded.where((e) => e.emailCurrent!.id == emailId);
-    EmailLoaded? emailLoaded;
-    if(currentEmail.isNotEmpty) {
-      emailLoaded = currentEmail.first;
+    final accountId = mailboxDashBoardController.accountId.value;
+    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
+    final emailLoaded = emailSupervisorController.getEmailInQueueByEmailId(emailId);
+
+    if (emailLoaded != null) {
       dispatchState(Right<Failure, Success>(GetEmailContentLoading()));
       await Future.delayed(const Duration(milliseconds: 300));
       consumeState(Stream.value(Right<Failure, Success>(GetEmailContentSuccess(
@@ -319,17 +329,18 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
     if(emailSupervisorController.presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
-      emailSupervisorController.presentationEmailsLoaded.removeFirst();
+      emailSupervisorController.popFirstEmailQueue();
     }
-    final emailLoaded = EmailLoaded(
+    emailSupervisorController.popEmailQueue(success.emailCurrent?.id);
+
+    emailSupervisorController.pushEmailQueue(EmailLoaded(
       success.emailContents.toList(),
       success.emailContentsDisplayed.toList(),
       success.attachments.toList(),
       success.emailCurrent,
-    );
-    emailSupervisorController.presentationEmailsLoaded.removeWhere((e) => e.emailCurrent!.id == emailLoaded.emailCurrent!.id);
-    emailSupervisorController.presentationEmailsLoaded.add(emailLoaded);
-    if(success.emailCurrent?.id == mailboxDashBoardController.selectedEmail.value?.id) {
+    ));
+
+    if (success.emailCurrent?.id == currentEmail?.id) {
       emailContents.value = success.emailContentsDisplayed;
       initialEmailContents = success.emailContents;
       attachments.value = success.attachments;
@@ -999,14 +1010,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void closeEmailView(BuildContext context) {
-    log('SingleEmailController::closeEmailView(): ');
     if (emailSupervisorController.supportedPageView.isTrue) {
-      emailSupervisorController.presentationEmailsLoaded.removeWhere((e) => e.emailCurrent?.id == currentEmail?.id);
-      emailSupervisorController.currentIndexPageView = -1;
-      _getEmailDeBouncer.value = null;
+      emailSupervisorController.popEmailQueue(_currentEmailId);
+      emailSupervisorController.setCurrentEmailIndex(-1);
+      emailSupervisorController.disposePageViewController();
     }
     mailboxDashBoardController.clearSelectedEmail();
-    _currentEmailId = null;
+    _updateCurrentEmailId(null);
     _resetToOriginalValue();
     _updateRouteOnBrowser();
     if (mailboxDashBoardController.searchController.isSearchEmailRunning) {
@@ -1118,17 +1128,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void toggleScrollPhysicsPagerView(bool leftDirection) {
-    log('SingleEmailController::toggleScrollPhysicsPagerView():leftDirection: $leftDirection');
-    log('SingleEmailController::toggleScrollPhysicsPagerView():canGetOlderEmail: ${emailSupervisorController.canGetOlderEmail.isTrue}');
-    log('SingleEmailController::toggleScrollPhysicsPagerView():canGetNewerEmail: ${emailSupervisorController.canGetNewerEmail.isTrue}');
+    final navigatorState = emailSupervisorController.pageViewNavigatorState.value;
 
     if (leftDirection) {
-      if (emailSupervisorController.canGetNewerEmail.isTrue) {
-        emailSupervisorController.getNewerEmail();
+      if (navigatorState == PageViewNavigatorState.next) {
+        emailSupervisorController.moveToNextEmail();
       }
     } else {
-      if (emailSupervisorController.canGetOlderEmail.isTrue) {
-        emailSupervisorController.getOlderEmail();
+      if (navigatorState == PageViewNavigatorState.previous) {
+        emailSupervisorController.backToPreviousEmail();
       }
     }
   }

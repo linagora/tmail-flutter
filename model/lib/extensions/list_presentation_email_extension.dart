@@ -96,4 +96,6 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
       }
     }).toList();
   }
+
+  int matchedIndex(EmailId emailId) => indexWhere((email) => email.id == emailId);
 }
