@@ -623,7 +623,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _searchEmail({UnsignedInt? limit, EmailFilterCondition? filterCondition}) {
-    if (_accountId != null && searchQuery != null) {
+    if (_accountId != null) {
       searchController.activateSimpleSearch();
 
       filterCondition = EmailFilterCondition(
