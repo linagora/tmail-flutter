@@ -35,23 +35,24 @@ extension PresentationEmailExtension on PresentationEmail {
 
   PresentationEmail toggleSelect() {
     return PresentationEmail(
-        this.id,
-        keywords: keywords,
-        size: size,
-        receivedAt: receivedAt,
-        hasAttachment: hasAttachment,
-        preview: preview,
-        subject: subject,
-        sentAt: sentAt,
-        from: from,
-        to: to,
-        cc: cc,
-        bcc: bcc,
-        replyTo: replyTo,
-        mailboxIds: mailboxIds,
-        mailboxNames: mailboxNames,
-        selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
-        routeWeb: routeWeb
+      this.id,
+      keywords: keywords,
+      size: size,
+      receivedAt: receivedAt,
+      hasAttachment: hasAttachment,
+      preview: preview,
+      subject: subject,
+      sentAt: sentAt,
+      from: from,
+      to: to,
+      cc: cc,
+      bcc: bcc,
+      replyTo: replyTo,
+      mailboxIds: mailboxIds,
+      mailboxNames: mailboxNames,
+      selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
+      routeWeb: routeWeb,
+      mailboxContain: mailboxContain
     );
   }
 
@@ -73,7 +74,8 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       mailboxNames: mailboxNames,
       selectMode: selectMode,
-      routeWeb: routeWeb
+      routeWeb: routeWeb,
+      mailboxContain: mailboxContain
     );
   }
 
@@ -155,7 +157,8 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       mailboxNames: listMailboxName,
       selectMode: selectMode,
-      routeWeb: routeWeb
+      routeWeb: routeWeb,
+      mailboxContain: mailboxContain
     );
   }
 
@@ -190,7 +193,8 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       mailboxNames: mailboxNames,
       selectMode: selectMode,
-      routeWeb: routeWeb
+      routeWeb: routeWeb,
+      mailboxContain: mailboxContain
     );
   }
 
@@ -212,7 +216,31 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       mailboxNames: mailboxNames,
       selectMode: selectMode,
-      routeWeb: routeWeb
+      routeWeb: routeWeb,
+      mailboxContain: mailboxContain
+    );
+  }
+
+  PresentationEmail syncPresentationEmail({PresentationMailbox? mailboxContain, Uri? routeWeb}) {
+    return PresentationEmail(
+      this.id,
+      keywords: keywords,
+      size: size,
+      receivedAt: receivedAt,
+      hasAttachment: hasAttachment,
+      preview: preview,
+      subject: subject,
+      sentAt: sentAt,
+      from: from,
+      to: to,
+      cc: cc,
+      bcc: bcc,
+      replyTo: replyTo,
+      mailboxIds: mailboxIds,
+      mailboxNames: mailboxNames,
+      selectMode: selectMode,
+      routeWeb: routeWeb,
+      mailboxContain: mailboxContain
     );
   }
 }

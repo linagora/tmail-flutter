@@ -57,6 +57,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_i
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -369,7 +370,13 @@ class ThreadController extends BaseController with EmailActionController {
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
     _currentEmailState = success.currentEmailState;
     log('ThreadController::_getAllEmailSuccess():_currentEmailState: $_currentEmailState');
-    emailList.value = success.emailList;
+    emailList.value = success.emailList.syncPresentationEmail(
+      mapMailboxById: mailboxDashBoardController.mapMailboxById,
+      selectedMailbox: currentMailbox,
+      searchQuery: searchController.searchQuery,
+      isSearchEmailRunning: searchController.isSearchEmailRunning
+    );
+
     if (listEmailController.hasClients) {
       listEmailController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
     }
@@ -381,7 +388,12 @@ class ThreadController extends BaseController with EmailActionController {
     final emailsBeforeChanges = emailList;
     final emailsAfterChanges = success.emailList;
     final newListEmail = emailsAfterChanges.combine(emailsBeforeChanges);
-    emailList.value = newListEmail;
+    emailList.value = newListEmail.syncPresentationEmail(
+      mapMailboxById: mailboxDashBoardController.mapMailboxById,
+      selectedMailbox: currentMailbox,
+      searchQuery: searchController.searchQuery,
+      isSearchEmailRunning: searchController.isSearchEmailRunning
+    );
 
     if (emailList.isEmpty) {
       refreshAllEmail();
@@ -497,7 +509,14 @@ class ThreadController extends BaseController with EmailActionController {
     if (success.emailList.isNotEmpty) {
       final appendableList = success.emailList
         .where(_belongToCurrentMailboxId)
-        .where(_notDuplicatedInCurrentList);
+        .where(_notDuplicatedInCurrentList)
+        .toList()
+        .syncPresentationEmail(
+          mapMailboxById: mailboxDashBoardController.mapMailboxById,
+          selectedMailbox: currentMailbox,
+          searchQuery: searchController.searchQuery,
+          isSearchEmailRunning: searchController.isSearchEmailRunning
+        );
 
       emailList.addAll(appendableList);
     } else {
@@ -662,7 +681,12 @@ class ThreadController extends BaseController with EmailActionController {
     final emailsSearchBeforeChanges = emailList;
     final emailsSearchAfterChanges = resultEmailSearchList;
     final newListEmailSearch = emailsSearchAfterChanges.combine(emailsSearchBeforeChanges);
-    emailList.value = newListEmailSearch;
+    emailList.value = newListEmailSearch.syncPresentationEmail(
+      mapMailboxById: mailboxDashBoardController.mapMailboxById,
+      selectedMailbox: currentMailbox,
+      searchQuery: searchController.searchQuery,
+      isSearchEmailRunning: searchController.isSearchEmailRunning
+    );
     searchController.autoFocus.value = true;
   }
 
@@ -685,7 +709,13 @@ class ThreadController extends BaseController with EmailActionController {
       final resultEmailSearchList = success.emailList
           .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
           .where((email) => !emailList.contains(email))
-          .toList();
+          .toList()
+          .syncPresentationEmail(
+            mapMailboxById: mailboxDashBoardController.mapMailboxById,
+            selectedMailbox: currentMailbox,
+            searchQuery: searchController.searchQuery,
+            isSearchEmailRunning: searchController.isSearchEmailRunning
+          );
       emailList.addAll(resultEmailSearchList);
     } else {
       canSearchMore = false;
@@ -773,7 +803,7 @@ class ThreadController extends BaseController with EmailActionController {
         if (mailboxContain?.isDrafts == true) {
           editEmail(selectedEmail);
         } else {
-          previewEmail(context, selectedEmail);
+          previewEmail(selectedEmail);
         }
         break;
       case EmailActionType.selection:
@@ -873,10 +903,6 @@ class ThreadController extends BaseController with EmailActionController {
     } else {
       return currentEmail;
     }
-  }
-
-  PresentationMailbox? getMailboxContain(PresentationEmail currentEmail) {
-    return currentEmail.findMailboxContain(mailboxDashBoardController.mapMailboxById);
   }
 
   void _getEmailByIdAction(EmailId emailId) {
