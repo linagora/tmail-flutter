@@ -24,12 +24,10 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 mixin EmailActionController on ViewAsDialogActionMixin {
@@ -47,15 +45,9 @@ mixin EmailActionController on ViewAsDialogActionMixin {
     mailboxDashBoardController.goToComposer(arguments);
   }
 
-  void previewEmail(BuildContext context, PresentationEmail presentationEmail) {
+  void previewEmail(PresentationEmail presentationEmail) {
     log('EmailActionController::previewEmail():presentationEmailId: ${presentationEmail.id}');
-    mailboxDashBoardController.setSelectedEmail(presentationEmail);
-    mailboxDashBoardController.dispatchRoute(DashboardRoutes.emailDetailed);
-    if (BuildUtils.isWeb && presentationEmail.routeWeb != null) {
-      RouteUtils.updateRouteOnBrowser(
-        'Email-${presentationEmail.id.id.value}',
-        presentationEmail.routeWeb!);
-    }
+    mailboxDashBoardController.openEmailDetailedView(presentationEmail);
   }
 
   void moveToTrash(PresentationEmail email, {PresentationMailbox? mailboxContain}) async {

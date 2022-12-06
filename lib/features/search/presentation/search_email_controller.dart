@@ -50,12 +50,11 @@ import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.da
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class SearchEmailController extends BaseController
     with EmailActionController {
@@ -232,7 +231,11 @@ class SearchEmailController extends BaseController
     final emailsAfterChanges = resultEmailSearchList;
     final newListEmail = emailsAfterChanges.combine(emailsBeforeChanges);
 
-    listResultSearch.value = newListEmail;
+    listResultSearch.value = newListEmail.syncPresentationEmail(
+      mapMailboxById: mailboxDashBoardController.mapMailboxById,
+      searchQuery: searchQuery,
+      isSearchEmailRunning: true
+    );
     listResultSearch.refresh();
   }
 
@@ -295,7 +298,11 @@ class SearchEmailController extends BaseController
     final emailsAfterChanges = resultEmailSearchList;
     final newListEmail = emailsAfterChanges.combine(emailsBeforeChanges);
 
-    listResultSearch.value = newListEmail;
+    listResultSearch.value = newListEmail.syncPresentationEmail(
+      mapMailboxById: mailboxDashBoardController.mapMailboxById,
+      searchQuery: searchQuery,
+      isSearchEmailRunning: true
+    );
 
     if (resultSearchScrollController.hasClients) {
       resultSearchScrollController.animateTo(
@@ -336,7 +343,12 @@ class SearchEmailController extends BaseController
       final resultEmailSearchList = success.emailList
           .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
           .where((email) => !listResultSearch.contains(email))
-          .toList();
+          .toList()
+          .syncPresentationEmail(
+            mapMailboxById: mailboxDashBoardController.mapMailboxById,
+            searchQuery: searchQuery,
+            isSearchEmailRunning: true
+          );
       listResultSearch.addAll(resultEmailSearchList);
     } else {
       canSearchMore = false;
@@ -646,7 +658,7 @@ class SearchEmailController extends BaseController
         if (mailboxContain?.isDrafts == true) {
           editEmail(selectedEmail);
         } else {
-          previewEmail(context, selectedEmail);
+          previewEmail(selectedEmail);
         }
         break;
       case EmailActionType.selection:
@@ -768,23 +780,6 @@ class SearchEmailController extends BaseController
         break;
       default:
         break;
-    }
-  }
-
-  PresentationEmail generateEmailByPlatform(PresentationEmail currentEmail) {
-    if (BuildUtils.isWeb) {
-      final route = RouteUtils.generateRouteBrowser(
-        AppRoutes.dashboard,
-        NavigationRouter(
-          emailId: currentEmail.id,
-          searchQuery: searchQuery,
-          dashboardType: DashboardType.search
-        )
-      );
-      final emailOnWeb = currentEmail.withRouteWeb(route);
-      return emailOnWeb;
-    } else {
-      return currentEmail;
     }
   }
 

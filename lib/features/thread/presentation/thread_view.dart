@@ -339,21 +339,20 @@ class ThreadView extends GetWidget<ThreadController>
           itemExtent: _getItemExtent(context),
           itemCount: listPresentationEmail.length,
           itemBuilder: (context, index) {
-            final mailboxContain = controller.getMailboxContain(listPresentationEmail[index]);
-            final newPresentationEmail = controller.generateEmailByPlatform(listPresentationEmail[index]);
+            final currentPresentationEmail = listPresentationEmail[index];
             return Obx(() => Draggable<List<PresentationEmail>>(
               maxSimultaneousDrags: kIsWeb ? null : 0,
               data: controller.listEmailDrag,
               child: (EmailTileBuilder(
                     context,
-                    newPresentationEmail,
+                    currentPresentationEmail,
                     controller.mailboxDashBoardController.currentSelectMode.value,
                     controller.searchQuery,
-                    controller.mailboxDashBoardController.selectedEmail.value?.id == newPresentationEmail.id,
-                    mailboxContain: mailboxContain,
+                    controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
+                    mailboxContain: currentPresentationEmail.mailboxContain,
                     isSearchEmailRunning: controller.searchController.isSearchEmailRunning)
                 ..addOnPressEmailActionClick((action, email) =>
-                    controller.pressEmailAction(context, action, email, mailboxContain: mailboxContain))
+                    controller.pressEmailAction(context, action, email, mailboxContain: currentPresentationEmail.mailboxContain))
                 ..addOnMoreActionClick((email, position) => _responsiveUtils.isScreenWithShortestSide(context)
                     ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
                     : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
@@ -361,17 +360,17 @@ class ThreadView extends GetWidget<ThreadController>
               feedback: _buildFeedBackWidget(context),
               childWhenDragging: (EmailTileBuilder(
                   context,
-                  newPresentationEmail,
+                  currentPresentationEmail,
                   controller.mailboxDashBoardController.currentSelectMode.value,
                   controller.searchQuery,
-                  controller.mailboxDashBoardController.selectedEmail.value?.id == newPresentationEmail.id,
-                  mailboxContain: mailboxContain,
+                  controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
+                  mailboxContain: currentPresentationEmail.mailboxContain,
                   isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
                   isDrag: true)
               ).build(),
               dragAnchorStrategy: pointerDragAnchorStrategy,
               onDragStarted: () {
-                controller.calculateDragValue(newPresentationEmail);
+                controller.calculateDragValue(currentPresentationEmail);
               },
             ));
           }),
@@ -500,7 +499,7 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   List<Widget> _contextMenuActionTile(BuildContext context, PresentationEmail email) {
-    final mailboxContain = controller.getMailboxContain(email);
+    final mailboxContain = email.mailboxContain;
 
     return <Widget>[
       _openInNewTabContextMenuItemAction(context, email),
@@ -565,7 +564,7 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   List<PopupMenuEntry> _popupMenuActionTile(BuildContext context, PresentationEmail email) {
-    final mailboxContain = controller.getMailboxContain(email);
+    final mailboxContain = email.mailboxContain;
 
     return [
       _buildOpenInNewTabPopupMenuItem(context, email, mailboxContain),
