@@ -1,5 +1,4 @@
 
-import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
@@ -25,7 +24,7 @@ extension EmailExtension on Email {
   }
 
   Set<String> getRecipientEmailAddressList() {
-    final listEmailAddress = Set<String>();
+    final listEmailAddress = <String>{};
     final listToAddress = to.getListAddress() ?? [];
     final listCcAddress = cc.getListAddress() ?? [];
     final listBccAddress = bcc.getListAddress() ?? [];
@@ -100,11 +99,7 @@ extension EmailExtension on Email {
       ?.where((emailBody) => emailBody.partId != null && emailBody.type != null)
       .toList() ?? <EmailBodyPart>[];
 
-    final mapHtmlBody = Map<PartId, MediaType>.fromIterable(
-      newHtmlBody,
-      key: (emailBody) => emailBody.partId!,
-      value: (emailBody) => emailBody.type!,
-    );
+    final mapHtmlBody = { for (var emailBody in newHtmlBody) emailBody.partId! : emailBody.type! };
 
     final emailContents = bodyValues?.entries
       .map((entries) => EmailContent(mapHtmlBody[entries.key].toEmailContentType(), entries.value.value))
