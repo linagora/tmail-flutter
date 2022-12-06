@@ -4,6 +4,7 @@ import 'dart:collection';
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/expand_mode.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 
 import 'mailbox_node.dart';
@@ -97,6 +98,22 @@ class MailboxTree with EquatableMixin {
       parentId = parentNode.item.parentId;
     }
     return path;
+  }
+
+  Map<Role, PresentationMailbox> get mapPresentationMailboxByRole {
+    if (root.childrenItems?.isEmpty == true) {
+      return {};
+    } else {
+      final listPresentationMailboxHasRole = root.childrenItems!
+        .where((node) => node.item.role != null)
+        .map((node) => node.item)
+        .toList();
+
+      return {
+        for (var mailbox in listPresentationMailboxHasRole)
+          mailbox.role!: mailbox
+      };
+    }
   }
 
   @override

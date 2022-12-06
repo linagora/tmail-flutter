@@ -329,7 +329,12 @@ class MailboxController extends BaseMailboxController {
   void _initialMailboxVariableStorage({bool isRefreshChange = false}) {
     _setMapMailbox();
     _setOutboxMailbox();
-    _selectMailboxDefault(isRefreshChange: isRefreshChange);
+
+    if (isRefreshChange) {
+      _selectSelectedMailboxDefault();
+    } else {
+      _handleDataFromNavigationRouter();
+    }
   }
 
   void _setMapMailbox() {
@@ -363,62 +368,63 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
-  void _selectMailboxDefault({bool isRefreshChange = false}) {
-    final mapDefaultMailbox = {
-      for (var mailboxNode in defaultMailboxTree.value.root.childrenItems ?? List<MailboxNode>.empty())
-        mailboxNode.item.role!: mailboxNode.item
-    };
+  void _selectSelectedMailboxDefault() {
+    final isSearchEmailRunning = mailboxDashBoardController.searchController.isSearchEmailRunning;
+    if (isSearchEmailRunning) {
+      log('MailboxController::_selectMailboxDefault(): isSearchEmailRunning is $isSearchEmailRunning');
+      return;
+    }
+    final mailboxSelected = _getCurrentSelectedMailbox();
+    mailboxDashBoardController.setSelectedMailbox(mailboxSelected);
+  }
+
+  PresentationMailbox? _getCurrentSelectedMailbox() {
     final mailboxCurrent = mailboxDashBoardController.selectedMailbox.value;
     final mapMailboxById = mailboxDashBoardController.mapMailboxById;
     final isSearchEmailRunning = mailboxDashBoardController.searchController.isSearchEmailRunning;
-
-    PresentationMailbox? mailboxSelected;
+    final mapDefaultPresentationMailboxByRole = defaultMailboxTree.value.mapPresentationMailboxByRole;
 
     if (mailboxCurrent != null) {
       if (mailboxCurrent.hasRole()) {
-        mailboxSelected = mapDefaultMailbox.containsKey(mailboxCurrent.role)
-          ? mapDefaultMailbox[mailboxCurrent.role]
+        return mapDefaultPresentationMailboxByRole.containsKey(mailboxCurrent.role)
+          ? mapDefaultPresentationMailboxByRole[mailboxCurrent.role]
           : mailboxCurrent;
       } else {
-        mailboxSelected = mapMailboxById.containsKey(mailboxCurrent.id)
+        return mapMailboxById.containsKey(mailboxCurrent.id)
           ? mapMailboxById[mailboxCurrent.id]
           : mailboxCurrent;
       }
-    } else {
-      if (!isSearchEmailRunning) {
-        if (mapDefaultMailbox.containsKey(PresentationMailbox.roleInbox)) {
-          mailboxSelected = mapDefaultMailbox[PresentationMailbox.roleInbox];
-        } else {
-          if (allMailboxes.isNotEmpty) {
-            mailboxSelected = allMailboxes.first;
-          }
-        }
+    } else if (!isSearchEmailRunning) {
+      if (mapDefaultPresentationMailboxByRole.containsKey(PresentationMailbox.roleInbox)) {
+        return mapDefaultPresentationMailboxByRole[PresentationMailbox.roleInbox];
+      } else if (allMailboxes.isNotEmpty) {
+        return allMailboxes.first;
       }
     }
 
-    if (isRefreshChange) {
-      mailboxDashBoardController.setSelectedMailbox(mailboxSelected);
-    } else {
-      if (isHasDataFromRoute) {
-        log('MailboxController::_selectMailboxDefault(): isHasDataFromRoute is true:navigationRouter: $navigationRouter');
-        if (mailboxIdFromNavigationRouter != null) {
-          _selectMailboxFromRouter();
-        } else if (emailIdFromNavigationRouter != null) {
-          mailboxDashBoardController.dispatchAction(SelectEmailByIdAction(navigationRouter!));
-          _clearNavigationRouter();
-        } else if (searchQueryFromNavigationRouter != null) {
-          mailboxDashBoardController.dispatchAction(SearchEmailByQueryAction(navigationRouter!));
-          _clearNavigationRouter();
-        } else {
-          _clearNavigationRouter();
-          mailboxDashBoardController.setSelectedMailbox(mailboxSelected);
-          _updateSelectedMailboxRouteOnBrowser();
-        }
+    return null;
+  }
+
+  void _handleDataFromNavigationRouter() {
+    log('MailboxController::_handleDataFromNavigationRouter():navigationRouter: $navigationRouter');
+
+    if (isHasDataFromRoute) {
+      if (mailboxIdFromNavigationRouter != null) {
+        _selectMailboxFromRouter();
+      } else if (emailIdFromNavigationRouter != null) {
+        mailboxDashBoardController.dispatchAction(SelectEmailByIdAction(navigationRouter!));
+        _clearNavigationRouter();
+      } else if (searchQueryFromNavigationRouter != null && searchQueryFromNavigationRouter?.value.isNotEmpty == true) {
+        mailboxDashBoardController.dispatchAction(SearchEmailByQueryAction(navigationRouter!));
+        _clearNavigationRouter();
       } else {
-        log('MailboxController::_selectMailboxDefault(): isHasDataFromRoute is false');
-        mailboxDashBoardController.setSelectedMailbox(mailboxSelected);
+        _clearNavigationRouter();
+        _selectSelectedMailboxDefault();
         _updateSelectedMailboxRouteOnBrowser();
       }
+    } else {
+      _selectSelectedMailboxDefault();
+      _updateSelectedMailboxRouteOnBrowser();
     }
   }
 
