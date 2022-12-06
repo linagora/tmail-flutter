@@ -384,6 +384,7 @@ class MailboxController extends BaseMailboxController {
           ? mapMailboxById[mailboxCurrent.id]
           : mailboxCurrent;
       }
+
     } else {
       if (!isSearchEmailRunning) {
         if (mapDefaultMailbox.containsKey(PresentationMailbox.roleInbox)) {
@@ -397,6 +398,7 @@ class MailboxController extends BaseMailboxController {
     }
 
     if (isRefreshChange) {
+      if(isSearchEmailRunning) return;
       mailboxDashBoardController.setSelectedMailbox(mailboxSelected);
     } else {
       if (isHasDataFromRoute) {
