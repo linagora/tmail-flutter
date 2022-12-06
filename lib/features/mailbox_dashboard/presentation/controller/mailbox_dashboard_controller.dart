@@ -89,6 +89,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
@@ -430,6 +431,17 @@ class MailboxDashBoardController extends ReloadableController {
 
   void clearSelectedEmail() {
     selectedEmail.value = null;
+  }
+
+  void openEmailDetailedView(PresentationEmail presentationEmail) {
+    setSelectedEmail(presentationEmail);
+    dispatchRoute(DashboardRoutes.emailDetailed);
+    if (BuildUtils.isWeb && presentationEmail.routeWeb != null) {
+      RouteUtils.updateRouteOnBrowser(
+        'Email-${presentationEmail.id.id.value}',
+        presentationEmail.routeWeb!
+      );
+    }
   }
 
   void openMailboxMenuDrawer() {
