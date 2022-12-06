@@ -421,30 +421,25 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             itemExtent: _getItemExtent(context),
             itemCount: listPresentationEmail.length,
             itemBuilder: (context, index) {
-              final mailboxContain = _getMailboxContain(listPresentationEmail[index]);
-              final newPresentationEmail = controller.generateEmailByPlatform(listPresentationEmail[index]);
+              final currentPresentationEmail = listPresentationEmail[index];
               return Obx(() => (EmailTileBuilder(
                     context,
-                    newPresentationEmail,
+                    currentPresentationEmail,
                     controller.selectionMode.value,
                     controller.searchQuery,
-                    controller.mailboxDashBoardController.selectedEmail.value?.id == newPresentationEmail.id,
+                    controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
                     isSearchEmailRunning: true,
                     padding: SearchEmailUtils.getPaddingSearchResultList(context, _responsiveUtils),
                     paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, _responsiveUtils),
-                    mailboxContain: mailboxContain)
+                    mailboxContain: currentPresentationEmail.mailboxContain)
                 ..addOnPressEmailActionClick((action, email) =>
-                    controller.pressEmailAction(context, action, email, mailboxContain: mailboxContain))
+                    controller.pressEmailAction(context, action, email, mailboxContain: currentPresentationEmail.mailboxContain))
                 ..addOnMoreActionClick((email, position) => _responsiveUtils.isScreenWithShortestSide(context)
                     ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
                     : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
               ).build());
             })
     );
-  }
-
-  PresentationMailbox? _getMailboxContain(PresentationEmail currentEmail) {
-    return currentEmail.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById);
   }
 
   double? _getItemExtent(BuildContext context) {
@@ -472,7 +467,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
-    final mailboxContain = _getMailboxContain(email);
+    final mailboxContain = email.mailboxContain;
 
     return (EmailActionCupertinoActionSheetActionBuilder(
         const Key('mark_as_spam_or_un_spam_action'),

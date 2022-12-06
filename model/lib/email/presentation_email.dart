@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 
 class PresentationEmail with EquatableMixin {
@@ -29,6 +30,7 @@ class PresentationEmail with EquatableMixin {
   final List<MailboxName?>? mailboxNames;
   final SelectMode selectMode;
   final Uri? routeWeb;
+  final PresentationMailbox? mailboxContain;
 
   PresentationEmail(
     this.id,
@@ -48,7 +50,8 @@ class PresentationEmail with EquatableMixin {
       this.mailboxIds,
       this.mailboxNames,
       this.selectMode = SelectMode.INACTIVE,
-      this.routeWeb
+      this.routeWeb,
+      this.mailboxContain
     }
   );
 
@@ -95,6 +98,7 @@ class PresentationEmail with EquatableMixin {
     mailboxIds,
     mailboxNames,
     selectMode,
-    routeWeb
+    routeWeb,
+    mailboxContain
   ];
 }
