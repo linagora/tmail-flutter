@@ -105,7 +105,7 @@ class EmailView extends GetWidget<SingleEmailController>
       const Divider(color: AppColor.colorDividerHorizontal, height: 1),
       Expanded(child: Obx(() {
         return controller.emailSupervisorController.supportedPageView.isTrue
-          ? _buildMultipleEmailView(controller.emailSupervisorController.listEmail)
+          ? _buildMultipleEmailView(controller.emailSupervisorController.currentListEmail)
           : _buildSingleEmailView(context, email);
       }),
       ),
@@ -196,21 +196,25 @@ class EmailView extends GetWidget<SingleEmailController>
       buildIconWeb(
         icon: SvgPicture.asset(
           imagePaths.icNewer,
-          color: controller.emailSupervisorController.canGetNewerEmail.value ? AppColor.primaryColor : AppColor.colorAttachmentIcon,
+          color: controller.emailSupervisorController.nextEmailActivated
+            ? AppColor.primaryColor
+            : AppColor.colorAttachmentIcon,
           width: IconUtils.defaultIconSize,
           height: IconUtils.defaultIconSize,
           fit: BoxFit.fill),
         tooltip: AppLocalizations.of(context).newer,
-        onTap: controller.emailSupervisorController.canGetNewerEmail.value ? controller.emailSupervisorController.getNewerEmail : null),
+        onTap: controller.emailSupervisorController.moveToNextEmail),
       buildIconWeb(
         icon: SvgPicture.asset(
           imagePaths.icOlder,
           width: IconUtils.defaultIconSize,
           height: IconUtils.defaultIconSize,
-          color: controller.emailSupervisorController.canGetOlderEmail.value ? AppColor.primaryColor : AppColor.colorAttachmentIcon,
+          color: controller.emailSupervisorController.previousEmailActivated
+            ? AppColor.primaryColor
+            : AppColor.colorAttachmentIcon,
           fit: BoxFit.fill),
         tooltip: AppLocalizations.of(context).older,
-        onTap: controller.emailSupervisorController.canGetOlderEmail.value ? controller.emailSupervisorController.getOlderEmail : null),
+        onTap: controller.emailSupervisorController.backToPreviousEmail),
     ];
   }
 
@@ -324,7 +328,7 @@ class EmailView extends GetWidget<SingleEmailController>
                                 constraints.maxWidth),
                           ),
                         )),
-                      _buildEmailReceivedTime(context),
+                      _buildEmailReceivedTime(context, presentationEmail),
                     ]),
                     if (presentationEmail.numberOfAllEmailAddress() > 0)
                       Obx(() => Row(
@@ -369,14 +373,14 @@ class EmailView extends GetWidget<SingleEmailController>
     });
   }
 
-  Widget _buildEmailReceivedTime(BuildContext context) {
+  Widget _buildEmailReceivedTime(BuildContext context, PresentationEmail presentationEmail) {
     return Container(
       constraints: const BoxConstraints(maxWidth: 100),
       color: Colors.transparent,
       child: Text(
-          '${controller.currentEmail?.getReceivedAt(
-              Localizations.localeOf(context).toLanguageTag(),
-              pattern: controller.currentEmail?.receivedAt?.value.toLocal().toPatternForEmailView())}',
+          presentationEmail.getReceivedAt(
+            Localizations.localeOf(context).toLanguageTag(),
+            pattern: presentationEmail.receivedAt?.value.toLocal().toPatternForEmailView()),
           maxLines: 1,
           overflow: CommonTextStyle.defaultTextOverFlow,
           softWrap: CommonTextStyle.defaultSoftWrap,
@@ -747,7 +751,7 @@ class EmailView extends GetWidget<SingleEmailController>
   }
 
   Widget _buildEmailContent(BuildContext context, BoxConstraints constraints, PresentationEmail email) {
-    if(email.id != controller.mailboxDashBoardController.selectedEmail.value?.id) {
+    if(email.id != controller.currentEmail?.id) {
       return const SizedBox.shrink();
     }
     return Obx(() {
