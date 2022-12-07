@@ -20,7 +20,7 @@ void main() async {
     await HiveCacheConfig().setUp();
     await HiveCacheConfig.initializeEncryptionKey();
     await Executor().warmUp();
-    AppUtils.loadEnvFile();
+    await AppUtils.loadEnvFile();
     runApp(const TMailApp());
   });
 }
