@@ -14,6 +14,7 @@ enum MailboxActions {
   move,
   markAsRead,
   selectForRuleAction,
+  openInNewTab
 }
 
 extension MailboxActionsExtension on MailboxActions {
@@ -35,6 +36,8 @@ extension MailboxActionsExtension on MailboxActions {
 
   String getTitleContextMenu(BuildContext context) {
     switch(this) {
+      case MailboxActions.openInNewTab:
+        return AppLocalizations.of(context).openInNewTab;
       case MailboxActions.markAsRead:
         return AppLocalizations.of(context).mark_as_read;
       case MailboxActions.move:
@@ -50,6 +53,8 @@ extension MailboxActionsExtension on MailboxActions {
 
   String getContextMenuIcon(ImagePaths imagePaths) {
     switch(this) {
+      case MailboxActions.openInNewTab:
+        return imagePaths.icOpenInNewTab;
       case MailboxActions.markAsRead:
         return imagePaths.icRead;
       case MailboxActions.move:
@@ -110,6 +115,8 @@ extension MailboxActionsExtension on MailboxActions {
 
   ContextMenuItemState getContextMenuItemState(PresentationMailbox mailbox) {
     switch(this) {
+      case MailboxActions.openInNewTab:
+        return ContextMenuItemState.activated;
       case MailboxActions.markAsRead:
         return mailbox.getCountUnReadEmails().isNotEmpty
             ? ContextMenuItemState.activated
