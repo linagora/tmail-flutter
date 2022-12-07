@@ -28,7 +28,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_t
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 mixin EmailActionController on ViewAsDialogActionMixin {
 
@@ -283,13 +283,6 @@ mixin EmailActionController on ViewAsDialogActionMixin {
   }
 
   void openEmailInNewTabAction(BuildContext context, PresentationEmail email) {
-    launchLink(email.routeWebAsString);
-  }
-
-  Future<void> launchLink(String url, {bool isNewTab = true}) async {
-    await launchUrl(
-      Uri.parse(url),
-      webOnlyWindowName: isNewTab ? '_blank' : '_self',
-    );
+    AppUtils.launchLink(email.routeWebAsString);
   }
 }
