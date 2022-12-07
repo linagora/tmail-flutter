@@ -43,60 +43,43 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       },
       child: Scaffold(
         drawerEnableOpenDragGesture: responsiveUtils.hasLeftMenuDrawerActive(context),
-        body: Stack(children: [
-          Obx(() {
-            switch(controller.dashboardRoute.value) {
-              case DashboardRoutes.thread:
-                return ResponsiveWidget(
-                    responsiveUtils: responsiveUtils,
-                    desktop: controller.searchController.isSearchEmailRunning
-                        ? EmailView()
-                        : bodyLandscapeTablet,
-                    tabletLarge: controller.searchController.isSearchEmailRunning
-                        ? EmailView()
-                        : bodyLandscapeTablet,
-                    landscapeTablet: controller.searchController.isSearchEmailRunning
-                        ? EmailView()
-                        : bodyLandscapeTablet,
-                    mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
-              case DashboardRoutes.emailDetailed:
-                return ResponsiveWidget(
-                    responsiveUtils: responsiveUtils,
-                    desktop: controller.searchController.isSearchEmailRunning
-                        ? EmailView()
-                        : bodyLandscapeTablet,
-                    tabletLarge: controller.searchController.isSearchEmailRunning
-                        ? EmailView()
-                        : bodyLandscapeTablet,
-                    landscapeTablet: controller.searchController.isSearchEmailRunning
-                        ? EmailView()
-                        : bodyLandscapeTablet,
-                    mobile: EmailView());
-              case DashboardRoutes.searchEmail:
-                return SafeArea(child: SearchEmailView());
-              case DashboardRoutes.waiting: 
-                return const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
-              default:
-                return ResponsiveWidget(
-                    responsiveUtils: responsiveUtils,
-                    desktop: controller.searchController.isSearchEmailRunning
-                        ? EmailView()
-                        : bodyLandscapeTablet,
-                    tabletLarge: controller.searchController.isSearchEmailRunning
-                        ? EmailView()
-                        : bodyLandscapeTablet,
-                    landscapeTablet: controller.searchController.isSearchEmailRunning
-                        ? EmailView()
-                        : bodyLandscapeTablet,
-                    mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
-            }
-          }),
-        ]),
+        body: Obx(() {
+          final bodyView = controller.searchController.isSearchEmailRunning
+            ? EmailView()
+            : bodyLandscapeTablet;
+          
+          switch(controller.dashboardRoute.value) {
+            case DashboardRoutes.thread:
+              return ResponsiveWidget(
+                  responsiveUtils: responsiveUtils,
+                  desktop: bodyView,
+                  tabletLarge: bodyView,
+                  landscapeTablet: bodyView,
+                  mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
+            case DashboardRoutes.emailDetailed:
+              return ResponsiveWidget(
+                  responsiveUtils: responsiveUtils,
+                  desktop: bodyView,
+                  tabletLarge: bodyView,
+                  landscapeTablet: bodyView,
+                  mobile: EmailView());
+            case DashboardRoutes.searchEmail:
+              return SafeArea(child: SearchEmailView());
+            case DashboardRoutes.waiting:
+              return const Center(
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
+            default:
+              return ResponsiveWidget(
+                  responsiveUtils: responsiveUtils,
+                  desktop: bodyView,
+                  tabletLarge: bodyView,
+                  landscapeTablet: bodyView,
+                  mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
+          }
+        }),
       ),
     );
   }
