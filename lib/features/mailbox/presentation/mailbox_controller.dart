@@ -71,6 +71,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:uuid/uuid.dart';
 
 class MailboxController extends BaseMailboxController {
@@ -1121,9 +1122,21 @@ class MailboxController extends BaseMailboxController {
       case MailboxActions.markAsRead:
         _markAsReadMailboxAction(context, mailbox);
         break;
+      case MailboxActions.openInNewTab:
+        openMailboxInNewTabAction(mailbox);
+        break;
       default:
         break;
     }
+  }
+
+  void openMailboxInNewTabAction(PresentationMailbox mailbox) {
+    final mailboxRouteWeb = RouteUtils.generateRouteBrowser(
+      AppRoutes.dashboard,
+      NavigationRouter(mailboxId: mailbox.id)
+    );
+    log('MailboxController::openMailboxInNewTabAction(): mailboxRouteWeb: $mailboxRouteWeb');
+    AppUtils.launchLink(mailboxRouteWeb.toString());
   }
 
   void _updateSelectedMailboxRouteOnBrowser() {
