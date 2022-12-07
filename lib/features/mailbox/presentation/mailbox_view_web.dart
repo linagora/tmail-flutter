@@ -401,6 +401,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
       PresentationMailbox mailbox
   ) {
     final mailboxActionsSupported = [
+      MailboxActions.openInNewTab,
       MailboxActions.markAsRead,
       MailboxActions.move,
       MailboxActions.rename,
