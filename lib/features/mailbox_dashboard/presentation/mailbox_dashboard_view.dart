@@ -1,6 +1,8 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:get/get.dart';
@@ -28,10 +30,14 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     );
 
     return FocusDetector(
-      onFocusGained: () {
+      onFocusGained: () async {
         ThemeUtils.setSystemDarkUIStyle();
         if (controller.isDrawerOpen) {
           ThemeUtils.setStatusBarTransparentColor();
+        }
+        if(await controller.haveLocalNotificationPress()) {
+          controller.popAllRouteIfHave();
+          controller.dispatchRoute(DashboardRoutes.waiting);
         }
         controller.refreshActionWhenBackToApp();
       },
@@ -68,6 +74,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     mobile: EmailView());
               case DashboardRoutes.searchEmail:
                 return SafeArea(child: SearchEmailView());
+              case DashboardRoutes.waiting: 
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
               default:
                 return ResponsiveWidget(
                     responsiveUtils: responsiveUtils,
