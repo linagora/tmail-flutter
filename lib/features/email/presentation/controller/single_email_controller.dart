@@ -156,6 +156,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
+  bool isListEmailContainSelectedEmail(PresentationEmail selectedEmail) {
+    return emailSupervisorController.currentListEmail.isNotEmpty 
+      && emailSupervisorController.currentListEmail.listEmailIds.contains(selectedEmail.id);
+  }
+
   void _unregisterListenerWorker() {
     accountIdWorker.dispose();
     selectedEmailWorker.dispose();
@@ -171,7 +176,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _updateCurrentEmailId(selectedEmail.id);
     _resetToOriginalValue();
 
-    if (emailSupervisorController.currentListEmail.isNotEmpty) {
+    if (isListEmailContainSelectedEmail(selectedEmail)) {
       _createMultipleEmailViewAsPageView(selectedEmail.id);
     } else {
       _createSingleEmailView(selectedEmail.id);
