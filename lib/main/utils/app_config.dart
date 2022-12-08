@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AppConfig {
@@ -13,12 +15,13 @@ class AppConfig {
   }
   static String appDashboardConfigurationPath = "configurations/app_dashboard.json";
   static bool get fcmAvailable {
-    final supported = dotenv.get('FCM_AVAILABLE', fallback: 'unsupported');
-    if (supported == 'supported') {
-      return true;
+    final supportedOtherPlatform = dotenv.get('FCM_AVAILABLE', fallback: 'unsupported');
+    final supportedIOSPlatform = dotenv.get('IOS_FCM', fallback: 'unsupported');
+    if (Platform.isIOS) {
+      return supportedIOSPlatform == 'supported';
+    } else {
+      return supportedOtherPlatform == 'supported';
     }
-    return false;
   }
   static String appFCMConfigurationPath = "configurations/env.fcm";
-
 }
