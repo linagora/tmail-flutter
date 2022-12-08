@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/multiple_view_date_range_picker.dart';
 import 'package:get/get.dart';
@@ -36,18 +37,14 @@ class AdvancedFilterController extends BaseController {
   final lastTextForm = ''.obs;
   final lastTextTo = ''.obs;
   TextEditingController subjectFilterInputController = TextEditingController();
-  TextEditingController hasKeyWordFilterInputController =
-      TextEditingController();
-  TextEditingController notKeyWordFilterInputController =
-      TextEditingController();
+  TextEditingController hasKeyWordFilterInputController = TextEditingController();
+  TextEditingController notKeyWordFilterInputController = TextEditingController();
   TextEditingController dateFilterInputController = TextEditingController();
   TextEditingController mailBoxFilterInputController = TextEditingController();
-  ContactSuggestionSource _contactSuggestionSource =
-      ContactSuggestionSource.tMailContact;
+  ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
 
   final SearchController searchController = Get.find<SearchController>();
-  final MailboxDashBoardController _mailboxDashBoardController =
-      Get.find<MailboxDashBoardController>();
+  final MailboxDashBoardController _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
 
@@ -129,8 +126,7 @@ class AdvancedFilterController extends BaseController {
     }
 
     searchController.updateFilterEmail(
-      subject:
-          StringConvert.writeEmptyToNull(subjectFilterInputController.text),
+      subjectOption: optionOf(subjectFilterInputController.text),
       emailReceiveTimeType: dateFilterSelectedFormAdvancedSearch.value,
       hasAttachment: hasAttachment.value,
       endDate: _endDate.toUTCDate(),
