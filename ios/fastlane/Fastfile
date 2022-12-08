@@ -55,7 +55,7 @@ platform :ios do
       export_options: {
         provisioningProfiles: {
           "com.linagora.ios.teammail": "tmail.development.profile",
-          "com.linagora.ios.teammail.TeamMailShareExtension": "tmail.ext.ios.development.provisioning.profile"
+          "com.linagora.ios.teammail.TeamMailShareExtension": "tmail.share.ext.development.profile"
         }
       }
     )
