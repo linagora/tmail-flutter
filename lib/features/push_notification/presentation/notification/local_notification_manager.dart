@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:core/presentation/extensions/html_extension.dart';
@@ -19,8 +20,15 @@ class LocalNotificationManager {
   final _localNotificationsPlugin = FlutterLocalNotificationsPlugin();
   bool notificationsEnabled = false;
 
+  final StreamController<NotificationResponse> localNotificationsController = StreamController<NotificationResponse>.broadcast();
+  
+  Stream<NotificationResponse> get localNotificationStream => localNotificationsController.stream;
+
+  NotificationAppLaunchDetails? _notificationAppLaunchDetails;
+
   Future<void> setUp() async {
     try {
+      _notificationAppLaunchDetails = await _localNotificationsPlugin.getNotificationAppLaunchDetails();
       await _initLocalNotification();
       _checkLocalNotificationPermission();
       if (Platform.isAndroid) {
@@ -30,6 +38,19 @@ class LocalNotificationManager {
     } catch (e) {
       logError('LocalNotificationManager::setUp(): ERROR: ${e.toString()}');
     }
+  }
+
+  bool get isOpenAppByNotification => _notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
+
+  bool get isLocalNotificationStreamClosed => localNotificationsController.isClosed;
+
+  String? getEmailIdFromNotification() {
+    if(_notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+      log('LocalNotificationManager::handleNotificationAppLaunch(): ${_notificationAppLaunchDetails!.notificationResponse}');
+      final selectedNotificationPayload = _notificationAppLaunchDetails!.notificationResponse?.payload;
+      return selectedNotificationPayload;
+    }
+    return null;
   }
 
   Future<bool?> _initLocalNotification() async {
@@ -43,7 +64,10 @@ class LocalNotificationManager {
   }
 
   void _handleReceiveNotificationResponse(NotificationResponse response) {
-    log('LocalNotificationManager::handleReceiveNotificationResponse(): $response');
+    log('LocalNotificationManager::handleReceiveNotificationResponse(): ${response.payload}');
+    if(response.notificationResponseType == NotificationResponseType.selectedNotification) {
+      localNotificationsController.add(response);
+    }
   }
 
   void _checkLocalNotificationPermission() async {
@@ -138,5 +162,13 @@ class LocalNotificationManager {
         ),
       );
     }
+  }
+
+  void _closeStream() {
+    localNotificationsController.close();
+  }
+
+  void dispose() {
+    _closeStream();
   }
 }
