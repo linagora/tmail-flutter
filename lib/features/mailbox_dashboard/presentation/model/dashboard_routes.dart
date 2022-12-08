@@ -2,5 +2,6 @@
 enum DashboardRoutes {
   thread,
   emailDetailed,
-  searchEmail
+  searchEmail,
+  waiting
 }

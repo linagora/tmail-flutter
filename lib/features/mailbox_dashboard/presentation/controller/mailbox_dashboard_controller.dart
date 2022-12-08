@@ -4,11 +4,13 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -73,14 +75,18 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
@@ -116,6 +122,7 @@ class MailboxDashBoardController extends ReloadableController {
   final MoveMultipleEmailToMailboxInteractor _moveMultipleEmailToMailboxInteractor;
   final EmptyTrashFolderInteractor _emptyTrashFolderInteractor;
   final DeleteMultipleEmailsPermanentlyInteractor _deleteMultipleEmailsPermanentlyInteractor;
+  final GetEmailByIdInteractor _getEmailByIdInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -130,7 +137,7 @@ class MailboxDashBoardController extends ReloadableController {
   final accountId = Rxn<AccountId>();
   final userProfile = Rxn<UserProfile>();
   final dashBoardAction = Rxn<UIAction>();
-  final dashboardRoute = DashboardRoutes.thread.obs;
+  final dashboardRoute = DashboardRoutes.waiting.obs;
   final appInformation = Rxn<PackageInfo>();
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final filterMessageOption = FilterMessageOption.all.obs;
@@ -173,6 +180,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._moveMultipleEmailToMailboxInteractor,
     this._emptyTrashFolderInteractor,
     this._deleteMultipleEmailsPermanentlyInteractor,
+    this._getEmailByIdInteractor,
   ) : super(logoutOidcInteractor,
       deleteAuthorityOidcInteractor,
       getAuthenticatedAccountInteractor);
@@ -189,6 +197,7 @@ class MailboxDashBoardController extends ReloadableController {
     _registerPendingFileInfo();
     _getSessionCurrent();
     _getAppVersion();
+    _handleOpenAppByNotification();
     super.onReady();
   }
 
@@ -259,7 +268,8 @@ class MailboxDashBoardController extends ReloadableController {
           clearState();
         } else if (failure is SaveEmailAsDraftsFailure
             || failure is RemoveEmailDraftsFailure
-            || failure is UpdateEmailDraftsFailure) {
+            || failure is UpdateEmailDraftsFailure
+            || failure is GetEmailByIdFailure) {
           clearState();
         } else if (failure is MarkAsMailboxReadAllFailure ||
             failure is MarkAsMailboxReadFailure) {
@@ -307,6 +317,8 @@ class MailboxDashBoardController extends ReloadableController {
           _deleteMultipleEmailsPermanentlySuccess(success);
         } else if (success is GetAppDashboardConfigurationSuccess) {
           appGridDashboardController.handleShowAppDashboard(success.linagoraApplications);
+        } else if(success is GetEmailByIdSuccess) {
+          _moveToEmailDetailedView(success);
         }
       }
     );
@@ -351,6 +363,19 @@ class MailboxDashBoardController extends ReloadableController {
     _refreshActionEventController.stream
       .debounceTime(const Duration(milliseconds: FcmService.durationMessageComing))
       .listen(_handleRefreshActionWhenBackToApp);
+    
+    LocalNotificationManager.instance.localNotificationStream.listen(_handleLocalNotificationResponse);
+  }
+
+  void _handleOpenAppByNotification() async {
+    log("_handleOpenAppByNotification(): isOpenAppByNotification: ${LocalNotificationManager.instance.isOpenAppByNotification}");
+    await LocalNotificationManager.instance.setUp();
+    if(LocalNotificationManager.instance.isOpenAppByNotification) {
+      final emailId = EmailId(Id(LocalNotificationManager.instance.getEmailIdFromNotification()!));
+      _getPresentationEmailFromEmailId(emailId);
+    } else {
+      dispatchRoute(DashboardRoutes.thread);
+    }
   }
 
   void _getUserProfile() async {
@@ -1342,6 +1367,36 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
+  Future<bool> haveLocalNotificationPress() async {
+    return !(await LocalNotificationManager.instance.localNotificationStream.isEmpty);
+  }
+
+  void _handleLocalNotificationResponse(NotificationResponse response) {
+    if(response.payload != null) {
+      final emailId = EmailId(Id(response.payload!));
+      _getPresentationEmailFromEmailId(emailId);
+    }
+  }
+
+  void _getPresentationEmailFromEmailId(EmailId emailId) {
+    if(accountId.value != null) {
+      log('MailboxDashBoardController: _getPresentationEmailFromEmailId: $emailId');
+      consumeState(_getEmailByIdInteractor.execute(accountId.value!, emailId, properties: ThreadConstants.propertiesDefault));
+    }
+  }
+
+  void _moveToEmailDetailedView(GetEmailByIdSuccess success) async {
+    log('MailboxDashBoardController::_moveToEmailDetailedView(): ${success.email}');
+    setSelectedEmail(success.email);
+    dispatchRoute(DashboardRoutes.emailDetailed);
+    // move to inbox so that user can back to inbox view
+    dispatchAction(ClearSearchEmailAction());
+  }
+
+  void popAllRouteIfHave() {
+    Get.until((route) => Get.currentRoute == AppRoutes.dashboard);
+  }
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
@@ -1351,6 +1406,7 @@ class MailboxDashBoardController extends ReloadableController {
     _refreshActionEventController.close();
     Get.delete<DownloadController>();
     FcmController.instance.dispose();
+    LocalNotificationManager.instance.dispose();
     super.onClose();
   }
 }
