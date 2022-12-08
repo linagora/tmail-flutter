@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -119,7 +120,7 @@ class SearchController extends BaseController {
     Set<String>? from,
     Set<String>? to,
     SearchQuery? text,
-    String? subject,
+    Option<String>? subjectOption,
     Set<String>? notKeyword,
     PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
@@ -132,7 +133,7 @@ class SearchController extends BaseController {
       from: from,
       to: to,
       text: text,
-      subject: subject,
+      subjectOption: subjectOption,
       notKeyword: notKeyword,
       mailbox: mailbox,
       emailReceiveTimeType: emailReceiveTimeType,

@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
@@ -46,7 +47,7 @@ class SearchEmailFilter with EquatableMixin {
     Set<String>? from,
     Set<String>? to,
     SearchQuery? text,
-    String? subject,
+    Option<String>? subjectOption,
     Set<String>? notKeyword,
     PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
@@ -59,7 +60,7 @@ class SearchEmailFilter with EquatableMixin {
       from: from ?? this.from,
       to: to ?? this.to,
       text: text ?? this.text,
-      subject: subject ?? this.subject,
+      subject: _getOptionParam(subjectOption, subject),
       notKeyword: notKeyword ?? this.notKeyword,
       mailbox: mailbox ?? this.mailbox,
       emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
@@ -68,6 +69,14 @@ class SearchEmailFilter with EquatableMixin {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
     );
+  }
+
+  T? _getOptionParam<T>(Option<T?>? option, T? defaultValue) {
+    if (option != null) {
+      return option.toNullable();
+    } else {
+      return defaultValue;
+    }
   }
 
   Filter? mappingToEmailFilterCondition({EmailFilterCondition? moreFilterCondition}) {
