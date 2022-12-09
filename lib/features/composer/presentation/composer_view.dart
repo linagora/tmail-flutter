@@ -354,6 +354,8 @@ class ComposerView extends GetWidget<ComposerController>
                       controller.listEmailAddressType,
                       expandMode: controller.toAddressExpandMode.value,
                       controller: controller.toEmailAddressController,
+                      focusNode: controller.toAddressFocusNode,
+                      autoDisposeFocusNode: false,
                       isInitial: controller.isInitialRecipient.value)
                   ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                   ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
@@ -431,6 +433,7 @@ class ComposerView extends GetWidget<ComposerController>
                       ..key(const Key('subject_email_input'))
                       ..cursorColor(AppColor.colorTextButton)
                       ..maxLines(responsiveUtils.isMobile(context) ? null : 1)
+                      ..addFocusNode(controller.subjectEmailInputFocusNode)
                       ..onChange((value) => controller.setSubjectEmail(value))
                       ..textStyle(const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.normal))
                       ..textDecoration(const InputDecoration(contentPadding: EdgeInsets.zero, border: InputBorder.none))
