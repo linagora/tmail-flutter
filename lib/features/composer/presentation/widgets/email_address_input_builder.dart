@@ -31,6 +31,8 @@ class EmailAddressInputBuilder {
   final List<PrefixEmailAddress> _listEmailAddressType;
   final TextEditingController? controller;
   final bool? isInitial;
+  final FocusNode? focusNode;
+  final bool autoDisposeFocusNode;
 
   List<EmailAddress> listEmailAddress = <EmailAddress>[];
 
@@ -76,6 +78,8 @@ class EmailAddressInputBuilder {
     {
       this.isInitial,
       this.controller,
+      this.focusNode,
+      this.autoDisposeFocusNode = true,
       this.expandMode = ExpandMode.EXPAND,
     }
   );
@@ -127,12 +131,14 @@ class EmailAddressInputBuilder {
           child: TagEditor<SuggestionEmailAddress>(
             length: newListEmailAddress.length,
             controller: controller,
+            focusNode: focusNode,
+            autoDisposeFocusNode: autoDisposeFocusNode,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
             hasAddButton: false,
             tagSpacing: 8,
             delimiters: const [' '],
-            autofocus: _prefixEmailAddress != PrefixEmailAddress.to,
+            autofocus: _prefixEmailAddress != PrefixEmailAddress.to && listEmailAddress.isEmpty,
             minTextFieldWidth: 20,
             resetTextOnSubmitted: true,
             suggestionsBoxElevation: _suggestionBoxRadius,
