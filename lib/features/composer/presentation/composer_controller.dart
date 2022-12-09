@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
@@ -115,6 +114,9 @@ class ComposerController extends BaseController {
   final ccEmailAddressController = TextEditingController();
   final bccEmailAddressController = TextEditingController();
 
+  FocusNode? subjectEmailInputFocusNode;
+  FocusNode? toAddressFocusNode;
+
   final RichTextController keyboardRichTextController = RichTextController();
 
   final ScrollController scrollController = ScrollController();
@@ -183,6 +185,7 @@ class ComposerController extends BaseController {
   @override
   void onInit() {
     super.onInit();
+    createFocusNodeInput();
     _listenWorker();
     if (!BuildUtils.isWeb) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -216,6 +219,10 @@ class ComposerController extends BaseController {
 
   @override
   void dispose() {
+    subjectEmailInputFocusNode?.dispose();
+    subjectEmailInputFocusNode = null;
+    toAddressFocusNode?.dispose();
+    toAddressFocusNode = null;
     subjectEmailInputController.dispose();
     toEmailAddressController.dispose();
     ccEmailAddressController.dispose();
@@ -252,14 +259,7 @@ class ComposerController extends BaseController {
         } else if (success is GetEmailContentSuccess) {
           _getEmailContentSuccess(success);
         } else if (success is GetAllIdentitiesSuccess) {
-          if (success.identities?.isNotEmpty == true) {
-            listIdentities.value = success.identities!
-                .where((identity) => identity.mayDelete == true)
-                .toList();
-            if (listIdentities.isNotEmpty) {
-              selectIdentity(listIdentities.first);
-            }
-          }
+          _handleGetAllIdentitiesSuccess(success);
         } else if (success is DownloadImageAsBase64Success) {
           if(kIsWeb) {
             richTextWebController.insertImage(
@@ -305,6 +305,11 @@ class ComposerController extends BaseController {
     });
   }
 
+  void createFocusNodeInput() {
+    toAddressFocusNode = FocusNode();
+    subjectEmailInputFocusNode = FocusNode();
+  }
+
   void _initEmail() {
     final arguments = kIsWeb ? mailboxDashBoardController.routerArguments : Get.arguments;
     if (arguments is ComposerArguments) {
@@ -321,6 +326,8 @@ class ComposerController extends BaseController {
       _initSubjectEmail(arguments);
       _initAttachments(arguments);
     }
+
+    _autoFocusFieldWhenLauncher();
   }
 
   void _initSubjectEmail(ComposerArguments arguments) {
@@ -348,6 +355,20 @@ class ComposerController extends BaseController {
     if (accountId != null) {
       consumeState(_getAllIdentitiesInteractor.execute(accountId));
     }
+  }
+
+  void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) async {
+    if (success.identities?.isNotEmpty == true) {
+      listIdentities.value = success.identities!
+        .where((identity) => identity.mayDelete == true)
+        .toList();
+
+      if (listIdentities.isNotEmpty) {
+        await selectIdentity(listIdentities.first);
+      }
+    }
+
+    _autoFocusFieldWhenLauncher();
   }
 
   String? getContentEmail(BuildContext context) {
@@ -1076,8 +1097,10 @@ class ComposerController extends BaseController {
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) {
     FocusManager.instance.primaryFocus?.unfocus();
+    createFocusNodeInput();
     _updateTextForEditor();
     screenDisplayMode.value = displayMode;
+    _autoFocusFieldWhenLauncher();
   }
 
   void _updateTextForEditor() async {
@@ -1174,13 +1197,13 @@ class ComposerController extends BaseController {
     }
   }
 
-  void selectIdentity(Identity? newIdentity) {
+  Future<void> selectIdentity(Identity? newIdentity) async {
     final formerIdentity = identitySelected.value;
     identitySelected.value = newIdentity;
     if (newIdentity != null) {
-      _applyIdentityForAllFieldComposer(formerIdentity, newIdentity);
-      FocusManager.instance.primaryFocus?.unfocus();
+      await _applyIdentityForAllFieldComposer(formerIdentity, newIdentity);
     }
+    return Future.value(null);
   }
 
   bool get _isMobileApp {
@@ -1189,7 +1212,10 @@ class ComposerController extends BaseController {
         && _responsiveUtils.isMobile(currentContext!);
   }
 
-  void _applyIdentityForAllFieldComposer(Identity? formerIdentity, Identity newIdentity) {
+  Future<void> _applyIdentityForAllFieldComposer(
+    Identity? formerIdentity,
+    Identity newIdentity
+  ) async {
     if (formerIdentity != null) {
       // Remove former identity
       if (formerIdentity.bcc?.isNotEmpty == true) {
@@ -1203,7 +1229,7 @@ class ComposerController extends BaseController {
 
     // Add new identity
     if (newIdentity.bcc?.isNotEmpty == true) {
-      _applyBccEmailAddressFromIdentity(newIdentity.bcc!);
+      await _applyBccEmailAddressFromIdentity(newIdentity.bcc!);
     }
 
     if (!_isMobileApp) {
@@ -1213,9 +1239,11 @@ class ComposerController extends BaseController {
         _applySignature(newIdentity.textSignature!);
       }
     }
+
+    return Future.value(null);
   }
 
-  void _applyBccEmailAddressFromIdentity(Set<EmailAddress> listEmailAddress) {
+  Future<void> _applyBccEmailAddressFromIdentity(Set<EmailAddress> listEmailAddress) {
     if (!listEmailAddressType.contains(PrefixEmailAddress.bcc)) {
       listEmailAddressType.add(PrefixEmailAddress.bcc);
     }
@@ -1224,6 +1252,8 @@ class ComposerController extends BaseController {
     ccAddressExpandMode.value = ExpandMode.COLLAPSE;
     bccAddressExpandMode.value = ExpandMode.COLLAPSE;
     _updateStatusEmailSendButton();
+
+    return Future.value(null);
   }
 
   void _removeBccEmailAddressFromFormerIdentity(Set<EmailAddress> listEmailAddress) {
@@ -1368,4 +1398,18 @@ class ComposerController extends BaseController {
     hasRequestReadReceipt.toggle();
   }
 
+  void _autoFocusFieldWhenLauncher() {
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (listToEmailAddress.isEmpty) {
+      toAddressFocusNode?.requestFocus();
+    } else if (subjectEmailInputController.text.isEmpty) {
+      subjectEmailInputFocusNode?.requestFocus();
+    } else if (BuildUtils.isWeb) {
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        richTextWebController.editorController.setFocus
+      );
+    }
+  }
 }
