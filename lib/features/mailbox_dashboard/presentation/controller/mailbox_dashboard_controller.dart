@@ -1385,7 +1385,7 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void _moveToEmailDetailedView(GetEmailByIdSuccess success) async {
+  void _moveToEmailDetailedView(GetEmailByIdSuccess success) {
     log('MailboxDashBoardController::_moveToEmailDetailedView(): ${success.email}');
     setSelectedEmail(success.email);
     dispatchRoute(DashboardRoutes.emailDetailed);
