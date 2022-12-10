@@ -39,8 +39,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>FirebaseMessagingAutoInitEnabled</key>
-	<false/>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<string>0</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>https</string>
