@@ -133,8 +133,8 @@ class LocalNotificationManager {
 
     await _localNotificationsPlugin.show(
       id.hashCode,
-      null,
-      null,
+      title,
+      message,
       LocalNotificationConfig.instance.generateNotificationDetails(styleInformation: inboxStyleInformation),
       payload: payload
     );
