@@ -1228,7 +1228,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "name": "Имя",
+  "name": "Название",
   "@name": {
     "type": "text",
     "placeholders_order": [],
