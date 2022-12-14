@@ -2469,7 +2469,7 @@
       "subject": {}
     }
   },
-  "textBodySendReceiptToSender": "Il messaggio è stato letto da {sender} il {time} \n\nOggetto: {subject} \n\nNota: questa notifica conferma solo che il messaggio è stato visualizzato sul computer del destinatario. Non vi è alcuna garanzia che il destinatario abbia letto o compreso il contenuto del messaggio.",
+  "textBodySendReceiptToSender": "Il messaggio è stato letto da {receiver} il {time} \n\nOggetto: {subject} \n\nNota: questa notifica conferma solo che il messaggio è stato visualizzato sul computer del destinatario. Non vi è alcuna garanzia che il destinatario abbia letto o compreso il contenuto del messaggio.",
   "@textBodySendReceiptToSender": {
     "type": "text",
     "placeholders_order": [
