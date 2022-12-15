@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AppConfig {
@@ -17,6 +18,7 @@ class AppConfig {
   static bool get fcmAvailable {
     final supportedOtherPlatform = dotenv.get('FCM_AVAILABLE', fallback: 'unsupported');
     final supportedIOSPlatform = dotenv.get('IOS_FCM', fallback: 'unsupported');
+    if (kIsWeb) return supportedOtherPlatform == 'supported';
     if (Platform.isIOS) {
       return supportedIOSPlatform == 'supported';
     } else {
