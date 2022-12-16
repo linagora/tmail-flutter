@@ -2035,7 +2035,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keepLocalCopyForwardLabel": "Conserva copia locale",
+  "keepLocalCopyForwardLabel": "Conserva una copia dell'e-mail nella Posta in arrivo",
   "@keepLocalCopyForwardLabel": {
     "type": "text",
     "placeholders_order": [],
@@ -2221,7 +2221,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteRecipient": "Eliminare destinatario",
+  "deleteRecipient": "Eliminare destinatari",
   "@deleteRecipient": {
     "type": "text",
     "placeholders_order": [],
@@ -2305,7 +2305,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteAllRecipientForward": "Vuoi eliminare tutte le email?",
+  "messageConfirmationDialogDeleteAllRecipientForward": "Sei sicuro di voler rimuovere quei destinatari? In questo modo li rimuoverai dallo scambio di lettere.",
   "@messageConfirmationDialogDeleteAllRecipientForward": {
     "type": "text",
     "placeholders_order": [],
@@ -2517,6 +2517,140 @@
   },
   "createNewMailbox": "Crea nuova casella di posta",
   "@createNewMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintInputAutocompleteContact": "Inserisci il nome o l'indirizzo email",
+  "@hintInputAutocompleteContact": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newer": "Più nuovo",
+  "@newer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "older": "Più vecchio",
+  "@older": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardingSettingExplanation": "Lascia a un nuovo destinatario di vedere l'e-mail inviata se non era originariamente incluso nello scambio di lettere.",
+  "@forwardingSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addRecipientButton": "Aggiungi il destinatario",
+  "@addRecipientButton": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "incorrectEmailFormat": "Formato e-mail non valido",
+  "@incorrectEmailFormat": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "remove": "Rimuovere",
+  "@remove": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "totalEmailSelected": "Deselezionare tutto ({count})",
+  "@totalEmailSelected": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "storageQuotas": "Spazio",
+  "@storageQuotas": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasUsed": "{used} GB di {softLimit} GB utilizzati",
+  "@textQuotasUsed": {
+    "type": "text",
+    "placeholders_order": [
+      "used",
+      "softLimit"
+    ],
+    "placeholders": {
+      "used": {},
+      "softLimit": {}
+    }
+  },
+  "textQuotasRunningOutOfStorageTitle": "Stai esaurendo lo spazio di archiviazione ({progress}%).",
+  "@textQuotasRunningOutOfStorageTitle": {
+    "type": "text",
+    "placeholders_order": [
+      "progress"
+    ],
+    "placeholders": {
+      "progress": {}
+    }
+  },
+  "textQuotasOutOfStorage": "Spazio esaurito",
+  "@textQuotasOutOfStorage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasRunOutOfStorageTitle": "Hai esaurito lo spazio di archiviazione",
+  "@textQuotasRunOutOfStorageTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasRunningOutOfStorageContent": "A breve non potrai più inviare email in Team Mail. Pulisci il tuo spazio di archiviazione o aggiornalo per ottenere tutte le funzionalità di Team Mail.",
+  "@textQuotasRunningOutOfStorageContent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasRunOutOfStorageContent": "Ora non puoi temporaneamente inviare o ricevere e-mail.  Libera o aggiorna il tuo spazio di archiviazione per ottenere tutte le funzionalità di Team Mail.",
+  "@textQuotasRunOutOfStorageContent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quickCreatingRule": "Crea una regola con questa email",
+  "@quickCreatingRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titlePageNotFound": "Spiacenti, non riusciamo a trovare questa pagina",
+  "@titlePageNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subTitlePageNotFound": "È possibile che questa pagina sia scomparsa o appartenga a un altro account.",
+  "@subTitlePageNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "page404": "Pagina 404",
+  "@page404": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openInNewTab": "Apri in una nuova scheda",
+  "@openInNewTab": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
