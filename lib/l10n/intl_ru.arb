@@ -1978,7 +1978,7 @@
       "endDate": {}
     }
   },
-  "deleteRecipient": "Удалить получателя",
+  "deleteRecipient": "Удалить получателей",
   "@deleteRecipient": {
     "type": "text",
     "placeholders_order": [],
@@ -2108,7 +2108,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keepLocalCopyForwardLabel": "Оставить локальную копию",
+  "keepLocalCopyForwardLabel": "Сохраните копию письма в папке «Входящие»",
   "@keepLocalCopyForwardLabel": {
     "type": "text",
     "placeholders_order": [],
@@ -2210,7 +2210,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteAllRecipientForward": "Вы хотите удалить все адреса?",
+  "messageConfirmationDialogDeleteAllRecipientForward": "Вы уверены, что хотите удалить этих получателей? Это действие удалит их из переписки.",
   "@messageConfirmationDialogDeleteAllRecipientForward": {
     "type": "text",
     "placeholders_order": [],
@@ -2518,6 +2518,140 @@
   },
   "createNewMailbox": "Создать новый почтовый ящик",
   "@createNewMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "older": "К старым",
+  "@older": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "remove": "Удалить",
+  "@remove": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "totalEmailSelected": "Отменить выбор всех ({count})",
+  "@totalEmailSelected": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "textQuotasUsed": "Использовано {used} ГБ из {softLimit} ГБ",
+  "@textQuotasUsed": {
+    "type": "text",
+    "placeholders_order": [
+      "used",
+      "softLimit"
+    ],
+    "placeholders": {
+      "used": {},
+      "softLimit": {}
+    }
+  },
+  "textQuotasRunOutOfStorageContent": "Теперь вы временно не можете отправлять или получать письма. Пожалуйста, освободите хранилище или обновите подписку, чтобы получить доступ ко всем функциям Team Mail.",
+  "@textQuotasRunOutOfStorageContent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintInputAutocompleteContact": "Введите имя или адрес электронной почты",
+  "@hintInputAutocompleteContact": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quickCreatingRule": "Создать правило с этим адресом электронной почты",
+  "@quickCreatingRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titlePageNotFound": "Ой, мы не можем найти эту страницу",
+  "@titlePageNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subTitlePageNotFound": "Возможно, эта страница была удалена или принадлежит другому аккаунту.",
+  "@subTitlePageNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newer": "К новым",
+  "@newer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addRecipientButton": "Добавить получателя",
+  "@addRecipientButton": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "incorrectEmailFormat": "Неверный формат электронной почты",
+  "@incorrectEmailFormat": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardingSettingExplanation": "Позволяет новому получателю увидеть отправленное письмо, если он изначально не был включен в переписку.",
+  "@forwardingSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storageQuotas": "Хранилище",
+  "@storageQuotas": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasRunningOutOfStorageTitle": "Вы приближаетесь к лимиту хранилища ({progress}%).",
+  "@textQuotasRunningOutOfStorageTitle": {
+    "type": "text",
+    "placeholders_order": [
+      "progress"
+    ],
+    "placeholders": {
+      "progress": {}
+    }
+  },
+  "textQuotasRunningOutOfStorageContent": "Скоро вы потеряете возможность отправлять письма в Team Mail. Пожалуйста, очистите хранилище или обновите подписку, чтобы получить все функции Team Mail.",
+  "@textQuotasRunningOutOfStorageContent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasOutOfStorage": "Достигнут лимит хранилища",
+  "@textQuotasOutOfStorage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasRunOutOfStorageTitle": "Вы достигли лимита хранилища",
+  "@textQuotasRunOutOfStorageTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "page404": "Страница 404",
+  "@page404": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openInNewTab": "Открыть в новой вкладке",
+  "@openInNewTab": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
