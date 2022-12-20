@@ -58,6 +58,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   String? _htmlData;
   late WebViewController _webViewController;
   bool _isLoading = true;
+  bool horizontalGestureActivated = false;
 
   @override
   void initState() {
@@ -114,7 +115,10 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       navigationDelegate: _onNavigation,
       gestureRecognizers: {
         Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
-        Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
+        if (Platform.isIOS && horizontalGestureActivated)
+          Factory<HorizontalDragGestureRecognizer>(() => HorizontalDragGestureRecognizer()),
+        if (Platform.isAndroid)
+          Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
       },
       javascriptChannels: {
         JavascriptChannel(
@@ -122,14 +126,11 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
           onMessageReceived: _onHandleScrollEvent
         )
       },
-      gestureNavigationEnabled: true,
-      debuggingEnabled: true,
     );
   }
 
   void _onPageFinished(String url) async {
     await Future.wait([
-      _webViewController.runJavascript(HtmlUtils.runScriptsHandleScrollEvent),
       _setActualHeightView(),
       _setActualWidthView(),
     ]);
@@ -183,6 +184,18 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       if (scrollWidth != null && offsetWidth != null && mounted) {
         final isScrollActivated = scrollWidth.round() == offsetWidth.round();
         log('_HtmlContentViewState::_setActualWidthView():isScrollActivated: $isScrollActivated');
+        if (isScrollActivated) {
+          setState(() {
+            horizontalGestureActivated = false;
+          });
+        } else {
+          setState(() {
+            horizontalGestureActivated = true;
+          });
+
+          await _webViewController.runJavascript(HtmlUtils.runScriptsHandleScrollEvent);
+        }
+
         widget.onWebViewLoaded?.call(isScrollActivated);
       }
     }
