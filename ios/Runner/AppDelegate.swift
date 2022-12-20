@@ -20,7 +20,8 @@ import flutter_local_notifications
         }
         
         GeneratedPluginRegistrant.register(with: self)
-        
+        UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60 * 15))
+
         FlutterDownloaderPlugin.setPluginRegistrantCallback { registry in
             if (!registry.hasPlugin("FlutterDownloaderPlugin")) {
                 FlutterDownloaderPlugin.register(with: registry.registrar(forPlugin: "FlutterDownloaderPlugin")!)

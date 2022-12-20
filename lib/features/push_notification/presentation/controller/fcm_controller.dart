@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:collection/collection.dart';
@@ -33,7 +32,13 @@ import 'package:tmail_ui_user/features/push_notification/presentation/services/f
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
+import 'package:tmail_ui_user/main/bindings/core/core_bindings.dart';
+import 'package:tmail_ui_user/main/bindings/credential/credential_bindings.dart';
+import 'package:tmail_ui_user/main/bindings/local/local_bindings.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
+import 'package:tmail_ui_user/main/bindings/network/network_bindings.dart';
+import 'package:tmail_ui_user/main/bindings/network_connection/network_connection_bindings.dart';
+import 'package:tmail_ui_user/main/bindings/session/session_bindings.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class FcmController extends BaseController {
@@ -62,18 +67,22 @@ class FcmController extends BaseController {
   void _listenFcmMessageStream() {
     log('FcmController::_listenFcmMessageStream():');
     FcmService.instance.foregroundMessageStream
-      .throttleTime(const Duration(milliseconds: FcmService.durationMessageComing))
-      .listen(_handleForegroundMessageAction);
+        .throttleTime(
+        const Duration(milliseconds: FcmService.durationMessageComing))
+        .listen(_handleForegroundMessageAction);
 
     FcmService.instance.backgroundMessageStream
-      .throttleTime(const Duration(milliseconds: FcmService.durationMessageComing))
-      .listen(_handleBackgroundMessageAction);
+        .throttleTime(
+        const Duration(milliseconds: FcmService.durationMessageComing))
+        .listen(_handleBackgroundMessageAction);
 
     FcmService.instance.fcmTokenStream.listen(FcmTokenHandler.instance.handle);
   }
 
   void _handleForegroundMessageAction(RemoteMessage newRemoteMessage) {
-    log('FcmController::_handleForegroundMessageAction():remoteMessage: ${newRemoteMessage.data}');
+    log(
+        'FcmController::_handleForegroundMessageAction():remoteMessage: ${newRemoteMessage
+            .data}');
     if (_currentAccountId != null) {
       final stateChange = _convertRemoteMessageToStateChange(newRemoteMessage);
       final mapTypeState = stateChange.getMapTypeState(_currentAccountId!);
@@ -82,61 +91,69 @@ class FcmController extends BaseController {
   }
 
   void _handleBackgroundMessageAction(RemoteMessage newRemoteMessage) async {
-    log('FcmController::_handleBackgroundMessageAction():remoteMessage: ${newRemoteMessage.data}');
+    log(
+        'FcmController::_handleBackgroundMessageAction():remoteMessage: ${newRemoteMessage
+            .data}');
     _remoteMessageBackground = newRemoteMessage;
     await _initialAppConfig();
     _getAuthenticatedAccount();
   }
 
-  StateChange? _convertRemoteMessageToStateChange(RemoteMessage newRemoteMessage) {
-    return FcmUtils.instance.convertFirebaseDataMessageToStateChange(newRemoteMessage.data);
+  StateChange? _convertRemoteMessageToStateChange(
+      RemoteMessage newRemoteMessage) {
+    return FcmUtils.instance.convertFirebaseDataMessageToStateChange(
+        newRemoteMessage.data);
   }
 
-  void _mappingTypeStateToAction(
-    Map<String, dynamic> mapTypeState,
-    AccountId accountId, {
-    bool isForeground = true,
-  }) {
-    log('FcmController::_mappingTypeStateToAction():mapTypeState: $mapTypeState');
+  void _mappingTypeStateToAction(Map<String, dynamic> mapTypeState,
+      AccountId accountId, {
+        bool isForeground = true,
+      }) {
+    log(
+        'FcmController::_mappingTypeStateToAction():mapTypeState: $mapTypeState');
     final listTypeName = mapTypeState.keys
-      .map((value) => TypeName(value))
-      .toList();
+        .map((value) => TypeName(value))
+        .toList();
 
     final listEmailActions = listTypeName
-      .where((typeName) => typeName == TypeName.emailType || typeName == TypeName.emailDelivery)
-      .map((typeName) => toFcmAction(typeName, accountId, mapTypeState, isForeground))
-      .whereNotNull()
-      .toList();
+        .where((typeName) =>
+    typeName == TypeName.emailType || typeName == TypeName.emailDelivery)
+        .map((typeName) =>
+        toFcmAction(typeName, accountId, mapTypeState, isForeground))
+        .whereNotNull()
+        .toList();
 
-    log('FcmController::_mappingTypeStateToAction():listEmailActions: $listEmailActions');
+    log(
+        'FcmController::_mappingTypeStateToAction():listEmailActions: $listEmailActions');
 
     if (listEmailActions.isNotEmpty) {
-       EmailChangeListener.instance.dispatchActions(listEmailActions);
+      EmailChangeListener.instance.dispatchActions(listEmailActions);
     }
 
     final listMailboxActions = listTypeName
-      .where((typeName) => typeName == TypeName.mailboxType)
-      .map((typeName) => toFcmAction(typeName, accountId, mapTypeState, isForeground))
-      .whereNotNull()
-      .toList();
+        .where((typeName) => typeName == TypeName.mailboxType)
+        .map((typeName) =>
+        toFcmAction(typeName, accountId, mapTypeState, isForeground))
+        .whereNotNull()
+        .toList();
 
-    log('FcmController::_mappingTypeStateToAction():listMailboxActions: $listEmailActions');
+    log(
+        'FcmController::_mappingTypeStateToAction():listMailboxActions: $listEmailActions');
 
     if (listMailboxActions.isNotEmpty) {
       MailboxChangeListener.instance.dispatchActions(listMailboxActions);
     }
   }
 
-  FcmAction? toFcmAction(
-    TypeName typeName,
-    AccountId accountId,
-    Map<String, dynamic> mapTypeState,
-    isForeground
-  ) {
+  FcmAction? toFcmAction(TypeName typeName,
+      AccountId accountId,
+      Map<String, dynamic> mapTypeState,
+      isForeground) {
     final newState = jmap.State(mapTypeState[typeName.value]);
     if (typeName == TypeName.emailType) {
       if (isForeground) {
-        return SynchronizeEmailOnForegroundAction(typeName, newState, accountId);
+        return SynchronizeEmailOnForegroundAction(
+            typeName, newState, accountId);
       } else {
         return StoreEmailStateToRefreshAction(typeName, newState, accountId);
       }
@@ -146,7 +163,8 @@ class FcmController extends BaseController {
       }
     } else if (typeName == TypeName.mailboxType) {
       if (isForeground) {
-        return SynchronizeMailboxOnForegroundAction(typeName, newState, accountId);
+        return SynchronizeMailboxOnForegroundAction(
+            typeName, newState, accountId);
       } else {
         return StoreMailboxStateToRefreshAction(typeName, newState, accountId);
       }
@@ -155,10 +173,13 @@ class FcmController extends BaseController {
   }
 
   Future<void> _initialAppConfig() async {
-    await Future.wait([
-      MainBindings().dependencies(),
-      HiveCacheConfig().setUp()
-    ]);
+    await CoreBindings().dependencies();
+    LocalBindings().dependencies();
+    NetworkBindings().dependencies();
+    CredentialBindings().dependencies();
+    NetWorkConnectionBindings().dependencies();
+    SessionBindings().dependencies();
+    await HiveCacheConfig().setUp();
 
     await Future.sync(() {
       HomeBindings().dependencies();
@@ -171,7 +192,8 @@ class FcmController extends BaseController {
 
   Future<void> _getInteractorBindings() {
     try {
-      _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
+      _getAuthenticatedAccountInteractor =
+          getBinding<GetAuthenticatedAccountInteractor>();
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
       _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
       _getSessionInteractor = getBinding<GetSessionInteractor>();
@@ -187,7 +209,8 @@ class FcmController extends BaseController {
       consumeState(_getAuthenticatedAccountInteractor!.execute());
     } else {
       _clearRemoteMessageBackground();
-      logError('FcmController::_getAuthenticatedAccount():_getAuthenticatedAccountInteractor is null');
+      logError(
+          'FcmController::_getAuthenticatedAccount():_getAuthenticatedAccountInteractor is null');
     }
   }
 
@@ -202,21 +225,24 @@ class FcmController extends BaseController {
       _getSessionWithTokenOidc(success);
     } else if (success is GetCredentialViewState) {
       _getSessionWithBasicAuth(success);
-    }  else if (success is GetSessionSuccess) {
+    } else if (success is GetSessionSuccess) {
       _handleGetSessionSuccess(success);
     }
   }
 
-  void _getSessionWithTokenOidc(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
-    _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.baseUrl.toString());
+  void _getSessionWithTokenOidc(
+      GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
+    _dynamicUrlInterceptors?.changeBaseUrl(
+        storedTokenOidcSuccess.baseUrl.toString());
     _authorizationInterceptors?.setTokenAndAuthorityOidc(
-      newToken: storedTokenOidcSuccess.tokenOidc.toToken(),
-      newConfig: storedTokenOidcSuccess.oidcConfiguration
+        newToken: storedTokenOidcSuccess.tokenOidc.toToken(),
+        newConfig: storedTokenOidcSuccess.oidcConfiguration
     );
     _getSession();
   }
 
   void _getSessionWithBasicAuth(GetCredentialViewState credentialViewState) {
+    log('FcmController::_getSessionWithBasicAuth(): _getSessionWithBasicAuth test');
     _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.baseUrl.origin);
     _authorizationInterceptors?.setBasicAuthorization(
       credentialViewState.userName.userName,
@@ -226,6 +252,7 @@ class FcmController extends BaseController {
   }
 
   void _getSession() {
+    log('FcmController::_getSession(): _getSession test');
     if (_getSessionInteractor != null) {
       consumeState(_getSessionInteractor!.execute().asStream());
     } else {
@@ -242,9 +269,11 @@ class FcmController extends BaseController {
     _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
 
     if (_remoteMessageBackground != null && _currentAccountId != null) {
-      final stateChange = _convertRemoteMessageToStateChange(_remoteMessageBackground!);
+      final stateChange = _convertRemoteMessageToStateChange(
+          _remoteMessageBackground!);
       final mapTypeState = stateChange.getMapTypeState(_currentAccountId!);
-      _mappingTypeStateToAction(mapTypeState, _currentAccountId!, isForeground: false);
+      _mappingTypeStateToAction(
+          mapTypeState, _currentAccountId!, isForeground: false);
     }
     _clearRemoteMessageBackground();
   }
