@@ -48,7 +48,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/page_view_navigator_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -1133,16 +1132,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void toggleScrollPhysicsPagerView(bool leftDirection) {
-    final navigatorState = emailSupervisorController.pageViewNavigatorState.value;
-
+    log('SingleEmailController::toggleScrollPhysicsPagerView():leftDirection: $leftDirection');
     if (leftDirection) {
-      if (navigatorState == PageViewNavigatorState.next) {
-        emailSupervisorController.moveToNextEmail();
-      }
+      emailSupervisorController.moveToNextEmail();
     } else {
-      if (navigatorState == PageViewNavigatorState.previous) {
-        emailSupervisorController.backToPreviousEmail();
-      }
+      emailSupervisorController.backToPreviousEmail();
     }
   }
 }
