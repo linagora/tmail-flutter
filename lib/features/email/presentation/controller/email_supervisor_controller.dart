@@ -61,13 +61,11 @@ class EmailSupervisorController extends GetxController {
   void createPageControllerAndJumpToEmailById(EmailId currentEmailId) {
     _currentEmailIndex = _currentListEmail.matchedIndex(currentEmailId);
     if (pageController != null && pageController?.hasClients == true) {
-      _jumpToPage(_currentEmailIndex);
+      pageController?.jumpToPage(_currentEmailIndex);
     } else {
       pageController = PageController(initialPage: _currentEmailIndex);
     }
-    if (BuildUtils.isWeb) {
-      _updateStatePageViewNavigator();
-    }
+    _updateStatePageViewNavigator();
   }
 
   void onPageChanged(int index) {
@@ -120,7 +118,7 @@ class EmailSupervisorController extends GetxController {
       pageController?.animateToPage(
         page,
         duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInToLinear);
+        curve: Curves.linear);
     }
   }
 
