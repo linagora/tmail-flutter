@@ -318,14 +318,17 @@ class EmailAddressInputBuilder {
   }
 
   FutureOr<List<SuggestionEmailAddress>> _findSuggestions(String query) async {
+    log('EmailAddressInputBuilder::_findSuggestions():query: $query');
     if (_gapBetweenTagChangedAndFindSuggestion?.isActive ?? false) {
       log('EmailAddressInputBuilder::_findSuggestions(): return empty');
       return [];
     }
 
+    final currentTextOnTextField = controller?.text ?? '';
+    log('EmailAddressInputBuilder::_findSuggestions():currentTextOnTextField: $currentTextOnTextField');
     final processedQuery = query.trim();
 
-    if (processedQuery.isEmpty) {
+    if (processedQuery.isEmpty || currentTextOnTextField.isEmpty) {
       return [];
     }
 
