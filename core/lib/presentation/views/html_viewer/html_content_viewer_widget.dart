@@ -163,6 +163,8 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
           }
           _isLoading = false;
         });
+      } else {
+        actualHeight = minHeight;
       }
     }
 
