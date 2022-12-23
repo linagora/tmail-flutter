@@ -1,0 +1,9 @@
+Epic Read-mails
+Basic requirements to read email with JMAP protocol:
+
+ Listing mailbox, thread, emails, ...
+ Receiving mail,
+ Synchronize, refresh,
+ receiving push notification
+ Search email
+ Filter email
