@@ -20,12 +20,16 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   /// Handler for mailto: links
   final Function(Uri?)? mailtoDelegate;
 
+  // if widthContent is bigger than width of htmlContent, set this to true let widget able to resize to width of htmlContent 
+  final bool allowResizeToDocumentSize;
+  
   const HtmlContentViewerOnWeb({
     Key? key,
     required this.contentHtml,
     required this.widthContent,
     required this.heightContent,
     required this.controller,
+    this.allowResizeToDocumentSize = true,
     this.mailtoDelegate,
   }) : super(key: key);
 
@@ -56,6 +60,24 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     createdViewId = _getRandString(10);
     widget.controller.viewId = createdViewId;
     _setUpWeb();
+  }
+
+  @override
+  void didUpdateWidget(covariant HtmlContentViewerOnWeb oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.contentHtml != oldWidget.contentHtml) {
+      createdViewId = _getRandString(10);
+      widget.controller.viewId = createdViewId;
+      _setUpWeb();
+    }
+
+    if (widget.heightContent != oldWidget.heightContent) {
+      actualHeight = widget.heightContent;
+    }
+
+    if (widget.widthContent != oldWidget.widthContent) {
+      actualWidth = widget.widthContent;
+    }
   }
 
   String _getRandString(int len) {
@@ -195,7 +217,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           if (data['type'] != null && data['type'].contains('toDart: htmlWidth') && data['view'] == createdViewId) {
             final docWidth = data['width'] ?? actualWidth;
             if (docWidth != null && mounted) {
-              if (docWidth > minWidth) {
+              if (docWidth > minWidth && widget.allowResizeToDocumentSize) {
                 setState(() {
                   actualWidth = docWidth;
                 });
