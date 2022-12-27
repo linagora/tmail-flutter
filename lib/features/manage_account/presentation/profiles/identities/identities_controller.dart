@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
@@ -47,9 +46,6 @@ class IdentitiesController extends BaseController {
   final selectedIndex = Rxn<int>();
   final identitySelected = Rxn<Identity>();
   final listAllIdentities = <Identity>[].obs;
-  final listSelectedIdentities = <Identity>[].obs;
-
-  final idIdentityAll = IdentityId(Id('all'));
 
   late Worker accountIdWorker;
 
@@ -184,8 +180,6 @@ class IdentitiesController extends BaseController {
   }
 
   void openConfirmationDialogDeleteIdentityAction(BuildContext context, Identity identity) {
-    popBack();
-
     if (_responsiveUtils.isScreenWithShortestSide(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
           ..messageText(AppLocalizations.of(context).message_confirmation_dialog_delete_identity)
@@ -232,8 +226,6 @@ class IdentitiesController extends BaseController {
   }
 
   void _deleteIdentityAction(Identity identity) {
-    popBack();
-
     final accountId = _accountDashBoardController.accountId.value;
     if (accountId != null && identity.id != null) {
       consumeState(_deleteIdentityInteractor.execute(accountId, identity.id!));
@@ -276,8 +268,6 @@ class IdentitiesController extends BaseController {
   }
 
   void goToEditIdentity(BuildContext context, Identity identity) async {
-    popBack();
-
     final accountId = _accountDashBoardController.accountId.value;
     final userProfile = _accountDashBoardController.userProfile.value;
     if (accountId != null && userProfile != null) {
