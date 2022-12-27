@@ -11,6 +11,7 @@ import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
@@ -161,7 +162,8 @@ abstract class BaseController extends GetxController
     try {
       requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
       if (AppConfig.fcmAvailable) {
-        await AppUtils.loadFcmConfigFile();
+        final mapEnvData = Map<String, String>.from(dotenv.env);
+        await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
         FcmConfiguration.initialize();
         if (!kIsWeb) {
           await LocalNotificationManager.instance.setUp();
