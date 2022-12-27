@@ -69,6 +69,14 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   }
 
   @override
+  void didUpdateWidget(covariant HtmlContentViewer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.contentHtml != oldWidget.contentHtml) {
+      _htmlData = generateHtml(widget.contentHtml);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return Stack(
