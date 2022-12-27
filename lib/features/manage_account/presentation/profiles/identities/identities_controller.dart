@@ -44,6 +44,7 @@ class IdentitiesController extends BaseController {
   final DeleteIdentityInteractor _deleteIdentityInteractor;
   final EditIdentityInteractor _editIdentityInteractor;
 
+  final selectedIndex = Rxn<int>();
   final identitySelected = Rxn<Identity>();
   final listAllIdentities = <Identity>[].obs;
   final listSelectedIdentities = <Identity>[].obs;
@@ -82,12 +83,11 @@ class IdentitiesController extends BaseController {
         (success) {
           if (success is GetAllIdentitiesSuccess) {
             if (success.identities?.isNotEmpty == true) {
-              _addNewIdentityAsAll();
-              final newListIdentities = success.identities!
+                final newListIdentities = success.identities!
                   .where((identity) => identity.mayDelete == true)
                   .toList();
               listAllIdentities.addAll(newListIdentities);
-              selectIdentity(listAllIdentities.first);
+              selectIdentity(0);
             }
           } else if (success is CreateNewIdentitySuccess) {
             _createNewIdentitySuccess(success);
@@ -121,9 +121,8 @@ class IdentitiesController extends BaseController {
   }
 
   void _refreshAllIdentities() {
-    identitySelected.value = null;
+    selectedIndex.value = null;
     listAllIdentities.clear();
-    listSelectedIdentities.clear();
 
     final accountId = _accountDashBoardController.accountId.value;
     if (accountId != null) {
@@ -131,26 +130,10 @@ class IdentitiesController extends BaseController {
     }
   }
 
-  void _addNewIdentityAsAll() {
-    if (currentContext != null) {
-      listAllIdentities.add(Identity(
-          id: idIdentityAll,
-          name: AppLocalizations.of(currentContext!).all_identities));
-    }
-  }
-
-  void selectIdentity(Identity? newIdentity) {
-    identitySelected.value = newIdentity;
-    if (newIdentity != null) {
-      _updateListSelectedIdentities(newIdentity);
-    }
-  }
-
-  void _updateListSelectedIdentities(Identity newIdentity) {
-    if (newIdentity.id == idIdentityAll) {
-      listSelectedIdentities.value = listAllIdentities.sublist(1);
-    } else  {
-      listSelectedIdentities.value = [newIdentity];
+  void selectIdentity(int? index) {
+    selectedIndex.value = index;
+    if (selectedIndex.value != null) {
+      identitySelected.value = listAllIdentities[selectedIndex.value!];
     }
   }
 
@@ -342,5 +325,11 @@ class IdentitiesController extends BaseController {
     }
 
     _refreshAllIdentities();
+  }
+
+  ImagePaths get imagePaths => _imagePaths;
+
+  bool isSignatureShow() {
+    return selectedIndex.value!= null && selectedIndex.value! >= 0; 
   }
 }
