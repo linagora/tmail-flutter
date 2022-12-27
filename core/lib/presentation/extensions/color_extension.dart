@@ -73,6 +73,7 @@ extension AppColor on Color {
   static const colorTextButton = Color(0xFF007AFF);
   static const colorHintSearchBar = Color(0xFF818C99);
   static const colorBgSearchBar = Color(0x99EBEDF0);
+  static const colorBgIdentityButton = Color(0x00EBEDF0);
   static const colorShadowBgContentEmail = Color(0x14000000);
   static const colorDividerMailbox = Color(0xFF99A2AD);
   static const colorCollapseMailbox = Color(0xFFB8C1CC);
@@ -167,6 +168,7 @@ extension AppColor on Color {
   static const colorTitleQuotasWarning = Color(0xFFF05C44);
   static const colorProgressQuotasWarning = Color(0xFFFFA000);
   static const colorOutOfStorageQuotasWarning = Color(0xffE64646);
+  static const colorThumbScrollBar = Color(0xFFAEB7C2);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

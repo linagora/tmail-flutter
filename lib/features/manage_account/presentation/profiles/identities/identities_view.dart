@@ -1,22 +1,12 @@
-
-import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/button/button_builder.dart';
-import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
-import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_bottom_sheet_action_tile_builder.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_info_tile_builder.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identities_radio_list_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identities_radio_list_builder_web.dart' as identities_listview_web;
 
 class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidgetMixin, AppLoaderMixin {
 
@@ -27,177 +17,106 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
 
   @override
   Widget build(BuildContext context) {
-    final buttonSelectIdentity = Row(children: [
-      Expanded(child: Obx(() => DropDownButtonWidget<Identity>(
-          items: controller.listAllIdentities,
-          itemSelected: controller.identitySelected.value,
-          onChanged: (newIdentity) => controller.selectIdentity(newIdentity),
-          supportSelectionIcon: true))),
-      if (!_responsiveUtils.isMobile(context)) const SizedBox(width: 12),
-      if (!_responsiveUtils.isMobile(context))
-        (ButtonBuilder(_imagePaths.icAddIdentity)
-            ..key(const Key('button_new_identity'))
-            ..decoration(BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColor.colorTextButton))
-            ..paddingIcon(const EdgeInsets.only(right: 8))
-            ..iconColor(Colors.white)
-            ..maxWidth(170)
-            ..size(20)
-            ..radiusSplash(10)
-            ..padding(const EdgeInsets.symmetric(vertical: 12))
-            ..textStyle(const TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w500))
-            ..onPressActionClick(() => controller.goToCreateNewIdentity(context))
-            ..text(AppLocalizations.of(context).new_identity, isVertical: false))
-          .build()
-    ]);
+    return ResponsiveWidget(
+      responsiveUtils: _responsiveUtils, 
+      mobile: _buildIdentitiesViewMobile(context),
+      tablet: _buildIdentitiesViewMobile(context),
+      desktop: _buildIdentitiesViewWeb(context),
+      tabletLarge: _buildIdentitiesViewMobile(context),
+    );
+  }
 
-    return LayoutBuilder(builder: (context, constraints) => ResponsiveWidget(
-        responsiveUtils: _responsiveUtils,
-        mobile: Scaffold(
-          body: Container(
-              margin: const EdgeInsets.symmetric(vertical: 16),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buttonSelectIdentity,
-                    const SizedBox(height: 24),
-                    _buildLoadingView(),
-                    Expanded(child: Obx(() => MasonryGridView.count(
-                        key: const Key('list_identities'),
-                        crossAxisSpacing: 24.0,
-                        mainAxisSpacing: 24.0,
-                        crossAxisCount: _responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)
-                            ? 2 : 1,
-                        itemCount: controller.listSelectedIdentities.length,
-                        itemBuilder: (context, index) =>
-                            IdentityInfoTileBuilder(_imagePaths, _responsiveUtils,
-                                controller.listSelectedIdentities[index],
-                                onMenuItemIdentityAction: (identity, position) =>
-                                    _openIdentityMenuAction(context, identity, position))
-                    )))
-                  ]
-              )
-          ),
-          floatingActionButton: _responsiveUtils.isMobile(context)
-            ? FloatingActionButton(
-                  key: const Key('add_new_identity'),
-                  onPressed: () => controller.goToCreateNewIdentity(context),
-                  backgroundColor: AppColor.primaryColor,
-                  child: SvgPicture.asset(_imagePaths.icAddIdentity, width: 24, height: 24))
-            : null),
-        desktop: Container(
-            margin: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+  Widget _buildIdentitiesViewMobile(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 24.0, bottom: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [ 
+          for(Widget item in _buildIdentitiesTitles(context))
+            item,
+          _buildCreateIdentityButton(context),
+          IdentitiesRadioListBuilder(controller: controller),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIdentitiesViewWeb(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 236,
+            padding: const EdgeInsets.only(right: 12.0),
             child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                      width: constraints.maxWidth / 2,
-                      child: buttonSelectIdentity),
-                  const SizedBox(height: 24),
-                  _buildLoadingView(),
-                  Expanded(child: Obx(() => MasonryGridView.count(
-                      key: const Key('list_identities'),
-                      crossAxisSpacing: 24.0,
-                      mainAxisSpacing: 24.0,
-                      crossAxisCount: _responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context)
-                          ? 2 : 1,
-                      itemCount: controller.listSelectedIdentities.length,
-                      itemBuilder: (context, index) =>
-                          IdentityInfoTileBuilder(_imagePaths, _responsiveUtils,
-                              controller.listSelectedIdentities[index],
-                              onMenuItemIdentityAction: (identity, position) =>
-                                  _openIdentityMenuAction(context, identity, position))
-                  )))
-                ]
-            )
-        )
-    ));
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for(Widget widget in _buildIdentitiesTitles(context))
+                  widget,
+                _buildCreateIdentityButton(context),
+              ],
+            ),
+          ),
+          Expanded(
+            child: identities_listview_web.IdentitiesRadioListBuilder(controller: controller),
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget _buildLoadingView() {
-    return Obx(() => controller.viewState.value.fold(
-        (failure) => const SizedBox.shrink(),
-        (success) => success is LoadingState
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: loadingWidget)
-            : const SizedBox.shrink()
-    ));
-  }
-
-  void _openIdentityMenuAction(BuildContext context, Identity identity,
-      RelativeRect? position) {
-    if (_responsiveUtils.isScreenWithShortestSide(context)) {
-      controller.openContextMenuAction(context, _bottomSheetIdentityActionTiles(context, identity));
-    } else {
-      controller.openPopupMenuAction(context, position, _popupMenuIdentityActionTiles(context, identity));
-    }
-  }
-
-  List<PopupMenuEntry> _popupMenuIdentityActionTiles(BuildContext context, Identity identity) {
+  List<Widget> _buildIdentitiesTitles(BuildContext context) {
     return [
-      PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: popupItem(_imagePaths.icEdit,
-              AppLocalizations.of(context).edit_identity,
-              styleName: const TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 17,
-                  color: Colors.black),
-              onCallbackAction: () => controller.goToEditIdentity(context, identity))),
-      if (identity.mayDelete == true)
-        PopupMenuItem(
-            padding: EdgeInsets.zero,
-            child: popupItem(_imagePaths.icDeleteComposer,
-                AppLocalizations.of(context).delete_identity,
-                colorIcon: AppColor.colorActionDeleteConfirmDialog,
-                styleName: const TextStyle(
-                    fontWeight: FontWeight.normal,
-                    fontSize: 17,
-                    color: AppColor.colorActionDeleteConfirmDialog),
-                onCallbackAction: () => controller.openConfirmationDialogDeleteIdentityAction(context, identity))),
+      Text(
+        AppLocalizations.of(context).identities.inCaps, 
+        style: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 17,
+          color: Colors.black)),
+      const SizedBox(height: 4.0),
+      Text(
+        AppLocalizations.of(context).identities_description,
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w400,
+          color: AppColor.colorSettingExplanation),
+        ),
+      const SizedBox(height: 12.0),
     ];
   }
 
-  List<Widget> _bottomSheetIdentityActionTiles(BuildContext context, Identity identity) {
-    return <Widget>[
-      _editIdentityActionTile(context, identity),
-      if (identity.mayDelete == true)
-        _deleteIdentityActionTile(context, identity),
-    ];
+  Widget _buildCreateIdentityButton(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: (ButtonBuilder(_imagePaths.icAddIdentity)
+              ..key(const Key('button_add_identity'))
+              ..decoration(BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: AppColor.colorBorderIdentityInfo))
+              ..paddingIcon(const EdgeInsets.only(right: 12))
+              ..iconColor(AppColor.primaryColor)
+              ..size(28)
+              ..padding(const EdgeInsets.symmetric(vertical: 12))
+              ..textStyle(const TextStyle(
+                fontSize: 16,
+                color: AppColor.primaryColor,
+                fontWeight: FontWeight.w500,
+              ))
+              ..onPressActionClick(() => controller.goToCreateNewIdentity(context))
+              ..text(
+                AppLocalizations.of(context).create_new_identity,
+                isVertical: false,
+              ))
+            .build(),
+          ),
+        ),
+      ],
+    );
   }
 
-  Widget _deleteIdentityActionTile(BuildContext context, Identity identity) {
-    return (IdentityBottomSheetActionTileBuilder(
-            const Key('delete_identity_action'),
-            SvgPicture.asset(_imagePaths.icDeleteComposer,
-                color: AppColor.colorActionDeleteConfirmDialog),
-            AppLocalizations.of(context).delete_identity,
-            identity,
-            iconLeftPadding: _responsiveUtils.isMobile(context)
-                ? const EdgeInsets.only(left: 12, right: 16)
-                : const EdgeInsets.only(right: 12),
-            iconRightPadding: _responsiveUtils.isMobile(context)
-                ? const EdgeInsets.only(right: 12)
-                : EdgeInsets.zero)
-        ..onActionClick((identity) => controller.openConfirmationDialogDeleteIdentityAction(context, identity)))
-      .build();
-  }
-
-  Widget _editIdentityActionTile(BuildContext context, Identity identity) {
-    return (IdentityBottomSheetActionTileBuilder(
-            const Key('edit_identity_action'),
-            SvgPicture.asset(_imagePaths.icEdit),
-            AppLocalizations.of(context).edit_identity,
-            identity,
-            iconLeftPadding: _responsiveUtils.isMobile(context)
-                ? const EdgeInsets.only(left: 12, right: 16)
-                : const EdgeInsets.only(right: 12),
-            iconRightPadding: _responsiveUtils.isMobile(context)
-                ? const EdgeInsets.only(right: 12)
-                : EdgeInsets.zero)
-        ..onActionClick((identity) => controller.goToEditIdentity(context, identity)))
-      .build();
-  }
 }

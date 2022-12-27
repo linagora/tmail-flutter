@@ -1200,9 +1200,24 @@ class AppLocalizations {
         name: 'profiles');
   }
 
+  String get profiles_description {
+    return Intl.message('Info about you, and options to manage it',
+        name: 'profiles_description');
+  }
+
   String get identities {
     return Intl.message('Identities',
         name: 'identities');
+  }
+
+  String get identities_description {
+    return Intl.message('Select the identity or email address you want to use to send an emails',
+        name: 'identities_description');
+  }
+
+  String get create_new_identity {
+    return Intl.message('Create new identity',
+        name: 'create_new_identity');
   }
 
   String get new_identity {
@@ -2592,6 +2607,13 @@ class AppLocalizations {
     return Intl.message(
       'Open in New Tab',
       name: 'openInNewTab',
+    );
+  }
+
+  String get regards {
+    return Intl.message(
+      'Regards',
+      name: 'regards',
     );
   }
 }

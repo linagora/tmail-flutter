@@ -207,6 +207,7 @@ dependencies:
   # Use for flutter 3.0.5 https://github.com/EdsonBueno/focus_detector/pull/14
   focus_detector:
     git: https://github.com/ifnyas/focus_detector.git
+  html_unescape: ^2.0.0
 
 dev_dependencies:
   flutter_test:
