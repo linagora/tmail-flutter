@@ -10,8 +10,11 @@ class AppUtils {
     return dotenv.load(fileName: envFileName);
   }
 
-  static Future<void> loadFcmConfigFile()  {
-    return dotenv.load(fileName: AppConfig.appFCMConfigurationPath);
+  static Future<void> loadFcmConfigFileToEnv({Map<String, String>? currentMapEnvData})  {
+    return dotenv.load(
+      fileName: AppConfig.appFCMConfigurationPath,
+      mergeWith: currentMapEnvData ?? {}
+    );
   }
 
   static Future<void> launchLink(String url, {bool isNewTab = true}) async {
