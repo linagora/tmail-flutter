@@ -3,9 +3,9 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/profiles_tab_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_controller.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ProfilesView extends GetWidget<ProfilesController> {
 
@@ -17,60 +17,52 @@ class ProfilesView extends GetWidget<ProfilesController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: SettingsUtils.getBackgroundColor(context, _responsiveUtils),
-      body: Container(
-        margin: _responsiveUtils.isWebDesktop(context)
-          ? const EdgeInsets.all(16)
-          : EdgeInsets.symmetric(horizontal: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)),
-        color: _responsiveUtils.isWebDesktop(context) ? null : Colors.white,
-        decoration: _responsiveUtils.isWebDesktop(context)
-            ? BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColor.colorBorderSettingContentWeb, width: 1),
-                color: Colors.white)
-            : null,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(
-              _responsiveUtils.isWebDesktop(context) ? 16 : 0),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-            child: DefaultTabController(
-                initialIndex: 0,
-                length: 1,
-                child: Scaffold(
-                  appBar: TabBar(
-                      unselectedLabelColor: AppColor.colorTextButtonHeaderThread,
-                      unselectedLabelStyle: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
-                          color: AppColor.colorTextButtonHeaderThread),
-                      labelStyle: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: AppColor.primaryColor),
-                      labelColor: AppColor.primaryColor,
-                      indicatorSize: TabBarIndicatorSize.label,
-                      isScrollable: true,
-                      indicator: const CustomIndicator(
-                        indicatorHeight: 4,
-                        indicatorColor: AppColor.primaryColor,
-                        indicatorSize: CustomIndicatorSize.full),
-                      onTap: (index) {},
-                      tabs: [
-                        Tab(text: ProfilesTabType.identities.getName(context)),
-                      ]),
-                  body: Column(children: [
-                    const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
-                    Expanded(child: TabBarView(
-                      children: [
-                        IdentitiesView(),
-                      ],
-                    ))
-                  ]),
-                )
-            ),
-          ),
-        ),
+      body: ResponsiveWidget(
+        responsiveUtils: _responsiveUtils, 
+        mobile: IdentitiesView(),
+        desktop: _buildProfilesWeb(context))
+    );
+  }
+
+  Widget _buildProfilesWeb(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+        border: Border.all(color: AppColor.colorBorderIdentityInfo),
+        color: Colors.white,
+      ),
+      margin: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for(var widget in _buildProfilesTitle(context))
+            widget,
+          const Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2),
+          Expanded(child: IdentitiesView()),
+        ],
       ),
     );
+  }
+
+  List<Widget> _buildProfilesTitle(BuildContext context) {
+    return [
+      Text(
+        AppLocalizations.of(context).profiles.inCaps, 
+        style: const TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 20,
+          fontFamily: 'Inter',
+          color: Colors.black)),
+      const SizedBox(height: 4.0),
+      Text(
+        AppLocalizations.of(context).profiles_description,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.normal,
+          color: AppColor.colorContentEmail),
+        ),
+      const SizedBox(height: 16.0),
+    ];
   }
 }
