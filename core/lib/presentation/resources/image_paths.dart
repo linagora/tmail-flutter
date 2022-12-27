@@ -26,6 +26,7 @@ class ImagePaths {
   String get icSelected => _getImagePath('ic_selected.svg');
   String get icUnSelected => _getImagePath('ic_unselected.svg');
   String get icDelete => _getImagePath('ic_delete.svg');
+  String get icDeleteOutline => _getImagePath('ic_delete_outline.svg');
   String get icSpam => _getImagePath('ic_spam.svg');
   String get icMove => _getImagePath('ic_move.svg');
   String get icReadToast => _getImagePath('ic_read_toast.svg');

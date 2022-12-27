@@ -789,6 +789,13 @@ packages:
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.0"
+  html_unescape:
+    dependency: "direct main"
+    description:
+      name: html_unescape
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   http:
     dependency: transitive
     description:

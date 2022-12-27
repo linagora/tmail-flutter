@@ -12,6 +12,10 @@ class ThemeUtils {
       appBarTheme: _appBarTheme,
       textTheme: _textTheme,
       visualDensity: VisualDensity.adaptivePlatformDensity,
+      scrollbarTheme: ScrollbarThemeData(
+        thickness: MaterialStateProperty.all(2.0), 
+        radius: const  Radius.circular(5.0), 
+        thumbColor: MaterialStateProperty.all(AppColor.colorThumbScrollBar)),
     );
   }
 
