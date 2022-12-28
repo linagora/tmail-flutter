@@ -3,6 +3,7 @@ import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/extensions/firebase_subscription_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
@@ -45,7 +46,8 @@ class FcmDatasourceImpl extends FCMDatasource {
   @override
   Future<FirebaseSubscription> registerNewToken(RegisterNewTokenRequest newTokenRequest) {
     return Future.sync(() async {
-      return await _fcmApi.registerNewToken(newTokenRequest);
+      final firebaseSubscription = await _fcmApi.registerNewToken(newTokenRequest);
+      return firebaseSubscription.fromDeviceId(newDeviceId: newTokenRequest.firebaseSubscription.deviceClientId);
     }).catchError((error) {
       _exceptionThrower.throwException(error);
     });
