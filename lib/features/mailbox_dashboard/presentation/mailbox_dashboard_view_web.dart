@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
@@ -251,9 +252,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             } else {
               return PortalTarget(
                 visible: searchController.isAdvancedSearchViewOpen.isTrue,
-                portalFollower: GestureDetector(
+                portalFollower: PointerInterceptor(
+                  child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () => searchController.selectOpenAdvanceSearch()),
+                ),
                 child: PortalTarget(
                   visible: searchController.isAdvancedSearchViewOpen.isTrue,
                   anchor: const Aligned(

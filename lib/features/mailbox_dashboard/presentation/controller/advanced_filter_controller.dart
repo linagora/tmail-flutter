@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
@@ -284,10 +285,11 @@ class AdvancedFilterController extends BaseController {
         barrierColor: Colors.black54,
         pageBuilder: (context, animation, secondaryAnimation) {
           return Dialog(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0)),
+            elevation: 0,
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0)),
+            child: PointerInterceptor(
               child: MultipleViewDateRangePicker(
                 confirmText: AppLocalizations.of(context).setDate,
                 cancelText: AppLocalizations.of(context).cancel,
@@ -300,7 +302,8 @@ class AdvancedFilterController extends BaseController {
                 setDateActionCallback: ({startDate, endDate}) {
                   _handleSelectDateRangeResult(context, startDate, endDate);
                 },
-              )
+              ),
+            )
           );
         }
     );

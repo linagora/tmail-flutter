@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form.dart';
 
 class AdvancedSearchFilterOverlay extends StatelessWidget {
@@ -17,31 +18,33 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final responsiveUtils = Get.find<ResponsiveUtils>();
 
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 4, bottom: 16),
-        child: Container(
-          constraints: BoxConstraints(
-            maxHeight: _getHeightOverlay(context, responsiveUtils),
-          ),
-          width: maxWidth ?? 660,
-          padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: const [
-                BoxShadow(
-                    color: AppColor.colorShadowComposer,
-                    blurRadius: 32,
-                    offset: Offset.zero),
-                BoxShadow(
-                    color: AppColor.colorDropShadow,
-                    blurRadius: 4,
-                    offset: Offset.zero),
-              ]),
-          child: SingleChildScrollView(
-            child: AdvancedSearchInputForm(),
+    return PointerInterceptor(
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 4, bottom: 16),
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: _getHeightOverlay(context, responsiveUtils),
+            ),
+            width: maxWidth ?? 660,
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                      color: AppColor.colorShadowComposer,
+                      blurRadius: 32,
+                      offset: Offset.zero),
+                  BoxShadow(
+                      color: AppColor.colorDropShadow,
+                      blurRadius: 4,
+                      offset: Offset.zero),
+                ]),
+            child: SingleChildScrollView(
+              child: AdvancedSearchInputForm(),
+            ),
           ),
         ),
       ),
