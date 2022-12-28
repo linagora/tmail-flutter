@@ -1200,9 +1200,11 @@ class AppLocalizations {
         name: 'profiles');
   }
 
-  String get profiles_description {
-    return Intl.message('Info about you, and options to manage it',
-        name: 'profiles_description');
+  String get profilesSettingExplanation {
+    return Intl.message(
+      'Info about you, and options to manage it',
+      name: 'profilesSettingExplanation'
+    );
   }
 
   String get identities {
@@ -1210,14 +1212,16 @@ class AppLocalizations {
         name: 'identities');
   }
 
-  String get identities_description {
-    return Intl.message('Select the identity or email address you want to use to send an emails',
-        name: 'identities_description');
+  String get identitiesSettingExplanation {
+    return Intl.message(
+      'Select the identity or email address you want to use to send an emails',
+      name: 'identitiesSettingExplanation');
   }
 
-  String get create_new_identity {
-    return Intl.message('Create new identity',
-        name: 'create_new_identity');
+  String get createNewIdentity {
+    return Intl.message(
+      'Create new identity',
+      name: 'createNewIdentity');
   }
 
   String get new_identity {

@@ -43,7 +43,6 @@ class IdentitiesController extends BaseController {
   final DeleteIdentityInteractor _deleteIdentityInteractor;
   final EditIdentityInteractor _editIdentityInteractor;
 
-  final selectedIndex = Rxn<int>();
   final identitySelected = Rxn<Identity>();
   final listAllIdentities = <Identity>[].obs;
 
@@ -71,28 +70,22 @@ class IdentitiesController extends BaseController {
   @override
   void onDone() {
     viewState.value.fold(
-        (failure) {
-          if (failure is DeleteIdentityFailure) {
-            _deleteIdentityFailure(failure);
-          }
-        },
-        (success) {
-          if (success is GetAllIdentitiesSuccess) {
-            if (success.identities?.isNotEmpty == true) {
-                final newListIdentities = success.identities!
-                  .where((identity) => identity.mayDelete == true)
-                  .toList();
-              listAllIdentities.addAll(newListIdentities);
-              selectIdentity(0);
-            }
-          } else if (success is CreateNewIdentitySuccess) {
-            _createNewIdentitySuccess(success);
-          } else if (success is DeleteIdentitySuccess) {
-            _deleteIdentitySuccess(success);
-          } else if (success is EditIdentitySuccess) {
-            _editIdentitySuccess(success);
-          }
+      (failure) {
+        if (failure is DeleteIdentityFailure) {
+          _deleteIdentityFailure(failure);
         }
+      },
+      (success) {
+        if (success is GetAllIdentitiesSuccess) {
+          _handleGetAllIdentitiesSuccess(success);
+        } else if (success is CreateNewIdentitySuccess) {
+          _createNewIdentitySuccess(success);
+        } else if (success is DeleteIdentitySuccess) {
+          _deleteIdentitySuccess(success);
+        } else if (success is EditIdentitySuccess) {
+          _editIdentitySuccess(success);
+        }
+      }
     );
   }
 
@@ -117,7 +110,7 @@ class IdentitiesController extends BaseController {
   }
 
   void _refreshAllIdentities() {
-    selectedIndex.value = null;
+    identitySelected.value = null;
     listAllIdentities.clear();
 
     final accountId = _accountDashBoardController.accountId.value;
@@ -126,11 +119,21 @@ class IdentitiesController extends BaseController {
     }
   }
 
-  void selectIdentity(int? index) {
-    selectedIndex.value = index;
-    if (selectedIndex.value != null) {
-      identitySelected.value = listAllIdentities[selectedIndex.value!];
+  void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
+    if (success.identities?.isNotEmpty == true) {
+      final newListIdentities = success.identities!
+        .where((identity) => identity.mayDelete == true)
+        .toList();
+      listAllIdentities.addAll(newListIdentities);
     }
+
+    if (listAllIdentities.isNotEmpty) {
+      selectIdentity(listAllIdentities.first);
+    }
+  }
+
+  void selectIdentity(Identity? newIdentity) {
+    identitySelected.value = newIdentity;
   }
 
   void goToCreateNewIdentity(BuildContext context) async {
@@ -226,6 +229,8 @@ class IdentitiesController extends BaseController {
   }
 
   void _deleteIdentityAction(Identity identity) {
+    popBack();
+
     final accountId = _accountDashBoardController.accountId.value;
     if (accountId != null && identity.id != null) {
       consumeState(_deleteIdentityInteractor.execute(accountId, identity.id!));
@@ -319,7 +324,5 @@ class IdentitiesController extends BaseController {
 
   ImagePaths get imagePaths => _imagePaths;
 
-  bool isSignatureShow() {
-    return selectedIndex.value!= null && selectedIndex.value! >= 0; 
-  }
+  bool get isSignatureShow => identitySelected.value != null;
 }

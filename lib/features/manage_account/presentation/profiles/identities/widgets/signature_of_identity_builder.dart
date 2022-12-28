@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/profiles/iden
 
 class SignatureOfIdentityBuilder extends StatelessWidget {
 
-  SignatureOfIdentityBuilder({required this.identity});
+  const SignatureOfIdentityBuilder({Key? key, required this.identity}) : super(key: key);
 
   final Identity identity;
 
