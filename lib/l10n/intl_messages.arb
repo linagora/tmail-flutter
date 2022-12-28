@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-11-18T14:33:10.063321",
+  "@@last_modified": "2022-12-28T14:09:51.971658",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1166,8 +1166,26 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "profilesSettingExplanation": "Info about you, and options to manage it",
+  "@profilesSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "identities": "Identities",
   "@identities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "identitiesSettingExplanation": "Select the identity or email address you want to use to send an emails",
+  "@identitiesSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewIdentity": "Create new identity",
+  "@createNewIdentity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2524,6 +2542,12 @@
   },
   "openInNewTab": "Open in New Tab",
   "@openInNewTab": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "regards": "Regards",
+  "@regards": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

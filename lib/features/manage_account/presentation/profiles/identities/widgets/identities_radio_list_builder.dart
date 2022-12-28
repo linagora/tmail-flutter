@@ -1,79 +1,105 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_list_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/signature_of_identity_builder.dart';
 
-import 'identity_list_tile_builder.dart';
-
-class IdentitiesRadioListBuilder extends StatefulWidget {
-  const IdentitiesRadioListBuilder({
-    Key? key, 
-    required this.controller,
-  }) : super(key: key);
+class IdentitiesRadioListBuilder extends StatelessWidget {
 
   final IdentitiesController controller;
+  final ResponsiveUtils responsiveUtils;
+  final ImagePaths imagePaths;
 
-  @override
-  State<StatefulWidget> createState() => _IdentitiesRadioListBuilderState();
-}
-
-class _IdentitiesRadioListBuilderState extends State<IdentitiesRadioListBuilder> {
-  late final controller = widget.controller;
+  const IdentitiesRadioListBuilder({
+    Key? key,
+    required this.controller,
+    required this.responsiveUtils,
+    required this.imagePaths,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      if (controller.listAllIdentities.isEmpty) {
-        return const SizedBox.shrink();
-      }
+    return Container(
+      height: responsiveUtils.isWebDesktop(context) ? 256 : null,
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColor.attachmentFileBorderColor),
+        borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+        color: Colors.white
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+        child: responsiveUtils.isWebDesktop(context)
+          ? _buildIdentityViewHorizontal(context)
+          : _buildIdentityViewVertical(context))
+    );
+  }
 
-      return Container(
-        foregroundDecoration: BoxDecoration(
-          border: Border.all(color: AppColor.colorBorderIdentityInfo, width: 1),
-          borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+  Widget _buildIdentityViewVertical(BuildContext context) {
+    return Obx(() => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if(controller.isSignatureShow)
+          ...[
+            _buildListIdentityView(context),
+            Container(height: 1, color: AppColor.attachmentFileBorderColor),
+            Obx(() => SignatureOfIdentityBuilder(identity: controller.identitySelected.value!))
+          ]
+        else
+          _buildListIdentityView(context)
+      ],
+    ));
+  }
+
+  Widget _buildIdentityViewHorizontal(BuildContext context) {
+    return Obx(() => Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (controller.isSignatureShow)
+          ...[
+            _buildListIdentityView(context),
+            Container(width: 1, color: AppColor.attachmentFileBorderColor),
+            Expanded(
+              child: Obx(() => SignatureOfIdentityBuilder(identity: controller.identitySelected.value!)),
+            )
+          ]
+        else
+          Expanded(child: _buildListIdentityView(context))
+      ],
+    ));
+  }
+
+  Widget _buildListIdentityView(BuildContext context) {
+    return Container(
+      key: const Key('identities_list'),
+      width: responsiveUtils.isWebDesktop(context) ? 320 : null,
+      height: 256,
+      padding: const EdgeInsets.only(left: 12, top: 12, bottom: 12),
+      child: Obx(() => FadingEdgeScrollView.fromScrollView(
+        gradientFractionOnStart: 0.3,
+        gradientFractionOnEnd: 0.3,
+        shouldDisposeScrollController: true,
+        child: ListView.builder(
+          controller: ScrollController(),
+          padding: const EdgeInsets.only(right: 12.0),
+          itemCount: controller.listAllIdentities.length,
+          itemBuilder: ((context, index) {
+            return IdentityListTileBuilder(
+              imagePaths: imagePaths,
+              identity: controller.listAllIdentities[index],
+              identitySelected: controller.identitySelected.value,
+              onSelectIdentityAction: controller.selectIdentity,
+              onEditIdentityAction: (identitySelected) =>
+                controller.goToEditIdentity(context, identitySelected),
+              onDeleteIdentityAction: (identitySelected) =>
+                controller.openConfirmationDialogDeleteIdentityAction(context, identitySelected),
+            );
+          }),
         ),
-        child: Obx(() => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              key: const Key('identities_checkbox_list'),
-              height: 256,
-              foregroundDecoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [0, 0.5, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 1].map((e) 
-                        => Colors.white.withOpacity(e.toDouble())).toList(),
-                    stops: const [0.8, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1],// Gradient from https://learnui.design/tools/gradient-generator.html
-                    tileMode: TileMode.mirror,
-                  ),
-                border: controller.isSignatureShow() ? const Border(bottom: BorderSide(color: AppColor.colorBorderIdentityInfo)): null,
-              ),
-              padding: const EdgeInsets.only(left: 12.0, bottom: 12.0, top: 12.0, right: 4.0),
-              child: Scrollbar(
-                child: MediaQuery.removePadding(
-                  context: context,
-                  removeTop: true,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    itemCount: controller.listAllIdentities.value.length,
-                    itemBuilder: ((context, index) {
-                      return IdentityListTileBuilder(
-                        controller: widget.controller,
-                        index: index,
-                        selected: widget.controller.selectedIndex.value,
-                      );
-                    }),
-                  )
-                ),
-              ),
-            ),
-            if(controller.isSignatureShow())
-              Obx(() => SignatureOfIdentityBuilder(identity: controller.identitySelected.value!)),
-          ],
-        ),
-      ));
-    });
+      ))
+    );
   }
 }
