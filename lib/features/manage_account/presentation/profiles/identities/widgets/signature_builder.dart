@@ -1,10 +1,14 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
+import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
+import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 
 class SignatureBuilder extends StatelessWidget {
-  SignatureBuilder({
+
+  const SignatureBuilder({
     Key? key,
     this.width,
     this.height,
@@ -61,5 +65,4 @@ class SignatureBuilder extends StatelessWidget {
     final unescape = HtmlUnescape();
     return unescape.convert(htmlString);
   }
-  
 }

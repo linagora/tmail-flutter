@@ -1,121 +1,167 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
+import 'package:model/extensions/list_email_address_extension.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+typedef OnSelectIdentityAction = Function(Identity? identitySelected);
+typedef OnEditIdentityAction = Function(Identity identitySelected);
+typedef OnDeleteIdentityAction = Function(Identity identitySelected);
 
 class IdentityListTileBuilder extends StatelessWidget {
+
   const IdentityListTileBuilder({
     Key? key, 
-    required this.controller,
-    required this.index,
-    required this.selected
+    required this.identity,
+    required this.identitySelected,
+    required this.imagePaths,
+    this.onSelectIdentityAction,
+    this.onEditIdentityAction,
+    this.onDeleteIdentityAction
   }) : super(key: key);
 
-  final IdentitiesController controller;
-  final int index;
-  final int? selected;
+  final Identity identity;
+  final Identity? identitySelected;
+  final ImagePaths imagePaths;
+  final OnSelectIdentityAction? onSelectIdentityAction;
+  final OnEditIdentityAction? onEditIdentityAction;
+  final OnDeleteIdentityAction? onDeleteIdentityAction;
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = controller.imagePaths;
-    final listAllIdentities = controller.listAllIdentities.value;
-    final identity = listAllIdentities[index];
-
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12.0),
-        onTap: () => controller.selectIdentity(index),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.0),
-            color: isIdentitySelected(index) ? AppColor.colorItemSelected : Colors.transparent,
-          ),
-          padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: BuildUtils.isWeb ? 8.0 : 0.0),
-                child: Radio<int>(
-                  value: index,
-                  groupValue: selected,
-                  onChanged: (selectedValue) => controller.selectIdentity(index),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 2),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12.0),
+          onTap: () => onSelectIdentityAction?.call(identity),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+              color: _isIdentitySelected
+                ? AppColor.colorItemSelected
+                : Colors.transparent,
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Radio<Identity>(
+                  value: identity,
+                  splashRadius: 15,
+                  groupValue: identitySelected,
+                  activeColor: AppColor.primaryColor,
+                  onChanged: onSelectIdentityAction,
                 ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      identity.name ?? '', 
-                      overflow: CommonTextStyle.defaultTextOverFlow,
-                      softWrap: CommonTextStyle.defaultSoftWrap, 
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: Colors.black)),
-                    _buildIconWithTextLine(imagePaths.icEmail, identity.email),
-                    for(final widget in _buildReplyLines(identity, imagePaths))
-                      widget
-                  ],  
-                )
-              ),
-              if(isIdentitySelected(index))...[
-                buildSVGIconButton(
-                  padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-                  icon: imagePaths.icEdit, 
-                  iconSize: 24,
-                  iconColor: AppColor.primaryColor, 
-                  onTap: () => controller.goToEditIdentity(context, controller.identitySelected.value!),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Text(
+                          identity.name ?? '',
+                          overflow: CommonTextStyle.defaultTextOverFlow,
+                          softWrap: CommonTextStyle.defaultSoftWrap,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Colors.black)),
+                      ),
+                      if (identity.email?.isNotEmpty == true)
+                        _buildIconSVGWithTextLine(imagePaths.icEmail, identity.email),
+                      if (identity.replyTo?.isNotEmpty == true)
+                        _buildIconSVGWithTextLine(
+                          imagePaths.icReplyTo,
+                          identity.replyTo?.listEmailAddressToString(isFullEmailAddress: true)
+                        ),
+                      if (identity.bcc?.isNotEmpty == true)
+                        _buildIconCharacterWithTextLine(
+                          AppLocalizations.of(context).bcc_email_address_prefix,
+                          identity.bcc?.listEmailAddressToString(isFullEmailAddress: true)
+                        ),
+                    ],
+                  )
                 ),
-                buildSVGIconButton(
-                  padding: const EdgeInsets.only(right: 0.0),
-                  icon: imagePaths.icDeleteOutline,
-                  iconSize: 24,
-                  iconColor: AppColor.colorActionDeleteConfirmDialog, 
-                  onTap: () => controller.openConfirmationDialogDeleteIdentityAction(context, controller.identitySelected.value!),
-                ),
-              ]
-            ],
+                if(_isIdentitySelected)
+                  ...[
+                    buildSVGIconButton(
+                      icon: imagePaths.icEditRule,
+                      iconSize: 24,
+                      iconColor: AppColor.primaryColor,
+                      onTap: () => onEditIdentityAction?.call(identity),
+                    ),
+                    buildSVGIconButton(
+                      icon: imagePaths.icDeleteRule,
+                      iconSize: 24,
+                      iconColor: AppColor.colorDeletePermanentlyButton,
+                      onTap: () => onDeleteIdentityAction?.call(identity),
+                    ),
+                  ]
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  List<Widget> _buildReplyLines(Identity? identity, ImagePaths imagePaths) {
-    return [
-      for(var identityReplyTo in identity?.replyTo?.toList() ?? [])
-        _buildIconWithTextLine(imagePaths.icReply, identityReplyTo.email)];
-  }
-
-  Widget _buildIconWithTextLine(String imagePath, String? text) {
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: SvgPicture.asset(
-            imagePath, 
-            color: AppColor.primaryColor, 
-            width: 16,
-            fit: BoxFit.fitHeight,
-        )),
-        // replacement character after ..., so wrap it inside richtext is workaround solution
+  Widget _buildIconSVGWithTextLine(String imagePath, String? text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(children: [
+        SizedBox(
+          width: 30,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SvgPicture.asset(imagePath, width: 15, height: 15))),
+        const SizedBox(width: 4),
         Expanded(child: Text(
-          text ?? '',  style: const TextStyle(
+          text ?? '',
+          style: const TextStyle(
             color: AppColor.colorEmailAddressFull,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.normal,
             fontSize: 13,
           ),
           overflow: CommonTextStyle.defaultTextOverFlow,
-          softWrap: CommonTextStyle.defaultSoftWrap,
-        )),
-      ]
+          softWrap: CommonTextStyle.defaultSoftWrap
+        ))
+      ]),
     );
   }
 
-  bool isIdentitySelected(int index) {
-    return index == selected;
+  Widget _buildIconCharacterWithTextLine(String character, String? text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(children: [
+        Container(
+          width: 30,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            character,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.normal,
+              decoration: TextDecoration.underline,
+              color: AppColor.colorTextButton))),
+        const SizedBox(width: 4),
+        Expanded(child: Text(text ?? '',
+          style: const TextStyle(
+            color: AppColor.colorEmailAddressFull,
+            fontWeight: FontWeight.normal,
+            fontSize: 13,
+          ),
+          overflow: CommonTextStyle.defaultTextOverFlow,
+          softWrap: CommonTextStyle.defaultSoftWrap
+        ))
+      ]),
+    );
   }
+
+  bool get _isIdentitySelected => identity.id == identitySelected?.id;
 }
