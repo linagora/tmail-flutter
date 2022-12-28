@@ -5,6 +5,7 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -34,9 +35,11 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
 
     return PortalTarget(
       visible: controller.isAdvancedSearchViewOpen.isTrue,
-      portalFollower: GestureDetector(
+      portalFollower: PointerInterceptor(
+        child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () => controller.selectOpenAdvanceSearch()),
+      ),
       child: PortalTarget(
         visible: controller.isAdvancedSearchViewOpen.isTrue,
         anchor: const Aligned(
