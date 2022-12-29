@@ -96,4 +96,9 @@ class FCMRepositoryImpl extends FCMRepository {
   Future<void> storeSubscription(FCMSubscription fcmSubscription) {
     return _fcmDatasource[DataSourceType.local]!.storeSubscription(fcmSubscription.toFCMSubscriptionCache());
   }
+  
+  @override
+  Future<bool> destroySubscription(String subscriptionId) {
+    return _fcmDatasource[DataSourceType.network]!.destroySubscription(subscriptionId);
+  }
 }
