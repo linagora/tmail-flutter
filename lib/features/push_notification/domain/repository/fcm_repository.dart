@@ -30,4 +30,6 @@ abstract class FCMRepository {
   Future<FirebaseSubscription> registerNewToken(RegisterNewTokenRequest newTokenRequest);
 
   Future<FCMSubscription> getSubscription();
+
+  Future<bool> destroySubscription(String subscriptionId);
 }
