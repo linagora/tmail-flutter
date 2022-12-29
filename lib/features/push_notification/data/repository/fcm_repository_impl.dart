@@ -85,6 +85,12 @@ class FCMRepositoryImpl extends FCMRepository {
   Future<FirebaseSubscription> registerNewToken(RegisterNewTokenRequest newTokenRequest) {
     return _fcmDatasource[DataSourceType.network]!.registerNewToken(newTokenRequest);
   }
+
+  @override
+  Future<FCMSubscription> getSubscription() async {
+    final _fcmSubScription = await _fcmDatasource[DataSourceType.local]!.geSubscription();
+    return FCMSubscription(_fcmSubScription.deviceId, _fcmSubScription.subscriptionId);
+  }
   
   @override
   Future<void> storeSubscription(FCMSubscription fcmSubscription) {
