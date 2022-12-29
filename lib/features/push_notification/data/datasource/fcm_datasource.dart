@@ -19,4 +19,6 @@ abstract class FCMDatasource {
   Future<FirebaseSubscription> registerNewToken(RegisterNewTokenRequest newTokenRequest);
 
   Future<FCMSubscriptionCache> geSubscription();
+
+  Future<bool> destroySubscription(String subscriptionId);
 }
