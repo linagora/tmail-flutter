@@ -319,7 +319,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               controller.openPopupMenuAction(context, position, popupMenuUserSettingActionTile(context,
                   controller.userProfile.value,
                   onLogoutAction: () {
-                     controller.logout(controller.sessionCurrent, controller.accountId.value);
+                    popBack();
+                    controller.logout(controller.sessionCurrent, controller.accountId.value);
                   },
                   onSettingAction: () {
                     popBack();

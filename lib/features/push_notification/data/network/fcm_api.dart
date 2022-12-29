@@ -70,7 +70,7 @@ class FcmApi {
     final processingInvocation = ProcessingInvocation();
     final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
 
-    final firebaseSubscriptionSetMethod = FirebaseSubscriptionSetMethod();
+    final firebaseSubscriptionSetMethod = FirebaseSubscriptionSetMethod()..addDestroy({Id(subscriptionId)});
     final firebaseSubscriptionSetInvocation = requestBuilder.invocation(firebaseSubscriptionSetMethod);
     final response = await (requestBuilder
         ..usings({

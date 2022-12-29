@@ -41,7 +41,7 @@ class FCMCacheManager {
     return await Future.wait([
       _sharedPreferences.remove(TypeName.emailType.value),
       _sharedPreferences.remove(TypeName.mailboxType.value),
-      _sharedPreferences.remove(TypeName.emailDelivery.value)
+      _sharedPreferences.remove(TypeName.emailDelivery.value),
     ]).then((listResult) => listResult.every((result) => result));
   }
 

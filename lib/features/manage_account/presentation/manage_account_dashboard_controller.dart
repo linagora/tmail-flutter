@@ -299,10 +299,4 @@ class ManageAccountDashBoardController extends ReloadableController {
       dashboardSettingAction.value = newAction;
     }
   }
-
-  @override
-  void logoutAction() {
-    popBack();
-    super.logoutAction();
-  }
 }
