@@ -1396,13 +1396,7 @@ class MailboxDashBoardController extends ReloadableController {
   void popAllRouteIfHave() {
     Get.until((route) => Get.currentRoute == AppRoutes.dashboard);
   }
-
-  @override
-  void logoutAction() {
-    popBack();
-    super.logoutAction();
-  }
-
+  
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();

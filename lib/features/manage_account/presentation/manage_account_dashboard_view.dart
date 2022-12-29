@@ -142,7 +142,8 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
               controller.openPopupMenuAction(context, position, popupMenuUserSettingActionTile(context,
                   controller.userProfile.value,
                   onLogoutAction: () {
-                      controller.logout(controller.sessionCurrent.value, controller.accountId.value);
+                    popBack();
+                    controller.logout(controller.sessionCurrent.value, controller.accountId.value);
                     },
                   onSettingAction: ()  {
                     popBack();

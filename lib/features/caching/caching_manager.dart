@@ -4,6 +4,7 @@ import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/subscription_cache_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 
@@ -16,6 +17,7 @@ class CachingManager {
   final RecentSearchCacheClient _recentSearchCacheClient;
   final AccountCacheClient _accountCacheClient;
   final FCMCacheManager _fcmCacheManager;
+  final FCMSubscriptionCacheClient _fcmSubscriptionCacheClient;
 
   CachingManager(
     this._mailboxCacheClient,
@@ -24,6 +26,7 @@ class CachingManager {
     this._recentSearchCacheClient,
     this._accountCacheClient,
     this._fcmCacheManager,
+    this._fcmSubscriptionCacheClient,
   );
 
   Future<void> clearAll() async {
@@ -33,6 +36,7 @@ class CachingManager {
       _emailCacheClient.clearAllData(),
       _recentSearchCacheClient.clearAllData(),
       _accountCacheClient.clearAllData(),
+      _fcmSubscriptionCacheClient.clearAllData(),
       _fcmCacheManager.clearAllStateToRefresh()
     ]);  
   }
