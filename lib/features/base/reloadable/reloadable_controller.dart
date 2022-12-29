@@ -11,7 +11,6 @@ import 'package:model/account/authentication_type.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
-import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
@@ -25,6 +24,7 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -44,6 +44,7 @@ abstract class ReloadableController extends BaseController {
   final LogoutOidcInteractor _logoutOidcInteractor;
   final DeleteAuthorityOidcInteractor _deleteAuthorityOidcInteractor;
   final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor;
+  final _fcmReceiver = FcmReceiver.instance;
 
   ReloadableController(
     this._logoutOidcInteractor,
@@ -157,7 +158,7 @@ abstract class ReloadableController extends BaseController {
       ]);
       _authorizationInterceptors.clear();
       _authorizationIsolateInterceptors.clear();
-      await HiveCacheConfig().closeHive();
+      _fcmReceiver.deleteFcmToken();
       _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
     }
   }
@@ -171,7 +172,7 @@ abstract class ReloadableController extends BaseController {
     ]);
     _authorizationIsolateInterceptors.clear();
     _authorizationInterceptors.clear();
-    await HiveCacheConfig().closeHive();
+    _fcmReceiver.deleteFcmToken();
     _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
   }
 
