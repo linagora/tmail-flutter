@@ -58,4 +58,13 @@ class FcmDatasourceImpl extends FCMDatasource {
   Future<FCMSubscriptionCache> geSubscription() {
     throw UnimplementedError();
   }
+
+  @override
+  Future<bool> destroySubscription(String subscriptionId) {
+    return Future.sync(() async {
+      return await _fcmApi.destroySubscription(subscriptionId);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
+  }
 }

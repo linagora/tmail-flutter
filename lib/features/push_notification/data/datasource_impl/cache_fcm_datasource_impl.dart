@@ -68,4 +68,9 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
       _exceptionThrower.throwException(error);
     });
   }
+
+  @override
+  Future<bool> destroySubscription(String subscriptionId) {
+    throw UnimplementedError();
+  }
 }

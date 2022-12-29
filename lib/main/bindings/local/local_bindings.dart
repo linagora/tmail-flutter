@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/caching/recent_login_url_cache_client.dar
 import 'package:tmail_ui_user/features/caching/recent_login_username_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/subscription_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/token_oidc_cache_client.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_username_cache_manager.dart';
@@ -56,7 +57,8 @@ class LocalBindings extends Bindings {
     Get.put(RecentLoginUrlCacheManager((Get.find<RecentLoginUrlCacheClient>())));
     Get.put(RecentLoginUsernameCacheClient());
     Get.put(RecentLoginUsernameCacheManager(Get.find<RecentLoginUsernameCacheClient>()));
-    Get.put(FCMCacheManager(Get.find<SharedPreferences>()));
+    Get.put(FCMSubscriptionCacheClient());
+    Get.put(FCMCacheManager(Get.find<SharedPreferences>(),Get.find<FCMSubscriptionCacheClient>()));
     Get.put(CachingManager(
       Get.find<MailboxCacheClient>(),
       Get.find<StateCacheClient>(),
