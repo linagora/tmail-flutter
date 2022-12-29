@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.da
 import 'package:tmail_ui_user/features/push_notification/data/repository/fcm_repository_impl.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_subscription_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_push_notification_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm_subscription_local_interactor.dart';
@@ -66,6 +67,7 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => GetMailboxStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => StoreSubscriptionInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetFCMSubscriptionLocalInteractor(Get.find<FCMRepositoryImpl>()));
+    Get.lazyPut(() => DestroySubscriptionInteractor(Get.find<FCMRepositoryImpl>()));
   }
 
   @override
