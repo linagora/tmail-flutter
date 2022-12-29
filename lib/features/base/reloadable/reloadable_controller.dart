@@ -159,6 +159,7 @@ abstract class ReloadableController extends BaseController {
       _authorizationInterceptors.clear();
       _authorizationIsolateInterceptors.clear();
       _fcmReceiver.deleteFcmToken();
+      await _cachingManager.closeHive();
       _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
     }
   }
@@ -173,6 +174,7 @@ abstract class ReloadableController extends BaseController {
     _authorizationIsolateInterceptors.clear();
     _authorizationInterceptors.clear();
     _fcmReceiver.deleteFcmToken();
+    await _cachingManager.closeHive();
     _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
   }
 

@@ -7,6 +7,8 @@ import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 
+import 'config/hive_cache_config.dart';
+
 class CachingManager {
   final MailboxCacheClient _mailboxCacheClient;
   final StateCacheClient _stateCacheClient;
@@ -25,25 +27,14 @@ class CachingManager {
   );
 
   Future<void> clearAll() async {
-    if (kIsWeb) {
-      await Future.wait([
-        _stateCacheClient.clearAllData(),
-        _mailboxCacheClient.clearAllData(),
-        _emailCacheClient.clearAllData(),
-        _recentSearchCacheClient.clearAllData(),
-        _accountCacheClient.clearAllData(),
-        _fcmCacheManager.clearAllStateToRefresh()
-      ]);
-    } else {
-      await Future.wait([
-        _stateCacheClient.deleteBox(),
-        _mailboxCacheClient.deleteBox(),
-        _emailCacheClient.deleteBox(),
-        _recentSearchCacheClient.deleteBox(),
-        _accountCacheClient.deleteBox(),
-        _fcmCacheManager.clearAllStateToRefresh()
-      ]);
-    }
+    await Future.wait([
+      _stateCacheClient.clearAllData(),
+      _mailboxCacheClient.clearAllData(),
+      _emailCacheClient.clearAllData(),
+      _recentSearchCacheClient.clearAllData(),
+      _accountCacheClient.clearAllData(),
+      _fcmCacheManager.clearAllStateToRefresh()
+    ]);  
   }
 
   Future<void> cleanEmailCache() async {
@@ -58,5 +49,9 @@ class CachingManager {
         _emailCacheClient.deleteBox(),
       ]);
     }
+  }
+
+  Future<void> closeHive() async {
+    return await HiveCacheConfig().closeHive();
   }
 }
