@@ -3,20 +3,21 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource_impl/fcm_datasource_impl.dart';
-import 'package:tmail_ui_user/features/push_notification/data/datasource_impl/hive_fcm_datasource_impl.dart';
+import 'package:tmail_ui_user/features/push_notification/data/datasource_impl/cache_fcm_datasource_impl.dart';
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.dart';
 import 'package:tmail_ui_user/features/push_notification/data/repository/fcm_repository_impl.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_device_id_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_subscription_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm_subscription_local_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_push_notification_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_firebase_subscription_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/register_new_token_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_device_id_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_subscription_interator.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_mailbox_state_to_refresh_interactor.dart';
@@ -37,7 +38,7 @@ class FcmInteractorBindings extends InteractorsBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => HiveFCMDatasourceImpl(
+    Get.lazyPut(() => CacheFCMDatasourceImpl(
       Get.find<FCMCacheManager>(),
       Get.find<CacheExceptionThrower>(),
     ));
@@ -60,12 +61,11 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => StoreEmailStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetEmailStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => DeleteEmailStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
-    Get.lazyPut(() => StoreDeviceIdInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetFirebaseSubscriptionInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => RegisterNewTokenInteractor(Get.find<FCMRepositoryImpl>()));
-    Get.lazyPut(() => GetDeviceIdInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => StoreMailboxStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetMailboxStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
+    Get.lazyPut(() => DestroySubscriptionInteractor(Get.find<FCMRepositoryImpl>()));
   }
 
   @override
@@ -77,7 +77,7 @@ class FcmInteractorBindings extends InteractorsBindings {
   void bindingsRepositoryImpl() {
     Get.lazyPut(() => FCMRepositoryImpl(
       {
-        DataSourceType.local: Get.find<HiveFCMDatasourceImpl>(),
+        DataSourceType.local: Get.find<CacheFCMDatasourceImpl>(),
         DataSourceType.network: Get.find<FCMDatasource>(),
       },
       Get.find<ThreadDataSource>()
