@@ -59,8 +59,9 @@ class ManageAccountDashBoardController extends ReloadableController {
   ManageAccountDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
     DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
-    GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor
-  ) : super(logoutOidcInteractor,
+    GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
+  ) : super(
+      logoutOidcInteractor,
       deleteAuthorityOidcInteractor,
       getAuthenticatedAccountInteractor);
 
@@ -297,5 +298,11 @@ class ManageAccountDashBoardController extends ReloadableController {
     } else {
       dashboardSettingAction.value = newAction;
     }
+  }
+
+  @override
+  void logoutAction() {
+    popBack();
+    super.logoutAction();
   }
 }
