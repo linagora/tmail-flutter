@@ -53,4 +53,9 @@ class FcmDatasourceImpl extends FCMDatasource {
   Future<bool> storeSubscription(FCMSubscriptionCache fcmSubscriptionCache) {
     throw UnimplementedError();
   }
+  
+  @override
+  Future<FCMSubscriptionCache> geSubscription() {
+    throw UnimplementedError();
+  }
 }
