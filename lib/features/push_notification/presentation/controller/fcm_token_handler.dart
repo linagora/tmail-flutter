@@ -11,14 +11,14 @@ import 'package:fcm/model/firebase_token.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/model/fcm_subscription.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/state/get_device_id_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_fcm_subscription_local.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_firebase_subscription_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/register_new_token_state.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_device_id_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_firebase_subscription_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/register_new_token_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_device_id_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_subscription_interator.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
@@ -34,20 +34,18 @@ class FcmTokenHandler {
   static const int limitedTimeToExpire = 3;
   static const int extensionTimeExpire = 7;
 
-  StoreDeviceIdInteractor? _storeDeviceIdInteractor;
+  StoreSubscriptionInteractor? _storeSubscriptionInteractor;
   GetFirebaseSubscriptionInteractor? _getFirebaseSubscriptionInteractor;
   RegisterNewTokenInteractor? _registerNewTokenInteractor;
-  GetDeviceIdInteractor? _getDeviceIdInteractor;
 
   FirebaseToken? _fcmToken;
   DeviceClientId? _deviceClientId;
 
   void initialize() {
     try {
-      _storeDeviceIdInteractor = getBinding<StoreDeviceIdInteractor>();
+      _storeSubscriptionInteractor = getBinding<StoreSubscriptionInteractor>();
       _getFirebaseSubscriptionInteractor = getBinding<GetFirebaseSubscriptionInteractor>();
       _registerNewTokenInteractor = getBinding<RegisterNewTokenInteractor>();
-      _getDeviceIdInteractor = getBinding<GetDeviceIdInteractor>();
     } catch (e) {
       logError('FcmTokenHandler::initialize(): ${e.toString()}');
     }
@@ -62,8 +60,6 @@ class FcmTokenHandler {
       log('FcmTokenHandler::handle(): fcmToken: $_fcmToken');
       log('FcmTokenHandler::handle(): deviceId: $deviceId');
       _getFcmTokenFromBackend(deviceId);
-    } else {
-      _getDeviceIdAction();
     }
   }
 
@@ -73,15 +69,9 @@ class FcmTokenHandler {
     }
   }
 
-  void _storeDeviceIdAction(String deviceId) {
-    if (_storeDeviceIdInteractor != null) {
-      _consumeState(_storeDeviceIdInteractor!.execute(deviceId));
-    }
-  }
-
-  void _getDeviceIdAction() {
-    if (_getDeviceIdInteractor != null) {
-      _consumeState(_getDeviceIdInteractor!.execute());
+  void _storeSubscriptionAction(FCMSubscription fcmSubscription){
+    if (_storeSubscriptionInteractor != null) {
+      _consumeState(_storeSubscriptionInteractor!.execute(fcmSubscription));
     }
   }
 
@@ -120,11 +110,12 @@ class FcmTokenHandler {
       }
     } else if (success is RegisterNewTokenSuccess) {
       final deviceId = success.firebaseSubscription.deviceClientId?.value;
-      if (deviceId != null) {
-        _storeDeviceIdAction(deviceId);
+      final subscriptionId = success.firebaseSubscription.id?.id.value;
+      if (deviceId != null && subscriptionId != null) {
+        _storeSubscriptionAction(FCMSubscription(deviceId, subscriptionId));
       }
-    } else if (success is GetDeviceIdSuccess) {
-      _getFcmTokenFromBackend(success.deviceId);
+    } else if (success is GetFCMSubscriptionLocalSuccess) {
+      _getFcmTokenFromBackend(success.fcmSubscription.deviceId);
     }
   }
 
