@@ -42,4 +42,8 @@ class FcmReceiver {
   void onRefreshFcmToken() {
     FirebaseMessaging.instance.onTokenRefresh.listen(FcmService.instance.handleRefreshToken);
   }
+  
+  void deleteFcmToken(){
+    FirebaseMessaging.instance.deleteToken();
+  }
 }
