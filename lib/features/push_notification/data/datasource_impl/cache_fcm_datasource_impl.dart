@@ -59,4 +59,13 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
        _exceptionThrower.throwException(error);
     });
   }
+  
+  @override
+  Future<FCMSubscriptionCache> geSubscription() {
+    return Future.sync(() async {
+      return await _firebaseCacheManager.getSubscription();
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
+  }
 }
