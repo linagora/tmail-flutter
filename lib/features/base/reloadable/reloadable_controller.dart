@@ -3,6 +3,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
+import 'package:fcm/model/firebase_capability.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -24,7 +25,9 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/destroy_subscription_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_fcm_subscription_local.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_subscription_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm_subscription_local_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
@@ -33,6 +36,7 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 abstract class ReloadableController extends BaseController {
   final DynamicUrlInterceptors _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
@@ -49,6 +53,7 @@ abstract class ReloadableController extends BaseController {
   final _fcmReceiver = FcmReceiver.instance;
 
   GetFCMSubscriptionLocalInteractor? _getSubscriptionLocalInteractor;
+  DestroySubscriptionInteractor? _destroySubscriptionInteractor;
 
   ReloadableController(
     this._logoutOidcInteractor,
@@ -71,9 +76,11 @@ abstract class ReloadableController extends BaseController {
           _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
         } else if (failure is GetAuthenticatedAccountFailure || failure is NoAuthenticatedAccountFailure) {
           _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
-        } else if (failure is GetFCMSubscriptionLocalFailure){
+        } else if (failure is GetFCMSubscriptionLocalFailure) {
           logoutAction();
-        } 
+        } else if (failure is DestroySubscriptionFailure) {
+          logoutAction();
+        }
       },
       (success) {
         if (success is GetCredentialViewState) {
@@ -84,6 +91,11 @@ abstract class ReloadableController extends BaseController {
           handleLogoutOidcSuccess(success);
         } else if (success is GetStoredTokenOidcSuccess) {
           _handleGetStoredTokenOIDCSuccess(success);
+        } else if (success is GetFCMSubscriptionLocalSuccess) {
+          final _subscriptionId = success.fcmSubscription.subscriptionId;
+          _destroySubscriptionAction(_subscriptionId);
+        } else if (success is DestroySubscriptionSuccess) {
+          logoutAction();
         }
       }
     );
@@ -218,5 +230,39 @@ abstract class ReloadableController extends BaseController {
       logoutAction();
     }
     return Future.value();
+  }
+
+  void _destroySubscriptionAction(String subscriptionId) {
+    try {
+      _destroySubscriptionInteractor = Get.find<DestroySubscriptionInteractor>();
+      consumeState(_destroySubscriptionInteractor!.execute(subscriptionId));
+    } catch(e) {
+      logError('ReloadableController::destroySubscriptionAction(): exception: $e');
+      logoutAction();
+    }
+  }
+
+  bool fcmEnabled(Session? session, AccountId? accountId) {
+    bool _fcmEnabled = false;
+    try {
+      requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
+      if (AppConfig.fcmAvailable) {
+        _fcmEnabled = true;
+      } else {
+        _fcmEnabled = false;
+      }
+    } catch (e) {
+      logError('BaseController::fcmEnabled(): exception: $e');
+    }
+    return _fcmEnabled;
+  }
+
+  void logout(Session? session, AccountId? accountId) {
+    final _fcmEnabled = fcmEnabled(session, accountId);
+    if (_fcmEnabled) {
+      getSubscriptionLocalAction();
+    } else {
+      logoutAction();
+    }
   }
 }
