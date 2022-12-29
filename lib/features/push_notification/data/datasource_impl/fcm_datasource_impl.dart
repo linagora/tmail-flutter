@@ -2,6 +2,7 @@ import 'package:fcm/model/firebase_subscription.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
+import 'package:tmail_ui_user/features/push_notification/data/model/fcm_subscription.dart';
 import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/extensions/firebase_subscription_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
@@ -34,11 +35,6 @@ class FcmDatasourceImpl extends FCMDatasource {
   }
 
   @override
-  Future<bool> storeDeviceId(String deviceId) {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<bool> storeStateToRefresh(TypeName typeName, jmap.State newState) {
     throw UnimplementedError();
   }
@@ -52,9 +48,9 @@ class FcmDatasourceImpl extends FCMDatasource {
       _exceptionThrower.throwException(error);
     });
   }
-
+  
   @override
-  Future<String> getDeviceId() {
+  Future<bool> storeSubscription(FCMSubscriptionCache fcmSubscriptionCache) {
     throw UnimplementedError();
   }
 }
