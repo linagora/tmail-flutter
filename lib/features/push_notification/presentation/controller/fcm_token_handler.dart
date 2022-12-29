@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/model/register_n
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_fcm_subscription_local.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_firebase_subscription_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/register_new_token_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm_subscription_local_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_firebase_subscription_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/register_new_token_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_subscription_interator.dart';
@@ -37,6 +38,7 @@ class FcmTokenHandler {
   StoreSubscriptionInteractor? _storeSubscriptionInteractor;
   GetFirebaseSubscriptionInteractor? _getFirebaseSubscriptionInteractor;
   RegisterNewTokenInteractor? _registerNewTokenInteractor;
+  GetFCMSubscriptionLocalInteractor? _getFCMSubscriptionLocalInteractor;
 
   FirebaseToken? _fcmToken;
   DeviceClientId? _deviceClientId;
@@ -46,6 +48,7 @@ class FcmTokenHandler {
       _storeSubscriptionInteractor = getBinding<StoreSubscriptionInteractor>();
       _getFirebaseSubscriptionInteractor = getBinding<GetFirebaseSubscriptionInteractor>();
       _registerNewTokenInteractor = getBinding<RegisterNewTokenInteractor>();
+      _getFCMSubscriptionLocalInteractor = getBinding<GetFCMSubscriptionLocalInteractor>();
     } catch (e) {
       logError('FcmTokenHandler::initialize(): ${e.toString()}');
     }
@@ -60,6 +63,8 @@ class FcmTokenHandler {
       log('FcmTokenHandler::handle(): fcmToken: $_fcmToken');
       log('FcmTokenHandler::handle(): deviceId: $deviceId');
       _getFcmTokenFromBackend(deviceId);
+    } else {
+      _getFCMSubscriptionLocalAction();
     }
   }
 
@@ -176,6 +181,12 @@ class FcmTokenHandler {
   void _invokeRegisterNewTokenAction(RegisterNewTokenRequest newTokenRequest) {
     if (_registerNewTokenInteractor != null) {
       _consumeState(_registerNewTokenInteractor!.execute(newTokenRequest));
+    }
+  }
+
+  void _getFCMSubscriptionLocalAction() {
+    if (_getFCMSubscriptionLocalInteractor != null) {
+      _consumeState(_getFCMSubscriptionLocalInteractor!.execute());
     }
   }
 }
