@@ -1398,6 +1398,12 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   @override
+  void logoutAction() {
+    popBack();
+    super.logoutAction();
+  }
+
+  @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
     _emailReceiveManagerStreamSubscription.cancel();

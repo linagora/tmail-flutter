@@ -119,7 +119,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         SettingFirstLevelTileBuilder(
           AppLocalizations.of(context).sign_out,
           _imagePaths.icSignOut,
-          controller.manageAccountDashboardController.logoutAction
+          controller.manageAccountMenuController.logout,
         ),
       ]),
     );
