@@ -1,11 +1,14 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 
 class SettingsController extends GetxController {
   final manageAccountDashboardController = Get.find<ManageAccountDashBoardController>();
+  final manageAccountMenuController = Get.find<ManageAccountMenuController>();
+
 
   void selectSettings(AccountMenuItem accountMenuItem) {
     log('SettingsController::selectSettings(): $accountMenuItem');
