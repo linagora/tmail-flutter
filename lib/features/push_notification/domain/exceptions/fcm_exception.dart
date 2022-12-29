@@ -8,4 +8,4 @@ class NotFoundEmailDeliveryStateException implements Exception {}
 
 class NotFoundFirebaseSubscriptionException implements Exception {}
 
-class NotFoundDeviceIdException implements Exception {}
+class NotFoundSubscriptionException implements Exception {}
