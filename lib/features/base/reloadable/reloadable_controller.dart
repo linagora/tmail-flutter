@@ -24,6 +24,8 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_fcm_subscription_local.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm_subscription_local_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
@@ -46,6 +48,8 @@ abstract class ReloadableController extends BaseController {
   final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor;
   final _fcmReceiver = FcmReceiver.instance;
 
+  GetFCMSubscriptionLocalInteractor? _getSubscriptionLocalInteractor;
+
   ReloadableController(
     this._logoutOidcInteractor,
     this._deleteAuthorityOidcInteractor,
@@ -67,7 +71,9 @@ abstract class ReloadableController extends BaseController {
           _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
         } else if (failure is GetAuthenticatedAccountFailure || failure is NoAuthenticatedAccountFailure) {
           _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
-        }
+        } else if (failure is GetFCMSubscriptionLocalFailure){
+          logoutAction();
+        } 
       },
       (success) {
         if (success is GetCredentialViewState) {
@@ -200,5 +206,17 @@ abstract class ReloadableController extends BaseController {
     } catch(e) {
       logError('ReloadableController::injectVacationBindings(): exception: $e');
     }
+  }
+
+  Future<void> getSubscriptionLocalAction() {
+    try {
+      _getSubscriptionLocalInteractor = Get.find<GetFCMSubscriptionLocalInteractor>();
+      consumeState(_getSubscriptionLocalInteractor!.execute());
+    } catch (e) {
+      logError(
+          'ReloadableController::getSubscriptionLocalAction(): exception: $e');
+      logoutAction();
+    }
+    return Future.value();
   }
 }
