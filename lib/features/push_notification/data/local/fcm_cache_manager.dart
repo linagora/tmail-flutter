@@ -1,15 +1,17 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/caching/subscription_cache_client.dart';
+import 'package:tmail_ui_user/features/push_notification/data/model/fcm_subscription.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
 class FCMCacheManager {
   final SharedPreferences _sharedPreferences;
+  final FCMSubscriptionCacheClient _fcmSubscriptionCacheClient;
 
-  static const String fcmDeviceIdKey = 'FCM_DEVICE_ID';
 
-  FCMCacheManager(this._sharedPreferences);
+  FCMCacheManager(this._sharedPreferences,this._fcmSubscriptionCacheClient);
 
   Future<bool> storeStateToRefresh(TypeName typeName, jmap.State newState) {
     return _sharedPreferences.setString(typeName.value, newState.value);
@@ -43,17 +45,8 @@ class FCMCacheManager {
     ]).then((listResult) => listResult.every((result) => result));
   }
 
-  Future<bool> storeDeviceId(String deviceId) {
-    return _sharedPreferences.setString(fcmDeviceIdKey, deviceId);
-  }
-
-  Future<String> getDeviceId() async {
-    await _sharedPreferences.reload();
-    final deviceId = _sharedPreferences.getString(fcmDeviceIdKey);
-    if (deviceId != null) {
-      return deviceId;
-    } else {
-      throw NotFoundDeviceIdException();
-    }
+  Future<void> storeSubscription(FCMSubscriptionCache fcmSubscriptionCache) {
+    return _fcmSubscriptionCacheClient.insertItem(
+        FCMSubscriptionCache.keyCacheValue, fcmSubscriptionCache);
   }
 }
