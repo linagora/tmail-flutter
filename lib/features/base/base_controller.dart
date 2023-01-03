@@ -6,10 +6,10 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/fps_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -165,7 +165,7 @@ abstract class BaseController extends GetxController
         final mapEnvData = Map<String, String>.from(dotenv.env);
         await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
         FcmConfiguration.initialize();
-        if (!kIsWeb) {
+        if (!BuildUtils.isWeb) {
           await LocalNotificationManager.instance.setUp();
         }
         FcmInteractorBindings().dependencies();

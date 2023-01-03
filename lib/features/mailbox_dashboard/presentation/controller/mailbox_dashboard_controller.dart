@@ -197,7 +197,11 @@ class MailboxDashBoardController extends ReloadableController {
     _registerPendingFileInfo();
     _getSessionCurrent();
     _getAppVersion();
-    _handleOpenAppByNotification();
+    if (!BuildUtils.isWeb) {
+      _handleOpenAppByNotification();
+    } else {
+      dispatchRoute(DashboardRoutes.thread);
+    }
     super.onReady();
   }
 
@@ -370,7 +374,7 @@ class MailboxDashBoardController extends ReloadableController {
   void _handleOpenAppByNotification() async {
     log("_handleOpenAppByNotification(): isOpenAppByNotification: ${LocalNotificationManager.instance.isOpenAppByNotification}");
     await LocalNotificationManager.instance.setUp();
-    if(LocalNotificationManager.instance.isOpenAppByNotification) {
+    if (LocalNotificationManager.instance.isOpenAppByNotification) {
       final emailId = EmailId(Id(LocalNotificationManager.instance.getEmailIdFromNotification()!));
       _getPresentationEmailFromEmailId(emailId);
     } else {
