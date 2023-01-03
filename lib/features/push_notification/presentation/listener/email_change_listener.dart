@@ -2,6 +2,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/email/presentation_email.dart';
@@ -143,12 +144,16 @@ class EmailChangeListener extends ChangeListener {
       if (_newState != null) {
         _storeEmailDeliveryStateAction(_newState!);
 
-        for (var presentationEmail in success.emailList) {
-          _showLocalNotification(presentationEmail, _newState!);
+        if (!BuildUtils.isWeb) {
+          for (var presentationEmail in success.emailList) {
+            _showLocalNotification(presentationEmail, _newState!);
+          }
         }
       }
 
-      LocalNotificationManager.instance.groupPushNotification();
+      if (!BuildUtils.isWeb) {
+        LocalNotificationManager.instance.groupPushNotification();
+      }
     }
   }
 

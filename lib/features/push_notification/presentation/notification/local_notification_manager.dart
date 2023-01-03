@@ -38,6 +38,7 @@ class LocalNotificationManager {
     } catch (e) {
       logError('LocalNotificationManager::setUp(): ERROR: ${e.toString()}');
     }
+    return Future.value();
   }
 
   bool get isOpenAppByNotification => _notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
@@ -141,6 +142,10 @@ class LocalNotificationManager {
   }
 
   void groupPushNotification() async {
+    if (Platform.isIOS) {
+      return;
+    }
+
     final activeNotifications = await _localNotificationsPlugin
       .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
       ?.getActiveNotifications();
