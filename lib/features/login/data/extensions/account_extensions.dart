@@ -4,6 +4,12 @@ import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 
 extension AccountExtensions on Account {
   AccountCache toCache() {
-    return AccountCache(id, authenticationType.asString(), isSelected: isSelected);
+    return AccountCache(
+      id,
+      authenticationType.asString(),
+      isSelected: isSelected,
+      accountId: accountId?.id.value,
+      apiUrl: apiUrl
+    );
   }
 }

@@ -35,7 +35,6 @@ import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/refresh_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -136,10 +135,6 @@ class EmailBindings extends BaseBindings {
       Get.find<CredentialRepository>(),
       Get.find<AccountRepository>(),
       Get.find<AuthenticationOIDCRepository>()));
-    Get.lazyPut(() => RefreshTokenOIDCInteractor(
-      Get.find<AuthenticationOIDCRepository>(),
-      Get.find<AccountRepository>(),
-    ));
     Get.lazyPut(() => GetStoredEmailStateInteractor(Get.find<EmailRepository>()));
     IdentityInteractorsBindings().dependencies();
   }

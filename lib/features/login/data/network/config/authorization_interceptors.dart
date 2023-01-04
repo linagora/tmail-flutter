@@ -88,13 +88,18 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
             _configOIDC!.scopes,
             _token!.refreshToken);
 
+        final accountCurrent = await _accountCacheManager.getSelectedAccount();
+
         await Future.wait([
           _tokenOidcCacheManager.persistOneTokenOidc(newToken),
           _accountCacheManager.deleteSelectedAccount(_token!.tokenIdHash),
           _accountCacheManager.setSelectedAccount(Account(
-              newToken.tokenIdHash,
-              AuthenticationType.oidc,
-              isSelected: true)),
+            newToken.tokenIdHash,
+            AuthenticationType.oidc,
+            isSelected: true,
+            accountId: accountCurrent.accountId,
+            apiUrl: accountCurrent.apiUrl
+          )),
         ]);
 
         log('AuthorizationInterceptors::onError(): refreshToken: $newToken');

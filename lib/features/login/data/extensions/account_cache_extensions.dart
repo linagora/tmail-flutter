@@ -1,3 +1,5 @@
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:model/account/account.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
@@ -15,6 +17,12 @@ extension AccountCacheExtension on AccountCache {
 
   Account toAccount() {
     final authenticationType = fromAuthenticationTypeString();
-    return Account(id, authenticationType, isSelected: isSelected);
+    return Account(
+      id,
+      authenticationType,
+      isSelected: isSelected,
+      accountId: accountId != null ? AccountId(Id(accountId!)) : null,
+      apiUrl: apiUrl
+    );
   }
 }

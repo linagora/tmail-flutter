@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_i
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/session/presentation/session_controller.dart';
@@ -37,6 +38,7 @@ class SessionPageBindings extends BaseBindings {
       Get.find<LogoutOidcInteractor>(),
       Get.find<DeleteAuthorityOidcInteractor>(),
       Get.find<GetAuthenticatedAccountInteractor>(),
+      Get.find<UpdateAuthenticationAccountInteractor>(),
       Get.find<GetSessionInteractor>(),
       Get.find<DeleteCredentialInteractor>(),
       Get.find<CachingManager>(),
@@ -85,6 +87,7 @@ class SessionPageBindings extends BaseBindings {
       Get.find<GetCredentialInteractor>(),
       Get.find<GetStoredTokenOidcInteractor>(),
     ));
+    Get.lazyPut(() => UpdateAuthenticationAccountInteractor(Get.find<AccountRepository>()));
   }
 
   @override

@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
@@ -60,10 +61,13 @@ class ManageAccountDashBoardController extends ReloadableController {
     LogoutOidcInteractor logoutOidcInteractor,
     DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
     GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
+    UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor
   ) : super(
-      logoutOidcInteractor,
-      deleteAuthorityOidcInteractor,
-      getAuthenticatedAccountInteractor);
+    logoutOidcInteractor,
+    deleteAuthorityOidcInteractor,
+    getAuthenticatedAccountInteractor,
+    updateAuthenticationAccountInteractor
+  );
 
   @override
   void onReady() {
