@@ -96,9 +96,12 @@ class DownloadAttachmentsInteractor {
         _authenticationOIDCRepository.persistTokenOIDC(newTokenOIDC),
         _accountRepository.deleteCurrentAccount(accountCurrent.id),
         _accountRepository.setCurrentAccount(Account(
-            newTokenOIDC.tokenIdHash,
-            AuthenticationType.oidc,
-            isSelected: true))
+          newTokenOIDC.tokenIdHash,
+          AuthenticationType.oidc,
+          isSelected: true,
+          accountId: accountId,
+          apiUrl: accountCurrent.apiUrl
+        ))
       ]);
 
       _authorizationInterceptors.setTokenAndAuthorityOidc(

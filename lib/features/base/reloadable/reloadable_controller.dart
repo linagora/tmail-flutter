@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -50,6 +51,7 @@ abstract class ReloadableController extends BaseController {
   final LogoutOidcInteractor _logoutOidcInteractor;
   final DeleteAuthorityOidcInteractor _deleteAuthorityOidcInteractor;
   final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor;
+  final UpdateAuthenticationAccountInteractor _updateAuthenticationAccountInteractor;
   final _fcmReceiver = FcmReceiver.instance;
 
   GetFCMSubscriptionLocalInteractor? _getSubscriptionLocalInteractor;
@@ -59,6 +61,7 @@ abstract class ReloadableController extends BaseController {
     this._logoutOidcInteractor,
     this._deleteAuthorityOidcInteractor,
     this._getAuthenticatedAccountInteractor,
+    this._updateAuthenticationAccountInteractor
   );
 
   @override
@@ -158,6 +161,7 @@ abstract class ReloadableController extends BaseController {
     final apiUrl = success.session.apiUrl.toString();
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
+      updateAuthenticationAccount(success.session, success.session.accounts.keys.first);
       handleReloaded(success.session);
     } else {
       _handleGetSessionFailure();
@@ -274,6 +278,14 @@ abstract class ReloadableController extends BaseController {
       _logoutOIDCAction();
     } else {
       logoutAction();
+    }
+  }
+
+  void updateAuthenticationAccount(Session? session, AccountId? accountId) {
+    final apiUrl = session?.apiUrl.toString() ?? '';
+    log('ReloadableController::updateAuthenticationAccount():apiUrl: $apiUrl');
+    if (accountId != null && apiUrl.isNotEmpty) {
+      consumeState(_updateAuthenticationAccountInteractor.execute(accountId, apiUrl));
     }
   }
 }
