@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.da
 
 abstract class RemoteException with EquatableMixin implements Exception {
   static const connectError = 'Connect error';
+  static const noNetworkError = 'No network error';
 
   final String? message;
   final int? code;
@@ -40,4 +41,11 @@ class MethodLevelErrors extends RemoteException {
 
 class CannotCalculateChangesMethodResponseException extends MethodLevelErrors {
   CannotCalculateChangesMethodResponseException({String? message}) : super(ErrorMethodResponse.cannotCalculateChanges, message: message);
+}
+
+class NoNetworkError extends RemoteException {
+  const NoNetworkError() : super(message: RemoteException.noNetworkError);
+
+  @override
+  List<Object?> get props => [message];
 }
