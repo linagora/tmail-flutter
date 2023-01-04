@@ -72,14 +72,15 @@ abstract class ReloadableController extends BaseController {
           _handleGetSessionFailure();
         } else if (failure is LogoutOidcFailure) {
           log('ReloadableController::onData(): LogoutOidcFailure: $failure');
+          _getSubscriptionLocalAction();
         } else if (failure is GetStoredTokenOidcFailure) {
           _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
         } else if (failure is GetAuthenticatedAccountFailure || failure is NoAuthenticatedAccountFailure) {
           _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
         } else if (failure is GetFCMSubscriptionLocalFailure) {
-          logoutAction();
+          _checkAuthenticationTypeWhenLogout();
         } else if (failure is DestroySubscriptionFailure) {
-          logoutAction();
+          _checkAuthenticationTypeWhenLogout();
         }
       },
       (success) {
@@ -88,14 +89,15 @@ abstract class ReloadableController extends BaseController {
         } else if (success is GetSessionSuccess) {
           _handleGetSessionSuccess(success);
         } else if (success is LogoutOidcSuccess) {
-          handleLogoutOidcSuccess(success);
+          log('ReloadableController::handleLogoutOidcSuccess(): $success');
+          _getSubscriptionLocalAction();
         } else if (success is GetStoredTokenOidcSuccess) {
           _handleGetStoredTokenOIDCSuccess(success);
         } else if (success is GetFCMSubscriptionLocalSuccess) {
           final _subscriptionId = success.fcmSubscription.subscriptionId;
           _destroySubscriptionAction(_subscriptionId);
         } else if (success is DestroySubscriptionSuccess) {
-          logoutAction();
+          _checkAuthenticationTypeWhenLogout();
         }
       }
     );
@@ -165,25 +167,20 @@ abstract class ReloadableController extends BaseController {
   void handleReloaded(Session session) {}
 
   void logoutAction() async {
-    final authenticationType = _authorizationInterceptors.authenticationType;
-    if (authenticationType == AuthenticationType.oidc) {
-      consumeState(_logoutOidcInteractor.execute());
-    } else {
-      await Future.wait([
-        _deleteCredentialInteractor.execute(),
-        _cachingManager.clearAll(),
-        _languageCacheManager.removeLanguage(),
-      ]);
-      _authorizationInterceptors.clear();
-      _authorizationIsolateInterceptors.clear();
-      _fcmReceiver.deleteFcmToken();
-      await _cachingManager.closeHive();
-      _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
-    }
+    await Future.wait([
+      _deleteCredentialInteractor.execute(),
+      _cachingManager.clearAll(),
+      _languageCacheManager.removeLanguage(),
+    ]);
+    _authorizationInterceptors.clear();
+    _authorizationIsolateInterceptors.clear();
+    _fcmReceiver.deleteFcmToken();
+    await _cachingManager.closeHive();
+    _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
   }
 
-  void handleLogoutOidcSuccess(LogoutOidcSuccess success) async {
-    log('ReloadableController::handleLogoutOidcSuccess(): $success');
+  void _logoutOIDCAction() async {
+    log('ReloadableController::_logoutOIDCAction():');
     await Future.wait([
       _deleteAuthorityOidcInteractor.execute(),
       _cachingManager.clearAll(),
@@ -220,7 +217,7 @@ abstract class ReloadableController extends BaseController {
     }
   }
 
-  Future<void> getSubscriptionLocalAction() {
+  Future<void> _getSubscriptionLocalAction() {
     try {
       _getSubscriptionLocalInteractor = Get.find<GetFCMSubscriptionLocalInteractor>();
       consumeState(_getSubscriptionLocalInteractor!.execute());
@@ -259,8 +256,22 @@ abstract class ReloadableController extends BaseController {
 
   void logout(Session? session, AccountId? accountId) {
     final _fcmEnabled = fcmEnabled(session, accountId);
-    if (_fcmEnabled) {
-      getSubscriptionLocalAction();
+    if (_fcmEnabled) {  
+      final authenticationType = _authorizationInterceptors.authenticationType;
+      if (authenticationType == AuthenticationType.oidc) {
+        consumeState(_logoutOidcInteractor.execute());
+      } else {
+        _getSubscriptionLocalAction();
+      }
+    } else {
+      _checkAuthenticationTypeWhenLogout();
+    }
+  }
+
+  void _checkAuthenticationTypeWhenLogout() {
+    final authenticationType = _authorizationInterceptors.authenticationType;
+    if (authenticationType == AuthenticationType.oidc) {
+      _logoutOIDCAction();
     } else {
       logoutAction();
     }
