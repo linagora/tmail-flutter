@@ -15,8 +15,28 @@ class AccountCache extends HiveObject with EquatableMixin {
   @HiveField(2)
   final bool isSelected;
 
-  AccountCache(this.id, this.authenticationType, {required this.isSelected});
+  @HiveField(3)
+  final String? accountId;
+
+  @HiveField(4)
+  final String? apiUrl;
+
+  AccountCache(
+    this.id,
+    this.authenticationType,
+    {
+      required this.isSelected,
+      this.accountId,
+      this.apiUrl
+    }
+  );
 
   @override
-  List<Object?> get props => [id, authenticationType, isSelected];
+  List<Object?> get props => [
+    id,
+    authenticationType,
+    isSelected,
+    accountId,
+    apiUrl
+  ];
 }

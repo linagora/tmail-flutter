@@ -43,6 +43,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_con
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
@@ -81,6 +82,7 @@ class LoginController extends ReloadableController {
     LogoutOidcInteractor logoutOidcInteractor,
     DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
     GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
+    UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor,
     this._authenticationInteractor,
     this._dynamicUrlInterceptors,
     this._authorizationInterceptors,
@@ -96,9 +98,12 @@ class LoginController extends ReloadableController {
     this._getAllRecentLoginUrlOnMobileInteractor,
     this._saveLoginUsernameOnMobileInteractor,
     this._getAllRecentLoginUsernameOnMobileInteractor,
-  ) : super(logoutOidcInteractor,
-      deleteAuthorityOidcInteractor,
-      getAuthenticatedAccountInteractor);
+  ) : super(
+    logoutOidcInteractor,
+    deleteAuthorityOidcInteractor,
+    getAuthenticatedAccountInteractor,
+    updateAuthenticationAccountInteractor
+  );
 
   var loginState = LoginState(Right(LoginInitAction())).obs;
   final loginFormType = LoginFormType.baseUrlForm.obs;

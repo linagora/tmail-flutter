@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_ex
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
@@ -33,6 +34,7 @@ class SessionController extends ReloadableController {
     LogoutOidcInteractor logoutOidcInteractor,
     DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
     GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
+    UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor,
     this._getSessionInteractor,
     this._deleteCredentialInteractor,
     this._cachingManager,
@@ -40,9 +42,12 @@ class SessionController extends ReloadableController {
     this._authorizationInterceptors,
     this._appToast,
     this._dynamicUrlInterceptors,
-  ) : super(logoutOidcInteractor,
-      deleteAuthorityOidcInteractor,
-      getAuthenticatedAccountInteractor);
+  ) : super(
+    logoutOidcInteractor,
+    deleteAuthorityOidcInteractor,
+    getAuthenticatedAccountInteractor,
+    updateAuthenticationAccountInteractor
+  );
 
   @override
   void onReady() {
