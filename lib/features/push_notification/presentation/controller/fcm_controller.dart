@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
@@ -31,8 +32,6 @@ import 'package:tmail_ui_user/features/push_notification/presentation/listener/e
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
-import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
-import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -44,7 +43,6 @@ class FcmController extends BaseController {
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   AuthorizationInterceptors? _authorizationInterceptors;
-  GetSessionInteractor? _getSessionInteractor;
 
   FcmController._internal() {
     _listenFcmStream();
@@ -190,7 +188,6 @@ class FcmController extends BaseController {
       _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
       _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
-      _getSessionInteractor = getBinding<GetSessionInteractor>();
       FcmTokenHandler.instance.initialize();
     } catch (e) {
       logError('FcmController::_getBindings(): ${e.toString()}');
@@ -214,49 +211,41 @@ class FcmController extends BaseController {
 
   void _handleSuccessViewState(Success success) {
     log('FcmController::_handleSuccessViewState(): $success');
-    if (success is GetStoredTokenOidcSuccess) {
-      _getSessionWithTokenOidc(success);
+    if (success is GetAuthenticatedAccountSuccess) {
+      _handleGetAuthenticatedAccountSuccess(success);
+    } else if (success is GetStoredTokenOidcSuccess) {
+      _handleGetAccountByOidcSuccess(success);
     } else if (success is GetCredentialViewState) {
-      _getSessionWithBasicAuth(success);
-    }  else if (success is GetSessionSuccess) {
-      _handleGetSessionSuccess(success);
+      _handleGetAccountByBasicAuthSuccess(success);
     }
   }
 
-  void _getSessionWithTokenOidc(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
-    _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.baseUrl.toString());
+  void _handleGetAuthenticatedAccountSuccess(GetAuthenticatedAccountSuccess success) {
+    _currentAccountId = success.account.accountId;
+    _dynamicUrlInterceptors?.changeBaseUrl(success.account.apiUrl);
+    log('FcmController::_handleGetAuthenticatedAccountSuccess():_currentAccountId: $_currentAccountId');
+  }
+
+  void _handleGetAccountByOidcSuccess(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
+    log('FcmController::_handleGetAccountByOidcSuccess():');
     _authorizationInterceptors?.setTokenAndAuthorityOidc(
       newToken: storedTokenOidcSuccess.tokenOidc.toToken(),
       newConfig: storedTokenOidcSuccess.oidcConfiguration
     );
-    _getSession();
+    _pushActionFromRemoteMessageBackground();
   }
 
-  void _getSessionWithBasicAuth(GetCredentialViewState credentialViewState) {
-    _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.baseUrl.origin);
+  void _handleGetAccountByBasicAuthSuccess(GetCredentialViewState credentialViewState) {
+    log('FcmController::_handleGetAccountByBasicAuthSuccess():');
     _authorizationInterceptors?.setBasicAuthorization(
       credentialViewState.userName.userName,
       credentialViewState.password.value,
     );
-    _getSession();
+    _pushActionFromRemoteMessageBackground();
   }
 
-  void _getSession() {
-    if (_getSessionInteractor != null) {
-      consumeState(_getSessionInteractor!.execute().asStream());
-    } else {
-      _clearRemoteMessageBackground();
-      logError('FcmController::_getSession(): _getSessionInteractor is null');
-    }
-  }
-
-  void _handleGetSessionSuccess(GetSessionSuccess success) {
-    final sessionCurrent = success.session;
-    final apiUrl = sessionCurrent.apiUrl.toString();
-    _currentAccountId = sessionCurrent.accounts.keys.first;
-
-    _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
-
+  void _pushActionFromRemoteMessageBackground() {
+    log('FcmController::_pushActionFromRemoteMessageBackground():');
     if (_remoteMessageBackground != null && _currentAccountId != null) {
       final stateChange = _convertRemoteMessageToStateChange(_remoteMessageBackground!);
       final mapTypeState = stateChange.getMapTypeState(_currentAccountId!);
