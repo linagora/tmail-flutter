@@ -23,16 +23,17 @@ class NetworkConnectionController extends BaseController {
   NetworkConnectionController(this._connectivity);
 
   @override
+  void onInit() {
+    super.onInit();
+    log('NetworkConnectionController::onInit():');
+    _listenNetworkConnectionChanged();
+  }
+
+  @override
   void onReady() {
-   subscription = _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-     connectivityResult.value = result;
-     if (_isEnableShowToastDisconnection && result == ConnectivityResult.none) {
-       _showToastLostConnection();
-     } else {
-       ToastView.dismiss();
-     }
-    }) ;
-   super.onReady();
+    super.onReady();
+    log('NetworkConnectionController::onReady():');
+    _getCurrentNetworkConnectionState();
   }
 
   @override
@@ -44,7 +45,36 @@ class NetworkConnectionController extends BaseController {
   @override
   void onDone() {}
 
-  void setNetworkConnectivityState(ConnectivityResult newConnectivityResult) {
+  void _getCurrentNetworkConnectionState() async {
+    final currentConnectionResult = await _connectivity.checkConnectivity();
+    log('NetworkConnectionController::onReady():_getCurrentNetworkConnectionState: $currentConnectionResult');
+    _setNetworkConnectivityState(currentConnectionResult);
+    if (_isEnableShowToastDisconnection && !isNetworkConnectionAvailable()) {
+      _showToastLostConnection();
+    } else {
+      ToastView.dismiss();
+    }
+  }
+
+  void _listenNetworkConnectionChanged() {
+    subscription = _connectivity.onConnectivityChanged.listen(
+      (result) {
+        log('NetworkConnectionController::_listenNetworkConnectionChanged():onConnectivityChanged: $result');
+        _setNetworkConnectivityState(result);
+        if (_isEnableShowToastDisconnection && !isNetworkConnectionAvailable()) {
+          _showToastLostConnection();
+        } else {
+          ToastView.dismiss();
+        }
+      },
+      onError: (error, stackTrace) {
+        logError('NetworkConnectionController::_listenNetworkConnectionChanged():error: $error');
+        logError('NetworkConnectionController::_listenNetworkConnectionChanged():stackTrace: $stackTrace');
+      }
+    );
+  }
+
+  void _setNetworkConnectivityState(ConnectivityResult newConnectivityResult) {
     connectivityResult.value = newConnectivityResult;
   }
 

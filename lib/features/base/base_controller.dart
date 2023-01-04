@@ -72,6 +72,11 @@ abstract class BaseController extends GetxController
   }
 
   void onError(dynamic error) {
+    if (error is NoNetworkError) {
+      logError('BaseController::onError(): $error');
+      return;
+    }
+
     final _appToast = Get.find<AppToast>();
     final _imagePaths = Get.find<ImagePaths>();
     final _responsiveUtils = Get.find<ResponsiveUtils>();
