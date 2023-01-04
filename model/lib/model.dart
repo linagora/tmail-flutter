@@ -52,6 +52,7 @@ export 'extensions/user_profile_extension.dart';
 export 'extensions/utc_date_extension.dart';
 export 'extensions/email_filter_condition_extension.dart';
 export 'extensions/list_email_header_extension.dart';
+export 'extensions/account_extension.dart';
 // Identity
 export 'identity/identity_request_dto.dart';
 export 'mailbox/expand_mode.dart';

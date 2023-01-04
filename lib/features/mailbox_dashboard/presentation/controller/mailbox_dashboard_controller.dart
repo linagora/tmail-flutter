@@ -42,6 +42,7 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
@@ -176,6 +177,7 @@ class MailboxDashBoardController extends ReloadableController {
     LogoutOidcInteractor logoutOidcInteractor,
     DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
     GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
+    UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor,
     this._moveToMailboxInteractor,
     this._deleteEmailPermanentlyInteractor,
     this._markAsMailboxReadInteractor,
@@ -188,9 +190,12 @@ class MailboxDashBoardController extends ReloadableController {
     this._emptyTrashFolderInteractor,
     this._deleteMultipleEmailsPermanentlyInteractor,
     this._getEmailByIdInteractor,
-  ) : super(logoutOidcInteractor,
-      deleteAuthorityOidcInteractor,
-      getAuthenticatedAccountInteractor);
+  ) : super(
+    logoutOidcInteractor,
+    deleteAuthorityOidcInteractor,
+    getAuthenticatedAccountInteractor,
+    updateAuthenticationAccountInteractor
+  );
 
   @override
   void onInit() {
@@ -405,6 +410,7 @@ class MailboxDashBoardController extends ReloadableController {
       sessionCurrent = arguments;
       accountId.value = sessionCurrent?.accounts.keys.first;
       _getUserProfile();
+      updateAuthenticationAccount(sessionCurrent, accountId.value);
       injectAutoCompleteBindings(sessionCurrent, accountId.value);
       injectRuleFilterBindings(sessionCurrent, accountId.value);
       injectVacationBindings(sessionCurrent, accountId.value);
