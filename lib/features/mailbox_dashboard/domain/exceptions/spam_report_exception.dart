@@ -1,0 +1,2 @@
+
+class NotFoundLastTimeDismissedSpamReportException implements Exception {}
