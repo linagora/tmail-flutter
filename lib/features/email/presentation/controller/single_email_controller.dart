@@ -391,8 +391,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions) async {
     final accountId = mailboxDashBoardController.accountId.value;
-    final mailboxCurrent = getMailboxContain(presentationEmail);
-    if (accountId != null && mailboxCurrent != null) {
+    if (accountId != null) {
       consumeState(_markAsEmailReadInteractor.execute(accountId, presentationEmail.toEmail(), readActions));
     }
   }
@@ -757,8 +756,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction markStarAction) async {
     final accountId = mailboxDashBoardController.accountId.value;
-    final mailboxCurrent = getMailboxContain(presentationEmail);
-    if (accountId != null && mailboxCurrent != null) {
+    if (accountId != null) {
       consumeState(_markAsStarEmailInteractor.execute(accountId, presentationEmail.toEmail(), markStarAction));
     }
   }
