@@ -54,8 +54,4 @@ abstract class ThreadRepository {
   );
 
   Future<PresentationEmail> getEmailById(AccountId accountId, EmailId emailId, {Properties? properties});
-
-  Future<void> storelastTimeDismissedSpamReport(DateTime lastTimeDismissedSpamReport);
-
-  Future<DateTime> getlastTimeDismissedSpamReport();
 }
