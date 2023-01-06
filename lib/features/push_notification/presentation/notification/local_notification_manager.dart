@@ -18,7 +18,9 @@ class LocalNotificationManager {
   static LocalNotificationManager get instance => _instance;
 
   final _localNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  bool notificationsEnabled = false;
+
+  bool _notificationsEnabled = false;
+  bool _isNotificationClickedOnTerminate = false;
 
   final StreamController<NotificationResponse> localNotificationsController = StreamController<NotificationResponse>.broadcast();
 
@@ -40,16 +42,19 @@ class LocalNotificationManager {
     return Future.value();
   }
 
-  Future<void> getNotificationDetails() async {
+  Future<NotificationResponse?> getCurrentNotificationResponse() async {
     try {
       _notificationAppLaunchDetails = await _localNotificationsPlugin.getNotificationAppLaunchDetails();
+      return _notificationAppLaunchDetails?.notificationResponse;
     } catch (e) {
-      logError('LocalNotificationManager::getNotificationDetails(): ERROR: ${e.toString()}');
+      logError('LocalNotificationManager::getCurrentNotificationResponse(): ERROR: ${e.toString()}');
     }
-    return Future.value();
+    return Future.value(null);
   }
 
-  NotificationResponse? get currentNotificationResponse => _notificationAppLaunchDetails?.notificationResponse;
+  set activatedNotificationClickedOnTerminate(bool clicked) => _isNotificationClickedOnTerminate = clicked;
+
+  bool get isNotificationClickedOnTerminate => _isNotificationClickedOnTerminate;
 
   Future<bool?> _initLocalNotification() async {
     return await _localNotificationsPlugin.initialize(
@@ -69,17 +74,17 @@ class LocalNotificationManager {
   }
 
   void _checkLocalNotificationPermission() async {
-    if (notificationsEnabled) {
+    if (_notificationsEnabled) {
       return;
     }
 
     if (Platform.isAndroid) {
       final granted = await _isAndroidPermissionGranted();
       if (!granted) {
-        notificationsEnabled = await _requestPermissions();
+        _notificationsEnabled = await _requestPermissions();
       }
     } else {
-      notificationsEnabled = await _requestPermissions();
+      _notificationsEnabled = await _requestPermissions();
     }
   }
 

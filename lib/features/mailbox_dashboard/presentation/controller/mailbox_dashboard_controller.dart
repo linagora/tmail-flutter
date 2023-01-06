@@ -371,8 +371,8 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleClickLocalNotificationOnTerminated() async {
-    await _notificationManager.getNotificationDetails();
-    final notificationResponse = _notificationManager.currentNotificationResponse;
+    _notificationManager.activatedNotificationClickedOnTerminate = true;
+    final notificationResponse = await _notificationManager.getCurrentNotificationResponse();
     log('MailboxDashBoardController::_handleClickLocalNotificationOnTerminated():payload: ${notificationResponse?.payload}');
     final emailIdFromPayload = notificationResponse?.payload;
     final currentAccountId = accountId.value;
@@ -391,9 +391,6 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _getSessionCurrent() {
-    if (BuildUtils.isWeb) {
-      dispatchRoute(DashboardRoutes.thread);
-    }
     final arguments = Get.arguments;
     log('MailboxDashBoardController::_getSessionCurrent(): arguments = $arguments');
     if (arguments is Session) {
@@ -406,10 +403,13 @@ class MailboxDashBoardController extends ReloadableController {
       injectFCMBindings(sessionCurrent, accountId.value);
       _getVacationResponse();
 
-      if (!BuildUtils.isWeb) {
+      if (!BuildUtils.isWeb && !_notificationManager.isNotificationClickedOnTerminate) {
         _handleClickLocalNotificationOnTerminated();
+      } else {
+        dispatchRoute(DashboardRoutes.thread);
       }
     } else {
+      dispatchRoute(DashboardRoutes.thread);
       reload();
     }
   }
@@ -1383,6 +1383,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleClickLocalNotificationOnForeground(NotificationResponse? response) {
+    _notificationManager.activatedNotificationClickedOnTerminate = true;
     log('MailboxDashBoardController::_handleClickLocalNotificationOnForeground():payload: ${response?.payload}');
     final emailIdFromPayload = response?.payload;
     final currentAccountId = accountId.value;
