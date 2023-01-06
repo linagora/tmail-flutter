@@ -1,6 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,17 +29,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     );
 
     return FocusDetector(
-      onFocusGained: () async {
-        ThemeUtils.setSystemDarkUIStyle();
-        if (controller.isDrawerOpen) {
-          ThemeUtils.setStatusBarTransparentColor();
-        }
-        if(await controller.haveLocalNotificationPress()) {
-          controller.popAllRouteIfHave();
-          controller.dispatchRoute(DashboardRoutes.waiting);
-        }
-        controller.refreshActionWhenBackToApp();
-      },
+      onFocusGained: controller.handleOnFocusGained,
       child: Scaffold(
         drawerEnableOpenDragGesture: responsiveUtils.hasLeftMenuDrawerActive(context),
         body: Obx(() {
