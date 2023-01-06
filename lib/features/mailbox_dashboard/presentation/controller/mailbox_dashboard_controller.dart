@@ -165,6 +165,9 @@ class MailboxDashBoardController extends ReloadableController {
   final StreamController<RefreshActionViewEvent> _refreshActionEventController =
     StreamController<RefreshActionViewEvent>.broadcast();
 
+  final _notificationManager = LocalNotificationManager.instance;
+  final _fcmController = FcmController.instance;
+
   MailboxDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
     DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
@@ -197,11 +200,6 @@ class MailboxDashBoardController extends ReloadableController {
     _registerPendingFileInfo();
     _getSessionCurrent();
     _getAppVersion();
-    if (!BuildUtils.isWeb) {
-      _handleOpenAppByNotification();
-    } else {
-      dispatchRoute(DashboardRoutes.thread);
-    }
     super.onReady();
   }
 
@@ -272,12 +270,13 @@ class MailboxDashBoardController extends ReloadableController {
           clearState();
         } else if (failure is SaveEmailAsDraftsFailure
             || failure is RemoveEmailDraftsFailure
-            || failure is UpdateEmailDraftsFailure
-            || failure is GetEmailByIdFailure) {
+            || failure is UpdateEmailDraftsFailure) {
           clearState();
         } else if (failure is MarkAsMailboxReadAllFailure ||
             failure is MarkAsMailboxReadFailure) {
           _markAsReadMailboxFailure(failure);
+        } else if (failure is GetEmailByIdFailure) {
+          _handleGetEmailDetailedFailed(failure);
         }
       },
       (success) {
@@ -367,16 +366,21 @@ class MailboxDashBoardController extends ReloadableController {
     _refreshActionEventController.stream
       .debounceTime(const Duration(milliseconds: FcmService.durationMessageComing))
       .listen(_handleRefreshActionWhenBackToApp);
-    
-    LocalNotificationManager.instance.localNotificationStream.listen(_handleLocalNotificationResponse);
+
+    _notificationManager.localNotificationStream.listen(_handleClickLocalNotificationOnForeground);
   }
 
-  void _handleOpenAppByNotification() async {
-    log("_handleOpenAppByNotification(): isOpenAppByNotification: ${LocalNotificationManager.instance.isOpenAppByNotification}");
-    await LocalNotificationManager.instance.setUp();
-    if (LocalNotificationManager.instance.isOpenAppByNotification) {
-      final emailId = EmailId(Id(LocalNotificationManager.instance.getEmailIdFromNotification()!));
-      _getPresentationEmailFromEmailId(emailId);
+  void _handleClickLocalNotificationOnTerminated() async {
+    await _notificationManager.getNotificationDetails();
+    final notificationResponse = _notificationManager.currentNotificationResponse;
+    log('MailboxDashBoardController::_handleClickLocalNotificationOnTerminated():payload: ${notificationResponse?.payload}');
+    final emailIdFromPayload = notificationResponse?.payload;
+    final currentAccountId = accountId.value;
+    if (emailIdFromPayload?.isNotEmpty == true && currentAccountId != null) {
+      _getPresentationEmailFromEmailIdAction(
+        EmailId(Id(emailIdFromPayload!)),
+        currentAccountId
+      );
     } else {
       dispatchRoute(DashboardRoutes.thread);
     }
@@ -387,6 +391,9 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _getSessionCurrent() {
+    if (BuildUtils.isWeb) {
+      dispatchRoute(DashboardRoutes.thread);
+    }
     final arguments = Get.arguments;
     log('MailboxDashBoardController::_getSessionCurrent(): arguments = $arguments');
     if (arguments is Session) {
@@ -398,6 +405,10 @@ class MailboxDashBoardController extends ReloadableController {
       injectVacationBindings(sessionCurrent, accountId.value);
       injectFCMBindings(sessionCurrent, accountId.value);
       _getVacationResponse();
+
+      if (!BuildUtils.isWeb) {
+        _handleClickLocalNotificationOnTerminated();
+      }
     } else {
       reload();
     }
@@ -1371,36 +1382,62 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  Future<bool> haveLocalNotificationPress() async {
-    return !(await LocalNotificationManager.instance.localNotificationStream.isEmpty);
-  }
+  void _handleClickLocalNotificationOnForeground(NotificationResponse? response) {
+    log('MailboxDashBoardController::_handleClickLocalNotificationOnForeground():payload: ${response?.payload}');
+    final emailIdFromPayload = response?.payload;
+    final currentAccountId = accountId.value;
+    if (emailIdFromPayload?.isNotEmpty == true && currentAccountId != null) {
+      popAllRouteIfHave();
+      dispatchRoute(DashboardRoutes.waiting);
 
-  void _handleLocalNotificationResponse(NotificationResponse response) {
-    if(response.payload != null) {
-      final emailId = EmailId(Id(response.payload!));
-      _getPresentationEmailFromEmailId(emailId);
+      _getPresentationEmailFromEmailIdAction(
+        EmailId(Id(emailIdFromPayload!)),
+        currentAccountId
+      );
+    } else {
+      dispatchRoute(DashboardRoutes.thread);
     }
   }
 
-  void _getPresentationEmailFromEmailId(EmailId emailId) {
-    if(accountId.value != null) {
-      log('MailboxDashBoardController: _getPresentationEmailFromEmailId: $emailId');
-      consumeState(_getEmailByIdInteractor.execute(accountId.value!, emailId, properties: ThreadConstants.propertiesDefault));
-    }
+  void _getPresentationEmailFromEmailIdAction(EmailId emailId, AccountId accountId) {
+    log('MailboxDashBoardController:_getPresentationEmailFromEmailIdAction:emailId: $emailId');
+    consumeState(_getEmailByIdInteractor.execute(
+      accountId,
+      emailId,
+      properties: ThreadConstants.propertiesDefault
+    ));
   }
 
   void _moveToEmailDetailedView(GetEmailByIdSuccess success) {
     log('MailboxDashBoardController::_moveToEmailDetailedView(): ${success.email}');
     setSelectedEmail(success.email);
     dispatchRoute(DashboardRoutes.emailDetailed);
-    // move to inbox so that user can back to inbox view
-    dispatchAction(ClearSearchEmailAction());
+  }
+
+  void _handleGetEmailDetailedFailed(GetEmailByIdFailure failure) {
+    logError('MailboxDashBoardController::_handleGetEmailDetailedFailed(): $failure');
+    dispatchRoute(DashboardRoutes.thread);
   }
 
   void popAllRouteIfHave() {
     Get.until((route) => Get.currentRoute == AppRoutes.dashboard);
   }
-  
+
+  void handleOnFocusGained() {
+    log('MailboxDashBoardController::handleOnFocusGained():');
+    if (!BuildUtils.isWeb) {
+      _updateTheme();
+    }
+    refreshActionWhenBackToApp();
+  }
+
+  void _updateTheme() {
+    ThemeUtils.setSystemDarkUIStyle();
+    if (isDrawerOpen) {
+      ThemeUtils.setStatusBarTransparentColor();
+    }
+  }
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
@@ -1409,8 +1446,8 @@ class MailboxDashBoardController extends ReloadableController {
     _progressStateController.close();
     _refreshActionEventController.close();
     Get.delete<DownloadController>();
-    FcmController.instance.dispose();
-    LocalNotificationManager.instance.dispose();
+    _notificationManager.dispose();
+    _fcmController.dispose();
     super.onClose();
   }
 }

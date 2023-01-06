@@ -6,7 +6,7 @@ import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/model.dart';
+import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
 
 class LocalNotificationManager {
@@ -21,14 +21,13 @@ class LocalNotificationManager {
   bool notificationsEnabled = false;
 
   final StreamController<NotificationResponse> localNotificationsController = StreamController<NotificationResponse>.broadcast();
-  
+
   Stream<NotificationResponse> get localNotificationStream => localNotificationsController.stream;
 
   NotificationAppLaunchDetails? _notificationAppLaunchDetails;
 
   Future<void> setUp() async {
     try {
-      _notificationAppLaunchDetails = await _localNotificationsPlugin.getNotificationAppLaunchDetails();
       await _initLocalNotification();
       _checkLocalNotificationPermission();
       if (Platform.isAndroid) {
@@ -41,18 +40,16 @@ class LocalNotificationManager {
     return Future.value();
   }
 
-  bool get isOpenAppByNotification => _notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
-
-  bool get isLocalNotificationStreamClosed => localNotificationsController.isClosed;
-
-  String? getEmailIdFromNotification() {
-    if(_notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
-      log('LocalNotificationManager::handleNotificationAppLaunch(): ${_notificationAppLaunchDetails!.notificationResponse}');
-      final selectedNotificationPayload = _notificationAppLaunchDetails!.notificationResponse?.payload;
-      return selectedNotificationPayload;
+  Future<void> getNotificationDetails() async {
+    try {
+      _notificationAppLaunchDetails = await _localNotificationsPlugin.getNotificationAppLaunchDetails();
+    } catch (e) {
+      logError('LocalNotificationManager::getNotificationDetails(): ERROR: ${e.toString()}');
     }
-    return null;
+    return Future.value();
   }
+
+  NotificationResponse? get currentNotificationResponse => _notificationAppLaunchDetails?.notificationResponse;
 
   Future<bool?> _initLocalNotification() async {
     return await _localNotificationsPlugin.initialize(
@@ -65,8 +62,8 @@ class LocalNotificationManager {
   }
 
   void _handleReceiveNotificationResponse(NotificationResponse response) {
-    log('LocalNotificationManager::handleReceiveNotificationResponse(): ${response.payload}');
-    if(response.notificationResponseType == NotificationResponseType.selectedNotification) {
+    log('LocalNotificationManager::handleReceiveNotificationResponse():payload: ${response.payload}');
+    if (response.notificationResponseType == NotificationResponseType.selectedNotification) {
       localNotificationsController.add(response);
     }
   }
