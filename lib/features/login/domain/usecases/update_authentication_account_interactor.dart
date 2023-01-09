@@ -15,10 +15,12 @@ class UpdateAuthenticationAccountInteractor {
     try{
       yield Right(UpdateAuthenticationAccountLoading());
       final currentAccount = await _accountRepository.getCurrentAccount();
-      await _accountRepository.setCurrentAccount(currentAccount.fromAccountId(
-        accountId: accountId,
-        apiUrl: apiUrl
-      ));
+      await _accountRepository.setCurrentAccount(
+        currentAccount.fromAccountId(
+          accountId: accountId,
+          apiUrl: apiUrl
+        )
+      );
       yield Right(UpdateAuthenticationAccountSuccess());
     } catch(e) {
       yield Left(UpdateAuthenticationAccountFailure(e));
