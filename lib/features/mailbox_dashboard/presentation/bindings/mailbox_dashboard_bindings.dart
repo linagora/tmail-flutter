@@ -81,6 +81,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller_bindings.dart';
 import 'package:tmail_ui_user/features/search/domain/usecases/refresh_changes_search_email_interactor.dart';
@@ -126,6 +127,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<SaveRecentSearchInteractor>(),
       Get.find<GetAllRecentSearchLatestInteractor>(),
     ));
+    Get.put(SpamReportController());
     Get.put(MailboxDashBoardController(
       Get.find<LogoutOidcInteractor>(),
       Get.find<DeleteAuthorityOidcInteractor>(),
@@ -281,7 +283,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<AccountRepository>(() => Get.find<AccountRepositoryImpl>());
     Get.lazyPut<AuthenticationOIDCRepository>(() => Get.find<AuthenticationOIDCRepositoryImpl>());
     Get.lazyPut<ComposerCacheRepository>(() => Get.find<ComposerCacheRepositoryImpl>());
-    Get.lazyPut<SpamReportRepository>(() => Get.find<SpamReportRepositoryImpl>());
+    Get.lazyPut<StoreLastTimeDismissedSpamReportInteractor>(() => Get.find<SpamReportRepositoryImpl>());
   }
 
   @override

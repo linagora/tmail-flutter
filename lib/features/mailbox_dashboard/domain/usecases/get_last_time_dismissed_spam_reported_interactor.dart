@@ -5,10 +5,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/spam_
 
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_last_time_dismissed_spam_reported_state.dart';
 
-class GetSpamReportInteractor {
-  final SpamReportRepository _spamReportRepository;
+class GetLastTimeDismissedSpamReportInteractor {
+  final StoreLastTimeDismissedSpamReportInteractor _spamReportRepository;
 
-  GetSpamReportInteractor(this._spamReportRepository);
+  GetLastTimeDismissedSpamReportInteractor(this._spamReportRepository);
 
   Stream<Either<Failure, Success>> execute() async* {
     try {
