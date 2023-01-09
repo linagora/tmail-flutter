@@ -43,6 +43,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_inte
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
@@ -105,11 +106,6 @@ class MailboxController extends BaseMailboxController {
   jmap.State? _currentMailboxState;
   List<String> listMailboxNameAsStringExist = <String>[];
 
-  late Worker accountIdWorker,
-    viewStateWorker,
-    dashboardActionWorker,
-    routerParametersWorker;
-
   PresentationMailbox? get selectedMailbox => mailboxDashBoardController.selectedMailbox.value;
 
   MailboxController(
@@ -126,7 +122,7 @@ class MailboxController extends BaseMailboxController {
 
   @override
   void onInit() {
-    _registerListenerWorker();
+    _registerObxStreamListener();
     _registerSearchFocusListener();
     super.onInit();
   }
@@ -147,7 +143,6 @@ class MailboxController extends BaseMailboxController {
     searchFocus.dispose();
     _openMailboxEventController.close();
     mailboxListScrollController.dispose();
-    _unregisterListenerWorker();
     super.onClose();
   }
 
@@ -205,19 +200,19 @@ class MailboxController extends BaseMailboxController {
     isMailboxListScrollable.value = mailboxListScrollController.hasClients && mailboxListScrollController.position.maxScrollExtent > 0;
   }
 
-  void _registerListenerWorker() {
-    accountIdWorker = ever(mailboxDashBoardController.accountId, (accountId) {
+  void _registerObxStreamListener() {
+    ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId is AccountId) {
         getAllMailboxAction(accountId);
       }
     });
 
-    routerParametersWorker = ever<Map<String, String?>?>(
+    ever<Map<String, String?>?>(
       mailboxDashBoardController.routerParameters,
       _handleNavigationRouteParameters
     );
 
-    viewStateWorker = ever(mailboxDashBoardController.viewState, (state) {
+    ever(mailboxDashBoardController.viewState, (state) {
       if (state is Either) {
         state.fold((failure) => null, (success) {
           if (success is MarkAsMultipleEmailReadAllSuccess) {
@@ -257,18 +252,23 @@ class MailboxController extends BaseMailboxController {
       }
     });
 
-    dashboardActionWorker = ever(mailboxDashBoardController.dashBoardAction, (action) {
-      log('MailboxController::_registerListenerWorker():action: $action');
+    ever(mailboxDashBoardController.dashBoardAction, (action) {
       if (action is ClearSearchEmailAction) {
         _switchBackToMailboxDefault();
-      } else if (action is SelectMailboxDefaultAction) {
+      }
+    });
+
+    ever(mailboxDashBoardController.mailboxUIAction, (action) {
+      if (action is SelectMailboxDefaultAction) {
         if (mailboxDashBoardController.selectedMailbox.value == null) {
           _switchBackToMailboxDefault();
         }
+        mailboxDashBoardController.clearMailboxUIAction();
       } else if (action is RefreshChangeMailboxAction) {
         if (action.newState != _currentMailboxState) {
           refreshMailboxChanges();
         }
+        mailboxDashBoardController.clearMailboxUIAction();
       }
     });
   }
@@ -282,13 +282,6 @@ class MailboxController extends BaseMailboxController {
         disableSearch();
       }
     });
-  }
-
-  void _unregisterListenerWorker() {
-    accountIdWorker.dispose();
-    viewStateWorker.dispose();
-    dashboardActionWorker.dispose();
-    routerParametersWorker.dispose();
   }
 
   void _initCollapseMailboxCategories() {

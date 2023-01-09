@@ -1,14 +1,12 @@
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 @pragma('vm:entry-point')
 Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
-  log('FcmReceiver::handleFirebaseBackgroundMessage():messageId: ${message.messageId}');
   log('FcmReceiver::handleFirebaseBackgroundMessage(): ${message.data}');
   FcmService.instance.handleFirebaseBackgroundMessage(message);
 }
@@ -30,12 +28,13 @@ class FcmReceiver {
 
   void getFcmToken() async {
     try {
-      final token = await FirebaseMessaging.instance.getToken(vapidKey: kIsWeb ? dotenv.get('FIREBASE_WEB_VAPID_PUBLIC_KEY', fallback: '') : null);
-      log('FcmReceiver::onFcmToken():token: $token');
-      FcmService.instance.handleRefreshToken(token);
+      final currentToken = await FirebaseMessaging.instance.getToken(vapidKey: AppUtils.fcmVapidPublicKey);
+      log('FcmReceiver::onFcmToken():currentToken: $currentToken');
+      if (BuildUtils.isWeb) {
+        FcmService.instance.handleGetToken(currentToken);
+      }
     } catch(e) {
       log('FcmReceiver::onFcmToken():exception: $e');
-      throw NotLoadedFCMTokenException();
     }
   }
 
