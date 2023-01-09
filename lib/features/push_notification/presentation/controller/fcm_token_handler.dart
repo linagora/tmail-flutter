@@ -54,14 +54,14 @@ class FcmTokenHandler {
     }
   }
 
-  void handle(String? token) {
-    log('FcmTokenHandler::handle():token: $token');
+  void handleTokenAction(String? token) {
+    log('FcmTokenHandler::handleTokenAction():token: $token');
     if (token != null) {
       _fcmToken = FirebaseToken(token);
       final deviceId = FcmUtils.instance.hashTokenToDeviceId(token);
       _deviceClientId = DeviceClientId(deviceId);
-      log('FcmTokenHandler::handle(): fcmToken: $_fcmToken');
-      log('FcmTokenHandler::handle(): deviceId: $deviceId');
+      log('FcmTokenHandler::handleTokenAction(): fcmToken: $_fcmToken');
+      log('FcmTokenHandler::handleTokenAction(): deviceId: $deviceId');
       _getFcmTokenFromBackend(deviceId);
     } else {
       _getFCMSubscriptionLocalAction();
@@ -171,7 +171,7 @@ class FcmTokenHandler {
       deviceClientId: deviceClientId,
       types: [TypeName.emailType, TypeName.mailboxType, TypeName.emailDelivery]
     );
-    log('FcmTokenHandler::_handleSuccessViewState():firebaseSubscription: $firebaseSubscription');
+    log('FcmTokenHandler::_handleRegisterNewToken():firebaseSubscription: $firebaseSubscription');
     _invokeRegisterNewTokenAction(RegisterNewTokenRequest(
       generateCreationId,
       firebaseSubscription

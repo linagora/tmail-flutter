@@ -11,7 +11,11 @@ import 'package:tmail_ui_user/features/push_notification/presentation/notificati
 
 class LocalNotificationManager {
 
-  LocalNotificationManager._internal();
+  late StreamController<NotificationResponse> localNotificationsController;
+
+  LocalNotificationManager._internal() {
+    localNotificationsController = StreamController<NotificationResponse>.broadcast();
+  }
 
   static final LocalNotificationManager _instance = LocalNotificationManager._internal();
 
@@ -21,8 +25,6 @@ class LocalNotificationManager {
 
   bool _notificationsEnabled = false;
   bool _isNotificationClickedOnTerminate = false;
-
-  final StreamController<NotificationResponse> localNotificationsController = StreamController<NotificationResponse>.broadcast();
 
   Stream<NotificationResponse> get localNotificationStream => localNotificationsController.stream;
 
@@ -69,7 +71,9 @@ class LocalNotificationManager {
   void _handleReceiveNotificationResponse(NotificationResponse response) {
     log('LocalNotificationManager::handleReceiveNotificationResponse():payload: ${response.payload}');
     if (response.notificationResponseType == NotificationResponseType.selectedNotification) {
-      localNotificationsController.add(response);
+      if (!localNotificationsController.isClosed) {
+        localNotificationsController.add(response);
+      }
     }
   }
 
@@ -171,11 +175,14 @@ class LocalNotificationManager {
     }
   }
 
-  void _closeStream() {
-    localNotificationsController.close();
+  Future<void> recreateStreamController() {
+    if (localNotificationsController.isClosed) {
+      localNotificationsController = StreamController<NotificationResponse>.broadcast();
+    }
+    return Future.value();
   }
 
-  void dispose() {
-    _closeStream();
+  void closeStream() {
+    localNotificationsController.close();
   }
 }

@@ -29,7 +29,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     );
 
     return FocusDetector(
-      onFocusGained: controller.handleOnFocusGained,
+      onForegroundGained: controller.handleOnForegroundGained,
       child: Scaffold(
         drawerEnableOpenDragGesture: responsiveUtils.hasLeftMenuDrawerActive(context),
         body: Obx(() {

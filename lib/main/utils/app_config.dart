@@ -26,4 +26,6 @@ class AppConfig {
     }
   }
   static String appFCMConfigurationPath = "configurations/env.fcm";
+
+  static String get fcmVapidPublicKeyWeb => dotenv.get('FIREBASE_WEB_VAPID_PUBLIC_KEY', fallback: '');
 }
