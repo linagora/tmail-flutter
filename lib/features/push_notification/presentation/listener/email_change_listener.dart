@@ -9,7 +9,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_stored_state_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_state.dart';
@@ -70,7 +70,7 @@ class EmailChangeListener extends ChangeListener {
   void _synchronizeEmailOnForegroundAction(jmap.State newState) {
     log('EmailChangeListener::_synchronizeEmailAction():newState: $newState');
     if (_dashBoardController != null) {
-      _dashBoardController!.dispatchAction(RefreshChangeEmailAction(newState));
+      _dashBoardController!.dispatchEmailUIAction(RefreshChangeEmailAction(newState));
     }
   }
 

@@ -50,8 +50,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sen
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -101,7 +101,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   EmailId? _currentEmailId;
   Identity? _identitySelected;
   List<EmailContent>? initialEmailContents;
-  late Worker selectedEmailWorker, accountIdWorker;
 
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
@@ -127,7 +126,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void onInit() {
-    _registerListenerWorker();
+    _registerObxStreamListener();
     _listenDownloadAttachmentProgressState();
     super.onInit();
   }
@@ -135,12 +134,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   @override
   void onClose() {
     _downloadProgressStateController.close();
-    _unregisterListenerWorker();
     super.onClose();
   }
 
-  void _registerListenerWorker() {
-    accountIdWorker = ever(mailboxDashBoardController.accountId, (accountId) {
+  void _registerObxStreamListener() {
+    ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId is AccountId) {
         _injectAndGetInteractorBindings(
           mailboxDashBoardController.sessionCurrent,
@@ -149,7 +147,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       }
     });
 
-    selectedEmailWorker = ever<PresentationEmail?>(
+    ever<PresentationEmail?>(
       mailboxDashBoardController.selectedEmail,
       _handleOpenEmailDetailedView
     );
@@ -158,11 +156,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   bool isListEmailContainSelectedEmail(PresentationEmail selectedEmail) {
     return emailSupervisorController.currentListEmail.isNotEmpty 
       && emailSupervisorController.currentListEmail.listEmailIds.contains(selectedEmail.id);
-  }
-
-  void _unregisterListenerWorker() {
-    accountIdWorker.dispose();
-    selectedEmailWorker.dispose();
   }
 
   void _handleOpenEmailDetailedView(PresentationEmail? selectedEmail) {
@@ -1030,7 +1023,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
       if (isOpenEmailNotMailboxFromRoute) {
-        mailboxDashBoardController.dispatchAction(SelectMailboxDefaultAction());
+        mailboxDashBoardController.dispatchMailboxUIAction(SelectMailboxDefaultAction());
       }
     }
   }

@@ -38,11 +38,13 @@ import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_ema
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_app_dashboard_configuration_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
@@ -50,6 +52,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_ema
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
@@ -74,7 +77,6 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailbox_state_to_refresh_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -137,6 +139,8 @@ class MailboxDashBoardController extends ReloadableController {
   final accountId = Rxn<AccountId>();
   final userProfile = Rxn<UserProfile>();
   final dashBoardAction = Rxn<UIAction>();
+  final mailboxUIAction = Rxn<MailboxUIAction>();
+  final emailUIAction = Rxn<EmailUIAction>();
   final dashboardRoute = DashboardRoutes.waiting.obs;
   final appInformation = Rxn<PackageInfo>();
   final currentSelectMode = SelectMode.INACTIVE.obs;
@@ -166,7 +170,7 @@ class MailboxDashBoardController extends ReloadableController {
     StreamController<RefreshActionViewEvent>.broadcast();
 
   final _notificationManager = LocalNotificationManager.instance;
-  final _fcmController = FcmController.instance;
+  final _fcmService = FcmService.instance;
 
   MailboxDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
@@ -245,10 +249,10 @@ class MailboxDashBoardController extends ReloadableController {
                 icon: _imagePaths.icSendToast);
           }
         } else if (success is GetEmailStateToRefreshSuccess) {
-          dispatchAction(RefreshChangeEmailAction(success.storedState));
+          dispatchEmailUIAction(RefreshChangeEmailAction(success.storedState));
           _deleteEmailStateToRefreshAction();
         } else if (success is GetMailboxStateToRefreshSuccess) {
-          dispatchAction(RefreshChangeMailboxAction(success.storedState));
+          dispatchMailboxUIAction(RefreshChangeMailboxAction(success.storedState));
           _deleteMailboxStateToRefreshAction();
         }
       }
@@ -367,6 +371,10 @@ class MailboxDashBoardController extends ReloadableController {
       .debounceTime(const Duration(milliseconds: FcmService.durationMessageComing))
       .listen(_handleRefreshActionWhenBackToApp);
 
+    _registerLocalNotificationStreamListener();
+  }
+
+  void _registerLocalNotificationStreamListener() {
     _notificationManager.localNotificationStream.listen(_handleClickLocalNotificationOnForeground);
   }
 
@@ -422,6 +430,17 @@ class MailboxDashBoardController extends ReloadableController {
       _updateVacationInteractor = Get.find<UpdateVacationInteractor>();
     } catch (e) {
       logError('MailboxDashBoardController::injectVacationBindings(): $e');
+    }
+  }
+
+  @override
+  void injectFCMBindings(Session? session, AccountId? accountId) async {
+    try {
+      super.injectFCMBindings(session, accountId);
+      await LocalNotificationManager.instance.recreateStreamController();
+      _registerLocalNotificationStreamListener();
+    } catch (e) {
+      logError('MailboxDashBoardController::injectFCMBindings(): $e');
     }
   }
 
@@ -1086,6 +1105,16 @@ class MailboxDashBoardController extends ReloadableController {
     dashBoardAction.value = action;
   }
 
+  void dispatchMailboxUIAction(MailboxUIAction newAction) {
+    log('MailboxDashBoardController::dispatchMailboxUIAction():newAction: ${newAction.runtimeType}');
+    mailboxUIAction.value = newAction;
+  }
+
+  void dispatchEmailUIAction(EmailUIAction newAction) {
+    log('MailboxDashBoardController::dispatchEmailUIAction():newAction: ${newAction.runtimeType}');
+    emailUIAction.value = newAction;
+  }
+
   void openComposerOverlay(RouterArguments? arguments) {
     routerArguments = arguments;
     ComposerBindings().dependencies();
@@ -1211,6 +1240,14 @@ class MailboxDashBoardController extends ReloadableController {
 
   void clearDashBoardAction() {
     dashBoardAction.value = DashBoardAction.idle;
+  }
+
+  void clearMailboxUIAction() {
+    mailboxUIAction.value = MailboxUIAction.idle;
+  }
+
+  void clearEmailUIAction() {
+    emailUIAction.value = EmailUIAction.idle;
   }
 
   void goToSettings() async {
@@ -1424,8 +1461,8 @@ class MailboxDashBoardController extends ReloadableController {
     Get.until((route) => Get.currentRoute == AppRoutes.dashboard);
   }
 
-  void handleOnFocusGained() {
-    log('MailboxDashBoardController::handleOnFocusGained():');
+  void handleOnForegroundGained() {
+    log('MailboxDashBoardController::handleOnForegroundGained():');
     if (!BuildUtils.isWeb) {
       _updateTheme();
     }
@@ -1446,9 +1483,9 @@ class MailboxDashBoardController extends ReloadableController {
     _fileReceiveManagerStreamSubscription.cancel();
     _progressStateController.close();
     _refreshActionEventController.close();
-    Get.delete<DownloadController>();
-    _notificationManager.dispose();
-    _fcmController.dispose();
+    _notificationManager.closeStream();
+    _fcmService.closeStream();
+    MailboxDashBoardBindings().deleteController();
     super.onClose();
   }
 }
