@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2022-12-28T14:09:51.971658",
+  "@@last_modified": "2023-01-09T16:48:24.908944",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2551,5 +2551,27 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "youHaveNewMessages": "You have new messages",
+  "@youHaveNewMessages": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "appTitlePushNotification": "Team Mail",
+  "@appTitlePushNotification": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "totalNewMessagePushNotification": "{count} new emails",
+  "@totalNewMessagePushNotification": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
   }
 }

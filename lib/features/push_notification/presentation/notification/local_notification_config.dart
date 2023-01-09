@@ -7,6 +7,8 @@ class LocalNotificationConfig {
   static const _channelId = 'team_mail_notification_channel_id';
   static const _channelName = 'Team Mail notifications';
   static const _channelDescription = 'Team Mail notifications';
+  static const notificationTitle = 'Team Mail';
+  static const notificationMessage = 'You have new messages';
 
   static const iosInitializationSettings = DarwinInitializationSettings();
 
@@ -53,6 +55,7 @@ class LocalNotificationConfig {
         presentSound: true,
         presentAlert: true,
         presentBadge: true,
+        threadIdentifier: _channelId
       ),
     );
   }

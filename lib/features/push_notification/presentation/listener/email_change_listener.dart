@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -6,6 +8,7 @@ import 'package:core/utils/build_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/email/presentation_email.dart';
+import 'package:model/notification/notification_payload.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_stored_state_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
@@ -20,8 +23,11 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_e
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/fcm_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class EmailChangeListener extends ChangeListener {
@@ -78,8 +84,22 @@ class EmailChangeListener extends ChangeListener {
     _newState = newState;
     _accountId = accountId;
     log('EmailChangeListener::_pushNotificationAction():newState: $newState');
-    _getStoredEmailDeliveryState();
+
+    if (BuildUtils.isWeb) {
+      _storeEmailDeliveryStateAction(_newState!);
+    } else {
+      if (Platform.isAndroid) {
+        _getStoredEmailDeliveryState();
+      } else if (Platform.isIOS) {
+        _storeEmailDeliveryStateAction(_newState!);
+        _showLocalNotificationForIOS(_newState!, _accountId!);
+      } else {
+        logError('EmailChangeListener::_pushNotificationAction(): NOT SUPPORTED PLATFORM');
+      }
+    }
   }
+
+
 
   void _getStoredEmailDeliveryState() {
     if (_getStoredEmailDeliveryStateInteractor != null) {
@@ -112,13 +132,30 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _showLocalNotification(PresentationEmail presentationEmail, jmap.State newState) {
+  void _showLocalNotification(PresentationEmail presentationEmail) {
+    final notificationPayload = NotificationPayload(emailId: presentationEmail.id);
+    log('EmailChangeListener::_showLocalNotification():notificationPayload: $notificationPayload');
     LocalNotificationManager.instance.showPushNotification(
       id: presentationEmail.id.id.value,
       title: presentationEmail.subject ?? '',
       message: presentationEmail.preview,
       emailAddress: presentationEmail.from?.first,
-      payload: presentationEmail.id.id.value,
+      payload: notificationPayload.encodeToString,
+    );
+  }
+
+  void _showLocalNotificationForIOS(jmap.State newState, AccountId accountId) {
+    final notificationPayload = NotificationPayload(newState: newState);
+    log('EmailChangeListener::_showLocalNotificationForIOS():notificationPayload: $notificationPayload');
+    LocalNotificationManager.instance.showPushNotification(
+      id: '${FcmUtils.instance.platformOS}-${accountId.id.value}',
+      title: currentContext != null
+        ? AppLocalizations.of(currentContext!).appTitlePushNotification
+        : LocalNotificationConfig.notificationTitle,
+      message: currentContext != null
+        ? AppLocalizations.of(currentContext!).youHaveNewMessages
+        : LocalNotificationConfig.notificationMessage,
+      payload: notificationPayload.encodeToString,
     );
   }
 
@@ -144,17 +181,19 @@ class EmailChangeListener extends ChangeListener {
       if (_newState != null) {
         _storeEmailDeliveryStateAction(_newState!);
 
-        if (!BuildUtils.isWeb) {
-          for (var presentationEmail in success.emailList) {
-            _showLocalNotification(presentationEmail, _newState!);
-          }
+        if (!BuildUtils.isWeb && Platform.isAndroid) {
+          _handleLocalPushNotification(success.emailList);
         }
       }
-
-      if (!BuildUtils.isWeb) {
-        LocalNotificationManager.instance.groupPushNotification();
-      }
     }
+  }
+
+  void _handleLocalPushNotification(List<PresentationEmail> emailList) {
+    for (var presentationEmail in emailList) {
+      _showLocalNotification(presentationEmail);
+    }
+
+    LocalNotificationManager.instance.groupPushNotification();
   }
 
   void _handleStoreEmailStateToRefreshAction(jmap.State newState) {
