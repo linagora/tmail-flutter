@@ -82,20 +82,20 @@ class FcmUtils {
   String get platformOS {
     var platformName = '';
     if (BuildUtils.isWeb) {
-      platformName = "Web";
+      platformName = 'Web';
     } else {
       if (Platform.isAndroid) {
-        platformName = "Android";
+        platformName = 'Android';
       } else if (Platform.isIOS) {
-        platformName = "IOS";
+        platformName = 'IOS';
       } else if (Platform.isFuchsia) {
-        platformName = "Fuchsia";
+        platformName = 'Fuchsia';
       } else if (Platform.isLinux) {
-        platformName = "Linux";
+        platformName = 'Linux';
       } else if (Platform.isMacOS) {
-        platformName = "MacOS";
+        platformName = 'MacOS';
       } else if (Platform.isWindows) {
-        platformName = "Windows";
+        platformName = 'Windows';
       }
     }
     log('FcmUtils::platformOS():$platformName');

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
@@ -10,7 +11,6 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -101,6 +101,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
 class MailboxDashBoardController extends ReloadableController {
 
@@ -387,16 +388,7 @@ class MailboxDashBoardController extends ReloadableController {
     _notificationManager.activatedNotificationClickedOnTerminate = true;
     final notificationResponse = await _notificationManager.getCurrentNotificationResponse();
     log('MailboxDashBoardController::_handleClickLocalNotificationOnTerminated():payload: ${notificationResponse?.payload}');
-    final emailIdFromPayload = notificationResponse?.payload;
-    final currentAccountId = accountId.value;
-    if (emailIdFromPayload?.isNotEmpty == true && currentAccountId != null) {
-      _getPresentationEmailFromEmailIdAction(
-        EmailId(Id(emailIdFromPayload!)),
-        currentAccountId
-      );
-    } else {
-      dispatchRoute(DashboardRoutes.thread);
-    }
+    _handleMessageFromNotification(notificationResponse?.payload, onForeground: false);
   }
 
   void _getUserProfile() async {
@@ -1428,19 +1420,60 @@ class MailboxDashBoardController extends ReloadableController {
   void _handleClickLocalNotificationOnForeground(NotificationResponse? response) {
     _notificationManager.activatedNotificationClickedOnTerminate = true;
     log('MailboxDashBoardController::_handleClickLocalNotificationOnForeground():payload: ${response?.payload}');
-    final emailIdFromPayload = response?.payload;
-    final currentAccountId = accountId.value;
-    if (emailIdFromPayload?.isNotEmpty == true && currentAccountId != null) {
-      popAllRouteIfHave();
-      dispatchRoute(DashboardRoutes.waiting);
+    _handleMessageFromNotification(response?.payload);
+  }
 
-      _getPresentationEmailFromEmailIdAction(
-        EmailId(Id(emailIdFromPayload!)),
-        currentAccountId
-      );
+  void _handleMessageFromNotification(String? payload, {bool onForeground = true}) {
+    log('MailboxDashBoardController::_handleMessageFromNotification():payload: $payload');
+    if (payload == null) {
+      dispatchRoute(DashboardRoutes.thread);
+      return;
+    }
+
+    final payloadDecoded = jsonDecode(payload);
+    if (payloadDecoded is Map<String, dynamic>) {
+      final notificationPayload = NotificationPayload.fromJson(payloadDecoded);
+      log('MailboxDashBoardController::_handleMessageFromNotification():notificationPayload: $notificationPayload');
+
+      if (notificationPayload.emailId != null) {
+        _handleNotificationMessageFromEmailId(notificationPayload.emailId!, onForeground: onForeground);
+      } else if (notificationPayload.newState != null) {
+        _handleNotificationMessageFromNewState(notificationPayload.newState!, onForeground: onForeground);
+      } else {
+        dispatchRoute(DashboardRoutes.thread);
+      }
     } else {
       dispatchRoute(DashboardRoutes.thread);
     }
+  }
+
+  void _handleNotificationMessageFromNewState(jmap.State newState, {bool onForeground = true}) {
+    if (onForeground) {
+      _openInboxMailbox();
+    }
+  }
+
+  void _handleNotificationMessageFromEmailId(EmailId emailId, {bool onForeground = true}) {
+    final currentAccountId = accountId.value;
+    if (currentAccountId != null) {
+      if (onForeground) {
+        _showWaitingView();
+      }
+      _getPresentationEmailFromEmailIdAction(emailId, currentAccountId);
+    } else {
+      dispatchRoute(DashboardRoutes.thread);
+    }
+  }
+
+  void _showWaitingView() {
+    popAllRouteIfHave();
+    dispatchRoute( DashboardRoutes.waiting);
+  }
+
+  void _openInboxMailbox() {
+    popAllRouteIfHave();
+    dispatchMailboxUIAction(SelectMailboxDefaultAction());
+    dispatchRoute(DashboardRoutes.thread);
   }
 
   void _getPresentationEmailFromEmailIdAction(EmailId emailId, AccountId accountId) {
@@ -1480,6 +1513,10 @@ class MailboxDashBoardController extends ReloadableController {
     if (isDrawerOpen) {
       ThemeUtils.setStatusBarTransparentColor();
     }
+  }
+
+  void updateEmailList(List<PresentationEmail> newEmailList) {
+    emailsInCurrentMailbox.value = newEmailList;
   }
 
   @override

@@ -8,6 +8,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LocalNotificationManager {
 
@@ -159,7 +161,9 @@ class LocalNotificationManager {
     if (activeNotifications != null && activeNotifications.isNotEmpty) {
       final inboxStyleInformation = InboxStyleInformation(
         [''],
-        summaryText: '${activeNotifications.length - 1} new emails'.addBlockTag('b'),
+        summaryText: currentContext != null
+          ? AppLocalizations.of(currentContext!).totalNewMessagePushNotification(activeNotifications.length - 1).addBlockTag('b')
+          : '${activeNotifications.length - 1} new emails'.addBlockTag('b'),
         htmlFormatSummaryText: true,
       );
 
