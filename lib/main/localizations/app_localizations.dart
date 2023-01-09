@@ -2620,4 +2620,24 @@ class AppLocalizations {
       name: 'regards',
     );
   }
+
+  String get youHaveNewMessages {
+    return Intl.message(
+      'You have new messages',
+      name: 'youHaveNewMessages',
+    );
+  }
+
+  String get appTitlePushNotification {
+    return Intl.message(
+      'Team Mail',
+      name: 'appTitlePushNotification');
+  }
+
+  String totalNewMessagePushNotification(int count) {
+    return Intl.message(
+      '$count new emails',
+      name: 'totalNewMessagePushNotification',
+      args: [count]);
+  }
 }

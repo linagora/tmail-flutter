@@ -122,7 +122,7 @@ class ThreadView extends GetWidget<ThreadController>
     return Obx(() {
       if ((!BuildUtils.isWeb || (BuildUtils.isWeb && controller.isSelectionEnabled()
             && controller.isSearchActive() && !_responsiveUtils.isDesktop(context)))
-          && controller.emailList.listEmailSelected.isNotEmpty) {
+          && controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected.isNotEmpty) {
         return Column(children: [
           const Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
           Padding(
@@ -131,7 +131,7 @@ class ThreadView extends GetWidget<ThreadController>
                     context,
                     _imagePaths,
                     _responsiveUtils,
-                    controller.emailList.listEmailSelected,
+                    controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
                     controller.mailboxDashBoardController.selectedMailbox.value)
                 ..addOnPressEmailSelectionActionClick((actionType, selectionEmail) =>
                     controller.pressEmailSelectionAction(context, actionType, selectionEmail)))
@@ -147,7 +147,7 @@ class ThreadView extends GetWidget<ThreadController>
     return Obx(() {
       return AppBarThreadWidgetBuilder(
         controller.currentMailbox,
-        controller.emailList.listEmailSelected,
+        controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
         controller.mailboxDashBoardController.currentSelectMode.value,
         controller.mailboxDashBoardController.filterMessageOption.value,
         onOpenMailboxMenuActionClick: controller.openMailboxLeftMenu,
@@ -287,9 +287,10 @@ class ThreadView extends GetWidget<ThreadController>
       padding: EdgeInsets.zero,
       color: Colors.white,
       child: Obx(() {
+        log('ThreadView::_buildListEmail():');
         return Visibility(
           visible: controller.openingEmail.isFalse,
-          child: _buildResultListEmail(context, controller.emailList));
+          child: _buildResultListEmail(context, controller.mailboxDashBoardController.emailsInCurrentMailbox));
       })
     );
   }
@@ -439,7 +440,7 @@ class ThreadView extends GetWidget<ThreadController>
 
   bool supportEmptyTrash(BuildContext context) {
     return controller.isMailboxTrash
-        && controller.emailList.isNotEmpty
+        && controller.mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
         && !controller.isSearchActive()
         && !_responsiveUtils.isWebDesktop(context);
   }
