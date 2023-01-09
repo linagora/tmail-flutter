@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailb
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -41,6 +42,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   final SearchController searchController = Get.find<SearchController>();
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
   final mailBoxDashboardController = Get.find<MailboxDashBoardController>();
+  final spamReportController = Get.find<SpamReportController>();
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +107,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     children: [
                       SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
                       Expanded(child: Column(children: [
+                        _buildSpamReportBoxWebWidget(context),
                         _buildEmptyTrashButton(context),
                         const QuotasWarningBannerWidget(
                           margin: EdgeInsets.only(right: 16, top: 8),
@@ -196,7 +199,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   Widget _buildThreadViewForWebDesktop(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(right: 16, top: 16, bottom: 16),
+      margin: const EdgeInsets.only(right: 16, top: 8, bottom: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
@@ -690,6 +693,78 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       } else {
         return const SizedBox.shrink();
       }
+    });
+  }
+
+  Widget _buildSpamReportBoxWebWidget(BuildContext context) {
+    return Obx(() {
+      if (spamReportController.dismissedSpamReported.value) {
+        return const SizedBox(
+          height: 8,
+        );
+      }
+      return Container(
+        height: 84,
+        margin: const EdgeInsets.only(right: 16, top: 16),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
+            color: AppColor.colorSpamReportBox.withOpacity(0.12)),
+        child: Stack(
+          alignment: AlignmentDirectional.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    SvgPicture.asset(
+                      imagePaths.icInfoCircleOutline,
+                      width: 28,
+                      height: 28,
+                      color: AppColor.primaryColor,
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      AppLocalizations.of(context).countNewSpamEmails(5),
+                      style: const TextStyle(
+                          fontSize: 16,
+                          color: AppColor.primaryColor,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 32,
+                  ),
+                  child: buildTextButton(
+                    AppLocalizations.of(context).showDetails,
+                    height: 36,
+                    width: 115,
+                    textStyle: const TextStyle(
+                        fontSize: 15,
+                        color: AppColor.primaryColor,
+                        fontWeight: FontWeight.w400),
+                    backgroundColor: AppColor.colorCreateNewIdentityButton,
+                    radius: 10,
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              top: 16,
+              right: 16,
+              child: buildSVGIconButton(
+                icon: imagePaths.icCloseComposer,
+                onTap: () => spamReportController.dismissSpamReportAction(),
+              ),
+            ),
+          ],
+        ),
+      );
     });
   }
 }

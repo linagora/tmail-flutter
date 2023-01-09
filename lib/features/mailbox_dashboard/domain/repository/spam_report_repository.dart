@@ -1,4 +1,4 @@
-abstract class SpamReportRepository {
+abstract class StoreLastTimeDismissedSpamReportInteractor {
   Future<void> storeLastTimeDismissedSpamReported(DateTime lastTimeDismissedSpamReported);
 
   Future<DateTime> getLastTimeDismissedSpamReported();

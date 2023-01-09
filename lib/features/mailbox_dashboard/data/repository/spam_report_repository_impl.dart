@@ -2,7 +2,7 @@ import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/spam_report_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/spam_report_repository.dart';
 
-class SpamReportRepositoryImpl extends SpamReportRepository {
+class SpamReportRepositoryImpl extends StoreLastTimeDismissedSpamReportInteractor {
   final Map<DataSourceType, SpamReportDataSource> mapDataSource;
 
   SpamReportRepositoryImpl(this.mapDataSource);

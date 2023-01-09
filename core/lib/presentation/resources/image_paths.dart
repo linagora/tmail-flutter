@@ -163,6 +163,7 @@ class ImagePaths {
   String get icQuickCreatingRule => _getImagePath('ic_quick_creating_rule.svg');
   String get icPageNotFound => _getImagePath('ic_page_not_found.svg');
   String get icOpenInNewTab => _getImagePath('ic_open_in_new_tab.svg');
+  String get icInfoCircleOutline => _getImagePath('ic_info_circle_outline.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

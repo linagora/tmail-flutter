@@ -61,6 +61,7 @@ class ThreadView extends GetWidget<ThreadController>
                         ... [
                           _buildAppBarNormal(context),
                           _buildSearchBarView(context),
+                          _buildSpamReportBoxWidget(context),
                           const QuotasWarningBannerWidget(),
                           _buildVacationNotificationMessage(context),
                         ],
@@ -653,5 +654,102 @@ class ThreadView extends GetWidget<ThreadController>
           return const SizedBox.shrink();
           });
     });
+  }
+
+  Widget _buildSpamReportBoxWidget(BuildContext context) {
+    return Obx(() {
+      if (controller.spamReportController.dismissedSpamReported.value) {
+        return const SizedBox.shrink();
+      }
+      return Container(
+        height: 124,
+        margin: const EdgeInsets.only(right: 16, top: 16, left: 16),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
+            color: AppColor.colorSpamReportBox.withOpacity(0.12)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    _imagePaths.icInfoCircleOutline,
+                    width: 28,
+                    height: 28,
+                    color: AppColor.primaryColor,
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    AppLocalizations.of(context).countNewSpamEmails(5),
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: AppColor.primaryColor,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+              child: Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: _spamReportButtonAction(
+                          context,
+                          AppLocalizations.of(context).showDetails,
+                          AppColor.primaryColor,
+                          () {}),
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: _spamReportButtonAction(
+                          context,
+                          AppLocalizations.of(context).dismiss,
+                          AppColor.textFieldErrorBorderColor,
+                          () => controller.spamReportController
+                              .dismissSpamReportAction()),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _spamReportButtonAction(BuildContext context,  String title, Color colorText, Function()? onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 36,
+        width: double.infinity,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: AppColor.colorCreateNewIdentityButton),
+        child: Expanded(
+          child: Center(
+            child: Text(
+              title,
+              style: TextStyle(
+                  fontSize: 15,
+                  color: colorText,
+                  fontWeight: FontWeight.w400),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
