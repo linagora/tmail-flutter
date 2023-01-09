@@ -57,6 +57,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/m
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -114,6 +115,7 @@ class MailboxDashBoardController extends ReloadableController {
   final DownloadController downloadController = Get.find<DownloadController>();
   final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
+  final SpamReportController spamReportController = Get.find<SpamReportController>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;

@@ -2644,7 +2644,29 @@ class AppLocalizations {
   String get privacyPolicy {
     return Intl.message(
       'Privacy policy',
-      name: 'privacyPolicy'
+      name: 'privacyPolicy',
+    );
+  }
+  
+  String countNewSpamEmails(int count,) {
+    return Intl.message(
+        'You have $count new spam emails!',
+        name: 'countNewSpamEmails',
+        args: [count]
+    );
+  }
+
+  String get showDetails {
+    return Intl.message(
+      'Show Details',
+      name: 'showDetails',
+    );
+  }
+
+  String get dismiss {
+    return Intl.message(
+      'Dismiss',
+      name: 'dismiss',
     );
   }
 }
