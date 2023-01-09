@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -97,7 +98,6 @@ class ThreadController extends BaseController with EmailActionController {
   final ScrollController listEmailController = ScrollController();
   final FocusNode focusNodeKeyBoard = FocusNode();
   final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
-  late Worker mailboxWorker, searchWorker, dashboardActionWorker, viewStateWorker, advancedSearchFilterWorker;
 
   Set<Comparator>? get _sortOrder => <Comparator>{}
     ..add(EmailComparator(EmailComparatorProperty.receivedAt)
@@ -131,7 +131,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   @override
   void onInit() {
-    _registerListenerWorker();
+    _registerObxStreamListener();
     super.onInit();
   }
 
@@ -145,7 +145,6 @@ class ThreadController extends BaseController with EmailActionController {
   void onClose() {
     listEmailController.dispose();
     focusNodeKeyBoard.dispose();
-    _unregisterListenerWorker();
     super.onClose();
   }
 
@@ -195,8 +194,8 @@ class ThreadController extends BaseController with EmailActionController {
     _handleErrorGetAllOrRefreshChangesEmail(error);
   }
 
-  void _registerListenerWorker() {
-    mailboxWorker = ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
+  void _registerObxStreamListener() {
+    ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
       if (mailbox is PresentationMailbox) {
         if (_currentMailboxId != mailbox.id) {
           _currentMailboxId = mailbox.id;
@@ -209,7 +208,7 @@ class ThreadController extends BaseController with EmailActionController {
       }
     });
 
-    searchWorker = ever(searchController.searchState, (searchState) {
+    ever(searchController.searchState, (searchState) {
       if (searchState is SearchState) {
         if (searchState.searchStatus == SearchStatus.ACTIVE) {
           cancelSelectEmail();
@@ -217,13 +216,13 @@ class ThreadController extends BaseController with EmailActionController {
       }
     });
 
-    advancedSearchFilterWorker = ever(searchController.isAdvancedSearchViewOpen, (hasOpen) {
+    ever(searchController.isAdvancedSearchViewOpen, (hasOpen) {
       if (hasOpen == true) {
         mailboxDashBoardController.filterMessageOption.value = FilterMessageOption.all;
       }
     });
 
-    dashboardActionWorker = ever(mailboxDashBoardController.dashBoardAction, (action) {
+    ever(mailboxDashBoardController.dashBoardAction, (action) {
       if (action is RefreshAllEmailAction) {
         refreshAllEmail();
         mailboxDashBoardController.clearDashBoardAction();
@@ -268,15 +267,19 @@ class ThreadController extends BaseController with EmailActionController {
         _navigationRouter = action.navigationRouter;
         _activateSearchFromRouter();
         mailboxDashBoardController.clearDashBoardAction();
-      } else if (action is RefreshChangeEmailAction) {
-        if (action.newState != _currentEmailState) {
-          _refreshEmailChanges();
-        }
-        mailboxDashBoardController.clearDashBoardAction();
       }
     });
 
-    viewStateWorker = ever(mailboxDashBoardController.viewState, (viewState) {
+    ever(mailboxDashBoardController.emailUIAction, (action) {
+      if (action is RefreshChangeEmailAction) {
+        if (action.newState != _currentEmailState) {
+          _refreshEmailChanges();
+        }
+        mailboxDashBoardController.clearEmailUIAction();
+      }
+    });
+
+    ever(mailboxDashBoardController.viewState, (viewState) {
       if (viewState is Either) {
         viewState.map((success) {
           if (success is MarkAsEmailReadSuccess) {
@@ -321,14 +324,6 @@ class ThreadController extends BaseController with EmailActionController {
         });
       }
     });
-  }
-
-  void _unregisterListenerWorker() {
-    mailboxWorker.dispose();
-    dashboardActionWorker.dispose();
-    searchWorker.dispose();
-    advancedSearchFilterWorker.dispose();
-    viewStateWorker.dispose();
   }
 
   void _activateSearchFromRouter() {

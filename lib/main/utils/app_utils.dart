@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,4 +24,6 @@ class AppUtils {
       webOnlyWindowName: isNewTab ? '_blank' : '_self',
     );
   }
+
+  static String? get fcmVapidPublicKey => BuildUtils.isWeb ? AppConfig.fcmVapidPublicKeyWeb : null;
 }

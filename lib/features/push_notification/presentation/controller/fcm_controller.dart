@@ -47,7 +47,7 @@ class FcmController extends BaseController {
   GetSessionInteractor? _getSessionInteractor;
 
   FcmController._internal() {
-    _listenFcmMessageStream();
+    _listenFcmStream();
   }
 
   static final FcmController _instance = FcmController._internal();
@@ -59,17 +59,33 @@ class FcmController extends BaseController {
     FcmTokenHandler.instance.initialize();
   }
 
-  void _listenFcmMessageStream() {
-    log('FcmController::_listenFcmMessageStream():');
+  void _listenFcmStream() async {
+    await Future.wait([
+      listenForegroundMessageStream(),
+      listenBackgroundMessageStream(),
+      listenTokenStream()
+    ]);
+  }
+
+  Future<void> listenForegroundMessageStream() {
     FcmService.instance.foregroundMessageStream
       .throttleTime(const Duration(milliseconds: FcmService.durationMessageComing))
       .listen(_handleForegroundMessageAction);
+    return Future.value();
+  }
 
+  Future<void> listenBackgroundMessageStream() {
     FcmService.instance.backgroundMessageStream
       .throttleTime(const Duration(milliseconds: FcmService.durationMessageComing))
       .listen(_handleBackgroundMessageAction);
+    return Future.value();
+  }
 
-    FcmService.instance.fcmTokenStream.listen(FcmTokenHandler.instance.handle);
+  Future<void> listenTokenStream() {
+    FcmService.instance.fcmTokenStream
+      .debounceTime(const Duration(milliseconds: FcmService.durationRefreshToken))
+      .listen(FcmTokenHandler.instance.handleTokenAction);
+    return Future.value();
   }
 
   void _handleForegroundMessageAction(RemoteMessage newRemoteMessage) {
@@ -251,13 +267,6 @@ class FcmController extends BaseController {
 
   void _clearRemoteMessageBackground() {
     _remoteMessageBackground = null;
-  }
-
-  @override
-  void dispose() {
-    _clearRemoteMessageBackground();
-    FcmService.instance.dispose();
-    super.dispose();
   }
 
   @override

@@ -5,7 +5,6 @@ import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
 class DashBoardAction extends UIAction {
   static final idle = DashBoardAction();
@@ -106,13 +105,6 @@ class ClearAllFieldOfAdvancedSearchAction extends DashBoardAction {
   List<Object?> get props => [];
 }
 
-class SelectMailboxDefaultAction extends DashBoardAction {
-  SelectMailboxDefaultAction();
-
-  @override
-  List<Object?> get props => [];
-}
-
 class SelectEmailByIdAction extends DashBoardAction {
 
   final NavigationRouter navigationRouter;
@@ -131,24 +123,4 @@ class SearchEmailByQueryAction extends DashBoardAction {
 
   @override
   List<Object?> get props => [navigationRouter];
-}
-
-class RefreshChangeEmailAction extends DashBoardAction {
-
-  final jmap.State? newState;
-
-  RefreshChangeEmailAction(this.newState);
-
-  @override
-  List<Object?> get props => [newState];
-}
-
-class RefreshChangeMailboxAction extends DashBoardAction {
-
-  final jmap.State? newState;
-
-  RefreshChangeMailboxAction(this.newState);
-
-  @override
-  List<Object?> get props => [newState];
 }
