@@ -475,7 +475,9 @@ class ComposerView extends GetWidget<ComposerController>
                           controller: controller.toEmailAddressController,
                           focusNode: controller.toAddressFocusNode,
                           autoDisposeFocusNode: false,
-                          isInitial: controller.isInitialRecipient.value)
+                          isInitial: controller.isInitialRecipient.value,
+                          keyTagEditor: controller.keyToEmailTagEditor
+                      )
                       ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                       ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                       ..addOnAddEmailAddressTypeAction((prefixEmailAddress) => controller.addEmailAddressType(prefixEmailAddress))
@@ -495,7 +497,9 @@ class ComposerView extends GetWidget<ComposerController>
                             controller.listEmailAddressType,
                             expandMode: controller.ccAddressExpandMode.value,
                             controller: controller.ccEmailAddressController,
-                            isInitial: controller.isInitialRecipient.value,)
+                            isInitial: controller.isInitialRecipient.value,
+                            keyTagEditor: controller.keyCcEmailTagEditor
+                        )
                         ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                         ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                         ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
@@ -516,7 +520,9 @@ class ComposerView extends GetWidget<ComposerController>
                             controller.listEmailAddressType,
                             expandMode: controller.bccAddressExpandMode.value,
                             controller: controller.bccEmailAddressController,
-                            isInitial: controller.isInitialRecipient.value,)
+                            isInitial: controller.isInitialRecipient.value,
+                            keyTagEditor: controller.keyBccEmailTagEditor
+                        )
                         ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                         ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                         ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))

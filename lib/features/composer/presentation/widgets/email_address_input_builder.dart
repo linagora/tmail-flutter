@@ -33,6 +33,7 @@ class EmailAddressInputBuilder {
   final bool? isInitial;
   final FocusNode? focusNode;
   final bool autoDisposeFocusNode;
+  final GlobalKey? keyTagEditor;
 
   List<EmailAddress> listEmailAddress = <EmailAddress>[];
 
@@ -81,6 +82,7 @@ class EmailAddressInputBuilder {
       this.focusNode,
       this.autoDisposeFocusNode = true,
       this.expandMode = ExpandMode.EXPAND,
+      this.keyTagEditor,
     }
   );
 
@@ -129,6 +131,7 @@ class EmailAddressInputBuilder {
       return FocusScope(child: Focus(
           onFocusChange: (focus) => _onFocusEmailAddressChangeAction?.call(_prefixEmailAddress, focus),
           child: TagEditor<SuggestionEmailAddress>(
+            key: keyTagEditor,
             length: newListEmailAddress.length,
             controller: controller,
             focusNode: focusNode,
