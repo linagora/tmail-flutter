@@ -83,7 +83,6 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       textInputAction: TextInputAction.done,
       hasAddButton: false,
       tagSpacing: BuildUtils.isWeb ? 12 : 8,
-      delimiters: const [' '],
       autofocus: false,
       minTextFieldWidth: 20,
       resetTextOnSubmitted: true,
