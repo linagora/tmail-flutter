@@ -148,6 +148,7 @@ class EmailAddressInputBuilder {
             suggestionsBoxRadius: 20,
             suggestionsBoxMaxHeight: 300,
             textStyle: const TextStyle(color: AppColor.colorEmailAddress, fontSize: 14, fontWeight: FontWeight.w500),
+            onDeleteTagAction: () => _handleDeleteTagAction(setState),
             onSubmitted: (value) {
               log('EmailAddressInputBuilder::_buildTagEditor(): onSubmitted: $value');
               if (!_isDuplicatedRecipient(value)) {
@@ -326,11 +327,8 @@ class EmailAddressInputBuilder {
       return [];
     }
 
-    final currentTextOnTextField = controller?.text ?? '';
-    log('EmailAddressInputBuilder::_findSuggestions():currentTextOnTextField: $currentTextOnTextField');
     final processedQuery = query.trim();
-
-    if (processedQuery.isEmpty || currentTextOnTextField.isEmpty) {
+    if (processedQuery.isEmpty) {
       return [];
     }
 
@@ -342,6 +340,11 @@ class EmailAddressInputBuilder {
     }
 
     tmailSuggestion.addAll(_matchedSuggestionEmailAddress(processedQuery, listEmailAddress));
+
+    final currentTextOnTextField = controller?.text ?? '';
+    if (currentTextOnTextField.isEmpty) {
+      return [];
+    }
 
     return tmailSuggestion;
   }
@@ -373,5 +376,28 @@ class EmailAddressInputBuilder {
 
   void _handleGapBetweenTagChangedAndFindSuggestion() {
     log('EmailAddressInputBuilder::_handleGapBetweenTagChangedAndFindSuggestion(): Timeout');
+  }
+
+  void _handleDeleteTagAction(StateSetter setState) {
+    log('EmailAddressInputBuilder::_handleDeleteTagAction()');
+    if (listEmailAddress.isNotEmpty) {
+      setState(() {
+        final emailAddressDeleted = listEmailAddress.removeLast();
+
+        Future.delayed(const Duration(milliseconds: 10), () {
+          if (controller != null) {
+            controller!.text = emailAddressDeleted.emailAddress;
+            controller!.value = controller!.value.copyWith(
+              text: emailAddressDeleted.asString(),
+              selection: TextSelection(
+                baseOffset: emailAddressDeleted.asString().length,
+                extentOffset: emailAddressDeleted.asString().length
+              )
+            );
+          }
+        });
+      });
+      _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
+    }
   }
 }
