@@ -137,7 +137,6 @@ class EmailAddressInputBuilder {
             textInputAction: TextInputAction.done,
             hasAddButton: false,
             tagSpacing: 8,
-            delimiters: const [' '],
             autofocus: _prefixEmailAddress != PrefixEmailAddress.to && listEmailAddress.isEmpty,
             minTextFieldWidth: 20,
             resetTextOnSubmitted: true,
