@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -28,6 +29,7 @@ import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -113,6 +115,10 @@ class ComposerController extends BaseController {
   final toEmailAddressController = TextEditingController();
   final ccEmailAddressController = TextEditingController();
   final bccEmailAddressController = TextEditingController();
+
+  final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
+  final GlobalKey<TagsEditorState> keyCcEmailTagEditor = GlobalKey<TagsEditorState>();
+  final GlobalKey<TagsEditorState> keyBccEmailTagEditor = GlobalKey<TagsEditorState>();
 
   FocusNode? subjectEmailInputFocusNode;
   FocusNode? toAddressFocusNode;
@@ -1145,6 +1151,8 @@ class ComposerController extends BaseController {
       ccAddressExpandMode.value = ExpandMode.COLLAPSE;
       bccAddressExpandMode.value = ExpandMode.COLLAPSE;
       htmlEditorApi?.unfocus();
+
+      autoCreateEmailTag();
     }
   }
 
@@ -1154,6 +1162,88 @@ class ComposerController extends BaseController {
       toAddressExpandMode.value = ExpandMode.COLLAPSE;
       ccAddressExpandMode.value = ExpandMode.COLLAPSE;
       bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+
+      autoCreateEmailTag();
+    }
+  }
+
+  void autoCreateEmailTag() {
+    final inputToEmail = toEmailAddressController.text;
+    final inputCcEmail = ccEmailAddressController.text;
+    final inputBccEmail = bccEmailAddressController.text;
+    log('ComposerController::_autoCreateEmailTag():inputToEmail: $inputToEmail');
+    log('ComposerController::_autoCreateEmailTag():inputCcEmail: $inputCcEmail');
+    log('ComposerController::_autoCreateEmailTag():inputBccEmail: $inputBccEmail');
+
+    if (inputToEmail.isNotEmpty) {
+      _autoCreateToEmailTag(inputToEmail);
+    }
+    if (inputCcEmail.isNotEmpty) {
+      _autoCreateCcEmailTag(inputCcEmail);
+    }
+    if (inputBccEmail.isNotEmpty) {
+      _autoCreateBccEmailTag(inputBccEmail);
+    }
+  }
+
+  bool _isDuplicatedRecipient(String inputEmail, List<EmailAddress> listEmailAddress) {
+    return listEmailAddress
+      .map((emailAddress) => emailAddress.email)
+      .whereNotNull()
+      .contains(inputEmail);
+  }
+
+  void _autoCreateToEmailTag(String inputEmail) {
+    if (!_isDuplicatedRecipient(inputEmail, listToEmailAddress)) {
+      final emailAddress = EmailAddress(null, inputEmail);
+      listToEmailAddress.add(emailAddress);
+      isInitialRecipient.value = true;
+      isInitialRecipient.refresh();
+      _updateStatusEmailSendButton();
+    }
+    keyToEmailTagEditor.currentState?.resetTextField();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      keyToEmailTagEditor.currentState?.closeSuggestionBox();
+    });
+  }
+
+  void _autoCreateCcEmailTag(String inputEmail) {
+    if (!_isDuplicatedRecipient(inputEmail, listCcEmailAddress)) {
+      final emailAddress = EmailAddress(null, inputEmail);
+      listCcEmailAddress.add(emailAddress);
+      isInitialRecipient.value = true;
+      isInitialRecipient.refresh();
+      _updateStatusEmailSendButton();
+    }
+    keyCcEmailTagEditor.currentState?.resetTextField();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      keyCcEmailTagEditor.currentState?.closeSuggestionBox();
+    });
+  }
+
+  void _autoCreateBccEmailTag(String inputEmail) {
+    if (!_isDuplicatedRecipient(inputEmail, listBccEmailAddress)) {
+      final emailAddress = EmailAddress(null, inputEmail);
+      listBccEmailAddress.add(emailAddress);
+      isInitialRecipient.value = true;
+      isInitialRecipient.refresh();
+      _updateStatusEmailSendButton();
+    }
+    keyBccEmailTagEditor.currentState?.resetTextField();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      keyBccEmailTagEditor.currentState?.closeSuggestionBox();
+    });
+  }
+
+  void _closeSuggestionBox() {
+    if (toEmailAddressController.text.isEmpty) {
+      keyToEmailTagEditor.currentState?.closeSuggestionBox();
+    }
+    if (ccEmailAddressController.text.isEmpty) {
+      keyCcEmailTagEditor.currentState?.closeSuggestionBox();
+    }
+    if (bccEmailAddressController.text.isEmpty) {
+      keyBccEmailTagEditor.currentState?.closeSuggestionBox();
     }
   }
 
@@ -1194,6 +1284,7 @@ class ComposerController extends BaseController {
         default:
           break;
       }
+      _closeSuggestionBox();
     }
   }
 
