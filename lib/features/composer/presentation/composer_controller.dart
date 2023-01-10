@@ -503,8 +503,10 @@ class ComposerController extends BaseController {
     _updateStatusEmailSendButton();
   }
 
-  void updateListEmailAddress(PrefixEmailAddress prefixEmailAddress,
-      List<EmailAddress> newListEmailAddress) {
+  void updateListEmailAddress(
+    PrefixEmailAddress prefixEmailAddress,
+    List<EmailAddress> newListEmailAddress
+  ) {
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.to:
         listToEmailAddress = List.from(newListEmailAddress);
