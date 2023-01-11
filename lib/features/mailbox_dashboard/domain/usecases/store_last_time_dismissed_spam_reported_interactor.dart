@@ -5,7 +5,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/spam_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/store_last_time_dismissed_spam_reported_state.dart';
 
 class StoreSpamReportInteractor {
-  final StoreLastTimeDismissedSpamReportInteractor _spamReportRepository;
+  final SpamReportRepository _spamReportRepository;
 
   StoreSpamReportInteractor(this._spamReportRepository);
 
