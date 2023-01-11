@@ -149,6 +149,12 @@ class EmailAddressInputBuilder {
             suggestionsBoxMaxHeight: 300,
             textStyle: const TextStyle(color: AppColor.colorEmailAddress, fontSize: 14, fontWeight: FontWeight.w500),
             onDeleteTagAction: () => _handleDeleteTagAction(setState),
+            onSelectOptionAction: (item) {
+              if (!_isDuplicatedRecipient(item.emailAddress.emailAddress)) {
+                setState(() => listEmailAddress.add(item.emailAddress));
+                _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
+              }
+            },
             onSubmitted: (value) {
               log('EmailAddressInputBuilder::_buildTagEditor(): onSubmitted: $value');
               if (!_isDuplicatedRecipient(value)) {
@@ -201,7 +207,7 @@ class EmailAddressInputBuilder {
                 _handleGapBetweenTagChangedAndFindSuggestion);
             },
             findSuggestions: _findSuggestions,
-            suggestionBuilder: (context, tagEditorState, suggestionEmailAddress) {
+            suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, highlight) {
               switch (suggestionEmailAddress.state) {
                 case SuggestionEmailState.duplicated:
                   return _buildExistedSuggestionItem(setState, context, suggestionEmailAddress);
@@ -315,7 +321,8 @@ class EmailAddressInputBuilder {
         log('EmailAddressInputBuilder::_buildSuggestionItem(): onTap: $suggestionEmailAddress');
         setState(() => listEmailAddress.add(suggestionEmailAddress.emailAddress));
         _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
-        tagEditorState.selectSuggestion(suggestionEmailAddress);
+        tagEditorState.closeSuggestionBox();
+        tagEditorState.resetTextField();
       },
     );
   }
