@@ -123,7 +123,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
         );
       },
       findSuggestions: _findSuggestions,
-      suggestionBuilder: (context, tagEditorState, suggestionEmailAddress) {
+      suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, highlight) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: ContactSuggestionBoxItem(
@@ -132,7 +132,8 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
               borderRadius: BorderRadius.all(Radius.circular(12))),
             selectedContactCallbackAction: (contact) {
               setState(() => listEmailAddress.add(contact));
-              tagEditorState.selectSuggestion(suggestionEmailAddress);
+              tagEditorState.closeSuggestionBox();
+              tagEditorState.resetTextField();
             },
           ),
         );
@@ -198,6 +199,11 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
     }
 
     teamMailSuggestion.addAll(_matchedSuggestionEmailAddress(processedQuery, listEmailAddress));
+
+    final currentTextOnTextField = widget.controller?.text ?? '';
+    if (currentTextOnTextField.isEmpty) {
+      return [];
+    }
 
     return teamMailSuggestion.toSet().toList();
   }
