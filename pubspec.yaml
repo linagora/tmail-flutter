@@ -99,8 +99,10 @@ dependencies:
   filesize: 2.0.1
 
   # super_tag_editor
-  super_tag_editor: 0.0.3+4
-
+  super_tag_editor:
+    git:
+      url: https://github.com/dab246/super_tag_editor.git
+      ref: master
   # uuid
   uuid: 3.0.4
 
