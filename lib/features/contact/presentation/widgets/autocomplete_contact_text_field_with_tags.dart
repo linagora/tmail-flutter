@@ -53,6 +53,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
   late List<EmailAddress> listEmailAddress;
 
   Timer? _gapBetweenTagChangedAndFindSuggestion;
+  bool lastTagFocused = false;
 
   @override
   void initState() {
@@ -89,6 +90,23 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       suggestionsBoxBackgroundColor: Colors.white,
       suggestionsBoxRadius: 16,
       suggestionsBoxMaxHeight: 350,
+      onFocusTagAction: (focused) {
+        setState(() {
+          lastTagFocused = focused;
+        });
+      },
+      onDeleteTagAction: () {
+        if (listEmailAddress.isNotEmpty) {
+          setState(() {
+            listEmailAddress.removeLast();
+          });
+        }
+      },
+      onSelectOptionAction: (item) {
+        if (!_isDuplicatedRecipient(item.emailAddress.emailAddress)) {
+          setState(() => listEmailAddress.add(item.emailAddress));
+        }
+      },
       onSubmitted: (value) {
         if (!_isDuplicatedRecipient(value)) {
           setState(() => listEmailAddress.add(EmailAddress(null, value)));
@@ -109,6 +127,8 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       ),
       tagBuilder: (context, index) => ContactInputTagItem(
         listEmailAddress[index],
+        isLastContact: index == listEmailAddress.length - 1,
+        lastTagFocused: lastTagFocused,
         deleteContactCallbackAction: (contact) {
           setState(() => listEmailAddress.remove(contact));
         }
@@ -123,7 +143,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
         );
       },
       findSuggestions: _findSuggestions,
-      suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, highlight) {
+      suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: ContactSuggestionBoxItem(

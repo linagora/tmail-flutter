@@ -418,15 +418,23 @@ class ComposerView extends GetWidget<ComposerController>
                       children: [
                         Text(
                           item.name ?? '',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black),
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
+                          softWrap: CommonTextStyle.defaultSoftWrap
                         ),
                         Text(
                           item.email ?? '',
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.normal, color: AppColor.colorHintSearchBar),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.normal,
+                            color: AppColor.colorHintSearchBar),
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
+                          softWrap: CommonTextStyle.defaultSoftWrap
                         )
                       ]
                   ),
@@ -447,13 +455,18 @@ class ComposerView extends GetWidget<ComposerController>
           ),
         ),
         Expanded(child: Padding(
-            padding: const EdgeInsets.only(right: 8, left: 12),
-            child: Text(
-              controller.identitySelected.value?.email ?? '',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.normal, color: AppColor.colorEmailAddressPrefix),
-            ))),
+          padding: const EdgeInsets.only(right: 8, left: 12),
+          child: Text(
+            controller.identitySelected.value?.email ?? '',
+            maxLines: 1,
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            softWrap: CommonTextStyle.defaultSoftWrap,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.normal,
+              color: AppColor.colorEmailAddressPrefix),
+          )
+        )),
       ]),
     );
   }
