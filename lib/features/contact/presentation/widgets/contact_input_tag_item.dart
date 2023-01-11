@@ -15,12 +15,16 @@ typedef DeleteContactCallbackAction = Function(EmailAddress contactDeleted);
 class ContactInputTagItem extends StatelessWidget {
 
   final EmailAddress contact;
+  final bool isLastContact;
+  final bool lastTagFocused;
   final DeleteContactCallbackAction? deleteContactCallbackAction;
 
   const ContactInputTagItem(
     this.contact,
     {
       Key? key,
+      this.isLastContact = false,
+      this.lastTagFocused = false,
       this.deleteContactCallbackAction
     }
   ) : super(key: key);
@@ -59,17 +63,10 @@ class ContactInputTagItem extends StatelessWidget {
             fit: BoxFit.fill)
         : null,
       labelStyle: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.normal),
-      backgroundColor: _isValidEmailAddress(contact.emailAddress)
-        ? AppColor.colorBackgroundContactTagItem
-        : Colors.white,
+      backgroundColor: _getTagBackgroundColor(),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          width: _isValidEmailAddress(contact.emailAddress) ? 0 : 1,
-          color: _isValidEmailAddress(contact.emailAddress)
-            ? AppColor.colorBackgroundContactTagItem
-            : AppColor.colorBorderEmailAddressInvalid
-        )
+        side: _getTagBorderSide()
       ),
       onDeleted: () => deleteContactCallbackAction?.call(contact),
     );
@@ -88,4 +85,29 @@ class ContactInputTagItem extends StatelessWidget {
   }
 
   bool _isValidEmailAddress(String value) => value.isEmail;
+
+  Color _getTagBackgroundColor() {
+    if (lastTagFocused && isLastContact) {
+      return AppColor.colorItemRecipientSelected;
+    } else {
+      return _isValidEmailAddress(contact.emailAddress)
+        ? AppColor.colorBackgroundContactTagItem
+        : Colors.white;
+    }
+  }
+
+  BorderSide _getTagBorderSide() {
+    if (lastTagFocused && isLastContact) {
+      return const BorderSide(
+      width: 1,
+      color: AppColor.primaryColor);
+    } else {
+      return BorderSide(
+        width: _isValidEmailAddress(contact.emailAddress) ? 0 : 1,
+        color: _isValidEmailAddress(contact.emailAddress)
+          ? AppColor.colorBackgroundContactTagItem
+          : AppColor.colorBorderEmailAddressInvalid
+      );
+    }
+  }
 }
