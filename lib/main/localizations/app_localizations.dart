@@ -2640,4 +2640,11 @@ class AppLocalizations {
       name: 'totalNewMessagePushNotification',
       args: [count]);
   }
+
+  String get privacyPolicy {
+    return Intl.message(
+      'Privacy policy',
+      name: 'privacyPolicy'
+    );
+  }
 }

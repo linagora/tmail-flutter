@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-01-09T16:48:24.908944",
+  "@@last_modified": "2023-01-12T18:44:51.610329",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2552,6 +2552,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+<<<<<<< HEAD
   "youHaveNewMessages": "You have new messages",
   "@youHaveNewMessages": {
     "type": "text",
@@ -2573,5 +2574,11 @@
     "placeholders": {
       "count": {}
     }
+  },
+  "privacyPolicy": "Privacy policy",
+  "@privacyPolicy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
