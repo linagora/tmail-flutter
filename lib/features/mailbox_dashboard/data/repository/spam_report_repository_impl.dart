@@ -27,7 +27,7 @@ class SpamReportRepositoryImpl extends SpamReportRepository {
   }
 
   @override
-  Future<UnreadSpamEmailsResponse> findNumberOfUnreadSpamEmails(
+  Future<UnreadSpamEmailsResponse> getUnreadSpamMailbox(
     AccountId accountId,
     {
       MailboxFilterCondition? mailboxFilterCondition,
@@ -35,6 +35,8 @@ class SpamReportRepositoryImpl extends SpamReportRepository {
     }
   ) {
     return mapDataSource[DataSourceType.network]!.findNumberOfUnreadSpamEmails(
-      accountId, mailboxFilterCondition: mailboxFilterCondition, limit: limit);
+        accountId,
+        mailboxFilterCondition: mailboxFilterCondition,
+        limit: limit);
   }
 }

@@ -269,6 +269,8 @@ class MailboxController extends BaseMailboxController {
           refreshMailboxChanges();
         }
         mailboxDashBoardController.clearMailboxUIAction();
+      } else if (action is OpenSpamMailboxAction){
+        openMailbox(action.context, action.presentationMailbox);
       }
     });
   }

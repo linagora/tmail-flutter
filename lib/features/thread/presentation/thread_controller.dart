@@ -34,7 +34,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/presentation/search_email_bindings.dart';
@@ -117,10 +116,6 @@ class ThreadController extends BaseController with EmailActionController {
   String get currentTextSearch => searchController.searchInputController.text;
 
   SearchQuery? get searchQuery => searchController.searchEmailFilter.value.text;
-
-  RxList<PresentationEmail> get emailList => mailboxDashBoardController.emailsInCurrentMailbox;
-
-  SpamReportController get spamReportController => mailboxDashBoardController.spamReportController;
 
   ThreadController(
     this._getEmailsInMailboxInteractor,

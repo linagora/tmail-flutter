@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
@@ -123,4 +124,14 @@ class SearchEmailByQueryAction extends DashBoardAction {
 
   @override
   List<Object?> get props => [navigationRouter];
+}
+class OpenSpamMailboxAction extends DashBoardAction {
+
+  final BuildContext context;
+  final PresentationMailbox presentationMailbox;
+
+  OpenSpamMailboxAction(this.context, this.presentationMailbox);
+
+  @override
+  List<Object?> get props => [context, presentationMailbox];
 }

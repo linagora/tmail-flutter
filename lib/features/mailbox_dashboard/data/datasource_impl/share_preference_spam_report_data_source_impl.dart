@@ -6,11 +6,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/share_prefer
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/unread_spam_emails_response.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
-class LocalSpamReportDataSourceImpl extends SpamReportDataSource {
+class SharePreferenceSpamReportDataSourceImpl extends SpamReportDataSource {
   final SharePreferenceSpamReportDataSource _sharePreferenceSpamReportDataSource;
   final ExceptionThrower _exceptionThrower;
 
-  LocalSpamReportDataSourceImpl(this._sharePreferenceSpamReportDataSource, this._exceptionThrower);
+  SharePreferenceSpamReportDataSourceImpl(this._sharePreferenceSpamReportDataSource, this._exceptionThrower);
   @override
   Future<DateTime> getLastTimeDismissedSpamReported() async {
     return Future.sync(() async {

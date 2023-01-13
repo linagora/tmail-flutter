@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_man
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/share_preference_spam_report_data_source.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
@@ -68,6 +69,7 @@ class LocalBindings extends Bindings {
       Get.find<FCMCacheManager>(),
       Get.find<FCMSubscriptionCacheClient>(),
     ));
+    Get.put(SharePreferenceSpamReportDataSource(Get.find<SharedPreferences>()));
   }
 
   void _bindingException() {

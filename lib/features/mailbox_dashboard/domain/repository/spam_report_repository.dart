@@ -10,7 +10,7 @@ abstract class SpamReportRepository {
 
   Future<void> deleteLastTimeDismissedSpamReported();
 
-  Future<UnreadSpamEmailsResponse> findNumberOfUnreadSpamEmails(
+  Future<UnreadSpamEmailsResponse> getUnreadSpamMailbox(
     AccountId accountId,
     {
       MailboxFilterCondition? mailboxFilterCondition,
