@@ -143,7 +143,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
         );
       },
       findSuggestions: _findSuggestions,
-      suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight) {
+      suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight, suggestionValid) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: ContactSuggestionBoxItem(

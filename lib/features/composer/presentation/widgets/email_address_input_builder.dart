@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:super_tag_editor/widgets/rich_text_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/suggestion_email_address.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -231,13 +232,22 @@ class EmailAddressInputBuilder {
             },
             findSuggestions: _findSuggestions,
             useDefaultHighlight: false,
-            suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight) {
+            suggestionBuilder: (
+              context,
+              tagEditorState,
+              suggestionEmailAddress,
+              index,
+              length,
+              highlight,
+              suggestionValid
+            ) {
               switch (suggestionEmailAddress.state) {
                 case SuggestionEmailState.duplicated:
                   return _buildExistedSuggestionItem(
                     setState,
                     context,
                     suggestionEmailAddress,
+                    suggestionValid
                   );
                 default:
                   return _buildSuggestionItem(
@@ -247,7 +257,8 @@ class EmailAddressInputBuilder {
                     suggestionEmailAddress,
                     index,
                     length,
-                    highlight
+                    highlight,
+                    suggestionValid
                   );
               }
             },
@@ -279,11 +290,11 @@ class EmailAddressInputBuilder {
     return listEmailAddress.length > 1 && expandMode == ExpandMode.COLLAPSE;
   }
 
-
   Widget _buildExistedSuggestionItem(
     StateSetter setState,
     BuildContext context,
     SuggestionEmailAddress suggestionEmailAddress,
+    String? suggestionValid
   ) {
     return Container(
       padding: const EdgeInsets.all(8.0),
@@ -306,17 +317,23 @@ class EmailAddressInputBuilder {
             child: Text(
               suggestionEmailAddress.emailAddress.asString().isNotEmpty ? suggestionEmailAddress.emailAddress.asString()[0].toUpperCase() : '',
               style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600))),
-          title: Text(
-            suggestionEmailAddress.emailAddress.asString(),
-            maxLines: 1,
-            overflow: kIsWeb ? null : TextOverflow.ellipsis,
-            style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal)),
+          title: RichTextWidget(
+            textOrigin: suggestionEmailAddress.emailAddress.asString(),
+            wordSearched: suggestionValid ?? '',
+          ),
           subtitle: suggestionEmailAddress.emailAddress.displayName.isNotEmpty && suggestionEmailAddress.emailAddress.emailAddress.isNotEmpty
-            ? Text(
-                suggestionEmailAddress.emailAddress.emailAddress,
-                maxLines: 1,
-                overflow: kIsWeb ? null : TextOverflow.ellipsis,
-                style: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 13, fontWeight: FontWeight.normal))
+            ? RichTextWidget(
+                textOrigin: suggestionEmailAddress.emailAddress.emailAddress,
+                wordSearched: suggestionValid ?? '',
+                styleTextOrigin: const TextStyle(
+                  color: AppColor.colorHintSearchBar,
+                  fontSize: 13,
+                  fontWeight: FontWeight.normal),
+                styleWordSearched: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold),
+              )
             : null,
           trailing: SvgPicture.asset(_imagePaths.icFilterSelected,
             width: 24,
@@ -334,7 +351,8 @@ class EmailAddressInputBuilder {
     SuggestionEmailAddress suggestionEmailAddress,
     int index,
     int length,
-    bool highlight
+    bool highlight,
+    String? suggestionValid
   ) {
     return Container(
       decoration: BoxDecoration(
@@ -353,18 +371,24 @@ class EmailAddressInputBuilder {
           child: Text(
               suggestionEmailAddress.emailAddress.asString().isNotEmpty ? suggestionEmailAddress.emailAddress.asString()[0].toUpperCase() : '',
               style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600))),
-        title: Text(
-            suggestionEmailAddress.emailAddress.asString(),
-            maxLines: 1,
-            overflow: kIsWeb ? null : TextOverflow.ellipsis,
-            style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal)),
+        title: RichTextWidget(
+          textOrigin: suggestionEmailAddress.emailAddress.asString(),
+          wordSearched: suggestionValid ?? '',
+        ),
         subtitle: suggestionEmailAddress.emailAddress.displayName.isNotEmpty && suggestionEmailAddress.emailAddress.emailAddress.isNotEmpty
-            ? Text(
-                suggestionEmailAddress.emailAddress.emailAddress,
-                maxLines: 1,
-                overflow: kIsWeb ? null : TextOverflow.ellipsis,
-                style: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 13, fontWeight: FontWeight.normal))
-            : null,
+          ? RichTextWidget(
+              textOrigin: suggestionEmailAddress.emailAddress.emailAddress,
+              wordSearched: suggestionValid ?? '',
+              styleTextOrigin: const TextStyle(
+                color: AppColor.colorHintSearchBar,
+                fontSize: 13,
+                fontWeight: FontWeight.normal),
+              styleWordSearched: const TextStyle(
+                color: Colors.black,
+                fontSize: 13,
+                fontWeight: FontWeight.bold),
+            )
+          : null,
         onTap: () {
           log('EmailAddressInputBuilder::_buildSuggestionItem(): onTap: $suggestionEmailAddress');
           setState(() => listEmailAddress.add(suggestionEmailAddress.emailAddress));
@@ -378,16 +402,20 @@ class EmailAddressInputBuilder {
 
   BorderRadius _getBorderRadiusSuggestionItem(int index, int length) {
     var borderRadius = const BorderRadius.all(Radius.circular(0));
-    if (index == 0) {
-      borderRadius = const BorderRadius.only(
-        topLeft: Radius.circular(20),
-        topRight: Radius.circular(20),
-      );
-    } else if (index == length - 1) {
-      borderRadius = const BorderRadius.only(
-        bottomRight: Radius.circular(20),
-        bottomLeft: Radius.circular(20),
-      );
+    if (length <= 1) {
+      borderRadius = const BorderRadius.all(Radius.circular(20));
+    } else {
+      if (index == 0) {
+        borderRadius = const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        );
+      } else if (index == length - 1) {
+        borderRadius = const BorderRadius.only(
+          bottomRight: Radius.circular(20),
+          bottomLeft: Radius.circular(20),
+        );
+      }
     }
     return borderRadius;
   }
