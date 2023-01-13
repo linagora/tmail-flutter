@@ -1,4 +1,3 @@
-
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
@@ -12,10 +11,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/unread_spa
 
 class SpamReportApi {
   final HttpClient _httpClient;
+  static const int _deafaultLimit = 1; 
 
   SpamReportApi(this._httpClient);
 
-  Future<UnreadSpamEmailsResponse> findNumberOfUnreadSpamEmails(
+  Future<UnreadSpamEmailsResponse> getUnreadSpamEmailbox(
     AccountId accountId,
     {
       MailboxFilterCondition? mailboxFilterCondition,
@@ -24,11 +24,11 @@ class SpamReportApi {
   ) async {
     final processingInvocation = ProcessingInvocation();
     final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
+    final spamReportQueryMethod = QueryMailboxMethod(accountId)..addLimit(limit ?? UnsignedInt(_deafaultLimit));
 
-    final spamReportQueryMethod = QueryMailboxMethod(accountId)..addLimit(limit ?? UnsignedInt(1));
+    if(mailboxFilterCondition != null) spamReportQueryMethod.addFilters(mailboxFilterCondition);
 
     final spamReportQueryMethodInvocation = requestBuilder.invocation(spamReportQueryMethod);
-
     final getMailBoxMethod = GetMailboxMethod(accountId)
         ..addReferenceIds(processingInvocation.createResultReference(
           spamReportQueryMethodInvocation.methodCallId,
@@ -42,11 +42,10 @@ class SpamReportApi {
 
     final _mailboxResponse = result
         .parse<GetMailboxResponse>(getMailboxInvocation.methodCallId, GetMailboxResponse.deserialize);
-    
-    final _unreadSpamEmailNumber = _mailboxResponse?.list.first.unreadEmails?.value.value.toInt();
 
      return Future.sync(() async {
-      return UnreadSpamEmailsResponse(unreadSpamEmailNumber: _unreadSpamEmailNumber);
+      final _unreadSpamMailbox = _mailboxResponse?.list.first;
+      return UnreadSpamEmailsResponse(unreadSpamMailbox: _unreadSpamMailbox);
     }).catchError((error) {
       throw error;
     });

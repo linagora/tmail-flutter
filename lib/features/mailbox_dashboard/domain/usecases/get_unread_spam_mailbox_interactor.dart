@@ -8,11 +8,11 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/spam_report_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_number_of_unread_spam_emails_state.dart';
 
-class GetNumberOfUnreadSpamEmails {
+class GetUnreadSpamMailboxInteractor {
   static const int conditionsForDisplayingSpamReportBanner = 4;
   final SpamReportRepository _spamReportRepository;
 
-  GetNumberOfUnreadSpamEmails(this._spamReportRepository);
+  GetUnreadSpamMailboxInteractor(this._spamReportRepository);
 
    Stream<Either<Failure, Success>> execute(
     AccountId accountId,
@@ -22,22 +22,22 @@ class GetNumberOfUnreadSpamEmails {
     }
   ) async* {
     try {
-      yield Right(GetNumberOfUnreadSpamEmailsLoading());
-
+      yield Right(GetUnreadSpamMailboxLoading());
       final _lastTimeDissmissedSpamReported = await _spamReportRepository.getLastTimeDismissedSpamReported();
+      final _timeLast = DateTime.now().difference(_lastTimeDissmissedSpamReported);
 
-      final _checkTimeCondition = (_lastTimeDissmissedSpamReported.hour - DateTime.now().hour) > conditionsForDisplayingSpamReportBanner;
+      final _checkTimeCondition = (_timeLast.inHours > 0) && (_timeLast.inHours > conditionsForDisplayingSpamReportBanner);
 
       if (_checkTimeCondition) {
-        final _response =  await _spamReportRepository.findNumberOfUnreadSpamEmails(accountId, mailboxFilterCondition: mailboxFilterCondition, limit: limit);
-        final _unreadSpamEmailNumber = _response.unreadSpamEmailNumber ?? 0;
+        final _response =  await _spamReportRepository.getUnreadSpamMailbox(accountId, mailboxFilterCondition: mailboxFilterCondition, limit: limit);
+        final _unreadSpamMailbox = _response.unreadSpamMailbox;
 
-        yield Right(GetNumberOfUnreadSpamEmailsSuccess(_unreadSpamEmailNumber));
+        yield Right(GetUnreadSpamMailboxSuccess(_unreadSpamMailbox!));
       } else {
         yield Left(InvalidSpamReportCondition());
       }
     } catch (e) {
-      yield Left(GetNumberOfUnreadSpamEmailsFailure(e));
+      yield Left(GetUnreadSpamMailboxFailure(e));
     }
   }
 }
