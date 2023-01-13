@@ -1,15 +1,16 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 
-class GetNumberOfUnreadSpamEmailsLoading extends UIState {}
+class GetUnreadSpamMailboxLoading extends UIState {}
 
-class GetNumberOfUnreadSpamEmailsSuccess extends UIState {
-  final int unreadSpamEmailNumber;
+class GetUnreadSpamMailboxSuccess extends UIState {
+  final Mailbox unreadSpamMailbox;
 
-  GetNumberOfUnreadSpamEmailsSuccess(this.unreadSpamEmailNumber);
+  GetUnreadSpamMailboxSuccess(this.unreadSpamMailbox);
 
   @override
-  List<Object> get props => [unreadSpamEmailNumber];
+  List<Object> get props => [unreadSpamMailbox];
 }
 
 class InvalidSpamReportCondition extends FeatureFailure {
@@ -17,10 +18,10 @@ class InvalidSpamReportCondition extends FeatureFailure {
   List<Object?> get props => [];
 }
 
-class GetNumberOfUnreadSpamEmailsFailure extends FeatureFailure {
+class GetUnreadSpamMailboxFailure extends FeatureFailure {
   final dynamic exception;
 
-  GetNumberOfUnreadSpamEmailsFailure(this.exception);
+  GetUnreadSpamMailboxFailure(this.exception);
 
   @override
   List<Object> get props => [exception];

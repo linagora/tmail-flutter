@@ -20,7 +20,7 @@ class SharePreferenceSpamReportDataSource extends SpamReportDataSource {
   
   @override
   Future<bool> storeLastTimeDismissedSpamReported(DateTime lastTimeDismissedSpamReported) async {
-    final _timeStamp = lastTimeDismissedSpamReported.microsecondsSinceEpoch;
+    final _timeStamp = lastTimeDismissedSpamReported.millisecondsSinceEpoch;
     return await _sharedPreferences.setInt(MailboxDashboardConstant.keyLastTimeDismissedSpamReported,_timeStamp);
   }
 

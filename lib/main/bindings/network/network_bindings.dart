@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/login/data/network/config/authorization_i
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/spam_report_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/forwarding_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/identity_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/rule_filter_api.dart';
@@ -90,6 +91,7 @@ class NetworkBindings extends Bindings {
     Get.put(ForwardingAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(QuotasAPI(Get.find<JmapHttpClient.HttpClient>()));
     Get.put(FcmApi(Get.find<JmapHttpClient.HttpClient>()));
+    Get.put(SpamReportApi(Get.find<JmapHttpClient.HttpClient>()));
   }
 
   void _bindingConnection() {

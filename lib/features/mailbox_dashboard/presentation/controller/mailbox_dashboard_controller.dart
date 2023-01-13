@@ -416,6 +416,7 @@ class MailboxDashBoardController extends ReloadableController {
       } else {
         dispatchRoute(DashboardRoutes.thread);
       }
+      spamReportController.getUnreadSpamMailboxAction(accountId.value!);
     } else {
       dispatchRoute(DashboardRoutes.thread);
       reload();
@@ -1519,6 +1520,10 @@ class MailboxDashBoardController extends ReloadableController {
 
   void updateEmailList(List<PresentationEmail> newEmailList) {
     emailsInCurrentMailbox.value = newEmailList;
+  }
+  
+  void openSpamMailboxAction(BuildContext context, PresentationMailbox presentationMailbox){
+    dispatchAction(OpenSpamMailboxAction(context, presentationMailbox));
   }
 
   @override
