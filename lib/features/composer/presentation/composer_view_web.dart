@@ -10,21 +10,13 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
-import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/composer_loading_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/order_list_type.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_type.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/drop_down_menu_header_style_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/toolbar_rich_text_builder.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
@@ -72,7 +64,7 @@ class ComposerView extends GetWidget<ComposerController>
                     Expanded(child: Column(
                         children: [
                           _buildAttachmentsWidget(context),
-                          _buildToolbarRichTextWidget(context),
+                          ToolbarRichTextWebBuilder(richTextWebController: controller.richTextWebController),
                           buildInlineLoadingView(controller),
                           _buildEditorForm(context)
                         ]
@@ -368,7 +360,7 @@ class ComposerView extends GetWidget<ComposerController>
             child: Column(
                 children: [
                   _buildAttachmentsWidget(context),
-                  _buildToolbarRichTextWidget(context),
+                  ToolbarRichTextWebBuilder(richTextWebController: controller.richTextWebController),
                   buildInlineLoadingView(controller),
                   _buildEditorForm(context)
                 ]
@@ -739,7 +731,7 @@ class ComposerView extends GetWidget<ComposerController>
   Widget _buildAttachmentsWidget(BuildContext context) {
     return Obx(() {
       final attachments = controller.uploadController.listUploadAttachments;
-      if (attachments.isNotEmpty) {
+      if (attachments.isNotEmpty) { 
         return Column(children: [
           Padding(
               padding: EdgeInsets.only(
@@ -845,194 +837,5 @@ class ComposerView extends GetWidget<ComposerController>
     } else {
       return constraints.maxHeight > 0 ? constraints.maxHeight * 0.4 : 150.0;
     }
-  }
-
-  Widget _buildToolbarRichTextWidget(BuildContext context) {
-    return Obx(() {
-      final richTextController = controller.richTextWebController;
-      final codeViewEnabled = richTextController.codeViewEnabled;
-      final opacity = codeViewEnabled ? 0.5 : 1.0;
-
-      return Container(
-        padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
-        alignment: Alignment.centerLeft,
-        child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            runSpacing: 8,
-            children: [
-              AbsorbPointer(
-                absorbing: codeViewEnabled,
-                child: DropDownMenuHeaderStyleWidget(
-                    icon: buildWrapIconStyleText(
-                        isSelected: richTextController.isMenuHeaderStyleOpen,
-                        icon: SvgPicture.asset(RichTextStyleType.headerStyle.getIcon(imagePaths),
-                            color: AppColor.colorDefaultRichTextButton.withOpacity(opacity),
-                            fit: BoxFit.fill),
-                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                        tooltip: RichTextStyleType.headerStyle.getTooltipButton(context)
-                    ),
-                    items: HeaderStyleType.values,
-                    onMenuStateChange: (isOpen) {
-                      log('ComposerView::_buildToolbarRichTextWidget(): MenuHeaderStyleStatus: $isOpen');
-                      final newStatus = isOpen
-                          ? DropdownMenuFontStatus.open
-                          : DropdownMenuFontStatus.closed;
-                      richTextController.menuHeaderStyleStatus.value = newStatus;
-                    },
-                    onChanged: (newStyle) => richTextController.applyHeaderStyle(newStyle)),
-              ),
-              AbsorbPointer(
-                absorbing: codeViewEnabled,
-                child: Container(
-                    width: 130,
-                    padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                    child: DropDownButtonWidget<FontNameType>(
-                        items: FontNameType.values,
-                        itemSelected: richTextController.selectedFontName.value,
-                        onChanged: (newFont) => richTextController.applyNewFontStyle(newFont),
-                        onMenuStateChange: (isOpen) {
-                          log('ComposerView::_buildToolbarRichTextWidget(): MenuFontStatus: $isOpen');
-                          final newStatus = isOpen
-                              ? DropdownMenuFontStatus.open
-                              : DropdownMenuFontStatus.closed;
-                          richTextController.menuFontStatus.value = newStatus;
-                        },
-                        heightItem: 40,
-                        sizeIconChecked: 16,
-                        radiusButton: 8,
-                        opacity: opacity,
-                        dropdownWidth: 200,
-                        colorButton: richTextController.isMenuFontOpen
-                            ? AppColor.colorBackgroundWrapIconStyleCode
-                            : Colors.white,
-                        iconArrowDown: SvgPicture.asset(imagePaths.icStyleArrowDown),
-                        tooltip: RichTextStyleType.fontName.getTooltipButton(context),
-                        supportSelectionIcon: true)),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 4.0),
-                child: AbsorbPointer(
-                  absorbing: codeViewEnabled,
-                  child: buildWrapIconStyleText(
-                      icon: buildIconWithTooltip(
-                          path: RichTextStyleType.textColor.getIcon(imagePaths),
-                          color: richTextController.selectedTextColor.value,
-                          tooltip: RichTextStyleType.textColor.getTooltipButton(context),
-                          opacity: opacity),
-                      onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.textColor)),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 4.0),
-                child: AbsorbPointer(
-                  absorbing: codeViewEnabled,
-                  child: buildWrapIconStyleText(
-                      padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 7),
-                      spacing: 3,
-                      icon: buildIconColorBackgroundText(
-                          iconData: RichTextStyleType.textBackgroundColor.getIconData(),
-                          colorSelected: richTextController.selectedTextBackgroundColor.value,
-                          tooltip: RichTextStyleType.textBackgroundColor.getTooltipButton(context),
-                          opacity: opacity),
-                      onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.textBackgroundColor)),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 4.0),
-                child: buildWrapIconStyleText(
-                    hasDropdown: false,
-                    padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-                    icon: Wrap(children: [
-                      AbsorbPointer(
-                        absorbing: codeViewEnabled,
-                        child: buildIconStyleText(
-                            path: RichTextStyleType.bold.getIcon(imagePaths),
-                            isSelected: richTextController.isTextStyleTypeSelected(RichTextStyleType.bold),
-                            tooltip: RichTextStyleType.bold.getTooltipButton(context),
-                            opacity: opacity,
-                            onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.bold)),
-                      ),
-                      AbsorbPointer(
-                        absorbing: codeViewEnabled,
-                        child: buildIconStyleText(
-                            path: RichTextStyleType.italic.getIcon(imagePaths),
-                            isSelected: richTextController.isTextStyleTypeSelected(RichTextStyleType.italic),
-                            tooltip: RichTextStyleType.italic.getTooltipButton(context),
-                            opacity: opacity,
-                            onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.italic)),
-                      ),
-                      AbsorbPointer(
-                        absorbing: codeViewEnabled,
-                        child: buildIconStyleText(
-                            path: RichTextStyleType.underline.getIcon(imagePaths),
-                            isSelected: richTextController.isTextStyleTypeSelected(RichTextStyleType.underline),
-                            tooltip: RichTextStyleType.underline.getTooltipButton(context),
-                            opacity: opacity,
-                            onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.underline)),
-                      ),
-                      AbsorbPointer(
-                        absorbing: codeViewEnabled,
-                        child: buildIconStyleText(
-                            path: RichTextStyleType.strikeThrough.getIcon(imagePaths),
-                            isSelected: richTextController.isTextStyleTypeSelected(
-                                RichTextStyleType.strikeThrough),
-                            tooltip: RichTextStyleType.strikeThrough.getTooltipButton(context),
-                            opacity: opacity,
-                            onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.strikeThrough)),
-                      )
-                    ])),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 4.0),
-                child: AbsorbPointer(
-                  absorbing: codeViewEnabled,
-                  child: PopupMenuOverlayWidget(
-                    controller: richTextController.menuParagraphController,
-                    listButtonAction: ParagraphType.values
-                      .map((paragraph) => paragraph.buildButtonWidget(
-                          context,
-                          imagePaths,
-                          (paragraph) => richTextController.applyParagraphType(paragraph)))
-                      .toList(),
-                    iconButton: buildWrapIconStyleText(
-                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                        spacing: 3,
-                        isSelected: richTextController.focusMenuParagraph.value,
-                        icon: buildIconWithTooltip(
-                          path: richTextController.selectedParagraph.value.getIcon(imagePaths),
-                          color: AppColor.colorDefaultRichTextButton,
-                          opacity: opacity,
-                          tooltip: RichTextStyleType.paragraph.getTooltipButton(context))),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 4.0),
-                child: AbsorbPointer(
-                  absorbing: codeViewEnabled,
-                  child: PopupMenuOverlayWidget(
-                    controller: richTextController.menuOrderListController,
-                    listButtonAction: OrderListType.values
-                      .map((orderType) => orderType.buildButtonWidget(
-                        context,
-                        imagePaths,
-                        (orderType) => richTextController.applyOrderListType(orderType)))
-                      .toList(),
-                    iconButton: buildWrapIconStyleText(
-                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                      spacing: 3,
-                      isSelected: richTextController.focusMenuOrderList.value,
-                      icon: buildIconWithTooltip(
-                        path: richTextController.selectedOrderList.value.getIcon(imagePaths),
-                        color: AppColor.colorDefaultRichTextButton,
-                        opacity: opacity,
-                        tooltip: RichTextStyleType.orderList.getTooltipButton(context))),
-                  ),
-                ),
-              )
-            ]
-        ),
-      );
-    });
   }
 }

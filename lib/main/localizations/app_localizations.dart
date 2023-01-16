@@ -1212,6 +1212,13 @@ class AppLocalizations {
         name: 'identities');
   }
 
+  String get setDefaultIdentity {
+    return Intl.message(
+        'Set as default identity',
+        name: 'setDefaultIdentity'
+    );
+  }
+
   String get identitiesSettingExplanation {
     return Intl.message(
       'Select the identity or email address you want to use to send an emails',
@@ -1235,16 +1242,16 @@ class AppLocalizations {
         name: 'name');
   }
 
-  String get reply_to_address {
+  String get reply_to {
     return Intl.message(
-        'Reply to address',
-        name: 'reply_to_address');
+        'Reply to',
+        name: 'reply_to');
   }
 
-  String get bcc_to_address {
+  String get bcc_to {
     return Intl.message(
-        'Bcc to address',
-        name: 'bcc_to_address');
+        'Bcc to',
+        name: 'bcc_to');
   }
 
   String get signature {
@@ -1265,6 +1272,12 @@ class AppLocalizations {
         name: 'html_template');
   }
 
+  String get html {
+    return Intl.message(
+        'Html',
+        name: 'html');
+  }
+
   String get create {
     return Intl.message(
         'Create',
@@ -1275,6 +1288,12 @@ class AppLocalizations {
     return Intl.message(
         'You have created a new identity',
         name: 'you_have_created_a_new_identity');
+  }
+
+  String get you_have_created_a_new_default_identity {
+    return Intl.message(
+        'You have created a new default identity',
+        name: 'you_have_created_a_new_default_identity');
   }
 
   String get all_identities {
@@ -2682,5 +2701,11 @@ class AppLocalizations {
       'Enable Spam report',
       name: 'enableSpamReport',
     );
+  }
+  
+  String get required {
+    return Intl.message(
+      'required',
+      name: 'required');
   }
 }
