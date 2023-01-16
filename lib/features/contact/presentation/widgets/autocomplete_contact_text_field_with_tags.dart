@@ -86,6 +86,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       tagSpacing: BuildUtils.isWeb ? 12 : 8,
       autofocus: false,
       minTextFieldWidth: 20,
+      debounceDuration: const Duration(milliseconds: 150),
       resetTextOnSubmitted: true,
       suggestionsBoxBackgroundColor: Colors.white,
       suggestionsBoxRadius: 16,
