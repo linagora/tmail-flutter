@@ -1535,8 +1535,9 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void storeSpamReportStateAction(SpamReportState spamReportState) {
-    spamReportController.storeSpamReportStateAction(spamReportState);
+  void storeSpamReportStateAction() {
+    final _storeSpamReportState = enableSpamRepot ? SpamReportState.disabled : SpamReportState.enabled;
+    spamReportController.storeSpamReportStateAction(_storeSpamReportState);
   }
 
   @override
