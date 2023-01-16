@@ -3,18 +3,23 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get_core/get_core.dart';
+import 'package:get/get_instance/get_instance.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/extensions/email_address_extension.dart';
-import 'package:model/extensions/identity_extension.dart';
-import 'package:model/user/user_profile.dart';
+import 'package:model/model.dart';
 import 'package:rich_text_composer/richtext_controller.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
@@ -49,8 +54,13 @@ class IdentityCreatorController extends BaseController {
   final replyToOfIdentity = Rxn<EmailAddress>();
   final bccOfIdentity = Rxn<EmailAddress>();
   final actionType = IdentityActionType.create.obs;
+  final isDefaultIdentity = RxBool(false);
+  final htmlEditorNode = FocusNode(debugLabel: 'html_editor');
+  final identityCreatorBinding = IdentityCreatorBindings();
 
   late RichTextController keyboardRichTextController;
+  late RichTextWebController richTextWebController;
+  late RichTextMobileTabletController richTextMobileTabletController;
   late HtmlEditorController signatureHtmlEditorController;
   TextEditingController? signaturePlainEditorController;
   TextEditingController? inputNameIdentityController;
@@ -88,7 +98,10 @@ class IdentityCreatorController extends BaseController {
   void onInit() {
     super.onInit();
     keyboardRichTextController = RichTextController();
-    signatureHtmlEditorController = HtmlEditorController(processNewLineAsBr: true);
+    richTextWebController = RichTextWebController();
+    richTextMobileTabletController = RichTextMobileTabletController();
+    signatureHtmlEditorController =
+        HtmlEditorController(processNewLineAsBr: true);
     signaturePlainEditorController = TextEditingController();
     inputNameIdentityController = TextEditingController();
     inputBccIdentityController = TextEditingController();
@@ -158,13 +171,12 @@ class IdentityCreatorController extends BaseController {
 
   void _getALlIdentitiesSuccess(GetAllIdentitiesSuccess success) {
     if (success.identities?.isNotEmpty == true) {
-      listEmailAddressDefault.value = success.identities
-          !.map((identity) => identity.toEmailAddressNoName())
+      listEmailAddressDefault.value = success.identities!
+          .map((identity) => identity.toEmailAddressNoName())
           .toSet()
           .toList();
       listEmailAddressOfReplyTo.add(noneEmailAddress);
       listEmailAddressOfReplyTo.addAll(listEmailAddressDefault);
-
       _setUpAllFieldEmailAddress();
     } else {
       _setDefaultEmailAddressList();
@@ -286,21 +298,28 @@ class IdentityCreatorController extends BaseController {
         ? {replyToOfIdentity.value!}
         : <EmailAddress>{};
 
+    final sortOrder = isDefaultIdentity.value ? UnsignedInt(0) : null;
+    
     final newIdentity = Identity(
       name: _nameIdentity,
       email: emailOfIdentity.value?.email,
       replyTo: replyToAddress,
       bcc: bccAddress,
       textSignature: Signature(signaturePlainText),
-      htmlSignature: Signature(signatureHtmlText ?? ''));
+      htmlSignature: Signature(signatureHtmlText ?? ''),
+      sortOrder: sortOrder);
 
     final generateCreateId = Id(_uuid.v1());
 
     if (actionType.value == IdentityActionType.create) {
-      final identityRequest = CreateNewIdentityRequest(generateCreateId, newIdentity);
+      final identityRequest = CreateNewIdentityRequest(
+        generateCreateId, 
+        newIdentity,
+        isDefaultIdentity: isDefaultIdentity.value
+      );
+      _disposeWidget();
 
       if (BuildUtils.isWeb) {
-        _disposeWidget();
         onCreatedIdentityCallback?.call(identityRequest);
       } else {
         popBack(result: identityRequest);
@@ -318,6 +337,11 @@ class IdentityCreatorController extends BaseController {
         popBack(result: identityRequest);
       }
     }
+    identityCreatorBinding.dispose();
+  }
+
+  void onCheckboxChanged() {
+    isDefaultIdentity.value = !isDefaultIdentity.value;
   }
 
   String? _getErrorInputNameString(BuildContext context) {
@@ -364,12 +388,6 @@ class IdentityCreatorController extends BaseController {
     }
   }
 
-  void _clearAll() {
-    signaturePlainEditorController?.clear();
-    inputNameIdentityController?.clear();
-    inputBccIdentityController?.clear();
-  }
-
   List<EmailAddress> getSuggestionEmailAddress(String? pattern) {
     if (pattern == null || pattern.isEmpty) {
       return List.empty();
@@ -382,19 +400,19 @@ class IdentityCreatorController extends BaseController {
   void clearFocusEditor(BuildContext context) {
     if (!BuildUtils.isWeb) {
       signatureHtmlEditorMobileController?.unfocus();
+      richTextMobileTabletController.htmlEditorApi?.unfocus();
+      keyboardRichTextController.hideRichTextView();
     }
-    FocusScope.of(context).unfocus();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
   }
 
   void closeView(BuildContext context) {
-    _clearAll();
-    clearFocusEditor(context);
-
     if (BuildUtils.isWeb) {
       _disposeWidget();
       onDismissIdentityCreator?.call();
     } else {
       popBack();
+      identityCreatorBinding.dispose();
     }
   }
 

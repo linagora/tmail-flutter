@@ -13,13 +13,17 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_default_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/edit_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_default_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_identity_interactor.dart';
@@ -28,7 +32,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/manage_accoun
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class IdentitiesController extends BaseController {
@@ -37,9 +40,11 @@ class IdentitiesController extends BaseController {
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _identityCreatorBindings = IdentityCreatorBindings();
 
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final CreateNewIdentityInteractor _createNewIdentityInteractor;
+  final CreateNewDefaultIdentityInteractor _createNewDefaultIdentityInteractor;
   final DeleteIdentityInteractor _deleteIdentityInteractor;
   final EditIdentityInteractor _editIdentityInteractor;
 
@@ -53,6 +58,7 @@ class IdentitiesController extends BaseController {
     this._deleteIdentityInteractor,
     this._createNewIdentityInteractor,
     this._editIdentityInteractor,
+    this._createNewDefaultIdentityInteractor
   );
 
   @override
@@ -80,6 +86,8 @@ class IdentitiesController extends BaseController {
           _handleGetAllIdentitiesSuccess(success);
         } else if (success is CreateNewIdentitySuccess) {
           _createNewIdentitySuccess(success);
+        } else if (success is CreateNewDefaultIdentitySuccess) {
+          _createNewDefaultIdentitySuccess(success);
         } else if (success is DeleteIdentitySuccess) {
           _deleteIdentitySuccess(success);
         } else if (success is EditIdentitySuccess) {
@@ -154,9 +162,8 @@ class IdentitiesController extends BaseController {
               }
             });
       } else {
-        final newIdentityArguments = await push(
-            AppRoutes.identityCreator,
-            arguments: arguments);
+        final newIdentityArguments =
+            await _getIdentityRequest(context, arguments);
 
         if (newIdentityArguments is CreateNewIdentityRequest) {
           _createNewIdentityAction(accountId, newIdentityArguments);
@@ -167,8 +174,34 @@ class IdentitiesController extends BaseController {
     }
   }
 
-  void _createNewIdentityAction(AccountId accountId, CreateNewIdentityRequest identityRequest) async {
-    consumeState(_createNewIdentityInteractor.execute(accountId, identityRequest));
+  Future<dynamic> _getIdentityRequest(
+    BuildContext context, 
+    dynamic arguments
+  ) async {
+    return await showModalBottomSheet(
+        enableDrag: false,
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16.0), 
+            topRight: Radius.circular(16.0)),
+        ),
+        builder: (context) {
+          _identityCreatorBindings.dependencies();
+          return IdentityCreatorView.fromArguments(arguments);
+        });
+  }
+
+  void _createNewIdentityAction(
+    AccountId accountId, 
+    CreateNewIdentityRequest identityRequest
+  ) async {
+    if (identityRequest.isDefaultIdentity) {
+       consumeState(_createNewDefaultIdentityInteractor.execute(accountId, identityRequest));
+    } else {
+      consumeState(_createNewIdentityInteractor.execute(accountId, identityRequest));
+    }
   }
 
   void _createNewIdentitySuccess(CreateNewIdentitySuccess success) {
@@ -177,6 +210,17 @@ class IdentitiesController extends BaseController {
           currentOverlayContext!,
           message: AppLocalizations.of(currentContext!).you_have_created_a_new_identity,
           icon: _imagePaths.icSelected);
+    }
+
+    _refreshAllIdentities();
+  }
+
+  void _createNewDefaultIdentitySuccess(CreateNewDefaultIdentitySuccess success) {
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastWithIcon(
+        currentOverlayContext!,
+        message: AppLocalizations.of(currentContext!).you_have_created_a_new_default_identity,
+        icon: _imagePaths.icSelected);
     }
 
     _refreshAllIdentities();
@@ -294,9 +338,7 @@ class IdentitiesController extends BaseController {
               }
             });
       } else {
-        final newIdentityArguments = await push(
-            AppRoutes.identityCreator,
-            arguments: arguments);
+        final newIdentityArguments = await _getIdentityRequest(context, arguments);
 
         if (newIdentityArguments is CreateNewIdentityRequest) {
           _createNewIdentityAction(accountId, newIdentityArguments);
