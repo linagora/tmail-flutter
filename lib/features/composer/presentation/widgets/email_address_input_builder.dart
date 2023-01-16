@@ -140,6 +140,7 @@ class EmailAddressInputBuilder {
             autoDisposeFocusNode: autoDisposeFocusNode,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
+            debounceDuration: const Duration(milliseconds: 150),
             hasAddButton: false,
             tagSpacing: 8,
             autofocus: _prefixEmailAddress != PrefixEmailAddress.to && listEmailAddress.isEmpty,
@@ -148,7 +149,7 @@ class EmailAddressInputBuilder {
             suggestionsBoxElevation: _suggestionBoxRadius,
             suggestionsBoxBackgroundColor: Colors.white,
             suggestionsBoxRadius: 20,
-            suggestionsBoxMaxHeight: 300,
+            suggestionsBoxMaxHeight: 350,
             textStyle: const TextStyle(color: AppColor.colorEmailAddress, fontSize: 14, fontWeight: FontWeight.w500),
             onFocusTagAction: (focused) {
               setState(() {
@@ -355,9 +356,7 @@ class EmailAddressInputBuilder {
     String? suggestionValid
   ) {
     return Container(
-      decoration: BoxDecoration(
-        color: highlight ? AppColor.colorItemSelected : Colors.white,
-        borderRadius: _getBorderRadiusSuggestionItem(index, length)),
+      color: highlight ? AppColor.colorItemSelected : Colors.white,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
         leading: Container(
@@ -398,26 +397,6 @@ class EmailAddressInputBuilder {
         },
       ),
     );
-  }
-
-  BorderRadius _getBorderRadiusSuggestionItem(int index, int length) {
-    var borderRadius = const BorderRadius.all(Radius.circular(0));
-    if (length <= 1) {
-      borderRadius = const BorderRadius.all(Radius.circular(20));
-    } else {
-      if (index == 0) {
-        borderRadius = const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        );
-      } else if (index == length - 1) {
-        borderRadius = const BorderRadius.only(
-          bottomRight: Radius.circular(20),
-          bottomLeft: Radius.circular(20),
-        );
-      }
-    }
-    return borderRadius;
   }
 
   FutureOr<List<SuggestionEmailAddress>> _findSuggestions(String query) async {
