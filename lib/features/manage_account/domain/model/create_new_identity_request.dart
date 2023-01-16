@@ -7,9 +7,15 @@ class CreateNewIdentityRequest with EquatableMixin {
 
   final Identity newIdentity;
   final Id creationId;
+  final bool isDefaultIdentity;
 
-  CreateNewIdentityRequest(this.creationId, this.newIdentity);
+  CreateNewIdentityRequest(
+    this.creationId, 
+    this.newIdentity, 
+    {
+      this.isDefaultIdentity = false
+    });
 
   @override
-  List<Object?> get props => [creationId, newIdentity];
+  List<Object?> get props => [creationId, newIdentity, isDefaultIdentity];
 }
