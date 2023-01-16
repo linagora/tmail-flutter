@@ -28,11 +28,15 @@ class GetUnreadSpamMailboxInteractor {
 
       final _checkTimeCondition = (_timeLast.inHours > 0) && (_timeLast.inHours > conditionsForDisplayingSpamReportBanner);
 
-      if (true) {
+      if (_checkTimeCondition) {
         final _response =  await _spamReportRepository.getUnreadSpamMailbox(accountId, mailboxFilterCondition: mailboxFilterCondition, limit: limit);
         final _unreadSpamMailbox = _response.unreadSpamMailbox;
 
-        yield Right(GetUnreadSpamMailboxSuccess(_unreadSpamMailbox!));
+        if (_unreadSpamMailbox!.unreadEmails!.value.value > 0) {
+          yield Right(GetUnreadSpamMailboxSuccess(_unreadSpamMailbox));
+        } else {
+          yield Left(InvalidSpamReportCondition());
+        }
       } else {
         yield Left(InvalidSpamReportCondition());
       }
