@@ -14,7 +14,9 @@ enum MailboxActions {
   move,
   markAsRead,
   selectForRuleAction,
-  openInNewTab
+  openInNewTab,
+  disableSpamReport,
+  enableSpamReport
 }
 
 extension MailboxActionsExtension on MailboxActions {
@@ -38,6 +40,10 @@ extension MailboxActionsExtension on MailboxActions {
     switch(this) {
       case MailboxActions.openInNewTab:
         return AppLocalizations.of(context).openInNewTab;
+      case MailboxActions.disableSpamReport:
+        return AppLocalizations.of(context).disableSpamReport;
+      case MailboxActions.enableSpamReport:
+        return AppLocalizations.of(context).enableSpamReport;
       case MailboxActions.markAsRead:
         return AppLocalizations.of(context).mark_as_read;
       case MailboxActions.move:
@@ -55,6 +61,10 @@ extension MailboxActionsExtension on MailboxActions {
     switch(this) {
       case MailboxActions.openInNewTab:
         return imagePaths.icOpenInNewTab;
+      case MailboxActions.disableSpamReport:
+        return imagePaths.icSpamReportDisable;
+      case MailboxActions.enableSpamReport:
+        return imagePaths.icSpamReportEnable;
       case MailboxActions.markAsRead:
         return imagePaths.icRead;
       case MailboxActions.move:
@@ -68,10 +78,22 @@ extension MailboxActionsExtension on MailboxActions {
     }
   }
 
+  Color getColorContextMenuTitle() {
+    switch(this) {
+      case MailboxActions.delete:
+        return AppColor.colorActionDeleteConfirmDialog;
+      default:
+        return Colors.black;
+    }
+  }
+
   Color getColorContextMenuIcon() {
     switch(this) {
       case MailboxActions.delete:
         return AppColor.colorActionDeleteConfirmDialog;
+      case MailboxActions.disableSpamReport:
+      case MailboxActions.enableSpamReport:
+        return AppColor.primaryColor;
       default:
         return Colors.black;
     }
@@ -116,7 +138,9 @@ extension MailboxActionsExtension on MailboxActions {
   ContextMenuItemState getContextMenuItemState(PresentationMailbox mailbox) {
     switch(this) {
       case MailboxActions.openInNewTab:
-        return ContextMenuItemState.activated;
+      case MailboxActions.disableSpamReport:
+      case MailboxActions.enableSpamReport:
+        return ContextMenuItemState.activated; 
       case MailboxActions.markAsRead:
         return mailbox.getCountUnReadEmails().isNotEmpty
             ? ContextMenuItemState.activated

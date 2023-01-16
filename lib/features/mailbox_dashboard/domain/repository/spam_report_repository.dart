@@ -23,5 +23,5 @@ abstract class SpamReportRepository {
 
   Future<void> storeSpamReportState(SpamReportState spamReportState);
 
-  Future<void> deletestoreSpamReportState();
+  Future<void> deleteSpamReportState();
 }

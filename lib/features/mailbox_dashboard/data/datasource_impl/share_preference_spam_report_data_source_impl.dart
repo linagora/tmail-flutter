@@ -51,7 +51,7 @@ class SharePreferenceSpamReportDataSourceImpl extends SpamReportDataSource {
   }
 
   @override
-  Future<void> deletestoreSpamReportState() {
+  Future<void> deleteSpamReportState() {
     return Future.sync(() async {
       return await _sharePreferenceSpamReportDataSource.deleteLastTimeDismissedSpamReported();
     }).catchError((error) {
