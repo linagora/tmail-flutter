@@ -1,15 +1,13 @@
-
-
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/spam_report_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_spam_report_state.dart';
 
-class StoreSpamReportStateInteractor {
+class GetSpamReportStateInteractor {
   final SpamReportRepository _spamReportRepository;
 
-  StoreSpamReportStateInteractor(this._spamReportRepository);
+  GetSpamReportStateInteractor(this._spamReportRepository);
 
   Stream<Either<Failure, Success>> execute() async* {
     try {

@@ -73,6 +73,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/spam_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_app_dashboard_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_unread_spam_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
@@ -80,6 +81,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
@@ -135,6 +137,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.put(SpamReportController(
       Get.find<StoreSpamReportInteractor>(),
       Get.find<GetUnreadSpamMailboxInteractor>(),
+      Get.find<StoreSpamReportStateInteractor>(),
+      Get.find<GetSpamReportStateInteractor>()
     ));
     Get.put(MailboxDashBoardController(
       Get.find<LogoutOidcInteractor>(),
@@ -286,6 +290,10 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => StoreSpamReportInteractor(
       Get.find<SpamReportRepository>()));
     Get.lazyPut(() => GetUnreadSpamMailboxInteractor(
+      Get.find<SpamReportRepository>()));
+    Get.lazyPut(() => StoreSpamReportStateInteractor(
+      Get.find<SpamReportRepository>()));
+    Get.lazyPut(() => GetSpamReportStateInteractor(
       Get.find<SpamReportRepository>()));
   }
 

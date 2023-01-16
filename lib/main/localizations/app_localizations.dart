@@ -2669,4 +2669,18 @@ class AppLocalizations {
       name: 'dismiss',
     );
   }
+
+  String get disableSpamReport {
+    return Intl.message(
+      'Disable Spam report',
+      name: 'disableSpamReport',
+    );
+  }
+
+  String get enableSpamReport {
+    return Intl.message(
+      'Enable Spam report',
+      name: 'enableSpamReport',
+    );
+  }
 }

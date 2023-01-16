@@ -47,6 +47,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_app_dashboard_configuration_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
@@ -416,7 +417,7 @@ class MailboxDashBoardController extends ReloadableController {
       } else {
         dispatchRoute(DashboardRoutes.thread);
       }
-      spamReportController.getUnreadSpamMailboxAction(accountId.value!);
+      _showSpamReportbanner();
     } else {
       dispatchRoute(DashboardRoutes.thread);
       reload();
@@ -1524,6 +1525,18 @@ class MailboxDashBoardController extends ReloadableController {
   
   void openSpamMailboxAction(BuildContext context, PresentationMailbox presentationMailbox){
     dispatchAction(OpenSpamMailboxAction(context, presentationMailbox));
+  }
+
+  bool get enableSpamRepot => spamReportController.enableSpamReport;
+
+  void _showSpamReportbanner() {
+    if (spamReportController.enableSpamReport) {
+      spamReportController.getUnreadSpamMailboxAction(accountId.value!);
+    }
+  }
+
+  void storeSpamReportStateAction(SpamReportState spamReportState) {
+    spamReportController.storeSpamReportStateAction(spamReportState);
   }
 
   @override
