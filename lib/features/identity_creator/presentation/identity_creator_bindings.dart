@@ -13,7 +13,7 @@ class IdentityCreatorBindings extends Bindings {
 
     Get.lazyPut(() => IdentityCreatorController(
       Get.find<VerifyNameInteractor>(),
-      Get.find<GetAllIdentitiesInteractor>(),
+      Get.find<GetAllIdentitiesInteractor>()
     ));
   }
 
