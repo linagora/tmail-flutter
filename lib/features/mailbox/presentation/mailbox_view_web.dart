@@ -408,6 +408,11 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
       MailboxActions.delete
     ];
 
+    if(mailbox.isSpam) {
+      mailboxActionsSupported.insert(1, 
+      controller.mailboxDashBoardController.enableSpamRepot ? MailboxActions.disableSpamReport : MailboxActions.enableSpamReport);
+    }
+
     final listContextMenuItemAction = mailboxActionsSupported
         .map((action) => ContextMenuItemMailboxAction(
             action,
@@ -488,7 +493,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                 styleName: TextStyle(
                     fontWeight: FontWeight.normal,
                     fontSize: 17,
-                    color: contextMenuItem.action.getColorContextMenuIcon()),
+                    color: contextMenuItem.action.getColorContextMenuTitle()),
                 onCallbackAction: () =>
                     controller.handleMailboxAction(context, contextMenuItem.action, mailbox)),
           ),

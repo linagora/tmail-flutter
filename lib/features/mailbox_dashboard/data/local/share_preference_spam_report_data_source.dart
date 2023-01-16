@@ -42,7 +42,7 @@ class SharePreferenceSpamReportDataSource extends SpamReportDataSource {
   }
 
   @override
-  Future<bool> deletestoreSpamReportState() async {
+  Future<bool> deleteSpamReportState() async {
     return await _sharedPreferences.remove(MailboxDashboardConstant.keySpamReportState);
   }
 

@@ -15,7 +15,7 @@ class StoreSpamReportStateInteractor {
     try {
       yield Right<Failure, Success>(StoreSpamReportStateLoading());
       await _spamReportRepository.storeSpamReportState(spamReportState);
-      yield Right<Failure, Success>(StoreSpamReportStateSuccess());
+      yield Right<Failure, Success>(StoreSpamReportStateSuccess(spamReportState));
     } catch (e) {
       yield Left<Failure, Success>(StoreSpamReportStateFailure(e));
     }

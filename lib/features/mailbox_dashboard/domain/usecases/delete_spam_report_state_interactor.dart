@@ -12,7 +12,7 @@ class DeleteSpamReportStateInteractor {
   Stream<Either<Failure, Success>> execute() async* {
     try {
       yield Right<Failure, Success>(DeleteSpamReportStateLoading());
-        await _spamReportRepository.deletestoreSpamReportState();
+        await _spamReportRepository.deleteSpamReportState();
       yield Right<Failure, Success>(DeleteSpamReportStateSuccess());
     } catch (e) {
       yield Left<Failure, Success>(DeleteSpamReportStateFailure(e));

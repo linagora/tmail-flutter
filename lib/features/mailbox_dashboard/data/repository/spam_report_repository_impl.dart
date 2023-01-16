@@ -52,7 +52,7 @@ class SpamReportRepositoryImpl extends SpamReportRepository {
   }
   
   @override
-  Future<void> deletestoreSpamReportState() {
-    return mapDataSource[DataSourceType.local]!.deletestoreSpamReportState();
+  Future<void> deleteSpamReportState() {
+    return mapDataSource[DataSourceType.local]!.deleteSpamReportState();
   }
 }
