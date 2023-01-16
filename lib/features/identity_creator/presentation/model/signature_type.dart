@@ -14,7 +14,7 @@ extension SignatureTypeExtension on SignatureType {
       case SignatureType.plainText:
         return AppLocalizations.of(context).plain_text;
       case SignatureType.htmlTemplate:
-        return AppLocalizations.of(context).html_template;
+        return AppLocalizations.of(context).html;
     }
   }
 }

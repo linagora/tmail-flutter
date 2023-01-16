@@ -8,8 +8,6 @@ import 'package:tmail_ui_user/features/destination_picker/presentation/destinati
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart' deferred as destination_picker;
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_view.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart' deferred as identity_creator;
 import 'package:tmail_ui_user/features/contact/presentation/contact_view.dart' deferred as contact_view;
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_bindings.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart' deferred as rules_filter_creator;
@@ -92,13 +90,6 @@ class AppPages {
                 contact_view.loadLibrary,
                 () => contact_view.ContactView()),
             binding: ContactBindings()),
-        GetPage(
-            name: AppRoutes.identityCreator,
-            opaque: false,
-            page: () => DeferredWidget(
-                identity_creator.loadLibrary,
-                () => identity_creator.IdentityCreatorView()),
-            binding: IdentityCreatorBindings()),
         GetPage(
             name: AppRoutes.rulesFilterCreator,
             opaque: false,
