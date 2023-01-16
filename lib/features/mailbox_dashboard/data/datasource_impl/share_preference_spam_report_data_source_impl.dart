@@ -3,6 +3,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/spam_report_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/share_preference_spam_report_data_source.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/unread_spam_emails_response.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
@@ -47,5 +48,32 @@ class SharePreferenceSpamReportDataSourceImpl extends SpamReportDataSource {
     }
   ) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deletestoreSpamReportState() {
+    return Future.sync(() async {
+      return await _sharePreferenceSpamReportDataSource.deleteLastTimeDismissedSpamReported();
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
+  }
+
+  @override
+  Future<SpamReportState> getSpamReportState() {
+    return Future.sync(() async {
+      return await _sharePreferenceSpamReportDataSource.getSpamReportState();
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
+  }
+
+  @override
+  Future<void> storeSpamReportState(SpamReportState spamReportState) {
+    return Future.sync(() async {
+      return await _sharePreferenceSpamReportDataSource.storeSpamReportState(spamReportState);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 }

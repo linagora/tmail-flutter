@@ -42,17 +42,17 @@ class SpamReportRepositoryImpl extends SpamReportRepository {
   }
 
   @override
-  Future<SpamReportState> getSpamReportState() {
-    throw UnimplementedError();
+  Future<SpamReportState> getSpamReportState() async {
+    return await mapDataSource[DataSourceType.local]!.getSpamReportState();
   }
 
   @override
   Future<void> storeSpamReportState(SpamReportState spamReportState) {
-    throw UnimplementedError();
+    return mapDataSource[DataSourceType.local]!.storeSpamReportState(spamReportState);
   }
   
   @override
   Future<void> deletestoreSpamReportState() {
-    throw UnimplementedError();
+    return mapDataSource[DataSourceType.local]!.deletestoreSpamReportState();
   }
 }
