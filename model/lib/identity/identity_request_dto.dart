@@ -2,6 +2,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/http/converter/identities/identity_id_nullable_converter.dart';
 import 'package:jmap_dart_client/http/converter/identities/signature_nullable_converter.dart';
+import 'package:jmap_dart_client/http/converter/unsigned_int_nullable_converter.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -11,6 +13,7 @@ part 'identity_request_dto.g.dart';
 @IdentityIdNullableConverter()
 @SignatureNullableConverter()
 @JsonSerializable()
+@UnsignedIntNullableConverter()
 class IdentityRequestDto with EquatableMixin {
 
   final String? name;
@@ -18,6 +21,7 @@ class IdentityRequestDto with EquatableMixin {
   final Set<EmailAddress>? replyTo;
   final Signature? textSignature;
   final Signature? htmlSignature;
+  final UnsignedInt? sortOrder;
 
   IdentityRequestDto({
     this.name,
@@ -25,6 +29,7 @@ class IdentityRequestDto with EquatableMixin {
     this.replyTo,
     this.textSignature,
     this.htmlSignature,
+    this.sortOrder
   });
 
   factory IdentityRequestDto.fromJson(Map<String, dynamic> json) => _$IdentityRequestDtoFromJson(json);
@@ -38,5 +43,6 @@ class IdentityRequestDto with EquatableMixin {
     replyTo,
     textSignature,
     htmlSignature,
+    sortOrder
   ];
 }
