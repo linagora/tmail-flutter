@@ -15,7 +15,7 @@ class SpamReportBannerWidget extends StatelessWidget {
     final _imagePaths = Get.find<ImagePaths>();
     
     return Obx(() {
-      if (_spamReportController.notShowSpamReportBanner) {
+      if (!_spamReportController.enableSpamReport || _spamReportController.notShowSpamReportBanner) {
         return const SizedBox.shrink();
       }
       return Container(

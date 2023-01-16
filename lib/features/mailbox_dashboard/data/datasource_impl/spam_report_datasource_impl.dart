@@ -47,7 +47,7 @@ class SpamReportDataSourceImpl extends SpamReportDataSource {
   }
 
   @override
-  Future<void> deletestoreSpamReportState() {
+  Future<void> deleteSpamReportState() {
     throw UnimplementedError();
   }
 

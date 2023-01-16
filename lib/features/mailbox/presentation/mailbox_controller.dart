@@ -57,6 +57,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -1120,6 +1121,12 @@ class MailboxController extends BaseMailboxController {
       case MailboxActions.openInNewTab:
         openMailboxInNewTabAction(mailbox);
         break;
+      case MailboxActions.disableSpamReport:
+      case MailboxActions.enableSpamReport:
+        final _currentSpamReportState = mailboxDashBoardController.enableSpamRepot;
+        final _storeSpamReportState = _currentSpamReportState ? SpamReportState.disabled : SpamReportState.enabled;
+        mailboxDashBoardController.storeSpamReportStateAction(_storeSpamReportState);
+        return;
       default:
         break;
     }

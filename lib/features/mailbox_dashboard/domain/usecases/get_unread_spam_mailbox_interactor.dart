@@ -28,7 +28,7 @@ class GetUnreadSpamMailboxInteractor {
 
       final _checkTimeCondition = (_timeLast.inHours > 0) && (_timeLast.inHours > conditionsForDisplayingSpamReportBanner);
 
-      if (_checkTimeCondition) {
+      if (true) {
         final _response =  await _spamReportRepository.getUnreadSpamMailbox(accountId, mailboxFilterCondition: mailboxFilterCondition, limit: limit);
         final _unreadSpamMailbox = _response.unreadSpamMailbox;
 
