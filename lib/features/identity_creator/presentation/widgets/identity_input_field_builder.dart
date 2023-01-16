@@ -9,6 +9,7 @@ class IdentityInputFieldBuilder {
 
   final String _label;
   final String? _error;
+  final String? requiredIndicator;
   final TextEditingController? editingController;
   final FocusNode? focusNode;
   final TextInputType? inputType;
@@ -18,7 +19,8 @@ class IdentityInputFieldBuilder {
 
   IdentityInputFieldBuilder(
     this._label,
-    this._error, {
+    this._error,
+    this.requiredIndicator, {
     this.isMandatory = false,
     this.editingController,
     this.focusNode,
@@ -31,10 +33,13 @@ class IdentityInputFieldBuilder {
 
   Widget build() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(isMandatory ? '$_label*' : _label, style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.normal,
-        color: AppColor.colorContentEmail)),
+      Text(
+        isMandatory 
+          ? '$_label ($requiredIndicator)' 
+          : _label, style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: AppColor.colorContentEmail)),
       const SizedBox(height: 8),
       (TextFieldBuilder()
           ..onChange((value) => onChangeInputNameAction?.call(value))

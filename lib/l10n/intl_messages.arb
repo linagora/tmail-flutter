@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-01-12T18:44:51.610329",
+  "@@last_modified": "2023-01-16T10:06:45.070370",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1178,6 +1178,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "setDefaultIdentity": "Set as default identity",
+  "@setDefaultIdentity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "identitiesSettingExplanation": "Select the identity or email address you want to use to send an emails",
   "@identitiesSettingExplanation": {
     "type": "text",
@@ -1202,14 +1208,14 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply_to_address": "Reply to address",
-  "@reply_to_address": {
+  "reply_to": "Reply to",
+  "@reply_to": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bcc_to_address": "Bcc to address",
-  "@bcc_to_address": {
+  "bcc_to": "Bcc to",
+  "@bcc_to": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1232,6 +1238,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "html": "Html",
+  "@html": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "create": "Create",
   "@create": {
     "type": "text",
@@ -1240,6 +1252,12 @@
   },
   "you_have_created_a_new_identity": "You have created a new identity",
   "@you_have_created_a_new_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_have_created_a_new_default_identity": "You have created a new default identity",
+  "@you_have_created_a_new_default_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2552,7 +2570,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-<<<<<<< HEAD
   "youHaveNewMessages": "You have new messages",
   "@youHaveNewMessages": {
     "type": "text",
@@ -2577,6 +2594,12 @@
   },
   "privacyPolicy": "Privacy policy",
   "@privacyPolicy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "required": "required",
+  "@required": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
