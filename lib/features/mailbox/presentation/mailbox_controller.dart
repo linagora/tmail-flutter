@@ -1123,9 +1123,7 @@ class MailboxController extends BaseMailboxController {
         break;
       case MailboxActions.disableSpamReport:
       case MailboxActions.enableSpamReport:
-        final _currentSpamReportState = mailboxDashBoardController.enableSpamRepot;
-        final _storeSpamReportState = _currentSpamReportState ? SpamReportState.disabled : SpamReportState.enabled;
-        mailboxDashBoardController.storeSpamReportStateAction(_storeSpamReportState);
+        mailboxDashBoardController.storeSpamReportStateAction();
         return;
       default:
         break;
