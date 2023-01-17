@@ -1,0 +1,61 @@
+
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:model/extensions/email_address_extension.dart';
+import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
+
+typedef OnOpenEmailAddressDetailAction = Function(BuildContext context, EmailAddress emailAddress);
+
+class EmailSenderBuilder extends StatelessWidget {
+
+  final EmailAddress emailAddress;
+  final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
+
+  const EmailSenderBuilder({
+    Key? key,
+    required this.emailAddress,
+    this.openEmailAddressDetailAction,
+}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const NeverScrollableScrollPhysics(),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (emailAddress.displayName.isNotEmpty)
+            MaterialTextButton(
+              label: emailAddress.displayName,
+              onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
+              borderRadius: 8,
+              padding: const EdgeInsets.all(3),
+              labelSize: 20,
+              labelColor: Colors.black,
+              labelWeight: FontWeight.bold,
+              overflow: CommonTextStyle.defaultTextOverFlow,
+              softWrap: CommonTextStyle.defaultSoftWrap
+            ),
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: MaterialTextButton(
+              label: '<${emailAddress.emailAddress}>',
+              onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
+              borderRadius: 8,
+              padding: const EdgeInsets.all(3),
+              labelSize: 16,
+              labelColor: AppColor.colorEmailAddressFull,
+              labelWeight: FontWeight.w500,
+              overflow: CommonTextStyle.defaultTextOverFlow,
+              softWrap: CommonTextStyle.defaultSoftWrap
+            ),
+          )
+        ]
+      )
+    );
+  }
+}
