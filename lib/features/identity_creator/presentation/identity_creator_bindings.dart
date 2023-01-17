@@ -3,6 +3,7 @@ import 'package:tmail_ui_user/features/identity_creator/presentation/identity_cr
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
 
 class IdentityCreatorBindings extends Bindings {
 
@@ -13,7 +14,8 @@ class IdentityCreatorBindings extends Bindings {
 
     Get.lazyPut(() => IdentityCreatorController(
       Get.find<VerifyNameInteractor>(),
-      Get.find<GetAllIdentitiesInteractor>()
+      Get.find<GetAllIdentitiesInteractor>(),
+      Get.find<IdentityUtils>()
     ));
   }
 
