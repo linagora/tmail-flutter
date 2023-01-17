@@ -417,7 +417,7 @@ class MailboxDashBoardController extends ReloadableController {
       } else {
         dispatchRoute(DashboardRoutes.thread);
       }
-      _showSpamReportbanner();
+      showSpamReportBanner();
     } else {
       dispatchRoute(DashboardRoutes.thread);
       reload();
@@ -1151,6 +1151,7 @@ class MailboxDashBoardController extends ReloadableController {
     injectFCMBindings(sessionCurrent, accountId.value);
     injectVacationBindings(sessionCurrent, accountId.value);
     _getVacationResponse();
+    showSpamReportBanner();
   }
 
   void _getRouteParameters() {
@@ -1529,7 +1530,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   bool get enableSpamReport => spamReportController.enableSpamReport;
 
-  void _showSpamReportbanner() {
+  void showSpamReportBanner() {
     if (spamReportController.enableSpamReport) {
       spamReportController.getUnreadSpamMailboxAction(accountId.value!);
     }
