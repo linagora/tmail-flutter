@@ -1527,7 +1527,7 @@ class MailboxDashBoardController extends ReloadableController {
     dispatchAction(OpenSpamMailboxAction(context, presentationMailbox));
   }
 
-  bool get enableSpamRepot => spamReportController.enableSpamReport;
+  bool get enableSpamReport => spamReportController.enableSpamReport;
 
   void _showSpamReportbanner() {
     if (spamReportController.enableSpamReport) {
@@ -1536,7 +1536,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void storeSpamReportStateAction() {
-    final _storeSpamReportState = enableSpamRepot ? SpamReportState.disabled : SpamReportState.enabled;
+    final _storeSpamReportState = enableSpamReport ? SpamReportState.disabled : SpamReportState.enabled;
     spamReportController.storeSpamReportStateAction(_storeSpamReportState);
   }
 
