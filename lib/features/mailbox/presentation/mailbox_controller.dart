@@ -256,6 +256,8 @@ class MailboxController extends BaseMailboxController {
     ever(mailboxDashBoardController.dashBoardAction, (action) {
       if (action is ClearSearchEmailAction) {
         _switchBackToMailboxDefault();
+      } else if (action is OpenSpamMailboxAction) {
+        openMailbox(action.context, action.presentationMailbox);
       }
     });
 
@@ -270,8 +272,6 @@ class MailboxController extends BaseMailboxController {
           refreshMailboxChanges();
         }
         mailboxDashBoardController.clearMailboxUIAction();
-      } else if (action is OpenSpamMailboxAction){
-        openMailbox(action.context, action.presentationMailbox);
       }
     });
   }
