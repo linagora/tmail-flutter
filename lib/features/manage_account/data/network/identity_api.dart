@@ -12,6 +12,7 @@ import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:model/identity/identity_request_dto.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_default_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/edit_default_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
 
@@ -108,13 +109,24 @@ class IdentityAPI {
       ..addUpdates({
         editIdentityRequest.identityId.id : PatchObject(editIdentityRequest.identityRequest.toJson())
       });
+    
+    var capabilities = setIdentityMethod.requiredCapabilities;
+
+    if (editIdentityRequest is EditDefaultIdentityRequest) {
+      for (var identityId in editIdentityRequest.oldDefaultIdentityIds ?? []) {
+        setIdentityMethod.addUpdates({
+          identityId.id: PatchObject(IdentityRequestDto(sortOrder: UnsignedInt(100)).toJson())
+        });
+      }
+      capabilities = setIdentityMethod.requiredCapabilitiesSupportSortOrder;
+    }
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final setIdentityInvocation = requestBuilder.invocation(setIdentityMethod);
 
     final response = await (requestBuilder
-        ..usings(setIdentityMethod.requiredCapabilities))
+        ..usings(capabilities))
       .build()
       .execute();
 
