@@ -46,7 +46,7 @@ class SpamReportBannerWidget extends StatelessWidget {
                     width: 8,
                   ),
                   Text(
-                    AppLocalizations.of(context).countNewSpamEmails(5),
+                    AppLocalizations.of(context).countNewSpamEmails(_spamReportController.numberOfUnreadSpamEmails),
                     style: const TextStyle(
                         fontSize: 16,
                         color: AppColor.primaryColor,

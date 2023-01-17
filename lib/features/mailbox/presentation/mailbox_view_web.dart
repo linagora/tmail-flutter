@@ -408,9 +408,12 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
       MailboxActions.delete
     ];
 
-    if(mailbox.isSpam) {
-      mailboxActionsSupported.insert(1, 
-      controller.mailboxDashBoardController.enableSpamRepot ? MailboxActions.disableSpamReport : MailboxActions.enableSpamReport);
+    if (mailbox.isSpam) {
+      mailboxActionsSupported.insert(
+        1,
+        controller.mailboxDashBoardController.enableSpamReport
+          ? MailboxActions.disableSpamReport
+          : MailboxActions.enableSpamReport);
     }
 
     final listContextMenuItemAction = mailboxActionsSupported

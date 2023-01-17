@@ -15,6 +15,7 @@ typedef OnOpenMailboxFolderClick = void Function(MailboxNode);
 typedef OnSelectMailboxFolderClick = void Function(MailboxNode);
 typedef OnMenuActionClick = void Function(RelativeRect, MailboxNode);
 typedef OnDragItemAccepted = void Function(List<PresentationEmail>, PresentationMailbox);
+typedef OnLongPressSpamReport = void Function(MailboxNode);
 
 class MailBoxFolderTileBuilder {
 
@@ -35,6 +36,7 @@ class MailBoxFolderTileBuilder {
   OnSelectMailboxFolderClick? _onSelectMailboxFolderClick;
   OnMenuActionClick? _onMenuActionClick;
   OnDragItemAccepted? _onDragItemAccepted;
+  OnLongPressSpamReport? _onLongPressSpamReport;
 
   bool isHoverItem = false;
 
@@ -70,6 +72,10 @@ class MailBoxFolderTileBuilder {
 
   void addOnDragItemAccepted(OnDragItemAccepted onDragItemAccepted) {
     _onDragItemAccepted = onDragItemAccepted;
+  }
+
+  void addOnLongPressSpamReport(OnLongPressSpamReport onLongPressSpamReport) {
+    _onLongPressSpamReport = onLongPressSpamReport;
   }
 
   Widget build() => DragTarget<List<PresentationEmail>>(
@@ -117,6 +123,9 @@ class MailBoxFolderTileBuilder {
           child: Opacity(
             opacity: _mailboxNode.isActivated ? 1.0 : 0.3,
             child: InkWell(
+              onLongPress: _mailboxNode.item.isSpam ? () {
+               _onLongPressSpamReport?.call(_mailboxNode);
+              } : null,
               onTap: () => allSelectMode == SelectMode.ACTIVE
                   ? _onSelectMailboxFolderClick?.call(_mailboxNode)
                   : _onOpenMailboxFolderClick?.call(_mailboxNode),

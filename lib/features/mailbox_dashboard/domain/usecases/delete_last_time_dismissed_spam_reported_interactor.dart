@@ -12,7 +12,7 @@ class DeleteLastTimeDismissedSpamReportedInteractor {
   Stream<Either<Failure, Success>> execute() async* {
     try {
       yield Right<Failure, Success>(DeleteLastTimeDismissedSpamReportedLoading());
-        await _spamReportRepository.deleteLastTimeDismissedSpamReported();
+      await _spamReportRepository.deleteLastTimeDismissedSpamReported();
       yield Right<Failure, Success>(DeleteLastTimeDismissedSpamReportedSuccess());
     } catch (e) {
       yield Left<Failure, Success>(DeleteLastTimeDismissedSpamReportedFailure(e));
