@@ -11,5 +11,7 @@ extension IdentityExtension on Identity {
     replyTo: replyTo,
     bcc: bcc,
     textSignature: textSignature,
-    htmlSignature: htmlSignature);
+    htmlSignature: htmlSignature,
+    sortOrder: sortOrder
+  );
 }
