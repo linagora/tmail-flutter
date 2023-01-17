@@ -93,6 +93,16 @@ class PresentationMailbox with EquatableMixin {
     id,
     name,
     parentId,
-    role
+    role,
+    sortOrder,
+    totalEmails,
+    unreadEmails,
+    totalThreads,
+    unreadThreads,
+    myRights,
+    isSubscribed,
+    selectMode,
+    mailboxPath,
+    state,
   ];
 }
