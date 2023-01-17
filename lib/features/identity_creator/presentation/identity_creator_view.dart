@@ -205,10 +205,12 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             Column(children: [
               Padding(
                   padding: const EdgeInsets.only(top: 14),
-                  child: Text(controller.actionType.value == IdentityActionType.create
+                  child: Obx(() {
+                    return Text(controller.actionType.value == IdentityActionType.create
                         ? AppLocalizations.of(context).createNewIdentity.inCaps
                         : AppLocalizations.of(context).edit_identity.inCaps,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black))),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black));
+                  })),
               const SizedBox(height: 8),
               Expanded(
                 child: KeyboardRichText(
