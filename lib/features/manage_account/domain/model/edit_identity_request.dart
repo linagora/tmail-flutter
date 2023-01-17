@@ -7,9 +7,18 @@ class EditIdentityRequest with EquatableMixin {
 
   final IdentityRequestDto identityRequest;
   final IdentityId identityId;
+  final bool isDefaultIdentity;
 
-  EditIdentityRequest({required this.identityId, required this.identityRequest});
+  EditIdentityRequest({
+    required this.identityId, 
+    required this.identityRequest,
+    this.isDefaultIdentity = false
+  });
 
   @override
-  List<Object?> get props => [identityId, identityRequest];
+  List<Object?> get props => [
+    identityId, 
+    identityRequest,
+    isDefaultIdentity
+  ];
 }
