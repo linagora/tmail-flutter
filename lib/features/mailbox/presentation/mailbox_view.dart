@@ -6,9 +6,12 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_search_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
@@ -297,6 +300,49 @@ class MailboxView extends GetWidget<MailboxController> {
     ]);
   }
 
+  void _openBottomSheetSpamMenuAction(BuildContext context, PresentationMailbox mailbox) {
+    final _spamActionsSupported = [
+      controller.mailboxDashBoardController.enableSpamReport
+          ? MailboxActions.disableSpamReport
+          : MailboxActions.enableSpamReport
+    ];
+
+    final listContextSpamPopupMenuItemAction = _spamActionsSupported
+        .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
+        .toList();
+
+    controller.openContextMenuAction(
+        context,
+        _bottomSheetIdentityActionTiles(context, mailbox, listContextSpamPopupMenuItemAction));
+  }
+
+  List<Widget> _bottomSheetIdentityActionTiles(
+      BuildContext context,
+      PresentationMailbox mailbox,
+      List<ContextMenuItemMailboxAction> contextMenuActions) {
+    return contextMenuActions
+        .map((action) => _openBottomSheetSpamMenuActionTile(context, action, mailbox))
+        .toList();
+  }
+
+  Widget _openBottomSheetSpamMenuActionTile(
+      BuildContext context,
+      ContextMenuItemMailboxAction contextMenuItem,
+      PresentationMailbox mailbox) {
+    return (MailboxBottomSheetActionTileBuilder(
+            Key('${contextMenuItem.action.name}_action'),
+            SvgPicture.asset(
+                contextMenuItem.action.getContextMenuIcon(_imagePaths),
+                color: AppColor.primaryColor),
+            contextMenuItem.action.getTitleContextMenu(context),
+            mailbox,
+            absorbing: !contextMenuItem.isActivated,
+            opacity: !contextMenuItem.isActivated)
+          ..onActionClick((mailbox) => controller.handleMailboxAction(
+              context, contextMenuItem.action, mailbox)))
+        .build();
+  }
+  
   List<Widget> _buildListChildTileWidget(BuildContext context, MailboxNode parentNode, {MailboxNode? lastNode}) {
     return parentNode.childrenItems
       ?.map((mailboxNode) => mailboxNode.hasChildren()
@@ -314,6 +360,7 @@ class MailboxView extends GetWidget<MailboxController> {
               ).build()
           : Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
                   allSelectMode: controller.currentSelectMode.value)
+              ..addOnLongPressSpamReport((mailboxNode) => _openBottomSheetSpamMenuAction(context, mailboxNode.item))
               ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
               ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
             .build())

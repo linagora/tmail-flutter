@@ -1,16 +1,13 @@
 enum SpamReportState {
   enabled,
-  disabled,
-}
-
-extension SpamReportStateExtension on SpamReportState {
-
+  disabled;
+  
   String get keyValue {
-    switch(this) {
-      case SpamReportState.enabled:
-        return 'enabled';
-      case SpamReportState.disabled:
-        return 'disabled';
+      switch(this) {
+          case SpamReportState.enabled:
+            return 'enabled';
+          case SpamReportState.disabled:
+            return 'disabled';
     }
   }
 }
