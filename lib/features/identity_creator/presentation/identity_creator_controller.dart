@@ -252,12 +252,20 @@ class IdentityCreatorController extends BaseController {
         .getSmallestOrderedIdentity(identities)
         ?.map((identity) => identity.id!);
     
-    // if all identities have same sortOrder, it means it don't have default identity 
-    if (listDefaultIdentityIds?.length == identities?.length) {
-      isDefaultIdentity.value = false;
+    if (haveDefaultIdentities(identities, listDefaultIdentityIds) && 
+      listDefaultIdentityIds?.contains(identity?.id) == true
+    ) {
+      isDefaultIdentity.value = true;
     } else {
-      isDefaultIdentity.value = listDefaultIdentityIds?.contains(identity?.id) ?? false;
-    } 
+      isDefaultIdentity.value = false;
+    }
+  }
+
+  bool haveDefaultIdentities(
+    Iterable<Identity>? allIdentities, 
+    Iterable<IdentityId>? defaultIdentityIds
+  ) {
+    return defaultIdentityIds?.length != allIdentities?.length;
   }
 
   void selectSignatureType(BuildContext context, SignatureType newSignatureType) async {
