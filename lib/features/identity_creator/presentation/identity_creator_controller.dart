@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -41,6 +42,7 @@ class IdentityCreatorController extends BaseController {
 
   final VerifyNameInteractor _verifyNameInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
+  final IdentityUtils _identityUtils;
 
   final _uuid = Get.find<Uuid>();
 
@@ -91,7 +93,8 @@ class IdentityCreatorController extends BaseController {
 
   IdentityCreatorController(
       this._verifyNameInteractor,
-      this._getAllIdentitiesInteractor
+      this._getAllIdentitiesInteractor,
+      this._identityUtils
   );
 
   @override
@@ -164,7 +167,7 @@ class IdentityCreatorController extends BaseController {
     if (accountId != null) {
       consumeState(_getAllIdentitiesInteractor.execute(
         accountId!,
-        properties: Properties({'email'})
+        properties: Properties({'email', 'sortOrder'})
       ));
     }
   }
@@ -178,6 +181,7 @@ class IdentityCreatorController extends BaseController {
       listEmailAddressOfReplyTo.add(noneEmailAddress);
       listEmailAddressOfReplyTo.addAll(listEmailAddressDefault);
       _setUpAllFieldEmailAddress();
+      _setUpDefaultIdentity(success.identities);
     } else {
       _setDefaultEmailAddressList();
     }
@@ -243,6 +247,19 @@ class IdentityCreatorController extends BaseController {
     }
   }
 
+  void _setUpDefaultIdentity(List<Identity>? identities) {
+    final listDefaultIdentityIds = _identityUtils
+        .getSmallestOrderedIdentity(identities)
+        ?.map((identity) => identity.id!);
+    
+    // if all identities have same sortOrder, it means it don't have default identity 
+    if (listDefaultIdentityIds?.length == identities?.length) {
+      isDefaultIdentity.value = false;
+    } else {
+      isDefaultIdentity.value = listDefaultIdentityIds?.contains(identity?.id) ?? false;
+    } 
+  }
+
   void selectSignatureType(BuildContext context, SignatureType newSignatureType) async {
     if (newSignatureType == SignatureType.plainText && !BuildUtils.isWeb) {
       final signatureText = await _getSignatureHtmlText();
@@ -298,7 +315,9 @@ class IdentityCreatorController extends BaseController {
         ? {replyToOfIdentity.value!}
         : <EmailAddress>{};
 
-    final sortOrder = isDefaultIdentity.value ? UnsignedInt(0) : null;
+    final sortOrder = isDefaultIdentity.value 
+        ? UnsignedInt(0) 
+        : UnsignedInt(100);
     
     final newIdentity = Identity(
       name: _nameIdentity,
@@ -328,7 +347,8 @@ class IdentityCreatorController extends BaseController {
     } else {
       final identityRequest = EditIdentityRequest(
           identityId: identity!.id!,
-          identityRequest: newIdentity.toIdentityRequest());
+          identityRequest: newIdentity.toIdentityRequest(),
+          isDefaultIdentity: isDefaultIdentity.value);
 
       if (BuildUtils.isWeb) {
         _disposeWidget();

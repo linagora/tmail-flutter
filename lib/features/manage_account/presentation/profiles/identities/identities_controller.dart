@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_default_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_identity_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_default_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
@@ -47,6 +48,7 @@ class IdentitiesController extends BaseController {
   final CreateNewDefaultIdentityInteractor _createNewDefaultIdentityInteractor;
   final DeleteIdentityInteractor _deleteIdentityInteractor;
   final EditIdentityInteractor _editIdentityInteractor;
+  final EditDefaultIdentityInteractor _editDefaultIdentityInteractor;
 
   final identitySelected = Rxn<Identity>();
   final listAllIdentities = <Identity>[].obs;
@@ -58,7 +60,8 @@ class IdentitiesController extends BaseController {
     this._deleteIdentityInteractor,
     this._createNewIdentityInteractor,
     this._editIdentityInteractor,
-    this._createNewDefaultIdentityInteractor
+    this._createNewDefaultIdentityInteractor,
+    this._editDefaultIdentityInteractor
   );
 
   @override
@@ -349,8 +352,15 @@ class IdentitiesController extends BaseController {
     }
   }
 
-  void _editIdentityAction(AccountId accountId, EditIdentityRequest editIdentityRequest) async {
-    consumeState(_editIdentityInteractor.execute(accountId, editIdentityRequest));
+  void _editIdentityAction(
+    AccountId accountId, 
+    EditIdentityRequest editIdentityRequest
+  ) async {
+    if (editIdentityRequest.isDefaultIdentity) {
+      consumeState(_editDefaultIdentityInteractor.execute(accountId, editIdentityRequest));
+    } else {
+      consumeState(_editIdentityInteractor.execute(accountId, editIdentityRequest));
+    }
   }
 
   void _editIdentitySuccess(EditIdentitySuccess success) {
