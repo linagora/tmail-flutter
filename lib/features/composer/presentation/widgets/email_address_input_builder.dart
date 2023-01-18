@@ -247,7 +247,7 @@ class EmailAddressInputBuilder {
                   return _buildExistedSuggestionItem(
                     setState,
                     context,
-                    suggestionEmailAddress,
+                    suggestionEmailAddress.emailAddress,
                     suggestionValid
                   );
                 default:
@@ -255,7 +255,7 @@ class EmailAddressInputBuilder {
                     setState,
                     context,
                     tagEditorState,
-                    suggestionEmailAddress,
+                    suggestionEmailAddress.emailAddress,
                     index,
                     length,
                     highlight,
@@ -294,7 +294,7 @@ class EmailAddressInputBuilder {
   Widget _buildExistedSuggestionItem(
     StateSetter setState,
     BuildContext context,
-    SuggestionEmailAddress suggestionEmailAddress,
+    EmailAddress emailAddress,
     String? suggestionValid
   ) {
     return Container(
@@ -307,35 +307,9 @@ class EmailAddressInputBuilder {
           borderRadius: BorderRadius.all(Radius.circular(_suggestionBoxRadius))),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
-          leading: Container(
-            width: 40,
-            height: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColor.avatarColor,
-              border: Border.all(color: AppColor.colorShadowBgContentEmail, width: 1.0)),
-            child: Text(
-              suggestionEmailAddress.emailAddress.asString().isNotEmpty ? suggestionEmailAddress.emailAddress.asString()[0].toUpperCase() : '',
-              style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600))),
-          title: RichTextWidget(
-            textOrigin: suggestionEmailAddress.emailAddress.asString(),
-            wordSearched: suggestionValid ?? '',
-          ),
-          subtitle: suggestionEmailAddress.emailAddress.displayName.isNotEmpty && suggestionEmailAddress.emailAddress.emailAddress.isNotEmpty
-            ? RichTextWidget(
-                textOrigin: suggestionEmailAddress.emailAddress.emailAddress,
-                wordSearched: suggestionValid ?? '',
-                styleTextOrigin: const TextStyle(
-                  color: AppColor.colorHintSearchBar,
-                  fontSize: 13,
-                  fontWeight: FontWeight.normal),
-                styleWordSearched: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold),
-              )
-            : null,
+          leading: _buildAvatarSuggestionItem(emailAddress),
+          title: _buildTitleSuggestionItem(emailAddress, suggestionValid),
+          subtitle: _buildSubtitleSuggestionItem(emailAddress, suggestionValid),
           trailing: SvgPicture.asset(_imagePaths.icFilterSelected,
             width: 24,
             height: 24,
@@ -349,7 +323,7 @@ class EmailAddressInputBuilder {
     StateSetter setState,
     BuildContext context,
     TagsEditorState<SuggestionEmailAddress> tagEditorState,
-    SuggestionEmailAddress suggestionEmailAddress,
+    EmailAddress emailAddress,
     int index,
     int length,
     bool highlight,
@@ -359,44 +333,71 @@ class EmailAddressInputBuilder {
       color: highlight ? AppColor.colorItemSelected : Colors.white,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-        leading: Container(
-          width: 40,
-          height: 40,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColor.avatarColor,
-            border: Border.all(color: AppColor.colorShadowBgContentEmail, width: 1.0)),
-          child: Text(
-              suggestionEmailAddress.emailAddress.asString().isNotEmpty ? suggestionEmailAddress.emailAddress.asString()[0].toUpperCase() : '',
-              style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600))),
-        title: RichTextWidget(
-          textOrigin: suggestionEmailAddress.emailAddress.asString(),
-          wordSearched: suggestionValid ?? '',
-        ),
-        subtitle: suggestionEmailAddress.emailAddress.displayName.isNotEmpty && suggestionEmailAddress.emailAddress.emailAddress.isNotEmpty
-          ? RichTextWidget(
-              textOrigin: suggestionEmailAddress.emailAddress.emailAddress,
-              wordSearched: suggestionValid ?? '',
-              styleTextOrigin: const TextStyle(
-                color: AppColor.colorHintSearchBar,
-                fontSize: 13,
-                fontWeight: FontWeight.normal),
-              styleWordSearched: const TextStyle(
-                color: Colors.black,
-                fontSize: 13,
-                fontWeight: FontWeight.bold),
-            )
-          : null,
+        leading: _buildAvatarSuggestionItem(emailAddress),
+        title: _buildTitleSuggestionItem(emailAddress, suggestionValid),
+        subtitle: _buildSubtitleSuggestionItem(emailAddress, suggestionValid),
         onTap: () {
-          log('EmailAddressInputBuilder::_buildSuggestionItem(): onTap: $suggestionEmailAddress');
-          setState(() => listEmailAddress.add(suggestionEmailAddress.emailAddress));
+          setState(() => listEmailAddress.add(emailAddress));
           _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
-          tagEditorState.closeSuggestionBox();
           tagEditorState.resetTextField();
+          tagEditorState.closeSuggestionBox();
         },
       ),
     );
+  }
+
+  Widget _buildAvatarSuggestionItem(EmailAddress emailAddress) {
+    return Container(
+      width: 40,
+      height: 40,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColor.avatarColor,
+        border: Border.all(
+          color: AppColor.colorShadowBgContentEmail,
+          width: 1.0
+        )
+      ),
+      child: Text(
+        emailAddress.asString().isNotEmpty
+          ? emailAddress.asString()[0].toUpperCase()
+          : '',
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 16,
+          fontWeight: FontWeight.w600
+        )
+      )
+    );
+  }
+
+  Widget _buildTitleSuggestionItem(EmailAddress emailAddress, String? suggestionValid) {
+    return RichTextWidget(
+      textOrigin: emailAddress.asString(),
+      wordSearched: suggestionValid ?? ''
+    );
+  }
+
+  Widget? _buildSubtitleSuggestionItem(EmailAddress emailAddress, String? suggestionValid) {
+    if (emailAddress.displayName.isNotEmpty && emailAddress.emailAddress.isNotEmpty) {
+      return RichTextWidget(
+        textOrigin: emailAddress.emailAddress,
+        wordSearched: suggestionValid ?? '',
+        styleTextOrigin: const TextStyle(
+          color: AppColor.colorHintSearchBar,
+          fontSize: 13,
+          fontWeight: FontWeight.normal
+        ),
+        styleWordSearched: const TextStyle(
+          color: Colors.black,
+          fontSize: 13,
+          fontWeight: FontWeight.bold
+        )
+      );
+    } else {
+      return null;
+    }
   }
 
   FutureOr<List<SuggestionEmailAddress>> _findSuggestions(String query) async {
