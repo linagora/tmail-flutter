@@ -56,6 +56,7 @@ abstract class ReloadableController extends BaseController {
 
   GetFCMSubscriptionLocalInteractor? _getSubscriptionLocalInteractor;
   DestroySubscriptionInteractor? _destroySubscriptionInteractor;
+  bool _isFcmEnabled = false;
 
   ReloadableController(
     this._logoutOidcInteractor,
@@ -178,7 +179,9 @@ abstract class ReloadableController extends BaseController {
     ]);
     _authorizationInterceptors.clear();
     _authorizationIsolateInterceptors.clear();
-    _fcmReceiver.deleteFcmToken();
+    if (_isFcmEnabled) {
+      _fcmReceiver.deleteFcmToken();
+    }
     await _cachingManager.closeHive();
     _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
   }
@@ -192,7 +195,9 @@ abstract class ReloadableController extends BaseController {
     ]);
     _authorizationIsolateInterceptors.clear();
     _authorizationInterceptors.clear();
-    _fcmReceiver.deleteFcmToken();
+    if (_isFcmEnabled) {
+      _fcmReceiver.deleteFcmToken();
+    }
     await _cachingManager.closeHive();
     _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
   }
@@ -259,8 +264,8 @@ abstract class ReloadableController extends BaseController {
   }
 
   void logout(Session? session, AccountId? accountId) {
-    final _fcmEnabled = fcmEnabled(session, accountId);
-    if (_fcmEnabled) {  
+    _isFcmEnabled = fcmEnabled(session, accountId);
+    if (_isFcmEnabled) {
       final authenticationType = _authorizationInterceptors.authenticationType;
       if (authenticationType == AuthenticationType.oidc) {
         consumeState(_logoutOidcInteractor.execute());
