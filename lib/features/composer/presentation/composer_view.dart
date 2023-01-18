@@ -356,6 +356,7 @@ class ComposerView extends GetWidget<ComposerController>
                       controller: controller.toEmailAddressController,
                       focusNode: controller.toAddressFocusNode,
                       autoDisposeFocusNode: false,
+                      keyTagEditor: controller.keyToEmailTagEditor,
                       isInitial: controller.isInitialRecipient.value)
                   ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                   ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
@@ -376,6 +377,7 @@ class ComposerView extends GetWidget<ComposerController>
                           controller.listEmailAddressType,
                           expandMode: controller.ccAddressExpandMode.value,
                           controller: controller.ccEmailAddressController,
+                          keyTagEditor: controller.keyCcEmailTagEditor,
                           isInitial: controller.isInitialRecipient.value,)
                       ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                       ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
@@ -397,6 +399,7 @@ class ComposerView extends GetWidget<ComposerController>
                           controller.listEmailAddressType,
                           expandMode: controller.bccAddressExpandMode.value,
                           controller: controller.bccEmailAddressController,
+                          keyTagEditor: controller.keyBccEmailTagEditor,
                           isInitial: controller.isInitialRecipient.value,)
                       ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                       ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
