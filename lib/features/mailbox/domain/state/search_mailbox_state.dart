@@ -1,6 +1,8 @@
 import 'package:core/core.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 
+class LoadingSearchMailbox extends UIState {}
+
 class SearchMailboxSuccess extends UIState {
 
   final List<PresentationMailbox> mailboxesSearched;

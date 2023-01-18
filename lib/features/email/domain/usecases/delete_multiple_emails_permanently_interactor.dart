@@ -14,6 +14,8 @@ class DeleteMultipleEmailsPermanentlyInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, List<EmailId> emailIds) async* {
     try {
+      yield Right<Failure, Success>(LoadingDeleteMultipleEmailsPermanentlyAll());
+
       final listState = await Future.wait([
         _mailboxRepository.getMailboxState(),
         _emailRepository.getEmailState(),

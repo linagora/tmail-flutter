@@ -6,6 +6,8 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 
+class LoadingMoveToMailbox extends UIState {}
+
 class MoveToMailboxSuccess extends UIActionState {
   final EmailId emailId;
   final MailboxId currentMailboxId;

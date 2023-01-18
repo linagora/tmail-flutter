@@ -6,6 +6,8 @@ import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 
+class LoadingMoveMultipleEmailToMailboxAll extends UIState {}
+
 class MoveMultipleEmailToMailboxAllSuccess extends UIActionState {
   final List<EmailId> movedListEmailId;
   final MailboxId currentMailboxId;

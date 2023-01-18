@@ -12,6 +12,8 @@ class RenameMailboxInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, RenameMailboxRequest request) async* {
     try {
+      yield Right<Failure, Success>(LoadingRenameMailbox());
+
       final currentMailboxState = await _mailboxRepository.getMailboxState();
 
       final result = await _mailboxRepository.renameMailbox(accountId, request);

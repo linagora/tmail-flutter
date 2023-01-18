@@ -16,6 +16,8 @@ class MoveMultipleEmailToMailboxInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, MoveToMailboxRequest moveRequest) async* {
     try {
+      yield Right(LoadingMoveMultipleEmailToMailboxAll());
+
       final listState = await Future.wait([
         _mailboxRepository.getMailboxState(),
         _emailRepository.getEmailState(),
