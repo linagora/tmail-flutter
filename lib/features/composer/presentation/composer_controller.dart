@@ -1149,27 +1149,27 @@ class ComposerController extends BaseController {
   void onSubjectEmailFocusChange(bool isFocus) {
     log('ComposerController::onSubjectEmailFocusChange(): Focus: $isFocus');
     if (isFocus) {
-      toAddressExpandMode.value = ExpandMode.COLLAPSE;
-      ccAddressExpandMode.value = ExpandMode.COLLAPSE;
-      bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+      _collapseAllRecipient();
       htmlEditorApi?.unfocus();
-
-      autoCreateEmailTag();
+      _autoCreateEmailTag();
     }
   }
 
   void onEditorFocusChange(bool isFocus) {
     log('ComposerController::onEditorFocusChange(): Focus: $isFocus');
     if (isFocus) {
-      toAddressExpandMode.value = ExpandMode.COLLAPSE;
-      ccAddressExpandMode.value = ExpandMode.COLLAPSE;
-      bccAddressExpandMode.value = ExpandMode.COLLAPSE;
-
-      autoCreateEmailTag();
+      _collapseAllRecipient();
+      _autoCreateEmailTag();
     }
   }
 
-  void autoCreateEmailTag() {
+  void _collapseAllRecipient() {
+    toAddressExpandMode.value = ExpandMode.COLLAPSE;
+    ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+    bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+  }
+
+  void _autoCreateEmailTag() {
     final inputToEmail = toEmailAddressController.text;
     final inputCcEmail = ccEmailAddressController.text;
     final inputBccEmail = bccEmailAddressController.text;
@@ -1203,6 +1203,7 @@ class ComposerController extends BaseController {
       isInitialRecipient.refresh();
       _updateStatusEmailSendButton();
     }
+    log('ComposerController::_autoCreateToEmailTag(): STATE: ${keyToEmailTagEditor.currentState}');
     keyToEmailTagEditor.currentState?.resetTextField();
     Future.delayed(const Duration(milliseconds: 300), () {
       keyToEmailTagEditor.currentState?.closeSuggestionBox();
@@ -1287,6 +1288,11 @@ class ComposerController extends BaseController {
           break;
       }
       _closeSuggestionBox();
+    } else {
+      if (!BuildUtils.isWeb) {
+        _collapseAllRecipient();
+        _autoCreateEmailTag();
+      }
     }
   }
 
