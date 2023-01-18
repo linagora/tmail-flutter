@@ -9,6 +9,8 @@ class SearchMailboxInteractor {
 
   Stream<Either<Failure, Success>> execute(List<PresentationMailbox> mailboxes, SearchQuery searchQuery) async* {
     try {
+      yield Right<Failure, Success>(LoadingSearchMailbox());
+
       final resultList = mailboxes
         .where((mailbox) => mailbox.name?.name.toLowerCase().contains(searchQuery.value.toLowerCase()) == true)
         .toList();

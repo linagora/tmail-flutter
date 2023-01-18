@@ -3,6 +3,8 @@ import 'package:model/model.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
+class LoadingMarkAsStarMultipleEmailAll extends UIState {}
+
 class MarkAsStarMultipleEmailAllSuccess extends UIActionState {
   final int countMarkStarSuccess;
   final MarkStarAction markStarAction;

@@ -12,6 +12,8 @@ class CreateNewMailboxInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, CreateNewMailboxRequest newMailboxRequest) async* {
     try {
+      yield Right<Failure, Success>(LoadingCreateNewMailbox());
+
       final currentMailboxState = await _mailboxRepository.getMailboxState();
       final newMailbox = await _mailboxRepository.createNewMailbox(accountId, newMailboxRequest);
       if (newMailbox != null) {

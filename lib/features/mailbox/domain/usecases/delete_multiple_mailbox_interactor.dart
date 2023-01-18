@@ -20,6 +20,8 @@ class DeleteMultipleMailboxInteractor {
       List<MailboxId> listMailboxIdToDelete
   ) async* {
     try {
+      yield Right<Failure, Success>(LoadingDeleteMultipleMailboxAll());
+
       final currentMailboxState = await _mailboxRepository.getMailboxState();
 
       final listResult = await Future.wait(
