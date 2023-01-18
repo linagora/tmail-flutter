@@ -4,13 +4,7 @@ import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
-class MoveMailboxLoading extends UIState {
-
-  MoveMailboxLoading();
-
-  @override
-  List<Object?> get props => [];
-}
+class LoadingMoveMailbox extends UIState {}
 
 class MoveMailboxSuccess extends UIActionState {
 

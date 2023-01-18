@@ -17,6 +17,8 @@ class MarkAsStarMultipleEmailInteractor {
       MarkStarAction markStarAction
   ) async* {
     try {
+      yield Right(LoadingMarkAsStarMultipleEmailAll());
+
       final currentEmailState = await _emailRepository.getEmailState();
 
       final listEmailNeedMarkStar = emails

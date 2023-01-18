@@ -3,6 +3,8 @@ import 'package:model/email/read_actions.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
+class LoadingMarkAsMultipleEmailReadAll extends UIState {}
+
 class MarkAsMultipleEmailReadAllSuccess extends UIActionState {
   final int countMarkAsReadSuccess;
   final ReadActions readActions;

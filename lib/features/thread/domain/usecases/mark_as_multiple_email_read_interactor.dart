@@ -19,6 +19,8 @@ class MarkAsMultipleEmailReadInteractor {
       ReadActions readAction
   ) async* {
     try {
+      yield Right(LoadingMarkAsMultipleEmailReadAll());
+
       final listState = await Future.wait([
         _mailboxRepository.getMailboxState(),
         _emailRepository.getEmailState(),

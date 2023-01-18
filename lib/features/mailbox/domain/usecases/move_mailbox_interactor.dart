@@ -12,6 +12,8 @@ class MoveMailboxInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, MoveMailboxRequest request) async* {
     try {
+      yield Right<Failure, Success>(LoadingMoveMailbox());
+
       final currentMailboxState = await _mailboxRepository.getMailboxState();
       final result = await _mailboxRepository.moveMailbox(accountId, request);
       if (result) {
