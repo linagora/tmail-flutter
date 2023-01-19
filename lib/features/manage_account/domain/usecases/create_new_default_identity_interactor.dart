@@ -37,9 +37,14 @@ class CreateNewDefaultIdentityInteractor {
     final listIdentities = await _identityRepository
         .getAllIdentities(
             accountId, 
-            properties: Properties({'sortOrder'})
+            properties: Properties({'sortOrder', 'mayDelete'})
         );
+    listIdentities.identities?.removeWhere(_isIdentityUnDeletable);
     return _identityUtils.getSmallestOrderedIdentity(listIdentities.identities);
+  }
+
+  bool _isIdentityUnDeletable(Identity identity) {
+    return identity.mayDelete != true;
   }
 
   CreateNewDefaultIdentityRequest _createNewIdentityDefault(
