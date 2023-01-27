@@ -152,13 +152,6 @@ class AppLocalizations {
     );
   }
 
-  String get no_emails {
-    return Intl.message(
-      'No emails in this mailbox',
-      name: 'no_emails',
-    );
-  }
-
   String get no_mail_selected {
     return Intl.message(
       'No email selected',
@@ -2707,5 +2700,23 @@ class AppLocalizations {
     return Intl.message(
       'required',
       name: 'required');
+  }
+
+  String get noEmailInYourCurrentMailbox {
+    return Intl.message(
+      'We\'re sorry, there are no emails in your current mailbox',
+      name: 'noEmailInYourCurrentMailbox');
+  }
+
+  String get noEmailMatchYourCurrentFilter {
+    return Intl.message(
+      'We\'re sorry, there are no emails that match your current filter.',
+      name: 'noEmailMatchYourCurrentFilter');
+  }
+
+  String get reduceSomeFiltersAndTryAgain {
+    return Intl.message(
+        'Let\'s reduce some filters and try again',
+        name: 'reduceSomeFiltersAndTryAgain');
   }
 }
