@@ -58,15 +58,13 @@ class MailboxView extends GetWidget<MailboxController> {
                               child: RefreshIndicator(
                                 color: AppColor.primaryColor,
                                 onRefresh: () async => controller.refreshAllMailbox(),
-                                child: SafeArea(top: false, right: false,
-                                  bottom: !controller.isSelectionEnabled(),
+                                child: SafeArea(
+                                  top: false,
+                                  right: false,
+                                  bottom: false,
                                   child: controller.isSearchActive()
                                       ? _buildListMailboxSearched(context)
-                                      : Padding(
-                                          padding: EdgeInsets.only(
-                                              bottom: _responsiveUtils.isLandscapeMobile(context)
-                                                  || controller.isSelectionEnabled() ? 0 : 24),
-                                          child: _buildListMailbox(context))
+                                      : _buildListMailbox(context)
                                 )
                               ),
                             ))),
@@ -75,8 +73,10 @@ class MailboxView extends GetWidget<MailboxController> {
                                 : const SizedBox.shrink()),
                           ]),
                         ),
-                        Obx(() => controller.isMailboxListScrollable.isTrue && !controller.isSelectionEnabled()
-                            ? const QuotasFooterWidget(padding: EdgeInsets.only(left: 24, right: 24, bottom: 8))
+                        Obx(() => controller.isMailboxListScrollable.isTrue
+                          && !controller.isSearchActive()
+                          && !controller.isSelectionEnabled()
+                            ? const QuotasFooterWidget()
                             : const SizedBox.shrink(),
                         ),
                         Obx(() {
@@ -87,9 +87,7 @@ class MailboxView extends GetWidget<MailboxController> {
                             if (_responsiveUtils.isLandscapeMobile(context)) {
                               return const SizedBox.shrink();
                             }
-                            return Align(
-                                alignment: Alignment.bottomCenter,
-                                child: _buildVersionInformation(context, appInformation));
+                            return _buildVersionInformation(context, appInformation);
                           } else {
                             return const SizedBox.shrink();
                           }
@@ -225,7 +223,7 @@ class MailboxView extends GetWidget<MailboxController> {
         controller: controller.mailboxListScrollController,
         key: const PageStorageKey('mailbox_list'),
         physics: const ClampingScrollPhysics(),
-        padding: EdgeInsets.only(bottom: controller.isSelectionEnabled() ? 16 : 0),
+        padding: const EdgeInsets.only(bottom: 16),
         child: Column(children: [
           Obx(() {
             if (controller.isSelectionEnabled() && _responsiveUtils.isLandscapeMobile(context)) {
@@ -242,8 +240,10 @@ class MailboxView extends GetWidget<MailboxController> {
           Obx(() => controller.folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
               ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderMailboxTree.value.root)
               : const SizedBox.shrink()),
-          Obx(() => controller.isMailboxListScrollable.isFalse && !controller.isSelectionEnabled()
-              ? const QuotasFooterWidget(padding: EdgeInsets.only(left: 24, right: 24, bottom: 8, top: 8))
+          Obx(() => controller.isMailboxListScrollable.isFalse
+            && !controller.isSearchActive()
+            && !controller.isSelectionEnabled()
+              ? const QuotasFooterWidget()
               : const SizedBox.shrink(),
           ),
         ])
