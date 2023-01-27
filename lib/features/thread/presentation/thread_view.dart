@@ -289,7 +289,6 @@ class ThreadView extends GetWidget<ThreadController>
       padding: EdgeInsets.zero,
       color: Colors.white,
       child: Obx(() {
-        log('ThreadView::_buildListEmail():');
         return Visibility(
           visible: controller.openingEmail.isFalse,
           child: _buildResultListEmail(context, controller.mailboxDashBoardController.emailsInCurrentMailbox));
@@ -429,15 +428,35 @@ class ThreadView extends GetWidget<ThreadController>
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) => success is! LoadingState && success is! SearchingState
-        ? (BackgroundWidgetBuilder(context)
-            ..key(const Key('empty_email_background'))
-            ..image(SvgPicture.asset(_imagePaths.icEmptyImageDefault, width: 120, height: 120, fit: BoxFit.fill))
-            ..text(controller.isSearchActive()
-                ? AppLocalizations.of(context).no_emails_matching_your_search
-                : AppLocalizations.of(context).no_emails))
-          .build()
+        ? BackgroundWidgetBuilder(
+            _getMessageEmptyEmail(context),
+            controller.responsiveUtils,
+            iconSVG: _imagePaths.icEmptyEmail,
+            subTitle: _getSubMessageEmptyEmail(context),
+          )
         : const SizedBox.shrink())
     );
+  }
+
+  String _getMessageEmptyEmail(BuildContext context) {
+    if (controller.isSearchActive()) {
+      return AppLocalizations.of(context).no_emails_matching_your_search;
+    } else {
+      if (controller.mailboxDashBoardController.filterMessageOption.value == FilterMessageOption.all) {
+        return AppLocalizations.of(context).noEmailInYourCurrentMailbox;
+      } else {
+        return AppLocalizations.of(context).noEmailMatchYourCurrentFilter;
+      }
+    }
+  }
+
+  String? _getSubMessageEmptyEmail(BuildContext context) {
+    if (!controller.isSearchActive()
+      && controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all) {
+      return AppLocalizations.of(context).reduceSomeFiltersAndTryAgain;
+    } else {
+      return null;
+    }
   }
 
   bool supportEmptyTrash(BuildContext context) {

@@ -392,14 +392,11 @@ class SearchEmailView extends GetWidget<SearchEmailController>
     return Obx(() => controller.viewState.value.fold(
         (failure) => const SizedBox.shrink(),
         (success) => success is! SearchingState
-            ? (BackgroundWidgetBuilder(context)
-                  ..image(SvgPicture.asset(
-                      _imagePaths.icEmptyImageDefault,
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.fill))
-                  ..text(AppLocalizations.of(context).no_emails_matching_your_search))
-              .build()
+            ? BackgroundWidgetBuilder(
+                AppLocalizations.of(context).no_emails_matching_your_search,
+                controller.responsiveUtils,
+                iconSVG: _imagePaths.icEmptyEmail
+              )
             : const SizedBox.shrink())
     );
   }

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-01-16T10:06:45.070370",
+  "@@last_modified": "2023-01-27T17:10:17.205660",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -146,12 +146,6 @@
   },
   "forward": "Forward",
   "@forward": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "no_emails": "No emails in this mailbox",
-  "@no_emails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2598,8 +2592,60 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "countNewSpamEmails": "You have {count} new spam emails!",
+  "@countNewSpamEmails": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "showDetails": "Show Details",
+  "@showDetails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dismiss": "Dismiss",
+  "@dismiss": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "disableSpamReport": "Disable Spam report",
+  "@disableSpamReport": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enableSpamReport": "Enable Spam report",
+  "@enableSpamReport": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "required": "required",
   "@required": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noEmailInYourCurrentMailbox": "We're sorry, there are no emails in your current mailbox",
+  "@noEmailInYourCurrentMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noEmailMatchYourCurrentFilter": "We're sorry, there are no emails that match your current filter.",
+  "@noEmailMatchYourCurrentFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reduceSomeFiltersAndTryAgain": "Let's reduce some filters and try again",
+  "@reduceSomeFiltersAndTryAgain": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
