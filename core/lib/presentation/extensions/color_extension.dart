@@ -171,6 +171,7 @@ extension AppColor on Color {
   static const colorThumbScrollBar = Color(0xFFAEB7C2);
   static const colorCreateNewIdentityButton = Color(0xFFEBEDF0);
   static const colorSpamReportBox = Color(0xFFBFDEFF);
+  static const colorSubtitle = Color(0xFF6D7885);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
