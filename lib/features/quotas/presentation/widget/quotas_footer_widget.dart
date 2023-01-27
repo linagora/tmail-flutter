@@ -7,15 +7,21 @@ import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dar
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class QuotasFooterWidget extends GetWidget<QuotasController> {
-  const QuotasFooterWidget({Key? key, this.padding}) : super(key: key);
-  final EdgeInsetsGeometry? padding;
+
+  const QuotasFooterWidget({
+    Key? key,
+    this.padding
+  }) : super(key: key);
+
+  final EdgeInsets? padding;
+
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => controller.quotasState.value != QuotasState.notAvailable
         ? Container(
             color: AppColor.colorBgDesktop,
-            padding: padding ?? const EdgeInsets.all(24),
+            padding: padding ?? const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
             alignment: Alignment.centerLeft,
             child: IntrinsicWidth(
               child: Column(
