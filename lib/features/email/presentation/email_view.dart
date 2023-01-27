@@ -43,10 +43,7 @@ class EmailView extends GetWidget<SingleEmailController>
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        controller.closeEmailView(context);
-        return false;
-      },
+      onWillPop: () => controller.backButtonPressedCallbackAction.call(context),
       child: Scaffold(
         backgroundColor: responsiveUtils.isWebDesktop(context)
             ? AppColor.colorBgDesktop

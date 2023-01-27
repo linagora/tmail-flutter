@@ -1130,4 +1130,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       emailSupervisorController.backToPreviousEmail();
     }
   }
+  Future<bool> backButtonPressedCallbackAction(BuildContext context) async {
+    if (!BuildUtils.isWeb) {
+      closeEmailView(context);
+    }
+    return false;
+  }
 }
