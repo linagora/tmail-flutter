@@ -965,4 +965,8 @@ class ThreadController extends BaseController with EmailActionController {
     }
     _navigationRouter = null;
   }
+
+  void onDragMailBox(bool isDrag) {
+    mailboxDashBoardController.onDragMailbox(isDrag);
+  }
 }

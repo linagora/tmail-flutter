@@ -155,6 +155,7 @@ class MailboxDashBoardController extends ReloadableController {
   final viewStateMarkAsReadMailbox = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final vacationResponse = Rxn<VacationResponse>();
   final routerParameters = Rxn<Map<String, String?>>();
+  final _isDraggingMailbox = RxBool(false);
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
   Map<MailboxId, PresentationMailbox> mapMailboxById = {};
@@ -1541,6 +1542,12 @@ class MailboxDashBoardController extends ReloadableController {
     spamReportController.storeSpamReportStateAction(_storeSpamReportState);
   }
 
+  void onDragMailbox(bool isDragging) {
+    _isDraggingMailbox.value = isDragging;
+  }
+
+  bool get isDraggingMailbox => _isDraggingMailbox.value;
+  
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
