@@ -150,50 +150,72 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
   }
 
   Widget _buildListMailbox(BuildContext context) {
-    return SingleChildScrollView(
-        controller: controller.mailboxListScrollController,
-        key: const PageStorageKey('mailbox_list'),
-        physics: const ClampingScrollPhysics(),
-        padding: EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 16 : 0),
-        child: Column(children: [
-          Obx(() {
-            if (controller.isSelectionEnabled() || _responsiveUtils.isDesktop(context)) {
-              return const SizedBox.shrink();
-            }
-            return _buildUserInformation(context);
-          }),
-          _buildLoadingView(),
-          AppConfig.appGridDashboardAvailable && _responsiveUtils.isWebNotDesktop(context)
-            ? Column(children: [
-                _buildAppGridDashboard(context),
-                const SizedBox(height: 8),
-                const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
-                const SizedBox(height: 8),
-              ])
-            : const SizedBox.shrink(),
-          Obx(() => controller.defaultMailboxHasChild
-              ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultRootNode)
-              : const SizedBox.shrink()),
-          const SizedBox(height: 8),
-          const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
-          const SizedBox(height: 8),
-          _buildHeaderMailboxCategory(context, MailboxCategories.folders),
-          Row(children: [
-            Expanded(child: _buildSearchBarWidget(context)),
-            Padding(
-                padding: EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 0 : 12),
-                child: buildIconWeb(
-                    minSize: 40,
-                    iconPadding: EdgeInsets.zero,
-                    splashRadius: 15,
-                    icon: SvgPicture.asset(_imagePaths.icAddNewFolder, color: AppColor.colorTextButton, fit: BoxFit.fill),
-                    tooltip: AppLocalizations.of(context).new_mailbox,
-                    onTap: () => controller.goToCreateNewMailboxView(context))),
-          ]),
-          Obx(() => controller.folderMailboxHasChild
-              ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderRootNode)
-              : const SizedBox.shrink()),
-        ])
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          controller: controller.mailboxListScrollController,
+          key: const PageStorageKey('mailbox_list'),
+          physics: const ClampingScrollPhysics(),
+          padding: EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 16 : 0),
+          child: Column(children: [
+            Obx(() {
+              if (controller.isSelectionEnabled() || _responsiveUtils.isDesktop(context)) {
+                return const SizedBox.shrink();
+              }
+              return _buildUserInformation(context);
+            }),
+            _buildLoadingView(),
+            AppConfig.appGridDashboardAvailable && _responsiveUtils.isWebNotDesktop(context)
+              ? Column(children: [
+                  _buildAppGridDashboard(context),
+                  const SizedBox(height: 8),
+                  const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+                  const SizedBox(height: 8),
+                ])
+              : const SizedBox.shrink(),
+            Obx(() => controller.defaultMailboxHasChild
+                ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultRootNode)
+                : const SizedBox.shrink()),
+            const SizedBox(height: 8),
+            const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+            const SizedBox(height: 8),
+            _buildHeaderMailboxCategory(context, MailboxCategories.folders),
+            Row(children: [
+              Expanded(child: _buildSearchBarWidget(context)),
+              Padding(
+                  padding: EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 0 : 12),
+                  child: buildIconWeb(
+                      minSize: 40,
+                      iconPadding: EdgeInsets.zero,
+                      splashRadius: 15,
+                      icon: SvgPicture.asset(_imagePaths.icAddNewFolder, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                      tooltip: AppLocalizations.of(context).new_mailbox,
+                      onTap: () => controller.goToCreateNewMailboxView(context))),
+            ]),
+            Obx(() => controller.folderMailboxHasChild
+                ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderRootNode)
+                : const SizedBox.shrink()),
+          ])
+        ),
+        Obx(() => controller.mailboxDashBoardController.isDraggingMailbox
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: InkWell(
+                  onTap: () {},
+                  onHover: (value) => value ? controller.autoScrollTop() : controller.stopAutoScroll(),
+                  child: Container(
+                    height: 40)))
+            : const SizedBox.shrink()),
+        Obx(() => controller.mailboxDashBoardController.isDraggingMailbox
+            ? Align(
+                alignment: Alignment.bottomCenter,
+                child: InkWell(
+                  onTap: () {},
+                  onHover: (value) => value ? controller.autoScrollBottom() : controller.stopAutoScroll(),
+                  child: Container(
+                    height: 40)))
+            : const SizedBox.shrink()),
+      ],
     );
   }
 
