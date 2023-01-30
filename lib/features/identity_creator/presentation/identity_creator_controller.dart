@@ -9,8 +9,10 @@ import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -33,6 +35,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -73,6 +76,7 @@ class IdentityCreatorController extends BaseController {
   String? _nameIdentity;
   String? _contentHtmlEditor;
   AccountId? accountId;
+  Session? session;
   UserProfile? userProfile;
   Identity? identity;
   IdentityCreatorArguments? arguments;
@@ -117,6 +121,7 @@ class IdentityCreatorController extends BaseController {
     super.onReady();
     if (arguments != null) {
       accountId = arguments!.accountId;
+      session = arguments!.session;
       userProfile = arguments!.userProfile;
       identity = arguments!.identity;
       actionType.value = arguments!.actionType;
@@ -165,10 +170,19 @@ class IdentityCreatorController extends BaseController {
   void _getAllIdentities() {
     log('IdentityCreatorController::_getAllIdentities() ');
     if (accountId != null) {
-      consumeState(_getAllIdentitiesInteractor.execute(
-        accountId!,
-        properties: Properties({'email', 'sortOrder'})
-      ));
+      try {
+        requireCapability(session!, accountId!, [CapabilityIdentifier.jamesSortOrder]);
+        consumeState(_getAllIdentitiesInteractor.execute(
+          accountId!,
+          properties: Properties({'email', 'sortOrder'})
+        ));
+      } catch (e) {
+        logError('IdentityCreatorController::_getAllIdentities(): exception: $e');
+        consumeState(_getAllIdentitiesInteractor.execute(
+          accountId!,
+          properties: Properties({'email'})
+        ));
+      }
     }
   }
 
