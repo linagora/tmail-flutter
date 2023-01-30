@@ -1162,4 +1162,25 @@ class MailboxController extends BaseMailboxController {
     _cancelSelectMailbox();
     mailboxDashBoardController.closeMailboxMenuDrawer();
   }
+
+  void autoScrollTop() {
+    mailboxListScrollController.animateTo(
+      mailboxListScrollController.position.minScrollExtent,
+      duration: const Duration(seconds: 1),
+      curve: Curves.easeInToLinear);
+  }
+
+  void autoScrollBottom() {
+    mailboxListScrollController.animateTo(
+      mailboxListScrollController.position.maxScrollExtent,
+      duration: const Duration(seconds: 1),
+      curve: Curves.easeInToLinear);
+  }
+
+  void stopAutoScroll() {
+    mailboxListScrollController.animateTo(
+      mailboxListScrollController.offset,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.fastOutSlowIn); 
+  }
 }

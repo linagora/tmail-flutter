@@ -374,7 +374,10 @@ class ThreadView extends GetWidget<ThreadController>
               dragAnchorStrategy: pointerDragAnchorStrategy,
               onDragStarted: () {
                 controller.calculateDragValue(currentPresentationEmail);
+                controller.onDragMailBox(true);
               },
+              onDragEnd: (_) => controller.onDragMailBox(false),
+              onDraggableCanceled: (_,__) => controller.onDragMailBox(false),
             ));
           }),
       )
