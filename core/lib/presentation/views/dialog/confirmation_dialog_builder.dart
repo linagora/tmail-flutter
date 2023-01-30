@@ -26,9 +26,13 @@ class ConfirmDialogBuilder {
   EdgeInsets? _paddingTitle;
   EdgeInsets? _paddingContent;
   EdgeInsets? _paddingButton;
+  EdgeInsets? _outsideDialogPadding;
   EdgeInsets? _marginIcon;
   EdgeInsets? _margin;
   double? _widthDialog;
+  double? _heightDialog;
+  Alignment? _alignment;
+  Color? _backgroundColor;
   bool showAsBottomSheet;
 
   OnConfirmButtonAction? _onConfirmButtonAction;
@@ -108,6 +112,22 @@ class ConfirmDialogBuilder {
     _widthDialog = value;
   }
 
+  void heightDialog(double? value) {
+    _heightDialog = value;
+  }
+
+  void aligment(Alignment? alignment) {
+    _alignment = alignment;
+  }
+
+  void outsideDialogPadding(EdgeInsets? value) {
+    _outsideDialogPadding = value;
+  }
+
+  void backgroundColor(Color value) {
+    _backgroundColor = value;
+  }
+
   void onConfirmButtonAction(String confirmText, OnConfirmButtonAction? onConfirmButtonAction) {
     _confirmText = confirmText;
     _onConfirmButtonAction = onConfirmButtonAction;
@@ -130,9 +150,11 @@ class ConfirmDialogBuilder {
         key: _key,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(16))),
-        insetPadding: const EdgeInsets.symmetric(
+        insetPadding: _outsideDialogPadding ?? const EdgeInsets.symmetric(
             horizontal: 24.0,
             vertical: 16.0),
+        alignment: _alignment ?? Alignment.center,
+        backgroundColor: _backgroundColor,
         child: _bodyContent(),
       );
     }
@@ -141,6 +163,7 @@ class ConfirmDialogBuilder {
   Widget _bodyContent() {
     return Container(
         width: _widthDialog ?? 400,
+        height: _heightDialog,
         decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: const BorderRadius.all(Radius.circular(16))),
