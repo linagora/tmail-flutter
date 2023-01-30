@@ -1,10 +1,8 @@
 
-import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +30,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/delete_identity_dialog_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -231,49 +230,14 @@ class IdentitiesController extends BaseController {
   }
 
   void openConfirmationDialogDeleteIdentityAction(BuildContext context, Identity identity) {
-    if (_responsiveUtils.isScreenWithShortestSide(context)) {
-      (ConfirmationDialogActionSheetBuilder(context)
-          ..messageText(AppLocalizations.of(context).message_confirmation_dialog_delete_identity)
-          ..onCancelAction(AppLocalizations.of(context).cancel, () =>
-              popBack())
-          ..onConfirmAction(AppLocalizations.of(context).delete, () =>
-              _deleteIdentityAction(identity)))
-        .show();
-    } else {
-      showDialog(
-          context: context,
-          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => (ConfirmDialogBuilder(_imagePaths)
-              ..key(const Key('confirm_dialog_delete_identity'))
-              ..title(AppLocalizations.of(context).delete_identity.capitalizeFirstEach)
-              ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_identity)
-              ..addIcon(SvgPicture.asset(_imagePaths.icDeleteDialogIdentity, fit: BoxFit.fill))
-              ..marginIcon(EdgeInsets.zero)
-              ..styleTitle(const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColor.colorActionDeleteConfirmDialog))
-              ..styleContent(const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal,
-                  color: AppColor.colorContentEmail))
-              ..colorCancelButton(AppColor.colorButtonCancelDialog)
-              ..colorConfirmButton(AppColor.colorActionDeleteConfirmDialog)
-              ..styleTextConfirmButton(const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white))
-              ..styleTextCancelButton(const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
-                  color: AppColor.colorTextButton))
-              ..onCloseButtonAction(() => popBack())
-              ..onConfirmButtonAction(AppLocalizations.of(context).delete, () =>
-                  _deleteIdentityAction(identity))
-              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
-                  popBack()))
-            .build());
-    }
+    showDialog(
+      context: context,
+      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      builder: (BuildContext context) => DeleteIdentityDialogBuilder(
+        responsiveUtils: _responsiveUtils,
+        imagePaths: _imagePaths,
+        onDeleteIdentityAction: () => _deleteIdentityAction(identity),
+      ));
   }
 
   void _deleteIdentityAction(Identity identity) {
