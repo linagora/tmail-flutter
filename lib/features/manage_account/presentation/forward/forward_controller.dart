@@ -118,7 +118,7 @@ class ForwardController extends BaseController {
       AppLocalizations.of(context).remove,
       onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
       showAsBottomSheet: true,
-      icon: SvgPicture.asset(_imagePaths.icDeleteDialogIdentity, fit: BoxFit.fill),
+      icon: SvgPicture.asset(_imagePaths.icDeleteDialogRecipients, fit: BoxFit.fill),
       titleStyle: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
@@ -205,7 +205,7 @@ class ForwardController extends BaseController {
       AppLocalizations.of(currentContext!).remove,
       onConfirmAction: () => _handleDeleteRecipientAction(listEmailAddress),
       showAsBottomSheet: true,
-      icon: SvgPicture.asset(_imagePaths.icDeleteDialogIdentity, fit: BoxFit.fill),
+      icon: SvgPicture.asset(_imagePaths.icDeleteDialogRecipients, fit: BoxFit.fill),
       titleStyle: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
