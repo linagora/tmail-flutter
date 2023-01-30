@@ -150,8 +150,9 @@ class IdentitiesController extends BaseController {
   void goToCreateNewIdentity(BuildContext context) async {
     final accountId = _accountDashBoardController.accountId.value;
     final userProfile = _accountDashBoardController.userProfile.value;
-    if (accountId != null && userProfile != null) {
-      final arguments = IdentityCreatorArguments(accountId, userProfile);
+    final session = _accountDashBoardController.sessionCurrent.value;
+    if (accountId != null && session != null && userProfile != null) {
+      final arguments = IdentityCreatorArguments(accountId, session, userProfile);
 
       if (BuildUtils.isWeb) {
         showDialogIdentityCreator(
@@ -322,9 +323,11 @@ class IdentitiesController extends BaseController {
   void goToEditIdentity(BuildContext context, Identity identity) async {
     final accountId = _accountDashBoardController.accountId.value;
     final userProfile = _accountDashBoardController.userProfile.value;
-    if (accountId != null && userProfile != null) {
+    final session = _accountDashBoardController.sessionCurrent.value;
+    if (accountId != null && session != null && userProfile != null) {
       final arguments = IdentityCreatorArguments(
           accountId,
+          session,
           userProfile,
           identity: identity,
           actionType: IdentityActionType.edit);
