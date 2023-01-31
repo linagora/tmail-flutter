@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -203,7 +204,7 @@ class MailboxController extends BaseMailboxController {
   void _registerObxStreamListener() {
     ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId is AccountId) {
-        getAllMailboxAction(accountId);
+        getAllMailboxAction(mailboxDashBoardController.sessionCurrent!, accountId);
       }
     });
 
@@ -297,15 +298,16 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
-  void getAllMailboxAction(AccountId accountId) async {
-    consumeState(_getAllMailboxInteractor.execute(accountId));
+  void getAllMailboxAction(Session session, AccountId accountId) async {
+    consumeState(_getAllMailboxInteractor.execute(session, accountId));
   }
 
   void refreshAllMailbox() {
     if (!isSearchActive()) {
+      final session = mailboxDashBoardController.sessionCurrent;
       final accountId = mailboxDashBoardController.accountId.value;
-      if (accountId != null) {
-        consumeState(_getAllMailboxInteractor.execute(accountId));
+      if (session != null && accountId != null) {
+        consumeState(_getAllMailboxInteractor.execute(session, accountId));
       }
     } else {
       _searchMailboxAction(allMailboxes, searchQuery.value);
@@ -1181,6 +1183,6 @@ class MailboxController extends BaseMailboxController {
     mailboxListScrollController.animateTo(
       mailboxListScrollController.offset,
       duration: const Duration(milliseconds: 300),
-      curve: Curves.fastOutSlowIn); 
+      curve: Curves.fastOutSlowIn);
   }
 }

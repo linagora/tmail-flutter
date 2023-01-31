@@ -18,7 +18,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 
 abstract class MailboxDataSource {
-  Future<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties});
+  Future<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties});
 
   Future<List<Mailbox>> getAllMailboxCache();
 

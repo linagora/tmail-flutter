@@ -35,7 +35,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
   );
 
   @override
-  Stream<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties}) async* {
+  Stream<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) async* {
     final localMailboxResponse = await Future.wait([
       mapDataSource[DataSourceType.local]!.getAllMailboxCache(),
       stateDataSource.getState(StateType.mailbox)
@@ -70,7 +70,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
         ]);
       }
     } else {
-      final mailboxResponse = await mapDataSource[DataSourceType.network]!.getAllMailbox(accountId);
+      final mailboxResponse = await mapDataSource[DataSourceType.network]!.getAllMailbox(session, accountId,);
 
       await Future.wait([
         mapDataSource[DataSourceType.local]!.update(created: mailboxResponse.mailboxes),

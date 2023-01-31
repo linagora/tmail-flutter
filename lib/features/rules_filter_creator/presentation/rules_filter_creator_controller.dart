@@ -191,7 +191,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   void _getAllMailboxAction() {
     if (_accountId != null) {
-      consumeState(_getAllMailboxInteractor.execute(_accountId!));
+      consumeState(_getAllMailboxInteractor.execute(_session!, _accountId!));
     }
   }
 
