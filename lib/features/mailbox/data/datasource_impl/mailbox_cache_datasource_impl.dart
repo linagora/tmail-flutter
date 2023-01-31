@@ -28,7 +28,7 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   MailboxCacheDataSourceImpl(this._mailboxCacheManager, this._exceptionThrower);
 
   @override
-  Future<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties}) {
+  Future<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) {
     throw UnimplementedError();
   }
 

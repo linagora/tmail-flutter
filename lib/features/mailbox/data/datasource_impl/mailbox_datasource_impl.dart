@@ -30,9 +30,9 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   MailboxDataSourceImpl(this.mailboxAPI, this._mailboxIsolateWorker, this._exceptionThrower);
 
   @override
-  Future<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties}) {
+  Future<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) {
     return Future.sync(() async {
-      return await mailboxAPI.getAllMailbox(accountId, properties: properties);
+      return await mailboxAPI.getAllMailbox(session, accountId, properties: properties);
     }).catchError((error) {
       _exceptionThrower.throwException(error);
     });

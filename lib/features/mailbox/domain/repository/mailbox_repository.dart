@@ -17,7 +17,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 
 abstract class MailboxRepository {
-  Stream<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties});
+  Stream<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties});
 
   Stream<MailboxResponse> refresh(AccountId accountId, State currentState);
 
