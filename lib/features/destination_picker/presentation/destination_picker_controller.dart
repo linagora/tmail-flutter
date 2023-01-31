@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/mailbox/expand_mode.dart';
@@ -74,6 +75,7 @@ class DestinationPickerController extends BaseMailboxController {
   TextEditingController? searchInputController;
   FocusNode? searchFocus;
   DestinationPickerArguments? arguments;
+  Session? _session;
   AccountId? accountId;
   MailboxId? mailboxIdSelected;
   OnSelectedMailboxCallback? onSelectedMailboxCallback;
@@ -156,7 +158,7 @@ class DestinationPickerController extends BaseMailboxController {
 
   void getAllMailboxAction() {
     if (accountId != null) {
-      consumeState(_getAllMailboxInteractor.execute(accountId!));
+      consumeState(_getAllMailboxInteractor.execute(_session!, accountId!));
     }
   }
 

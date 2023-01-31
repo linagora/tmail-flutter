@@ -38,7 +38,7 @@ class MailboxAPI with HandleSetErrorMixin {
 
   MailboxAPI(this.httpClient);
 
-  Future<MailboxResponse> getAllMailbox(AccountId accountId, {Properties? properties}) async {
+  Future<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) async {
     final processingInvocation = ProcessingInvocation();
 
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
@@ -47,8 +47,10 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final queryInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
 
+    final capabilities = checkCapabilities(session, accountId);
+
     final result = await (jmapRequestBuilder
-        ..usings(getMailboxCreated.requiredCapabilities))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -57,6 +59,23 @@ class MailboxAPI with HandleSetErrorMixin {
       GetMailboxResponse.deserialize);
 
     return MailboxResponse(mailboxes: resultCreated?.list, state: resultCreated?.state);
+  }
+
+  Set<CapabilityIdentifier>  checkCapabilities(Session session, AccountId accountId) {
+    final getMailboxCreated = GetMailboxMethod(accountId);
+    try {
+     requireCapability(
+        session,
+        accountId,
+        [
+          CapabilityIdentifier.jmapCore, 
+          CapabilityIdentifier.jmapMail,
+          CapabilityIdentifier.jmapTeamMailboxes
+        ]);
+      return getMailboxCreated.requiredCapabilitiesSupportTeamMailboxes;
+    } catch (_) {
+      return getMailboxCreated.requiredCapabilities;
+    }
   }
 
   Future<MailboxChangeResponse> getChanges(AccountId accountId, State sinceState) async {

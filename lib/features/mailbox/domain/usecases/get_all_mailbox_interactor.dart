@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
@@ -12,12 +13,15 @@ class GetAllMailboxInteractor {
 
   GetAllMailboxInteractor(this._mailboxRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, {Properties? properties}) async* {
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, {Properties? properties}) async* {
     try {
       yield Right<Failure, Success>(LoadingState());
 
       yield* _mailboxRepository
-        .getAllMailbox(accountId, properties: properties)
+        .getAllMailbox(
+          session,
+          accountId, 
+          properties: properties)
         .map(_toGetMailboxState);
     } catch (e) {
       yield Left<Failure, Success>(GetAllMailboxFailure(e));
