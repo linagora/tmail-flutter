@@ -292,11 +292,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 behavior: HitTestBehavior.opaque,
                 onTap: () => appGridDashboardController.toggleAppGridDashboard()),
               child: PortalTarget(
-                child: InkWell(
-                  onTapDown: (tapDownDetails) => controller.showAppDashboardAction(),
-                  child: buildIconWeb(
-                    icon: SvgPicture.asset(imagePaths.icAppDashboard, width: 28, height: 28, fit: BoxFit.fill),
-                  )
+                child: buildIconWeb(
+                  onTap: controller.showAppDashboardAction,
+                  splashRadius: 20,
+                  icon: SvgPicture.asset(
+                    imagePaths.icAppDashboard,
+                    width: 28,
+                    height: 28,
+                    fit: BoxFit.fill
+                  ),
                 ),
                 anchor: const Aligned(
                   follower: Alignment.topRight,
