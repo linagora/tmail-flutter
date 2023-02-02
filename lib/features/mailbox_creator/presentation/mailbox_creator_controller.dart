@@ -3,6 +3,7 @@ import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -34,8 +35,10 @@ class MailboxCreatorController extends BaseController {
 
   MailboxCreatorArguments? arguments;
   AccountId? accountId;
-  MailboxTree? folderMailboxTree;
+  Session? _session;
   MailboxTree? defaultMailboxTree;
+  MailboxTree? personalMailboxTree;
+  MailboxTree? teamMailboxesTre;
   OnCreatedMailboxCallback? onCreatedMailboxCallback;
   VoidCallback? onDismissMailboxCreator;
 
@@ -56,9 +59,11 @@ class MailboxCreatorController extends BaseController {
   void onReady() {
     super.onReady();
     if (arguments != null) {
-      folderMailboxTree = arguments!.folderMailboxTree;
+      personalMailboxTree = arguments!.personalMailboxTree;
       defaultMailboxTree = arguments!.defaultMailboxTree;
+      teamMailboxesTre = arguments!.teamMailboxesTree;
       accountId = arguments!.accountId;
+      _session = arguments!.session;
       _createListMailboxNameAsStringInMailboxLocation();
     }
   }
@@ -89,13 +94,17 @@ class MailboxCreatorController extends BaseController {
     final mailboxNode = defaultMailboxTree?.findNode((node) => node.item.id == mailboxId);
     if (mailboxNode != null) {
       return mailboxNode;
+    } else if(mailboxNode!.item.isTeamMailboxes) {
+      return teamMailboxesTre?.findNode((node) => node.item.id == mailboxId);
     }
-    return folderMailboxTree?.findNode((node) => node.item.id == mailboxId);
+    return personalMailboxTree?.findNode((node) => node.item.id == mailboxId);
   }
 
   void _createListMailboxNameAsStringInMailboxLocation() {
     if (selectedMailbox.value == null) {
-      final allChildrenAtMailboxLocation = (defaultMailboxTree?.root.childrenItems ?? <MailboxNode>[]) + (folderMailboxTree?.root.childrenItems ?? <MailboxNode>[]);
+      final allChildrenAtMailboxLocation = (defaultMailboxTree?.root.childrenItems ?? <MailboxNode>[]) 
+        + (personalMailboxTree?.root.childrenItems ?? <MailboxNode>[])
+        + (teamMailboxesTre?.root.childrenItems ?? <MailboxNode>[]);
       if (allChildrenAtMailboxLocation.isNotEmpty) {
         listMailboxNameAsStringExist = allChildrenAtMailboxLocation
             .where((mailboxNode) => mailboxNode.nameNotEmpty)
@@ -150,6 +159,7 @@ class MailboxCreatorController extends BaseController {
       final arguments = DestinationPickerArguments(
           accountId!,
           MailboxActions.create,
+          _session,
           mailboxIdSelected: selectedMailbox.value?.id);
 
       if (BuildUtils.isWeb) {

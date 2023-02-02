@@ -153,7 +153,7 @@ class MailboxController extends BaseMailboxController {
     newState.map((success) async {
       if (success is GetAllMailboxSuccess) {
         _currentMailboxState = success.currentMailboxState;
-        await buildTree(success.mailboxList);
+        _buildMailboxTreeHasSubscribed(success.mailboxList);
       } else if (success is RefreshChangesAllMailboxSuccess) {
         _currentMailboxState = success.currentMailboxState;
         await refreshTree(success.mailboxList);
@@ -292,7 +292,8 @@ class MailboxController extends BaseMailboxController {
         && (_responsiveUtils.isMobile(currentContext!) || _responsiveUtils.isTablet(currentContext!))) {
       mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode(
           defaultMailbox: ExpandMode.COLLAPSE,
-          folderMailbox: ExpandMode.COLLAPSE);
+          personalMailboxes: ExpandMode.COLLAPSE,
+          teamMailboxes: ExpandMode.COLLAPSE);
     } else {
       mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode.initial();
     }
@@ -496,9 +497,11 @@ class MailboxController extends BaseMailboxController {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {
       final arguments = MailboxCreatorArguments(
-          accountId,
-          defaultMailboxTree.value,
-          folderMailboxTree.value);
+        accountId,
+        defaultMailboxTree.value,
+        personalMailboxTree.value,
+        teamMailboxesTree.value,
+        mailboxDashBoardController.sessionCurrent!);
 
       if (BuildUtils.isWeb) {
         showDialogMailboxCreator(
@@ -656,10 +659,13 @@ class MailboxController extends BaseMailboxController {
       final defaultMailboxSelected = defaultMailboxTree.value
         .findNodes((node) => node.selectMode == SelectMode.ACTIVE);
 
-      final folderMailboxSelected = folderMailboxTree.value
+      final folderMailboxSelected = personalMailboxTree.value
         .findNodes((node) => node.selectMode == SelectMode.ACTIVE);
 
-      return [defaultMailboxSelected, folderMailboxSelected]
+      final teamMailboxesSelected = teamMailboxesTree.value
+        .findNodes((node) => node.selectMode == SelectMode.ACTIVE);
+
+      return [defaultMailboxSelected, folderMailboxSelected, teamMailboxesSelected]
         .expand((node) => node)
         .map((node) => node.item)
         .toList();
@@ -736,7 +742,7 @@ class MailboxController extends BaseMailboxController {
       final tupleMap = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
           [presentationMailbox],
           defaultMailboxTree.value,
-          folderMailboxTree.value);
+          personalMailboxTree.value);
       final mapDescendantIds = tupleMap.value1;
       final listMailboxId = tupleMap.value2;
 
@@ -816,7 +822,7 @@ class MailboxController extends BaseMailboxController {
       final tupleMap = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
           selectedMailboxList,
           defaultMailboxTree.value,
-          folderMailboxTree.value);
+          personalMailboxTree.value);
       final mapDescendantIds = tupleMap.value1;
       final listMailboxId = tupleMap.value2;
       consumeState(_deleteMultipleMailboxInteractor.execute(
@@ -947,10 +953,12 @@ class MailboxController extends BaseMailboxController {
 
   void _moveMailboxAction(BuildContext context, PresentationMailbox mailboxSelected) async {
     final accountId = mailboxDashBoardController.accountId.value;
+    final _session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null) {
       final arguments = DestinationPickerArguments(
           accountId,
           MailboxActions.move,
+          _session,
           mailboxIdSelected: mailboxSelected.id);
 
       if (BuildUtils.isWeb) {
@@ -1039,7 +1047,10 @@ class MailboxController extends BaseMailboxController {
 
   void _createListMailboxNameAsStringInMailboxParent(PresentationMailbox mailboxRenamed) {
     if (mailboxRenamed.parentId == null) {
-      final allChildrenAtMailboxLocation = (defaultMailboxTree.value.root.childrenItems ?? <MailboxNode>[]) + (folderMailboxTree.value.root.childrenItems ?? <MailboxNode>[]);
+      final allChildrenAtMailboxLocation = (
+        defaultMailboxTree.value.root.childrenItems ?? <MailboxNode>[]) 
+        + (personalMailboxTree.value.root.childrenItems ?? <MailboxNode>[])
+        + (teamMailboxesTree.value.root.childrenItems ?? <MailboxNode>[]);
       if (allChildrenAtMailboxLocation.isNotEmpty) {
         listMailboxNameAsStringExist = allChildrenAtMailboxLocation
             .where((mailboxNode) => mailboxNode.nameNotEmpty)
@@ -1071,9 +1082,14 @@ class MailboxController extends BaseMailboxController {
         mailboxCategoriesExpandMode.value.defaultMailbox = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
-      case MailboxCategories.folders:
-        final newExpandMode = mailboxCategoriesExpandMode.value.folderMailbox == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.folderMailbox = newExpandMode;
+      case MailboxCategories.personalMailboxes:
+        final newExpandMode = mailboxCategoriesExpandMode.value.personalMailboxes == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
+        mailboxCategoriesExpandMode.value.personalMailboxes = newExpandMode;
+        mailboxCategoriesExpandMode.refresh();
+        break;
+      case MailboxCategories.teamMailboxes:
+        final newExpandMode = mailboxCategoriesExpandMode.value.teamMailboxes == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
+        mailboxCategoriesExpandMode.value.teamMailboxes = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
       case MailboxCategories.appGrid:
@@ -1184,5 +1200,10 @@ class MailboxController extends BaseMailboxController {
       mailboxListScrollController.offset,
       duration: const Duration(milliseconds: 300),
       curve: Curves.fastOutSlowIn);
+  }
+
+  void _buildMailboxTreeHasSubscribed(List<PresentationMailbox> mailboxList) async {
+    final _mailboxList = mailboxList.where((mailbox) => mailbox.isSubscribed?.value == true).toList();
+    await buildTree(_mailboxList);
   }
 }

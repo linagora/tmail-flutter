@@ -18,7 +18,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
       isSubscribed: isSubscribed,
       selectMode: selectMode,
       mailboxPath: mailboxPath,
-      state: state
+      state: state,
+      namespace: namespace,
     );
   }
 
@@ -37,7 +38,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
         isSubscribed: isSubscribed,
         selectMode: selectMode,
         mailboxPath: mailboxPath,
-        state: newMailboxState
+        state: newMailboxState,
+        namespace: namespace,
     );
   }
 
@@ -53,7 +55,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
       totalThreads: totalThreads,
       unreadThreads: unreadThreads,
       myRights: myRights,
-      isSubscribed: isSubscribed
+      isSubscribed: isSubscribed,
+      namespace: namespace,
     );
   }
 
@@ -72,7 +75,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
         isSubscribed: isSubscribed,
         mailboxPath: mailboxPath,
         selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
-        state: state
+        state: state,
+        namespace: namespace,
     );
   }
 
@@ -91,7 +95,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
       isSubscribed: isSubscribed,
       mailboxPath: mailboxPath,
       selectMode: selectMode,
-      state: state
+      state: state,
+      namespace: namespace,
     );
   }
 }

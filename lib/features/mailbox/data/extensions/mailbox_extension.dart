@@ -16,7 +16,8 @@ extension MailboxExtension on Mailbox {
       totalThreads: totalThreads?.value.value.round(),
       unreadThreads: unreadThreads?.value.value.round(),
       myRights: myRights != null ? myRights!.toMailboxRightsCache() : null,
-      isSubscribed: isSubscribed?.value
+      isSubscribed: isSubscribed?.value,
+      namespace: namespace?.value
     );
   }
 }

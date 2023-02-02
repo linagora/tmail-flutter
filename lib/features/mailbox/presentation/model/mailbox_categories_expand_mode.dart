@@ -4,14 +4,21 @@ import 'package:model/mailbox/expand_mode.dart';
 
 class MailboxCategoriesExpandMode with EquatableMixin {
    ExpandMode defaultMailbox;
-   ExpandMode folderMailbox;
+   ExpandMode personalMailboxes;
+   ExpandMode teamMailboxes;
 
-  MailboxCategoriesExpandMode({required this.defaultMailbox, required this.folderMailbox});
+  MailboxCategoriesExpandMode({
+    required this.defaultMailbox, 
+    required this.personalMailboxes,
+    required this.teamMailboxes});
 
   factory MailboxCategoriesExpandMode.initial() {
-    return MailboxCategoriesExpandMode(defaultMailbox: ExpandMode.EXPAND, folderMailbox: ExpandMode.EXPAND);
+    return MailboxCategoriesExpandMode(
+      defaultMailbox: ExpandMode.EXPAND, 
+      personalMailboxes: ExpandMode.EXPAND,
+      teamMailboxes: ExpandMode.EXPAND);
   }
 
   @override
-  List<Object?> get props => [defaultMailbox, folderMailbox];
+  List<Object?> get props => [defaultMailbox, personalMailboxes, teamMailboxes];
 }
