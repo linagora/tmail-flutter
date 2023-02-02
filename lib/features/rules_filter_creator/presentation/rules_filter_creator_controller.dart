@@ -234,7 +234,8 @@ class RulesFilterCreatorController extends BaseMailboxController {
     if (_accountId != null) {
       final arguments = DestinationPickerArguments(
           _accountId!,
-          MailboxActions.selectForRuleAction);
+          MailboxActions.selectForRuleAction,
+          _session);
 
       if (BuildUtils.isWeb) {
         showDialogDestinationPicker(

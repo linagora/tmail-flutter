@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/namespace.dart';
 import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/select_mode.dart';
 
@@ -34,6 +35,7 @@ class PresentationMailbox with EquatableMixin {
   final SelectMode selectMode;
   final String? mailboxPath;
   final MailboxState? state;
+  final Namespace? namespace;
 
   PresentationMailbox(
     this.id,
@@ -51,6 +53,7 @@ class PresentationMailbox with EquatableMixin {
       this.selectMode = SelectMode.INACTIVE,
       this.mailboxPath,
       this.state = MailboxState.activated,
+      this.namespace,
     }
   );
 
@@ -59,6 +62,12 @@ class PresentationMailbox with EquatableMixin {
   bool hasParentId() => parentId != null && parentId!.id.value.isNotEmpty;
 
   bool hasRole() => role != null && role!.value.isNotEmpty;
+
+  bool get isPersonal => namespace == Namespace('Personal');
+
+  bool get isTeamMailboxes => !isPersonal && !hasParentId();
+
+  bool get isChildOfTeamMailboxes => !isPersonal && hasParentId();
 
   String getCountUnReadEmails() {
     if (unreadEmails == null || unreadEmails!.value.value <= 0) {
@@ -69,7 +78,7 @@ class PresentationMailbox with EquatableMixin {
   }
 
   bool get isSpam => role == roleSpam;
-
+  
   bool get isTrash => role == roleTrash;
 
   bool get isDrafts => role == roleDrafts;
@@ -88,6 +97,10 @@ class PresentationMailbox with EquatableMixin {
     }
   }
 
+  String? get nameTeamMailBoxes => namespace?.value.substring(
+    (namespace?.value.indexOf('[') ?? 0) + 1,
+    namespace?.value.indexOf(']'));
+
   @override
   List<Object?> get props => [
     id,
@@ -104,5 +117,6 @@ class PresentationMailbox with EquatableMixin {
     selectMode,
     mailboxPath,
     state,
+    namespace,
   ];
 }

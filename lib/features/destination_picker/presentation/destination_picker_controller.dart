@@ -110,6 +110,7 @@ class DestinationPickerController extends BaseMailboxController {
       mailboxAction.value = arguments!.mailboxAction;
       mailboxIdSelected = arguments!.mailboxIdSelected;
       accountId = arguments!.accountId;
+      _session = arguments!.session;
       getAllMailboxAction();
     }
   }
@@ -175,9 +176,9 @@ class DestinationPickerController extends BaseMailboxController {
         mailboxCategoriesExpandMode.value.defaultMailbox = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
-      case MailboxCategories.folders:
-        final newExpandMode = mailboxCategoriesExpandMode.value.folderMailbox == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.folderMailbox = newExpandMode;
+      case MailboxCategories.personalMailboxes:
+        final newExpandMode = mailboxCategoriesExpandMode.value.personalMailboxes == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
+        mailboxCategoriesExpandMode.value.personalMailboxes = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
       default:
@@ -235,7 +236,7 @@ class DestinationPickerController extends BaseMailboxController {
     if (mailboxDestination.value == null ||
         mailboxDestination.value == PresentationMailbox.unifiedMailbox) {
       final allChildrenAtMailboxLocation = (defaultMailboxTree.value.root.childrenItems ?? <MailboxNode>[]) +
-          (folderMailboxTree.value.root.childrenItems ?? <MailboxNode>[]);
+          (personalMailboxTree.value.root.childrenItems ?? <MailboxNode>[]);
       if (allChildrenAtMailboxLocation.isNotEmpty) {
         listMailboxNameAsStringExist = allChildrenAtMailboxLocation
             .where((mailboxNode) => mailboxNode.nameNotEmpty)

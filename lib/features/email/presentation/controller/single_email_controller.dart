@@ -576,9 +576,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void moveToMailbox(BuildContext context, PresentationEmail email) async {
     final currentMailbox = getMailboxContain(email);
     final accountId = mailboxDashBoardController.accountId.value;
+    final _session = mailboxDashBoardController.sessionCurrent;
 
     if (currentMailbox != null && accountId != null) {
-      final arguments = DestinationPickerArguments(accountId, MailboxActions.moveEmail);
+      final arguments = DestinationPickerArguments(accountId, MailboxActions.moveEmail, _session);
       if (BuildUtils.isWeb) {
         showDialogDestinationPicker(
             context: context,

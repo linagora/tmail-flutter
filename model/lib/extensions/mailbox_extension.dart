@@ -19,6 +19,7 @@ extension MailboxExtension on Mailbox {
       unreadThreads: unreadThreads,
       myRights: myRights,
       isSubscribed: isSubscribed,
+      namespace: namespace,
     );
   }
 
@@ -35,6 +36,7 @@ extension MailboxExtension on Mailbox {
       unreadThreads: updatedProperties.contain(MailboxProperty.unreadThreads) ? newMailbox.unreadThreads : unreadThreads,
       myRights: updatedProperties.contain(MailboxProperty.myRights) ? newMailbox.myRights : myRights,
       isSubscribed: updatedProperties.contain(MailboxProperty.isSubscribed) ? newMailbox.isSubscribed : isSubscribed,
+      namespace: updatedProperties.contain(MailboxProperty.namespace) ? newMailbox.namespace : namespace,
     );
   }
 
@@ -51,6 +53,7 @@ extension MailboxExtension on Mailbox {
         unreadThreads: unreadThreads,
         myRights: myRights,
         isSubscribed: isSubscribed,
+        namespace: namespace,
     );
   }
 }

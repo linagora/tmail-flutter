@@ -132,14 +132,6 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
           .build());
   }
 
-  Widget _buildSearchBarWidget(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.only(top: 16, bottom: 16, right: 4, left: _responsiveUtils.isDesktop(context) ? 0 : 12),
-        child: SearchBarView(
-            _imagePaths,
-            hintTextSearch: AppLocalizations.of(context).hint_search_mailboxes,
-            onOpenSearchViewAction: controller.enableSearch));
-  }
 
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
@@ -147,7 +139,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
         (success) => success is LoadingState
             ? Padding(padding: const EdgeInsets.only(top: 16), child: loadingWidget)
             : const SizedBox.shrink()));
-  }
+  } 
 
   Widget _buildListMailbox(BuildContext context) {
     return Stack(
@@ -178,22 +170,49 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                 : const SizedBox.shrink()),
             const SizedBox(height: 8),
             const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+            const SizedBox(height: 13),
+            Padding(
+              padding: EdgeInsets.only(left: _responsiveUtils.isDesktop(context) ? 0 : 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(AppLocalizations.of(context).mailBoxes,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold)),
+                  Padding(
+                    padding: EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 0 : 12),
+                    child: Row(
+                      children: [
+                        buildIconWeb(
+                            minSize: 40,
+                            iconSize: 20,
+                            iconPadding: EdgeInsets.zero,
+                            splashRadius: 15,
+                            icon: SvgPicture.asset(_imagePaths.icSearchBar, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                            onTap: () => controller.enableSearch()),
+                        buildIconWeb(
+                            minSize: 40,
+                            iconSize: 20,
+                            iconPadding: EdgeInsets.zero,
+                            splashRadius: 15,
+                            icon: SvgPicture.asset(_imagePaths.icAddNewFolder, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                            tooltip: AppLocalizations.of(context).new_mailbox,
+                            onTap: () => controller.goToCreateNewMailboxView(context)),
+                      ],
+                      )),
+                ]),
+            ),
             const SizedBox(height: 8),
-            _buildHeaderMailboxCategory(context, MailboxCategories.folders),
-            Row(children: [
-              Expanded(child: _buildSearchBarWidget(context)),
-              Padding(
-                  padding: EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 0 : 12),
-                  child: buildIconWeb(
-                      minSize: 40,
-                      iconPadding: EdgeInsets.zero,
-                      splashRadius: 15,
-                      icon: SvgPicture.asset(_imagePaths.icAddNewFolder, color: AppColor.colorTextButton, fit: BoxFit.fill),
-                      tooltip: AppLocalizations.of(context).new_mailbox,
-                      onTap: () => controller.goToCreateNewMailboxView(context))),
-            ]),
-            Obx(() => controller.folderMailboxHasChild
-                ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderRootNode)
+            _buildHeaderMailboxCategory(context, MailboxCategories.personalMailboxes),
+            Obx(() => controller.personalMailboxHasChild
+                ? _buildMailboxCategory(context, MailboxCategories.personalMailboxes, controller.personalRootNode)
+                : const SizedBox.shrink()),
+            const SizedBox(height: 8),
+            _buildHeaderMailboxCategory(context, MailboxCategories.teamMailboxes),
+            Obx(() => controller.teamMailboxesHasChild
+                ? _buildMailboxCategory(context, MailboxCategories.teamMailboxes, controller.teamMailboxesRootNode)
                 : const SizedBox.shrink()),
           ])
         ),
