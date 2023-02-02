@@ -224,11 +224,11 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 actions,
                 mailboxIdSelected)
             : const SizedBox.shrink()),
-          Obx(() => controller.folderMailboxHasChild
+          Obx(() => controller.personalMailboxHasChild
             ? _buildMailboxCategory(
                 context,
-                MailboxCategories.folders,
-                controller.folderRootNode,
+                MailboxCategories.personalMailboxes,
+                controller.personalRootNode,
                 actions,
                 mailboxIdSelected)
             : const SizedBox.shrink()),

@@ -12,8 +12,9 @@ abstract class BaseMailboxController extends BaseController {
 
   BaseMailboxController(this._treeBuilder);
 
-  final folderMailboxTree = MailboxTree(MailboxNode.root()).obs;
+  final personalMailboxTree = MailboxTree(MailboxNode.root()).obs;
   final defaultMailboxTree = MailboxTree(MailboxNode.root()).obs;
+  final teamMailboxesTree =  MailboxTree(MailboxNode.root()).obs;
 
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
 
@@ -26,20 +27,27 @@ abstract class BaseMailboxController extends BaseController {
         allMailbox,
         mailboxIdSelected: mailboxIdSelected);
     defaultMailboxTree.firstRebuild = true;
-    folderMailboxTree.firstRebuild = true;
+    personalMailboxTree.firstRebuild = true;
+    teamMailboxesTree.firstRebuild = true;
     defaultMailboxTree.value = tupleTree.value1;
-    folderMailboxTree.value = tupleTree.value2;
-    allMailboxes = tupleTree.value3;
+    personalMailboxTree.value = tupleTree.value2;
+    teamMailboxesTree.value = tupleTree.value3;
+    allMailboxes = tupleTree.value4;
   }
 
   Future refreshTree(List<PresentationMailbox> allMailbox) async {
     allMailboxes = allMailbox;
     final tupleTree = await _treeBuilder.generateMailboxTreeInUIAfterRefreshChanges(
-      allMailbox, defaultMailboxTree.value, folderMailboxTree.value);
+      allMailbox, 
+      defaultMailboxTree.value, 
+      personalMailboxTree.value,
+      teamMailboxesTree.value);
     defaultMailboxTree.firstRebuild = true;
-    folderMailboxTree.firstRebuild = true;
+    personalMailboxTree.firstRebuild = true;
+    teamMailboxesTree.firstRebuild = true;
     defaultMailboxTree.value = tupleTree.value1;
-    folderMailboxTree.value = tupleTree.value2;
+    personalMailboxTree.value = tupleTree.value2;
+    teamMailboxesTree.value = tupleTree.value3;
   }
 
   void toggleMailboxFolder(MailboxNode selectedMailboxNode) {
@@ -52,9 +60,14 @@ abstract class BaseMailboxController extends BaseController {
       defaultMailboxTree.refresh();
     }
 
-    if (folderMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
+    if (personalMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
       log('toggleMailboxFolder() refresh folderMailboxTree');
-      folderMailboxTree.refresh();
+      personalMailboxTree.refresh();
+    }
+
+    if (teamMailboxesTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
+      log('toggleMailboxFolder() refresh teamMailboxesTree');
+      teamMailboxesTree.refresh();
     }
   }
 
@@ -68,31 +81,43 @@ abstract class BaseMailboxController extends BaseController {
       defaultMailboxTree.refresh();
     }
 
-    if (folderMailboxTree.value.updateSelectedNode(mailboxNodeSelected, newSelectMode) != null) {
+    if (personalMailboxTree.value.updateSelectedNode(mailboxNodeSelected, newSelectMode) != null) {
       log('selectMailboxNode() refresh folderMailboxTree');
-      folderMailboxTree.refresh();
+      personalMailboxTree.refresh();
+    }
+
+    if (teamMailboxesTree.value.updateSelectedNode(mailboxNodeSelected, newSelectMode) != null) {
+      log('selectMailboxNode() refresh folderMailboxTree');
+      teamMailboxesTree.refresh();
     }
   }
 
   void unAllSelectedMailboxNode() {
     defaultMailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
-    folderMailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
+    personalMailboxTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
+    teamMailboxesTree.value.updateNodesUIMode(selectMode: SelectMode.INACTIVE);
     defaultMailboxTree.refresh();
-    folderMailboxTree.refresh();
+    personalMailboxTree.refresh();
+    teamMailboxesTree.refresh();
   }
 
   MailboxNode? findMailboxNodeById(MailboxId mailboxId) {
     final mailboxNode = defaultMailboxTree.value.findNode((node) => node.item.id == mailboxId);
+    final mailboxPersonal = personalMailboxTree.value.findNode((node) => node.item.id == mailboxId);
     if (mailboxNode != null) {
       return mailboxNode;
     }
-    return folderMailboxTree.value.findNode((node) => node.item.id == mailboxId);
+    
+    if (mailboxPersonal != null) {
+      return mailboxPersonal;
+    }
+    return teamMailboxesTree.value.findNode((node) => node.item.id == mailboxId);
   }
 
   String? findNodePath(MailboxId mailboxId) {
     var mailboxNodePath = defaultMailboxTree.value.getNodePath(mailboxId);
     if (mailboxNodePath == null) {
-      return folderMailboxTree.value.getNodePath(mailboxId);
+      return personalMailboxTree.value.getNodePath(mailboxId);
     }
     return mailboxNodePath;
   }
@@ -120,10 +145,16 @@ abstract class BaseMailboxController extends BaseController {
   bool get defaultMailboxHasChild =>
       defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false;
 
-  bool get folderMailboxHasChild =>
-      folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false;
+  bool get personalMailboxHasChild =>
+      personalMailboxTree.value.root.childrenItems?.isNotEmpty ?? false;
+  
+  bool get teamMailboxesHasChild =>
+      teamMailboxesTree.value.root.childrenItems?.isNotEmpty ?? false;
 
   MailboxNode get defaultRootNode => defaultMailboxTree.value.root;
 
-  MailboxNode get folderRootNode => folderMailboxTree.value.root;
+  MailboxNode get personalRootNode => personalMailboxTree.value.root;
+
+  MailboxNode get teamMailboxesRootNode => teamMailboxesTree.value.root;
+
 }

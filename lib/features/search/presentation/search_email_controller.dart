@@ -462,6 +462,7 @@ class SearchEmailController extends BaseController
     final arguments = DestinationPickerArguments(
         mailboxDashBoardController.accountId.value!,
         MailboxActions.select,
+        mailboxDashBoardController.sessionCurrent,
         mailboxIdSelected: mailbox?.id);
 
     if (BuildUtils.isWeb) {

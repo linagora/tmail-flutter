@@ -187,19 +187,6 @@ class MailboxView extends GetWidget<MailboxController> {
     ]);
   }
 
-  Widget _buildSearchBarWidget(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-          top: _responsiveUtils.isDesktop(context) ? 16 : 12,
-          bottom: 16,
-          left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
-          right: 16),
-      child: SearchBarView(
-        _imagePaths,
-        hintTextSearch: AppLocalizations.of(context).hint_search_mailboxes,
-        onOpenSearchViewAction: controller.enableSearch));
-  }
-
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
@@ -231,15 +218,54 @@ class MailboxView extends GetWidget<MailboxController> {
             }
             return _buildUserInformation(context);
           }),
-          _buildSearchBarWidget(context),
           _buildLoadingView(),
           Obx(() => controller.defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
               ? _buildMailboxCategory(context, MailboxCategories.exchange, controller.defaultMailboxTree.value.root)
               : const SizedBox.shrink()),
+          const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
           const SizedBox(height: 12),
-          Obx(() => controller.folderMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
-              ? _buildMailboxCategory(context, MailboxCategories.folders, controller.folderMailboxTree.value.root)
-              : const SizedBox.shrink()),
+          Container(
+            margin: EdgeInsets.only(
+              left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
+              right: 16),
+            padding: const EdgeInsets.only(left: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(AppLocalizations.of(context).mailBoxes,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold)),
+                  Row(
+                    children: [
+                      buildIconWeb(
+                          iconSize: 20,
+                          minSize: 40,
+                          iconPadding: EdgeInsets.zero,
+                          splashRadius: 15,
+                          icon: SvgPicture.asset(_imagePaths.icSearchBar, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                          onTap: () => controller.enableSearch()),
+                      buildIconWeb(
+                          minSize: 40,
+                          iconSize: 20,
+                          iconPadding: EdgeInsets.zero,
+                          splashRadius: 15,
+                          icon: SvgPicture.asset(_imagePaths.icAddNewFolder, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                          tooltip: AppLocalizations.of(context).new_mailbox,
+                          onTap: () => controller.goToCreateNewMailboxView(context)),
+                    ],
+                  ),
+                ]),
+            ),
+            const SizedBox(height: 8),
+            Obx(() => controller.personalMailboxTree.value.root.childrenItems?.isNotEmpty ?? false
+                ? _buildMailboxCategory(context, MailboxCategories.personalMailboxes, controller.personalMailboxTree.value.root)
+                : const SizedBox.shrink()),
+            const SizedBox(height: 8),
+            Obx(() => controller.teamMailboxesTree.value.root.childrenItems?.isNotEmpty ?? false
+                ? _buildMailboxCategory(context, MailboxCategories.teamMailboxes, controller.teamMailboxesTree.value.root)
+                : const SizedBox.shrink()),
           Obx(() => controller.isMailboxListScrollable.isFalse
             && !controller.isSearchActive()
             && !controller.isSelectionEnabled()
@@ -254,21 +280,25 @@ class MailboxView extends GetWidget<MailboxController> {
   Widget _buildHeaderMailboxCategory(BuildContext context, MailboxCategories categories) {
     return Padding(
         padding: EdgeInsets.only(
-            left: _responsiveUtils.isLandscapeMobile(context) ? 8 : 28,
-            right: 16),
+            right: _responsiveUtils.isLandscapeMobile(context) ? 8 : 28,
+            left: 16),
         child: Row(children: [
-          Expanded(child: Text(categories.getTitle(context),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold))),
-          buildIconWeb(
+         buildIconWeb(
+              minSize: 40,
+              iconSize: 20,
+              iconPadding: EdgeInsets.zero,
+              splashRadius: 15,
               icon: SvgPicture.asset(
                   categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
                     ? _imagePaths.icExpandFolder
                     : _imagePaths.icCollapseFolder,
                   color: AppColor.primaryColor, fit: BoxFit.fill),
               tooltip: AppLocalizations.of(context).collapse,
-              onTap: () => controller.toggleMailboxCategories(categories))
+              onTap: () => controller.toggleMailboxCategories(categories)),
+          Expanded(child: Text(categories.getTitle(context),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold))),
         ]));
   }
 
@@ -276,7 +306,6 @@ class MailboxView extends GetWidget<MailboxController> {
     final lastNode = mailboxNode.childrenItems?.last;
 
     return Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.white),
         margin: EdgeInsets.only(
             left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
             right: 16),

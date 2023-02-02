@@ -39,14 +39,16 @@ class TreeBuilder {
     return tree;
   }
 
-  Future<Tuple3<MailboxTree, MailboxTree, List<PresentationMailbox>>> generateMailboxTreeInUI(
+  Future<Tuple4<MailboxTree, MailboxTree, MailboxTree, List<PresentationMailbox>>> generateMailboxTreeInUI(
       List<PresentationMailbox> allMailboxes,
       {MailboxId? mailboxIdSelected}
   ) async {
     final Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
 
     final defaultTree = MailboxTree(MailboxNode.root());
-    final folderTree = MailboxTree(MailboxNode.root());
+    final personalTree = MailboxTree(MailboxNode.root());
+    final teamMailboxes = MailboxTree(MailboxNode.root());
+  
     List<PresentationMailbox> listAllMailboxes = <PresentationMailbox>[];
 
     for (var mailbox in allMailboxes) {
@@ -81,7 +83,14 @@ class TreeBuilder {
         } else {
           listAllMailboxes.add(node.item);
 
-          var tree = mailbox.hasRole() ? defaultTree : folderTree;
+          MailboxTree tree;
+          if (mailbox.hasRole()) {
+            tree = defaultTree;
+          } else if(mailbox.isPersonal) {
+            tree = personalTree;
+          } else {
+            tree = teamMailboxes;
+          }
 
           tree.root.addChildNode(node);
           tree.root.childrenItems?.sortByCompare<MailboxName?>(
@@ -93,22 +102,25 @@ class TreeBuilder {
     }
 
     defaultTree.root.childrenItems?.sort((thisMailbox, thatMailbox) => thisMailbox.compareTo(thatMailbox));
-    return Tuple3(defaultTree, folderTree, listAllMailboxes);
+    return Tuple4(defaultTree, personalTree, teamMailboxes, listAllMailboxes);
   }
 
-  Future<Tuple2<MailboxTree, MailboxTree>> generateMailboxTreeInUIAfterRefreshChanges(
+  Future<Tuple3<MailboxTree, MailboxTree, MailboxTree>> generateMailboxTreeInUIAfterRefreshChanges(
       List<PresentationMailbox> allMailboxes,
       MailboxTree defaultTreeBeforeChanges,
-      MailboxTree folderTreeBeforeChanges,
+      MailboxTree personalTreeBeforeChanges,
+      MailboxTree teamMailboxesTreeBeforeChanges
   ) async {
     final Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
 
     final newDefaultTree = MailboxTree(MailboxNode.root());
-    final newFolderTree = MailboxTree(MailboxNode.root());
+    final newPersonalTree = MailboxTree(MailboxNode.root());
+    final newTeamMailboxes = MailboxTree(MailboxNode.root());
 
     for (var mailbox in allMailboxes) {
-      final mailboxNodeBeforeChanges = defaultTreeBeforeChanges.findNode((node) => node.item.id == mailbox.id) ??
-          folderTreeBeforeChanges.findNode((node) => node.item.id == mailbox.id);
+      final mailboxNodeBeforeChanges = defaultTreeBeforeChanges.findNode((node) => node.item.id == mailbox.id) 
+        ?? personalTreeBeforeChanges.findNode((node) => node.item.id == mailbox.id) 
+        ?? teamMailboxesTreeBeforeChanges.findNode((node) => node.item.id == mailbox.id);
       if (mailboxNodeBeforeChanges != null) {
         mailboxDictionary[mailbox.id] = MailboxNode(
             mailbox,
@@ -131,7 +143,15 @@ class TreeBuilder {
             (name, other) => name?.compareAlphabetically(other) ?? -1
           );
         } else {
-          var tree = mailbox.hasRole() ? newDefaultTree : newFolderTree;
+
+          MailboxTree tree;
+          if (mailbox.hasRole()) {
+            tree = newDefaultTree;
+          } else if(mailbox.isPersonal) {
+            tree = newPersonalTree;
+          } else {
+            tree = newTeamMailboxes;
+          }
 
           tree.root.addChildNode(node);
           tree.root.childrenItems?.sortByCompare<MailboxName?>(
@@ -143,6 +163,6 @@ class TreeBuilder {
     }
 
     newDefaultTree.root.childrenItems?.sort((thisMailbox, thatMailbox) => thisMailbox.compareTo(thatMailbox));
-    return Tuple2(newDefaultTree, newFolderTree);
+    return Tuple3(newDefaultTree, newPersonalTree, newTeamMailboxes);
   }
 }

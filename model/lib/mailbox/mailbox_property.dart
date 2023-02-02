@@ -11,4 +11,5 @@ class MailboxProperty {
   static const String unreadThreads = 'unreadThreads';
   static const String myRights = 'myRights';
   static const String isSubscribed = 'isSubscribed';
+  static const String namespace = 'namespace';
 }

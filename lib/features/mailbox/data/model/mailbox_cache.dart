@@ -45,6 +45,9 @@ class MailboxCache extends HiveObject with EquatableMixin {
   @HiveField(11)
   final DateTime? lastOpened;
 
+  @HiveField(12)
+  final String? namespace;
+
   MailboxCache(
     this.id,
     {
@@ -58,7 +61,8 @@ class MailboxCache extends HiveObject with EquatableMixin {
       this.unreadThreads,
       this.myRights,
       this.isSubscribed,
-      this.lastOpened
+      this.lastOpened,
+      this.namespace,
     }
   );
 
@@ -68,7 +72,13 @@ class MailboxCache extends HiveObject with EquatableMixin {
     name,
     parentId,
     role,
+    totalEmails,
     unreadEmails,
+    totalThreads,
+    unreadThreads,
     lastOpened,
+    myRights,
+    isSubscribed,
+    namespace,
   ];
 }

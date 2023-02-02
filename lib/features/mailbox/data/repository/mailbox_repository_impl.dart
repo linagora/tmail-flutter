@@ -70,7 +70,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
         ]);
       }
     } else {
-      final mailboxResponse = await mapDataSource[DataSourceType.network]!.getAllMailbox(session, accountId,);
+      final mailboxResponse = await mapDataSource[DataSourceType.network]!.getAllMailbox(session, accountId);
 
       await Future.wait([
         mapDataSource[DataSourceType.local]!.update(created: mailboxResponse.mailboxes),

@@ -137,10 +137,12 @@ class AdvancedFilterController extends BaseController {
 
   void selectedMailBox(BuildContext context) async {
     final accountId = _mailboxDashBoardController.accountId.value;
+    final _session = _mailboxDashBoardController.sessionCurrent;
     if (accountId != null) {
       final arguments = DestinationPickerArguments(
           accountId,
           MailboxActions.select,
+          _session,
           mailboxIdSelected: searchController.searchEmailFilter.value.mailbox?.id);
 
       if (BuildUtils.isWeb) {

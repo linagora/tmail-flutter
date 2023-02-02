@@ -117,10 +117,10 @@ class AppLocalizations {
     );
   }
 
-  String get myFolders {
+  String get personalMailboxes {
     return Intl.message(
-      'My Folders',
-      name: 'myFolders',
+      'Personal mailboxes',
+      name: 'personalMailboxes',
     );
   }
 
@@ -2753,5 +2753,23 @@ class AppLocalizations {
       'Failure to save your message as drafts, because it is over quota.',
       name: 'saveEmailAsDraftFailureWithSetErrorTypeOverQuota',
     );
+  }
+  
+  String get mailBoxes {
+    return Intl.message(
+      'Mailboxes',
+      name: 'mailBoxes');
+  }
+
+  String get teamMailBoxes {
+    return Intl.message(
+      'Team-mailboxes',
+      name: 'teamMailBoxes');
+  }
+
+  String get hideMailBoxes {
+    return Intl.message(
+      'Hide mailbox',
+      name: 'hideMailBoxes');
   }
 }
