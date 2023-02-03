@@ -25,14 +25,13 @@ class UpdateEmailDraftsInteractor {
       final currentEmailState = listState.last;
 
       final newEmailDrafts = await _emailRepository.updateEmailDrafts(accountId, newEmail, oldEmailId);
-      if (newEmailDrafts != null) {
-        yield Right<Failure, Success>(UpdateEmailDraftsSuccess(
-            newEmailDrafts,
-            currentEmailState: currentEmailState,
-            currentMailboxState: currentMailboxState));
-      } else {
-        yield Left<Failure, Success>(UpdateEmailDraftsFailure(null));
-      }
+      yield Right<Failure, Success>(
+        UpdateEmailDraftsSuccess(
+          newEmailDrafts,
+          currentEmailState: currentEmailState,
+          currentMailboxState: currentMailboxState
+        )
+      );
     } catch (e) {
       yield Left<Failure, Success>(UpdateEmailDraftsFailure(e));
     }
