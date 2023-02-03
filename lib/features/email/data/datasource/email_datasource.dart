@@ -54,7 +54,7 @@ abstract class EmailDataSource {
 
   Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId);
 
-  Future<Email?> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId);
+  Future<Email> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId);
 
   Future<List<EmailId>> deleteMultipleEmailsPermanently(AccountId accountId, List<EmailId> emailIds);
 

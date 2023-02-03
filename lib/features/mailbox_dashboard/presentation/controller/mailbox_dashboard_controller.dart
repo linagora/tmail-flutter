@@ -280,7 +280,9 @@ class MailboxDashBoardController extends ReloadableController {
           _handleSendEmailFailure(failure);
         } else if (failure is SaveEmailAsDraftsFailure) {
           _handleSaveEmailAsDraftsFailure(failure);
-        } else if (failure is RemoveEmailDraftsFailure || failure is UpdateEmailDraftsFailure) {
+        } else if (failure is UpdateEmailDraftsFailure) {
+          _handleUpdateEmailAsDraftsFailure(failure);
+        } else if (failure is RemoveEmailDraftsFailure) {
           clearState();
         } else if (failure is MarkAsMailboxReadAllFailure ||
             failure is MarkAsMailboxReadFailure) {
@@ -1598,6 +1600,27 @@ class MailboxDashBoardController extends ReloadableController {
     }
     final exception = failure.exception;
     logError('MailboxDashBoardController::_handleSaveEmailAsDraftsFailure():exception: $exception');
+    if (exception is SetEmailMethodException) {
+      final listErrors = exception.mapErrors.values.toList();
+      final toastSuccess = _handleSetErrors(listErrors);
+      if (!toastSuccess) {
+        _showToastSendMessageFailure(AppLocalizations.of(currentContext!).saveEmailAsDraftFailure);
+      }
+    } else {
+      _showToastSendMessageFailure(AppLocalizations.of(currentContext!).saveEmailAsDraftFailure);
+    }
+
+    clearState();
+  }
+
+  void _handleUpdateEmailAsDraftsFailure(UpdateEmailDraftsFailure failure) {
+    logError('MailboxDashBoardController::_handleUpdateEmailAsDraftsFailure():failure: $failure');
+    if (currentContext == null) {
+      clearState();
+      return;
+    }
+    final exception = failure.exception;
+    logError('MailboxDashBoardController::_handleUpdateEmailAsDraftsFailure():exception: $exception');
     if (exception is SetEmailMethodException) {
       final listErrors = exception.mapErrors.values.toList();
       final toastSuccess = _handleSetErrors(listErrors);
