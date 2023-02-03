@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-02-02T19:29:42.134695",
+  "@@last_modified": "2023-02-03T11:24:09.273116",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -584,12 +584,6 @@
   },
   "message_has_been_sent_successfully": "Message has been sent successfully",
   "@message_has_been_sent_successfully": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "message_has_been_sent_failure": "Message has been sent failure",
-  "@message_has_been_sent_failure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2650,6 +2644,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "sendMessageFailure": "Failure to send your message.",
+  "@sendMessageFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "sendMessageFailureWithSetErrorTypeTooLarge": "Failure to send your message, because it is too large.",
   "@sendMessageFailureWithSetErrorTypeTooLarge": {
     "type": "text",
@@ -2658,6 +2658,24 @@
   },
   "sendMessageFailureWithSetErrorTypeOverQuota": "Failure to send your message, because it is over quota.",
   "@sendMessageFailureWithSetErrorTypeOverQuota": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveEmailAsDraftFailure": "Failure to save your message as drafts.",
+  "@saveEmailAsDraftFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveEmailAsDraftFailureWithSetErrorTypeTooLarge": "Failure to save your message as drafts, because it is too large.",
+  "@saveEmailAsDraftFailureWithSetErrorTypeTooLarge": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveEmailAsDraftFailureWithSetErrorTypeOverQuota": "Failure to save your message as drafts, because it is over quota.",
+  "@saveEmailAsDraftFailureWithSetErrorTypeOverQuota": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
