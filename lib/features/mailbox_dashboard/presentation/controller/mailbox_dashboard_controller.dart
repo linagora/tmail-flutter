@@ -61,6 +61,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -277,9 +278,9 @@ class MailboxDashBoardController extends ReloadableController {
       (failure) {
         if (failure is SendEmailFailure) {
           _handleSendEmailFailure(failure);
-        } else if (failure is SaveEmailAsDraftsFailure
-            || failure is RemoveEmailDraftsFailure
-            || failure is UpdateEmailDraftsFailure) {
+        } else if (failure is SaveEmailAsDraftsFailure) {
+          _handleSaveEmailAsDraftsFailure(failure);
+        } else if (failure is RemoveEmailDraftsFailure || failure is UpdateEmailDraftsFailure) {
           clearState();
         } else if (failure is MarkAsMailboxReadAllFailure ||
             failure is MarkAsMailboxReadFailure) {
@@ -1555,22 +1556,23 @@ class MailboxDashBoardController extends ReloadableController {
       final listErrors = exception.mapErrors.values.toList();
       final toastSuccess = _handleSetErrors(listErrors);
       if (!toastSuccess) {
-        _showToastSendMessageFailure(AppLocalizations.of(currentContext!).message_has_been_sent_failure);
+        _showToastSendMessageFailure(AppLocalizations.of(currentContext!).sendMessageFailure);
       }
     } else {
-      _showToastSendMessageFailure(AppLocalizations.of(currentContext!).message_has_been_sent_failure);
+      _showToastSendMessageFailure(AppLocalizations.of(currentContext!).sendMessageFailure);
     }
 
     clearState();
   }
 
-  bool _handleSetErrors(List<SetError> listErrors) {
+  bool _handleSetErrors(List<SetError> listErrors, {bool isDrafts = false}) {
     for (var error in listErrors) {
-      if (error.type == SetError.tooLarge) {
-        _showToastSendMessageFailure(AppLocalizations.of(currentContext!).sendMessageFailureWithSetErrorTypeTooLarge);
-        return true;
-      } else if (error.type == SetError.overQuota) {
-        _showToastSendMessageFailure(AppLocalizations.of(currentContext!).sendMessageFailureWithSetErrorTypeOverQuota);
+      if (error.type == SetError.tooLarge || error.type == SetError.overQuota) {
+        if (isDrafts) {
+          _showToastSendMessageFailure(error.toastMessageForSaveEmailAsDraftFailure(currentContext!));
+        } else {
+          _showToastSendMessageFailure(error.toastMessageForSendEmailFailure(currentContext!));
+        }
         return true;
       }
     }
@@ -1586,6 +1588,27 @@ class MailboxDashBoardController extends ReloadableController {
         icon: _imagePaths.icSendToast
       );
     }
+  }
+
+  void _handleSaveEmailAsDraftsFailure(SaveEmailAsDraftsFailure failure) {
+    logError('MailboxDashBoardController::_handleSaveEmailAsDraftsFailure():failure: $failure');
+    if (currentContext == null) {
+      clearState();
+      return;
+    }
+    final exception = failure.exception;
+    logError('MailboxDashBoardController::_handleSaveEmailAsDraftsFailure():exception: $exception');
+    if (exception is SetEmailMethodException) {
+      final listErrors = exception.mapErrors.values.toList();
+      final toastSuccess = _handleSetErrors(listErrors);
+      if (!toastSuccess) {
+        _showToastSendMessageFailure(AppLocalizations.of(currentContext!).saveEmailAsDraftFailure);
+      }
+    } else {
+      _showToastSendMessageFailure(AppLocalizations.of(currentContext!).saveEmailAsDraftFailure);
+    }
+
+    clearState();
   }
   
   @override

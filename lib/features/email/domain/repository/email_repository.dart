@@ -60,7 +60,7 @@ abstract class EmailRepository {
 
   Future<List<EmailContent>> addTooltipWhenHoverOnLink(List<EmailContent> emailContents);
 
-  Future<Email?> saveEmailAsDrafts(AccountId accountId, Email email);
+  Future<Email> saveEmailAsDrafts(AccountId accountId, Email email);
 
   Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId);
 
