@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -22,6 +23,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/set_email_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
@@ -274,14 +276,7 @@ class MailboxDashBoardController extends ReloadableController {
     viewState.value.fold(
       (failure) {
         if (failure is SendEmailFailure) {
-          if (currentOverlayContext != null && currentContext != null) {
-            _appToast.showToastWithIcon(
-                currentOverlayContext!,
-                textColor: AppColor.toastErrorBackgroundColor,
-                message: AppLocalizations.of(currentContext!).message_has_been_sent_failure,
-                icon: _imagePaths.icSendToast);
-          }
-          clearState();
+          _handleSendEmailFailure(failure);
         } else if (failure is SaveEmailAsDraftsFailure
             || failure is RemoveEmailDraftsFailure
             || failure is UpdateEmailDraftsFailure) {
@@ -1547,6 +1542,51 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   bool get isDraggingMailbox => _isDraggingMailbox.value;
+
+  void _handleSendEmailFailure(SendEmailFailure failure) {
+    logError('MailboxDashBoardController::_handleSendEmailFailure():failure: $failure');
+    if (currentContext == null) {
+      clearState();
+      return;
+    }
+    final exception = failure.exception;
+    logError('MailboxDashBoardController::_handleSendEmailFailure():exception: $exception');
+    if (exception is SetEmailMethodException) {
+      final listErrors = exception.mapErrors.values.toList();
+      final toastSuccess = _handleSetErrors(listErrors);
+      if (!toastSuccess) {
+        _showToastSendMessageFailure(AppLocalizations.of(currentContext!).message_has_been_sent_failure);
+      }
+    } else {
+      _showToastSendMessageFailure(AppLocalizations.of(currentContext!).message_has_been_sent_failure);
+    }
+
+    clearState();
+  }
+
+  bool _handleSetErrors(List<SetError> listErrors) {
+    for (var error in listErrors) {
+      if (error.type == SetError.tooLarge) {
+        _showToastSendMessageFailure(AppLocalizations.of(currentContext!).sendMessageFailureWithSetErrorTypeTooLarge);
+        return true;
+      } else if (error.type == SetError.overQuota) {
+        _showToastSendMessageFailure(AppLocalizations.of(currentContext!).sendMessageFailureWithSetErrorTypeOverQuota);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void _showToastSendMessageFailure(String message) {
+    if (currentOverlayContext != null) {
+      _appToast.showToastWithIcon(
+        currentOverlayContext!,
+        textColor: AppColor.toastErrorBackgroundColor,
+        message: message,
+        icon: _imagePaths.icSendToast
+      );
+    }
+  }
   
   @override
   void onClose() {

@@ -2719,4 +2719,18 @@ class AppLocalizations {
         'Let\'s reduce some filters and try again',
         name: 'reduceSomeFiltersAndTryAgain');
   }
+
+  String get sendMessageFailureWithSetErrorTypeTooLarge {
+    return Intl.message(
+      'Failure to send your message, because it is too large.',
+      name: 'sendMessageFailureWithSetErrorTypeTooLarge',
+    );
+  }
+
+  String get sendMessageFailureWithSetErrorTypeOverQuota {
+    return Intl.message(
+      'Failure to send your message, because it is over quota.',
+      name: 'sendMessageFailureWithSetErrorTypeOverQuota',
+    );
+  }
 }
