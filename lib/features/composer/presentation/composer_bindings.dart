@@ -51,7 +51,6 @@ import 'package:tmail_ui_user/features/upload/presentation/controller/upload_con
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
-import 'package:uuid/uuid.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 class ComposerBindings extends BaseBindings {
@@ -132,9 +131,9 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => LocalFilePickerInteractor());
     Get.lazyPut(() => UploadAttachmentInteractor(Get.find<ComposerRepository>()));
     Get.lazyPut(() => SendEmailInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>(),
-        Get.find<Uuid>()));
+      Get.find<EmailRepository>(),
+      Get.find<MailboxRepository>()
+    ));
     Get.lazyPut(() => SaveEmailAsDraftsInteractor(
         Get.find<EmailRepository>(),
         Get.find<MailboxRepository>()));

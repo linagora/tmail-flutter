@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-01-27T17:10:17.205660",
+  "@@last_modified": "2023-02-02T19:29:42.134695",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2646,6 +2646,18 @@
   },
   "reduceSomeFiltersAndTryAgain": "Let's reduce some filters and try again",
   "@reduceSomeFiltersAndTryAgain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendMessageFailureWithSetErrorTypeTooLarge": "Failure to send your message, because it is too large.",
+  "@sendMessageFailureWithSetErrorTypeTooLarge": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendMessageFailureWithSetErrorTypeOverQuota": "Failure to send your message, because it is over quota.",
+  "@sendMessageFailureWithSetErrorTypeOverQuota": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
