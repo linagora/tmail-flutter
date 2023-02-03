@@ -11,6 +11,8 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/reference_id.dart';
@@ -27,6 +29,7 @@ import 'package:jmap_dart_client/jmap/mail/email/submission/email_submission.dar
 import 'package:jmap_dart_client/jmap/mail/email/submission/email_submission_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/envelope.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submission_method.dart';
+import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submission_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:model/account/account_request.dart';
@@ -43,6 +46,8 @@ import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/oidc/token.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/set_email_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
@@ -50,7 +55,7 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_ex
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
-class EmailAPI {
+class EmailAPI with HandleSetErrorMixin {
 
   final HttpClient _httpClient;
   final DownloadManager _downloadManager;
@@ -93,9 +98,9 @@ class EmailAPI {
   }
 
   Future<bool> sendEmail(
-      AccountId accountId,
-      EmailRequest emailRequest,
-      {CreateNewMailboxRequest? mailboxRequest}
+    AccountId accountId,
+    EmailRequest emailRequest,
+    {CreateNewMailboxRequest? mailboxRequest}
   ) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
@@ -158,19 +163,53 @@ class EmailAPI {
       setEmailInvocation.methodCallId,
       SetEmailResponse.deserialize);
 
-    final setEmailSubmissionResponse = response.parse<SetEmailResponse>(
+    final setEmailSubmissionResponse = response.parse<SetEmailSubmissionResponse>(
       setEmailSubmissionInvocation.methodCallId,
-      SetEmailResponse.deserialize,
+      SetEmailSubmissionResponse.deserialize,
       methodName: setEmailInvocation.methodName);
 
     final emailCreated = setEmailResponse?.created?[emailNeedsToBeCreated.id.id];
-    if (emailCreated != null) {
-      return setEmailSubmissionResponse?.notUpdated == null &&
-          setEmailSubmissionResponse?.notCreated == null &&
-          setEmailSubmissionResponse?.notDestroyed == null;
+    final listEntriesErrors = _handleSetEmailResponse(
+      response: setEmailResponse,
+      submissionResponse: setEmailSubmissionResponse
+    );
+    final mapErrors = Map.fromEntries(listEntriesErrors);
+
+    if (emailCreated != null && mapErrors.isEmpty) {
+      return true;
     } else {
-      return false;
+      throw SetEmailMethodException(mapErrors);
     }
+  }
+
+  List<MapEntry<Id, SetError>> _handleSetEmailResponse({
+    SetEmailResponse? response,
+    SetEmailSubmissionResponse? submissionResponse
+  }) {
+    final List<MapEntry<Id, SetError>> remainedErrors = [];
+    if (response != null) {
+      handleSetErrors(
+        notDestroyedError: response.notDestroyed,
+        notUpdatedError: response.notUpdated,
+        notCreatedError: response.notCreated,
+        unCatchErrorHandler: (setErrorEntry) {
+          remainedErrors.add(setErrorEntry);
+          return false;
+        }
+      );
+    }
+    if (submissionResponse != null) {
+      handleSetErrors(
+        notDestroyedError: submissionResponse.notDestroyed,
+        notUpdatedError: submissionResponse.notUpdated,
+        notCreatedError: submissionResponse.notCreated,
+        unCatchErrorHandler: (setErrorEntry) {
+          remainedErrors.add(setErrorEntry);
+          return false;
+        }
+      );
+    }
+    return remainedErrors;
   }
 
   Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions) async {
