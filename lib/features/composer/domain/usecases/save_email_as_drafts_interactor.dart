@@ -25,14 +25,13 @@ class SaveEmailAsDraftsInteractor {
       final currentEmailState = listState.last;
 
       final emailAsDrafts = await _emailRepository.saveEmailAsDrafts(accountId, email);
-      if (emailAsDrafts != null) {
-        yield Right<Failure, Success>(SaveEmailAsDraftsSuccess(
-            emailAsDrafts,
-            currentEmailState: currentEmailState,
-            currentMailboxState: currentMailboxState));
-      } else {
-        yield Left<Failure, Success>(SaveEmailAsDraftsFailure(null));
-      }
+      yield Right<Failure, Success>(
+        SaveEmailAsDraftsSuccess(
+          emailAsDrafts,
+          currentEmailState: currentEmailState,
+          currentMailboxState: currentMailboxState
+        )
+      );
     } catch (e) {
       yield Left<Failure, Success>(SaveEmailAsDraftsFailure(e));
     }

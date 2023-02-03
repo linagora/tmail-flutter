@@ -432,7 +432,7 @@ class EmailAPI with HandleSetErrorMixin {
     });
   }
 
-  Future<Email?> saveEmailAsDrafts(AccountId accountId, Email email) async {
+  Future<Email> saveEmailAsDrafts(AccountId accountId, Email email) async {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addCreate(email.id.id, email);
 
@@ -446,14 +446,19 @@ class EmailAPI with HandleSetErrorMixin {
       .execute();
 
     final setEmailResponse = response.parse<SetEmailResponse>(
-        setEmailInvocation.methodCallId,
-        SetEmailResponse.deserialize);
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize
+    );
 
-    return Future.sync(() async {
-      return setEmailResponse?.created?[email.id.id];
-    }).catchError((error) {
-      throw error;
-    });
+    final emailCreated = setEmailResponse?.created?[email.id.id];
+    final listEntriesErrors = _handleSetEmailResponse(response: setEmailResponse,);
+    final mapErrors = Map.fromEntries(listEntriesErrors);
+
+    if (emailCreated != null && mapErrors.isEmpty) {
+      return emailCreated;
+    } else {
+      throw SetEmailMethodException(mapErrors);
+    }
   }
 
   Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId) async {

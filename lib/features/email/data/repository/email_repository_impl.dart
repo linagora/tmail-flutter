@@ -104,7 +104,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<Email?> saveEmailAsDrafts(AccountId accountId, Email email) {
+  Future<Email> saveEmailAsDrafts(AccountId accountId, Email email) {
     return emailDataSource.saveEmailAsDrafts(accountId, email);
   }
 

@@ -602,13 +602,6 @@ class AppLocalizations {
     );
   }
 
-  String get message_has_been_sent_failure {
-    return Intl.message(
-      'Message has been sent failure',
-      name: 'message_has_been_sent_failure',
-    );
-  }
-
   String get done {
     return Intl.message(
         'Done',
@@ -2720,6 +2713,13 @@ class AppLocalizations {
         name: 'reduceSomeFiltersAndTryAgain');
   }
 
+  String get sendMessageFailure {
+    return Intl.message(
+      'Failure to send your message.',
+      name: 'sendMessageFailure',
+    );
+  }
+
   String get sendMessageFailureWithSetErrorTypeTooLarge {
     return Intl.message(
       'Failure to send your message, because it is too large.',
@@ -2731,6 +2731,27 @@ class AppLocalizations {
     return Intl.message(
       'Failure to send your message, because it is over quota.',
       name: 'sendMessageFailureWithSetErrorTypeOverQuota',
+    );
+  }
+
+  String get saveEmailAsDraftFailure {
+    return Intl.message(
+      'Failure to save your message as drafts.',
+      name: 'saveEmailAsDraftFailure',
+    );
+  }
+
+  String get saveEmailAsDraftFailureWithSetErrorTypeTooLarge {
+    return Intl.message(
+      'Failure to save your message as drafts, because it is too large.',
+      name: 'saveEmailAsDraftFailureWithSetErrorTypeTooLarge',
+    );
+  }
+
+  String get saveEmailAsDraftFailureWithSetErrorTypeOverQuota {
+    return Intl.message(
+      'Failure to save your message as drafts, because it is over quota.',
+      name: 'saveEmailAsDraftFailureWithSetErrorTypeOverQuota',
     );
   }
 }
