@@ -451,7 +451,7 @@ class EmailAPI with HandleSetErrorMixin {
     );
 
     final emailCreated = setEmailResponse?.created?[email.id.id];
-    final listEntriesErrors = _handleSetEmailResponse(response: setEmailResponse,);
+    final listEntriesErrors = _handleSetEmailResponse(response: setEmailResponse);
     final mapErrors = Map.fromEntries(listEntriesErrors);
 
     if (emailCreated != null && mapErrors.isEmpty) {
@@ -485,7 +485,7 @@ class EmailAPI with HandleSetErrorMixin {
     });
   }
 
-  Future<Email?> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) async {
+  Future<Email> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) async {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addCreate(newEmail.id.id, newEmail)
       ..addDestroy({oldEmailId.id});
@@ -500,19 +500,20 @@ class EmailAPI with HandleSetErrorMixin {
       .execute();
 
     final setEmailResponse = response.parse<SetEmailResponse>(
-        setEmailInvocation.methodCallId,
-        SetEmailResponse.deserialize);
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize
+    );
 
-    return Future.sync(() async {
-      final emailUpdated = setEmailResponse?.created?[newEmail.id.id];
-      final emailDestroyed = setEmailResponse?.destroyed?.contains(oldEmailId.id);
-      if (emailUpdated != null && emailDestroyed == true) {
-        return emailUpdated;
-      }
-      return null;
-    }).catchError((error) {
-      throw error;
-    });
+    final emailUpdated = setEmailResponse?.created?[newEmail.id.id];
+    final isEmailDestroyedSuccess = setEmailResponse?.destroyed?.contains(oldEmailId.id) ?? false;
+    final listEntriesErrors = _handleSetEmailResponse(response: setEmailResponse);
+    final mapErrors = Map.fromEntries(listEntriesErrors);
+
+    if (emailUpdated != null && isEmailDestroyedSuccess && mapErrors.isEmpty) {
+      return emailUpdated;
+    } else {
+      throw SetEmailMethodException(mapErrors);
+    }
   }
 
   Future<List<EmailId>> deleteMultipleEmailsPermanently(AccountId accountId, List<EmailId> emailIds) async {

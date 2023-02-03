@@ -114,7 +114,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<Email?> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) {
+  Future<Email> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) {
     return emailDataSource.updateEmailDrafts(accountId, newEmail, oldEmailId);
   }
 
