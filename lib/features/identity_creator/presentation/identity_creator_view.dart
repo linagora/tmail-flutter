@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/views/keyboard_richtext.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/toolbar_rich_text_builder.dart';
@@ -75,108 +76,69 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             backgroundColor: Colors.black.withAlpha(24),
             body: GestureDetector(
               onTap: () => controller.clearFocusEditor(context),
-              child: KeyboardRichText(
-                richTextController: controller.keyboardRichTextController,
-                keyBroadToolbar: RichTextKeyboardToolBar(
-                  backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
-                  richTextController: controller.keyboardRichTextController,
-                  titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-                  titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
-                  titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-                  titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
-                  titleBack: AppLocalizations.of(context).format,
-                ),
-                child: Center(child: Card(
-                    color: Colors.transparent,
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-                    child: Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(16))),
-                        width: _responsiveUtils.getSizeScreenWidth(context) * 0.85,
-                        height: _responsiveUtils.getSizeScreenHeight(context) * 0.6,
-                        child: ClipRRect(
-                            borderRadius: const BorderRadius.all(Radius.circular(16)),
-                            child: _buildBodyMobile(context)
-                        )
-                    )
-                )),
-              )
+              child: Center(child: Card(
+                  color: Colors.transparent,
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+                  child: Container(
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(16))),
+                      width: _responsiveUtils.getSizeScreenWidth(context) * 0.85,
+                      height: _responsiveUtils.getSizeScreenHeight(context) * 0.6,
+                      child: ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(16)),
+                          child: _buildBodyMobile(context)
+                      )
+                  )
+              ))
             ),
         ),
         tabletLarge: Scaffold(
             backgroundColor: Colors.black.withAlpha(24),
             body: GestureDetector(
               onTap: () => controller.clearFocusEditor(context),
-              child: KeyboardRichText(
-                richTextController: controller.keyboardRichTextController,
-                keyBroadToolbar: RichTextKeyboardToolBar(
-                  backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
-                  richTextController: controller.keyboardRichTextController,
-                  titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-                  titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
-                  titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-                  titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
-                  titleBack: AppLocalizations.of(context).format,
-                ),
-                child: Center(child: Card(
-                    color: Colors.transparent,
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-                    child: Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(16))),
-                        width: _responsiveUtils.getSizeScreenWidth(context) * 0.85,
-                        height: _responsiveUtils.getSizeScreenHeight(context) * 0.6,
-                        child: ClipRRect(
-                            borderRadius: const BorderRadius.all(Radius.circular(16)),
-                            child: _buildBodyMobile(context)
-                        )
-                    )
-                )),
-              )
+              child: Center(child: Card(
+                  color: Colors.transparent,
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+                  child: Container(
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(16))),
+                      width: _responsiveUtils.getSizeScreenWidth(context) * 0.85,
+                      height: _responsiveUtils.getSizeScreenHeight(context) * 0.6,
+                      child: ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(16)),
+                          child: _buildBodyMobile(context)
+                      )
+                  )
+              ))
             )
         ),
         landscapeTablet: Scaffold(
             backgroundColor: Colors.black.withAlpha(24),
             body: GestureDetector(
               onTap: () => controller.clearFocusEditor(context),
-              child: KeyboardRichText(
-                richTextController: controller.keyboardRichTextController,
-                keyBroadToolbar: RichTextKeyboardToolBar(
-                  backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
-                  richTextController: controller.keyboardRichTextController,
-                  titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-                  titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
-                  titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-                  titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
-                  titleBack: AppLocalizations.of(context).format,
-                ),
-                child: Center(child: Card(
-                    color: Colors.transparent,
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-                    child: Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(16))),
-                        width: _responsiveUtils.getSizeScreenWidth(context) * 0.65,
-                        height: _responsiveUtils.getSizeScreenHeight(context) * 0.8,
-                        child: ClipRRect(
-                            borderRadius: const BorderRadius.all(Radius.circular(16)),
-                            child: _buildBodyMobile(context)
-                        )
-                    )
-                )),
-              )
+              child: Center(child: Card(
+                  color: Colors.transparent,
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+                  child: Container(
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(16))),
+                      width: _responsiveUtils.getSizeScreenWidth(context) * 0.65,
+                      height: _responsiveUtils.getSizeScreenHeight(context) * 0.8,
+                      child: ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(16)),
+                          child: _buildBodyMobile(context)
+                      )
+                  )
+              ))
             )
         ),
         desktop: Scaffold(
             backgroundColor: Colors.black.withAlpha(24),
             body: GestureDetector(
-              onTap: () {
-                controller.clearFocusEditor(context);
-                debugPrint('${MediaQuery.of(context).size.width}');
-              },
+              onTap: () => controller.clearFocusEditor(context),
               child: Center(child: Card(
                   color: Colors.transparent,
                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
@@ -198,6 +160,175 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
   }
 
   Widget _buildBodyMobile(BuildContext context) {
+    final bodyCreatorView = SingleChildScrollView(
+      controller: controller.scrollController,
+      physics: const ClampingScrollPhysics(),
+      child: Padding(
+      padding: const EdgeInsets.all(24.0),
+        child: Column(children: [
+          Obx(() => (IdentityInputFieldBuilder(
+            AppLocalizations.of(context).name,
+            controller.errorNameIdentity.value,
+          AppLocalizations.of(context).required,
+            editingController: controller.inputNameIdentityController,
+            focusNode: controller.inputNameIdentityFocusNode,
+            isMandatory: true)
+            ..addOnChangeInputNameAction((value) => controller.updateNameIdentity(context, value)))
+          .build()),
+          const SizedBox(height: 24),
+          Obx(() {
+            if (controller.actionType.value == IdentityActionType.create) {
+              return (IdentityDropListFieldBuilder(
+                  _imagePaths,
+                  AppLocalizations.of(context).email.inCaps,
+                  controller.emailOfIdentity.value,
+                  controller.listEmailAddressDefault)
+                ..addOnSelectEmailAddressDropListAction((emailAddress) =>
+                    controller.updateEmailOfIdentity(emailAddress))
+              ).build();
+            } else {
+              return IdentityFieldNoEditableBuilder(
+                  AppLocalizations.of(context).email.inCaps,
+                  controller.emailOfIdentity.value
+              ).build();
+            }
+          }),
+          const SizedBox(height: 24),
+          Obx(() => (IdentityDropListFieldBuilder(
+              _imagePaths,
+              AppLocalizations.of(context).reply_to,
+              controller.replyToOfIdentity.value,
+              controller.listEmailAddressOfReplyTo)
+            ..addOnSelectEmailAddressDropListAction((newEmailAddress) =>
+                controller.updaterReplyToOfIdentity(newEmailAddress)))
+          .build()),
+          const SizedBox(height: 24),
+          Obx(() => (IdentityInputWithDropListFieldBuilder(
+              AppLocalizations.of(context).bcc_to,
+              controller.errorBccIdentity.value,
+              controller.inputBccIdentityController)
+            ..addOnSelectedSuggestionAction((newEmailAddress) {
+              controller.inputBccIdentityController?.text = newEmailAddress?.email ?? '';
+              controller.updateBccOfIdentity(newEmailAddress);
+            })
+            ..addOnChangeInputSuggestionAction((pattern) {
+              controller.validateInputBccAddress(context, pattern);
+              if (pattern == null || pattern.trim().isEmpty) {
+                controller.updateBccOfIdentity(null);
+              } else {
+                controller.updateBccOfIdentity(EmailAddress(null, pattern));
+              }
+            })
+            ..addOnSuggestionCallbackAction((pattern) =>
+                controller.getSuggestionEmailAddress(pattern)))
+          .build()
+          ),
+          const SizedBox(height: 32),
+          Row(
+            children: [
+              Text(AppLocalizations.of(context).signature,
+                style: const TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14,
+                  color: AppColor.colorContentEmail,
+                ),
+              ),
+              Expanded(
+                child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  Obx(() => _buildSignatureButton(context, SignatureType.plainText)),
+                  const SizedBox(width: 10),
+                  Obx(() => _buildSignatureButton(context, SignatureType.htmlTemplate)),
+                ]),
+              )
+            ],
+          ),
+          const SizedBox(height: 8),
+          Obx(() => PointerInterceptor(
+            child: Container(
+              height: 300,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
+                color: Colors.white,
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              child: Stack(
+                children: [
+                  if (controller.signatureType.value == SignatureType.plainText)
+                    _buildSignaturePlainTextTemplate(context)
+                  else
+                    _buildSignatureHtmlTemplate(context)
+                ]
+              ),
+            ),
+          )),
+          if (_responsiveUtils.isTablet(context) || _responsiveUtils.isMobile(context))...[
+            Obx(() => Padding(
+            padding: const EdgeInsets.only(top: 27, bottom: 135),
+            child: SetDefaultIdentityCheckboxBuilder(
+              imagePaths: _imagePaths,
+              isCheck: controller.isDefaultIdentity.value,
+              onCheckboxChanged: controller.onCheckboxChanged),
+            )),
+            const SizedBox(height: 24),
+            Container(
+              alignment: Alignment.center,
+              color: Colors.white,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: buildTextButton(
+                      AppLocalizations.of(context).cancel,
+                      textStyle: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 17,
+                        color: AppColor.colorTextButton,
+                      ),
+                      backgroundColor: AppColor.emailAddressChipColor,
+                      width: 128,
+                      height: 44,
+                      radius: 10,
+                      onTap: () => controller.closeView(context),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Obx(() => controller.viewState.value.fold(
+                      (failure) => buildTextButton(
+                        controller.actionType.value == IdentityActionType.create
+                            ? AppLocalizations.of(context).create
+                            : AppLocalizations.of(context).save,
+                        width: 128,
+                        height: 44,
+                        radius: 10,
+                        onTap: () => controller.createNewIdentity(context)),
+                      (success) {
+                        if (success is GetAllIdentitiesLoading) {
+                          return const Center(
+                              key: Key('create_loading_icon'),
+                              child: CircularProgressIndicator(color: AppColor.primaryColor));
+                        } else {
+                          return buildTextButton(
+                            controller.actionType.value == IdentityActionType.create
+                                ? AppLocalizations.of(context).create
+                                : AppLocalizations.of(context).save,
+                            width: 128,
+                            height: 44,
+                            radius: 10,
+                            onTap: () => controller.createNewIdentity(context));
+                        }
+                      }
+                    )),
+                  ),
+                ]
+              ),
+          )] else ...[
+            _buildActionBottomDesktop(context)
+          ]
+        ]),
+      ),
+    );
+
     return GestureDetector(
       onTap: () => controller.clearFocusEditor(context),
       child: Stack(
@@ -213,185 +344,21 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   })),
               const SizedBox(height: 8),
               Expanded(
-                child: KeyboardRichText(
-                  keyBroadToolbar: RichTextKeyboardToolBar(
-                    titleBack: AppLocalizations.of(context).titleFormat,
-                    backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
-                    isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
-                    richTextController: controller.keyboardRichTextController,
-                    titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-                    titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
-                    titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-                    titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
-                  ),
-                  richTextController: controller.keyboardRichTextController,
-                  child: SingleChildScrollView(
-                    controller: controller.scrollController,
-                    physics: const ClampingScrollPhysics(),
-                    child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                      child: Column(children: [
-                        Obx(() => (IdentityInputFieldBuilder(
-                          AppLocalizations.of(context).name,
-                          controller.errorNameIdentity.value,
-                        AppLocalizations.of(context).required,
-                          editingController: controller.inputNameIdentityController,
-                          focusNode: controller.inputNameIdentityFocusNode,
-                          isMandatory: true)
-                          ..addOnChangeInputNameAction((value) => controller.updateNameIdentity(context, value)))
-                        .build()),
-                        const SizedBox(height: 24),
-                        Obx(() {
-                          if (controller.actionType.value == IdentityActionType.create) {
-                            return (IdentityDropListFieldBuilder(
-                                _imagePaths,
-                                AppLocalizations.of(context).email.inCaps,
-                                controller.emailOfIdentity.value,
-                                controller.listEmailAddressDefault)
-                              ..addOnSelectEmailAddressDropListAction((emailAddress) =>
-                                  controller.updateEmailOfIdentity(emailAddress))
-                            ).build();
-                          } else {
-                            return IdentityFieldNoEditableBuilder(
-                                AppLocalizations.of(context).email.inCaps,
-                                controller.emailOfIdentity.value
-                            ).build();
-                          }
-                        }),
-                        const SizedBox(height: 24),
-                        Obx(() => (IdentityDropListFieldBuilder(
-                            _imagePaths,
-                            AppLocalizations.of(context).reply_to,
-                            controller.replyToOfIdentity.value,
-                            controller.listEmailAddressOfReplyTo)
-                          ..addOnSelectEmailAddressDropListAction((newEmailAddress) =>
-                              controller.updaterReplyToOfIdentity(newEmailAddress)))
-                        .build()),
-                        const SizedBox(height: 24),
-                        Obx(() => (IdentityInputWithDropListFieldBuilder(
-                            AppLocalizations.of(context).bcc_to,
-                            controller.errorBccIdentity.value,
-                            controller.inputBccIdentityController)
-                          ..addOnSelectedSuggestionAction((newEmailAddress) {
-                            controller.inputBccIdentityController?.text = newEmailAddress?.email ?? '';
-                            controller.updateBccOfIdentity(newEmailAddress);
-                          })
-                          ..addOnChangeInputSuggestionAction((pattern) {
-                            controller.validateInputBccAddress(context, pattern);
-                            if (pattern == null || pattern.trim().isEmpty) {
-                              controller.updateBccOfIdentity(null);
-                            } else {
-                              controller.updateBccOfIdentity(EmailAddress(null, pattern));
-                            }
-                          })
-                          ..addOnSuggestionCallbackAction((pattern) =>
-                              controller.getSuggestionEmailAddress(pattern)))
-                        .build()
-                        ),
-                        const SizedBox(height: 32),
-                        Row(
-                          children: [
-                            Text(AppLocalizations.of(context).signature,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 14,
-                                color: AppColor.colorContentEmail,
-                              ),
-                            ),
-                            Expanded(
-                              child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                                Obx(() => _buildSignatureButton(context, SignatureType.plainText)),
-                                const SizedBox(width: 10),
-                                Obx(() => _buildSignatureButton(context, SignatureType.htmlTemplate)),
-                              ]),
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Obx(() => Container(
-                          height: 160,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
-                            color: Colors.white,
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                          child: Stack(
-                            children: [
-                              if (controller.signatureType.value == SignatureType.plainText)
-                                _buildSignaturePlainTextTemplate(context)
-                              else
-                                _buildSignatureHtmlTemplate(context)
-                            ]
-                          ),
-                        )),
-                        if (_responsiveUtils.isTablet(context) || _responsiveUtils.isMobile(context))...[
-                          Obx(() => Padding(
-                          padding: const EdgeInsets.only(top: 27, bottom: 135),
-                          child: SetDefaultIdentityCheckboxBuilder(
-                            imagePaths: _imagePaths,
-                            isCheck: controller.isDefaultIdentity.value,
-                            onCheckboxChanged: controller.onCheckboxChanged),
-                          )),
-                          const SizedBox(height: 24),
-                          Container(
-                            alignment: Alignment.center,
-                            color: Colors.white,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: buildTextButton(
-                                    AppLocalizations.of(context).cancel,
-                                    textStyle: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 17,
-                                      color: AppColor.colorTextButton,
-                                    ),
-                                    backgroundColor: AppColor.emailAddressChipColor,
-                                    width: 128,
-                                    height: 44,
-                                    radius: 10,
-                                    onTap: () => controller.closeView(context),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Obx(() => controller.viewState.value.fold(
-                                    (failure) => buildTextButton(
-                                      controller.actionType.value == IdentityActionType.create
-                                          ? AppLocalizations.of(context).create
-                                          : AppLocalizations.of(context).save,
-                                      width: 128,
-                                      height: 44,
-                                      radius: 10,
-                                      onTap: () => controller.createNewIdentity(context)),
-                                    (success) {
-                                      if (success is GetAllIdentitiesLoading) {
-                                        return const Center(
-                                            key: Key('create_loading_icon'),
-                                            child: CircularProgressIndicator(color: AppColor.primaryColor));
-                                      } else {
-                                        return buildTextButton(
-                                          controller.actionType.value == IdentityActionType.create
-                                              ? AppLocalizations.of(context).create
-                                              : AppLocalizations.of(context).save,
-                                          width: 128,
-                                          height: 44,
-                                          radius: 10,
-                                          onTap: () => controller.createNewIdentity(context));
-                                      }
-                                    }
-                                  )),
-                                ),
-                              ]
-                            ),
-                        )] else ...[
-                          _buildActionBottomDesktop(context)
-                        ]
-                      ]),
-                    ),
-                  ),
-                ),
+                child: BuildUtils.isWeb
+                  ? PointerInterceptor(child: bodyCreatorView)
+                  : KeyboardRichText(
+                      keyBroadToolbar: RichTextKeyboardToolBar(
+                        titleBack: AppLocalizations.of(context).titleFormat,
+                        backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
+                        isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
+                        richTextController: controller.keyboardRichTextController,
+                        titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
+                        titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
+                        titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
+                        titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
+                      ),
+                      richTextController: controller.keyboardRichTextController,
+                      child: bodyCreatorView),
               ),
             ]),
             Positioned(top: 2, right: 8,
