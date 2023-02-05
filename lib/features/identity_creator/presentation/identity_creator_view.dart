@@ -425,7 +425,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         : _buildHtmlEditor(context, initialContent: controller.contentHtmlEditor ?? '');
 
     return SizedBox(
-      height: 160,
+      height: 300,
       child: Column(
         children: [
           if(BuildUtils.isWeb)
