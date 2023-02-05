@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -21,7 +22,7 @@ class DeleteIdentityDialogBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
+    final deleteDialogBuilder = ResponsiveWidget(
       responsiveUtils: responsiveUtils, 
       mobile: (_buildDeleteDialog(context)
           ..aligment(Alignment.bottomCenter)
@@ -34,6 +35,10 @@ class DeleteIdentityDialogBuilder extends StatelessWidget {
       tabletLarge: _buildDeleteDialog(context).build(),
       landscapeTablet: _buildDeleteDialog(context).build(),
       desktop: _buildDeleteDialog(context).build());
+
+    return BuildUtils.isWeb
+        ? PointerInterceptor(child: deleteDialogBuilder)
+        : deleteDialogBuilder;
   }
 
   ConfirmDialogBuilder _buildDeleteDialog(BuildContext context) {
