@@ -1,0 +1,1 @@
+class DataResponseIsNullException implements Exception {}

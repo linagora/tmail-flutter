@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:dio/dio.dart';
 
-class UploadAttachment extends Equatable {
+class UploadAttachment with EquatableMixin {
 
   final UploadTaskId uploadTaskId;
   final FileInfo fileInfo;
@@ -35,31 +35,44 @@ class UploadAttachment extends Equatable {
     _progressStateController.add(flowUploadState);
   }
 
-  Future<void> upload() async {
-    log('UploadFile::upload(): $uploadTaskId');
-    _updateEvent(Right(PendingAttachmentUploadState(uploadTaskId, 0, fileInfo.fileSize)));
+  void upload() async {
+    try {
+      log('UploadFile::upload(): $uploadTaskId');
+      _updateEvent(Right(PendingAttachmentUploadState(uploadTaskId, 0, fileInfo.fileSize)));
 
-    final attachment = await fileUploader.uploadAttachment(
+      final attachment = await fileUploader.uploadAttachment(
         uploadTaskId,
         _progressStateController,
         fileInfo,
         uploadUri,
-        cancelToken: cancelToken);
+        cancelToken: cancelToken
+      );
 
-    if (cancelToken?.isCancelled == true) {
-      _updateEvent(Left(CancelAttachmentUploadState(uploadTaskId)));
-      await _progressStateController.close();
-      return;
-    }
+      if (cancelToken?.isCancelled == true) {
+        _updateEvent(Left(CancelAttachmentUploadState(uploadTaskId)));
+        await _progressStateController.close();
+        return;
+      }
 
-    if (attachment != null) {
-      _updateEvent(Right(SuccessAttachmentUploadState(uploadTaskId, attachment, fileInfo)));
-    } else {
+      if (attachment != null) {
+        _updateEvent(Right(SuccessAttachmentUploadState(uploadTaskId, attachment, fileInfo)));
+      } else {
+        _updateEvent(Left(ErrorAttachmentUploadState(uploadTaskId)));
+      }
+    } catch (e) {
+      logError('UploadAttachment::upload():ERROR: $e');
       _updateEvent(Left(ErrorAttachmentUploadState(uploadTaskId)));
+    } finally {
+      await _progressStateController.close();
     }
-    await _progressStateController.close();
   }
 
   @override
-  List<Object?> get props => [uploadTaskId, fileInfo, uploadUri];
+  List<Object?> get props => [
+    uploadTaskId,
+    fileInfo,
+    uploadUri,
+    fileUploader,
+    cancelToken
+  ];
 }

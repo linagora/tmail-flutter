@@ -16,7 +16,7 @@ class ComposerRepositoryImpl extends ComposerRepository {
     this._composerDataSource);
 
   @override
-  UploadAttachment uploadAttachment(FileInfo fileInfo, Uri uploadUri, {CancelToken? cancelToken}) {
+  Future<UploadAttachment> uploadAttachment(FileInfo fileInfo, Uri uploadUri, {CancelToken? cancelToken}) {
     return _attachmentUploadDataSource.uploadAttachment(fileInfo, uploadUri, cancelToken: cancelToken);
   }
 
