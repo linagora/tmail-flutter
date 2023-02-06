@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class MailboxCacheDataSourceImpl extends MailboxDataSource {
@@ -82,6 +83,11 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
       MailboxId mailboxId,
       int totalEmailUnread,
       StreamController<dartz.Either<Failure, Success>> onProgressController) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request) {
     throw UnimplementedError();
   }
 }
