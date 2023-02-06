@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 
 class MailboxRepositoryImpl extends MailboxRepository {
@@ -187,5 +188,10 @@ class MailboxRepositoryImpl extends MailboxRepository {
   @override
   Future<State?> getMailboxState() {
     return stateDataSource.getState(StateType.mailbox);
+  }
+
+  @override
+  Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request) {
+    return mapDataSource[DataSourceType.network]!.subscribeMailbox(accountId, request);
   }
 }
