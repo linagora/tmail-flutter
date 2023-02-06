@@ -1445,7 +1445,7 @@ class ComposerController extends BaseController {
       final accountId = mailboxDashBoardController.accountId.value;
       if (session != null && accountId != null) {
         final uploadUri = session.getUploadUri(accountId);
-        uploadController.uploadInlineImage(pickedFile, uploadUri);
+        uploadController.uploadFileAction(pickedFile, uploadUri, isInline: true);
       }
     } else {
       if (currentContext != null) {

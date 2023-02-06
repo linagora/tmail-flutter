@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-02-03T11:24:09.273116",
+  "@@last_modified": "2023-02-03T16:28:53.514637",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2676,6 +2676,12 @@
   },
   "saveEmailAsDraftFailureWithSetErrorTypeOverQuota": "Failure to save your message as drafts, because it is over quota.",
   "@saveEmailAsDraftFailureWithSetErrorTypeOverQuota": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisImageCannotBeAdded": "This image cannot be added.",
+  "@thisImageCannotBeAdded": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

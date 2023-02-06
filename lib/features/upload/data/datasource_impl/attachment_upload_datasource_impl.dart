@@ -5,29 +5,29 @@ import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_attachment.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 import 'package:uuid/uuid.dart';
 
 class AttachmentUploadDataSourceImpl extends AttachmentUploadDataSource {
 
   final FileUploader _fileUploader;
+  final Uuid _uuid;
+  final ExceptionThrower _exceptionThrower;
 
-  AttachmentUploadDataSourceImpl(this._fileUploader);
+  AttachmentUploadDataSourceImpl(this._fileUploader, this._uuid, this._exceptionThrower);
 
   @override
-  UploadAttachment uploadAttachment(FileInfo fileInfo, Uri uploadUri, {CancelToken? cancelToken}) {
-    final attachmentUploadId = _generateAttachmentUploadId();
-    final uploadAttachment = UploadAttachment(
-          attachmentUploadId,
-          fileInfo,
-          uploadUri,
-          _fileUploader,
-          cancelToken: cancelToken)
-      ..upload();
-
-    return uploadAttachment;
-  }
-
-  UploadTaskId _generateAttachmentUploadId() {
-    return UploadTaskId(const Uuid().v4());
+  Future<UploadAttachment> uploadAttachment(FileInfo fileInfo, Uri uploadUri, {CancelToken? cancelToken}) {
+    return Future.sync(() {
+      return UploadAttachment(
+        UploadTaskId(_uuid.v4()),
+        fileInfo,
+        uploadUri,
+        _fileUploader,
+        cancelToken: cancelToken
+      )..upload();
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
   }
 }
