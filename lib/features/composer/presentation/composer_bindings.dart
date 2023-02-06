@@ -51,6 +51,7 @@ import 'package:tmail_ui_user/features/upload/presentation/controller/upload_con
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:uuid/uuid.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 class ComposerBindings extends BaseBindings {
@@ -67,7 +68,11 @@ class ComposerBindings extends BaseBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => AttachmentUploadDataSourceImpl(Get.find<FileUploader>()));
+    Get.lazyPut(() => AttachmentUploadDataSourceImpl(
+      Get.find<FileUploader>(),
+      Get.find<Uuid>(),
+      Get.find<RemoteExceptionThrower>()
+    ));
     Get.lazyPut(() => ComposerDataSourceImpl(Get.find<DownloadClient>(), Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => ContactDataSourceImpl(Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => MailboxDataSourceImpl(

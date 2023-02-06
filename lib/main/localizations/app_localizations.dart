@@ -2754,7 +2754,7 @@ class AppLocalizations {
       name: 'saveEmailAsDraftFailureWithSetErrorTypeOverQuota',
     );
   }
-  
+
   String get mailBoxes {
     return Intl.message(
       'Mailboxes',
@@ -2771,5 +2771,12 @@ class AppLocalizations {
     return Intl.message(
       'Hide mailbox',
       name: 'hideMailBoxes');
+  }
+
+  String get thisImageCannotBeAdded {
+    return Intl.message(
+      'This image cannot be added.',
+      name: 'thisImageCannotBeAdded'
+    );
   }
 }

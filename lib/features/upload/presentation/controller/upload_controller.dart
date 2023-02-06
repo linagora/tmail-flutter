@@ -15,10 +15,13 @@ import 'package:model/email/attachment.dart';
 import 'package:model/extensions/attachment_extension.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:model/upload/file_info.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
+import 'package:tmail_ui_user/features/upload/presentation/extensions/upload_attachment_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state_list.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
@@ -26,7 +29,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
 
-class UploadController extends GetxController {
+class UploadController extends BaseController {
 
   final _imagePaths = Get.find<ImagePaths>();
   final _appToast = Get.find<AppToast>();
@@ -125,6 +128,14 @@ class UploadController extends GetxController {
         if (failure is ErrorAttachmentUploadState) {
           uploadInlineViewState.value = Left(failure);
           _deleteInlineFileUploaded(failure.uploadId);
+          if (currentContext != null && currentOverlayContext != null) {
+            _appToast.showToastWithIcon(currentOverlayContext!,
+              message: AppLocalizations.of(currentContext!).thisImageCannotBeAdded,
+              textColor: AppColor.toastErrorBackgroundColor,
+              iconColor: AppColor.toastErrorBackgroundColor,
+              icon: _imagePaths.icInsertImage
+            );
+          }
         }
       },
       (success) {
@@ -185,28 +196,21 @@ class UploadController extends GetxController {
     _refreshListUploadAttachmentState();
   }
 
-  Future<void> justUploadAttachmentsAction(List<FileInfo> uploadFiles, Uri uploadUri) async {
+  Future<void> justUploadAttachmentsAction(List<FileInfo> uploadFiles, Uri uploadUri) {
     return Future.forEach<FileInfo>(uploadFiles, (uploadFile) async {
-      await _uploadFile(uploadFile, uploadUri);
+      await uploadFileAction(uploadFile, uploadUri);
     });
   }
 
-  Future<void> _uploadFile(FileInfo uploadFile, Uri uploadUri) async {
-    log('UploadAttachmentManager::_uploadFile(): ${uploadFile.fileName}');
-
-    final cancelToken = CancelToken();
-    final uploadAttachment = _uploadAttachmentInteractor.execute(
-        uploadFile, uploadUri,
-        cancelToken: cancelToken);
-
-    _uploadingStateFiles.add(UploadFileState(
-        uploadAttachment.uploadTaskId,
-        file: uploadFile,
-        cancelToken: cancelToken));
-
-    await _progressUploadStateStreamGroup.add(uploadAttachment.progressState);
-
-    _refreshListUploadAttachmentState();
+  Future<void> uploadFileAction(FileInfo uploadFile, Uri uploadUri, {bool isInline = false}) {
+    log('UploadController::_uploadFile():fileName: ${uploadFile.fileName}');
+    consumeState(_uploadAttachmentInteractor.execute(
+      uploadFile,
+      uploadUri,
+      cancelToken: CancelToken(),
+      isInline: isInline
+    ));
+    return Future.value();
   }
 
   void _refreshListUploadAttachmentState() {
@@ -258,19 +262,19 @@ class UploadController extends GetxController {
   bool hasEnoughMaxAttachmentSize({List<FileInfo>? listFiles}) {
     final currentTotalAttachmentsSize = attachmentsUploaded.totalSize();
     final totalInlineAttachmentsSize = inlineAttachmentsUploaded.totalSize();
-    log('ComposerController::_validateAttachmentsSize(): $currentTotalAttachmentsSize');
-    log('ComposerController::_validateAttachmentsSize(): totalInlineAttachmentsSize: $totalInlineAttachmentsSize');
+    log('UploadController::_validateAttachmentsSize(): $currentTotalAttachmentsSize');
+    log('UploadController::_validateAttachmentsSize(): totalInlineAttachmentsSize: $totalInlineAttachmentsSize');
     num uploadedTotalSize = 0;
     if (listFiles != null && listFiles.isNotEmpty) {
       final uploadedListSize = listFiles.map((file) => file.fileSize).toList();
       uploadedTotalSize = uploadedListSize.reduce((sum, size) => sum + size);
-      log('ComposerController::_validateAttachmentsSize(): uploadedTotalSize: $uploadedTotalSize');
+      log('UploadController::_validateAttachmentsSize(): uploadedTotalSize: $uploadedTotalSize');
     }
 
     final totalSizeReadyToUpload = currentTotalAttachmentsSize +
         totalInlineAttachmentsSize +
         uploadedTotalSize;
-    log('ComposerController::_validateAttachmentsSize(): totalSizeReadyToUpload: $totalSizeReadyToUpload');
+    log('UploadController::_validateAttachmentsSize(): totalSizeReadyToUpload: $totalSizeReadyToUpload');
 
     final maxSizeAttachmentsPerEmail = _mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value;
     if (maxSizeAttachmentsPerEmail != null) {
@@ -283,23 +287,6 @@ class UploadController extends GetxController {
   bool get allUploadAttachmentsCompleted {
     return listUploadAttachments
         .every((uploadFile) => uploadFile.uploadStatus.completed);
-  }
-
-  Future<void> uploadInlineImage(FileInfo uploadFile, Uri uploadUri) async {
-    log('UploadAttachmentManager::uploadInlineImage(): ${uploadFile.fileName}');
-
-    final cancelToken = CancelToken();
-    final uploadAttachment = _uploadAttachmentInteractor.execute(
-        uploadFile,
-        uploadUri,
-        cancelToken: cancelToken);
-
-    _uploadingStateInlineFiles.add(UploadFileState(
-        uploadAttachment.uploadTaskId,
-        file: uploadFile,
-        cancelToken: cancelToken));
-
-    await _progressUploadInlineImageStateStreamGroup.add(uploadAttachment.progressState);
   }
 
   void _deleteInlineFileUploaded(UploadTaskId uploadId) {
@@ -349,5 +336,49 @@ class UploadController extends GetxController {
     };
 
     return mapInlineAttachments;
+  }
+
+  @override
+  void onDone() {
+    viewState.value.fold(_handleFailureViewState, _handleSuccessViewState);
+  }
+
+  void _handleFailureViewState(Failure failure) async {
+    logError('UploadController::_handleFailureViewState():failure: $failure');
+    if (failure is UploadAttachmentFailure) {
+      if (failure.isInline) {
+        if (currentContext != null && currentOverlayContext != null) {
+          _appToast.showToastWithIcon(currentOverlayContext!,
+            message: AppLocalizations.of(currentContext!).thisImageCannotBeAdded,
+            textColor: AppColor.toastErrorBackgroundColor,
+            iconColor: AppColor.toastErrorBackgroundColor,
+            icon: _imagePaths.icInsertImage
+          );
+        }
+      } else {
+        if (currentContext != null && currentOverlayContext != null) {
+          _appToast.showToastWithIcon(currentOverlayContext!,
+            message: AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments,
+            textColor: AppColor.toastErrorBackgroundColor,
+            iconColor: AppColor.toastErrorBackgroundColor,
+            icon: _imagePaths.icAttachment
+          );
+        }
+      }
+    }
+  }
+
+  void _handleSuccessViewState(Success success) async {
+    log('UploadController::_handleSuccessViewState():success: $success');
+    if (success is UploadAttachmentSuccess) {
+      if (success.isInline) {
+        _uploadingStateInlineFiles.add(success.uploadAttachment.toUploadFileState());
+        await _progressUploadInlineImageStateStreamGroup.add(success.uploadAttachment.progressState);
+      } else {
+        _uploadingStateFiles.add(success.uploadAttachment.toUploadFileState());
+        await _progressUploadStateStreamGroup.add(success.uploadAttachment.progressState);
+        _refreshListUploadAttachmentState();
+      }
+    }
   }
 }
