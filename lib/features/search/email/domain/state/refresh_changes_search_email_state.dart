@@ -1,5 +1,6 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:model/email/presentation_email.dart';
 
 class RefreshingChangeSearchEmailState extends UIState {
