@@ -258,15 +258,31 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _getAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
     if (success.identities?.isNotEmpty == true) {
-      try {
-        final identityDefault = success.identities!
-            .firstWhere((identity) => identity.mayDelete == false);
-        _identitySelected = identityDefault;
-      } catch (e) {
-        logError('SingleEmailController::_getAllIdentitiesSuccess(): ${e.toString()}');
-        _identitySelected = success.identities!.first;
+      if (currentEmail != null) {
+        final currentMailbox = getMailboxContain(currentEmail!);
+        log('SingleEmailController::_getAllIdentitiesSuccess():currentMailbox: $currentMailbox');
+        if (currentMailbox != null && currentMailbox.isPersonal == false) {
+          _setUpDefaultIdentityForTeamMailbox(success.identities!, currentMailbox);
+        } else {
+          _setUpDefaultIdentity(success.identities!);
+        }
+      } else {
+        _setUpDefaultIdentity(success.identities!);
       }
     }
+  }
+
+  void _setUpDefaultIdentityForTeamMailbox(List<Identity> identities, PresentationMailbox currentMailbox) {
+    final matchedTeamMailboxIdentity = identities.firstWhereOrNull((identity) => identity.email == currentMailbox.emailTeamMailBoxes);
+    if (matchedTeamMailboxIdentity != null) {
+      _identitySelected = matchedTeamMailboxIdentity;
+    } else {
+      _identitySelected = identities.first;
+    }
+  }
+
+  void _setUpDefaultIdentity(List<Identity> identities) {
+    _identitySelected = identities.first;
   }
 
   void _getEmailContentAction(EmailId emailId) async {

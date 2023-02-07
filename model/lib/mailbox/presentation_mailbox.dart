@@ -97,7 +97,7 @@ class PresentationMailbox with EquatableMixin {
     }
   }
 
-  String? get nameTeamMailBoxes => namespace?.value.substring(
+  String? get emailTeamMailBoxes => namespace?.value.substring(
     (namespace?.value.indexOf('[') ?? 0) + 1,
     namespace?.value.indexOf(']'));
 
