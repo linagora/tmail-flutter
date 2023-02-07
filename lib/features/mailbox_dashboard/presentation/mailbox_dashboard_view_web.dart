@@ -27,7 +27,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/to
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_warning_banner_widget.dart';
-import 'package:tmail_ui_user/features/search/presentation/search_email_view.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';

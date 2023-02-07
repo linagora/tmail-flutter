@@ -1,13 +1,14 @@
 
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
-import 'package:tmail_ui_user/features/search/domain/state/refresh_changes_search_email_state.dart';
+import 'package:model/extensions/email_extension.dart';
+import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
 
 class RefreshChangesSearchEmailInteractor {

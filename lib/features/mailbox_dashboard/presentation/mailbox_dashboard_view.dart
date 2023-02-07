@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
-import 'package:tmail_ui_user/features/search/presentation/search_email_view.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
