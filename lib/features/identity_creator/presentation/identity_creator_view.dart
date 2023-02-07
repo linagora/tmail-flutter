@@ -146,7 +146,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                       decoration: const BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(16))),
-                      width: max(_responsiveUtils.getSizeScreenWidth(context) * 0.4, 600),
+                      width: max(_responsiveUtils.getSizeScreenWidth(context) * 0.4, 650),
                       height: _responsiveUtils.getSizeScreenHeight(context) * 0.75,
                       child: ClipRRect(
                           borderRadius: const BorderRadius.all(Radius.circular(16)),
@@ -251,7 +251,6 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                 border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
                 color: Colors.white,
               ),
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               child: Stack(
                 children: [
                   if (controller.signatureType.value == SignatureType.plainText)
@@ -429,7 +428,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
       child: Column(
         children: [
           if(BuildUtils.isWeb)
-            ToolbarRichTextWebBuilder(richTextWebController: controller.richTextWebController),
+            ToolbarRichTextWebBuilder(
+              richTextWebController: controller.richTextWebController,
+              padding: const EdgeInsets.only(top: 22, bottom: 8.0, left: 24, right: 12)),
           htmlEditor,
         ],
       ),
@@ -440,8 +441,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
     log('IdentityCreatorView::_buildHtmlEditorWeb(): initContent: $initContent');
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: _responsiveUtils.isMobile(context) ? 8 : 10),
+        padding: const EdgeInsets.only(left: 14.0, right: 2.0),
         child: html_editor_browser.HtmlEditor(
           key: const Key('identity_create_editor_web'),
           controller: controller.richTextWebController.editorController,
@@ -478,8 +478,8 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             log('IdentityCreatorView::_buildHtmlEditorWeb(): onChangeCodeView : $contentChanged');
             controller.updateContentHtmlEditor(contentChanged);
           }),
-        )
-      )
+        ),
+      ),
     );
   }
 

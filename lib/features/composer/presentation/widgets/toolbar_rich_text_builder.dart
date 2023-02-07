@@ -21,10 +21,12 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
 
   final RichTextWebController richTextWebController;
   final ImagePaths _imagePaths = Get.find<ImagePaths>();
+  final EdgeInsetsGeometry? padding;
 
   ToolbarRichTextWebBuilder({
     Key? key,
-    required this.richTextWebController
+    required this.richTextWebController,
+    this.padding,
   }) : super(key: key);
 
   @override
@@ -34,7 +36,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
       final opacity = codeViewEnabled ? 0.5 : 1.0;
 
       return Container(
-        padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8),
+        padding: padding,
         alignment: Alignment.centerLeft,
         child: Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
