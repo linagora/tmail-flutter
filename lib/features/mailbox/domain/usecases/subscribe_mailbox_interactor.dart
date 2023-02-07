@@ -6,18 +6,25 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_re
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_mailbox_state.dart';
 
-class SearchMailboxInteractor {
+class SubscribeMailboxInteractor {
   final MailboxRepository _mailboxRepository;
 
-  SearchMailboxInteractor(this._mailboxRepository);
+  SubscribeMailboxInteractor(this._mailboxRepository);
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, SubscribeMailboxRequest request) async* {
     try {
       yield Right<Failure, Success>(LoadingSubscribeMailbox());
 
-      final resultList = await _mailboxRepository.subscribeMailbox(accountId, request);
+      final currentMailboxState = await _mailboxRepository.getMailboxState();
 
-      yield Right<Failure, Success>(SubscribeMailboxSuccess(resultList));
+      final result = await _mailboxRepository.subscribeMailbox(accountId, request);
+
+      if (result) {
+        yield Right<Failure, Success>(SubscribeMailboxSuccess(currentMailboxState: currentMailboxState));
+      } else {
+        yield Left<Failure, Success>(SubscribeMailboxFailure(null));
+      }
+
     } catch (exception) {
       yield Left<Failure, Success>(SubscribeMailboxFailure(exception));
     }
