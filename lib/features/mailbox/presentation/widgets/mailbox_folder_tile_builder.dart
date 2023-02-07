@@ -364,7 +364,7 @@ class MailBoxFolderTileBuilder {
         ),
         if(_mailboxNode.item.isTeamMailboxes)
         Text(
-          _mailboxNode.item.nameTeamMailBoxes ?? '',
+          _mailboxNode.item.emailTeamMailBoxes ?? '',
           maxLines: 1,
           softWrap: CommonTextStyle.defaultSoftWrap,
           overflow: CommonTextStyle.defaultTextOverFlow,
