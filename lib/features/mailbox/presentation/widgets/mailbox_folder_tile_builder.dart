@@ -15,7 +15,7 @@ typedef OnOpenMailboxFolderClick = void Function(MailboxNode);
 typedef OnSelectMailboxFolderClick = void Function(MailboxNode);
 typedef OnMenuActionClick = void Function(RelativeRect, MailboxNode);
 typedef OnDragItemAccepted = void Function(List<PresentationEmail>, PresentationMailbox);
-typedef OnLongPressSpamReport = void Function(MailboxNode);
+typedef OnLongPressMailboxFolderClick = void Function(MailboxNode);
 
 class MailBoxFolderTileBuilder {
 
@@ -36,7 +36,7 @@ class MailBoxFolderTileBuilder {
   OnSelectMailboxFolderClick? _onSelectMailboxFolderClick;
   OnMenuActionClick? _onMenuActionClick;
   OnDragItemAccepted? _onDragItemAccepted;
-  OnLongPressSpamReport? _onLongPressSpamReport;
+  OnLongPressMailboxFolderClick? _onLongPressMailboxFolderClick;
 
   bool isHoverItem = false;
 
@@ -74,8 +74,8 @@ class MailBoxFolderTileBuilder {
     _onDragItemAccepted = onDragItemAccepted;
   }
 
-  void addOnLongPressSpamReport(OnLongPressSpamReport onLongPressSpamReport) {
-    _onLongPressSpamReport = onLongPressSpamReport;
+  void addOnLongPressMailboxFolderClick(OnLongPressMailboxFolderClick onLongPressMailboxFolderClick) {
+    _onLongPressMailboxFolderClick = onLongPressMailboxFolderClick;
   }
 
   Widget build() => DragTarget<List<PresentationEmail>>(
@@ -127,9 +127,11 @@ class MailBoxFolderTileBuilder {
           child: Opacity(
             opacity: _mailboxNode.isActivated ? 1.0 : 0.3,
             child: InkWell(
-              onLongPress: _mailboxNode.item.isSpam ? () {
-               _onLongPressSpamReport?.call(_mailboxNode);
-              } : null,
+              onLongPress: () {
+                if(_mailboxNode.item.isShowDisableMailbox || _mailboxNode.item.isSpam) {
+                  _onLongPressMailboxFolderClick?.call(_mailboxNode);
+                }
+              },
               onTap: () => allSelectMode == SelectMode.ACTIVE
                   ? _onSelectMailboxFolderClick?.call(_mailboxNode)
                   : _onOpenMailboxFolderClick?.call(_mailboxNode),
@@ -170,6 +172,7 @@ class MailBoxFolderTileBuilder {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
+              onLongPress: () => print('123'),
               onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
               child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -199,7 +202,7 @@ class MailBoxFolderTileBuilder {
           if (_mailboxNode.hasChildren())
             Row(
               children: [
-                const SizedBox(width: 8),
+                SizedBox(width: _mailboxNode.item.hasRole() ? 0 : 8),
                 buildIconWeb(
                     icon: SvgPicture.asset(
                         _mailboxNode.expandMode == ExpandMode.EXPAND
@@ -216,11 +219,10 @@ class MailBoxFolderTileBuilder {
                         ? AppLocalizations.of(_context).collapse
                         : AppLocalizations.of(_context).expand,
                     onTap: () => _onExpandFolderActionClick?.call(_mailboxNode)),
-                const SizedBox(width: 4),
               ],
             )
           else
-            SizedBox(width:_mailboxNode.item.hasRole() ? 0 : 24),
+            SizedBox(width: !_mailboxNode.item.hasRole() ? 32 : 24),
           Transform(
               transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
               child: _buildLeadingIcon()),
@@ -254,7 +256,7 @@ class MailBoxFolderTileBuilder {
               ],
             )
           else
-            SizedBox(width: _mailboxNode.item.hasRole() ? 0 : 36),
+            const SizedBox(width: 36),
           _buildLeadingIcon(),
         ]);
       } else {

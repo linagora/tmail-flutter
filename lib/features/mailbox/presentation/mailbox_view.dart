@@ -331,10 +331,14 @@ class MailboxView extends GetWidget<MailboxController> {
 
   void _openBottomSheetSpamMenuAction(BuildContext context, PresentationMailbox mailbox) {
     final _spamActionsSupported = [
-      controller.mailboxDashBoardController.enableSpamReport
-          ? MailboxActions.disableSpamReport
-          : MailboxActions.enableSpamReport
+      MailboxActions.disableMailbox
     ];
+
+    if (mailbox.isSpam) {
+      _spamActionsSupported.add(controller.mailboxDashBoardController.enableSpamReport
+        ? MailboxActions.disableSpamReport
+        : MailboxActions.enableSpamReport);
+    }
 
     final listContextSpamPopupMenuItemAction = _spamActionsSupported
         .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
@@ -381,6 +385,7 @@ class MailboxView extends GetWidget<MailboxController> {
                   isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
                   parent: Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
                           allSelectMode: controller.currentSelectMode.value)
+                      ..addOnLongPressMailboxFolderClick((mailboxNode) => _openBottomSheetSpamMenuAction(context, mailboxNode.item))
                       ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
                       ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
                       ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
@@ -389,7 +394,7 @@ class MailboxView extends GetWidget<MailboxController> {
               ).build()
           : Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
                   allSelectMode: controller.currentSelectMode.value)
-              ..addOnLongPressSpamReport((mailboxNode) => _openBottomSheetSpamMenuAction(context, mailboxNode.item))
+              ..addOnLongPressMailboxFolderClick((mailboxNode) => _openBottomSheetSpamMenuAction(context, mailboxNode.item))
               ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
               ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
             .build())

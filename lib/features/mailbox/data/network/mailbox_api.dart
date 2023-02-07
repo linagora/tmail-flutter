@@ -296,7 +296,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final setMailboxMethod = SetMailboxMethod(accountId)
       ..addUpdates({
         request.mailboxId.id : PatchObject({
-          'isSubscribed': request.newState == MailboxSubscribeState.disabled ? true : false
+          'isSubscribed': request.newState == MailboxSubscribeState.disabled ? false : true
         })
       });
 
