@@ -36,7 +36,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/das
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
-import 'package:tmail_ui_user/features/search/presentation/search_email_bindings.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';

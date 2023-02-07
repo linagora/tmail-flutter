@@ -90,8 +90,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller_bindings.dart';
-import 'package:tmail_ui_user/features/search/domain/usecases/refresh_changes_search_email_interactor.dart';
-import 'package:tmail_ui_user/features/search/presentation/search_email_bindings.dart';
+import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/local_thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
