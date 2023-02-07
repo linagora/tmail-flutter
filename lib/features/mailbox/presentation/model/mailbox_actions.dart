@@ -16,7 +16,8 @@ enum MailboxActions {
   selectForRuleAction,
   openInNewTab,
   disableSpamReport,
-  enableSpamReport
+  enableSpamReport,
+  disableMailbox
 }
 
 extension MailboxActionsExtension on MailboxActions {
@@ -52,6 +53,8 @@ extension MailboxActionsExtension on MailboxActions {
         return AppLocalizations.of(context).rename_mailbox;
       case MailboxActions.delete:
         return AppLocalizations.of(context).deleteMailbox;
+      case MailboxActions.disableMailbox:
+        return AppLocalizations.of(context).hideMailBoxes;
       default:
         return '';
     }
@@ -73,6 +76,8 @@ extension MailboxActionsExtension on MailboxActions {
         return imagePaths.icRenameMailbox;
       case MailboxActions.delete:
         return imagePaths.icDelete;
+      case MailboxActions.disableMailbox:
+        return imagePaths.icEyeOff;
       default:
         return '';
     }
@@ -93,6 +98,7 @@ extension MailboxActionsExtension on MailboxActions {
         return AppColor.colorActionDeleteConfirmDialog;
       case MailboxActions.disableSpamReport:
       case MailboxActions.enableSpamReport:
+      case MailboxActions.disableMailbox:
         return AppColor.primaryColor;
       default:
         return Colors.black;
@@ -140,6 +146,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.openInNewTab:
       case MailboxActions.disableSpamReport:
       case MailboxActions.enableSpamReport:
+      case MailboxActions.disableMailbox:
         return ContextMenuItemState.activated; 
       case MailboxActions.markAsRead:
         return mailbox.getCountUnReadEmails().isNotEmpty

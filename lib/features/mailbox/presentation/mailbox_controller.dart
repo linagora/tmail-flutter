@@ -27,8 +27,10 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
@@ -37,6 +39,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.d
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
@@ -44,6 +47,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_inte
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
@@ -92,6 +96,7 @@ class MailboxController extends BaseMailboxController {
   final VerifyNameInteractor _verifyNameInteractor;
   final RenameMailboxInteractor _renameMailboxInteractor;
   final MoveMailboxInteractor _moveMailboxInteractor;
+  final SubscribeMailboxInteractor _subscribeMailboxInteractor;
 
   final listMailboxSearched = <PresentationMailbox>[].obs;
   final searchState = SearchState.initial().obs;
@@ -118,6 +123,7 @@ class MailboxController extends BaseMailboxController {
     this._verifyNameInteractor,
     this._renameMailboxInteractor,
     this._moveMailboxInteractor,
+    this._subscribeMailboxInteractor,
     treeBuilder,
   ) : super(treeBuilder);
 
@@ -156,7 +162,7 @@ class MailboxController extends BaseMailboxController {
         _buildMailboxTreeHasSubscribed(success.mailboxList);
       } else if (success is RefreshChangesAllMailboxSuccess) {
         _currentMailboxState = success.currentMailboxState;
-        await refreshTree(success.mailboxList);
+        _refreshMailboxTreeHasSubscribed(success.mailboxList);
       }
     });
   }
@@ -192,6 +198,8 @@ class MailboxController extends BaseMailboxController {
           refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
         } else if (success is MoveMailboxSuccess) {
           _moveMailboxSuccess(success);
+        } else if (success is SubscribeMailboxSuccess){
+          refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
         }
       }
     );
@@ -1142,7 +1150,10 @@ class MailboxController extends BaseMailboxController {
       case MailboxActions.disableSpamReport:
       case MailboxActions.enableSpamReport:
         mailboxDashBoardController.storeSpamReportStateAction();
-        return;
+        break;
+      case MailboxActions.disableMailbox:
+        subscribeMailboxAction(mailbox);
+        break;
       default:
         break;
     }
@@ -1205,5 +1216,20 @@ class MailboxController extends BaseMailboxController {
   void _buildMailboxTreeHasSubscribed(List<PresentationMailbox> mailboxList) async {
     final _mailboxList = mailboxList.where((mailbox) => mailbox.isSubscribed?.value == true).toList();
     await buildTree(_mailboxList);
+  }
+
+  void _refreshMailboxTreeHasSubscribed(List<PresentationMailbox> mailboxList) async {
+    final _mailboxList = mailboxList.where((mailbox) => mailbox.isSubscribed?.value == true).toList();
+    await refreshTree(_mailboxList);
+  }
+
+  void subscribeMailboxAction(PresentationMailbox mailboxSelected) {
+    final _accountId = mailboxDashBoardController.accountId.value;
+    if(_accountId != null) {
+      consumeState(_subscribeMailboxInteractor.execute(_accountId, SubscribeMailboxRequest(
+        mailboxSelected.id,
+        MailboxSubscribeState.disabled,
+      )));
+    }
   }
 }

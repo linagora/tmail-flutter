@@ -205,14 +205,22 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                 ]),
             ),
             const SizedBox(height: 8),
-            _buildHeaderMailboxCategory(context, MailboxCategories.personalMailboxes),
             Obx(() => controller.personalMailboxHasChild
-                ? _buildMailboxCategory(context, MailboxCategories.personalMailboxes, controller.personalRootNode)
+                ? Column(
+                  children: [
+                    _buildHeaderMailboxCategory(context, MailboxCategories.personalMailboxes),
+                    _buildMailboxCategory(context, MailboxCategories.personalMailboxes, controller.personalRootNode),
+                  ],
+                )
                 : const SizedBox.shrink()),
             const SizedBox(height: 8),
-            _buildHeaderMailboxCategory(context, MailboxCategories.teamMailboxes),
             Obx(() => controller.teamMailboxesHasChild
-                ? _buildMailboxCategory(context, MailboxCategories.teamMailboxes, controller.teamMailboxesRootNode)
+                ? Column(
+                  children: [
+                    _buildHeaderMailboxCategory(context, MailboxCategories.teamMailboxes),
+                    _buildMailboxCategory(context, MailboxCategories.teamMailboxes, controller.teamMailboxesRootNode),
+                  ],
+                )
                 : const SizedBox.shrink()),
           ])
         ),
@@ -446,8 +454,12 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
       MailboxActions.markAsRead,
       MailboxActions.move,
       MailboxActions.rename,
-      MailboxActions.delete
+      MailboxActions.delete,
     ];
+
+    if(mailbox.isShowDisableMailbox) {
+      mailboxActionsSupported.add(MailboxActions.disableMailbox);
+    }
 
     if (mailbox.isSpam) {
       mailboxActionsSupported.insert(
