@@ -261,8 +261,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       if (currentEmail != null) {
         final currentMailbox = getMailboxContain(currentEmail!);
         log('SingleEmailController::_getAllIdentitiesSuccess():currentMailbox: $currentMailbox');
-        if (currentMailbox != null && currentMailbox.isPersonal == false) {
-          _setUpDefaultIdentityForTeamMailbox(success.identities!, currentMailbox);
+        if (_isBelongToTeamMailboxes(currentMailbox)) {
+          _setUpDefaultIdentityForTeamMailbox(success.identities!, currentMailbox!);
         } else {
           _setUpDefaultIdentity(success.identities!);
         }
@@ -270,6 +270,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _setUpDefaultIdentity(success.identities!);
       }
     }
+  }
+
+  bool _isBelongToTeamMailboxes(PresentationMailbox? presentationMailbox) {
+    return presentationMailbox != null && presentationMailbox.isPersonal == false;
   }
 
   void _setUpDefaultIdentityForTeamMailbox(List<Identity> identities, PresentationMailbox currentMailbox) {
@@ -971,7 +975,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
-    final mdnToSender = _generateMDN(context, currentEmail!, userProfile);
+    final receiverEmailAddress = _getReceiverEmailAddress(currentEmail!) ?? userProfile.email;
+    log('SingleEmailController::_handleSendReceiptToSenderAction():receiverEmailAddress: $receiverEmailAddress');
+    final mdnToSender = _generateMDN(context, currentEmail!, receiverEmailAddress);
     final sendReceiptRequest = SendReceiptToSenderRequest(
         mdn: mdnToSender,
         identityId: _identitySelected!.id!,
@@ -981,8 +987,17 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     consumeState(_sendReceiptToSenderInteractor!.execute(accountId, sendReceiptRequest));
   }
 
-  MDN _generateMDN(BuildContext context, PresentationEmail email, UserProfile userProfile) {
-    final receiverEmailAddress = userProfile.email;
+  String? _getReceiverEmailAddress(PresentationEmail presentationEmail) {
+    final currentMailbox = getMailboxContain(presentationEmail);
+    if (_isBelongToTeamMailboxes(currentMailbox)) {
+      return currentMailbox!.emailTeamMailBoxes;
+    } else {
+      return null;
+    }
+  }
+
+  MDN _generateMDN(BuildContext context, PresentationEmail email, String emailAddress) {
+    final receiverEmailAddress = emailAddress;
     final subjectEmail = email.subject ?? '';
     final timeCurrent = DateTime.now();
     final timeAsString = '${timeCurrent.formatDate(
