@@ -6,14 +6,13 @@ class ResponsiveUtils {
 
   static const double defaultSizeLeftMenuMobile = 375;
   static const double defaultSizeDrawer = 320;
+  static const double defaultSizeMenu = 256;
 
   final int heightShortest = 600;
 
   final int minDesktopWidth = 1200;
   final int minTabletWidth = 600;
   final int minTabletLargeWidth = 900;
-
-  final double defaultSizeMenu = 256;
 
   final double _loginTextFieldWidthSmallScreen = 280.0;
   final double _loginTextFieldWidthLargeScreen = 320.0;

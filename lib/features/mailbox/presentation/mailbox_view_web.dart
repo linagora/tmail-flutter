@@ -6,7 +6,6 @@ import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -49,8 +48,6 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                   ? AppColor.colorBgDesktop
                   : Colors.white,
               child: Column(children: [
-                if (_responsiveUtils.isDesktop(context))
-                  _buildComposerButton(context),
                 Obx(() => controller.isSearchActive()
                     ? _buildInputSearchFormWidget(context)
                     : const SizedBox.shrink()),
@@ -60,8 +57,6 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                         ? AppColor.colorBgDesktop
                         : Colors.white,
                     padding: EdgeInsets.zero,
-                    margin: EdgeInsets.only(
-                        top: _responsiveUtils.isDesktop(context) ? 16 : 0),
                     child: RefreshIndicator(
                         color: AppColor.primaryColor,
                         onRefresh: () async => controller.refreshAllMailbox(),
@@ -104,34 +99,6 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
         ])
     );
   }
-
-  Widget _buildComposerButton(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.only(top: 16, right: 16),
-        color: AppColor.colorBgDesktop,
-        alignment: Alignment.centerLeft,
-        child: (ButtonBuilder(_imagePaths.icComposeWeb)
-            ..key(const Key('button_compose_email'))
-            ..decoration(BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColor.colorTextButton,
-                boxShadow: const [
-                  BoxShadow(
-                    blurRadius: 12.0,
-                    color: AppColor.colorShadowComposerButton
-                  )
-                ]))
-            ..paddingIcon(const EdgeInsets.only(right: 8))
-            ..iconColor(Colors.white)
-            ..size(16)
-            ..radiusSplash(10)
-            ..padding(const EdgeInsets.symmetric(vertical: 8))
-            ..textStyle(const TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w500))
-            ..onPressActionClick(() => controller.mailboxDashBoardController.goToComposer(ComposerArguments()))
-            ..text(AppLocalizations.of(context).compose, isVertical: false))
-          .build());
-  }
-
 
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(

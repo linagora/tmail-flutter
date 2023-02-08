@@ -81,7 +81,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(child: ManageAccountMenuView(), width: _responsiveUtils.defaultSizeMenu),
+                  SizedBox(child: ManageAccountMenuView(), width: ResponsiveUtils.defaultSizeMenu),
                   Expanded(child: Container(
                     color: AppColor.colorBgDesktop,
                     child: Column(children: [
