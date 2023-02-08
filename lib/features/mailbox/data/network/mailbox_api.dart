@@ -49,7 +49,7 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final queryInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
 
-    final capabilities = capabilitiesForGetMailboxMethod(session, accountId);
+    final capabilities = _capabilitiesForMailboxMethod(session, accountId);
 
     final result = await (jmapRequestBuilder
         ..usings(capabilities))
@@ -63,7 +63,7 @@ class MailboxAPI with HandleSetErrorMixin {
     return MailboxResponse(mailboxes: resultCreated?.list, state: resultCreated?.state);
   }
 
-  Set<CapabilityIdentifier> capabilitiesForGetMailboxMethod(Session session, AccountId accountId) {
+  Set<CapabilityIdentifier> _capabilitiesForMailboxMethod(Session session, AccountId accountId) {
     final getMailboxCreated = GetMailboxMethod(accountId);
     try {
      requireCapability(
@@ -101,7 +101,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final getMailboxUpdatedInvocation = jmapRequestBuilder.invocation(getMailboxUpdated);
     final getMailboxCreatedInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
 
-    final capabilities = capabilitiesForGetMailboxMethod(session, accountId);
+    final capabilities = _capabilitiesForMailboxMethod(session, accountId);
 
     final result = await (jmapRequestBuilder
         ..usings(capabilities))
@@ -297,7 +297,7 @@ class MailboxAPI with HandleSetErrorMixin {
   Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request) async {
     final setMailboxMethod = SetMailboxMethod(accountId)
       ..addUpdates({
-        request.mailbox.id.id : PatchObject({
+        request.mailboxId.id : PatchObject({
           'isSubscribed': request.newState == MailboxSubscribeState.disabled ? false : true
         })
       });
@@ -316,7 +316,7 @@ class MailboxAPI with HandleSetErrorMixin {
         SetMailboxResponse.deserialize);
 
     return Future.sync(() async {
-      return setMailboxResponse?.updated?.isNotEmpty == true;
+      return setMailboxResponse?.updated?.containsKey(request.mailboxId.id) ?? false;
     }).catchError((error) {
       throw error;
     });
