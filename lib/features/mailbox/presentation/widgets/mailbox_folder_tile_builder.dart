@@ -176,7 +176,6 @@ class MailBoxFolderTileBuilder {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              onLongPress: () => print('123'),
               onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
               child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -198,18 +197,6 @@ class MailBoxFolderTileBuilder {
       );
     }
   }
-
-  // double _buildSizedBoxWhenHasNotChildren() {
-  //   if (_mailboxNode.item.hasRole()) {
-  //     if (!_mailboxNode.item.hasParentId()) {
-  //       return 32;
-  //     } else {
-  //       return 8;
-  //     } 
-  //   } else {
-  //     return 32;
-  //   }
-  // }
 
   Widget _buildLeadingMailboxItem() {
     if (BuildUtils.isWeb) {
