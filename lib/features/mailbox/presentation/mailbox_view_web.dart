@@ -457,7 +457,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
       MailboxActions.delete,
     ];
 
-    if(mailbox.isShowDisableMailbox) {
+    if (mailbox.isShowDisableMailbox) {
       mailboxActionsSupported.add(MailboxActions.disableMailbox);
     }
 

@@ -281,7 +281,7 @@ class MailboxView extends GetWidget<MailboxController> {
     return Padding(
         padding: EdgeInsets.only(
             right: _responsiveUtils.isLandscapeMobile(context) ? 8 : 28,
-            left: 16),
+            left: 4),
         child: Row(children: [
          buildIconWeb(
               minSize: 40,
@@ -307,7 +307,7 @@ class MailboxView extends GetWidget<MailboxController> {
 
     return Container(
         margin: EdgeInsets.only(
-            left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
+            left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
             right: 16),
         padding: const EdgeInsets.only(left: 12),
         child: TreeView(
@@ -330,23 +330,23 @@ class MailboxView extends GetWidget<MailboxController> {
   }
 
   void _openBottomSheetSpamMenuAction(BuildContext context, PresentationMailbox mailbox) {
-    final _spamActionsSupported = [
+    final _mailboxActionsSupported = [
       MailboxActions.disableMailbox
     ];
 
     if (mailbox.isSpam) {
-      _spamActionsSupported.add(controller.mailboxDashBoardController.enableSpamReport
+      _mailboxActionsSupported.add(controller.mailboxDashBoardController.enableSpamReport
         ? MailboxActions.disableSpamReport
         : MailboxActions.enableSpamReport);
     }
 
-    final listContextSpamPopupMenuItemAction = _spamActionsSupported
+    final listContextMailboxPopupMenuItemAction = _mailboxActionsSupported
         .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
         .toList();
 
     controller.openContextMenuAction(
         context,
-        _bottomSheetIdentityActionTiles(context, mailbox, listContextSpamPopupMenuItemAction));
+        _bottomSheetIdentityActionTiles(context, mailbox, listContextMailboxPopupMenuItemAction));
   }
 
   List<Widget> _bottomSheetIdentityActionTiles(

@@ -149,7 +149,8 @@ abstract class BaseMailboxController extends BaseController {
       personalMailboxTree.value.root.childrenItems?.isNotEmpty ?? false;
   
   bool get teamMailboxesHasChild =>
-      teamMailboxesTree.value.root.childrenItems?.isNotEmpty ?? false;
+      (teamMailboxesTree.value.root.childrenItems?.isNotEmpty ?? false )
+      && !teamMailboxesTree.value.root.item.isTeamMailboxes;
 
   MailboxNode get defaultRootNode => defaultMailboxTree.value.root;
 

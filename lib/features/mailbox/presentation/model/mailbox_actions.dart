@@ -146,8 +146,11 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.openInNewTab:
       case MailboxActions.disableSpamReport:
       case MailboxActions.enableSpamReport:
-      case MailboxActions.disableMailbox:
         return ContextMenuItemState.activated; 
+      case MailboxActions.disableMailbox:
+        return mailbox.hasRole()
+            ? ContextMenuItemState.deactivated
+            : ContextMenuItemState.activated;
       case MailboxActions.markAsRead:
         return mailbox.getCountUnReadEmails().isNotEmpty
             ? ContextMenuItemState.activated

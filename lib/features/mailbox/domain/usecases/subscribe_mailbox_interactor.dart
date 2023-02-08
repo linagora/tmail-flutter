@@ -20,7 +20,10 @@ class SubscribeMailboxInteractor {
       final result = await _mailboxRepository.subscribeMailbox(accountId, request);
 
       if (result) {
-        yield Right<Failure, Success>(SubscribeMailboxSuccess(currentMailboxState: currentMailboxState));
+        yield Right<Failure, Success>(SubscribeMailboxSuccess(
+          request.mailbox, 
+          currentMailboxState: currentMailboxState,
+          request.mailboxSubscribeStateAction));
       } else {
         yield Left<Failure, Success>(SubscribeMailboxFailure(null));
       }
