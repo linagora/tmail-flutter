@@ -20,7 +20,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_re
 abstract class MailboxRepository {
   Stream<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties});
 
-  Stream<MailboxResponse> refresh(AccountId accountId, State currentState);
+  Stream<MailboxResponse> refresh(Session session, AccountId accountId, State currentState);
 
   Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest);
 

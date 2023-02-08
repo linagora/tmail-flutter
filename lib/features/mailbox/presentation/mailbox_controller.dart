@@ -330,8 +330,9 @@ class MailboxController extends BaseMailboxController {
     final newMailboxState = currentMailboxState ?? _currentMailboxState;
     log('MailboxController::refreshMailboxChanges(): newMailboxState: $newMailboxState');
     final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null && newMailboxState != null) {
-      consumeState(_refreshAllMailboxInteractor.execute(accountId, newMailboxState));
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (accountId != null && session != null && newMailboxState != null) {
+      consumeState(_refreshAllMailboxInteractor.execute(session, accountId, newMailboxState));
     }
   }
 

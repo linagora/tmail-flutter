@@ -49,7 +49,7 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final queryInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
 
-    final capabilities = capabilitiesSupportedMailboxes(session, accountId);
+    final capabilities = capabilitiesForGetMailboxMethod(session, accountId);
 
     final result = await (jmapRequestBuilder
         ..usings(capabilities))
@@ -63,7 +63,7 @@ class MailboxAPI with HandleSetErrorMixin {
     return MailboxResponse(mailboxes: resultCreated?.list, state: resultCreated?.state);
   }
 
-  Set<CapabilityIdentifier> capabilitiesSupportedMailboxes(Session session, AccountId accountId) {
+  Set<CapabilityIdentifier> capabilitiesForGetMailboxMethod(Session session, AccountId accountId) {
     final getMailboxCreated = GetMailboxMethod(accountId);
     try {
      requireCapability(
@@ -76,7 +76,7 @@ class MailboxAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<MailboxChangeResponse> getChanges(AccountId accountId, State sinceState) async {
+  Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState) async {
     final processingInvocation = ProcessingInvocation();
 
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
@@ -101,8 +101,10 @@ class MailboxAPI with HandleSetErrorMixin {
     final getMailboxUpdatedInvocation = jmapRequestBuilder.invocation(getMailboxUpdated);
     final getMailboxCreatedInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
 
+    final capabilities = capabilitiesForGetMailboxMethod(session, accountId);
+
     final result = await (jmapRequestBuilder
-        ..usings(getMailboxCreated.requiredCapabilities))
+        ..usings(capabilities))
       .build()
       .execute();
 
