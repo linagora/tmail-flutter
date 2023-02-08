@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -63,7 +64,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 child: Column(children: [
                   Row(children: [
                     Container(
-                      width: responsiveUtils.defaultSizeMenu,
+                      width: ResponsiveUtils.defaultSizeMenu,
                       color: Colors.white,
                       padding: const EdgeInsets.only(left: 28),
                       alignment: Alignment.center,
@@ -103,32 +104,35 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       height: 80,
                       child: _buildRightHeader(context)))
                   ]),
-                  Expanded(child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(child: MailboxView(), width: responsiveUtils.defaultSizeMenu),
-                      Expanded(child: Column(children: [
-                        const SpamReportBannerWebWidget(),
-                        _buildEmptyTrashButton(context),
-                        const QuotasWarningBannerWidget(
-                          margin: EdgeInsets.only(right: 16, top: 8),
-                        ),
-                        _buildVacationNotificationMessage(context),
-                        _buildListButtonQuickSearchFilter(context),
-                        _buildMarkAsMailboxReadLoading(context),
-                        Expanded(child: Obx(() {
-                          switch(controller.dashboardRoute.value) {
-                            case DashboardRoutes.thread:
-                              return _buildThreadViewForWebDesktop(context);
-                            case DashboardRoutes.emailDetailed:
-                              return EmailView();
-                            default:
-                              return const SizedBox.shrink();
-                          }
-                        }))
-                      ]))
-                    ],
-                  ))
+                  Expanded(child: Row(children: [
+                    Column(children: [
+                      _buildComposerButton(context),
+                      Expanded(child: SizedBox(
+                        child: MailboxView(),
+                        width: ResponsiveUtils.defaultSizeMenu
+                      ))
+                    ]),
+                    Expanded(child: Column(children: [
+                      const SpamReportBannerWebWidget(),
+                      _buildEmptyTrashButton(context),
+                      const QuotasWarningBannerWidget(
+                        margin: EdgeInsets.only(right: 16, top: 8),
+                      ),
+                      _buildVacationNotificationMessage(context),
+                      _buildListButtonQuickSearchFilter(context),
+                      _buildMarkAsMailboxReadLoading(context),
+                      Expanded(child: Obx(() {
+                        switch(controller.dashboardRoute.value) {
+                          case DashboardRoutes.thread:
+                            return _buildThreadViewForWebDesktop(context);
+                          case DashboardRoutes.emailDetailed:
+                            return EmailView();
+                          default:
+                            return const SizedBox.shrink();
+                        }
+                      }))
+                    ]))
+                  ]))
                 ]),
               ),
             ),
@@ -699,5 +703,38 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         return const SizedBox.shrink();
       }
     });
+  }
+
+  Widget _buildComposerButton(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      color: Colors.transparent,
+      width: ResponsiveUtils.defaultSizeMenu,
+      alignment: Alignment.centerLeft,
+      child: (ButtonBuilder(imagePaths.icComposeWeb)
+        ..key(const Key('button_compose_email'))
+        ..decoration(BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: AppColor.colorTextButton,
+            boxShadow: const [
+              BoxShadow(
+                blurRadius: 12.0,
+                color: AppColor.colorShadowComposerButton
+              )
+            ]))
+        ..paddingIcon(const EdgeInsets.only(right: 8))
+        ..iconColor(Colors.white)
+        ..size(24)
+        ..radiusSplash(10)
+        ..padding(const EdgeInsets.symmetric(vertical: 8))
+        ..textStyle(const TextStyle(
+            fontSize: 15,
+            color: Colors.white,
+            fontWeight: FontWeight.w500
+        ))
+        ..onPressActionClick(() => controller.goToComposer(ComposerArguments()))
+        ..text(AppLocalizations.of(context).compose, isVertical: false)
+      ).build()
+    );
   }
 }
