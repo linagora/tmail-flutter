@@ -51,7 +51,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
       State? sinceState = localMailboxResponse.state!;
 
       while(hasMoreChanges && sinceState != null) {
-        final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(accountId, sinceState);
+        final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(session, accountId, sinceState);
 
         hasMoreChanges = changesResponse.hasMoreChanges;
         sinceState = changesResponse.newStateChanges;
@@ -115,14 +115,14 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   @override
-  Stream<MailboxResponse> refresh(AccountId accountId, State currentState) async* {
+  Stream<MailboxResponse> refresh(Session session, AccountId accountId, State currentState) async* {
     final localMailboxList = await mapDataSource[DataSourceType.local]!.getAllMailboxCache();
 
     bool hasMoreChanges = true;
     State? sinceState = currentState;
 
     while(hasMoreChanges && sinceState != null) {
-      final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(accountId, sinceState);
+      final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(session, accountId, sinceState);
 
       hasMoreChanges = changesResponse.hasMoreChanges;
       sinceState = changesResponse.newStateChanges;
