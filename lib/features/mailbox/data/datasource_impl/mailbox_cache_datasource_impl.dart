@@ -34,7 +34,7 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<MailboxChangeResponse> getChanges(AccountId accountId, State sinceState) {
+  Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState) {
     throw UnimplementedError();
   }
 

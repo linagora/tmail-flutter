@@ -158,14 +158,14 @@ class DestinationPickerController extends BaseMailboxController {
   }
 
   void getAllMailboxAction() {
-    if (accountId != null) {
+    if (accountId != null && _session != null) {
       consumeState(_getAllMailboxInteractor.execute(_session!, accountId!));
     }
   }
 
   void _refreshMailboxChanges(jmap.State currentMailboxState) {
-    if (accountId != null) {
-      consumeState(_refreshAllMailboxInteractor.execute(accountId!, currentMailboxState));
+    if (accountId != null && _session != null) {
+      consumeState(_refreshAllMailboxInteractor.execute(_session!, accountId!, currentMailboxState));
     }
   }
 

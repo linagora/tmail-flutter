@@ -40,9 +40,9 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<MailboxChangeResponse> getChanges(AccountId accountId, State sinceState) {
+  Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState) {
     return Future.sync(() async {
-      return await mailboxAPI.getChanges(accountId, sinceState);
+      return await mailboxAPI.getChanges(session, accountId, sinceState);
     }).catchError((error) {
       _exceptionThrower.throwException(error);
     });
