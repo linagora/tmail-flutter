@@ -103,7 +103,11 @@ class MailBoxFolderTileBuilder {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: backgroundColorItem),
-                      padding: const EdgeInsets.only(left: 4, right: 4, top: 8, bottom: 8),
+                      padding:  EdgeInsets.only(
+                        left: _mailboxNode.item.hasRole() ? 0 : 4, 
+                        right: 4, 
+                        top: 8, 
+                        bottom: 8),
                       margin: const EdgeInsets.only(bottom: 4),
                       child: Row(
                         crossAxisAlignment: _mailboxNode.item.isTeamMailboxes
@@ -195,6 +199,18 @@ class MailBoxFolderTileBuilder {
     }
   }
 
+  // double _buildSizedBoxWhenHasNotChildren() {
+  //   if (_mailboxNode.item.hasRole()) {
+  //     if (!_mailboxNode.item.hasParentId()) {
+  //       return 32;
+  //     } else {
+  //       return 8;
+  //     } 
+  //   } else {
+  //     return 32;
+  //   }
+  // }
+
   Widget _buildLeadingMailboxItem() {
     if (BuildUtils.isWeb) {
       if (mailboxDisplayed == MailboxDisplayed.mailbox) {
@@ -202,7 +218,7 @@ class MailBoxFolderTileBuilder {
           if (_mailboxNode.hasChildren())
             Row(
               children: [
-                SizedBox(width: _mailboxNode.item.hasRole() ? 0 : 8),
+                const SizedBox(width: 8),
                 buildIconWeb(
                     icon: SvgPicture.asset(
                         _mailboxNode.expandMode == ExpandMode.EXPAND
@@ -222,7 +238,7 @@ class MailBoxFolderTileBuilder {
               ],
             )
           else
-            SizedBox(width: !_mailboxNode.item.hasRole() ? 32 : 24),
+            const SizedBox(width: 32),
           Transform(
               transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
               child: _buildLeadingIcon()),
@@ -236,7 +252,7 @@ class MailBoxFolderTileBuilder {
           if (_mailboxNode.hasChildren())
             Row(
               children: [
-                const SizedBox(width: 12),
+                SizedBox(width: _mailboxNode.item.hasRole() ? 0 : 0),
                 buildIconWeb(
                     icon: SvgPicture.asset(
                         _mailboxNode.expandMode == ExpandMode.EXPAND
@@ -256,7 +272,7 @@ class MailBoxFolderTileBuilder {
               ],
             )
           else
-            const SizedBox(width: 36),
+            const SizedBox(width: 24),
           _buildLeadingIcon(),
         ]);
       } else {
@@ -335,7 +351,7 @@ class MailBoxFolderTileBuilder {
   }
 
   Widget _buildLeadingIconTeamMailboxes() {
-    if(!_mailboxNode.item.isPersonal) {
+    if (!_mailboxNode.item.isPersonal) {
       return _buildLeadingIconForChildOfTeamMailboxes();
     } else {
       return _buildMailboxIcon();
@@ -343,7 +359,7 @@ class MailBoxFolderTileBuilder {
   }
 
   Widget _buildLeadingIconForChildOfTeamMailboxes() {
-    if(_mailboxNode.item.hasParentId()) {
+    if (_mailboxNode.item.hasParentId()) {
       return _buildMailboxIcon(); 
     } else {
       return const SizedBox();

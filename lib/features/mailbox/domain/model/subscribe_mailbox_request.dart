@@ -1,14 +1,19 @@
 import 'package:equatable/equatable.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 
 class SubscribeMailboxRequest with EquatableMixin {
 
-  final MailboxId mailboxId;
+  final PresentationMailbox mailbox;
   final MailboxSubscribeState newState;
+  final MailboxSubscribeStateAction mailboxSubscribeStateAction;
 
-  SubscribeMailboxRequest(this.mailboxId, this.newState);
+  SubscribeMailboxRequest(
+    this.mailbox, 
+    this.newState, 
+    this.mailboxSubscribeStateAction);
   
   @override
-  List<Object?> get props => [mailboxId, newState];
+  List<Object?> get props => [mailbox, newState, mailboxSubscribeStateAction];
 }

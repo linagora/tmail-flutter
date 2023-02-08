@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
@@ -198,8 +199,8 @@ class MailboxController extends BaseMailboxController {
           refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
         } else if (success is MoveMailboxSuccess) {
           _moveMailboxSuccess(success);
-        } else if (success is SubscribeMailboxSuccess){
-          refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is SubscribeMailboxSuccess) {
+          subscribeMailboxSuccess(success);
         }
       }
     );
@@ -1152,7 +1153,10 @@ class MailboxController extends BaseMailboxController {
         mailboxDashBoardController.storeSpamReportStateAction();
         break;
       case MailboxActions.disableMailbox:
-        subscribeMailboxAction(mailbox);
+        subscribeMailboxAction(SubscribeMailboxRequest(
+          mailbox, 
+          MailboxSubscribeState.disabled,
+          MailboxSubscribeStateAction.subscribing));
         break;
       default:
         break;
@@ -1223,13 +1227,41 @@ class MailboxController extends BaseMailboxController {
     await refreshTree(_mailboxList);
   }
 
-  void subscribeMailboxAction(PresentationMailbox mailboxSelected) {
+  void subscribeMailboxAction(SubscribeMailboxRequest subscribeMailboxRequest) {
     final _accountId = mailboxDashBoardController.accountId.value;
     if(_accountId != null) {
-      consumeState(_subscribeMailboxInteractor.execute(_accountId, SubscribeMailboxRequest(
-        mailboxSelected.id,
-        MailboxSubscribeState.disabled,
-      )));
+      consumeState(_subscribeMailboxInteractor.execute(
+        _accountId, subscribeMailboxRequest));
     }
+  }
+
+  void subscribeMailboxSuccess(SubscribeMailboxSuccess subscribeMailboxSuccess) {
+    if(subscribeMailboxSuccess.mailboxSubscribeStateAction == MailboxSubscribeStateAction.subscribing 
+        && currentOverlayContext != null
+        && currentContext != null) {
+      _appToast.showBottomToast(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).toastMsgHideMailboxSuccess,
+          actionName: AppLocalizations.of(currentContext!).undo,
+          onActionClick: () {
+            subscribeMailboxAction(SubscribeMailboxRequest(
+              subscribeMailboxSuccess.mailbox,
+              MailboxSubscribeState.enabled,
+              MailboxSubscribeStateAction.undo));
+          },
+          leadingIcon: SvgPicture.asset(
+              _imagePaths.icFolderMailbox,
+              width: 24,
+              height: 24,
+              color: Colors.white,
+              fit: BoxFit.fill),
+          backgroundColor: AppColor.toastSuccessBackgroundColor,
+          textColor: Colors.white,
+          textActionColor: Colors.white,
+          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
+          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
+    }
+
+    refreshMailboxChanges(currentMailboxState: subscribeMailboxSuccess.currentMailboxState);
   }
 }

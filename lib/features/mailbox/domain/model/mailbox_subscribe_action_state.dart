@@ -1,0 +1,4 @@
+enum MailboxSubscribeStateAction {
+  subscribing,
+  undo
+}
