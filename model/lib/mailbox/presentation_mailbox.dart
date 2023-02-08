@@ -63,7 +63,7 @@ class PresentationMailbox with EquatableMixin {
 
   bool hasRole() => role != null && role!.value.isNotEmpty;
 
-  bool get isPersonal => namespace == Namespace('Personal');
+  bool get isPersonal => namespace == null || namespace == Namespace('Personal');
 
   bool get isTeamMailboxes => !isPersonal && !hasParentId();
 

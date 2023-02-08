@@ -1155,9 +1155,9 @@ class MailboxController extends BaseMailboxController {
         break;
       case MailboxActions.disableMailbox:
         subscribeMailboxAction(SubscribeMailboxRequest(
-          mailbox, 
+          mailbox.id, 
           MailboxSubscribeState.disabled,
-          MailboxSubscribeStateAction.subscribing));
+          MailboxSubscribeAction.unSubscribe));
         break;
       default:
         break;
@@ -1230,14 +1230,16 @@ class MailboxController extends BaseMailboxController {
 
   void subscribeMailboxAction(SubscribeMailboxRequest subscribeMailboxRequest) {
     final _accountId = mailboxDashBoardController.accountId.value;
-    if(_accountId != null) {
+    if (_accountId != null) {
       consumeState(_subscribeMailboxInteractor.execute(
-        _accountId, subscribeMailboxRequest));
+        _accountId, 
+        subscribeMailboxRequest
+      ));
     }
   }
 
   void subscribeMailboxSuccess(SubscribeMailboxSuccess subscribeMailboxSuccess) {
-    if(subscribeMailboxSuccess.mailboxSubscribeStateAction == MailboxSubscribeStateAction.subscribing 
+    if(subscribeMailboxSuccess.mailboxSubscribeStateAction == MailboxSubscribeAction.unSubscribe
         && currentOverlayContext != null
         && currentContext != null) {
       _appToast.showBottomToast(
@@ -1246,9 +1248,9 @@ class MailboxController extends BaseMailboxController {
           actionName: AppLocalizations.of(currentContext!).undo,
           onActionClick: () {
             subscribeMailboxAction(SubscribeMailboxRequest(
-              subscribeMailboxSuccess.mailbox,
+              subscribeMailboxSuccess.mailboxId,
               MailboxSubscribeState.enabled,
-              MailboxSubscribeStateAction.undo));
+              MailboxSubscribeAction.undo));
           },
           leadingIcon: SvgPicture.asset(
               _imagePaths.icFolderMailbox,
