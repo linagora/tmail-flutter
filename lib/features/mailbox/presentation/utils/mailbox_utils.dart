@@ -1,5 +1,7 @@
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
@@ -35,5 +37,17 @@ class MailboxUtils {
     }
     log('MailboxUtils::generateMapDescendantIdsAndMailboxIdList(): mapDescendantIds: $mapDescendantIds');
     return Tuple2(mapDescendantIds, allMailboxIds);
+  }
+
+  static EdgeInsets getPaddingListViewMailboxSearched(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return const EdgeInsets.only(left: 16, right: 16, bottom: 16);
+    } else {
+      if (responsiveUtils.isScreenWithShortestSide(context)) {
+        return const EdgeInsets.all(16);
+      } else {
+        return const EdgeInsets.symmetric(horizontal: 32, vertical: 16);
+      }
+    }
   }
 }

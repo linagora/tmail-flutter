@@ -148,8 +148,8 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   }
 
   void refreshMailboxChanges({jmap.State? mailboxState}) {
+    dashboardController.dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
     final newMailboxState = mailboxState ?? currentMailboxState;
-    dashboardController.dispatchMailboxUIAction(RefreshChangeMailboxAction(newMailboxState));
     final accountId = dashboardController.accountId.value;
     final session = dashboardController.sessionCurrent;
     if (session != null && accountId != null && newMailboxState != null) {
