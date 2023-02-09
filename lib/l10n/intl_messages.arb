@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-02-03T16:28:53.514637",
+  "@@last_modified": "2023-02-10T03:40:25.843946",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -120,8 +120,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "myFolders": "My Folders",
-  "@myFolders": {
+  "personalMailboxes": "Personal mailboxes",
+  "@personalMailboxes": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2680,8 +2680,50 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "mailBoxes": "Mailboxes",
+  "@mailBoxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "teamMailBoxes": "Team-mailboxes",
+  "@teamMailBoxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hideMailBoxes": "Hide mailbox",
+  "@hideMailBoxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "thisImageCannotBeAdded": "This image cannot be added.",
   "@thisImageCannotBeAdded": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMsgHideMailboxSuccess": "This mailbox has been hidden from your primary mailbox",
+  "@toastMsgHideMailboxSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "searchForMailboxes": "Search for mailboxes",
+  "@searchForMailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showMailbox": "Show mailbox",
+  "@showMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageShowMailboxSuccess": "This mailbox is already displayed in your primary mailbox",
+  "@toastMessageShowMailboxSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

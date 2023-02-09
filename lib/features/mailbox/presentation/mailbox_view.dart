@@ -6,18 +6,16 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_footer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class MailboxView extends GetWidget<MailboxController> {
+class MailboxView extends GetWidget<MailboxController> with MailboxWidgetMixin {
 
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -328,95 +326,54 @@ class MailboxView extends GetWidget<MailboxController> {
     ]);
   }
 
-  MailboxActions _mailboxActionForSpam() {
-    return controller.mailboxDashBoardController.enableSpamReport
-      ? MailboxActions.disableSpamReport
-      : MailboxActions.enableSpamReport;
-  }
-
-  List<MailboxActions> _listActionForMailbox(PresentationMailbox mailbox) {
-    return [
-      if (BuildUtils.isWeb)
-        MailboxActions.openInNewTab,
-      if (mailbox.isSpam)
-        _mailboxActionForSpam(),
-      MailboxActions.markAsRead,
-      MailboxActions.move,
-      MailboxActions.rename,
-      MailboxActions.delete,
-      if (mailbox.isSupportedDisableMailbox)
-        MailboxActions.disableMailbox
-    ];
-  }
-
-  void _openBottomSheetMailboxMenuAction(BuildContext context, PresentationMailbox mailbox) {
-    final mailboxActionsSupported = _listActionForMailbox(mailbox);
-
-    final listContextMailboxPopupMenuItemAction = mailboxActionsSupported
-      .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
-      .toList();
-
-    controller.openContextMenuAction(
-      context,
-      _bottomSheetMailboxActionTiles(
-        context,
-        mailbox,
-        listContextMailboxPopupMenuItemAction
-      )
-    );
-  }
-
-  List<Widget> _bottomSheetMailboxActionTiles(
-    BuildContext context,
-    PresentationMailbox mailbox,
-    List<ContextMenuItemMailboxAction> contextMenuActions
-  ) {
-    return contextMenuActions
-      .map((action) => _openBottomSheetMailboxMenuActionTile(context, action, mailbox))
-      .toList();
-  }
-
-  Widget _openBottomSheetMailboxMenuActionTile(
-    BuildContext context,
-    ContextMenuItemMailboxAction contextMenuItem,
-    PresentationMailbox mailbox
-  ) {
-    return (MailboxBottomSheetActionTileBuilder(
-        Key('${contextMenuItem.action.name}_action'),
-        SvgPicture.asset(
-            contextMenuItem.action.getContextMenuIcon(_imagePaths),
-            color: AppColor.primaryColor),
-        contextMenuItem.action.getTitleContextMenu(context),
-        mailbox,
-        absorbing: !contextMenuItem.isActivated,
-        opacity: !contextMenuItem.isActivated)
-      ..onActionClick((mailbox) => controller.handleMailboxAction(context, contextMenuItem.action, mailbox)))
-    .build();
-  }
-  
   List<Widget> _buildListChildTileWidget(BuildContext context, MailboxNode parentNode, {MailboxNode? lastNode}) {
     return parentNode.childrenItems
-      ?.map((mailboxNode) => mailboxNode.hasChildren()
-          ? TreeViewChild(
+      ?.map((mailboxNode) {
+          if (mailboxNode.hasChildren()) {
+            return TreeViewChild(
+              context,
+              key: const Key('children_tree_mailbox_child'),
+              isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
+              parent: Obx(() => (MailBoxFolderTileBuilder(
+                    context,
+                    _imagePaths,
+                    mailboxNode,
+                    lastNode: lastNode,
+                    allSelectMode: controller.currentSelectMode.value)
+                ..addOnLongPressMailboxNodeAction((mailboxNode) {
+                  openMailboxMenuActionOnMobile(
+                    context,
+                    _imagePaths,
+                    mailboxNode.item,
+                    controller
+                  );
+                })
+                ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
+                ..addOnClickExpandMailboxNodeAction((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
+                ..addOnSelectMailboxNodeAction((mailboxNode) => controller.selectMailboxNode(mailboxNode))
+              ).build()),
+              children: _buildListChildTileWidget(context, mailboxNode)
+            ).build();
+          } else {
+            return Obx(() => (MailBoxFolderTileBuilder(
                   context,
-                  key: const Key('children_tree_mailbox_child'),
-                  isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-                  parent: Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
-                          allSelectMode: controller.currentSelectMode.value)
-                      ..addOnLongPressMailboxNodeAction((mailboxNode) => _openBottomSheetMailboxMenuAction(context, mailboxNode.item))
-                      ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-                      ..addOnClickExpandMailboxNodeAction((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
-                      ..addOnSelectMailboxNodeAction((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
-                    .build()),
-                  children: _buildListChildTileWidget(context, mailboxNode)
-              ).build()
-          : Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
+                  _imagePaths,
+                  mailboxNode,
+                  lastNode: lastNode,
                   allSelectMode: controller.currentSelectMode.value)
-              ..addOnLongPressMailboxNodeAction((mailboxNode) => _openBottomSheetMailboxMenuAction(context, mailboxNode.item))
+              ..addOnLongPressMailboxNodeAction((mailboxNode) {
+                openMailboxMenuActionOnMobile(
+                  context,
+                  _imagePaths,
+                  mailboxNode.item,
+                  controller
+                );
+              })
               ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-              ..addOnSelectMailboxNodeAction((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
-            .build())
-      ).toList() ?? <Widget>[];
+              ..addOnSelectMailboxNodeAction((mailboxNode) => controller.selectMailboxNode(mailboxNode))
+            ).build());
+          }
+      }).toList() ?? <Widget>[];
   }
 
   Widget _buildOptionSelectionMailbox(BuildContext context) {

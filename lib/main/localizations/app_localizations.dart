@@ -2792,4 +2792,17 @@ class AppLocalizations {
       name: 'searchForMailboxes'
     );
   }
+
+  String get showMailbox {
+    return Intl.message(
+      'Show mailbox',
+      name: 'showMailbox'
+    );
+  }
+
+  String get toastMessageShowMailboxSuccess {
+    return Intl.message(
+      'This mailbox is already displayed in your primary mailbox',
+      name: 'toastMessageShowMailboxSuccess');
+  }
 }
