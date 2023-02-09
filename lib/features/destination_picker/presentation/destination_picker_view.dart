@@ -216,7 +216,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           _buildLoadingView(),
           if (actions?.hasAllMailboxDefault() == true)
             _buildAllMailboxes(context, actions, mailboxIdSelected),
-          Obx(() => controller.defaultMailboxHasChild
+          Obx(() => controller.defaultMailboxIsNotEmpty
             ? _buildMailboxCategory(
                 context,
                 MailboxCategories.exchange,
@@ -224,7 +224,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 actions,
                 mailboxIdSelected)
             : const SizedBox.shrink()),
-          Obx(() => controller.personalMailboxHasChild
+          Obx(() => controller.personalMailboxIsNotEmpty
             ? _buildMailboxCategory(
                 context,
                 MailboxCategories.personalMailboxes,

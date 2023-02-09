@@ -72,14 +72,20 @@ class MailBoxFolderTileBuilder {
     _onLongPressMailboxNodeAction = onLongPressMailboxNodeAction;
   }
 
-  Widget build() => DragTarget<List<PresentationEmail>>(
-    builder: (context, _, __,) {
+  Widget build() {
+    if (BuildUtils.isWeb) {
+      return DragTarget<List<PresentationEmail>>(
+        builder: (context, _, __,) {
+          return _buildMailboxItem();
+        },
+        onAccept: (emails) {
+          _onDragItemAccepted?.call(emails, _mailboxNode.item);
+        },
+      );
+    } else {
       return _buildMailboxItem();
-    },
-    onAccept: (emails) {
-      _onDragItemAccepted?.call(emails, _mailboxNode.item);
-    },
-  );
+    }
+  }
 
   Widget _buildMailboxItem() {
     if (mailboxDisplayed == MailboxDisplayed.mailbox) {
@@ -124,35 +130,39 @@ class MailBoxFolderTileBuilder {
           absorbing: !_mailboxNode.isActivated,
           child: Opacity(
             opacity: _mailboxNode.isActivated ? 1.0 : 0.3,
-            child: InkWell(
-              onLongPress: () => _onLongPressMailboxFolderClick?.call(_mailboxNode),
-              onTap: () => allSelectMode == SelectMode.ACTIVE
-                  ? _onSelectMailboxFolderClick?.call(_mailboxNode)
-                  : _onOpenMailboxFolderClick?.call(_mailboxNode),
-              child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(14)),
-                  child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: _mailboxNode.hasChildren() ? 8 : 15),
-                          child: Row(
-                            crossAxisAlignment: _mailboxNode.item.isTeamMailboxes
-                              ? CrossAxisAlignment.start
-                              : CrossAxisAlignment.center,
-                            children: [
-                              _buildLeadingMailboxItem(),
-                              const SizedBox(width: 8),
-                              Expanded(child: _buildTitleFolderItem()),
-                              _buildSelectedIcon(),
-                              const SizedBox(width: 8),
-                              _buildTrailingMailboxItem()
-                          ]),
-                        ),
-                      ]
-                  )
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onLongPress: () => _onLongPressMailboxFolderClick?.call(_mailboxNode),
+                onTap: () => allSelectMode == SelectMode.ACTIVE
+                    ? _onSelectMailboxFolderClick?.call(_mailboxNode)
+                    : _onOpenMailboxFolderClick?.call(_mailboxNode),
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(14)),
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: _mailboxNode.hasChildren() ? 8 : 15),
+                            child: Row(
+                              crossAxisAlignment: _mailboxNode.item.isTeamMailboxes
+                                ? CrossAxisAlignment.start
+                                : CrossAxisAlignment.center,
+                              children: [
+                                _buildLeadingMailboxItem(),
+                                const SizedBox(width: 8),
+                                Expanded(child: _buildTitleFolderItem()),
+                                _buildSelectedIcon(),
+                                const SizedBox(width: 8),
+                                _buildTrailingMailboxItem()
+                            ]),
+                          ),
+                        ]
+                    )
+                ),
               ),
             ),
           ),

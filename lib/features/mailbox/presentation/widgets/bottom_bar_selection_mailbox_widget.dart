@@ -41,7 +41,7 @@ class BottomBarSelectionMailboxWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(child: (ButtonBuilder(_imagePaths.icMove)
+        Expanded(child: (ButtonBuilder(_imagePaths.icMoveMailbox)
             ..key(const Key('button_move_all_mailbox'))
             ..paddingIcon(const EdgeInsets.all(8))
             ..textStyle(TextStyle(
@@ -77,7 +77,7 @@ class BottomBarSelectionMailboxWidget {
             })
             ..text(AppLocalizations.of(_context).rename, isVertical: true))
           .build()),
-        Expanded(child: (ButtonBuilder(_imagePaths.icRead)
+        Expanded(child: (ButtonBuilder(_imagePaths.icMarkAsRead)
             ..key(const Key('button_mark_read_all_mailbox'))
             ..paddingIcon(const EdgeInsets.all(8))
             ..textStyle(TextStyle(
@@ -95,7 +95,7 @@ class BottomBarSelectionMailboxWidget {
             })
             ..text(AppLocalizations.of(_context).mark_as_read, isVertical: true))
           .build()),
-        Expanded(child: (ButtonBuilder(_imagePaths.icDelete)
+        Expanded(child: (ButtonBuilder(_imagePaths.icDeleteMailbox)
             ..key(const Key('button_delete_all_mailbox'))
             ..paddingIcon(const EdgeInsets.all(8))
             ..textStyle(TextStyle(

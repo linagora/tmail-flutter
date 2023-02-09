@@ -173,13 +173,13 @@ abstract class BaseMailboxController extends BaseController {
     }).toList();
   }
 
-  bool get defaultMailboxHasChild =>
-      defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false;
+  bool get defaultMailboxIsNotEmpty =>
+    defaultMailboxTree.value.root.childrenItems?.isNotEmpty ?? false;
 
-  bool get personalMailboxHasChild =>
-      personalMailboxTree.value.root.childrenItems?.isNotEmpty ?? false;
+  bool get personalMailboxIsNotEmpty =>
+    personalMailboxTree.value.root.childrenItems?.isNotEmpty ?? false;
   
-  bool get teamMailboxesHasChild {
+  bool get teamMailboxesIsNotEmpty {
     return (teamMailboxesTree.value.root.childrenItems?.isNotEmpty ?? false)
       && !teamMailboxesTree.value.root.item.isTeamMailboxes;
   }
