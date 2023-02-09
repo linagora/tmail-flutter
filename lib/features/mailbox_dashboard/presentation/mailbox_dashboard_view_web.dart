@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_warning_banner_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
+import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -48,11 +49,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   @override
   Widget build(BuildContext context) {
-    if (controller.isDrawerOpen && responsiveUtils.isDesktop(context)) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        controller.closeMailboxMenuDrawer();
-      });
-    }
+    controller.hideMailboxMenuWhenScreenSizeChange(context);
 
     return Portal(
       child: Stack(children: [
@@ -108,7 +105,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     Column(children: [
                       _buildComposerButton(context),
                       Expanded(child: SizedBox(
-                        child: MailboxView(),
+                        child: Obx(() {
+                          if (controller.searchMailboxActivated.isTrue) {
+                            return const SearchMailboxView(
+                              backgroundColor: AppColor.colorBgDesktop
+                            );
+                          } else {
+                            return MailboxView();
+                          }
+                        }),
                         width: ResponsiveUtils.defaultSizeMenu
                       ))
                     ]),
@@ -183,7 +188,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         ),
         Obx(() => controller.composerOverlayState.value == ComposerOverlayState.active
             ? ComposerView()
-            : const SizedBox.shrink()),
+            : const SizedBox.shrink()
+        ),
+        Obx(() => controller.searchMailboxActivated.value == true && !responsiveUtils.isWebDesktop(context)
+          ? const SearchMailboxView()
+          : const SizedBox.shrink()
+        ),
         _buildDownloadTaskStateWidget(),
       ]),
     );
@@ -193,11 +203,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Scaffold(
       key: controller.scaffoldKey,
       drawer: ResponsiveWidget(
-      responsiveUtils: responsiveUtils,
-      mobile: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
-      tablet: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
-      tabletLarge: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeLeftMenuMobile),
-      desktop: const SizedBox.shrink()),
+        responsiveUtils: responsiveUtils,
+        mobile: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
+        tabletLarge: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeLeftMenuMobile),
+        desktop: const SizedBox.shrink()
+      ),
       body: body,
     );
   }

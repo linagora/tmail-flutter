@@ -167,6 +167,8 @@ class ImagePaths {
   String get icInfoCircleOutline => _getImagePath('ic_info_circle_outline.svg');
   String get icSpamReportDisable => _getImagePath('ic_spam_report_disable.svg');
   String get icSpamReportEnable => _getImagePath('ic_spam_report_enable.svg');
+  String get icClearSearchInput => _getImagePath('ic_clear_search_input.svg');
+  String get icHideFolder => _getImagePath('ic_hide_folder.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

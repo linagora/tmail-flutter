@@ -172,6 +172,8 @@ extension AppColor on Color {
   static const colorCreateNewIdentityButton = Color(0xFFEBEDF0);
   static const colorSpamReportBox = Color(0xFFBFDEFF);
   static const colorSubtitle = Color(0xFF6D7885);
+  static const colorBackgroundSearchMailboxInput = Color(0xFFEBEDF0);
+  static const colorMailboxPath = Color(0xFF818C99);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

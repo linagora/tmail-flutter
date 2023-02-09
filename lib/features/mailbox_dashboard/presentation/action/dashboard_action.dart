@@ -125,12 +125,12 @@ class SearchEmailByQueryAction extends DashBoardAction {
   @override
   List<Object?> get props => [navigationRouter];
 }
-class OpenSpamMailboxAction extends DashBoardAction {
+class OpenMailboxAction extends DashBoardAction {
 
   final BuildContext context;
   final PresentationMailbox presentationMailbox;
 
-  OpenSpamMailboxAction(this.context, this.presentationMailbox);
+  OpenMailboxAction(this.context, this.presentationMailbox);
 
   @override
   List<Object?> get props => [context, presentationMailbox];

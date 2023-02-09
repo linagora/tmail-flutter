@@ -159,6 +159,7 @@ class MailboxDashBoardController extends ReloadableController {
   final vacationResponse = Rxn<VacationResponse>();
   final routerParameters = Rxn<Map<String, String?>>();
   final _isDraggingMailbox = RxBool(false);
+  final searchMailboxActivated = RxBool(false);
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
   Map<MailboxId, PresentationMailbox> mapMailboxById = {};
@@ -510,6 +511,14 @@ class MailboxDashBoardController extends ReloadableController {
 
   void closeMailboxMenuDrawer() {
     scaffoldKey.currentState?.openEndDrawer();
+  }
+
+  void hideMailboxMenuWhenScreenSizeChange(BuildContext context) {
+    if (isDrawerOpen && _responsiveUtils.isWebDesktop(context)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        closeMailboxMenuDrawer();
+      });
+    }
   }
 
   bool get isDrawerOpen => scaffoldKey.currentState?.isDrawerOpen == true;
@@ -1526,8 +1535,8 @@ class MailboxDashBoardController extends ReloadableController {
     emailsInCurrentMailbox.value = newEmailList;
   }
   
-  void openSpamMailboxAction(BuildContext context, PresentationMailbox presentationMailbox){
-    dispatchAction(OpenSpamMailboxAction(context, presentationMailbox));
+  void openMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
+    dispatchAction(OpenMailboxAction(context, presentationMailbox));
   }
 
   bool get enableSpamReport => spamReportController.enableSpamReport;

@@ -85,12 +85,14 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
                         color: Colors.black,
                         fontSize: 16.0)
                 ),
-                leftButton: buildIconWeb(
+                leftButton: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: buildIconWeb(
+                    minSize: 40,
+                    iconPadding: EdgeInsets.zero,
                     icon: SvgPicture.asset(
-                        imagePaths.icSearchBar,
-                        width: 16,
-                        height: 16,
-                        fit: BoxFit.fill),
+                      imagePaths.icSearchBar,
+                      fit: BoxFit.fill),
                     onTap: () {
                       final keyword = controller.searchInputController.text.trim();
                       if (keyword.isNotEmpty) {
@@ -99,7 +101,9 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
                       } else {
                         dashBoardController.clearSearchEmail();
                       }
-                    }),
+                    }
+                  )
+                ),
                 clearTextButton: buildIconWeb(
                     icon: SvgPicture.asset(
                         imagePaths.icClearTextSearch,
