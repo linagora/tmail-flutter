@@ -18,6 +18,7 @@ class MailboxSearchedItemBuilder extends StatefulWidget {
   final OnClickOpenMailboxAction? onClickOpenMailboxAction;
   final OnClickOpenMenuMailboxAction? onClickOpenMenuMailboxAction;
   final OnDragEmailToMailboxAccepted? onDragEmailToMailboxAccepted;
+  final OnLongPressMailboxAction? onLongPressMailboxAction;
 
   const MailboxSearchedItemBuilder(
     this._imagePaths,
@@ -27,7 +28,8 @@ class MailboxSearchedItemBuilder extends StatefulWidget {
       Key? key,
       this.onClickOpenMailboxAction,
       this.onClickOpenMenuMailboxAction,
-      this.onDragEmailToMailboxAccepted
+      this.onDragEmailToMailboxAccepted,
+      this.onLongPressMailboxAction
     }
   ) : super(key: key);
 
@@ -89,6 +91,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
       return ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 8),
         onTap: _onTapMailboxAction,
+        onLongPress: _onLongPressMailboxAction,
         leading: _buildMailboxIcon(),
         title: _buildTitleItem(),
         subtitle: _buildSubtitleItem()
@@ -100,6 +103,10 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
     if (widget._presentationMailbox.isSubscribed?.value == true) {
       widget.onClickOpenMailboxAction?.call(widget._presentationMailbox);
     }
+  }
+
+  void _onLongPressMailboxAction() {
+    widget.onLongPressMailboxAction?.call(widget._presentationMailbox);
   }
 
   Widget _buildMailboxIcon() {

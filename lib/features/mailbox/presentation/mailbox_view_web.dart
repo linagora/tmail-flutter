@@ -160,7 +160,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                             color: AppColor.colorTextButton,
                             fit: BoxFit.fill
                           ),
-                          onTap: controller.enableSearch
+                          onTap: () => controller.openSearchViewAction(context)
                         ),
                         buildIconWeb(
                             minSize: 40,
@@ -463,14 +463,21 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
     return (MailboxBottomSheetActionTileBuilder(
             Key('${contextMenuItem.action.name}_action'),
             SvgPicture.asset(
-                contextMenuItem.action.getContextMenuIcon(_imagePaths),
-                color: contextMenuItem.action.getColorContextMenuIcon()),
+              contextMenuItem.action.getContextMenuIcon(_imagePaths),
+              color: contextMenuItem.action.getColorContextMenuIcon(),
+              width: 24,
+              height: 24
+            ),
             contextMenuItem.action.getTitleContextMenu(context),
             mailbox,
             absorbing: !contextMenuItem.isActivated,
             opacity: !contextMenuItem.isActivated)
-        ..onActionClick((mailbox) =>
-            controller.handleMailboxAction(context, contextMenuItem.action, mailbox)))
+        ..actionTextStyle(textStyle: const TextStyle(
+            fontSize: 16,
+            color: Colors.black,
+            fontWeight: FontWeight.w500
+        ))
+        ..onActionClick((mailbox) => controller.handleMailboxAction(context, contextMenuItem.action, mailbox)))
       .build();
   }
 
@@ -495,15 +502,17 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
           absorbing: !contextMenuItem.isActivated,
           child: Opacity(
             opacity: contextMenuItem.isActivated ? 1.0 : 0.3,
-            child: popupItem(contextMenuItem.action.getContextMenuIcon(_imagePaths),
-                contextMenuItem.action.getTitleContextMenu(context),
-                colorIcon: contextMenuItem.action.getColorContextMenuIcon(),
-                styleName: TextStyle(
-                    fontWeight: FontWeight.normal,
-                    fontSize: 17,
-                    color: contextMenuItem.action.getColorContextMenuTitle()),
-                onCallbackAction: () =>
-                    controller.handleMailboxAction(context, contextMenuItem.action, mailbox)),
+            child: popupItem(
+              contextMenuItem.action.getContextMenuIcon(_imagePaths),
+              contextMenuItem.action.getTitleContextMenu(context),
+              colorIcon: contextMenuItem.action.getColorContextMenuIcon(),
+              styleName: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                color: contextMenuItem.action.getColorContextMenuTitle()
+              ),
+              onCallbackAction: () => controller.handleMailboxAction(context, contextMenuItem.action, mailbox)
+            ),
           ),
         ));
   }

@@ -69,15 +69,15 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.enableSpamReport:
         return imagePaths.icSpamReportEnable;
       case MailboxActions.markAsRead:
-        return imagePaths.icRead;
+        return imagePaths.icMarkAsRead;
       case MailboxActions.move:
-        return imagePaths.icMove;
+        return imagePaths.icMoveMailbox;
       case MailboxActions.rename:
         return imagePaths.icRenameMailbox;
       case MailboxActions.delete:
-        return imagePaths.icDelete;
+        return imagePaths.icDeleteMailbox;
       case MailboxActions.disableMailbox:
-        return imagePaths.icEyeOff;
+        return imagePaths.icHideMailbox;
       default:
         return '';
     }
@@ -96,12 +96,8 @@ extension MailboxActionsExtension on MailboxActions {
     switch(this) {
       case MailboxActions.delete:
         return AppColor.colorActionDeleteConfirmDialog;
-      case MailboxActions.disableSpamReport:
-      case MailboxActions.enableSpamReport:
-      case MailboxActions.disableMailbox:
-        return AppColor.primaryColor;
       default:
-        return Colors.black;
+        return AppColor.primaryColor;
     }
   }
 

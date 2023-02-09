@@ -1,4 +1,5 @@
 
+import 'package:core/core.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -150,8 +151,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     final newMailboxState = mailboxState ?? currentMailboxState;
     dashboardController.dispatchMailboxUIAction(RefreshChangeMailboxAction(newMailboxState));
     final accountId = dashboardController.accountId.value;
-    if (accountId != null && newMailboxState != null) {
-      consumeState(_refreshAllMailboxInteractor.execute(accountId, newMailboxState));
+    final session = dashboardController.sessionCurrent;
+    if (session != null && accountId != null && newMailboxState != null) {
+      consumeState(_refreshAllMailboxInteractor.execute(session, accountId, newMailboxState));
     }
   }
 
@@ -359,6 +361,14 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         message: AppLocalizations.of(currentContext!).delete_mailboxes_failure,
         icon: imagePaths.icDeleteToast
       );
+    }
+  }
+
+  void openMailboxAction(BuildContext context, PresentationMailbox mailbox) {
+    dashboardController.openMailboxAction(context, mailbox);
+
+    if (!responsiveUtils.isWebDesktop(context)) {
+      closeSearchView(context);
     }
   }
 

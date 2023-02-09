@@ -1,4 +1,5 @@
 
+import 'package:core/core.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
@@ -43,7 +44,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
             if (!controller.responsiveUtils.isWebDesktop(context))
               const Divider(color: AppColor.colorDividerComposer, height: 1),
             _buildLoadingView(),
-            Expanded(child: _buildMailboxListView())
+            Expanded(child: _buildMailboxListView(context))
           ]),
         ),
       ),
@@ -68,9 +69,9 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
   Widget _buildSearchInputForm(BuildContext context) {
     return Row(children: [
       buildIconWeb(
-        minSize: 30,
+        minSize: SearchMailboxUtils.getIconSize(context, controller.responsiveUtils),
         iconPadding: EdgeInsets.zero,
-        splashRadius: 10,
+        splashRadius: SearchMailboxUtils.getIconSplashRadius(context, controller.responsiveUtils),
         icon: SvgPicture.asset(
           controller.imagePaths.icBack,
           color: AppColor.colorTextButton,
@@ -89,7 +90,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         alignment: Alignment.center,
         child: Row(children: [
           Padding(
-            padding: const EdgeInsets.only(left: 5, right: 2),
+            padding: SearchMailboxUtils.getPaddingInputSearchIcon(context, controller.responsiveUtils),
             child: buildIconWeb(
               minSize: 40,
               iconPadding: EdgeInsets.zero,
@@ -157,10 +158,10 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     )).build();
   }
 
-  Widget _buildMailboxListView() {
+  Widget _buildMailboxListView(BuildContext context) {
     return Obx(() {
       return ListView.builder(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        padding: SearchMailboxUtils.getPaddingListViewMailboxSearched(context, controller.responsiveUtils),
         key: const Key('list_mailbox_searched'),
         itemCount: controller.listMailboxSearched.length,
         shrinkWrap: true,
@@ -171,8 +172,9 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
             controller.responsiveUtils,
             controller.listMailboxSearched[index],
             onDragEmailToMailboxAccepted: controller.dashboardController.dragSelectedMultipleEmailToMailboxAction,
-            onClickOpenMailboxAction: (mailbox) => controller.dashboardController.openMailboxAction(context, mailbox),
-            onClickOpenMenuMailboxAction: (position, mailbox) => _openMailboxMenuAction(context, position, mailbox),
+            onClickOpenMailboxAction: (mailbox) => controller.openMailboxAction(context, mailbox),
+            onClickOpenMenuMailboxAction: (position, mailbox) => _openMailboxMenuAction(context, mailbox, position: position),
+            onLongPressMailboxAction: (mailbox) => _openMailboxMenuAction(context, mailbox),
           );
         }
       );
@@ -185,7 +187,11 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
       : MailboxActions.enableSpamReport;
   }
 
-  void _openMailboxMenuAction(BuildContext context, RelativeRect position, PresentationMailbox mailbox) {
+  void _openMailboxMenuAction(
+    BuildContext context,
+    PresentationMailbox mailbox,
+    {RelativeRect? position}
+  ) {
     final mailboxActionsSupported = [
       MailboxActions.openInNewTab,
       if (mailbox.isPersonal && mailbox.isSpam)
@@ -241,6 +247,8 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
           Key('${contextMenuItem.action.name}_action'),
           SvgPicture.asset(
             contextMenuItem.action.getContextMenuIcon(controller.imagePaths),
+            width: 24,
+            height: 24,
             color: contextMenuItem.action.getColorContextMenuIcon()
           ),
           contextMenuItem.action.getTitleContextMenu(context),
@@ -279,6 +287,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
           child: popupItem(contextMenuItem.action.getContextMenuIcon(controller.imagePaths),
             contextMenuItem.action.getTitleContextMenu(context),
             colorIcon: contextMenuItem.action.getColorContextMenuIcon(),
+            iconSize: 24,
             styleName: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 16,
