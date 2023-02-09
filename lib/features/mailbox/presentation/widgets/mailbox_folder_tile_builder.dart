@@ -133,7 +133,7 @@ class MailBoxFolderTileBuilder {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onLongPress: () => _onLongPressMailboxFolderClick?.call(_mailboxNode),
+                onLongPress: () => _onLongPressMailboxNodeAction?.call(_mailboxNode),
                 onTap: () => allSelectMode == SelectMode.ACTIVE
                     ? _onSelectMailboxFolderClick?.call(_mailboxNode)
                     : _onOpenMailboxFolderClick?.call(_mailboxNode),

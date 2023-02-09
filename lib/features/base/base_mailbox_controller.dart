@@ -17,6 +17,12 @@ import 'package:model/mailbox/select_mode.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
@@ -391,5 +397,23 @@ abstract class BaseMailboxController extends BaseController {
         ).build())
       );
     }
+  }
+
+  SubscribeRequest? generateSubscribeRequest(
+    MailboxId mailboxId,
+    MailboxSubscribeState subscribeState,
+    MailboxSubscribeAction subscribeAction
+  ) {
+    final mailboxNode = findMailboxNodeById(mailboxId);
+
+    if (mailboxNode != null) {
+      if (mailboxNode.hasChildren()) {
+        final listDescendantMailboxIds = mailboxNode.descendantsAsList().mailboxIds;
+        return SubscribeMultipleMailboxRequest(mailboxId, listDescendantMailboxIds, subscribeState, subscribeAction);
+      } else {
+        return SubscribeMailboxRequest(mailboxId, subscribeState, subscribeAction);
+      }
+    }
+    return null;
   }
 }

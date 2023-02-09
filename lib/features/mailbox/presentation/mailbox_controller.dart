@@ -52,7 +52,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_in
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
@@ -993,29 +992,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     await refreshTree(_mailboxList);
   }
 
-  SubscribeRequest? _generateSubscribeRequest(
-    MailboxId mailboxId,
-    MailboxSubscribeState subscribeState,
-    MailboxSubscribeAction subscribeAction
-  ) {
-    final mailboxNode = findMailboxNodeById(mailboxId);
-
-    if (mailboxNode != null) {
-      if (mailboxNode.hasChildren()) {
-        final listDescendantMailboxIds = mailboxNode.descendantsAsList().mailboxIds;
-        return SubscribeMultipleMailboxRequest(mailboxId, listDescendantMailboxIds, subscribeState, subscribeAction);
-      } else {
-        return SubscribeMailboxRequest(mailboxId, subscribeState, subscribeAction);
-      }
-    }
-    return null;
-  }
-
   void _unsubscribeMailboxAction(MailboxId mailboxId) {
     final _accountId = mailboxDashBoardController.accountId.value;
 
     if (_accountId != null) {
-      final subscribeRequest = _generateSubscribeRequest(
+      final subscribeRequest = generateSubscribeRequest(
         mailboxId,
         MailboxSubscribeState.disabled,
         MailboxSubscribeAction.unSubscribe
@@ -1145,26 +1126,5 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         consumeState(_subscribeMailboxInteractor.execute(_accountId, subscribeRequest));
       }
     }
-  }
-
-  MailboxActions _mailboxActionForSpam() {
-    return mailboxDashBoardController.enableSpamReport
-      ? MailboxActions.disableSpamReport
-      : MailboxActions.enableSpamReport;
-  }
-
-  List<MailboxActions> listActionForMailbox(PresentationMailbox mailbox) {
-    return [
-      if (BuildUtils.isWeb)
-        MailboxActions.openInNewTab,
-      if (mailbox.isSpam)
-        _mailboxActionForSpam(),
-      MailboxActions.markAsRead,
-      MailboxActions.move,
-      MailboxActions.rename,
-      MailboxActions.delete,
-      if (mailbox.isSupportedDisableMailbox)
-        MailboxActions.disableMailbox
-    ];
   }
 }

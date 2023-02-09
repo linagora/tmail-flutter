@@ -21,7 +21,7 @@ import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:model/extensions/list_email_content_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
@@ -32,8 +32,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class EmailView extends GetWidget<SingleEmailController>
-    with PopupMenuWidgetMixin {
+class EmailView extends GetWidget<SingleEmailController> {
 
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
@@ -554,7 +553,7 @@ class EmailView extends GetWidget<SingleEmailController>
   PopupMenuEntry _markAsEmailUnreadPopupItemAction(BuildContext context, PresentationEmail email) {
     return PopupMenuItem(
       padding: EdgeInsets.zero,
-      child: popupItem(
+      child: PopupItemWidget(
         imagePaths.icUnreadEmail,
         AppLocalizations.of(context).mark_as_unread,
         colorIcon: AppColor.colorTextButton,
@@ -579,7 +578,7 @@ class EmailView extends GetWidget<SingleEmailController>
   ) {
     return PopupMenuItem(
       padding: EdgeInsets.zero,
-      child: popupItem(
+      child: PopupItemWidget(
         mailboxContain?.isSpam == true ? imagePaths.icNotSpam : imagePaths.icSpam,
         mailboxContain?.isSpam == true
           ? AppLocalizations.of(context).remove_from_spam
@@ -602,7 +601,7 @@ class EmailView extends GetWidget<SingleEmailController>
   PopupMenuEntry _quickCreatingRulePopupItemAction(BuildContext context, PresentationEmail email) {
     return PopupMenuItem(
       padding: EdgeInsets.zero,
-      child: popupItem(
+      child: PopupItemWidget(
         imagePaths.icQuickCreatingRule,
         AppLocalizations.of(context).quickCreatingRule,
         colorIcon: AppColor.colorTextButton,

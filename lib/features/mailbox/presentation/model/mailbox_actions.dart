@@ -17,7 +17,8 @@ enum MailboxActions {
   openInNewTab,
   disableSpamReport,
   enableSpamReport,
-  disableMailbox
+  disableMailbox,
+  enableMailbox
 }
 
 extension MailboxActionsExtension on MailboxActions {
@@ -55,6 +56,8 @@ extension MailboxActionsExtension on MailboxActions {
         return AppLocalizations.of(context).deleteMailbox;
       case MailboxActions.disableMailbox:
         return AppLocalizations.of(context).hideMailBoxes;
+      case MailboxActions.enableMailbox:
+        return AppLocalizations.of(context).showMailbox;
       default:
         return '';
     }
@@ -78,6 +81,8 @@ extension MailboxActionsExtension on MailboxActions {
         return imagePaths.icDeleteMailbox;
       case MailboxActions.disableMailbox:
         return imagePaths.icHideMailbox;
+      case MailboxActions.enableMailbox:
+        return imagePaths.icShowMailbox;
       default:
         return '';
     }
@@ -142,9 +147,10 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.openInNewTab:
       case MailboxActions.disableSpamReport:
       case MailboxActions.enableSpamReport:
-      return mailbox.isPersonal
-        ? ContextMenuItemState.activated
-        : ContextMenuItemState.deactivated;
+        return mailbox.isPersonal
+          ? ContextMenuItemState.activated
+          : ContextMenuItemState.deactivated;
+      case MailboxActions.enableMailbox:
       case MailboxActions.disableMailbox:
         return mailbox.hasRole()
           ? ContextMenuItemState.deactivated
@@ -156,7 +162,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.move:
       case MailboxActions.rename:
       case MailboxActions.delete:
-      return !mailbox.hasRole() && mailbox.isPersonal
+        return !mailbox.hasRole() && mailbox.isPersonal
           ? ContextMenuItemState.activated
           : ContextMenuItemState.deactivated;
       default:

@@ -8,19 +8,20 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focused_menu_custom/modals.dart';
 import 'package:get/get.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/widgets/mailbox_searched_item_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SearchMailboxView extends GetWidget<SearchMailboxController>
-    with AppLoaderMixin, PopupMenuWidgetMixin {
+  with AppLoaderMixin,
+    MailboxWidgetMixin {
 
   final Color? backgroundColor;
 
@@ -35,7 +36,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: BuildUtils.isWeb
-          ? _buildSearchBody(context)
+          ? PointerInterceptor(child: _buildSearchBody(context))
           : SafeArea(child: _buildSearchBody(context)),
       ),
     );
@@ -250,30 +251,14 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     );
   }
 
-  MailboxActions _mailboxActionForSpam() {
-    return controller.dashboardController.enableSpamReport
-      ? MailboxActions.disableSpamReport
-      : MailboxActions.enableSpamReport;
-  }
-
   List<MailboxActions> _listActionForMailboxUnsubscribed() {
     return [
-      MailboxActions.markAsRead
+      MailboxActions.enableMailbox
     ];
   }
 
   List<MailboxActions> _listActionForMailboxSubscribed(PresentationMailbox mailbox) {
-    return [
-      if (BuildUtils.isWeb)
-        MailboxActions.openInNewTab,
-      if (mailbox.isSpam)
-        _mailboxActionForSpam(),
-      MailboxActions.markAsRead,
-      MailboxActions.move,
-      MailboxActions.rename,
-      MailboxActions.delete,
-      MailboxActions.disableMailbox
-    ];
+    return listActionForMailbox(mailbox, controller.dashboardController);
   }
 
   void _openMailboxMenuAction(
@@ -281,106 +266,39 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     PresentationMailbox mailbox,
     {RelativeRect? position}
   ) {
-    final mailboxActionsSupported = mailbox.isSubscribed?.value == true
+    final mailboxActionsSupported = mailbox.supportedSubscribe
       ? _listActionForMailboxSubscribed(mailbox)
       : _listActionForMailboxUnsubscribed();
 
-    final listContextMenuItemAction = mailboxActionsSupported
-      .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
-      .toList();
+    final contextMenuActions = listContextMenuItemAction(
+      mailbox,
+      controller.dashboardController,
+      mailboxActions: mailboxActionsSupported
+    );
 
     if (controller.responsiveUtils.isScreenWithShortestSide(context) || position == null) {
       controller.openContextMenuAction(
         context,
-        _bottomSheetMailboxActionTiles(
+        contextMenuMailboxActionTiles(
           context,
+          controller.imagePaths,
           mailbox,
-          listContextMenuItemAction
+          contextMenuActions,
+          handleMailboxAction: controller.handleMailboxAction
         )
       );
     } else {
       controller.openPopupMenuAction(
         context,
         position,
-        _popupMenuMailboxActionTiles(
+        popupMenuMailboxActionTiles(
           context,
+          controller.imagePaths,
           mailbox,
-          listContextMenuItemAction
+          contextMenuActions,
+          handleMailboxAction: controller.handleMailboxAction
         )
       );
     }
-  }
-
-  List<Widget> _bottomSheetMailboxActionTiles(
-    BuildContext context,
-    PresentationMailbox mailbox,
-    List<ContextMenuItemMailboxAction> contextMenuActions
-  ) {
-    return contextMenuActions
-      .map((action) => _mailboxContextMenuActionTile(context, action, mailbox))
-      .toList();
-  }
-
-  Widget _mailboxContextMenuActionTile(
-    BuildContext context,
-    ContextMenuItemMailboxAction contextMenuItem,
-    PresentationMailbox mailbox
-  ) {
-    return (MailboxBottomSheetActionTileBuilder(
-          Key('${contextMenuItem.action.name}_action'),
-          SvgPicture.asset(
-            contextMenuItem.action.getContextMenuIcon(controller.imagePaths),
-            width: 24,
-            height: 24,
-            color: contextMenuItem.action.getColorContextMenuIcon()
-          ),
-          contextMenuItem.action.getTitleContextMenu(context),
-          mailbox,
-          absorbing: !contextMenuItem.isActivated,
-          opacity: !contextMenuItem.isActivated)
-      ..actionTextStyle(textStyle: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Colors.black))
-      ..onActionClick((mailbox) => controller.handleMailboxAction(context, contextMenuItem.action, mailbox))
-    ).build();
-  }
-
-  List<PopupMenuEntry> _popupMenuMailboxActionTiles(
-      BuildContext context,
-      PresentationMailbox mailbox,
-      List<ContextMenuItemMailboxAction> contextMenuActions
-  ) {
-    return contextMenuActions
-      .map((action) => _mailboxPopupMenuActionTile(context, action, mailbox))
-      .toList();
-  }
-
-  PopupMenuItem _mailboxPopupMenuActionTile(
-      BuildContext context,
-      ContextMenuItemMailboxAction contextMenuItem,
-      PresentationMailbox mailbox
-  ) {
-    return PopupMenuItem(
-      padding: EdgeInsets.zero,
-      child: AbsorbPointer(
-        absorbing: !contextMenuItem.isActivated,
-        child: Opacity(
-          opacity: contextMenuItem.isActivated ? 1.0 : 0.3,
-          child: popupItem(
-            contextMenuItem.action.getContextMenuIcon(controller.imagePaths),
-            contextMenuItem.action.getTitleContextMenu(context),
-            colorIcon: contextMenuItem.action.getColorContextMenuIcon(),
-            iconSize: 24,
-            styleName: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 16,
-              color: contextMenuItem.action.getColorContextMenuTitle()
-            ),
-            onCallbackAction: () => controller.handleMailboxAction(context, contextMenuItem.action, mailbox))
-          ,
-        )
-      )
-    );
   }
 }
