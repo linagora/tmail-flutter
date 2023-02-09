@@ -18,8 +18,11 @@ import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
@@ -27,12 +30,14 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.d
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -53,6 +58,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   final RenameMailboxInteractor _renameMailboxInteractor;
   final MoveMailboxInteractor _moveMailboxInteractor;
   final DeleteMultipleMailboxInteractor _deleteMultipleMailboxInteractor;
+  final SubscribeMailboxInteractor _subscribeMailboxInteractor;
 
   final dashboardController = Get.find<MailboxDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
@@ -71,6 +77,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     this._renameMailboxInteractor,
     this._moveMailboxInteractor,
     this._deleteMultipleMailboxInteractor,
+    this._subscribeMailboxInteractor,
     TreeBuilder treeBuilder,
     VerifyNameInteractor verifyNameInteractor
   ) : super(treeBuilder, verifyNameInteractor);
@@ -123,6 +130,8 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
     } else if (success is DeleteMultipleMailboxHasSomeSuccess) {
       _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
+    } else if (success is SubscribeMailboxSuccess) {
+      _handleSubscribeMailboxSuccess(success);
     }
   }
 
@@ -241,6 +250,13 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
           mailbox,
           onDeleteMailboxAction: _deleteMailboxAction
         );
+        break;
+      case MailboxActions.disableMailbox:
+        _subscribeMailboxAction(SubscribeMailboxRequest(
+          mailbox.id,
+          MailboxSubscribeState.disabled,
+          MailboxSubscribeAction.unSubscribe
+        ));
         break;
       default:
         break;
@@ -376,6 +392,52 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         icon: imagePaths.icDeleteToast
       );
     }
+  }
+
+  void _subscribeMailboxAction(SubscribeMailboxRequest subscribeMailboxRequest) {
+    final _accountId = dashboardController.accountId.value;
+    if (_accountId != null) {
+      consumeState(_subscribeMailboxInteractor.execute(
+        _accountId,
+        subscribeMailboxRequest
+      ));
+    }
+  }
+
+  void _handleSubscribeMailboxSuccess(SubscribeMailboxSuccess success) {
+    if(success.mailboxSubscribeStateAction == MailboxSubscribeAction.unSubscribe
+      && currentOverlayContext != null
+      && currentContext != null
+    ) {
+      _appToast.showBottomToast(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMsgHideMailboxSuccess,
+        actionName: AppLocalizations.of(currentContext!).undo,
+        onActionClick: () => _invokeUndoUnsubscribeMailboxAction(success.mailboxId),
+        leadingIcon: SvgPicture.asset(
+          imagePaths.icFolderMailbox,
+          width: 24,
+          height: 24,
+          color: Colors.white,
+          fit: BoxFit.fill
+        ),
+        backgroundColor: AppColor.toastSuccessBackgroundColor,
+        textColor: Colors.white,
+        textActionColor: Colors.white,
+        actionIcon: SvgPicture.asset(imagePaths.icUndo),
+        maxWidth: responsiveUtils.getMaxWidthToast(currentContext!)
+      );
+    }
+
+    refreshMailboxChanges(mailboxState: success.currentMailboxState);
+  }
+
+  void _invokeUndoUnsubscribeMailboxAction(MailboxId mailboxId) {
+    _subscribeMailboxAction(SubscribeMailboxRequest(
+      mailboxId,
+      MailboxSubscribeState.enabled,
+      MailboxSubscribeAction.undo
+    ));
   }
 
   void openMailboxAction(BuildContext context, PresentationMailbox mailbox) {
