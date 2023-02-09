@@ -560,8 +560,12 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void openSearchViewAction(BuildContext context) {
-    SearchMailboxBindings().dependencies();
-    mailboxDashBoardController.searchMailboxActivated.value = true;
+    if (BuildUtils.isWeb) {
+      SearchMailboxBindings().dependencies();
+      mailboxDashBoardController.searchMailboxActivated.value = true;
+    } else {
+      push(AppRoutes.searchMailbox);
+    }
     closeMailboxScreen(context);
   }
 

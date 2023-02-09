@@ -13,4 +13,5 @@ abstract class AppRoutes {
   static const rulesFilterCreator = '/rules_filter_creator';
   static const emailsForwardCreator = '/emails_forward_creator';
   static const unknownRoutePage = '/notfound';
+  static const searchMailbox = '/search_mailbox';
 }
