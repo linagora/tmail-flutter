@@ -2,23 +2,29 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:focused_menu_custom/focused_menu.dart';
+import 'package:focused_menu_custom/modals.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
+import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
 
 class MailboxSearchedItemBuilder extends StatefulWidget {
 
   final PresentationMailbox _presentationMailbox;
   final ImagePaths _imagePaths;
   final ResponsiveUtils _responsiveUtils;
+  final double? maxWidth;
   final OnClickOpenMailboxAction? onClickOpenMailboxAction;
   final OnClickOpenMenuMailboxAction? onClickOpenMenuMailboxAction;
   final OnDragEmailToMailboxAccepted? onDragEmailToMailboxAccepted;
   final OnLongPressMailboxAction? onLongPressMailboxAction;
+  final List<FocusedMenuItem>? listPopupMenuItemAction;
 
   const MailboxSearchedItemBuilder(
     this._imagePaths,
@@ -26,10 +32,12 @@ class MailboxSearchedItemBuilder extends StatefulWidget {
     this._presentationMailbox,
     {
       Key? key,
+      this.maxWidth,
       this.onClickOpenMailboxAction,
       this.onClickOpenMenuMailboxAction,
       this.onDragEmailToMailboxAccepted,
-      this.onLongPressMailboxAction
+      this.onLongPressMailboxAction,
+      this.listPopupMenuItemAction
     }
   ) : super(key: key);
 
@@ -66,7 +74,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
             borderRadius: BorderRadius.circular(8),
             color: getBackgroundColorItem(context)
           ),
-          padding: const EdgeInsets.all(8),
+          padding: SearchMailboxUtils.getPaddingItemListView(context, widget._responsiveUtils),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -88,15 +96,81 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
         )
       );
     } else {
-      return ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-        onTap: _onTapMailboxAction,
-        onLongPress: _onLongPressMailboxAction,
-        leading: _buildMailboxIcon(),
-        title: _buildTitleItem(),
-        subtitle: _buildSubtitleItem()
+      return ResponsiveWidget(
+        responsiveUtils: widget._responsiveUtils,
+        mobile: _buildMailboxItemMobile(),
+        tablet: _buildMailboxItemTablet()
       );
     }
+  }
+
+  Widget _buildMailboxItemTablet() {
+    return FocusedMenuHolder(
+      onPressed: () {},
+      menuWidth: widget.maxWidth,
+      blurBackgroundColor: AppColor.colorInputBorderCreateMailbox,
+      blurSize: 0.0,
+      duration: const Duration(milliseconds: 100),
+      menuOffset: 8.0,
+      animateMenuItems: true,
+      menuItems: widget.listPopupMenuItemAction ?? [],
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _onTapMailboxAction,
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
+          child: Padding(
+            padding: SearchMailboxUtils.getPaddingItemListView(context, widget._responsiveUtils),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildMailboxIcon(),
+                Expanded(child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTitleItem(),
+                      _buildSubtitleItem()
+                    ]
+                  )
+                ))
+              ]
+            ),
+          )
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMailboxItemMobile() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _onTapMailboxAction,
+        onLongPress: _onLongPressMailboxAction,
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+        child: Padding(
+          padding: SearchMailboxUtils.getPaddingItemListView(context, widget._responsiveUtils),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildMailboxIcon(),
+              Expanded(child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTitleItem(),
+                    _buildSubtitleItem()
+                  ]
+                )
+              ))
+            ]
+          ),
+        )
+      ),
+    );
   }
 
   void _onTapMailboxAction() {

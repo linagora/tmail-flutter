@@ -7,9 +7,9 @@ class SearchMailboxUtils {
       return const EdgeInsets.symmetric(vertical: 8, horizontal: 16);
     } else {
       if (responsiveUtils.isScreenWithShortestSide(context)) {
-        return const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+        return const EdgeInsets.symmetric(horizontal: 12, vertical: 8);
       } else {
-        return const EdgeInsets.symmetric(horizontal: 32, vertical: 8);
+        return const EdgeInsets.symmetric(horizontal: 28, vertical: 8);
       }
     }
   }
@@ -19,9 +19,9 @@ class SearchMailboxUtils {
       return const EdgeInsets.only(left: 5, right: 2);
     } else {
       if (responsiveUtils.isScreenWithShortestSide(context)) {
-        return const EdgeInsets.only(left: 10, right: 16);
+        return const EdgeInsets.only(left: 6, right: 14);
       } else {
-        return const EdgeInsets.only(left: 10, right: 16);
+        return const EdgeInsets.only(left: 8, right: 16);
       }
     }
   }
@@ -51,6 +51,14 @@ class SearchMailboxUtils {
       } else {
         return const EdgeInsets.symmetric(horizontal: 32, vertical: 16);
       }
+    }
+  }
+
+  static EdgeInsets getPaddingItemListView(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return const EdgeInsets.all(8);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 8, vertical: 10);
     }
   }
 }
