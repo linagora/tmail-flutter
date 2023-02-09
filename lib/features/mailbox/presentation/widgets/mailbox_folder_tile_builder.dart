@@ -8,14 +8,8 @@ import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_ma
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-
-typedef OnExpandFolderActionClick = void Function(MailboxNode);
-typedef OnOpenMailboxFolderClick = void Function(MailboxNode);
-typedef OnSelectMailboxFolderClick = void Function(MailboxNode);
-typedef OnMenuActionClick = void Function(RelativeRect, MailboxNode);
-typedef OnDragItemAccepted = void Function(List<PresentationEmail>, PresentationMailbox);
-typedef OnLongPressMailboxFolderClick = void Function(MailboxNode);
 
 class MailBoxFolderTileBuilder {
 
@@ -31,13 +25,13 @@ class MailBoxFolderTileBuilder {
   final MailboxActions? mailboxActions;
   final MailboxId? mailboxIdAlreadySelected;
 
-  OnExpandFolderActionClick? _onExpandFolderActionClick;
-  OnOpenMailboxFolderClick? _onOpenMailboxFolderClick;
-  OnSelectMailboxFolderClick? _onSelectMailboxFolderClick;
-  OnMenuActionClick? _onMenuActionClick;
-  OnDragItemAccepted? _onDragItemAccepted;
-  OnLongPressMailboxFolderClick? _onLongPressMailboxFolderClick;
-
+  OnClickExpandMailboxNodeAction? _onExpandFolderActionClick;
+  OnClickOpenMailboxNodeAction? _onOpenMailboxFolderClick;
+  OnSelectMailboxNodeAction? _onSelectMailboxFolderClick;
+  OnClickOpenMenuMailboxNodeAction? _onMenuActionClick;
+  OnDragEmailToMailboxAccepted? _onDragItemAccepted;
+  OnLongPressMailboxNodeAction? _onLongPressSpamReport;
+  
   bool isHoverItem = false;
 
   MailBoxFolderTileBuilder(
@@ -54,28 +48,28 @@ class MailBoxFolderTileBuilder {
     }
   );
 
-  void addOnExpandFolderActionClick(OnExpandFolderActionClick onExpandFolderActionClick) {
+  void addOnClickExpandMailboxNodeAction(OnClickExpandMailboxNodeAction onExpandFolderActionClick) {
     _onExpandFolderActionClick = onExpandFolderActionClick;
   }
 
-  void addOnOpenMailboxFolderClick(OnOpenMailboxFolderClick onOpenMailboxFolderClick) {
+  void addOnClickOpenMailboxNodeAction(OnClickOpenMailboxNodeAction onOpenMailboxFolderClick) {
     _onOpenMailboxFolderClick = onOpenMailboxFolderClick;
   }
 
-  void addOnSelectMailboxFolderClick(OnSelectMailboxFolderClick onSelectMailboxFolderClick) {
+  void addOnSelectMailboxNodeAction(OnSelectMailboxNodeAction onSelectMailboxFolderClick) {
     _onSelectMailboxFolderClick = onSelectMailboxFolderClick;
   }
 
-  void addOnMenuActionClick(OnMenuActionClick onMenuActionClick) {
+  void addOnClickOpenMenuMailboxNodeAction(OnClickOpenMenuMailboxNodeAction onMenuActionClick) {
     _onMenuActionClick = onMenuActionClick;
   }
 
-  void addOnDragItemAccepted(OnDragItemAccepted onDragItemAccepted) {
+  void addOnDragEmailToMailboxAccepted(OnDragEmailToMailboxAccepted onDragItemAccepted) {
     _onDragItemAccepted = onDragItemAccepted;
   }
 
-  void addOnLongPressMailboxFolderClick(OnLongPressMailboxFolderClick onLongPressMailboxFolderClick) {
-    _onLongPressMailboxFolderClick = onLongPressMailboxFolderClick;
+  void addOnLongPressMailboxNodeAction(OnLongPressMailboxNodeAction onLongPressSpamReport) {
+    _onLongPressSpamReport = onLongPressSpamReport;
   }
 
   Widget build() => DragTarget<List<PresentationEmail>>(

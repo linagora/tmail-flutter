@@ -282,8 +282,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                     mailboxActions: actions,
                     mailboxIdAlreadySelected: mailboxIdSelected,
                     mailboxDisplayed: MailboxDisplayed.destinationPicker)
-                ..addOnOpenMailboxFolderClick((node) => _pickMailboxNode(context, node))
-                ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
+                ..addOnClickOpenMailboxNodeAction((node) => _pickMailboxNode(context, node))
+                ..addOnClickExpandMailboxNodeAction((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
               ).build(),
             children: _buildListChildTileWidget(
                 context,
@@ -300,7 +300,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 mailboxDisplayed: MailboxDisplayed.destinationPicker,
                 mailboxIdAlreadySelected: mailboxIdSelected,
                 mailboxActions: actions)
-            ..addOnOpenMailboxFolderClick((node) => _pickMailboxNode(context, node))
+            ..addOnClickOpenMailboxNodeAction((node) => _pickMailboxNode(context, node))
           ).build();
         }})
       .toList() ?? <Widget>[];

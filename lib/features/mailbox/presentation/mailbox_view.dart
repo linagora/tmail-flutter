@@ -226,13 +226,16 @@ class MailboxView extends GetWidget<MailboxController> {
                   Row(
                     children: [
                       buildIconWeb(
-                          iconSize: 20,
-                          minSize: 40,
-                          iconPadding: EdgeInsets.zero,
-                          splashRadius: 15,
-                          icon: SvgPicture.asset(_imagePaths.icSearchBar, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                        minSize: 40,
+                        iconPadding: EdgeInsets.zero,
+                        icon: SvgPicture.asset(
+                          _imagePaths.icSearchBar,
+                          color: AppColor.colorTextButton,
+                          fit: BoxFit.fill
+                        ),
                           tooltip: AppLocalizations.of(context).search_folder,
-                          onTap: () => controller.enableSearch()),
+                        onTap: controller.enableSearch
+                      ),
                       buildIconWeb(
                           minSize: 40,
                           iconSize: 20,
@@ -391,18 +394,18 @@ class MailboxView extends GetWidget<MailboxController> {
                   isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
                   parent: Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
                           allSelectMode: controller.currentSelectMode.value)
-                      ..addOnLongPressMailboxFolderClick((mailboxNode) => _openBottomSheetMailboxMenuAction(context, mailboxNode.item))
-                      ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-                      ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
-                      ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
+                      ..addOnLongPressMailboxNodeAction((mailboxNode) => _openBottomSheetMailboxMenuAction(context, mailboxNode.item))
+                      ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
+                      ..addOnClickExpandMailboxNodeAction((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
+                      ..addOnSelectMailboxNodeAction((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
                     .build()),
                   children: _buildListChildTileWidget(context, mailboxNode)
               ).build()
           : Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
                   allSelectMode: controller.currentSelectMode.value)
-              ..addOnLongPressMailboxFolderClick((mailboxNode) => _openBottomSheetMailboxMenuAction(context, mailboxNode.item))
-              ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-              ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
+              ..addOnLongPressMailboxNodeAction((mailboxNode) => _openBottomSheetMailboxMenuAction(context, mailboxNode.item))
+              ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
+              ..addOnSelectMailboxNodeAction((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
             .build())
       ).toList() ?? <Widget>[];
   }
@@ -466,7 +469,7 @@ class MailboxView extends GetWidget<MailboxController> {
                         allSelectMode: controller.currentSelectMode.value,
                         lastMailboxIdInSearchedList: controller.listMailboxSearched.last.id)
                     ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox))
-                    ..addOnSelectMailboxActionClick((mailbox) => controller.selectMailboxSearched(context, mailbox)))
+                    ..addOnSelectMailboxAction((mailbox) => controller.selectMailboxSearched(context, mailbox)))
                   .build())
         )
     ));

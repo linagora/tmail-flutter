@@ -9,7 +9,7 @@ class VerifyNameViewState extends UIState {
 }
 
 class VerifyNameFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   VerifyNameFailure(this.exception);
   @override

@@ -6,11 +6,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
-
-typedef OnOpenMailboxActionClick = void Function(PresentationMailbox);
-typedef OnSelectMailboxActionClick = void Function(PresentationMailbox);
-typedef OnOpenMenuActionClick = void Function(RelativeRect, PresentationMailbox);
-typedef OnDragItemAccepted = void Function(List<PresentationEmail>, PresentationMailbox);
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 
 class MailboxSearchTileBuilder {
 
@@ -27,10 +23,10 @@ class MailboxSearchTileBuilder {
 
   bool isHoverItem = false;
 
-  OnOpenMailboxActionClick? _onOpenMailboxActionClick;
-  OnSelectMailboxActionClick? _onSelectMailboxActionClick;
-  OnOpenMenuActionClick? _onMenuActionClick;
-  OnDragItemAccepted? _onDragItemAccepted;
+  OnClickOpenMailboxAction? _onOpenMailboxActionClick;
+  OnSelectMailboxAction? _onSelectMailboxActionClick;
+  OnClickOpenMenuMailboxAction? _onMenuActionClick;
+  OnDragEmailToMailboxAccepted? _onDragItemAccepted;
 
   MailboxSearchTileBuilder(
     this._context,
@@ -47,19 +43,19 @@ class MailboxSearchTileBuilder {
     }
   );
 
-  void addOnOpenMailboxAction(OnOpenMailboxActionClick onOpenMailboxActionClick) {
+  void addOnOpenMailboxAction(OnClickOpenMailboxAction onOpenMailboxActionClick) {
     _onOpenMailboxActionClick = onOpenMailboxActionClick;
   }
 
-  void addOnSelectMailboxActionClick(OnSelectMailboxActionClick onSelectMailboxActionClick) {
+  void addOnSelectMailboxAction(OnSelectMailboxAction onSelectMailboxActionClick) {
     _onSelectMailboxActionClick = onSelectMailboxActionClick;
   }
 
-  void addOnMenuActionClick(OnOpenMenuActionClick onOpenMenuActionClick) {
+  void addOnMenuActionClick(OnClickOpenMenuMailboxAction onOpenMenuActionClick) {
     _onMenuActionClick = onOpenMenuActionClick;
   }
 
-  void addOnDragItemAccepted(OnDragItemAccepted onDragItemAccepted) {
+  void addOnDragEmailToMailboxAccepted(OnDragEmailToMailboxAccepted onDragItemAccepted) {
     _onDragItemAccepted = onDragItemAccepted;
   }
 
