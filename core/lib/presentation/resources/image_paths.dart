@@ -169,6 +169,10 @@ class ImagePaths {
   String get icSpamReportEnable => _getImagePath('ic_spam_report_enable.svg');
   String get icClearSearchInput => _getImagePath('ic_clear_search_input.svg');
   String get icHideFolder => _getImagePath('ic_hide_folder.svg');
+  String get icMoveMailbox => _getImagePath('ic_move_mailbox.svg');
+  String get icMarkAsRead => _getImagePath('ic_mark_as_read.svg');
+  String get icDeleteMailbox => _getImagePath('ic_delete_mailbox.svg');
+  String get icHideMailbox => _getImagePath('ic_hide_mailbox.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

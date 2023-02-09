@@ -30,7 +30,7 @@ class MailBoxFolderTileBuilder {
   OnSelectMailboxNodeAction? _onSelectMailboxFolderClick;
   OnClickOpenMenuMailboxNodeAction? _onMenuActionClick;
   OnDragEmailToMailboxAccepted? _onDragItemAccepted;
-  OnLongPressMailboxNodeAction? _onLongPressSpamReport;
+  OnLongPressMailboxNodeAction? _onLongPressMailboxNodeAction;
   
   bool isHoverItem = false;
 
@@ -68,8 +68,8 @@ class MailBoxFolderTileBuilder {
     _onDragItemAccepted = onDragItemAccepted;
   }
 
-  void addOnLongPressMailboxNodeAction(OnLongPressMailboxNodeAction onLongPressSpamReport) {
-    _onLongPressSpamReport = onLongPressSpamReport;
+  void addOnLongPressMailboxNodeAction(OnLongPressMailboxNodeAction onLongPressMailboxNodeAction) {
+    _onLongPressMailboxNodeAction = onLongPressMailboxNodeAction;
   }
 
   Widget build() => DragTarget<List<PresentationEmail>>(

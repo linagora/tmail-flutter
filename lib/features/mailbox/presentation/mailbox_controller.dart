@@ -596,10 +596,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   bool isSearchActive() => searchState.value.searchStatus == SearchStatus.ACTIVE;
 
-  void enableSearch() {
-    _cancelSelectMailbox();
+  void openSearchViewAction(BuildContext context) {
     SearchMailboxBindings().dependencies();
     mailboxDashBoardController.searchMailboxActivated.value = true;
+    closeMailboxScreen(context);
   }
 
   void disableSearch() {
