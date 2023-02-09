@@ -153,12 +153,15 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                     child: Row(
                       children: [
                         buildIconWeb(
-                            minSize: 40,
-                            iconSize: 20,
-                            iconPadding: EdgeInsets.zero,
-                            splashRadius: 15,
-                            icon: SvgPicture.asset(_imagePaths.icSearchBar, color: AppColor.colorTextButton, fit: BoxFit.fill),
-                            onTap: () => controller.enableSearch()),
+                          minSize: 40,
+                          iconPadding: EdgeInsets.zero,
+                          icon: SvgPicture.asset(
+                            _imagePaths.icSearchBar,
+                            color: AppColor.colorTextButton,
+                            fit: BoxFit.fill
+                          ),
+                          onTap: controller.enableSearch
+                        ),
                         buildIconWeb(
                             minSize: 40,
                             iconSize: 20,
@@ -295,27 +298,27 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                 isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
                 parent: Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
                         mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
-                    ..addOnOpenMailboxFolderClick((mailboxNode) =>
+                    ..addOnClickOpenMailboxNodeAction((mailboxNode) =>
                         controller.openMailbox(context, mailboxNode.item))
-                    ..addOnExpandFolderActionClick((mailboxNode) =>
+                    ..addOnClickExpandMailboxNodeAction((mailboxNode) =>
                         controller.toggleMailboxFolder(mailboxNode))
-                    ..addOnMenuActionClick((position, mailboxNode) =>
+                    ..addOnClickOpenMenuMailboxNodeAction((position, mailboxNode) =>
                         _openMailboxMenuAction(context, position, mailboxNode.item))
-                    ..addOnSelectMailboxFolderClick((mailboxNode) =>
+                    ..addOnSelectMailboxNodeAction((mailboxNode) =>
                         controller.selectMailboxNode(mailboxNode))
-                    ..addOnDragItemAccepted(_handleDragItemAccepted))
+                    ..addOnDragEmailToMailboxAccepted(_handleDragItemAccepted))
                   .build()),
                 children: _buildListChildTileWidget(context, mailboxNode)
             ).build()
           : Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
                   mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
-              ..addOnOpenMailboxFolderClick((mailboxNode) =>
+              ..addOnClickOpenMailboxNodeAction((mailboxNode) =>
                   controller.openMailbox(context, mailboxNode.item))
-              ..addOnMenuActionClick((position, mailboxNode) =>
+              ..addOnClickOpenMenuMailboxNodeAction((position, mailboxNode) =>
                   _openMailboxMenuAction(context, position, mailboxNode.item))
-              ..addOnSelectMailboxFolderClick((mailboxNode) =>
+              ..addOnSelectMailboxNodeAction((mailboxNode) =>
                   controller.selectMailboxNode(mailboxNode))
-              ..addOnDragItemAccepted(_handleDragItemAccepted))
+              ..addOnDragEmailToMailboxAccepted(_handleDragItemAccepted))
             .build())
     ).toList() ?? <Widget>[];
   }
@@ -392,10 +395,10 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
                       _imagePaths,
                       _responsiveUtils,
                       listMailbox[index])
-                  ..addOnDragItemAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction)
+                  ..addOnDragEmailToMailboxAccepted(controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction)
                   ..addOnOpenMailboxAction((mailbox) => controller.openMailbox(context, mailbox))
                   ..addOnMenuActionClick((position, mailbox) => _openMailboxMenuAction(context, position, mailbox))
-                  ..addOnSelectMailboxActionClick((mailbox) => controller.selectMailboxSearched(context, mailbox)))
+                  ..addOnSelectMailboxAction((mailbox) => controller.selectMailboxSearched(context, mailbox)))
                 .build()))
     );
   }
@@ -427,7 +430,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
     if (_responsiveUtils.isScreenWithShortestSide(context)) {
       controller.openContextMenuAction(
           context,
-          _bottomSheetIdentityActionTiles(
+          _bottomSheetMailboxActionTiles(
               context,
               mailbox,
               listContextMenuItemAction));
@@ -442,7 +445,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
     }
   }
 
-  List<Widget> _bottomSheetIdentityActionTiles(
+  List<Widget> _bottomSheetMailboxActionTiles(
       BuildContext context,
       PresentationMailbox mailbox,
       List<ContextMenuItemMailboxAction> contextMenuActions

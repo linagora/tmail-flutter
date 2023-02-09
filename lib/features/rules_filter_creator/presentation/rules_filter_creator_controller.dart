@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/destination_picker/presentation/model/des
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
@@ -44,7 +45,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   final _appToast = Get.find<AppToast>();
 
-  final VerifyNameInteractor _verifyNameInteractor;
   final GetAllMailboxInteractor _getAllMailboxInteractor;
 
   GetAllRulesInteractor? _getAllRulesInteractor;
@@ -76,10 +76,10 @@ class RulesFilterCreatorController extends BaseMailboxController {
   List<TMailRule>? _listEmailRule;
 
   RulesFilterCreatorController(
-    this._verifyNameInteractor,
     this._getAllMailboxInteractor,
-    treeBuilder
-  ) : super(treeBuilder);
+    TreeBuilder treeBuilder,
+    VerifyNameInteractor verifyNameInteractor,
+  ) : super(treeBuilder, verifyNameInteractor);
 
   @override
   void onInit() {
@@ -206,7 +206,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   }
 
   String? _getErrorStringByInputValue(BuildContext context, String? inputValue) {
-    return _verifyNameInteractor.execute(inputValue, [EmptyNameValidator()]).fold(
+    return verifyNameInteractor.execute(inputValue, [EmptyNameValidator()]).fold(
       (failure) {
           if (failure is VerifyNameFailure) {
             return failure.getMessageRulesFilter(context);

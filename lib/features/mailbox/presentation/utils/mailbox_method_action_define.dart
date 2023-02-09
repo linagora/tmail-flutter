@@ -1,0 +1,16 @@
+
+import 'package:flutter/material.dart';
+import 'package:model/email/presentation_email.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+
+typedef OnClickOpenMailboxAction = void Function(PresentationMailbox);
+typedef OnClickOpenMenuMailboxAction = void Function(RelativeRect, PresentationMailbox);
+typedef OnSelectMailboxAction = void Function(PresentationMailbox);
+typedef OnDragEmailToMailboxAccepted = void Function(List<PresentationEmail>, PresentationMailbox);
+
+typedef OnClickExpandMailboxNodeAction = void Function(MailboxNode);
+typedef OnClickOpenMailboxNodeAction = void Function(MailboxNode);
+typedef OnSelectMailboxNodeAction = void Function(MailboxNode);
+typedef OnClickOpenMenuMailboxNodeAction = void Function(RelativeRect, MailboxNode);
+typedef OnLongPressMailboxNodeAction = void Function(MailboxNode);
