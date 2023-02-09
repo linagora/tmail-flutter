@@ -49,15 +49,14 @@ class SearchBarView extends StatelessWidget {
             children: [
               const SizedBox(width: 8),
               buildIconWeb(
-                  splashRadius: 15,
-                  minSize: 40,
-                  iconPadding: EdgeInsets.zero,
-                  icon: SvgPicture.asset(
-                      _imagePaths.icSearchBar,
-                      width: 16,
-                      height: 16,
-                      fit: BoxFit.fill),
-                  onTap: onOpenSearchViewAction),
+                minSize: 40,
+                iconPadding: EdgeInsets.zero,
+                icon: SvgPicture.asset(
+                  _imagePaths.icSearchBar,
+                  fit: BoxFit.fill
+                ),
+                onTap: onOpenSearchViewAction
+              ),
               Expanded(
                 child: Text(
                     hintTextSearch ?? '',

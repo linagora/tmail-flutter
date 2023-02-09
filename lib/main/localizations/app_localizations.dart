@@ -2779,10 +2779,17 @@ class AppLocalizations {
       name: 'thisImageCannotBeAdded'
     );
   }
-  
+
   String get toastMsgHideMailboxSuccess {
     return Intl.message(
       'This mailbox has been hidden from your primary mailbox',
       name: 'toastMsgHideMailboxSuccess');
+  }
+
+  String get searchForMailboxes {
+    return Intl.message(
+      'Search for mailboxes',
+      name: 'searchForMailboxes'
+    );
   }
 }

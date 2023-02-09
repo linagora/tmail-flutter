@@ -80,7 +80,7 @@ class SpamReportController extends BaseController {
   void openMailbox(BuildContext context) {
     final _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     dismissSpamReportAction();
-    _mailboxDashBoardController.openSpamMailboxAction(context, _presentationSpamMailbox.value!);
+    _mailboxDashBoardController.openMailboxAction(context, _presentationSpamMailbox.value!);
   }
 
   void storeSpamReportStateAction(SpamReportState spamReportState) {
