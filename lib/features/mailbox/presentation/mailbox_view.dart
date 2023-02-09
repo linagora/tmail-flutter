@@ -233,8 +233,8 @@ class MailboxView extends GetWidget<MailboxController> {
                           color: AppColor.colorTextButton,
                           fit: BoxFit.fill
                         ),
-                          tooltip: AppLocalizations.of(context).search_folder,
-                        onTap: controller.enableSearch
+                        tooltip: AppLocalizations.of(context).search_folder,
+                        onTap: () => controller.openSearchViewAction(context)
                       ),
                       buildIconWeb(
                           minSize: 40,
