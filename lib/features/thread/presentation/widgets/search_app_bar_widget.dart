@@ -145,8 +145,17 @@ class SearchAppBarWidget {
   }
 
  Widget _buildSearchButton() {
-    return buildIconWeb(
-        icon: SvgPicture.asset(_imagePaths.icSearchBar, width: 16, height: 16, fit: BoxFit.fill),
-        onTap: () => _onSearchTextAction?.call(_searchInputController?.text ?? ''));
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: buildIconWeb(
+        minSize: 40,
+        iconPadding: EdgeInsets.zero,
+        icon: SvgPicture.asset(
+          _imagePaths.icSearchBar,
+          fit: BoxFit.fill
+        ),
+        onTap: () => _onSearchTextAction?.call(_searchInputController?.text ?? '')
+      ),
+    );
  }
 }
