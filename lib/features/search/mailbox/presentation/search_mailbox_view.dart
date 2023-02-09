@@ -2,8 +2,10 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:focused_menu_custom/modals.dart';
 import 'package:get/get.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
@@ -32,21 +34,27 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     return Scaffold(
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: Container(
-          color: backgroundColor ?? Colors.white,
-          child: Column(children: [
-            Container(
-              color: Colors.transparent,
-              padding: SearchMailboxUtils.getPaddingAppBar(context, controller.responsiveUtils),
-              child: _buildSearchInputForm(context)
-            ),
-            if (!controller.responsiveUtils.isWebDesktop(context))
-              const Divider(color: AppColor.colorDividerComposer, height: 1),
-            _buildLoadingView(),
-            Expanded(child: _buildMailboxListView(context))
-          ]),
-        ),
+        child: BuildUtils.isWeb
+          ? _buildSearchBody(context)
+          : SafeArea(child: _buildSearchBody(context)),
       ),
+    );
+  }
+
+  Widget _buildSearchBody(BuildContext context) {
+    return Container(
+      color: backgroundColor ?? Colors.white,
+      child: Column(children: [
+        Container(
+          color: Colors.transparent,
+          padding: SearchMailboxUtils.getPaddingAppBar(context, controller.responsiveUtils),
+          child: _buildSearchInputForm(context)
+        ),
+        if (!controller.responsiveUtils.isWebDesktop(context))
+          const Divider(color: AppColor.colorDividerComposer, height: 1),
+        _buildLoadingView(),
+        Expanded(child: _buildMailboxListView(context))
+      ]),
     );
   }
 
@@ -99,7 +107,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
                 fit: BoxFit.fill
               ),
               tooltip: AppLocalizations.of(context).search,
-              onTap: controller.searchMailboxAction
+              onTap: () => controller.handleSearchButtonPressed(context)
             ),
           ),
           Expanded(child: _buildTextFieldSearchInput(context)),
@@ -132,6 +140,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     return (TextFieldBuilder()
       ..onChange(controller.onTextSearchChange)
       ..textInputAction(TextInputAction.search)
+      ..autoFocus(true)
       ..addController(controller.textInputSearchController)
       ..textStyle(const TextStyle(
           color: Colors.black,
@@ -166,24 +175,105 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         shrinkWrap: true,
         primary: false,
         itemBuilder: (context, index) {
-          return MailboxSearchedItemBuilder(
-            controller.imagePaths,
-            controller.responsiveUtils,
-            controller.listMailboxSearched[index],
-            onDragEmailToMailboxAccepted: controller.dashboardController.dragSelectedMultipleEmailToMailboxAction,
-            onClickOpenMailboxAction: (mailbox) => controller.openMailboxAction(context, mailbox),
-            onClickOpenMenuMailboxAction: (position, mailbox) => _openMailboxMenuAction(context, mailbox, position: position),
-            onLongPressMailboxAction: (mailbox) => _openMailboxMenuAction(context, mailbox),
-          );
+          return LayoutBuilder(builder: (context, constraints) {
+            final mailboxCurrent = controller.listMailboxSearched[index];
+            return MailboxSearchedItemBuilder(
+              controller.imagePaths,
+              controller.responsiveUtils,
+              mailboxCurrent,
+              maxWidth: constraints.maxWidth,
+              onDragEmailToMailboxAccepted: controller.dashboardController.dragSelectedMultipleEmailToMailboxAction,
+              onClickOpenMailboxAction: (mailbox) => controller.openMailboxAction(context, mailbox),
+              onClickOpenMenuMailboxAction: (position, mailbox) => _openMailboxMenuAction(context, mailbox, position: position),
+              onLongPressMailboxAction: (mailbox) => _openMailboxMenuAction(context, mailbox),
+              listPopupMenuItemAction: _listPopupMenuItemAction(context, mailboxCurrent)
+            );
+          });
         }
       );
     });
   }
 
-  MailboxActions mailboxActionForSpam() {
+  List<FocusedMenuItem> _listPopupMenuItemAction(BuildContext context, PresentationMailbox mailbox) {
+    final mailboxActionsSupported = mailbox.isSubscribed?.value == true
+      ? _listActionForMailboxSubscribed(mailbox)
+      : _listActionForMailboxUnsubscribed();
+
+    final listContextMenuItemAction = mailboxActionsSupported
+      .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
+      .toList();
+
+    return listContextMenuItemAction
+      .map((action) => _mailboxFocusedMenuItem(context, action, mailbox))
+      .toList();
+  }
+
+  FocusedMenuItem _mailboxFocusedMenuItem(
+    BuildContext context,
+    ContextMenuItemMailboxAction contextMenuItem,
+    PresentationMailbox mailbox
+  ) {
+    return FocusedMenuItem(
+      backgroundColor: Colors.white,
+      onPressed: () => controller.handleMailboxAction(
+        context,
+        contextMenuItem.action,
+        mailbox,
+        isFocusedMenu: true
+      ),
+      title: Expanded(
+        child: AbsorbPointer(
+          absorbing: !contextMenuItem.isActivated,
+          child: Opacity(
+            opacity: contextMenuItem.isActivated ? 1.0 : 0.3,
+            child: Row(children: [
+              SvgPicture.asset(
+                contextMenuItem.action.getContextMenuIcon(controller.imagePaths),
+                width: 24,
+                height: 24,
+                fit: BoxFit.fill,
+                color: contextMenuItem.action.getColorContextMenuIcon()
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Text(
+                contextMenuItem.action.getTitleContextMenu(context),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                  color: contextMenuItem.action.getColorContextMenuTitle()
+                )
+              )),
+            ]),
+          ),
+        ),
+      )
+    );
+  }
+
+  MailboxActions _mailboxActionForSpam() {
     return controller.dashboardController.enableSpamReport
       ? MailboxActions.disableSpamReport
       : MailboxActions.enableSpamReport;
+  }
+
+  List<MailboxActions> _listActionForMailboxUnsubscribed() {
+    return [
+      MailboxActions.markAsRead
+    ];
+  }
+
+  List<MailboxActions> _listActionForMailboxSubscribed(PresentationMailbox mailbox) {
+    return [
+      if (BuildUtils.isWeb)
+        MailboxActions.openInNewTab,
+      if (mailbox.isSpam)
+        _mailboxActionForSpam(),
+      MailboxActions.markAsRead,
+      MailboxActions.move,
+      MailboxActions.rename,
+      MailboxActions.delete,
+      MailboxActions.disableMailbox
+    ];
   }
 
   void _openMailboxMenuAction(
@@ -191,21 +281,15 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     PresentationMailbox mailbox,
     {RelativeRect? position}
   ) {
-    final mailboxActionsSupported = [
-      MailboxActions.openInNewTab,
-      if (mailbox.isPersonal && mailbox.isSpam)
-        mailboxActionForSpam(),
-      MailboxActions.markAsRead,
-      MailboxActions.move,
-      MailboxActions.rename,
-      MailboxActions.delete
-    ];
+    final mailboxActionsSupported = mailbox.isSubscribed?.value == true
+      ? _listActionForMailboxSubscribed(mailbox)
+      : _listActionForMailboxUnsubscribed();
 
     final listContextMenuItemAction = mailboxActionsSupported
       .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
       .toList();
 
-    if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
+    if (controller.responsiveUtils.isScreenWithShortestSide(context) || position == null) {
       controller.openContextMenuAction(
         context,
         _bottomSheetMailboxActionTiles(
@@ -283,7 +367,8 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         absorbing: !contextMenuItem.isActivated,
         child: Opacity(
           opacity: contextMenuItem.isActivated ? 1.0 : 0.3,
-          child: popupItem(contextMenuItem.action.getContextMenuIcon(controller.imagePaths),
+          child: popupItem(
+            contextMenuItem.action.getContextMenuIcon(controller.imagePaths),
             contextMenuItem.action.getTitleContextMenu(context),
             colorIcon: contextMenuItem.action.getColorContextMenuIcon(),
             iconSize: 24,

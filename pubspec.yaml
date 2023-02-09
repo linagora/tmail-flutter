@@ -214,6 +214,8 @@ dependencies:
 
   fading_edge_scrollview: 3.0.0
 
+  focused_menu_custom: 1.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -731,6 +731,13 @@ packages:
       url: "https://github.com/ifnyas/focus_detector.git"
     source: git
     version: "2.0.1"
+  focused_menu_custom:
+    dependency: "direct main"
+    description:
+      name: focused_menu_custom
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   forward:
     dependency: "direct main"
     description:

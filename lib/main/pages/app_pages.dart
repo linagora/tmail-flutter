@@ -21,11 +21,13 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_da
   if (dart.library.html) 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view_web.dart' deferred as mailbox_dashboard;
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_view.dart' deferred as manage_account_dashboard;
+import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/session/presentation/session_page_bindings.dart';
 import 'package:tmail_ui_user/features/session/presentation/session_view.dart' deferred as session;
 import 'package:tmail_ui_user/features/unknown_route_page/unknown_route_page_view.dart';
 import 'package:tmail_ui_user/main/pages/deferred_widget.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart' deferred as search_mailbox_view;
 
 class AppPages {
   static final pages = [
@@ -96,7 +98,15 @@ class AppPages {
             page: () => DeferredWidget(
                 rules_filter_creator.loadLibrary,
                 () => rules_filter_creator.RuleFilterCreatorView()),
-            binding: RulesFilterCreatorBindings())
+            binding: RulesFilterCreatorBindings()),
+        GetPage(
+          name: AppRoutes.searchMailbox,
+          opaque: false,
+          page: () => DeferredWidget(
+            search_mailbox_view.loadLibrary,
+            () => search_mailbox_view.SearchMailboxView()
+          ),
+          binding: SearchMailboxBindings()),
       ]
   ];
 

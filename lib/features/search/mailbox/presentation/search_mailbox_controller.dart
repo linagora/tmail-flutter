@@ -1,5 +1,4 @@
 
-import 'package:core/core.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -7,6 +6,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -168,6 +168,11 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     }
   }
 
+  void handleSearchButtonPressed(BuildContext context) {
+    FocusScope.of(context).unfocus();
+    searchMailboxAction();
+  }
+
   void _handleSearchMailboxSuccess(SearchMailboxSuccess success) {
     final mailboxesSearchedWithPath = findMailboxPath(success.mailboxesSearched);
     listMailboxSearched.value = mailboxesSearchedWithPath;
@@ -186,11 +191,20 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   }
 
   void submitSearchAction(BuildContext context, String query) {
-
+    FocusScope.of(context).unfocus();
+    currentSearchQuery.value = query;
+    searchMailboxAction();
   }
 
-  void handleMailboxAction(BuildContext context, MailboxActions actions, PresentationMailbox mailbox) {
-    popBack();
+  void handleMailboxAction(
+    BuildContext context,
+    MailboxActions actions,
+    PresentationMailbox mailbox,
+    {bool isFocusedMenu = false}
+  ) {
+    if (!isFocusedMenu) {
+      popBack();
+    }
 
     switch(actions) {
       case MailboxActions.openInNewTab:
@@ -365,6 +379,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   }
 
   void openMailboxAction(BuildContext context, PresentationMailbox mailbox) {
+    FocusScope.of(context).unfocus();
     dashboardController.openMailboxAction(context, mailbox);
 
     if (!responsiveUtils.isWebDesktop(context)) {
@@ -379,9 +394,14 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   }
 
   void closeSearchView(BuildContext context) {
-    clearAllTextInputSearchForm();
-    dashboardController.searchMailboxActivated.value = false;
-    SearchMailboxBindings().disposeBindings();
+    FocusScope.of(context).unfocus();
+    if (BuildUtils.isWeb) {
+      dashboardController.searchMailboxActivated.value = false;
+      clearAllTextInputSearchForm();
+      SearchMailboxBindings().disposeBindings();
+    } else {
+      popBack();
+    }
   }
 
   @override
