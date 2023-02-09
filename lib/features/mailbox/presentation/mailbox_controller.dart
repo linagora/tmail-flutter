@@ -41,7 +41,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
@@ -50,7 +49,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_i
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
@@ -74,8 +72,6 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
@@ -94,22 +90,16 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   final GetAllMailboxInteractor _getAllMailboxInteractor;
   final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
-  final SearchMailboxInteractor _searchMailboxInteractor;
   final DeleteMultipleMailboxInteractor _deleteMultipleMailboxInteractor;
   final RenameMailboxInteractor _renameMailboxInteractor;
   final MoveMailboxInteractor _moveMailboxInteractor;
   final SubscribeMailboxInteractor _subscribeMailboxInteractor;
   final SubscribeMultipleMailboxInteractor _subscribeMultipleMailboxInteractor;
 
-  final listMailboxSearched = <PresentationMailbox>[].obs;
-  final searchState = SearchState.initial().obs;
-  final searchQuery = SearchQuery.initial().obs;
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final mailboxCategoriesExpandMode = MailboxCategoriesExpandMode.initial().obs;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
-  final searchInputController = TextEditingController();
-  final searchFocus = FocusNode();
   final mailboxListScrollController = ScrollController();
 
   PresentationMailbox? get selectedMailbox => mailboxDashBoardController.selectedMailbox.value;
@@ -120,7 +110,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     this._getAllMailboxInteractor,
     this._refreshAllMailboxInteractor,
     this._createNewMailboxInteractor,
-    this._searchMailboxInteractor,
     this._deleteMultipleMailboxInteractor,
     this._renameMailboxInteractor,
     this._moveMailboxInteractor,
@@ -133,7 +122,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   @override
   void onInit() {
     _registerObxStreamListener();
-    _registerSearchFocusListener();
     super.onInit();
   }
 
@@ -149,8 +137,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   @override
   void onClose() {
-    searchInputController.dispose();
-    searchFocus.dispose();
     _openMailboxEventController.close();
     mailboxListScrollController.dispose();
     super.onClose();
@@ -176,8 +162,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       (failure) {
         if (failure is CreateNewMailboxFailure) {
           _createNewMailboxFailure(failure);
-        } else if (failure is SearchMailboxFailure) {
-          _searchMailboxFailure(failure);
         } else if (failure is DeleteMultipleMailboxFailure) {
           _deleteMailboxFailure(failure);
         }
@@ -189,14 +173,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           _initialMailboxVariableStorage(isRefreshChange: true);
         } else if (success is CreateNewMailboxSuccess) {
           _createNewMailboxSuccess(success);
-        } else if (success is SearchMailboxSuccess) {
-          _searchMailboxSuccess(success);
         } else if (success is DeleteMultipleMailboxAllSuccess) {
           _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
         } else if (success is DeleteMultipleMailboxHasSomeSuccess) {
           _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
-        } else if ((success is GetAllMailboxSuccess || success is RefreshChangesAllMailboxSuccess) && isSearchActive()) {
-          _searchMailboxAction(allMailboxes, searchQuery.value);
         } else if (success is RenameMailboxSuccess) {
           refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
         } else if (success is MoveMailboxSuccess) {
@@ -291,17 +271,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     });
   }
 
-  void _registerSearchFocusListener() {
-    searchFocus.addListener(() {
-      final hasFocus = searchFocus.hasFocus;
-      final query = searchQuery.value.value;
-      log('MailboxController::_registerSearchFocusListener(): hasFocus: $hasFocus | query: $query');
-      if (!hasFocus && query.isEmpty) {
-        disableSearch();
-      }
-    });
-  }
-
   void _initCollapseMailboxCategories() {
     if (kIsWeb && currentContext != null
         && (_responsiveUtils.isMobile(currentContext!) || _responsiveUtils.isTablet(currentContext!))) {
@@ -319,14 +288,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void refreshAllMailbox() {
-    if (!isSearchActive()) {
-      final session = mailboxDashBoardController.sessionCurrent;
-      final accountId = mailboxDashBoardController.accountId.value;
-      if (session != null && accountId != null) {
-        consumeState(_getAllMailboxInteractor.execute(session, accountId));
-      }
-    } else {
-      _searchMailboxAction(allMailboxes, searchQuery.value);
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (session != null && accountId != null) {
+      consumeState(_getAllMailboxInteractor.execute(session, accountId));
     }
   }
 
@@ -594,50 +559,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
   }
 
-  bool isSearchActive() => searchState.value.searchStatus == SearchStatus.ACTIVE;
-
   void openSearchViewAction(BuildContext context) {
     SearchMailboxBindings().dependencies();
     mailboxDashBoardController.searchMailboxActivated.value = true;
     closeMailboxScreen(context);
-  }
-
-  void disableSearch() {
-    _cancelSelectMailbox();
-    listMailboxSearched.clear();
-    searchState.value = searchState.value.disableSearchState();
-    searchQuery.value = SearchQuery.initial();
-    searchInputController.clear();
-    searchFocus.unfocus();
-  }
-
-  void clearSearchText() {
-    searchQuery.value = SearchQuery.initial();
-    searchFocus.requestFocus();
-    listMailboxSearched.clear();
-  }
-
-  void searchMailbox(String value) {
-    searchQuery.value = SearchQuery(value);
-    _searchMailboxAction(allMailboxes, searchQuery.value);
-  }
-
-  void _searchMailboxAction(List<PresentationMailbox> allMailboxes, SearchQuery searchQuery) {
-    log('MailboxController::_searchMailboxAction():');
-    if (searchQuery.value.isNotEmpty) {
-      consumeState(_searchMailboxInteractor.execute(allMailboxes, searchQuery));
-    } else {
-      listMailboxSearched.clear();
-    }
-  }
-
-  void _searchMailboxSuccess(SearchMailboxSuccess success) {
-    final mailboxesSearchedWithPath = findMailboxPath(success.mailboxesSearched);
-    listMailboxSearched.value = mailboxesSearchedWithPath;
-  }
-
-  void _searchMailboxFailure(SearchMailboxFailure failure) {
-    listMailboxSearched.clear();
   }
 
   void enableSelectionMailbox() {
@@ -650,43 +575,25 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
-  void selectMailboxSearched(BuildContext context, PresentationMailbox mailboxSelected) {
-    listMailboxSearched.value = listMailboxSearched
-        .map((mailbox) => mailbox.id == mailboxSelected.id ? mailbox.toggleSelectPresentationMailbox() : mailbox)
-        .toList();
-  }
-
   void _cancelSelectMailbox() {
-    if (isSearchActive()) {
-      listMailboxSearched.value = listMailboxSearched
-          .map((mailbox) => mailbox.toSelectedPresentationMailbox(selectMode: SelectMode.INACTIVE))
-          .toList();
-    } else {
-      unAllSelectedMailboxNode();
-    }
+    unAllSelectedMailboxNode();
     currentSelectMode.value = SelectMode.INACTIVE;
   }
 
   List<PresentationMailbox> get listMailboxSelected {
-    if (isSearchActive()) {
-      return listMailboxSearched
-        .where((mailbox) => mailbox.selectMode == SelectMode.ACTIVE)
-        .toList();
-    } else {
-      final defaultMailboxSelected = defaultMailboxTree.value
-        .findNodes((node) => node.selectMode == SelectMode.ACTIVE);
+    final defaultMailboxSelected = defaultMailboxTree.value
+      .findNodes((node) => node.selectMode == SelectMode.ACTIVE);
 
-      final folderMailboxSelected = personalMailboxTree.value
-        .findNodes((node) => node.selectMode == SelectMode.ACTIVE);
+    final folderMailboxSelected = personalMailboxTree.value
+      .findNodes((node) => node.selectMode == SelectMode.ACTIVE);
 
-      final teamMailboxesSelected = teamMailboxesTree.value
-        .findNodes((node) => node.selectMode == SelectMode.ACTIVE);
+    final teamMailboxesSelected = teamMailboxesTree.value
+      .findNodes((node) => node.selectMode == SelectMode.ACTIVE);
 
-      return [defaultMailboxSelected, folderMailboxSelected, teamMailboxesSelected]
-        .expand((node) => node)
-        .map((node) => node.item)
-        .toList();
-    }
+    return [defaultMailboxSelected, folderMailboxSelected, teamMailboxesSelected]
+      .expand((node) => node)
+      .map((node) => node.item)
+      .toList();
   }
 
   void pressMailboxSelectionAction(

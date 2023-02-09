@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_i
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
@@ -52,7 +51,6 @@ class MailboxBindings extends BaseBindings {
       Get.find<GetAllMailboxInteractor>(),
       Get.find<RefreshAllMailboxInteractor>(),
       Get.find<CreateNewMailboxInteractor>(),
-      Get.find<SearchMailboxInteractor>(),
       Get.find<DeleteMultipleMailboxInteractor>(),
       Get.find<RenameMailboxInteractor>(),
       Get.find<MoveMailboxInteractor>(),
@@ -95,7 +93,6 @@ class MailboxBindings extends BaseBindings {
     Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => RefreshAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));
-    Get.lazyPut(() => SearchMailboxInteractor());
     Get.lazyPut(() => DeleteMultipleMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => VerifyNameInteractor());
     Get.lazyPut(() => RenameMailboxInteractor(Get.find<MailboxRepository>()));
