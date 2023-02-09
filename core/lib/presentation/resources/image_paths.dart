@@ -173,6 +173,7 @@ class ImagePaths {
   String get icMarkAsRead => _getImagePath('ic_mark_as_read.svg');
   String get icDeleteMailbox => _getImagePath('ic_delete_mailbox.svg');
   String get icHideMailbox => _getImagePath('ic_hide_mailbox.svg');
+  String get icShowMailbox => _getImagePath('ic_show_mailbox.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

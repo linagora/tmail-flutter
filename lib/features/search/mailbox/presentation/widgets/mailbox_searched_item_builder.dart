@@ -89,8 +89,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
                   ]
                 )
               )),
-              if (widget._presentationMailbox.isSubscribed?.value == true)
-                _buildMenuIcon(context)
+              _buildMenuIcon(context)
             ]
           ),
         )

@@ -191,7 +191,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             : const SizedBox.shrink()
         ),
         Obx(() => controller.searchMailboxActivated.value == true && !responsiveUtils.isWebDesktop(context)
-          ? const PointerInterceptor(child: SearchMailboxView())
+          ? const SearchMailboxView()
           : const SizedBox.shrink()
         ),
         _buildDownloadTaskStateWidget(),
