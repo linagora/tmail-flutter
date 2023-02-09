@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
@@ -59,7 +60,6 @@ class DestinationPickerController extends BaseMailboxController {
   final SearchMailboxInteractor _searchMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
   final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
-  final VerifyNameInteractor _verifyNameInteractor;
 
   final mailboxAction = Rxn<MailboxActions>();
   final listMailboxSearched = <PresentationMailbox>[].obs;
@@ -88,9 +88,9 @@ class DestinationPickerController extends BaseMailboxController {
     this._searchMailboxInteractor,
     this._createNewMailboxInteractor,
     this._refreshAllMailboxInteractor,
-    this._verifyNameInteractor,
-    treeBuilder,
-  ) : super(treeBuilder);
+    TreeBuilder treeBuilder,
+    VerifyNameInteractor verifyNameInteractor,
+  ) : super(treeBuilder, verifyNameInteractor);
 
   @override
   void onInit() {
@@ -201,7 +201,7 @@ class DestinationPickerController extends BaseMailboxController {
       return null;
     }
 
-    return _verifyNameInteractor.execute(
+    return verifyNameInteractor.execute(
       nameMailbox,
       [
         EmptyNameValidator(),

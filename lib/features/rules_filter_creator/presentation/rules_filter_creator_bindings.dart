@@ -34,9 +34,9 @@ class RulesFilterCreatorBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.lazyPut(() => RulesFilterCreatorController(
-      Get.find<VerifyNameInteractor>(),
       Get.find<GetAllMailboxInteractor>(),
-      Get.find<TreeBuilder>()
+      Get.find<TreeBuilder>(),
+      Get.find<VerifyNameInteractor>()
     ));
   }
 
