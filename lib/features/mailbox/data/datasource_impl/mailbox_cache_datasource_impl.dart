@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dar
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class MailboxCacheDataSourceImpl extends MailboxDataSource {
@@ -88,6 +89,11 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
 
   @override
   Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<MailboxId>> subscribeMultipleMailbox(AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) {
     throw UnimplementedError();
   }
 }
