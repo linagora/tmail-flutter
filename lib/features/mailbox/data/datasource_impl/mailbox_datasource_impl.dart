@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dar
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class MailboxDataSourceImpl extends MailboxDataSource {
@@ -115,6 +116,15 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request) {
     return Future.sync(() async {
       return await mailboxAPI.subscribeMailbox(accountId, request);
+    }).catchError((error) {
+      _exceptionThrower.throwException(error);
+    });
+  }
+
+  @override
+  Future<List<MailboxId>> subscribeMultipleMailbox(AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) {
+    return Future.sync(() async {
+      return await mailboxAPI.subscribeMultipleMailbox(accountId, subscribeRequest);
     }).catchError((error) {
       _exceptionThrower.throwException(error);
     });

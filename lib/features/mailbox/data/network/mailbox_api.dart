@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -26,12 +27,14 @@ import 'package:model/error_type_handler/set_method_error_handler_mixin.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 class MailboxAPI with HandleSetErrorMixin {
@@ -298,7 +301,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final setMailboxMethod = SetMailboxMethod(accountId)
       ..addUpdates({
         request.mailboxId.id : PatchObject({
-          'isSubscribed': request.newState == MailboxSubscribeState.disabled ? false : true
+          MailboxProperty.isSubscribed: request.subscribeState == MailboxSubscribeState.enabled
         })
       });
 
@@ -320,5 +323,35 @@ class MailboxAPI with HandleSetErrorMixin {
     }).catchError((error) {
       throw error;
     });
+  }
+
+  Future<List<MailboxId>> subscribeMultipleMailbox(AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) async {
+    final mapMailboxUpdated = subscribeRequest.mailboxIdsSubscribe
+      .generateMapUpdateObjectSubscribeMailbox(subscribeRequest.subscribeState);
+
+    final setMailboxMethod = SetMailboxMethod(accountId)
+      ..addUpdates(mapMailboxUpdated);
+
+    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+
+    final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
+
+    final response = await (requestBuilder
+        ..usings(setMailboxMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final setMailboxResponse = response.parse<SetMailboxResponse>(
+      setMailboxInvocation.methodCallId,
+      SetMailboxResponse.deserialize
+    );
+
+    final listMailboxIdSubscribe = setMailboxResponse?.updated?.keys
+      .whereNotNull()
+      .map((id) => MailboxId(id))
+      .toList();
+
+    log('MailboxAPI::subscribeMultipleMailbox():listMailboxIdSubscribe: $listMailboxIdSubscribe');
+    return listMailboxIdSubscribe ?? [];
   }
 }
