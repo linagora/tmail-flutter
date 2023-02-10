@@ -1290,7 +1290,10 @@ class MailboxController extends BaseMailboxController {
 
   void _handleUnsubscribeMultipleMailboxAllSuccess(SubscribeMultipleMailboxAllSuccess success) {
     if(success.subscribeAction == MailboxSubscribeAction.unSubscribe) {
-      _showToastSubscribeMailboxSuccess(success.parentMailboxId);
+      _showToastSubscribeMailboxSuccess(
+        success.parentMailboxId,
+        listDescendantMailboxIds: success.mailboxIdsSubscribe
+      );
 
       if (success.mailboxIdsSubscribe.contains(selectedMailbox?.id)) {
         _switchBackToMailboxDefault();
@@ -1303,7 +1306,10 @@ class MailboxController extends BaseMailboxController {
 
   void _handleUnsubscribeMultipleMailboxHasSomeSuccess(SubscribeMultipleMailboxHasSomeSuccess success) {
     if(success.subscribeAction == MailboxSubscribeAction.unSubscribe) {
-      _showToastSubscribeMailboxSuccess(success.parentMailboxId);
+      _showToastSubscribeMailboxSuccess(
+        success.parentMailboxId,
+        listDescendantMailboxIds: success.mailboxIdsSubscribe
+      );
 
       if (success.mailboxIdsSubscribe.contains(selectedMailbox?.id)) {
         _switchBackToMailboxDefault();
@@ -1326,13 +1332,19 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
-  void _showToastSubscribeMailboxSuccess(MailboxId mailboxId) {
+  void _showToastSubscribeMailboxSuccess(
+      MailboxId mailboxIdSubscribed,
+      {List<MailboxId>? listDescendantMailboxIds}
+  ) {
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showBottomToast(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).toastMsgHideMailboxSuccess,
         actionName: AppLocalizations.of(currentContext!).undo,
-        onActionClick: () => _undoUnsubscribeMailboxAction(mailboxId),
+        onActionClick: () => _undoUnsubscribeMailboxAction(
+          mailboxIdSubscribed,
+          listDescendantMailboxIds: listDescendantMailboxIds
+        ),
         leadingIcon: SvgPicture.asset(
           _imagePaths.icFolderMailbox,
           width: 24,
@@ -1349,15 +1361,29 @@ class MailboxController extends BaseMailboxController {
     }
   }
 
-  void _undoUnsubscribeMailboxAction(MailboxId mailboxId) {
+  void _undoUnsubscribeMailboxAction(
+    MailboxId mailboxIdSubscribed,
+    {List<MailboxId>? listDescendantMailboxIds}
+  ) {
     final _accountId = mailboxDashBoardController.accountId.value;
 
     if (_accountId != null) {
-      final subscribeRequest = _generateSubscribeRequest(
-        mailboxId,
-        MailboxSubscribeState.enabled,
-        MailboxSubscribeAction.undo
-      );
+      SubscribeRequest? subscribeRequest;
+
+      if (listDescendantMailboxIds != null) {
+        subscribeRequest = SubscribeMultipleMailboxRequest(
+          mailboxIdSubscribed,
+          listDescendantMailboxIds,
+          MailboxSubscribeState.enabled,
+          MailboxSubscribeAction.undo
+        );
+      } else {
+        subscribeRequest = SubscribeMailboxRequest(
+          mailboxIdSubscribed,
+          MailboxSubscribeState.enabled,
+          MailboxSubscribeAction.undo
+        );
+      }
 
       if (subscribeRequest is SubscribeMultipleMailboxRequest) {
         consumeState(_subscribeMultipleMailboxInteractor.execute(_accountId, subscribeRequest));
