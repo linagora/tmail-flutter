@@ -121,6 +121,8 @@ class MailboxController extends BaseMailboxController {
 
   PresentationMailbox? get selectedMailbox => mailboxDashBoardController.selectedMailbox.value;
 
+  PresentationEmail? get selectedEmail => mailboxDashBoardController.selectedEmail.value;
+
   MailboxController(
     this._getAllMailboxInteractor,
     this._refreshAllMailboxInteractor,
@@ -1278,6 +1280,7 @@ class MailboxController extends BaseMailboxController {
 
       if (success.mailboxId == selectedMailbox?.id) {
         _switchBackToMailboxDefault();
+        _closeEmailViewIfMailboxDisabled([success.mailboxId]);
       }
     }
 
@@ -1290,6 +1293,7 @@ class MailboxController extends BaseMailboxController {
 
       if (success.mailboxIdsSubscribe.contains(selectedMailbox?.id)) {
         _switchBackToMailboxDefault();
+        _closeEmailViewIfMailboxDisabled(success.mailboxIdsSubscribe);
       }
     }
 
@@ -1302,10 +1306,23 @@ class MailboxController extends BaseMailboxController {
 
       if (success.mailboxIdsSubscribe.contains(selectedMailbox?.id)) {
         _switchBackToMailboxDefault();
+        _closeEmailViewIfMailboxDisabled(success.mailboxIdsSubscribe);
       }
     }
 
     refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+  }
+
+  void _closeEmailViewIfMailboxDisabled(List<MailboxId> mailboxIdsDisabled) {
+    if (selectedEmail == null) {
+      return;
+    }
+
+    final mailboxContain = selectedEmail!.findMailboxContain(mailboxDashBoardController.mapMailboxById);
+    if (mailboxContain != null && mailboxIdsDisabled.contains(mailboxContain.id)) {
+      mailboxDashBoardController.clearSelectedEmail();
+      mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
+    }
   }
 
   void _showToastSubscribeMailboxSuccess(MailboxId mailboxId) {
