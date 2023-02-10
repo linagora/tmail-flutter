@@ -101,7 +101,19 @@ class PresentationMailbox with EquatableMixin {
     (namespace?.value.indexOf('[') ?? 0) + 1,
     namespace?.value.indexOf(']'));
 
-  bool get isShowDisableMailbox => isTeamMailboxes || hasRole() || !hasParentId();
+  bool get supportedSubscribe => isSubscribed?.value == true;
+
+  bool get isSupportedDisableMailbox {
+    if (!supportedSubscribe) {
+      return false;
+    }
+    if (isPersonal) {
+      return true;
+    } else {
+      return isTeamMailboxes;
+    }
+  }
+
 
   @override
   List<Object?> get props => [

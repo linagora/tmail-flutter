@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dar
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 
 abstract class MailboxRepository {
   Stream<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties});
@@ -39,4 +40,6 @@ abstract class MailboxRepository {
   Future<State?> getMailboxState();
 
   Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request);
+
+  Future<List<MailboxId>> subscribeMultipleMailbox(AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest);
 }

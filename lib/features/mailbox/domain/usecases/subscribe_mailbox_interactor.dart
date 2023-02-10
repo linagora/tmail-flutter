@@ -23,7 +23,7 @@ class SubscribeMailboxInteractor {
         yield Right<Failure, Success>(SubscribeMailboxSuccess(
           request.mailboxId, 
           currentMailboxState: currentMailboxState,
-          request.mailboxSubscribeStateAction));
+          request.subscribeAction));
       } else {
         yield Left<Failure, Success>(SubscribeMailboxFailure(null));
       }
