@@ -3,19 +3,22 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_ac
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.dart';
 
-class SubscribeMailboxRequest extends SubscribeRequest {
+class SubscribeMultipleMailboxRequest extends SubscribeRequest {
 
-  final MailboxId mailboxId;
+  final MailboxId parentMailboxId;
+  final List<MailboxId> mailboxIdsSubscribe;
 
-  SubscribeMailboxRequest(
-    this.mailboxId,
+  SubscribeMultipleMailboxRequest(
+    this.parentMailboxId,
+    this.mailboxIdsSubscribe,
     MailboxSubscribeState subscribeState,
     MailboxSubscribeAction subscribeAction,
   ) : super(subscribeState, subscribeAction);
   
   @override
   List<Object?> get props => [
-    mailboxId,
+    parentMailboxId,
+    mailboxIdsSubscribe,
     super.props
   ];
 }
