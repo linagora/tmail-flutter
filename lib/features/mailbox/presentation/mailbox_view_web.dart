@@ -449,25 +449,7 @@ class MailboxView extends GetWidget<MailboxController> with AppLoaderMixin, Popu
       RelativeRect position,
       PresentationMailbox mailbox
   ) {
-    final mailboxActionsSupported = [
-      MailboxActions.openInNewTab,
-      MailboxActions.markAsRead,
-      MailboxActions.move,
-      MailboxActions.rename,
-      MailboxActions.delete,
-    ];
-
-    if (mailbox.isShowDisableMailbox) {
-      mailboxActionsSupported.add(MailboxActions.disableMailbox);
-    }
-
-    if (mailbox.isSpam) {
-      mailboxActionsSupported.insert(
-        1,
-        controller.mailboxDashBoardController.enableSpamReport
-          ? MailboxActions.disableSpamReport
-          : MailboxActions.enableSpamReport);
-    }
+    final mailboxActionsSupported = controller.listActionForMailbox(mailbox);
 
     final listContextMenuItemAction = mailboxActionsSupported
         .map((action) => ContextMenuItemMailboxAction(

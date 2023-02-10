@@ -329,51 +329,70 @@ class MailboxView extends GetWidget<MailboxController> {
     ]);
   }
 
-  void _openBottomSheetSpamMenuAction(BuildContext context, PresentationMailbox mailbox) {
-    final _mailboxActionsSupported = [
-      MailboxActions.disableMailbox
+  MailboxActions _mailboxActionForSpam() {
+    return controller.mailboxDashBoardController.enableSpamReport
+      ? MailboxActions.disableSpamReport
+      : MailboxActions.enableSpamReport;
+  }
+
+  List<MailboxActions> _listActionForMailbox(PresentationMailbox mailbox) {
+    return [
+      if (BuildUtils.isWeb)
+        MailboxActions.openInNewTab,
+      if (mailbox.isSpam)
+        _mailboxActionForSpam(),
+      MailboxActions.markAsRead,
+      MailboxActions.move,
+      MailboxActions.rename,
+      MailboxActions.delete,
+      if (mailbox.isSupportedDisableMailbox)
+        MailboxActions.disableMailbox
     ];
+  }
 
-    if (mailbox.isSpam) {
-      _mailboxActionsSupported.add(controller.mailboxDashBoardController.enableSpamReport
-        ? MailboxActions.disableSpamReport
-        : MailboxActions.enableSpamReport);
-    }
+  void _openBottomSheetMailboxMenuAction(BuildContext context, PresentationMailbox mailbox) {
+    final mailboxActionsSupported = _listActionForMailbox(mailbox);
 
-    final listContextMailboxPopupMenuItemAction = _mailboxActionsSupported
-        .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
-        .toList();
+    final listContextMailboxPopupMenuItemAction = mailboxActionsSupported
+      .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
+      .toList();
 
     controller.openContextMenuAction(
+      context,
+      _bottomSheetMailboxActionTiles(
         context,
-        _bottomSheetIdentityActionTiles(context, mailbox, listContextMailboxPopupMenuItemAction));
+        mailbox,
+        listContextMailboxPopupMenuItemAction
+      )
+    );
   }
 
-  List<Widget> _bottomSheetIdentityActionTiles(
-      BuildContext context,
-      PresentationMailbox mailbox,
-      List<ContextMenuItemMailboxAction> contextMenuActions) {
+  List<Widget> _bottomSheetMailboxActionTiles(
+    BuildContext context,
+    PresentationMailbox mailbox,
+    List<ContextMenuItemMailboxAction> contextMenuActions
+  ) {
     return contextMenuActions
-        .map((action) => _openBottomSheetSpamMenuActionTile(context, action, mailbox))
-        .toList();
+      .map((action) => _openBottomSheetMailboxMenuActionTile(context, action, mailbox))
+      .toList();
   }
 
-  Widget _openBottomSheetSpamMenuActionTile(
-      BuildContext context,
-      ContextMenuItemMailboxAction contextMenuItem,
-      PresentationMailbox mailbox) {
+  Widget _openBottomSheetMailboxMenuActionTile(
+    BuildContext context,
+    ContextMenuItemMailboxAction contextMenuItem,
+    PresentationMailbox mailbox
+  ) {
     return (MailboxBottomSheetActionTileBuilder(
-            Key('${contextMenuItem.action.name}_action'),
-            SvgPicture.asset(
-                contextMenuItem.action.getContextMenuIcon(_imagePaths),
-                color: AppColor.primaryColor),
-            contextMenuItem.action.getTitleContextMenu(context),
-            mailbox,
-            absorbing: !contextMenuItem.isActivated,
-            opacity: !contextMenuItem.isActivated)
-          ..onActionClick((mailbox) => controller.handleMailboxAction(
-              context, contextMenuItem.action, mailbox)))
-        .build();
+        Key('${contextMenuItem.action.name}_action'),
+        SvgPicture.asset(
+            contextMenuItem.action.getContextMenuIcon(_imagePaths),
+            color: AppColor.primaryColor),
+        contextMenuItem.action.getTitleContextMenu(context),
+        mailbox,
+        absorbing: !contextMenuItem.isActivated,
+        opacity: !contextMenuItem.isActivated)
+      ..onActionClick((mailbox) => controller.handleMailboxAction(context, contextMenuItem.action, mailbox)))
+    .build();
   }
   
   List<Widget> _buildListChildTileWidget(BuildContext context, MailboxNode parentNode, {MailboxNode? lastNode}) {
@@ -385,7 +404,7 @@ class MailboxView extends GetWidget<MailboxController> {
                   isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
                   parent: Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
                           allSelectMode: controller.currentSelectMode.value)
-                      ..addOnLongPressMailboxFolderClick((mailboxNode) => _openBottomSheetSpamMenuAction(context, mailboxNode.item))
+                      ..addOnLongPressMailboxFolderClick((mailboxNode) => _openBottomSheetMailboxMenuAction(context, mailboxNode.item))
                       ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
                       ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
                       ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
@@ -394,7 +413,7 @@ class MailboxView extends GetWidget<MailboxController> {
               ).build()
           : Obx(() => (MailBoxFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode,
                   allSelectMode: controller.currentSelectMode.value)
-              ..addOnLongPressMailboxFolderClick((mailboxNode) => _openBottomSheetSpamMenuAction(context, mailboxNode.item))
+              ..addOnLongPressMailboxFolderClick((mailboxNode) => _openBottomSheetMailboxMenuAction(context, mailboxNode.item))
               ..addOnOpenMailboxFolderClick((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
               ..addOnSelectMailboxFolderClick((mailboxNode) => controller.selectMailboxNode(mailboxNode)))
             .build())
