@@ -8,11 +8,11 @@ class LoadingSubscribeMailbox extends UIState {}
 
 class SubscribeMailboxSuccess extends UIActionState {
   final MailboxId mailboxId;
-  final MailboxSubscribeAction mailboxSubscribeStateAction;
+  final MailboxSubscribeAction subscribeAction;
 
   SubscribeMailboxSuccess(
     this.mailboxId, 
-    this.mailboxSubscribeStateAction,
+    this.subscribeAction,
     {
       jmap.State? currentEmailState,
       jmap.State? currentMailboxState,
@@ -21,10 +21,9 @@ class SubscribeMailboxSuccess extends UIActionState {
 
   @override
   List<Object?> get props => [
-    mailboxId, 
-    currentEmailState, 
-    currentMailboxState,
-    mailboxSubscribeStateAction
+    mailboxId,
+    subscribeAction,
+    super.props
   ];
 }
 
