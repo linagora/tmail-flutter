@@ -131,11 +131,7 @@ class MailBoxFolderTileBuilder {
           child: Opacity(
             opacity: _mailboxNode.isActivated ? 1.0 : 0.3,
             child: InkWell(
-              onLongPress: () {
-                if(_mailboxNode.item.isShowDisableMailbox || _mailboxNode.item.isSpam) {
-                  _onLongPressMailboxFolderClick?.call(_mailboxNode);
-                }
-              },
+              onLongPress: () => _onLongPressMailboxFolderClick?.call(_mailboxNode),
               onTap: () => allSelectMode == SelectMode.ACTIVE
                   ? _onSelectMailboxFolderClick?.call(_mailboxNode)
                   : _onOpenMailboxFolderClick?.call(_mailboxNode),
