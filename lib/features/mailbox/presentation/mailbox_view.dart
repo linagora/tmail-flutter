@@ -111,15 +111,6 @@ class MailboxView extends GetWidget<MailboxController> {
               Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: _buildCloseScreenButton(context)),
-              Obx(() {
-                if (controller.isSearchActive()) {
-                  return controller.listMailboxSearched.isNotEmpty
-                      ? SizedBox(width: controller.isSelectionEnabled() ? 49 : 40)
-                      : const SizedBox.shrink();
-                } else {
-                  return SizedBox(width: controller.isSelectionEnabled() ? 49 : 40);
-                }
-              }),
               Expanded(child: Text(
                 AppLocalizations.of(context).folders,
                 textAlign: TextAlign.center,
@@ -128,12 +119,11 @@ class MailboxView extends GetWidget<MailboxController> {
                 if (controller.isSearchActive()) {
                   return controller.listMailboxSearched.isNotEmpty
                       ? _buildEditMailboxButton(context, controller.isSelectionEnabled())
-                      : const SizedBox(width: 25);
+                      : const SizedBox(width: 60);
                 } else {
                   return _buildEditMailboxButton(context, controller.isSelectionEnabled());
                 }
-              }),
-              Padding(padding: const EdgeInsets.only(right: 5), child: _buildAddNewFolderButton(context)),
+              })
             ]
           )
         ),
@@ -150,25 +140,21 @@ class MailboxView extends GetWidget<MailboxController> {
         onTap: () => controller.closeMailboxScreen(context));
   }
 
-  Widget _buildAddNewFolderButton(BuildContext context) {
-    return buildIconWeb(
-        icon: SvgPicture.asset(_imagePaths.icAddNewFolder, width: 28, height: 24, color: AppColor.colorTextButton, fit: BoxFit.fill),
-        tooltip: AppLocalizations.of(context).new_mailbox,
-        onTap: () => controller.goToCreateNewMailboxView(context));
-  }
-
   Widget _buildEditMailboxButton(BuildContext context, bool isSelectionEnabled) {
-    return Material(
-        shape: const CircleBorder(),
-        color: Colors.transparent,
-        child: TextButton(
-            child: Text(
-              !isSelectionEnabled ? AppLocalizations.of(context).edit : AppLocalizations.of(context).cancel,
-              style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton, fontWeight: FontWeight.normal)),
-            onPressed: () => !isSelectionEnabled
-                ? controller.enableSelectionMailbox()
-                : controller.disableSelectionMailbox()
-        )
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: Material(
+          shape: const CircleBorder(),
+          color: Colors.transparent,
+          child: TextButton(
+              child: Text(
+                !isSelectionEnabled ? AppLocalizations.of(context).select : AppLocalizations.of(context).cancel,
+                style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton, fontWeight: FontWeight.normal)),
+              onPressed: () => !isSelectionEnabled
+                  ? controller.enableSelectionMailbox()
+                  : controller.disableSelectionMailbox()
+          )
+      ),
     );
   }
 
@@ -245,6 +231,7 @@ class MailboxView extends GetWidget<MailboxController> {
                           iconPadding: EdgeInsets.zero,
                           splashRadius: 15,
                           icon: SvgPicture.asset(_imagePaths.icSearchBar, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                          tooltip: AppLocalizations.of(context).search_folder,
                           onTap: () => controller.enableSearch()),
                       buildIconWeb(
                           minSize: 40,
