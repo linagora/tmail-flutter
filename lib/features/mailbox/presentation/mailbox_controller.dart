@@ -792,8 +792,9 @@ class MailboxController extends BaseMailboxController {
           message: AppLocalizations.of(currentContext!).delete_mailboxes_successfully,
           icon: _imagePaths.icSelected);
     }
-    if (listMailboxIdDeleted.contains(mailboxDashBoardController.selectedMailbox.value?.id)) {
+    if (listMailboxIdDeleted.contains(selectedMailbox?.id)) {
       _switchBackToMailboxDefault();
+      _closeEmailViewIfMailboxDisabledOrNotExist(listMailboxIdDeleted);
     }
     refreshMailboxChanges(currentMailboxState: currentMailboxState);
   }
@@ -1280,7 +1281,7 @@ class MailboxController extends BaseMailboxController {
 
       if (success.mailboxId == selectedMailbox?.id) {
         _switchBackToMailboxDefault();
-        _closeEmailViewIfMailboxDisabled([success.mailboxId]);
+        _closeEmailViewIfMailboxDisabledOrNotExist([success.mailboxId]);
       }
     }
 
@@ -1293,7 +1294,7 @@ class MailboxController extends BaseMailboxController {
 
       if (success.mailboxIdsSubscribe.contains(selectedMailbox?.id)) {
         _switchBackToMailboxDefault();
-        _closeEmailViewIfMailboxDisabled(success.mailboxIdsSubscribe);
+        _closeEmailViewIfMailboxDisabledOrNotExist(success.mailboxIdsSubscribe);
       }
     }
 
@@ -1306,14 +1307,14 @@ class MailboxController extends BaseMailboxController {
 
       if (success.mailboxIdsSubscribe.contains(selectedMailbox?.id)) {
         _switchBackToMailboxDefault();
-        _closeEmailViewIfMailboxDisabled(success.mailboxIdsSubscribe);
+        _closeEmailViewIfMailboxDisabledOrNotExist(success.mailboxIdsSubscribe);
       }
     }
 
     refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
   }
 
-  void _closeEmailViewIfMailboxDisabled(List<MailboxId> mailboxIdsDisabled) {
+  void _closeEmailViewIfMailboxDisabledOrNotExist(List<MailboxId> mailboxIdsDisabled) {
     if (selectedEmail == null) {
       return;
     }
