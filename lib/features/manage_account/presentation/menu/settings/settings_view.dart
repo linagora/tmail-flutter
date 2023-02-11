@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/e
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/mailbox_visibility_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_first_level_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
@@ -193,13 +194,13 @@ class SettingsView extends GetWidget<SettingsController> {
         case AccountMenuItem.languageAndRegion:
           return LanguageAndRegionView();
         case AccountMenuItem.emailRules:
-          if(controller.manageAccountDashboardController.checkAvailableRuleFilterInSession()){
+          if (controller.manageAccountDashboardController.checkAvailableRuleFilterInSession()) {
             return EmailRulesView();
           } else {
             return const SizedBox.shrink();
           }
         case AccountMenuItem.forward:
-          if(controller.manageAccountDashboardController.checkAvailableForwardInSession()){
+          if (controller.manageAccountDashboardController.checkAvailableForwardInSession()) {
             return ForwardView();
           } else {
             return const SizedBox.shrink();
@@ -210,6 +211,8 @@ class SettingsView extends GetWidget<SettingsController> {
           } else {
             return const SizedBox.shrink();
           }
+        case AccountMenuItem.mailboxVisibility:
+          return MailboxVisibilityView();
         default:
           return const SizedBox.shrink();
       }
