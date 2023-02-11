@@ -105,6 +105,20 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             return const SizedBox.shrink();
           }
         }),
+        Column(children: [
+          SettingFirstLevelTileBuilder(
+            AccountMenuItem.mailboxVisibility.getName(context),
+            AccountMenuItem.mailboxVisibility.getIcon(_imagePaths),
+            subtitle: AppLocalizations.of(context).mailboxVisibilitySubtitle,
+            () => controller.selectSettings(AccountMenuItem.mailboxVisibility)
+          ),
+          Divider(
+            color: AppColor.colorDividerComposer,
+            height: 1,
+            indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+            endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+          ),
+        ]),
         SettingFirstLevelTileBuilder(
           AccountMenuItem.languageAndRegion.getName(context),
           AccountMenuItem.languageAndRegion.getIcon(_imagePaths),

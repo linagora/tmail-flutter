@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/action/dashbo
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/bindings/mailbox_visibility_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
@@ -103,6 +104,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     injectAutoCompleteBindings(sessionCurrent.value, accountId.value);
     injectForwardBindings(sessionCurrent.value, accountId.value);
     injectRuleFilterBindings(sessionCurrent.value, accountId.value);
+    injectMailboxVisibilityBindings();
     injectVacationBindings(sessionCurrent.value, accountId.value);
     _getVacationResponse();
   }
@@ -117,6 +119,7 @@ class ManageAccountDashBoardController extends ReloadableController {
       injectAutoCompleteBindings(sessionCurrent.value, accountId.value);
       injectForwardBindings(sessionCurrent.value, accountId.value);
       injectRuleFilterBindings(sessionCurrent.value, accountId.value);
+      injectMailboxVisibilityBindings();
       injectVacationBindings(sessionCurrent.value, accountId.value);
       _getVacationResponse();
       if (arguments.menuSettingCurrent != null) {
@@ -182,11 +185,14 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   void selectAccountMenuItem(AccountMenuItem newAccountMenuItem) {
     clearInputFormView();
-    if(newAccountMenuItem == AccountMenuItem.emailRules) {
+    if (newAccountMenuItem == AccountMenuItem.emailRules) {
       EmailRulesBindings().dependencies();
     }
-    if(newAccountMenuItem == AccountMenuItem.forward) {
+    if (newAccountMenuItem == AccountMenuItem.forward) {
       ForwardBindings().dependencies();
+    }
+    if (newAccountMenuItem == AccountMenuItem.mailboxVisibility) {
+      MailboxVisibilityBindings().dependencies();
     }
     accountMenuItemSelected.value = newAccountMenuItem;
     if (isMenuDrawerOpen) {
@@ -205,11 +211,14 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void _goToSettingMenuCurrent(AccountMenuItem accountMenuItem) {
-    if(accountMenuItem == AccountMenuItem.emailRules) {
+    if (accountMenuItem == AccountMenuItem.emailRules) {
       EmailRulesBindings().dependencies();
     }
-    if(accountMenuItem == AccountMenuItem.forward) {
+    if (accountMenuItem == AccountMenuItem.forward) {
       ForwardBindings().dependencies();
+    }
+    if (accountMenuItem == AccountMenuItem.mailboxVisibility) {
+      MailboxVisibilityBindings().dependencies();
     }
     accountMenuItemSelected.value = accountMenuItem;
     if (currentContext != null &&

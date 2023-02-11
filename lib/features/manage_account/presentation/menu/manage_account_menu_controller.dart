@@ -46,7 +46,12 @@ class ManageAccountMenuController extends BaseController {
     if (dashBoardController.checkAvailableVacationInSession()) {
       listAccountMenuItem.add(AccountMenuItem.vacation);
     }
-    listAccountMenuItem.add(AccountMenuItem.languageAndRegion);
+    listAccountMenuItem.addAll(
+      [
+        AccountMenuItem.mailboxVisibility,
+        AccountMenuItem.languageAndRegion
+      ]
+    );
   }
 
   @override
