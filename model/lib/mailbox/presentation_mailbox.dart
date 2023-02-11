@@ -89,6 +89,8 @@ class PresentationMailbox with EquatableMixin {
 
   bool get isOutbox => name == lowerCaseOutboxMailboxName || role == roleOutbox;
 
+  bool get isSubscribedMailbox => isSubscribed != null && isSubscribed?.value == true;
+
   bool matchCountingRules() {
     if (isTrash || isDrafts || isTemplates || isSent) {
       return false;

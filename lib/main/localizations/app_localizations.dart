@@ -2805,4 +2805,17 @@ class AppLocalizations {
       'This mailbox is already displayed in your primary mailbox',
       name: 'toastMessageShowMailboxSuccess');
   }
+  String get mailboxVisibility {
+    return Intl.message(
+      'Mailbox visibility',
+      name: 'mailboxVisibility',
+    );
+  }
+
+  String get mailboxVisibilitySubtitle {
+    return Intl.message(
+      'Show/ hide your mailboxes, including your personal and team mailboxes.',
+      name: 'mailboxVisibilitySubtitle',
+    );
+  }
 }

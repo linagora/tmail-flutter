@@ -174,6 +174,7 @@ class ImagePaths {
   String get icDeleteMailbox => _getImagePath('ic_delete_mailbox.svg');
   String get icHideMailbox => _getImagePath('ic_hide_mailbox.svg');
   String get icShowMailbox => _getImagePath('ic_show_mailbox.svg');
+  String get icMailboxVisibility => _getImagePath('ic_mailbox_visibility.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
