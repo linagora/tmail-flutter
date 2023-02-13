@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 class PopupItemWidget extends StatelessWidget {
 
@@ -27,31 +28,33 @@ class PopupItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onCallbackAction,
-      child: Padding(
-        padding: padding ?? const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: SizedBox(
-          child: Row(children: [
-            SvgPicture.asset(
-              _iconAction,
-              width: iconSize ?? 20,
-              height: iconSize ?? 20,
-              fit: BoxFit.fill,
-              color: colorIcon
-            ),
-            const SizedBox(width: 12),
-            Expanded(child: Text(
-              _nameAction,
-              style: styleName ?? const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.normal,
-                color: Colors.black
-              )
-            )),
-          ])
-        ),
-      )
+    return PointerInterceptor(
+      child: InkWell(
+        onTap: onCallbackAction,
+        child: Padding(
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: SizedBox(
+            child: Row(children: [
+              SvgPicture.asset(
+                _iconAction,
+                width: iconSize ?? 20,
+                height: iconSize ?? 20,
+                fit: BoxFit.fill,
+                color: colorIcon
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Text(
+                _nameAction,
+                style: styleName ?? const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black
+                )
+              )),
+            ])
+          ),
+        )
+      ),
     );
   }
 }
