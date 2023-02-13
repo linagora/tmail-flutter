@@ -16,12 +16,15 @@ import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -35,6 +38,7 @@ class MailboxVisibilityController extends BaseMailboxController {
   GetAllMailboxInteractor? _getAllMailboxInteractor;
   RefreshAllMailboxInteractor? _refreshAllMailboxInteractor;
   SubscribeMailboxInteractor? _subscribeMailboxInteractor;
+  SubscribeMultipleMailboxInteractor? _subscribeMultipleMailboxInteractor;
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -60,6 +64,7 @@ class MailboxVisibilityController extends BaseMailboxController {
       _getAllMailboxInteractor = Get.find<GetAllMailboxInteractor>();
       _refreshAllMailboxInteractor = Get.find<RefreshAllMailboxInteractor>();
       _subscribeMailboxInteractor = Get.find<SubscribeMailboxInteractor>();
+      _subscribeMultipleMailboxInteractor = Get.find<SubscribeMultipleMailboxInteractor>();
     } catch (e) {
       logError('MailboxVisibilityController::onInit(): ${e.toString()}');
     }
@@ -76,6 +81,10 @@ class MailboxVisibilityController extends BaseMailboxController {
         _refreshMailboxTreeHasSubscribed(success.mailboxList);
       } else if (success is SubscribeMailboxSuccess) {
         _subscribeMailboxSuccess(success);
+      } else if (success is SubscribeMultipleMailboxAllSuccess) {
+        _handleUnsubscribeMultipleMailboxAllSuccess(success);
+      } else if (success is SubscribeMultipleMailboxHasSomeSuccess) {
+        _handleUnsubscribeMultipleMailboxHasSomeSuccess(success);
       }
     });
 
@@ -123,21 +132,29 @@ class MailboxVisibilityController extends BaseMailboxController {
       ? MailboxSubscribeState.disabled : MailboxSubscribeState.enabled;
     final _mailboxSubscribeStateAction = mailboxNode.item.isSubscribedMailbox
       ? MailboxSubscribeAction.unSubscribe : MailboxSubscribeAction.subscribe;
-    if (mailboxNode.item.isSubscribedMailbox) {
-      _subscribeMailboxAction(
-          SubscribeMailboxRequest(
-              mailboxNode.item.id,
-              _mailboxSubscribeState,
-              _mailboxSubscribeStateAction,
-          )
-      );
-    }
+    _subscribeMailboxAction(
+        SubscribeMailboxRequest(
+          mailboxNode.item.id,
+          _mailboxSubscribeState,
+          _mailboxSubscribeStateAction,
+        )
+    );
   }
 
   void _subscribeMailboxAction(SubscribeMailboxRequest subscribeMailboxRequest) {
     final _accountId = _accountDashBoardController.accountId.value;
     if (_accountId != null) {
-      consumeState(_subscribeMailboxInteractor!.execute(_accountId, subscribeMailboxRequest));
+      final subscribeRequest = generateSubscribeRequest(
+        subscribeMailboxRequest.mailboxId,
+        subscribeMailboxRequest.subscribeState,
+        subscribeMailboxRequest.subscribeAction
+      );
+
+      if (subscribeRequest is SubscribeMultipleMailboxRequest) {
+        consumeState(_subscribeMultipleMailboxInteractor!.execute(_accountId, subscribeRequest));
+      } else if (subscribeRequest is SubscribeMailboxRequest) {
+        consumeState(_subscribeMailboxInteractor!.execute(_accountId, subscribeRequest));
+      }
     }
   }
 
@@ -167,31 +184,63 @@ class MailboxVisibilityController extends BaseMailboxController {
     if (subscribeMailboxSuccess.subscribeAction == MailboxSubscribeAction.unSubscribe
         && currentOverlayContext != null
         && currentContext != null) {
+        _showToastSubscribeMailboxSuccess(subscribeMailboxSuccess.mailboxId);
+    }
+
+    refreshMailboxChanges(currentMailboxState: subscribeMailboxSuccess.currentMailboxState);
+  }
+
+  void _handleUnsubscribeMultipleMailboxHasSomeSuccess(SubscribeMultipleMailboxHasSomeSuccess subscribeMailboxSuccess) {
+    if(subscribeMailboxSuccess.subscribeAction == MailboxSubscribeAction.unSubscribe) {
+      _showToastSubscribeMailboxSuccess(
+        subscribeMailboxSuccess.parentMailboxId,
+        listDescendantMailboxIds: subscribeMailboxSuccess.mailboxIdsSubscribe
+      );
+    }
+
+    refreshMailboxChanges(currentMailboxState: subscribeMailboxSuccess.currentMailboxState);
+  }
+
+  void _handleUnsubscribeMultipleMailboxAllSuccess(SubscribeMultipleMailboxAllSuccess subscribeMailboxSuccess) {
+    if(subscribeMailboxSuccess.subscribeAction == MailboxSubscribeAction.unSubscribe) {
+      _showToastSubscribeMailboxSuccess(
+          subscribeMailboxSuccess.parentMailboxId,
+          listDescendantMailboxIds: subscribeMailboxSuccess.mailboxIdsSubscribe
+      );
+    }
+
+    refreshMailboxChanges(currentMailboxState: subscribeMailboxSuccess.currentMailboxState);
+  }
+
+  void _showToastSubscribeMailboxSuccess(
+      MailboxId mailboxIdSubscribed,
+      {List<MailboxId>? listDescendantMailboxIds}
+  ) {
+    if (currentOverlayContext != null && currentContext != null) {
       _appToast.showBottomToast(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).toastMsgHideMailboxSuccess,
           actionName: AppLocalizations.of(currentContext!).undo,
-          onActionClick: () {
-            _subscribeMailboxAction(
-              SubscribeMailboxRequest(
-                subscribeMailboxSuccess.mailboxId,
-                MailboxSubscribeState.enabled,
-                MailboxSubscribeAction.undo)
-            );
-          },
+          onActionClick: () => _subscribeMailboxAction(
+            SubscribeMailboxRequest(
+              mailboxIdSubscribed,
+              MailboxSubscribeState.enabled,
+              MailboxSubscribeAction.subscribe
+            )
+          ),
           leadingIcon: SvgPicture.asset(
             _imagePaths.icFolderMailbox,
             width: 24,
             height: 24,
             color: Colors.white,
-            fit: BoxFit.fill),
+            fit: BoxFit.fill
+          ),
           backgroundColor: AppColor.toastSuccessBackgroundColor,
           textColor: Colors.white,
           textActionColor: Colors.white,
           actionIcon: SvgPicture.asset(_imagePaths.icUndo),
-          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
+          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
+      );
     }
-
-    refreshMailboxChanges(currentMailboxState: subscribeMailboxSuccess.currentMailboxState);
   }
 }
