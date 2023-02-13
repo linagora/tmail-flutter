@@ -43,29 +43,29 @@ class MailBoxVisibilityFolderTileBuilder {
     if (BuildUtils.isWeb) {
       return Theme(
         data: ThemeData(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent),
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent),
         child: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return InkWell(
-                onTap: () {},
-                onHover: (value) => setState(() => isHoverItem = value),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: backgroundColorItem),
-                  padding: EdgeInsets.only(
-                    left: _mailboxNode.item.hasRole() ? 0 : 4,
-                    right: 4,
-                    top: 8,
-                    bottom: 8),
-                  margin: const EdgeInsets.only(bottom: 4),
+          builder: (BuildContext context, StateSetter setState) {
+            return InkWell(
+              onTap: () {},
+              onHover: (value) => setState(() => isHoverItem = value),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: backgroundColorItem),
+                padding: EdgeInsets.only(
+                  left: _mailboxNode.item.hasRole() ? 0 : 4,
+                  right: 4,
+                  top: 8,
+                  bottom: 8),
+                margin: const EdgeInsets.only(bottom: 4),
                   child: Row(
                     children: [
                       _buildLeadingMailboxItem(),
                       const SizedBox(width: 4),
                        Expanded(child: _buildTitleFolderItem()),
-                      if (!_mailboxNode.item.hasRole())
+                      if (!_mailboxNode.item.hasRole() || !_mailboxNode.item.isSubscribedMailbox)
                         _buildSubscribeMailboxItem(context, _mailboxNode),
                       const SizedBox(width: 32),
                       ]),
@@ -75,30 +75,30 @@ class MailBoxVisibilityFolderTileBuilder {
       );
     } else {
       return ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(14)),
-          child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(
-                      vertical: _mailboxNode.hasChildren() ? 8 : 15),
-                  child: Row(
-                      crossAxisAlignment:
-                        _mailboxNode.item.isTeamMailboxes
-                          ? CrossAxisAlignment.start
-                          : CrossAxisAlignment.center,
-                      children: [
-                        if (_mailboxNode.item.isTeamMailboxes)
-                          const SizedBox(width: 16),
-                        _buildLeadingMailboxItem(),
-                        const SizedBox(width: 8),
-                        Expanded(child: _buildTitleFolderItem()),
-                        if (!_mailboxNode.item.hasRole())
-                          _buildSubscribeMailboxItem(context, _mailboxNode),
-                      ]),
+        borderRadius: const BorderRadius.all(Radius.circular(14)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(
+              vertical: _mailboxNode.hasChildren() ? 8 : 15),
+                child: Row(
+                  crossAxisAlignment:
+                    _mailboxNode.item.isTeamMailboxes
+                      ? CrossAxisAlignment.start
+                      : CrossAxisAlignment.center,
+                  children: [
+                    if (_mailboxNode.item.isTeamMailboxes)
+                      const SizedBox(width: 16),
+                    _buildLeadingMailboxItem(),
+                    const SizedBox(width: 8),
+                    Expanded(child: _buildTitleFolderItem()),
+                    if (!_mailboxNode.item.hasRole() || !_mailboxNode.item.isSubscribedMailbox)
+                      _buildSubscribeMailboxItem(context, _mailboxNode),
+                  ]),
                 ),
-              ]));
+          ]));
     }
   }
 
@@ -110,14 +110,14 @@ class MailBoxVisibilityFolderTileBuilder {
             children: [
               const SizedBox(width: 8),
               buildIconWeb(
-                  icon: SvgPicture.asset(
-                    _mailboxNode.expandMode == ExpandMode.EXPAND
-                      ? _imagePaths.icExpandFolder
-                      : _imagePaths.icCollapseFolder,
-                    color: _mailboxNode.expandMode == ExpandMode.EXPAND
-                      ? AppColor.colorExpandMailbox
-                      : AppColor.colorCollapseMailbox,
-                    fit: BoxFit.fill),
+                icon: SvgPicture.asset(
+                  _mailboxNode.expandMode == ExpandMode.EXPAND
+                    ? _imagePaths.icExpandFolder
+                    : _imagePaths.icCollapseFolder,
+                  color: _mailboxNode.expandMode == ExpandMode.EXPAND
+                    ? AppColor.colorExpandMailbox
+                    : AppColor.colorCollapseMailbox,
+                  fit: BoxFit.fill),
                   minSize: 12,
                   splashRadius: 10,
                   iconPadding: EdgeInsets.zero,
@@ -130,8 +130,8 @@ class MailBoxVisibilityFolderTileBuilder {
         else
           SizedBox(width: _mailboxNode.item.isPersonal ? 32 : 24),
         Transform(
-            transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
-            child: _buildLeadingIconTeamMailboxes()),
+          transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
+          child: _buildLeadingIconTeamMailboxes()),
       ]);
     } else {
       return Row(mainAxisSize: MainAxisSize.min, children: [
@@ -234,7 +234,7 @@ class MailBoxVisibilityFolderTileBuilder {
     return SvgPicture.asset(_mailboxNode.item.getMailboxIcon(_imagePaths),
         width: BuildUtils.isWeb ? 20 : 24,
         height: BuildUtils.isWeb ? 20 : 24,
-        color: !_mailboxNode.item.isSubscribedMailbox
+        color: (!_mailboxNode.item.isSubscribedMailbox)
           ? AppColor.colorDeleteContactIcon
           : null,
         fit: BoxFit.fill);

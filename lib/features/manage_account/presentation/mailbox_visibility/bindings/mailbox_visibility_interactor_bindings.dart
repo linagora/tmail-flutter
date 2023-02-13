@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
@@ -29,12 +30,12 @@ class MailboxVisibilityInteractorBindings extends InteractorsBindings {
   @override
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => MailboxDataSourceImpl(
-        Get.find<MailboxAPI>(),
-        Get.find<MailboxIsolateWorker>(),
-        Get.find<RemoteExceptionThrower>()));
+      Get.find<MailboxAPI>(),
+      Get.find<MailboxIsolateWorker>(),
+      Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => MailboxCacheDataSourceImpl(
-        Get.find<MailboxCacheManager>(),
-        Get.find<CacheExceptionThrower>()));
+      Get.find<MailboxCacheManager>(),
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>(), Get.find<CacheExceptionThrower>()));
   }
 
@@ -43,6 +44,7 @@ class MailboxVisibilityInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => RefreshAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => SubscribeMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => SubscribeMultipleMailboxInteractor(Get.find<MailboxRepository>()));
   }
 
   @override
