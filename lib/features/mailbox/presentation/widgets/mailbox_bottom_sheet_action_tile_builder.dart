@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 class MailboxBottomSheetActionTileBuilder extends CupertinoActionSheetActionBuilder<PresentationMailbox> {
 
@@ -32,27 +33,29 @@ class MailboxBottomSheetActionTileBuilder extends CupertinoActionSheetActionBuil
 
   @override
   Widget build() {
-    return AbsorbPointer(
-      absorbing: absorbing,
-      child: Opacity(
-        opacity: opacity ? 0.3 : 1.0,
-        child: Container(
-          color: bgColor ?? Colors.white,
-          child: MouseRegion(
-            cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
-            child: CupertinoActionSheetAction(
-              key: key,
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Padding(
-                    padding: iconLeftPadding ?? const EdgeInsets.only(left: 12, right: 16),
-                    child: actionIcon),
-                Expanded(child: Text(actionName, textAlign: TextAlign.left, style: actionTextStyle())),
-              ]),
-              onPressed: () {
-                if (onCupertinoActionSheetActionClick != null) {
-                  onCupertinoActionSheetActionClick!(presentationMailbox);
-                }
-              },
+    return PointerInterceptor(
+      child: AbsorbPointer(
+        absorbing: absorbing,
+        child: Opacity(
+          opacity: opacity ? 0.3 : 1.0,
+          child: Container(
+            color: bgColor ?? Colors.white,
+            child: MouseRegion(
+              cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+              child: CupertinoActionSheetAction(
+                key: key,
+                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Padding(
+                      padding: iconLeftPadding ?? const EdgeInsets.only(left: 12, right: 16),
+                      child: actionIcon),
+                  Expanded(child: Text(actionName, textAlign: TextAlign.left, style: actionTextStyle())),
+                ]),
+                onPressed: () {
+                  if (onCupertinoActionSheetActionClick != null) {
+                    onCupertinoActionSheetActionClick!(presentationMailbox);
+                  }
+                },
+              ),
             ),
           ),
         ),
