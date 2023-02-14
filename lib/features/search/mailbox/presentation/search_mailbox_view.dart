@@ -195,16 +195,22 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     });
   }
 
-  List<FocusedMenuItem> _listPopupMenuItemAction(BuildContext context, PresentationMailbox mailbox) {
-    final mailboxActionsSupported = mailbox.isSubscribed?.value == true
+  List<ContextMenuItemMailboxAction> _generateListContextMenuItemAction(PresentationMailbox mailbox) {
+    final mailboxActionsSupported = mailbox.supportedSubscribe
       ? _listActionForMailboxSubscribed(mailbox)
-      : _listActionForMailboxUnsubscribed();
+      : _listActionForMailboxUnsubscribed(mailbox);
 
-    final listContextMenuItemAction = mailboxActionsSupported
-      .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
-      .toList();
+    final contextMenuActions = listContextMenuItemAction(
+      mailbox,
+      controller.dashboardController,
+      mailboxActions: mailboxActionsSupported
+    );
 
-    return listContextMenuItemAction
+    return contextMenuActions;
+  }
+
+  List<FocusedMenuItem> _listPopupMenuItemAction(BuildContext context, PresentationMailbox mailbox) {
+    return _generateListContextMenuItemAction(mailbox)
       .map((action) => _mailboxFocusedMenuItem(context, action, mailbox))
       .toList();
   }
@@ -251,9 +257,10 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     );
   }
 
-  List<MailboxActions> _listActionForMailboxUnsubscribed() {
+  List<MailboxActions> _listActionForMailboxUnsubscribed(PresentationMailbox mailbox) {
     return [
-      MailboxActions.enableMailbox
+      if (mailbox.isSupportedEnableMailbox)
+        MailboxActions.enableMailbox
     ];
   }
 
@@ -266,15 +273,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     PresentationMailbox mailbox,
     {RelativeRect? position}
   ) {
-    final mailboxActionsSupported = mailbox.supportedSubscribe
-      ? _listActionForMailboxSubscribed(mailbox)
-      : _listActionForMailboxUnsubscribed();
-
-    final contextMenuActions = listContextMenuItemAction(
-      mailbox,
-      controller.dashboardController,
-      mailboxActions: mailboxActionsSupported
-    );
+    final contextMenuActions = _generateListContextMenuItemAction(mailbox);
 
     if (controller.responsiveUtils.isScreenWithShortestSide(context) || position == null) {
       controller.openContextMenuAction(
