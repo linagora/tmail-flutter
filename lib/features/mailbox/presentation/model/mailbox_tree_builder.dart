@@ -80,7 +80,7 @@ class TreeBuilder {
             (node) => node.item.name,
             (name, other) => name?.compareAlphabetically(other) ?? -1
           );
-        } else {
+        } else if (parentId == null) {
           listAllMailboxes.add(node.item);
 
           MailboxTree tree;
@@ -97,6 +97,8 @@ class TreeBuilder {
             (node) => node.item.name,
             (name, other) => name?.compareAlphabetically(other) ?? -1
           );
+        } else {
+          listAllMailboxes.add(node.item);
         }
       }
     }
@@ -142,7 +144,7 @@ class TreeBuilder {
             (node) => node.item.name,
             (name, other) => name?.compareAlphabetically(other) ?? -1
           );
-        } else {
+        } else if (parentId == null) {
 
           MailboxTree tree;
           if (mailbox.hasRole()) {
