@@ -368,16 +368,16 @@ class MailBoxFolderTileBuilder {
               fontWeight: _mailboxNode.item.isTeamMailboxes ? FontWeight.bold : FontWeight.normal),
         ),
         if(_mailboxNode.item.isTeamMailboxes)
-        Text(
-          _mailboxNode.item.emailTeamMailBoxes ?? '',
-          maxLines: 1,
-          softWrap: CommonTextStyle.defaultSoftWrap,
-          overflow: CommonTextStyle.defaultTextOverFlow,
-          style: const TextStyle(
-              fontSize: 13,
-              color: AppColor.colorEmailAddressFull,
-              fontWeight: FontWeight.w400),
-        ),
+          Text(
+            _mailboxNode.item.emailTeamMailBoxes ?? '',
+            maxLines: 1,
+            softWrap: CommonTextStyle.defaultSoftWrap,
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            style: const TextStyle(
+                fontSize: 13,
+                color: AppColor.colorEmailAddressFull,
+                fontWeight: FontWeight.w400),
+          )
       ],
     );
   }
