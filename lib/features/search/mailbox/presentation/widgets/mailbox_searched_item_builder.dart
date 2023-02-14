@@ -224,7 +224,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   }
 
   Widget _buildMenuIcon(BuildContext context) {
-    if (isHoverItem) {
+    if (isHoverItem && widget.listPopupMenuItemAction?.isNotEmpty == true) {
       return InkWell(
         onTapDown: (detail) {
           final screenSize = MediaQuery.of(context).size;
