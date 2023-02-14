@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_screen_type.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/destination_picker_search_mailbox_item_builder.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/top_bar_destination_picker_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -27,7 +28,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_search_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -385,33 +385,22 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
       MailboxActions? actions,
       MailboxId? mailboxIdSelected
   ) {
-    return Obx(() => Container(
-        margin: const EdgeInsets.only(
-            bottom: 8,
-            top: BuildUtils.isWeb ? 8 : 0),
-        decoration: _responsiveUtils.isDesktop(context)
-            ? BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white)
-            : null,
-        child: ListView.builder(
-            key: const Key('list_mailbox_searched'),
-            itemCount: controller.listMailboxSearched.length,
-            shrinkWrap: true,
-            primary: false,
-            itemBuilder: (context, index) =>
-                Obx(() => (MailboxSearchTileBuilder(
-                        context,
-                        _imagePaths,
-                        _responsiveUtils,
-                        controller.listMailboxSearched[index],
-                        mailboxActions: actions,
-                        mailboxIdAlreadySelected: mailboxIdSelected,
-                        mailboxDisplayed: MailboxDisplayed.destinationPicker,
-                        mailboxIdDestination: controller.mailboxDestination.value?.id)
-                    ..addOnOpenMailboxAction((mailbox) => _pickPresentationMailbox(context, mailbox)))
-                  .build())
-        )
+    return Obx(() => ListView.builder(
+        key: const Key('list_mailbox_searched'),
+        itemCount: controller.listMailboxSearched.length,
+        shrinkWrap: true,
+        primary: false,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemBuilder: (context, index) {
+          return Obx(() => DestinationPickerSearchMailboxItemBuilder(
+            _imagePaths,
+            _responsiveUtils,
+            controller.listMailboxSearched[index],
+            mailboxActions: actions,
+            mailboxIdAlreadySelected: mailboxIdSelected,
+            onClickOpenMailboxAction: (mailbox) => _pickPresentationMailbox(context, mailbox),
+          ));
+        }
     ));
   }
 

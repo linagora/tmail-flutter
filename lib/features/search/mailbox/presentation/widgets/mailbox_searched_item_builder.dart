@@ -76,7 +76,10 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
           ),
           padding: SearchMailboxUtils.getPaddingItemListView(context, widget._responsiveUtils),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: widget._presentationMailbox.mailboxPath?.isNotEmpty == true
+              || widget._presentationMailbox.isTeamMailboxes
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
             children: [
               _buildMailboxIcon(),
               Expanded(child: Padding(
@@ -121,7 +124,10 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
           child: Padding(
             padding: SearchMailboxUtils.getPaddingItemListView(context, widget._responsiveUtils),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: widget._presentationMailbox.mailboxPath?.isNotEmpty == true
+                || widget._presentationMailbox.isTeamMailboxes
+                  ? CrossAxisAlignment.start
+                  : CrossAxisAlignment.center,
               children: [
                 _buildMailboxIcon(),
                 Expanded(child: Padding(
@@ -152,7 +158,10 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
         child: Padding(
           padding: SearchMailboxUtils.getPaddingItemListView(context, widget._responsiveUtils),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: widget._presentationMailbox.mailboxPath?.isNotEmpty == true
+              || widget._presentationMailbox.isTeamMailboxes
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
             children: [
               _buildMailboxIcon(),
               Expanded(child: Padding(
