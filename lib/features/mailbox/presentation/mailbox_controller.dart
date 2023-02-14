@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -86,8 +85,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _uuid = Get.find<Uuid>();
   final isMailboxListScrollable = false.obs;
-  final GetAllMailboxInteractor _getAllMailboxInteractor;
-  final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
   final DeleteMultipleMailboxInteractor _deleteMultipleMailboxInteractor;
   final RenameMailboxInteractor _renameMailboxInteractor;
@@ -106,8 +103,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   PresentationEmail? get selectedEmail => mailboxDashBoardController.selectedEmail.value;
 
   MailboxController(
-    this._getAllMailboxInteractor,
-    this._refreshAllMailboxInteractor,
     this._createNewMailboxInteractor,
     this._deleteMultipleMailboxInteractor,
     this._renameMailboxInteractor,
@@ -116,7 +111,14 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     this._subscribeMultipleMailboxInteractor,
     TreeBuilder treeBuilder,
     VerifyNameInteractor verifyNameInteractor,
-  ) : super(treeBuilder, verifyNameInteractor);
+    GetAllMailboxInteractor getAllMailboxInteractor,
+    RefreshAllMailboxInteractor  refreshAllMailboxInteractor,
+  ) : super(
+    treeBuilder,
+    verifyNameInteractor,
+    getAllMailboxInteractor: getAllMailboxInteractor,
+    refreshAllMailboxInteractor: refreshAllMailboxInteractor
+  );
 
   @override
   void onInit() {
@@ -177,7 +179,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         } else if (success is DeleteMultipleMailboxHasSomeSuccess) {
           _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
         } else if (success is RenameMailboxSuccess) {
-          refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
         } else if (success is MoveMailboxSuccess) {
           _moveMailboxSuccess(success);
         } else if (success is SubscribeMailboxSuccess) {
@@ -198,7 +200,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   void _registerObxStreamListener() {
     ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId is AccountId) {
-        getAllMailboxAction(mailboxDashBoardController.sessionCurrent!, accountId);
+        getAllMailbox(mailboxDashBoardController.sessionCurrent!, accountId);
       }
     });
 
@@ -211,37 +213,37 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       if (state is Either) {
         state.fold((failure) => null, (success) {
           if (success is MarkAsMultipleEmailReadAllSuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is EmptyTrashFolderSuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is MarkAsEmailReadSuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is MoveToMailboxSuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is DeleteEmailPermanentlySuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is SaveEmailAsDraftsSuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is RemoveEmailDraftsSuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is SendEmailSuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is MarkAsMailboxReadAllSuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           } else if (success is UpdateEmailDraftsSuccess) {
-            refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
           }
         });
       }
@@ -263,7 +265,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         mailboxDashBoardController.clearMailboxUIAction();
       } else if (action is RefreshChangeMailboxAction) {
         if (action.newState != currentMailboxState) {
-          refreshMailboxChanges();
+          _refreshMailboxChanges();
         }
         mailboxDashBoardController.clearMailboxUIAction();
       }
@@ -282,27 +284,23 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
   }
 
-  void getAllMailboxAction(Session session, AccountId accountId) async {
-    consumeState(_getAllMailboxInteractor.execute(session, accountId));
-  }
-
   void refreshAllMailbox() {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     if (session != null && accountId != null) {
-      consumeState(_getAllMailboxInteractor.execute(session, accountId));
+      consumeState(getAllMailboxInteractor!.execute(session, accountId));
     }
   }
-
-  void refreshMailboxChanges({jmap.State? currentMailboxState}) {
+  
+  void _refreshMailboxChanges({jmap.State? currentMailboxState}) {
     mailboxDashBoardController.showSpamReportBanner();
-    log('MailboxController::refreshMailboxChanges(): currentMailboxState: $currentMailboxState');
+    log('MailboxController::_refreshMailboxChanges(): currentMailboxState: $currentMailboxState');
     final newMailboxState = currentMailboxState ?? this.currentMailboxState;
-    log('MailboxController::refreshMailboxChanges(): newMailboxState: $newMailboxState');
+    log('MailboxController::_refreshMailboxChanges(): newMailboxState: $newMailboxState');
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null && newMailboxState != null) {
-      consumeState(_refreshAllMailboxInteractor.execute(session, accountId, newMailboxState));
+      refreshMailboxChanges(session, accountId, newMailboxState);
     }
   }
 
@@ -531,7 +529,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
     }
 
-    refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
   }
 
   void _createNewMailboxFailure(CreateNewMailboxFailure failure) {
@@ -676,7 +674,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       _switchBackToMailboxDefault();
       _closeEmailViewIfMailboxDisabledOrNotExist(listMailboxIdDeleted);
     }
-    refreshMailboxChanges(currentMailboxState: currentMailboxState);
+    _refreshMailboxChanges(currentMailboxState: currentMailboxState);
   }
 
   void _openConfirmationDialogDeleteMultipleMailboxAction(
@@ -817,7 +815,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
     }
 
-    refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
   }
 
   void _undoMovingMailbox(MoveMailboxRequest newMoveRequest) {
@@ -1020,7 +1018,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       }
     }
 
-    refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
   }
 
   void _handleUnsubscribeMultipleMailboxAllSuccess(SubscribeMultipleMailboxAllSuccess success) {
@@ -1036,7 +1034,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       }
     }
 
-    refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
   }
 
   void _handleUnsubscribeMultipleMailboxHasSomeSuccess(SubscribeMultipleMailboxHasSomeSuccess success) {
@@ -1052,7 +1050,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       }
     }
 
-    refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
   }
 
   void _closeEmailViewIfMailboxDisabledOrNotExist(List<MailboxId> mailboxIdsDisabled) {

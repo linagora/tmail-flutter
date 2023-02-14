@@ -9,6 +9,8 @@ import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -22,6 +24,8 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_st
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -42,11 +46,17 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 abstract class BaseMailboxController extends BaseController {
   final TreeBuilder _treeBuilder;
   final VerifyNameInteractor verifyNameInteractor;
+  final GetAllMailboxInteractor? getAllMailboxInteractor;
+  final RefreshAllMailboxInteractor? refreshAllMailboxInteractor;
   jmap.State? currentMailboxState;
 
   BaseMailboxController(
     this._treeBuilder,
-    this.verifyNameInteractor
+    this.verifyNameInteractor,
+    {
+      this.getAllMailboxInteractor,
+      this.refreshAllMailboxInteractor
+    }
   );
 
   final personalMailboxTree = MailboxTree(MailboxNode.root()).obs;
@@ -415,5 +425,24 @@ abstract class BaseMailboxController extends BaseController {
       }
     }
     return null;
+  }
+
+  void getAllMailbox(Session session, AccountId accountId) async {
+    if (getAllMailboxInteractor != null) {
+      consumeState(getAllMailboxInteractor!.execute(session, accountId));
+    }
+  }
+
+  void refreshMailboxChanges(
+    Session session,
+    AccountId accountId,
+    jmap.State currentMailboxState
+  ) {
+    if (refreshAllMailboxInteractor != null) {
+      log('BaseMailboxController::refreshMailboxChanges(): currentMailboxState: $currentMailboxState');
+      final newMailboxState = currentMailboxState;
+      log('BaseMailboxController::refreshMailboxChanges(): newMailboxState: $newMailboxState');
+      consumeState(refreshAllMailboxInteractor!.execute(session, accountId, newMailboxState));
+    }
   }
 }

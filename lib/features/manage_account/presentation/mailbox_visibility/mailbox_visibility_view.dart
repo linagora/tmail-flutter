@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
@@ -13,6 +14,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/mailbox_visibility_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/state/mailbox_visibility_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/widgets/mailbox_visibility_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/widgets/mailbox_visibility_header_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
@@ -51,12 +53,12 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController> with 
                 children: [
                   if (_responsiveUtils.isWebDesktop(context))...[
                     const MailboxVisibilityHeaderWidget(),
-                    _buildLoadingView(),
                     const Padding(
                       padding:  EdgeInsets.symmetric(vertical: 16),
                       child:  Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
                     ),
                   ],
+                  _buildLoadingView(),
                   Expanded(child: _buildListMailbox(context)),
                 ]
             ),
@@ -69,19 +71,34 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController> with 
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
-      (success) => success is LoadingState
-        ? const Center(
-          child: Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: SizedBox(
-              height: 24,
-              width: 24,
-              child: CupertinoActivityIndicator(
-                color: AppColor.colorTextButton,
-              ),
-            )),
-        )
-        : const SizedBox.shrink()));
+      (success) {
+        if (success is LoadingState) {
+          return const Center(
+            child: Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CupertinoActivityIndicator(
+                    color: AppColor.colorTextButton,
+                  ),
+                )),
+          );
+        } else if (success is LoadingBuildTreeMailboxVisibility) {
+          return const Center(
+            child: Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CupertinoActivityIndicator(
+                    color: AppColor.colorTextButton,
+                  ),
+                )),
+          );
+        }
+        return const SizedBox.shrink();
+      }));
   }
 
   Widget _buildListMailbox(BuildContext context) {
@@ -182,15 +199,15 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController> with 
               context,
               key: const Key('children_tree_mailbox_child'),
               isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-              parent: Obx(() => controller.defaultMailboxIsNotEmpty ? (MailBoxVisibilityFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode)
+              parent: (MailBoxVisibilityFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode)
                 ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
                 ..addOnSubscribeMailboxActionClick((mailboxNode) => controller.subscribeMailbox(mailboxNode)))
-                .build(context) : const SizedBox.shrink()) ,
+                .build(context),
               children: _buildListChildTileWidget(context, mailboxNode)
           ).build()
-          : Obx(() => controller.defaultMailboxIsNotEmpty ? (MailBoxVisibilityFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode)
+          : (MailBoxVisibilityFolderTileBuilder(context, _imagePaths, mailboxNode, lastNode: lastNode)
             ..addOnExpandFolderActionClick((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
             ..addOnSubscribeMailboxActionClick((mailboxNode) => controller.subscribeMailbox(mailboxNode)))
-          .build(context) : const SizedBox.shrink())).toList() ?? <Widget>[];
+            .build(context)).toList() ?? <Widget>[];
   }
 }
