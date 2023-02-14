@@ -44,12 +44,12 @@ class DestinationPickerBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.lazyPut(() => DestinationPickerController(
-      Get.find<GetAllMailboxInteractor>(),
       Get.find<SearchMailboxInteractor>(),
       Get.find<CreateNewMailboxInteractor>(),
-      Get.find<RefreshAllMailboxInteractor>(),
       Get.find<TreeBuilder>(),
       Get.find<VerifyNameInteractor>(),
+      Get.find<GetAllMailboxInteractor>(),
+      Get.find<RefreshAllMailboxInteractor>(),
     ));
   }
 

@@ -15,3 +15,4 @@ typedef OnClickOpenMailboxNodeAction = void Function(MailboxNode);
 typedef OnSelectMailboxNodeAction = void Function(MailboxNode);
 typedef OnClickOpenMenuMailboxNodeAction = void Function(RelativeRect, MailboxNode);
 typedef OnLongPressMailboxNodeAction = void Function(MailboxNode);
+typedef OnClickSubscribeMailboxAction = void Function(MailboxNode);

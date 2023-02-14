@@ -56,10 +56,8 @@ class DestinationPickerController extends BaseMailboxController {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  final GetAllMailboxInteractor _getAllMailboxInteractor;
   final SearchMailboxInteractor _searchMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
-  final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
 
   final mailboxAction = Rxn<MailboxActions>();
   final listMailboxSearched = <PresentationMailbox>[].obs;
@@ -84,13 +82,18 @@ class DestinationPickerController extends BaseMailboxController {
   List<String> listMailboxNameAsStringExist = <String>[];
 
   DestinationPickerController(
-    this._getAllMailboxInteractor,
     this._searchMailboxInteractor,
     this._createNewMailboxInteractor,
-    this._refreshAllMailboxInteractor,
     TreeBuilder treeBuilder,
     VerifyNameInteractor verifyNameInteractor,
-  ) : super(treeBuilder, verifyNameInteractor);
+    GetAllMailboxInteractor getAllMailboxInteractor,
+    RefreshAllMailboxInteractor refreshAllMailboxInteractor
+  ) : super(
+    treeBuilder,
+    verifyNameInteractor,
+    getAllMailboxInteractor : getAllMailboxInteractor,
+    refreshAllMailboxInteractor : refreshAllMailboxInteractor
+  );
 
   @override
   void onInit() {
@@ -159,13 +162,13 @@ class DestinationPickerController extends BaseMailboxController {
 
   void getAllMailboxAction() {
     if (accountId != null && _session != null) {
-      consumeState(_getAllMailboxInteractor.execute(_session!, accountId!));
+      getAllMailbox(_session!, accountId!);
     }
   }
 
   void _refreshMailboxChanges(jmap.State currentMailboxState) {
     if (accountId != null && _session != null) {
-      consumeState(_refreshAllMailboxInteractor.execute(_session!, accountId!, currentMailboxState));
+      refreshMailboxChanges(_session!, accountId!, currentMailboxState);
     }
   }
 

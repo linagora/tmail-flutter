@@ -3,11 +3,10 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -30,13 +29,12 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/state/mailbox_visibility_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class MailboxVisibilityController extends BaseMailboxController {
-  GetAllMailboxInteractor? _getAllMailboxInteractor;
-  RefreshAllMailboxInteractor? _refreshAllMailboxInteractor;
   SubscribeMailboxInteractor? _subscribeMailboxInteractor;
   SubscribeMultipleMailboxInteractor? _subscribeMultipleMailboxInteractor;
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
@@ -55,14 +53,19 @@ class MailboxVisibilityController extends BaseMailboxController {
   MailboxVisibilityController(
     TreeBuilder treeBuilder,
     VerifyNameInteractor verifyNameInteractor,
-  ) : super(treeBuilder, verifyNameInteractor);
+    GetAllMailboxInteractor getAllMailboxInteractor,
+    RefreshAllMailboxInteractor refreshAllMailboxInteractor
+  ) : super(
+    treeBuilder,
+    verifyNameInteractor,
+    getAllMailboxInteractor: getAllMailboxInteractor,
+    refreshAllMailboxInteractor: refreshAllMailboxInteractor
+  );
 
   @override
   void onInit() {
     super.onInit();
     try {
-      _getAllMailboxInteractor = Get.find<GetAllMailboxInteractor>();
-      _refreshAllMailboxInteractor = Get.find<RefreshAllMailboxInteractor>();
       _subscribeMailboxInteractor = Get.find<SubscribeMailboxInteractor>();
       _subscribeMultipleMailboxInteractor = Get.find<SubscribeMultipleMailboxInteractor>();
     } catch (e) {
@@ -87,7 +90,6 @@ class MailboxVisibilityController extends BaseMailboxController {
         _handleUnsubscribeMultipleMailboxHasSomeSuccess(success);
       }
     });
-
   }
 
   @override
@@ -95,31 +97,16 @@ class MailboxVisibilityController extends BaseMailboxController {
     final _session = _accountDashBoardController.sessionCurrent.value;
     final _accountId = _accountDashBoardController.accountId.value;
     if(_session != null && _accountId != null) {
-      getAllMailboxAction(_session, _accountId);
+      getAllMailbox(_session, _accountId);
     }
     super.onReady();
   }
 
-  void getAllMailboxAction(Session session, AccountId accountId) async {
-    if(_getAllMailboxInteractor != null){
-      consumeState(_getAllMailboxInteractor!.execute(session, accountId));
-    }
-  }
-
-  void refreshMailboxChanges({jmap.State? currentMailboxState}) {
-    log('MailboxVisibilityController::refreshMailboxChanges(): currentMailboxState: $currentMailboxState');
-    final newMailboxState = currentMailboxState ?? _currentMailboxState;
-    log('MailboxVisibilityController::refreshMailboxChanges(): newMailboxState: $newMailboxState');
-    final session = _accountDashBoardController.sessionCurrent.value;
-    final accountId = _accountDashBoardController.accountId.value;
-    if (accountId != null && session != null && newMailboxState != null) {
-      consumeState(_refreshAllMailboxInteractor!.execute(session, accountId, newMailboxState));
-    }
-  }
-
   void _buildMailboxTreeHasSubscribed(List<PresentationMailbox> mailboxList) async {
+    dispatchState(Right(LoadingBuildTreeMailboxVisibility()));
     final _mailboxList = mailboxList;
     await buildTree(_mailboxList);
+    dispatchState(Right(BuildTreeMailboxVisibilitySuccess()));
   }
 
   void _refreshMailboxTreeHasSubscribed(List<PresentationMailbox> mailboxList) async {
@@ -187,7 +174,7 @@ class MailboxVisibilityController extends BaseMailboxController {
         _showToastSubscribeMailboxSuccess(subscribeMailboxSuccess.mailboxId);
     }
 
-    refreshMailboxChanges(currentMailboxState: subscribeMailboxSuccess.currentMailboxState);
+    _refreshMailboxChanges(subscribeMailboxSuccess.currentEmailState);
   }
 
   void _handleUnsubscribeMultipleMailboxHasSomeSuccess(SubscribeMultipleMailboxHasSomeSuccess subscribeMailboxSuccess) {
@@ -198,7 +185,7 @@ class MailboxVisibilityController extends BaseMailboxController {
       );
     }
 
-    refreshMailboxChanges(currentMailboxState: subscribeMailboxSuccess.currentMailboxState);
+    _refreshMailboxChanges(subscribeMailboxSuccess.currentEmailState);
   }
 
   void _handleUnsubscribeMultipleMailboxAllSuccess(SubscribeMultipleMailboxAllSuccess subscribeMailboxSuccess) {
@@ -209,7 +196,16 @@ class MailboxVisibilityController extends BaseMailboxController {
       );
     }
 
-    refreshMailboxChanges(currentMailboxState: subscribeMailboxSuccess.currentMailboxState);
+    _refreshMailboxChanges(subscribeMailboxSuccess.currentEmailState);
+  }
+
+  void _refreshMailboxChanges(jmap.State? currentEmailState) {
+    final _session = _accountDashBoardController.sessionCurrent.value;
+    final _accountId = _accountDashBoardController.accountId.value;
+    final currentMailboxState = currentEmailState ?? _currentMailboxState;
+    if (_session != null && _accountId != null && currentMailboxState != null) {
+      refreshMailboxChanges(_session, _accountId, currentMailboxState);
+    }
   }
 
   void _showToastSubscribeMailboxSuccess(

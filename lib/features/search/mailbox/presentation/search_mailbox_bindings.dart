@@ -32,8 +32,6 @@ class SearchMailboxBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.lazyPut(() => SearchMailboxController(
-      Get.find<GetAllMailboxInteractor>(),
-      Get.find<RefreshAllMailboxInteractor>(),
       Get.find<SearchMailboxInteractor>(),
       Get.find<RenameMailboxInteractor>(),
       Get.find<MoveMailboxInteractor>(),
@@ -41,7 +39,9 @@ class SearchMailboxBindings extends BaseBindings {
       Get.find<SubscribeMailboxInteractor>(),
       Get.find<SubscribeMultipleMailboxInteractor>(),
       Get.find<TreeBuilder>(),
-      Get.find<VerifyNameInteractor>()
+      Get.find<VerifyNameInteractor>(),
+      Get.find<GetAllMailboxInteractor>(),
+      Get.find<RefreshAllMailboxInteractor>(),
     ));
   }
 
