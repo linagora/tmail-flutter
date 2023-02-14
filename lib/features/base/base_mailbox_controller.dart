@@ -152,10 +152,10 @@ abstract class BaseMailboxController extends BaseController {
   }
 
   String? findNodePath(MailboxId mailboxId) {
-    var mailboxNodePath = defaultMailboxTree.value.getNodePath(mailboxId);
-    if (mailboxNodePath == null) {
-      return personalMailboxTree.value.getNodePath(mailboxId);
-    }
+    var mailboxNodePath = defaultMailboxTree.value.getNodePath(mailboxId)
+      ?? personalMailboxTree.value.getNodePath(mailboxId)
+      ?? teamMailboxesTree.value.getNodePath(mailboxId);
+    log('BaseMailboxController::findNodePath():mailboxNodePath: $mailboxNodePath');
     return mailboxNodePath;
   }
 
