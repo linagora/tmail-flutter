@@ -18,6 +18,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_screen_type.dart';
@@ -124,12 +125,15 @@ class DestinationPickerController extends BaseMailboxController {
     newState.map((success) {
       if (success is GetAllMailboxSuccess) {
         if (mailboxAction.value == MailboxActions.move && mailboxIdSelected != null) {
-          buildTree(success.mailboxList, mailboxIdSelected: mailboxIdSelected);
+          buildTree(
+            success.mailboxList.listSubscribedMailboxes,
+            mailboxIdSelected: mailboxIdSelected
+          );
         } else {
-          buildTree(success.mailboxList);
+          buildTree(success.mailboxList.listSubscribedMailboxes);
         }
       } else if (success is RefreshChangesAllMailboxSuccess) {
-        refreshTree(success.mailboxList);
+        refreshTree(success.mailboxList.listSubscribedMailboxes);
       }
     });
   }
