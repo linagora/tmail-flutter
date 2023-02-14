@@ -116,6 +116,16 @@ class PresentationMailbox with EquatableMixin {
     }
   }
 
+  bool get isSupportedEnableMailbox {
+    if (supportedSubscribe) {
+      return false;
+    }
+    if (isPersonal) {
+      return true;
+    } else {
+      return isTeamMailboxes;
+    }
+  }
 
   @override
   List<Object?> get props => [
