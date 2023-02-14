@@ -215,8 +215,21 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
         softWrap: CommonTextStyle.defaultSoftWrap,
         style: const TextStyle(
           fontSize: 11,
-          color: AppColor.colorMailboxPath
+          color: AppColor.colorMailboxPath,
+          fontWeight: FontWeight.normal
         ),
+      );
+    } else if (widget._presentationMailbox.isTeamMailboxes) {
+      return Text(
+        widget._presentationMailbox.emailTeamMailBoxes ?? '',
+        maxLines: 1,
+        softWrap: CommonTextStyle.defaultSoftWrap,
+        overflow: CommonTextStyle.defaultTextOverFlow,
+        style: const TextStyle(
+          fontSize: 11,
+          color: AppColor.colorEmailAddressFull,
+          fontWeight: FontWeight.normal
+        )
       );
     } else {
       return const SizedBox.shrink();
