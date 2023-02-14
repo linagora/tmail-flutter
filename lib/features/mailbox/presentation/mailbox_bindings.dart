@@ -48,8 +48,6 @@ class MailboxBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.put(MailboxController(
-      Get.find<GetAllMailboxInteractor>(),
-      Get.find<RefreshAllMailboxInteractor>(),
       Get.find<CreateNewMailboxInteractor>(),
       Get.find<DeleteMultipleMailboxInteractor>(),
       Get.find<RenameMailboxInteractor>(),
@@ -57,7 +55,9 @@ class MailboxBindings extends BaseBindings {
       Get.find<SubscribeMailboxInteractor>(),
       Get.find<SubscribeMultipleMailboxInteractor>(),
       Get.find<TreeBuilder>(),
-      Get.find<VerifyNameInteractor>()
+      Get.find<VerifyNameInteractor>(),
+      Get.find<GetAllMailboxInteractor>(),
+      Get.find<RefreshAllMailboxInteractor>()
     ));
   }
 

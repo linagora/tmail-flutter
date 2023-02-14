@@ -5,10 +5,8 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-
-typedef OnExpandFolderActionClick = void Function(MailboxNode);
-typedef OnSubscribeMailboxActionClick = void Function(MailboxNode);
 
 class MailBoxVisibilityFolderTileBuilder {
   final MailboxNode _mailboxNode;
@@ -17,8 +15,8 @@ class MailBoxVisibilityFolderTileBuilder {
   final MailboxNode? lastNode;
   final MailboxActions? mailboxActions;
 
-  OnSubscribeMailboxActionClick? _onSubscribeMailboxActionClick;
-  OnExpandFolderActionClick? _onExpandFolderActionClick;
+  OnClickExpandMailboxNodeAction? _onClickExpandMailboxNodeAction;
+  OnClickSubscribeMailboxAction? _onClickSubscribeMailboxAction;
   bool isHoverItem = false;
 
   MailBoxVisibilityFolderTileBuilder(
@@ -29,12 +27,12 @@ class MailBoxVisibilityFolderTileBuilder {
     this.mailboxActions,
   });
 
-  void addOnExpandFolderActionClick(OnExpandFolderActionClick onExpandFolderActionClick) {
-    _onExpandFolderActionClick = onExpandFolderActionClick;
+  void addOnExpandFolderActionClick(OnClickExpandMailboxNodeAction onClickExpandMailboxNodeAction) {
+    _onClickExpandMailboxNodeAction = onClickExpandMailboxNodeAction;
   }
 
-  void addOnSubscribeMailboxActionClick(OnSubscribeMailboxActionClick onSubscribeMailboxActionClick) {
-    _onSubscribeMailboxActionClick = onSubscribeMailboxActionClick;
+  void addOnSubscribeMailboxActionClick(OnClickSubscribeMailboxAction onClickSubscribeMailboxAction) {
+    _onClickSubscribeMailboxAction = onClickSubscribeMailboxAction;
   }
 
   Widget build(BuildContext context) => _buildMailboxItem(context);
@@ -124,7 +122,7 @@ class MailBoxVisibilityFolderTileBuilder {
                   tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND
                     ? AppLocalizations.of(_context).collapse
                     : AppLocalizations.of(_context).expand,
-                  onTap: () => _onExpandFolderActionClick?.call(_mailboxNode)),
+                  onTap: () => _onClickExpandMailboxNodeAction?.call(_mailboxNode)),
             ],
           )
         else
@@ -155,7 +153,7 @@ class MailBoxVisibilityFolderTileBuilder {
                     tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND
                       ? AppLocalizations.of(_context).collapse
                       : AppLocalizations.of(_context).expand,
-                    onTap: () => _onExpandFolderActionClick?.call(_mailboxNode)),
+                    onTap: () => _onClickExpandMailboxNodeAction?.call(_mailboxNode)),
             ],
           )
         else
@@ -242,7 +240,7 @@ class MailBoxVisibilityFolderTileBuilder {
 
   Widget _buildSubscribeMailboxItem(BuildContext context, MailboxNode _mailboxNode) {
     return InkWell(
-      onTap: () => _onSubscribeMailboxActionClick?.call(_mailboxNode),
+      onTap: () => _onClickSubscribeMailboxAction?.call(_mailboxNode),
       child: Text(
         _mailboxNode.item.isSubscribedMailbox
           ? AppLocalizations.of(context).hide

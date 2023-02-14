@@ -59,8 +59,6 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
 class SearchMailboxController extends BaseMailboxController with MailboxActionHandlerMixin {
 
-  final GetAllMailboxInteractor _getAllMailboxInteractor;
-  final RefreshAllMailboxInteractor _refreshAllMailboxInteractor;
   final SearchMailboxInteractor _searchMailboxInteractor;
   final RenameMailboxInteractor _renameMailboxInteractor;
   final MoveMailboxInteractor _moveMailboxInteractor;
@@ -83,8 +81,6 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   PresentationEmail? get selectedEmail => dashboardController.selectedEmail.value;
 
   SearchMailboxController(
-    this._getAllMailboxInteractor,
-    this._refreshAllMailboxInteractor,
     this._searchMailboxInteractor,
     this._renameMailboxInteractor,
     this._moveMailboxInteractor,
@@ -92,8 +88,15 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     this._subscribeMailboxInteractor,
     this._subscribeMultipleMailboxInteractor,
     TreeBuilder treeBuilder,
-    VerifyNameInteractor verifyNameInteractor
-  ) : super(treeBuilder, verifyNameInteractor);
+    VerifyNameInteractor verifyNameInteractor,
+    GetAllMailboxInteractor getAllMailboxInteractor,
+    RefreshAllMailboxInteractor refreshAllMailboxInteractor
+  ) : super(
+    treeBuilder,
+    verifyNameInteractor,
+    getAllMailboxInteractor: getAllMailboxInteractor,
+    refreshAllMailboxInteractor: refreshAllMailboxInteractor
+  );
 
   @override
   void onInit() {
@@ -132,11 +135,11 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     if (success is SearchMailboxSuccess) {
       _handleSearchMailboxSuccess(success);
     } else if (success is MarkAsMailboxReadAllSuccess) {
-      refreshMailboxChanges(mailboxState: success.currentMailboxState);
+      _refreshMailboxChanges(mailboxState: success.currentMailboxState);
     } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
-      refreshMailboxChanges(mailboxState: success.currentMailboxState);
+      _refreshMailboxChanges(mailboxState: success.currentMailboxState);
     } else if (success is RenameMailboxSuccess) {
-      refreshMailboxChanges(mailboxState: success.currentMailboxState);
+      _refreshMailboxChanges(mailboxState: success.currentMailboxState);
     } else if (success is MoveMailboxSuccess) {
       _moveMailboxSuccess(success);
     } else if (success is DeleteMultipleMailboxAllSuccess) {
@@ -169,17 +172,17 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     final session = dashboardController.sessionCurrent;
     final accountId = dashboardController.accountId.value;
     if (session != null && accountId != null) {
-      consumeState(_getAllMailboxInteractor.execute(session, accountId));
+      getAllMailbox(session, accountId);
     }
   }
 
-  void refreshMailboxChanges({jmap.State? mailboxState}) {
+  void _refreshMailboxChanges({jmap.State? mailboxState}) {
     dashboardController.dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
     final newMailboxState = mailboxState ?? currentMailboxState;
     final accountId = dashboardController.accountId.value;
     final session = dashboardController.sessionCurrent;
     if (session != null && accountId != null && newMailboxState != null) {
-      consumeState(_refreshAllMailboxInteractor.execute(session, accountId, newMailboxState));
+      refreshMailboxChanges(session, accountId, newMailboxState);
     }
   }
 
@@ -355,7 +358,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       );
     }
 
-    refreshMailboxChanges(mailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(mailboxState: success.currentMailboxState);
   }
 
   void _undoMovingMailbox(MoveMailboxRequest newMoveRequest) {
@@ -405,7 +408,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       dashboardController.dispatchMailboxUIAction(SelectMailboxDefaultAction());
     }
 
-    refreshMailboxChanges(mailboxState: currentMailboxState);
+    _refreshMailboxChanges(mailboxState: currentMailboxState);
   }
 
   void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
@@ -455,7 +458,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       }
     }
 
-    refreshMailboxChanges(mailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(mailboxState: success.currentMailboxState);
   }
 
   void _handleSubscribeMultipleMailboxAllSuccess(SubscribeMultipleMailboxAllSuccess success) {
@@ -473,7 +476,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       }
     }
 
-    refreshMailboxChanges(mailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(mailboxState: success.currentMailboxState);
   }
 
   void _handleSubscribeMultipleMailboxHasSomeSuccess(SubscribeMultipleMailboxHasSomeSuccess success) {
@@ -491,7 +494,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       }
     }
 
-    refreshMailboxChanges(mailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(mailboxState: success.currentMailboxState);
   }
 
   void _showToastSubscribeMailboxSuccess(
