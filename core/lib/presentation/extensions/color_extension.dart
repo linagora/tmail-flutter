@@ -173,6 +173,7 @@ extension AppColor on Color {
   static const colorSpamReportBox = Color(0xFFBFDEFF);
   static const colorSubtitle = Color(0xFF6D7885);
   static const colorBackgroundSearchMailboxInput = Color(0xFFEBEDF0);
+  static const colorMailboxHovered = Color(0xFFEBEDF0);
   static const colorMailboxPath = Color(0xFF818C99);
 
   static const mapGradientColor = [

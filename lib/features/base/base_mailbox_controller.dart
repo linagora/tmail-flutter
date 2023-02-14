@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_m
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -43,6 +44,7 @@ abstract class BaseMailboxController extends BaseController {
   final TreeBuilder _treeBuilder;
   final VerifyNameInteractor verifyNameInteractor;
   jmap.State? currentMailboxState;
+  final mailboxCategoriesExpandMode = MailboxCategoriesExpandMode.initial().obs;
 
   BaseMailboxController(
     this._treeBuilder,

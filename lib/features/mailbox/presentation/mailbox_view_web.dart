@@ -174,21 +174,10 @@ class MailboxView extends GetWidget<MailboxController>
             ),
             Obx(() {
               if (controller.personalMailboxIsNotEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Column(
-                    children: [
-                      _buildHeaderMailboxCategory(
-                        context,
-                        MailboxCategories.personalMailboxes
-                      ),
-                      _buildMailboxCategory(
-                        context,
-                        MailboxCategories.personalMailboxes,
-                        controller.personalRootNode
-                      ),
-                    ],
-                  ),
+                return _buildMailboxCategory(
+                  context,
+                  MailboxCategories.personalMailboxes,
+                  controller.personalRootNode
                 );
               } else {
                 return const SizedBox.shrink();
@@ -196,21 +185,10 @@ class MailboxView extends GetWidget<MailboxController>
             }),
             Obx(() {
               if (controller.teamMailboxesIsNotEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Column(
-                    children: [
-                      _buildHeaderMailboxCategory(
-                        context,
-                        MailboxCategories.teamMailboxes
-                      ),
-                      _buildMailboxCategory(
-                        context,
-                        MailboxCategories.teamMailboxes,
-                        controller.teamMailboxesRootNode
-                      ),
-                    ]
-                  )
+                return _buildMailboxCategory(
+                  context,
+                  MailboxCategories.teamMailboxes,
+                  controller.teamMailboxesRootNode
                 );
               } else {
                 return const SizedBox.shrink();
@@ -256,37 +234,11 @@ class MailboxView extends GetWidget<MailboxController>
     );
   }
 
-  Widget _buildHeaderMailboxCategory(BuildContext context, MailboxCategories categories) {
-    return Padding(
-        padding: EdgeInsets.only(
-            top: 10,
-            left: _responsiveUtils.isDesktop(context) ? 0 : 16,
-            right: _responsiveUtils.isDesktop(context) ? 0 : 16),
-        child: Row(children: [
-          buildIconWeb(
-              splashRadius: 5,
-              iconPadding: EdgeInsets.zero,
-              minSize: 12,
-              icon: SvgPicture.asset(
-                  categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
-                      ? _imagePaths.icExpandFolder
-                      : _imagePaths.icCollapseFolder,
-                  color: AppColor.primaryColor,
-                  fit: BoxFit.fill),
-              tooltip: AppLocalizations.of(context).collapse,
-              onTap: () => controller.toggleMailboxCategories(categories)),
-          Expanded(child: Text(categories.getTitle(context),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  fontSize: 17,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold))),
-        ]));
-  }
-
-  Widget _buildBodyMailboxCategory(BuildContext context,
-      MailboxCategories categories, MailboxNode mailboxNode) {
+  Widget _buildBodyMailboxCategory(
+    BuildContext context,
+    MailboxCategories categories,
+    MailboxNode mailboxNode
+  ) {
     final lastNode = mailboxNode.childrenItems?.last;
 
     return Container(
@@ -301,15 +253,34 @@ class MailboxView extends GetWidget<MailboxController>
                 lastNode: lastNode)));
   }
 
-  Widget _buildMailboxCategory(BuildContext context, MailboxCategories categories, MailboxNode mailboxNode) {
+  Widget _buildMailboxCategory(
+    BuildContext context,
+    MailboxCategories categories,
+    MailboxNode mailboxNode
+  ) {
     if (categories == MailboxCategories.exchange) {
       return _buildBodyMailboxCategory(context, categories, mailboxNode);
+    } else {
+      return Column(
+        children: [
+          buildHeaderMailboxCategory(
+            context,
+            _responsiveUtils,
+            _imagePaths,
+            categories,
+            controller,
+            toggleMailboxCategories: controller.toggleMailboxCategories
+          ),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            child: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
+              ? _buildBodyMailboxCategory(context, categories, mailboxNode)
+              : const Offstage()
+          ),
+          const SizedBox(height: 8)
+        ],
+      );
     }
-    return AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
-        child: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
-            ? _buildBodyMailboxCategory(context, categories, mailboxNode)
-            : const Offstage());
   }
 
   List<Widget> _buildListChildTileWidget(

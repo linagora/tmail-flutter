@@ -118,7 +118,7 @@ class MailBoxFolderTileBuilder {
                           const SizedBox(width: 4),
                           Expanded(child: _buildTitleFolderItem()),
                           const SizedBox(width: 8),
-                          _buildTrailingMailboxItem()
+                          _buildTrailingItemForMailboxView()
                       ])
                   ),
                 );
@@ -157,7 +157,7 @@ class MailBoxFolderTileBuilder {
                                 Expanded(child: _buildTitleFolderItem()),
                                 _buildSelectedIcon(),
                                 const SizedBox(width: 8),
-                                _buildTrailingMailboxItem()
+                                _buildTrailingItemForMailboxView()
                             ]),
                           ),
                         ]
@@ -177,9 +177,11 @@ class MailBoxFolderTileBuilder {
             color: Colors.transparent,
             child: InkWell(
               onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
+              customBorder: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+              hoverColor: AppColor.colorMailboxHovered,
               child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                  color: mailboxDisplayed == MailboxDisplayed.destinationPicker && _mailboxNode.isSelected
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  color: _mailboxNode.isSelected
                     ? AppColor.colorItemSelected
                     : Colors.transparent,
                   child: Row(children: [
@@ -187,8 +189,7 @@ class MailBoxFolderTileBuilder {
                     const SizedBox(width: 8),
                     Expanded(child: _buildTitleFolderItem()),
                     _buildSelectedIcon(),
-                    const SizedBox(width: 8),
-                    _buildTrailingMailboxItem()
+                    const SizedBox(width: 8)
                   ])
               ),
             ),
@@ -199,104 +200,47 @@ class MailBoxFolderTileBuilder {
   }
 
   Widget _buildLeadingMailboxItem() {
-    if (BuildUtils.isWeb) {
-      if (mailboxDisplayed == MailboxDisplayed.mailbox) {
-        return Row(mainAxisSize: MainAxisSize.min, children: [
-          if (_mailboxNode.hasChildren())
-            Row(
-              children: [
-                const SizedBox(width: 8),
-                buildIconWeb(
-                    icon: SvgPicture.asset(
-                        _mailboxNode.expandMode == ExpandMode.EXPAND
-                            ? _imagePaths.icExpandFolder
-                            : _imagePaths.icCollapseFolder,
-                        color: _mailboxNode.expandMode == ExpandMode.EXPAND
-                            ? AppColor.colorExpandMailbox
-                            : AppColor.colorCollapseMailbox,
-                        fit: BoxFit.fill),
-                    minSize: 12,
-                    splashRadius: 10,
-                    iconPadding: EdgeInsets.zero,
-                    tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND
-                        ? AppLocalizations.of(_context).collapse
-                        : AppLocalizations.of(_context).expand,
-                    onTap: () => _onExpandFolderActionClick?.call(_mailboxNode)),
-              ],
-            )
-          else
-            const SizedBox(width: 32),
-          Transform(
-              transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
-              child: _buildLeadingIcon()),
-        ]);
-      } else {
-        return _buildLeadingIcon();
-      }
-    } else {
-      if (mailboxDisplayed == MailboxDisplayed.mailbox) {
-        return Row(mainAxisSize: MainAxisSize.min, children: [
-          if (_mailboxNode.hasChildren())
-            Row(
-              children: [
-                SizedBox(width: _mailboxNode.item.hasRole() ? 0 : 0),
-                buildIconWeb(
-                    icon: SvgPicture.asset(
-                        _mailboxNode.expandMode == ExpandMode.EXPAND
-                            ? _imagePaths.icExpandFolder
-                            : _imagePaths.icCollapseFolder,
-                        color: _mailboxNode.expandMode == ExpandMode.EXPAND
-                            ? AppColor.colorExpandMailbox
-                            : AppColor.colorCollapseMailbox,
-                        fit: BoxFit.fill),
-                    minSize: 12,
-                    splashRadius: 10,
-                    iconPadding: EdgeInsets.zero,
-                    tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND
-                        ? AppLocalizations.of(_context).collapse
-                        : AppLocalizations.of(_context).expand,
-                    onTap: () => _onExpandFolderActionClick?.call(_mailboxNode)),
-              ],
-            )
-          else
-            const SizedBox(width: 24),
-          _buildLeadingIcon(),
-        ]);
-      } else {
-        return _buildLeadingIcon();
-      }
-    }
+    return Row(children: [
+      if (_mailboxNode.hasChildren())
+        Row(children: [
+          const SizedBox(width: 8),
+          buildIconWeb(
+            icon: SvgPicture.asset(
+              _mailboxNode.expandMode == ExpandMode.EXPAND
+                ? _imagePaths.icExpandFolder
+                : _imagePaths.icCollapseFolder,
+              color: _mailboxNode.expandMode == ExpandMode.EXPAND
+                ? AppColor.colorExpandMailbox
+                : AppColor.colorCollapseMailbox,
+              fit: BoxFit.fill
+            ),
+            minSize: 12,
+            splashRadius: 10,
+            iconPadding: EdgeInsets.zero,
+            tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND
+              ? AppLocalizations.of(_context).collapse
+              : AppLocalizations.of(_context).expand,
+            onTap: () => _onExpandFolderActionClick?.call(_mailboxNode)
+          ),
+        ])
+      else
+        const SizedBox(width: 32),
+      Transform(
+        transform: Matrix4.translationValues(-4.0, 0.0, 0.0),
+        child: _buildLeadingIcon()
+      ),
+    ]);
   }
 
-  Widget _buildTrailingMailboxItem() {
+  Widget _buildTrailingItemForMailboxView() {
     if (BuildUtils.isWeb) {
       if (isHoverItem) {
         return _buildMenuIcon();
       } else if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
-          && _mailboxNode.item.matchCountingRules()
-          && mailboxDisplayed == MailboxDisplayed.mailbox) {
+          && _mailboxNode.item.matchCountingRules()) {
         return Padding(
           padding: const EdgeInsets.only(right: 10),
           child: _buildCounter(),
-        );
-      } else if (_mailboxNode.hasChildren()
-          && mailboxDisplayed == MailboxDisplayed.destinationPicker) {
-        return buildIconWeb(
-            icon: SvgPicture.asset(
-                _mailboxNode.expandMode == ExpandMode.EXPAND
-                    ? _imagePaths.icExpandFolder
-                    : _imagePaths.icCollapseFolder,
-                color: _mailboxNode.expandMode == ExpandMode.EXPAND
-                    ? AppColor.colorExpandMailbox
-                    : AppColor.colorCollapseMailbox,
-                fit: BoxFit.fill),
-            splashRadius: 10,
-            iconPadding: EdgeInsets.zero,
-            minSize: 30,
-            tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND
-                ? AppLocalizations.of(_context).collapse
-                : AppLocalizations.of(_context).expand,
-            onTap: () => _onExpandFolderActionClick?.call(_mailboxNode)
         );
       } else {
         return const SizedBox(width: 20);
@@ -308,19 +252,17 @@ class MailBoxFolderTileBuilder {
           child: Row(
             children: [
               if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
-                  && _mailboxNode.item.matchCountingRules()
-                  && mailboxDisplayed == MailboxDisplayed.mailbox)
-                _buildCounter(),
+                && _mailboxNode.item.matchCountingRules())
+                  _buildCounter(),
             ],
           ),
         );
       } else if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
-          && _mailboxNode.item.matchCountingRules()
-          && mailboxDisplayed == MailboxDisplayed.mailbox) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: _buildCounter(),
-        );
+        && _mailboxNode.item.matchCountingRules()) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: _buildCounter(),
+          );
       } else {
         return const SizedBox();
       }
