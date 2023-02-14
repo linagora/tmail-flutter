@@ -93,7 +93,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   final SubscribeMultipleMailboxInteractor _subscribeMultipleMailboxInteractor;
 
   final currentSelectMode = SelectMode.INACTIVE.obs;
-  final mailboxCategoriesExpandMode = MailboxCategoriesExpandMode.initial().obs;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   final mailboxListScrollController = ScrollController();
