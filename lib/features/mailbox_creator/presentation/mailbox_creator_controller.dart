@@ -91,13 +91,10 @@ class MailboxCreatorController extends BaseController {
   }
 
   MailboxNode? _findMailboxNodeById(MailboxId mailboxId) {
-    final mailboxNode = defaultMailboxTree?.findNode((node) => node.item.id == mailboxId);
-    if (mailboxNode != null) {
-      return mailboxNode;
-    } else if(mailboxNode!.item.isTeamMailboxes) {
-      return teamMailboxesTre?.findNode((node) => node.item.id == mailboxId);
-    }
-    return personalMailboxTree?.findNode((node) => node.item.id == mailboxId);
+    final mailboxNode = defaultMailboxTree?.findNode((node) => node.item.id == mailboxId)
+     ?? personalMailboxTree?.findNode((node) => node.item.id == mailboxId)
+     ?? teamMailboxesTre?.findNode((node) => node.item.id == mailboxId);
+    return mailboxNode;
   }
 
   void _createListMailboxNameAsStringInMailboxLocation() {

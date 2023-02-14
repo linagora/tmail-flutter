@@ -282,7 +282,10 @@ class DestinationPickerController extends BaseMailboxController {
 
   void searchMailbox(String value) {
     searchQuery.value = SearchQuery(value);
-    _searchMailboxAction(allMailboxes, searchQuery.value);
+    _searchMailboxAction(
+      allMailboxes.listPersonalMailboxes,
+      searchQuery.value
+    );
   }
 
   void _searchMailboxAction(List<PresentationMailbox> allMailboxes, SearchQuery searchQuery) {
