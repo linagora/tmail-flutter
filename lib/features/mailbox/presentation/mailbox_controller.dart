@@ -983,12 +983,12 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void _buildMailboxTreeHasSubscribed(List<PresentationMailbox> mailboxList) async {
-    final _mailboxList = mailboxList.where((mailbox) => mailbox.isSubscribed?.value == true).toList();
+    final _mailboxList = mailboxList.listSubscribedMailboxes;
     await buildTree(_mailboxList);
   }
 
   void _refreshMailboxTreeHasSubscribed(List<PresentationMailbox> mailboxList) async {
-    final _mailboxList = mailboxList.where((mailbox) => mailbox.isSubscribed?.value == true).toList();
+    final _mailboxList = mailboxList.listSubscribedMailboxes;
     await refreshTree(_mailboxList);
   }
 
