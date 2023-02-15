@@ -106,7 +106,7 @@ class _TextFieldAutoCompleteEmailAddressState
         return widget.optionsBuilder.call(textEditingValue.text.toLowerCase());
       },
       onSelected: (EmailAddress selectedTag) {
-        _controller.addTag = selectedTag.asString();
+        _controller.addTag = selectedTag.emailAddress;
       },
       fieldViewBuilder: (context, ttec, tfn, onFieldSubmitted) {
         return TextFieldTags(
