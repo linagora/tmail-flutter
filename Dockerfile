@@ -11,6 +11,7 @@ ENV PATH "$PATH:$FLUTTER_HOME/bin"
 # Prerequisites
 RUN apt update && apt install -y curl git unzip xz-utils zip gzip libglu1-mesa \
  && mkdir -p $FLUTTER_HOME \
+ && git config --global --add safe.directory /opt/flutter \
  && curl -o flutter.tar.xz $FLUTTER_URL \
  && tar xf flutter.tar.xz -C /opt \
  && rm flutter.tar.xz \
