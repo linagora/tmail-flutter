@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/caching/authentication_info_cache_client.
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/encryption_key_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_login_url_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_login_username_cache_client.dart';
@@ -32,8 +33,8 @@ class LocalBindings extends Bindings {
 
   @override
   void dependencies() {
-    _bindingCaching();
     _bindingException();
+    _bindingCaching();
   }
 
   void _bindingCaching() {
@@ -60,6 +61,7 @@ class LocalBindings extends Bindings {
     Get.put(RecentLoginUsernameCacheManager(Get.find<RecentLoginUsernameCacheClient>()));
     Get.put(FCMSubscriptionCacheClient());
     Get.put(FCMCacheManager(Get.find<SharedPreferences>(),Get.find<FCMSubscriptionCacheClient>()));
+    Get.put(HiveCacheVersionClient(Get.find<SharedPreferences>(), Get.find<CacheExceptionThrower>()));
     Get.put(CachingManager(
       Get.find<MailboxCacheClient>(),
       Get.find<StateCacheClient>(),
@@ -68,6 +70,7 @@ class LocalBindings extends Bindings {
       Get.find<AccountCacheClient>(),
       Get.find<FCMCacheManager>(),
       Get.find<FCMSubscriptionCacheClient>(),
+      Get.find<HiveCacheVersionClient>()
     ));
     Get.put(SharePreferenceSpamReportDataSource(Get.find<SharedPreferences>()));
   }
