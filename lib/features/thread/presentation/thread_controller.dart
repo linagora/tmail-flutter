@@ -440,7 +440,7 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void refreshAllEmail() {
+  void refreshAllEmail() async {
     dispatchState(Right(LoadingState()));
     canLoadMore = true;
     cancelSelectEmail();
@@ -449,6 +449,7 @@ class ThreadController extends BaseController with EmailActionController {
       searchController.searchEmailFilter.value = _searchEmailFilter.clearBeforeDate();
       _searchEmail(limit: limitEmailFetched);
     } else {
+      await _cachingManager.cleanEmailCache();
       _getAllEmail();
     }
   }
