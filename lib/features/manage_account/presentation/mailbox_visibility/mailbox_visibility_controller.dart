@@ -1,5 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
@@ -74,15 +76,23 @@ class MailboxVisibilityController extends BaseMailboxController {
   }
 
   @override
-  void onDone() {
-    viewState.value.fold((failure) {}, (success) {
+  void onData(Either<Failure, Success> newState) {
+    super.onData(newState);
+    newState.fold((failure) => null, (success) {
       if (success is GetAllMailboxSuccess) {
         _currentMailboxState = success.currentMailboxState;
-        _buildMailboxTreeHasSubscribed(success.mailboxList);
+        _handleBuildMailboxTree(success.mailboxList);
       } else if (success is RefreshChangesAllMailboxSuccess) {
         _currentMailboxState = success.currentMailboxState;
-        _refreshMailboxTreeHasSubscribed(success.mailboxList);
-      } else if (success is SubscribeMailboxSuccess) {
+        refreshTree(success.mailboxList);
+      }
+    });
+  }
+
+  @override
+  void onDone() {
+    viewState.value.fold((failure) {}, (success) {
+      if (success is SubscribeMailboxSuccess) {
         _subscribeMailboxSuccess(success);
       } else if (success is SubscribeMultipleMailboxAllSuccess) {
         _handleUnsubscribeMultipleMailboxAllSuccess(success);
@@ -102,16 +112,10 @@ class MailboxVisibilityController extends BaseMailboxController {
     super.onReady();
   }
 
-  void _buildMailboxTreeHasSubscribed(List<PresentationMailbox> mailboxList) async {
+  void _handleBuildMailboxTree(List<PresentationMailbox> mailboxList) async {
     dispatchState(Right(LoadingBuildTreeMailboxVisibility()));
-    final _mailboxList = mailboxList;
-    await buildTree(_mailboxList);
+    await buildTree(mailboxList);
     dispatchState(Right(BuildTreeMailboxVisibilitySuccess()));
-  }
-
-  void _refreshMailboxTreeHasSubscribed(List<PresentationMailbox> mailboxList) async {
-    final _mailboxList = mailboxList;
-    await refreshTree(_mailboxList);
   }
 
   void subscribeMailbox(MailboxNode mailboxNode) {
