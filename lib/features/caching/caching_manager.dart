@@ -1,6 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:tmail_ui_user/features/caching/account_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
@@ -18,6 +19,7 @@ class CachingManager {
   final AccountCacheClient _accountCacheClient;
   final FCMCacheManager _fcmCacheManager;
   final FCMSubscriptionCacheClient _fcmSubscriptionCacheClient;
+  final HiveCacheVersionClient _hiveCacheVersionClient;
 
   CachingManager(
     this._mailboxCacheClient,
@@ -27,6 +29,7 @@ class CachingManager {
     this._accountCacheClient,
     this._fcmCacheManager,
     this._fcmSubscriptionCacheClient,
+    this._hiveCacheVersionClient,
   );
 
   Future<void> clearAll() async {
@@ -41,18 +44,26 @@ class CachingManager {
     ]);  
   }
 
-  Future<void> cleanEmailCache() async {
-    if (kIsWeb) {
-      await Future.wait([
-        _stateCacheClient.deleteItem(StateType.email.value),
-        _emailCacheClient.clearAllData(),
-      ]);
-    } else {
-      await Future.wait([
-        _stateCacheClient.deleteItem(StateType.email.value),
-        _emailCacheClient.deleteBox(),
-      ]);
-    }
+  Future<void> clearEmailCache() async {
+    await Future.wait([
+      _stateCacheClient.deleteItem(StateType.email.value),
+      _emailCacheClient.clearAllData(),
+    ]);
+  }
+
+  Future<void> clearMailboxCache() async {
+    await Future.wait([
+      _stateCacheClient.deleteItem(StateType.mailbox.value),
+      _mailboxCacheClient.clearAllData(),
+    ]);
+  }
+
+  Future<bool> storeCacheVersion() async {
+    return _hiveCacheVersionClient.storeVersion(CacheVersion.hiveDBVersion);
+  }
+
+  Future<int?> getLatestHiveCacheVersion() {
+    return _hiveCacheVersionClient.getLatestVersion();
   }
 
   Future<void> closeHive() async {
