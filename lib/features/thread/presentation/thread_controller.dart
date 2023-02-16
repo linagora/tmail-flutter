@@ -339,7 +339,7 @@ class ThreadController extends BaseController with EmailActionController {
   void _handleErrorGetAllOrRefreshChangesEmail(dynamic error) async {
     logError('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
     if (error is CannotCalculateChangesMethodResponseException) {
-      await _cachingManager.cleanEmailCache();
+      await _cachingManager.clearEmailCache();
       _getAllEmail();
     } else {
       super.onError(error);
