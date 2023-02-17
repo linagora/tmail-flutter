@@ -294,4 +294,11 @@ class ManageAccountDashBoardController extends ReloadableController {
       dashboardSettingAction.value = newAction;
     }
   }
+
+  Future<bool> backButtonPressedCallbackAction(BuildContext context) async {
+    if (!BuildUtils.isWeb) {
+      backToMailboxDashBoard(context);
+    }
+    return false;
+  }
 }
