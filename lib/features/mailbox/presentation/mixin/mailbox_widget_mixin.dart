@@ -277,8 +277,7 @@ mixin MailboxWidgetMixin {
       EdgeInsets? padding
     }
   ) {
-    return Container(
-      color: Colors.transparent,
+    return Padding(
       padding: padding ?? EdgeInsets.only(
         top: 10,
         left: responsiveUtils.isDesktop(context) ? 0 : 16,

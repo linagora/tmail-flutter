@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/expand_mode.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
@@ -29,6 +30,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/state/mailbox_visibility_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -68,13 +70,13 @@ class MailboxVisibilityController extends BaseMailboxController {
   @override
   void onData(Either<Failure, Success> newState) {
     super.onData(newState);
-    newState.fold((failure) => null, (success) async {
+    newState.fold((failure) => null, (success) {
       if (success is GetAllMailboxSuccess)  {
         currentMailboxState = success.currentMailboxState;
-        await buildTree(success.mailboxList);
+        _handleBuildTree(success.mailboxList);
       } else if (success is RefreshChangesAllMailboxSuccess) {
         currentMailboxState = success.currentMailboxState;
-        await refreshTree(success.mailboxList);
+        refreshTree(success.mailboxList);
       }
     });
   }
@@ -100,6 +102,12 @@ class MailboxVisibilityController extends BaseMailboxController {
       getAllMailbox(_session, _accountId);
     }
     super.onReady();
+  }
+
+  void _handleBuildTree(List<PresentationMailbox> mailboxList) async {
+    dispatchState(Right(LoadingBuildTreeMailboxVisibility()));
+    await buildTree(mailboxList);
+    dispatchState(Right(BuildTreeMailboxVisibilitySuccess()));
   }
 
   void subscribeMailbox(MailboxNode mailboxNode) {
