@@ -137,7 +137,14 @@ class MailboxAPI with HandleSetErrorMixin {
 
   Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest request) async {
     final setMailboxMethod = SetMailboxMethod(accountId)
-      ..addCreate(request.creationId, Mailbox(name: request.newName, parentId: request.parentId));
+      ..addCreate(
+          request.creationId,
+          Mailbox(
+            name: request.newName,
+            isSubscribed: IsSubscribed(request.isSubscribed),
+            parentId: request.parentId
+          )
+      );
 
     final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
 

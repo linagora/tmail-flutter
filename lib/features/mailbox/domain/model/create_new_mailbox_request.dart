@@ -8,9 +8,22 @@ class CreateNewMailboxRequest with EquatableMixin {
   final MailboxName newName;
   final Id creationId;
   final MailboxId? parentId;
+  final bool isSubscribed;
 
-  CreateNewMailboxRequest(this.creationId, this.newName, {this.parentId});
+  CreateNewMailboxRequest(
+    this.creationId,
+    this.newName,
+    {
+      this.parentId,
+      this.isSubscribed = true
+    }
+  );
 
   @override
-  List<Object?> get props => [creationId, newName, parentId];
+  List<Object?> get props => [
+    creationId,
+    newName,
+    parentId,
+    isSubscribed
+  ];
 }
