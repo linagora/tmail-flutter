@@ -343,6 +343,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             context,
             key: const Key('children_tree_mailbox_child'),
             isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
+            paddingChild: const EdgeInsets.only(left: 14),
             parent: (MailBoxFolderTileBuilder(
                     context,
                     _imagePaths,

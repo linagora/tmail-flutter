@@ -33,7 +33,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailb
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
@@ -64,7 +63,6 @@ class DestinationPickerController extends BaseMailboxController {
   final listMailboxSearched = <PresentationMailbox>[].obs;
   final searchState = SearchState.initial().obs;
   final searchQuery = SearchQuery.initial().obs;
-  final mailboxCategoriesExpandMode = MailboxCategoriesExpandMode.initial().obs;
   final destinationScreenType = DestinationScreenType.destinationPicker.obs;
   final mailboxDestination = Rxn<PresentationMailbox>();
   final newNameMailbox = Rxn<String>();

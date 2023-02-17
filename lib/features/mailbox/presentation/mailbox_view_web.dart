@@ -89,10 +89,10 @@ class MailboxView extends GetWidget<MailboxController>
 
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
-        (failure) => const SizedBox.shrink(),
-        (success) => success is LoadingState
-            ? Padding(padding: const EdgeInsets.only(top: 16), child: loadingWidget)
-            : const SizedBox.shrink()));
+      (failure) => const SizedBox.shrink(),
+      (success) => success is LoadingState
+        ? Padding(padding: const EdgeInsets.only(top: 16), child: loadingWidget)
+        : const SizedBox.shrink()));
   } 
 
   Widget _buildListMailbox(BuildContext context) {
@@ -294,6 +294,7 @@ class MailboxView extends GetWidget<MailboxController>
           context,
           key: const Key('children_tree_mailbox_child'),
           isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
+          paddingChild: const EdgeInsets.only(left: 14),
           parent: Obx(() => (MailBoxFolderTileBuilder(
                 context,
                 _imagePaths,

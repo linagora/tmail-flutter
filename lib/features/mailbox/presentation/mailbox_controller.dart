@@ -147,11 +147,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     super.onData(newState);
     newState.map((success) async {
       if (success is GetAllMailboxSuccess) {
-        currentMailboxState = success.currentMailboxState;
-        _buildMailboxTreeHasSubscribed(success.mailboxList);
+        _handleGetAllMailboxSuccess(success);
       } else if (success is RefreshChangesAllMailboxSuccess) {
-        currentMailboxState = success.currentMailboxState;
-        _refreshMailboxTreeHasSubscribed(success.mailboxList);
+        _handleRefreshChangesAllMailboxSuccess(success);
       }
     });
   }
@@ -979,14 +977,16 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       curve: Curves.fastOutSlowIn);
   }
 
-  void _buildMailboxTreeHasSubscribed(List<PresentationMailbox> mailboxList) async {
-    final _mailboxList = mailboxList.listSubscribedMailboxes;
-    await buildTree(_mailboxList);
+  void _handleGetAllMailboxSuccess(GetAllMailboxSuccess success) async {
+    currentMailboxState = success.currentMailboxState;
+    final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
+    await buildTree(listMailboxDisplayed);
   }
 
-  void _refreshMailboxTreeHasSubscribed(List<PresentationMailbox> mailboxList) async {
-    final _mailboxList = mailboxList.listSubscribedMailboxes;
-    await refreshTree(_mailboxList);
+  void _handleRefreshChangesAllMailboxSuccess(RefreshChangesAllMailboxSuccess success) async {
+    currentMailboxState = success.currentMailboxState;
+    final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
+    await refreshTree(listMailboxDisplayed);
   }
 
   void _unsubscribeMailboxAction(MailboxId mailboxId) {

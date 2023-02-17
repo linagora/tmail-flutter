@@ -35,7 +35,7 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
           const SizedBox(width: 8),
           _buildLeadingMailboxItem(context),
           Expanded(child: _buildTitleFolderItem()),
-          if (!_mailboxNode.item.hasRole() || !_mailboxNode.item.isSubscribedMailbox)
+          if (!_mailboxNode.item.isDefault)
             _buildSubscribeButton(context),
           const SizedBox(width: 32),
         ]
@@ -85,7 +85,7 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
           overflow: CommonTextStyle.defaultTextOverFlow,
           style: TextStyle(
             fontSize: _mailboxNode.item.isTeamMailboxes ? 16 : 15,
-            color: _mailboxNode.item.isSubscribedMailbox
+            color: _mailboxNode.item.allowedToDisplay
               ? Colors.black
               : AppColor.colorTitleAUnSubscribedMailbox,
             fontWeight: _mailboxNode.item.isTeamMailboxes
@@ -114,7 +114,7 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
         _mailboxNode.item.getMailboxIcon(_imagePaths),
         width: 20,
         height: 20,
-        color: _mailboxNode.item.isSubscribedMailbox
+        color: _mailboxNode.item.allowedToDisplay
           ? AppColor.primaryColor
           : AppColor.colorIconUnSubscribedMailbox,
         fit: BoxFit.fill

@@ -42,7 +42,7 @@ mixin MailboxWidgetMixin {
 
   List<MailboxActions> _listActionForPersonalMailbox(PresentationMailbox mailbox) {
     return [
-      if (BuildUtils.isWeb)
+      if (BuildUtils.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
       MailboxActions.markAsRead,
       MailboxActions.move,
@@ -57,7 +57,7 @@ mixin MailboxWidgetMixin {
 
   List<MailboxActions> _listActionForTeamMailbox(PresentationMailbox mailbox) {
     return [
-      if (BuildUtils.isWeb)
+      if (BuildUtils.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
       MailboxActions.markAsRead,
       if (mailbox.isTeamMailboxes)

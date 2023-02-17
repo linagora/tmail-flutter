@@ -12,7 +12,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/mailbox_visibility_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/state/mailbox_visibility_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/utils/mailbox_visibility_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/widgets/mailbox_visibility_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/widgets/mailbox_visibility_header_widget.dart';
@@ -57,17 +56,9 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
   Widget _buildLoadingView() {
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
-      (success) {
-        if (success is LoadingState || success is LoadingBuildTreeMailboxVisibility) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: loadingWidget
-          );
-        } else {
-          return const SizedBox.shrink();
-        }
-      }
-    ));
+      (success) => success is LoadingState
+        ? Padding(padding: const EdgeInsets.only(top: 16), child: loadingWidget)
+        : const SizedBox.shrink()));
   }
 
   Widget _buildListMailbox(BuildContext context) {
