@@ -182,7 +182,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   }
 
   void _onTapMailboxAction() {
-    if (widget._presentationMailbox.isSubscribed?.value == true) {
+    if (widget._presentationMailbox.allowedToDisplay) {
       widget.onClickOpenMailboxAction?.call(widget._presentationMailbox);
     }
   }
@@ -195,7 +195,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
 
   Widget _buildMailboxIcon() {
     return SvgPicture.asset(
-      widget._presentationMailbox.isSubscribed?.value == true
+      widget._presentationMailbox.allowedToDisplay
         ? widget._presentationMailbox.getMailboxIcon(widget._imagePaths)
         : widget._imagePaths.icHideFolder,
       width: 20,

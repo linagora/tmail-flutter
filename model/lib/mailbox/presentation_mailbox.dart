@@ -105,6 +105,8 @@ class PresentationMailbox with EquatableMixin {
     (namespace?.value.indexOf('[') ?? 0) + 1,
     namespace?.value.indexOf(']'));
 
+  bool get allowedToDisplay => isSubscribedMailbox || isDefault;
+
   @override
   List<Object?> get props => [
     id,

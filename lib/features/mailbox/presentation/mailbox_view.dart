@@ -1,10 +1,10 @@
 import 'package:core/core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
@@ -15,7 +15,9 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_informa
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_footer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class MailboxView extends GetWidget<MailboxController> with MailboxWidgetMixin {
+class MailboxView extends GetWidget<MailboxController>
+  with MailboxWidgetMixin,
+    AppLoaderMixin {
 
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -156,12 +158,7 @@ class MailboxView extends GetWidget<MailboxController> with MailboxWidgetMixin {
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) => success is LoadingState
-        ? const Center(child: Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: CupertinoActivityIndicator(color: AppColor.colorTextButton))))
+        ? Padding(padding: const EdgeInsets.only(top: 16), child: loadingWidget)
         : const SizedBox.shrink()));
   }
 
@@ -334,12 +331,14 @@ class MailboxView extends GetWidget<MailboxController> with MailboxWidgetMixin {
               context,
               key: const Key('children_tree_mailbox_child'),
               isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
+              paddingChild: const EdgeInsets.only(left: 14),
               parent: Obx(() => (MailBoxFolderTileBuilder(
                     context,
                     _imagePaths,
                     mailboxNode,
                     lastNode: lastNode,
-                    allSelectMode: controller.currentSelectMode.value)
+                    allSelectMode: controller.currentSelectMode.value,
+                    mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
                 ..addOnLongPressMailboxNodeAction((mailboxNode) {
                   openMailboxMenuActionOnMobile(
                     context,
@@ -360,7 +359,8 @@ class MailboxView extends GetWidget<MailboxController> with MailboxWidgetMixin {
                   _imagePaths,
                   mailboxNode,
                   lastNode: lastNode,
-                  allSelectMode: controller.currentSelectMode.value)
+                  allSelectMode: controller.currentSelectMode.value,
+                  mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
               ..addOnLongPressMailboxNodeAction((mailboxNode) {
                 openMailboxMenuActionOnMobile(
                   context,

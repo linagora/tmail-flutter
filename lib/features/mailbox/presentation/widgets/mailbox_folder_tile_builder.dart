@@ -1,9 +1,15 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/model.dart';
+import 'package:model/email/presentation_email.dart';
+import 'package:model/mailbox/expand_mode.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
@@ -12,8 +18,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class MailBoxFolderTileBuilder {
-
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final MailboxNode _mailboxNode;
   final BuildContext _context;
@@ -90,79 +94,62 @@ class MailBoxFolderTileBuilder {
   Widget _buildMailboxItem() {
     if (mailboxDisplayed == MailboxDisplayed.mailbox) {
       if (BuildUtils.isWeb) {
-        return Theme(
-          data: ThemeData(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent),
-          child: StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-                return InkWell(
-                  onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
-                  onHover: (value) => setState(() => isHoverItem = value),
-                  child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: backgroundColorItem),
-                      padding:  EdgeInsets.only(
-                        left: _mailboxNode.item.hasRole() ? 0 : 4, 
-                        right: 4, 
-                        top: 8, 
-                        bottom: 8),
-                      margin: const EdgeInsets.only(bottom: 4),
-                      child: Row(
-                        crossAxisAlignment: _mailboxNode.item.isTeamMailboxes
-                          ? CrossAxisAlignment.start
-                          : CrossAxisAlignment.center,
-                        children: [
-                          _buildLeadingMailboxItem(),
-                          const SizedBox(width: 4),
-                          Expanded(child: _buildTitleFolderItem()),
-                          const SizedBox(width: 8),
-                          _buildTrailingItemForMailboxView()
-                      ])
-                  ),
-                );
-              }
-          ),
+        return StatefulBuilder(
+            builder: (context, setState) {
+              return InkWell(
+                onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
+                onHover: (value) => setState(() => isHoverItem = value),
+                child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: backgroundColorItem),
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      crossAxisAlignment: _mailboxNode.item.isTeamMailboxes
+                        ? CrossAxisAlignment.start
+                        : CrossAxisAlignment.center,
+                      children: [
+                        _buildLeadingMailboxItem(),
+                        const SizedBox(width: 4),
+                        Expanded(child: _buildTitleFolderItem()),
+                        const SizedBox(width: 8),
+                        _buildTrailingItemForMailboxView()
+                    ])
+                ),
+              );
+            }
         );
       } else {
-        return AbsorbPointer(
-          absorbing: !_mailboxNode.isActivated,
-          child: Opacity(
-            opacity: _mailboxNode.isActivated ? 1.0 : 0.3,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onLongPress: () => _onLongPressMailboxNodeAction?.call(_mailboxNode),
-                onTap: () => allSelectMode == SelectMode.ACTIVE
-                    ? _onSelectMailboxFolderClick?.call(_mailboxNode)
-                    : _onOpenMailboxFolderClick?.call(_mailboxNode),
-                borderRadius: const BorderRadius.all(Radius.circular(8)),
-                child: ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(14)),
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: _mailboxNode.hasChildren() ? 8 : 15),
-                            child: Row(
-                              crossAxisAlignment: _mailboxNode.item.isTeamMailboxes
-                                ? CrossAxisAlignment.start
-                                : CrossAxisAlignment.center,
-                              children: [
-                                _buildLeadingMailboxItem(),
-                                const SizedBox(width: 8),
-                                Expanded(child: _buildTitleFolderItem()),
-                                _buildSelectedIcon(),
-                                const SizedBox(width: 8),
-                                _buildTrailingItemForMailboxView()
-                            ]),
-                          ),
-                        ]
-                    )
-                ),
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onLongPress: () => _onLongPressMailboxNodeAction?.call(_mailboxNode),
+            onTap: () => allSelectMode == SelectMode.ACTIVE
+                ? _onSelectMailboxFolderClick?.call(_mailboxNode)
+                : _onOpenMailboxFolderClick?.call(_mailboxNode),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: backgroundColorItem),
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      crossAxisAlignment: _mailboxNode.item.isTeamMailboxes
+                        ? CrossAxisAlignment.start
+                        : CrossAxisAlignment.center,
+                      children: [
+                        _buildLeadingMailboxItem(),
+                        const SizedBox(width: 8),
+                        Expanded(child: _buildTitleFolderItem()),
+                        _buildSelectedIcon(),
+                        const SizedBox(width: 8),
+                        _buildTrailingItemForMailboxView()
+                    ]),
+                  ]
               ),
             ),
           ),
@@ -188,8 +175,7 @@ class MailBoxFolderTileBuilder {
                     _buildLeadingMailboxItem(),
                     const SizedBox(width: 8),
                     Expanded(child: _buildTitleFolderItem()),
-                    _buildSelectedIcon(),
-                    const SizedBox(width: 8)
+                    _buildSelectedIcon()
                   ])
               ),
             ),
@@ -209,9 +195,9 @@ class MailBoxFolderTileBuilder {
               _mailboxNode.expandMode == ExpandMode.EXPAND
                 ? _imagePaths.icExpandFolder
                 : _imagePaths.icCollapseFolder,
-              color: _mailboxNode.expandMode == ExpandMode.EXPAND
-                ? AppColor.colorExpandMailbox
-                : AppColor.colorCollapseMailbox,
+              color: _mailboxNode.item.isSubscribedMailbox
+                ? AppColor.primaryColor
+                : AppColor.colorIconUnSubscribedMailbox,
               fit: BoxFit.fill
             ),
             minSize: 12,
@@ -383,15 +369,10 @@ class MailBoxFolderTileBuilder {
     if (mailboxDisplayed == MailboxDisplayed.destinationPicker) {
       return Colors.white;
     } else {
-      if (BuildUtils.isWeb) {
-        if (mailboxNodeSelected?.id == _mailboxNode.item.id || isHoverItem) {
-          return AppColor.colorBgMailboxSelected;
-        }
-        return _responsiveUtils.isDesktop(_context)
-            ? AppColor.colorBgDesktop
-            : Colors.white;
+      if (mailboxNodeSelected?.id == _mailboxNode.item.id || isHoverItem) {
+        return AppColor.colorBgMailboxSelected;
       } else {
-        return Colors.white;
+        return Colors.transparent;
       }
     }
   }
