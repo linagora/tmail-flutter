@@ -63,6 +63,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
 
   Widget _buildListMailbox(BuildContext context) {
     return SingleChildScrollView(
+      controller: controller.mailboxListScrollController,
       key: const PageStorageKey('mailbox_list'),
       physics: const ClampingScrollPhysics(),
       child: Column(children: [

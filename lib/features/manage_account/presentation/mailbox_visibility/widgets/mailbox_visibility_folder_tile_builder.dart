@@ -27,18 +27,24 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(8),
-      child: Row(
-        children: [
-          const SizedBox(width: 8),
-          _buildLeadingMailboxItem(context),
-          Expanded(child: _buildTitleFolderItem()),
-          if (!_mailboxNode.item.isDefault)
-            _buildSubscribeButton(context),
-          const SizedBox(width: 32),
-        ]
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {},
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Row(
+            children: [
+              const SizedBox(width: 8),
+              _buildLeadingMailboxItem(context),
+              Expanded(child: _buildTitleFolderItem()),
+              if (!_mailboxNode.item.isDefault)
+                _buildSubscribeButton(context),
+              const SizedBox(width: 32),
+            ]
+          ),
+        ),
       ),
     );
   }
