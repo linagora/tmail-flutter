@@ -6,6 +6,8 @@ import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
@@ -39,6 +41,16 @@ class HiveCacheConfig {
         Hive.init(directory.path);
       }
     }
+  }
+
+  Future<void> onUpgradeDatabase(CachingManager cachingManager) async {
+    final oldVersion = await cachingManager.getLatestVersion() ?? 0;
+    const newVersion = CacheVersion.hiveDBVersion;
+    log('HiveCacheConfig::onUpgradeDatabase():oldVersion: $oldVersion | newVersion: $newVersion');
+    if (oldVersion != newVersion) {
+      await cachingManager.onUpgradeCache(oldVersion, newVersion);
+    }
+    return Future.value();
   }
 
   static Future<void> initializeEncryptionKey() async {
