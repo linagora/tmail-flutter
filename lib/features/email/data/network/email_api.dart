@@ -111,7 +111,12 @@ class EmailAPI with HandleSetErrorMixin {
       final setMailboxMethod = SetMailboxMethod(accountId)
         ..addCreate(
             mailboxRequest.creationId,
-            Mailbox(name: mailboxRequest.newName, parentId: mailboxRequest.parentId));
+            Mailbox(
+              name: mailboxRequest.newName,
+              parentId: mailboxRequest.parentId,
+              isSubscribed: IsSubscribed(mailboxRequest.isSubscribed)
+            )
+        );
 
       requestBuilder.invocation(setMailboxMethod);
 
