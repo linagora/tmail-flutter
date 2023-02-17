@@ -24,5 +24,5 @@ class GetUnreadSpamMailboxFailure extends FeatureFailure {
   GetUnreadSpamMailboxFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

@@ -10,14 +10,14 @@ class GetCredentialViewState extends UIState {
   GetCredentialViewState(this.baseUrl, this.userName, this.password);
 
   @override
-  List<Object> get props => [baseUrl, this.userName, this.password];
+  List<Object> get props => [baseUrl, userName, password];
 }
 
 class GetCredentialFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   GetCredentialFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

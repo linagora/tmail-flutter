@@ -33,5 +33,5 @@ class UpdateEmailDraftsFailure extends FeatureFailure {
   UpdateEmailDraftsFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

@@ -21,5 +21,5 @@ class GetMailboxStateToRefreshFailure extends FeatureFailure {
   GetMailboxStateToRefreshFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

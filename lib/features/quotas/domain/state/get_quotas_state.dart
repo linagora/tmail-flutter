@@ -21,5 +21,5 @@ class GetQuotasFailure extends FeatureFailure {
   GetQuotasFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

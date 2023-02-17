@@ -26,5 +26,5 @@ class GetTokenOIDCFailure extends FeatureFailure {
   GetTokenOIDCFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

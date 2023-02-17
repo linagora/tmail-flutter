@@ -55,5 +55,5 @@ class MarkAsStarMultipleEmailFailure extends FeatureFailure {
   MarkAsStarMultipleEmailFailure(this.exception, this.markStarAction);
 
   @override
-  List<Object> get props => [exception, markStarAction];
+  List<Object?> get props => [exception, markStarAction];
 }

@@ -18,5 +18,5 @@ class StoreEmailDeliveryStateFailure extends FeatureFailure {
   StoreEmailDeliveryStateFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

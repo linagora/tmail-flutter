@@ -11,10 +11,10 @@ class DownloadAttachmentsSuccess extends UIState {
 }
 
 class DownloadAttachmentsFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   DownloadAttachmentsFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }
