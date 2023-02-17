@@ -234,7 +234,8 @@ mixin MailboxWidgetMixin {
       EdgeInsets? padding
     }
   ) {
-    return Padding(
+    return Container(
+      color: Colors.transparent,
       padding: padding ?? EdgeInsets.only(
         top: 10,
         left: responsiveUtils.isDesktop(context) ? 0 : 16,
@@ -244,7 +245,7 @@ mixin MailboxWidgetMixin {
         Obx(() {
           final expandMode = categories.getExpandMode(baseMailboxController.mailboxCategoriesExpandMode.value);
           return buildIconWeb(
-            splashRadius: 5,
+            splashRadius: 12,
             iconPadding: EdgeInsets.zero,
             minSize: 12,
             icon: SvgPicture.asset(

@@ -188,7 +188,9 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   }
 
   void _onLongPressMailboxAction() {
-    widget.onLongPressMailboxAction?.call(widget._presentationMailbox);
+    if (widget.listPopupMenuItemAction?.isNotEmpty == true) {
+      widget.onLongPressMailboxAction?.call(widget._presentationMailbox);
+    }
   }
 
   Widget _buildMailboxIcon() {

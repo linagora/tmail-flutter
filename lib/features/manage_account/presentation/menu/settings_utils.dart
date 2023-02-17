@@ -107,14 +107,6 @@ class SettingsUtils {
     }
   }
 
-  static EdgeInsets getPaddingHeaderWidgetForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (responsiveUtils.isPortraitMobile(context)) {
-      return const EdgeInsets.only(left: 16, right: 16);
-    } else {
-      return const EdgeInsets.all(12);
-    }
-  }
-
   static EdgeInsets getPaddingKeepLocalSwitchButtonForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isPortraitMobile(context)) {
       return const EdgeInsets.symmetric(horizontal: 18, vertical: 14);
@@ -136,6 +128,14 @@ class SettingsUtils {
   }
 
   static EdgeInsets getMarginViewForForwardSettingDetails(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return const EdgeInsets.all(16);
+    } else {
+      return EdgeInsets.zero;
+    }
+  }
+
+  static EdgeInsets getMarginSettingDetailsView(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isWebDesktop(context)) {
       return const EdgeInsets.all(16);
     } else {

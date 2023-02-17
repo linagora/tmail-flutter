@@ -57,6 +57,7 @@ class TreeViewChild {
   final Widget parent;
   final List<Widget> children;
   final VoidCallback? onTap;
+  final EdgeInsets? paddingChild;
 
   TreeViewChild(
     this.context,
@@ -65,6 +66,7 @@ class TreeViewChild {
       required this.children,
       this.isExpanded,
       this.onTap,
+      this.paddingChild,
       Key? key,
     }
   );
@@ -86,7 +88,13 @@ class TreeViewChild {
           child: isExpanded!
             ? Column(
                 mainAxisSize: MainAxisSize.min,
-                children: children.map((child) => Padding(padding: const EdgeInsets.only(left: 20), child: child)).toList())
+                children: children
+                  .map((child) => Padding(
+                    padding: paddingChild ?? const EdgeInsets.only(left: 20),
+                    child: child
+                  ))
+                  .toList()
+              )
             : const Offstage(),
         ),
       ],

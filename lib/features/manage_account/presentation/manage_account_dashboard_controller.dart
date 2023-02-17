@@ -47,8 +47,6 @@ class ManageAccountDashBoardController extends ReloadableController {
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
 
-  final menuDrawerKey = GlobalKey<ScaffoldState>(debugLabel: 'manage_account');
-
   final appInformation = Rxn<PackageInfo>();
   final userProfile = Rxn<UserProfile>();
   final accountId = Rxn<AccountId>();
@@ -173,16 +171,6 @@ class ManageAccountDashBoardController extends ReloadableController {
     vacationResponse.value = newVacation;
   }
 
-  void openMenuDrawer() {
-    menuDrawerKey.currentState?.openDrawer();
-  }
-
-  void closeMenuDrawer() {
-    menuDrawerKey.currentState?.openEndDrawer();
-  }
-
-  bool get isMenuDrawerOpen => menuDrawerKey.currentState?.isDrawerOpen == true;
-
   void selectAccountMenuItem(AccountMenuItem newAccountMenuItem) {
     clearInputFormView();
     if (newAccountMenuItem == AccountMenuItem.emailRules) {
@@ -195,9 +183,6 @@ class ManageAccountDashBoardController extends ReloadableController {
       MailboxVisibilityBindings().dependencies();
     }
     accountMenuItemSelected.value = newAccountMenuItem;
-    if (isMenuDrawerOpen) {
-      closeMenuDrawer();
-    }
   }
 
   void clearInputFormView() {
@@ -233,9 +218,6 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void backToMailboxDashBoard(BuildContext context) {
-    if (isMenuDrawerOpen) {
-      closeMenuDrawer();
-    }
     if (canBack(context)) {
       popBack(result: vacationResponse.value);
     } else {

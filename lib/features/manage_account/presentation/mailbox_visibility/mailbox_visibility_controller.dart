@@ -27,7 +27,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailb
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
@@ -43,14 +42,6 @@ class MailboxVisibilityController extends BaseMailboxController {
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final mailboxCategoriesExpandMode = MailboxCategoriesExpandMode.initial().obs;
-  final mailboxListScrollController = ScrollController();
-
-  Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
-  Map<MailboxId, PresentationMailbox> mapMailboxById = {};
-  PresentationMailbox? outboxMailbox;
-
-  jmap.State? _currentMailboxState;
 
   MailboxVisibilityController(
     TreeBuilder treeBuilder,
@@ -80,10 +71,10 @@ class MailboxVisibilityController extends BaseMailboxController {
     super.onData(newState);
     newState.fold((failure) => null, (success) {
       if (success is GetAllMailboxSuccess) {
-        _currentMailboxState = success.currentMailboxState;
+        currentMailboxState = success.currentMailboxState;
         _handleBuildMailboxTree(success.mailboxList);
       } else if (success is RefreshChangesAllMailboxSuccess) {
-        _currentMailboxState = success.currentMailboxState;
+        currentMailboxState = success.currentMailboxState;
         refreshTree(success.mailboxList);
       }
     });
@@ -178,7 +169,7 @@ class MailboxVisibilityController extends BaseMailboxController {
         _showToastSubscribeMailboxSuccess(subscribeMailboxSuccess.mailboxId);
     }
 
-    _refreshMailboxChanges(subscribeMailboxSuccess.currentEmailState);
+    _refreshMailboxChanges(subscribeMailboxSuccess.currentMailboxState);
   }
 
   void _handleUnsubscribeMultipleMailboxHasSomeSuccess(SubscribeMultipleMailboxHasSomeSuccess subscribeMailboxSuccess) {
@@ -189,7 +180,7 @@ class MailboxVisibilityController extends BaseMailboxController {
       );
     }
 
-    _refreshMailboxChanges(subscribeMailboxSuccess.currentEmailState);
+    _refreshMailboxChanges(subscribeMailboxSuccess.currentMailboxState);
   }
 
   void _handleUnsubscribeMultipleMailboxAllSuccess(SubscribeMultipleMailboxAllSuccess subscribeMailboxSuccess) {
@@ -200,15 +191,15 @@ class MailboxVisibilityController extends BaseMailboxController {
       );
     }
 
-    _refreshMailboxChanges(subscribeMailboxSuccess.currentEmailState);
+    _refreshMailboxChanges(subscribeMailboxSuccess.currentMailboxState);
   }
 
-  void _refreshMailboxChanges(jmap.State? currentEmailState) {
+  void _refreshMailboxChanges(jmap.State? newMailboxState) {
     final _session = _accountDashBoardController.sessionCurrent.value;
     final _accountId = _accountDashBoardController.accountId.value;
-    final currentMailboxState = currentEmailState ?? _currentMailboxState;
-    if (_session != null && _accountId != null && currentMailboxState != null) {
-      refreshMailboxChanges(_session, _accountId, currentMailboxState);
+    final mailboxState = newMailboxState ?? currentMailboxState;
+    if (_session != null && _accountId != null && mailboxState != null) {
+      refreshMailboxChanges(_session, _accountId, mailboxState);
     }
   }
 
