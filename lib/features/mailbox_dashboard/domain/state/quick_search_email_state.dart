@@ -17,5 +17,5 @@ class QuickSearchEmailFailure extends FeatureFailure {
   QuickSearchEmailFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

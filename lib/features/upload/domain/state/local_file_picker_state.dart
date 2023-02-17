@@ -12,12 +12,12 @@ class LocalFilePickerSuccess extends UIState {
 }
 
 class LocalFilePickerFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   LocalFilePickerFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }
 
 class LocalFilePickerCancel extends FeatureFailure {

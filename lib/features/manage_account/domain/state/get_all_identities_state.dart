@@ -20,5 +20,5 @@ class GetAllIdentitiesFailure extends FeatureFailure {
   GetAllIdentitiesFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

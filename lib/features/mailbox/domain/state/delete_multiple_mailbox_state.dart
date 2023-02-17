@@ -46,5 +46,5 @@ class DeleteMultipleMailboxFailure extends FeatureFailure {
   DeleteMultipleMailboxFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

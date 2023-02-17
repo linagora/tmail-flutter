@@ -14,5 +14,5 @@ class CleanupRecentLoginUrlCacheFailure extends FeatureFailure {
   CleanupRecentLoginUrlCacheFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

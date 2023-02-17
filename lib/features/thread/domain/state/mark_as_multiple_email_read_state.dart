@@ -55,5 +55,5 @@ class MarkAsMultipleEmailReadFailure extends FeatureFailure {
   MarkAsMultipleEmailReadFailure(this.exception, this.readActions);
 
   @override
-  List<Object> get props => [exception, readActions];
+  List<Object?> get props => [exception, readActions];
 }

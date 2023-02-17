@@ -18,5 +18,5 @@ class GetAllRecentLoginUrlLatestFailure extends FeatureFailure {
   GetAllRecentLoginUrlLatestFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

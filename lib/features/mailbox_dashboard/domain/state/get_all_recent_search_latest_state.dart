@@ -17,5 +17,5 @@ class GetAllRecentSearchLatestFailure extends FeatureFailure {
   GetAllRecentSearchLatestFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

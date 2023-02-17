@@ -19,5 +19,5 @@ class CreateNewIdentityFailure extends FeatureFailure {
   CreateNewIdentityFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

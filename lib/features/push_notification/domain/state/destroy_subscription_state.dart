@@ -20,5 +20,5 @@ class DestroySubscriptionFailure extends FeatureFailure {
   DestroySubscriptionFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }
