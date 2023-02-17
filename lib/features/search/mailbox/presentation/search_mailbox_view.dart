@@ -196,7 +196,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
   }
 
   List<ContextMenuItemMailboxAction> _generateListContextMenuItemAction(PresentationMailbox mailbox) {
-    final mailboxActionsSupported = mailbox.supportedSubscribe
+    final mailboxActionsSupported = mailbox.isSubscribedMailbox
       ? _listActionForMailboxSubscribed(mailbox)
       : _listActionForMailboxUnsubscribed(mailbox);
 

@@ -34,14 +34,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
 
   @override
   Widget build(BuildContext context) {
-    if (controller.isMenuDrawerOpen && _responsiveUtils.isWebDesktop(context)) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        controller.closeMenuDrawer();
-      });
-    }
-
     return Scaffold(
-      key: controller.menuDrawerKey,
       backgroundColor: Colors.white,
       drawerEnableOpenDragGesture: false,
       body: GestureDetector(
