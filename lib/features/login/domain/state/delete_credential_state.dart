@@ -8,10 +8,10 @@ class DeleteCredentialSuccess extends UIState {
 }
 
 class DeleteCredentialFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   DeleteCredentialFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

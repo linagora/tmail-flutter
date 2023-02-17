@@ -9,10 +9,10 @@ class CleanupEmailCacheSuccess extends UIState {
 }
 
 class CleanupEmailCacheFailure extends FeatureFailure {
-  final exception;
+  final dynamic exception;
 
   CleanupEmailCacheFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

@@ -29,5 +29,5 @@ class DownloadImageAsBase64Failure extends FeatureFailure {
   DownloadImageAsBase64Failure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

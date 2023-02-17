@@ -19,5 +19,5 @@ class SearchMailboxFailure extends FeatureFailure {
   SearchMailboxFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

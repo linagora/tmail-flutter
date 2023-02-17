@@ -17,5 +17,5 @@ class DeleteLastTimeDismissedSpamReportedFailure extends FeatureFailure {
   DeleteLastTimeDismissedSpamReportedFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

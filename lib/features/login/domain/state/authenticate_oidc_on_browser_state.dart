@@ -24,5 +24,5 @@ class AuthenticateOidcOnBrowserFailure extends FeatureFailure {
   AuthenticateOidcOnBrowserFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

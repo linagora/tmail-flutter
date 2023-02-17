@@ -47,5 +47,5 @@ class MoveToMailboxFailure extends FeatureFailure {
   MoveToMailboxFailure(this.emailActionType, this.exception);
 
   @override
-  List<Object> get props => [emailActionType, exception];
+  List<Object?> get props => [emailActionType, exception];
 }

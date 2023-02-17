@@ -60,5 +60,5 @@ class DownloadAttachmentForWebFailure extends FeatureFailure {
   DownloadAttachmentForWebFailure(this.taskId, this.exception);
 
   @override
-  List<Object> get props => [taskId, exception];
+  List<Object?> get props => [taskId, exception];
 }

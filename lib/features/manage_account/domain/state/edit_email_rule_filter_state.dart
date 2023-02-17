@@ -18,5 +18,5 @@ class EditEmailRuleFilterFailure extends FeatureFailure {
   EditEmailRuleFilterFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }

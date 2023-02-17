@@ -14,5 +14,5 @@ class SaveEmailAddressFailure extends FeatureFailure {
   SaveEmailAddressFailure(this.exception);
 
   @override
-  List<Object> get props => [exception];
+  List<Object?> get props => [exception];
 }
