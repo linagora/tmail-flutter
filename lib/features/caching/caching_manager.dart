@@ -1,5 +1,5 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:tmail_ui_user/features/caching/account_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
@@ -49,6 +49,7 @@ class CachingManager {
       _stateCacheClient.deleteItem(StateType.email.value),
       _emailCacheClient.clearAllData(),
     ]);
+    log('CachingManager::clearEmailCache(): success');
   }
 
   Future<void> clearMailboxCache() async {
@@ -56,13 +57,27 @@ class CachingManager {
       _stateCacheClient.deleteItem(StateType.mailbox.value),
       _mailboxCacheClient.clearAllData(),
     ]);
+    log('CachingManager::clearMailboxCache(): success');
   }
 
-  Future<bool> storeCacheVersion() async {
-    return _hiveCacheVersionClient.storeVersion(CacheVersion.hiveDBVersion);
+  Future<void> onUpgradeCache(int oldVersion, int newVersion) async {
+    log('CachingManager::onUpgradeCache():oldVersion $oldVersion | newVersion: $newVersion');
+    if (oldVersion == 0 && newVersion >= 1) {
+      await Future.wait([
+        clearMailboxCache(),
+        clearEmailCache()
+      ]);
+    }
+    storeCacheVersion(newVersion);
+    return Future.value();
   }
 
-  Future<int?> getLatestHiveCacheVersion() {
+  Future<bool> storeCacheVersion(int newVersion) async {
+    log('CachingManager::storeCacheVersion()');
+    return _hiveCacheVersionClient.storeVersion(newVersion);
+  }
+
+  Future<int?> getLatestVersion() {
     return _hiveCacheVersionClient.getLatestVersion();
   }
 

@@ -8,7 +8,7 @@ import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
-import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/email_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_login_url_cleanup_rule.dart';
@@ -78,7 +78,6 @@ class HomeController extends BaseController {
 
   @override
   void onReady() {
-    log('HomeController::onReady()');
     _cleanupCache();
     super.onReady();
   }
@@ -92,7 +91,7 @@ class HomeController extends BaseController {
   static void downloadCallback(String id, DownloadTaskStatus status, int progress) {}
 
   void _cleanupCache() async {
-    await _checkCacheVersion();
+    await HiveCacheConfig().onUpgradeDatabase(_cachingManager);
 
     await Future.wait([
       _cleanupEmailCacheInteractor.execute(EmailCleanupRule(Duration.defaultCacheInternal)),
@@ -100,19 +99,6 @@ class HomeController extends BaseController {
       _cleanupRecentLoginUrlCacheInteractor.execute(RecentLoginUrlCleanupRule()),
       _cleanupRecentLoginUsernameCacheInteractor.execute(RecentLoginUsernameCleanupRule()),
     ]).then((value) => _getAuthenticatedAccount());
-  }
-
-  Future<void> _checkCacheVersion() async {
-    final latestHiveCacheVersion = await _cachingManager.getLatestHiveCacheVersion();
-    log('HomeController::_checkCacheVersion():latestHiveCacheVersion: $latestHiveCacheVersion');
-    if (latestHiveCacheVersion == null || latestHiveCacheVersion < CacheVersion.hiveDBVersion) {
-      await Future.wait([
-        _cachingManager.clearMailboxCache(),
-        _cachingManager.clearEmailCache()
-      ]);
-      await _cachingManager.storeCacheVersion();
-    }
-    return Future.value(null);
   }
 
   void _getAuthenticatedAccount() async {
