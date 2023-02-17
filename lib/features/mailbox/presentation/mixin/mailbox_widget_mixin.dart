@@ -17,33 +17,68 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_m
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 mixin MailboxWidgetMixin {
 
-  MailboxActions _mailboxActionForSpam(MailboxDashBoardController dashBoardController) {
-    return dashBoardController.enableSpamReport
+  MailboxActions _mailboxActionForSpam(bool spamReportEnabled) {
+    return spamReportEnabled
       ? MailboxActions.disableSpamReport
       : MailboxActions.enableSpamReport;
   }
 
-  List<MailboxActions> listActionForMailbox(
+  List<MailboxActions> _listActionForDefaultMailbox(
     PresentationMailbox mailbox,
-    MailboxDashBoardController dashBoardController
+    bool spamReportEnabled
   ) {
     return [
       if (BuildUtils.isWeb)
         MailboxActions.openInNewTab,
       if (mailbox.isSpam)
-        _mailboxActionForSpam(dashBoardController),
+        _mailboxActionForSpam(spamReportEnabled),
+      MailboxActions.markAsRead
+    ];
+  }
+
+  List<MailboxActions> _listActionForPersonalMailbox(PresentationMailbox mailbox) {
+    return [
+      if (BuildUtils.isWeb)
+        MailboxActions.openInNewTab,
       MailboxActions.markAsRead,
       MailboxActions.move,
       MailboxActions.rename,
       MailboxActions.delete,
-      if (mailbox.isSupportedDisableMailbox)
+      if (mailbox.isSubscribedMailbox)
         MailboxActions.disableMailbox
+      else
+        MailboxActions.enableMailbox
     ];
+  }
+
+  List<MailboxActions> _listActionForTeamMailbox(PresentationMailbox mailbox) {
+    return [
+      if (BuildUtils.isWeb)
+        MailboxActions.openInNewTab,
+      MailboxActions.markAsRead,
+      if (mailbox.isTeamMailboxes)
+        if (mailbox.isSubscribedMailbox)
+          MailboxActions.disableMailbox
+        else
+          MailboxActions.enableMailbox
+    ];
+  }
+
+  List<MailboxActions> _listActionForAllMailboxType(
+    PresentationMailbox mailbox,
+    bool spamReportEnabled
+  ) {
+    if (mailbox.isDefault) {
+      return _listActionForDefaultMailbox(mailbox, spamReportEnabled);
+    } else if (mailbox.isPersonal) {
+      return _listActionForPersonalMailbox(mailbox);
+    } else {
+      return _listActionForTeamMailbox(mailbox);
+    }
   }
 
   void openMailboxMenuActionOnMobile(
@@ -52,7 +87,14 @@ mixin MailboxWidgetMixin {
     PresentationMailbox mailbox,
     MailboxController controller
   ) {
-    final contextMenuActions = listContextMenuItemAction(mailbox, controller.mailboxDashBoardController);
+    final contextMenuActions = listContextMenuItemAction(
+      mailbox,
+      controller.mailboxDashBoardController.enableSpamReport
+    );
+
+    if (contextMenuActions.isEmpty) {
+      return;
+    }
 
     controller.openContextMenuAction(
       context,
@@ -118,15 +160,9 @@ mixin MailboxWidgetMixin {
 
   List<ContextMenuItemMailboxAction> listContextMenuItemAction(
     PresentationMailbox mailbox,
-    MailboxDashBoardController dashBoardController,
-    {
-      List<MailboxActions>? mailboxActions
-    }
+    bool spamReportEnabled
   ) {
-    final mailboxActionsSupported = mailboxActions ?? listActionForMailbox(
-      mailbox,
-      dashBoardController
-    );
+    final mailboxActionsSupported = _listActionForAllMailboxType(mailbox, spamReportEnabled);
 
     final listContextMenuItemAction = mailboxActionsSupported
       .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
@@ -143,7 +179,14 @@ mixin MailboxWidgetMixin {
     PresentationMailbox mailbox,
     MailboxController controller
   ) {
-    final contextMenuActions = listContextMenuItemAction(mailbox, controller.mailboxDashBoardController);
+    final contextMenuActions = listContextMenuItemAction(
+      mailbox,
+      controller.mailboxDashBoardController.enableSpamReport
+    );
+
+    if (contextMenuActions.isEmpty) {
+      return;
+    }
 
     if (responsiveUtils.isScreenWithShortestSide(context)) {
       controller.openContextMenuAction(
