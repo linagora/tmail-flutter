@@ -55,7 +55,13 @@ class PresentationEmail with EquatableMixin {
     }
   );
 
-  String getSenderName() => from?.first.asString() ?? '';
+  String getSenderName() {
+    if (from?.isNotEmpty == true) {
+      return from?.first.asString() ?? '';
+    } else {
+      return '';
+    }
+  }
 
   String getAvatarText() {
     if (getSenderName().isNotEmpty) {
@@ -76,7 +82,13 @@ class PresentationEmail with EquatableMixin {
 
   bool get withAttachments => hasAttachment == true;
 
-  String get mailboxName => mailboxNames?.first?.name ?? '';
+  String get mailboxName {
+    if (mailboxNames?.isNotEmpty == true) {
+      return mailboxNames?.first?.name ?? '';
+    } else {
+      return '';
+    }
+  }
 
   String get routeWebAsString => routeWeb.toString();
 
