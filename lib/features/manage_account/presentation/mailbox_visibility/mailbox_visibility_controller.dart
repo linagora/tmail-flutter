@@ -40,6 +40,7 @@ class MailboxVisibilityController extends BaseMailboxController {
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final mailboxListScrollController = ScrollController();
 
   MailboxVisibilityController(
     TreeBuilder treeBuilder,
@@ -225,5 +226,11 @@ class MailboxVisibilityController extends BaseMailboxController {
           maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
+  }
+
+  @override
+  void onClose() {
+    mailboxListScrollController.dispose();
+    super.onClose();
   }
 }
