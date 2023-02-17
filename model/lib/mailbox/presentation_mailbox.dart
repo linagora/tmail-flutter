@@ -63,6 +63,8 @@ class PresentationMailbox with EquatableMixin {
 
   bool hasRole() => role != null && role!.value.isNotEmpty;
 
+  bool get isDefault => hasRole();
+
   bool get isPersonal => namespace == null || namespace == Namespace('Personal');
 
   bool get isTeamMailboxes => !isPersonal && !hasParentId();
@@ -102,28 +104,6 @@ class PresentationMailbox with EquatableMixin {
   String? get emailTeamMailBoxes => namespace?.value.substring(
     (namespace?.value.indexOf('[') ?? 0) + 1,
     namespace?.value.indexOf(']'));
-
-  bool get isSupportedDisableMailbox {
-    if (!isSubscribedMailbox) {
-      return false;
-    }
-    if (isPersonal) {
-      return true;
-    } else {
-      return isTeamMailboxes;
-    }
-  }
-
-  bool get isSupportedEnableMailbox {
-    if (isSubscribedMailbox) {
-      return false;
-    }
-    if (isPersonal) {
-      return true;
-    } else {
-      return isTeamMailboxes;
-    }
-  }
 
   @override
   List<Object?> get props => [

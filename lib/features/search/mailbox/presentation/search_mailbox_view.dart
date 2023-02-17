@@ -195,22 +195,12 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     });
   }
 
-  List<ContextMenuItemMailboxAction> _generateListContextMenuItemAction(PresentationMailbox mailbox) {
-    final mailboxActionsSupported = mailbox.isSubscribedMailbox
-      ? _listActionForMailboxSubscribed(mailbox)
-      : _listActionForMailboxUnsubscribed(mailbox);
-
+  List<FocusedMenuItem> _listPopupMenuItemAction(BuildContext context, PresentationMailbox mailbox) {
     final contextMenuActions = listContextMenuItemAction(
       mailbox,
-      controller.dashboardController,
-      mailboxActions: mailboxActionsSupported
+      controller.dashboardController.enableSpamReport,
     );
-
-    return contextMenuActions;
-  }
-
-  List<FocusedMenuItem> _listPopupMenuItemAction(BuildContext context, PresentationMailbox mailbox) {
-    return _generateListContextMenuItemAction(mailbox)
+    return contextMenuActions
       .map((action) => _mailboxFocusedMenuItem(context, action, mailbox))
       .toList();
   }
@@ -257,23 +247,19 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     );
   }
 
-  List<MailboxActions> _listActionForMailboxUnsubscribed(PresentationMailbox mailbox) {
-    return [
-      if (mailbox.isSupportedEnableMailbox)
-        MailboxActions.enableMailbox
-    ];
-  }
-
-  List<MailboxActions> _listActionForMailboxSubscribed(PresentationMailbox mailbox) {
-    return listActionForMailbox(mailbox, controller.dashboardController);
-  }
-
   void _openMailboxMenuAction(
     BuildContext context,
     PresentationMailbox mailbox,
     {RelativeRect? position}
   ) {
-    final contextMenuActions = _generateListContextMenuItemAction(mailbox);
+    final contextMenuActions = listContextMenuItemAction(
+      mailbox,
+      controller.dashboardController.enableSpamReport,
+    );
+
+    if (contextMenuActions.isEmpty) {
+      return;
+    }
 
     if (controller.responsiveUtils.isScreenWithShortestSide(context) || position == null) {
       controller.openContextMenuAction(
