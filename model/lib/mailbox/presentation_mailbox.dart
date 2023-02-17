@@ -103,10 +103,8 @@ class PresentationMailbox with EquatableMixin {
     (namespace?.value.indexOf('[') ?? 0) + 1,
     namespace?.value.indexOf(']'));
 
-  bool get supportedSubscribe => isSubscribed?.value == true;
-
   bool get isSupportedDisableMailbox {
-    if (!supportedSubscribe) {
+    if (!isSubscribedMailbox) {
       return false;
     }
     if (isPersonal) {
@@ -117,7 +115,7 @@ class PresentationMailbox with EquatableMixin {
   }
 
   bool get isSupportedEnableMailbox {
-    if (supportedSubscribe) {
+    if (isSubscribedMailbox) {
       return false;
     }
     if (isPersonal) {

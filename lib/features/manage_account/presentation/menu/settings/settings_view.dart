@@ -33,57 +33,52 @@ class SettingsView extends GetWidget<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SafeArea(
-          bottom: false,
-          child: SizedBox.fromSize(
-            size: const Size.fromHeight(52),
-            child: Padding(
-              padding: SettingsUtils.getPaddingAppBar(context, _responsiveUtils),
-              child: _buildAppbar(context))),
-        ),
-        const Divider(color: AppColor.colorDividerComposer, height: 1),
-        SafeArea(
-          bottom: false,
-          top: false,
-          child: Obx(() {
-            if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
-              return VacationNotificationMessageWidget(
+    return Container(
+      color: Colors.white,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox.fromSize(
+              size: const Size.fromHeight(52),
+              child: Padding(
+                padding: SettingsUtils.getPaddingAppBar(context, _responsiveUtils),
+                child: _buildAppbar(context))),
+            const Divider(color: AppColor.colorDividerComposer, height: 1),
+            Obx(() {
+              if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
+                return VacationNotificationMessageWidget(
+                    margin: const EdgeInsets.only(
+                        left: BuildUtils.isWeb ? 24 : 16,
+                        right: BuildUtils.isWeb ? 24 : 16,
+                        top: 16),
+                    fromAccountDashBoard: true,
+                    vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
+                    actionEndNow: () => controller.manageAccountDashboardController.disableVacationResponder());
+              } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
+                  || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
+                  && controller.manageAccountDashboardController.inVacationSettings()) {
+                return VacationNotificationMessageWidget(
                   margin: const EdgeInsets.only(
-                      left: BuildUtils.isWeb ? 24 : 16,
-                      right: BuildUtils.isWeb ? 24 : 16,
-                      top: 16),
+                    left: BuildUtils.isWeb ? 24 : 16,
+                    right: BuildUtils.isWeb ? 24 : 16,
+                    top: 16),
                   fromAccountDashBoard: true,
                   vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
-                  actionEndNow: () => controller.manageAccountDashboardController.disableVacationResponder());
-            } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
-                || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
-                && controller.manageAccountDashboardController.inVacationSettings()) {
-              return VacationNotificationMessageWidget(
-                margin: const EdgeInsets.only(
-                  left: BuildUtils.isWeb ? 24 : 16,
-                  right: BuildUtils.isWeb ? 24 : 16,
-                  top: 16),
-                fromAccountDashBoard: true,
-                vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                leadingIcon: const Padding(
-                  padding: EdgeInsets.only(right: 16),
-                  child: Icon(Icons.timer, size: 20),
-                )
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          })
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  leadingIcon: const Padding(
+                    padding: EdgeInsets.only(right: 16),
+                    child: Icon(Icons.timer, size: 20),
+                  )
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
+            Expanded(child: _bodySettingsScreen())
+          ]
         ),
-        Expanded(child: SafeArea(
-          top: false,
-          child: _bodySettingsScreen()
-        ))
-      ]
+      ),
     );
   }
 
