@@ -1268,11 +1268,14 @@ class MailboxDashBoardController extends ReloadableController {
     if (isDrawerOpen) {
       closeMailboxMenuDrawer();
     }
-    final result = await push(AppRoutes.settings,
-        arguments: ManageAccountArguments(sessionCurrent));
+    final result = await push(
+      AppRoutes.settings,
+      arguments: ManageAccountArguments(sessionCurrent)
+    );
 
     if (result is VacationResponse) {
       vacationResponse.value = result;
+      dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
     }
   }
 
