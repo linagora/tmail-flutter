@@ -58,9 +58,14 @@ class MailboxView extends GetWidget<MailboxController>
                                 )
                               ),
                             )),
-                            Obx(() => controller.isSelectionEnabled()
-                                ? _buildOptionSelectionMailbox(context)
-                                : const SizedBox.shrink()),
+                            Obx(() {
+                              if (controller.isSelectionEnabled()
+                                  && controller.listActionOfMailboxSelected.isNotEmpty) {
+                                return _buildOptionSelectionMailbox(context);
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            }),
                           ]),
                         ),
                         Obx(() => controller.isMailboxListScrollable.isTrue
@@ -377,21 +382,32 @@ class MailboxView extends GetWidget<MailboxController>
   }
 
   Widget _buildOptionSelectionMailbox(BuildContext context) {
-    return Column(children: [
-      const Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
-      SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: (BottomBarSelectionMailboxWidget(context,
-                  _imagePaths,
-                  controller.listMailboxSelected)
-              ..addOnMailboxActionsClick((actions, listMailboxSelected) =>
-                  controller.pressMailboxSelectionAction(
-                      context,
-                      actions,
-                      listMailboxSelected)))
-            .build()))
-    ]);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Divider(
+          color: AppColor.lineItemListColor,
+          height: 1,
+          thickness: 0.2
+        ),
+        SafeArea(
+          right: false,
+          top: false,
+          child: BottomBarSelectionMailboxWidget(
+            _responsiveUtils,
+            _imagePaths,
+            controller.listMailboxSelected,
+            controller.listActionOfMailboxSelected,
+            onMailboxActionsClick: (actions, listMailboxSelected) =>
+              controller.pressMailboxSelectionAction(
+                context,
+                actions,
+                listMailboxSelected
+              )
+          )
+        )
+      ]
+    );
   }
 
   Widget _buildVersionInformation(BuildContext context, PackageInfo packageInfo) {
