@@ -599,7 +599,6 @@ class ComposerView extends GetWidget<ComposerController>
   }
 
   Widget _buildHtmlEditor(BuildContext context, {String? initialContent}) {
-    final richTextMobileTabletController = controller.richTextMobileTabletController;
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
       child: HtmlEditor(
@@ -607,14 +606,7 @@ class ComposerView extends GetWidget<ComposerController>
         minHeight: 550,
         addDefaultSelectionMenuItems: false,
         initialContent: initialContent ?? '',
-        onCreated: (editorApi) {
-          richTextMobileTabletController.htmlEditorApi = editorApi;
-            controller.keyboardRichTextController.onCreateHTMLEditor(
-              editorApi,
-              onEnterKeyDown: controller.onEnterKeyDown,
-              context: context,
-            );
-        },
+        onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi)
       ),
     );
   }

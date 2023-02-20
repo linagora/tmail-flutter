@@ -316,6 +316,22 @@ class ComposerController extends BaseController {
     subjectEmailInputFocusNode = FocusNode();
   }
 
+  void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi) {
+    richTextMobileTabletController.htmlEditorApi = editorApi;
+    keyboardRichTextController.onCreateHTMLEditor(
+      editorApi,
+      onEnterKeyDown: _onEnterKeyDown,
+      context: context,
+    );
+
+    richTextMobileTabletController.htmlEditorApi?.onFocus = () {
+      FocusManager.instance.primaryFocus?.unfocus();
+
+      _collapseAllRecipient();
+      _autoCreateEmailTag();
+    };
+  }
+
   void _initEmail() {
     final arguments = kIsWeb ? mailboxDashBoardController.routerArguments : Get.arguments;
     if (arguments is ComposerArguments) {
@@ -1483,7 +1499,7 @@ class ComposerController extends BaseController {
     popBack();
   }
 
-  void onEnterKeyDown() {
+  void _onEnterKeyDown() {
     if(scrollController.position.pixels < scrollController.position.maxScrollExtent) {
       scrollController.animateTo(
         scrollController.position.pixels + 20,
