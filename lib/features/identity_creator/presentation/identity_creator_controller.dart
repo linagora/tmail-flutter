@@ -23,7 +23,6 @@ import 'package:tmail_ui_user/features/composer/presentation/controller/rich_tex
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
@@ -50,7 +49,6 @@ class IdentityCreatorController extends BaseController {
   final _uuid = Get.find<Uuid>();
 
   final noneEmailAddress = EmailAddress(null, 'None');
-  final signatureType = SignatureType.plainText.obs;
   final listEmailAddressDefault = <EmailAddress>[].obs;
   final listEmailAddressOfReplyTo = <EmailAddress>[].obs;
   final errorNameIdentity = Rxn<String>();
@@ -67,12 +65,10 @@ class IdentityCreatorController extends BaseController {
   late RichTextWebController richTextWebController;
   late RichTextMobileTabletController richTextMobileTabletController;
   late HtmlEditorController signatureHtmlEditorController;
-  TextEditingController? signaturePlainEditorController;
   TextEditingController? inputNameIdentityController;
   TextEditingController? inputBccIdentityController;
   FocusNode? inputNameIdentityFocusNode;
 
-  HtmlEditorApi? signatureHtmlEditorMobileController;
   String? _nameIdentity;
   String? _contentHtmlEditor;
   AccountId? accountId;
@@ -93,7 +89,9 @@ class IdentityCreatorController extends BaseController {
 
   void updateContentHtmlEditor(String? text) => _contentHtmlEditor = text;
 
-  String? get contentHtmlEditor => _contentHtmlEditor;
+  HtmlEditorApi? get signatureHtmlEditorMobileController => richTextMobileTabletController.htmlEditorApi;
+
+  String? get contentHtmlEditor => _contentHtmlEditor ?? arguments?.identity?.htmlSignature?.value;
 
   IdentityCreatorController(
       this._verifyNameInteractor,
@@ -109,7 +107,6 @@ class IdentityCreatorController extends BaseController {
     richTextMobileTabletController = RichTextMobileTabletController();
     signatureHtmlEditorController =
         HtmlEditorController(processNewLineAsBr: true);
-    signaturePlainEditorController = TextEditingController();
     inputNameIdentityController = TextEditingController();
     inputBccIdentityController = TextEditingController();
     inputNameIdentityFocusNode = FocusNode();
@@ -157,13 +154,9 @@ class IdentityCreatorController extends BaseController {
     _nameIdentity = identity?.name ?? '';
     inputNameIdentityController?.text = identity?.name ?? '';
 
-    if (identity?.textSignature?.value.isNotEmpty == true) {
-      signaturePlainEditorController?.text = identity?.textSignature?.value ?? '';
-    }
-
     if (identity?.htmlSignature?.value.isNotEmpty == true) {
-      updateContentHtmlEditor(identity?.htmlSignature?.value ?? '');
-      signatureHtmlEditorController.setText(identity?.htmlSignature?.value ?? '');
+      updateContentHtmlEditor(arguments?.identity?.htmlSignature?.value ?? '');
+      signatureHtmlEditorController.setText(arguments?.identity?.htmlSignature?.value ?? '');
     }
   }
 
@@ -282,15 +275,6 @@ class IdentityCreatorController extends BaseController {
     return defaultIdentityIds?.length != allIdentities?.length;
   }
 
-  void selectSignatureType(BuildContext context, SignatureType newSignatureType) async {
-    if (newSignatureType == SignatureType.plainText && !BuildUtils.isWeb) {
-      final signatureText = await _getSignatureHtmlText();
-      updateContentHtmlEditor(signatureText);
-    }
-    clearFocusEditor(context);
-    signatureType.value = newSignatureType;
-  }
-
   void updateEmailOfIdentity(EmailAddress? newEmailAddress) {
     emailOfIdentity.value = newEmailAddress;
   }
@@ -326,7 +310,6 @@ class IdentityCreatorController extends BaseController {
       return;
     }
 
-    final signaturePlainText = signaturePlainEditorController?.text ?? '';
     final signatureHtmlText = BuildUtils.isWeb
         ? contentHtmlEditor
         : await _getSignatureHtmlText();
@@ -346,7 +329,6 @@ class IdentityCreatorController extends BaseController {
       email: emailOfIdentity.value?.email,
       replyTo: replyToAddress,
       bcc: bccAddress,
-      textSignature: Signature(signaturePlainText),
       htmlSignature: Signature(signatureHtmlText ?? ''),
       sortOrder: sortOrder);
 
@@ -459,8 +441,6 @@ class IdentityCreatorController extends BaseController {
   }
 
   void _disposeWidget() {
-    signaturePlainEditorController?.dispose();
-    signaturePlainEditorController = null;
     inputNameIdentityFocusNode?.dispose();
     inputNameIdentityFocusNode = null;
     inputNameIdentityController?.dispose();
