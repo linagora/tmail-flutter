@@ -104,12 +104,8 @@ class MailboxView extends GetWidget<MailboxController>
           physics: const ClampingScrollPhysics(),
           padding: EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 16 : 0),
           child: Column(children: [
-            Obx(() {
-              if (controller.isSelectionEnabled() || _responsiveUtils.isDesktop(context)) {
-                return const SizedBox.shrink();
-              }
-              return _buildUserInformation(context);
-            }),
+            if (!_responsiveUtils.isDesktop(context))
+              _buildUserInformation(context),
             _buildLoadingView(),
             AppConfig.appGridDashboardAvailable && _responsiveUtils.isWebNotDesktop(context)
               ? Column(children: [
@@ -223,12 +219,13 @@ class MailboxView extends GetWidget<MailboxController>
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(children: [
         Padding(
-          padding: const EdgeInsets.only(left: 16, bottom: 10),
-          child: UserInformationWidgetBuilder(
+          padding: const EdgeInsets.only(left: 16, bottom: 10, right: 16),
+          child: Obx(() => UserInformationWidgetBuilder(
             _imagePaths,
             controller.mailboxDashBoardController.userProfile.value,
             subtitle: AppLocalizations.of(context).manage_account,
-            onSubtitleClick: () => controller.mailboxDashBoardController.goToSettings())),
+            onSubtitleClick: () => controller.mailboxDashBoardController.goToSettings()),
+          )),
         const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2)
       ]),
     );

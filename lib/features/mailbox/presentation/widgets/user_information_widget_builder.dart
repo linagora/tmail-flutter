@@ -53,7 +53,8 @@ class UserInformationWidgetBuilder extends StatelessWidget {
                 child: Text(
                     _userProfile != null ? '${_userProfile?.email}' : '',
                     maxLines: 1,
-                    overflow: GetPlatform.isWeb ? TextOverflow.clip : TextOverflow.ellipsis,
+                    overflow: CommonTextStyle.defaultTextOverFlow,
+                    softWrap: CommonTextStyle.defaultSoftWrap,
                     style: const TextStyle(fontSize: 17, color: AppColor.colorNameEmail, fontWeight: FontWeight.w600)
                 )
             ),
