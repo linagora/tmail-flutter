@@ -14,7 +14,6 @@ import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart
 import 'package:tmail_ui_user/features/composer/presentation/widgets/toolbar_rich_text_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/model/signature_type.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_drop_list_field_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_field_no_editable_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_field_builder.dart';
@@ -235,15 +234,13 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
               ),
               Expanded(
                 child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  Obx(() => _buildSignatureButton(context, SignatureType.plainText)),
-                  const SizedBox(width: 10),
-                  Obx(() => _buildSignatureButton(context, SignatureType.htmlTemplate)),
+                  _buildSignatureButton(context)
                 ]),
               )
             ],
           ),
           const SizedBox(height: 8),
-          Obx(() => PointerInterceptor(
+          PointerInterceptor(
             child: Container(
               height: 300,
               decoration: BoxDecoration(
@@ -251,16 +248,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                 border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
                 color: Colors.white,
               ),
-              child: Stack(
-                children: [
-                  if (controller.signatureType.value == SignatureType.plainText)
-                    _buildSignaturePlainTextTemplate(context)
-                  else
-                    _buildSignatureHtmlTemplate(context)
-                ]
-              ),
+              child: _buildSignatureHtmlTemplate(context),
             ),
-          )),
+          ),
           if (_responsiveUtils.isTablet(context) || _responsiveUtils.isMobile(context))...[
             Obx(() => Padding(
             padding: const EdgeInsets.only(top: 27, bottom: 135),
@@ -371,51 +361,16 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
     );
   }
 
-  Widget _buildSignatureButton(BuildContext context, SignatureType signatureType) {
+  Widget _buildSignatureButton(BuildContext context) {
     return buildButtonWrapText(
-        signatureType.getTitle(context),
-        textStyle: TextStyle(
+        AppLocalizations.of(context).html,
+        textStyle: const TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 14,
-            color: controller.signatureType.value == signatureType
-                ? AppColor.colorContentEmail
-                : AppColor.colorHintSearchBar),
-        bgColor: controller.signatureType.value == signatureType
-            ? AppColor.emailAddressChipColor
-            : Colors.transparent,
+            color: AppColor.colorContentEmail),
+        bgColor: AppColor.emailAddressChipColor,
         height: 30,
-        radius: 10,
-        onTap: () => controller.selectSignatureType(context, signatureType));
-  }
-
-  Widget _buildSignaturePlainTextTemplate(BuildContext context) {
-    if (BuildUtils.isWeb) {
-      return SizedBox(
-        height: 230,
-        child: (TextFieldBuilder()
-            ..key(const Key('signature_plain_text_editor'))
-            ..cursorColor(Colors.black)
-            ..addController(controller.signaturePlainEditorController)
-            ..textStyle(const TextStyle(
-                fontWeight: FontWeight.normal,
-                color: Colors.black,
-                fontSize: 16))
-            ..maxLines(null))
-          .build(),
-      );
-    } else {
-      return(TextFieldBuilder()
-          ..key(const Key('signature_plain_text_editor'))
-          ..cursorColor(Colors.black)
-          ..addController(controller.signaturePlainEditorController)
-          ..textStyle(const TextStyle(
-              fontWeight: FontWeight.normal,
-              color: Colors.black,
-              fontSize: 16))
-          ..minLines(12)
-          ..maxLines(null))
-        .build();
-    }
+        radius: 10);
   }
 
   Widget _buildSignatureHtmlTemplate(BuildContext context) {
