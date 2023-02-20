@@ -573,6 +573,31 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
+  List<MailboxActions> get listActionOfMailboxSelected {
+    final currentMailboxesSelected = listMailboxSelected;
+
+    if (currentMailboxesSelected.length == 1) {
+      if (currentMailboxesSelected.isAllDefaultMailboxes && currentMailboxesSelected.isAllUnreadMailboxes) {
+        return [MailboxActions.markAsRead];
+      } else if (currentMailboxesSelected.isAllPersonalMailboxes) {
+        return [
+          MailboxActions.move,
+          MailboxActions.rename,
+          if (currentMailboxesSelected.isAllUnreadMailboxes)
+            MailboxActions.markAsRead,
+          MailboxActions.delete
+        ];
+      } else {
+        return [];
+      }
+    } else if (currentMailboxesSelected.length > 1
+      && currentMailboxesSelected.isAllPersonalMailboxes) {
+      return [MailboxActions.delete];
+    } else {
+      return [];
+    }
+  }
+
   void _cancelSelectMailbox() {
     unAllSelectedMailboxNode();
     currentSelectMode.value = SelectMode.INACTIVE;

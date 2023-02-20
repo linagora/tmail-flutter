@@ -25,6 +25,7 @@ class ButtonBuilder {
   double? _radiusSplash;
   double? _maxWidth;
   EdgeInsets? _padding;
+  String? _tooltip;
 
   void key(Key key) {
     _key = key;
@@ -79,6 +80,10 @@ class ButtonBuilder {
     _isVertical = isVertical;
   }
 
+  void tooltip(String? message) {
+    _tooltip = message;
+  }
+
   ButtonBuilder(this._icon);
 
   void onPressActionClick(OnPressActionClick onPressActionClick) {
@@ -109,14 +114,17 @@ class ButtonBuilder {
         },
         customBorder: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(_radiusSplash ?? 20)),
-        child: Container(
-          key: _key,
-          alignment: Alignment.center,
-          color: _decoration == null ? _colorButton : null,
-          decoration: _decoration,
-          width: _maxWidth,
-          padding: _padding ?? EdgeInsets.zero,
-          child: _buildBody()
+        child: Tooltip(
+          message: _tooltip ?? '',
+          child: Container(
+            key: _key,
+            alignment: Alignment.center,
+            color: _decoration == null ? _colorButton : null,
+            decoration: _decoration,
+            width: _maxWidth,
+            padding: _padding ?? EdgeInsets.zero,
+            child: _buildBody()
+          ),
         )
       ),
     );

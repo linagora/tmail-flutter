@@ -1,133 +1,53 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/button/button_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:model/model.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnMailboxActionsClick = void Function(MailboxActions, List<PresentationMailbox>);
 
-class BottomBarSelectionMailboxWidget {
+class BottomBarSelectionMailboxWidget extends StatelessWidget {
 
-  final BuildContext _context;
+  final ResponsiveUtils _responsiveUtils;
   final ImagePaths _imagePaths;
   final List<PresentationMailbox> _listSelectionMailbox;
+  final List<MailboxActions> _listMailboxActions;
+  final OnMailboxActionsClick onMailboxActionsClick;
 
-  OnMailboxActionsClick? _onMailboxActionsClick;
-
-  BottomBarSelectionMailboxWidget(
-    this._context,
+  const BottomBarSelectionMailboxWidget(
+    this._responsiveUtils,
     this._imagePaths,
     this._listSelectionMailbox,
-  );
+    this._listMailboxActions,
+    {
+      Key? key,
+      required this.onMailboxActionsClick
+    }
+  ) : super(key: key);
 
-  void addOnMailboxActionsClick(OnMailboxActionsClick onMailboxActionsClick) {
-    _onMailboxActionsClick = onMailboxActionsClick;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(children: _listMailboxActions
+      .map((action) => _buildMailboxActionButton(context, action))
+      .toList());
   }
 
-  Widget build() {
-    return Container(
-      key: const Key('bottom_bar_selection_mailbox_widget'),
-      alignment: Alignment.center,
-      color: Colors.white,
-      child: MediaQuery(
-        data: const MediaQueryData(padding: EdgeInsets.zero),
-        child: SafeArea(child: _buildListOptionButton())
+  Widget _buildMailboxActionButton(BuildContext context, MailboxActions actions) {
+    return Expanded(child: (ButtonBuilder(actions.getContextMenuIcon(_imagePaths))
+      ..key(const Key('button_move_all_mailbox'))
+      ..radiusSplash(8)
+      ..padding(const EdgeInsets.all(8))
+      ..tooltip(actions.getTitleContextMenu(context))
+      ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
+      ..iconColor(AppColor.colorTextButton)
+      ..onPressActionClick(() => onMailboxActionsClick.call(actions, _listSelectionMailbox))
+      ..text(
+        _responsiveUtils.isLandscapeMobile(context) ? null : actions.getTitleContextMenu(context),
+        isVertical: true
       )
-    );
+    ).build());
   }
-
-  Widget _buildListOptionButton() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(child: (ButtonBuilder(_imagePaths.icMoveMailbox)
-            ..key(const Key('button_move_all_mailbox'))
-            ..paddingIcon(const EdgeInsets.all(8))
-            ..textStyle(TextStyle(
-                fontSize: 12,
-                color: _isMoveMailboxValid
-                    ? AppColor.colorTextButton
-                    : AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(_isMoveMailboxValid
-                ? AppColor.colorTextButton
-                : AppColor.colorTextButton.withOpacity(0.3))
-            ..onPressActionClick(() {
-              if (_isMoveMailboxValid) {
-                _onMailboxActionsClick?.call(MailboxActions.move, _listSelectionMailbox);
-              }
-            })
-            ..text(AppLocalizations.of(_context).move, isVertical: true))
-          .build()),
-        Expanded(child: (ButtonBuilder(_imagePaths.icRenameMailbox)
-            ..key(const Key('button_rename_mailbox'))
-            ..paddingIcon(const EdgeInsets.all(8))
-            ..textStyle(TextStyle(
-                fontSize: 12,
-                color: _isRenameMailboxValid
-                    ? AppColor.colorTextButton
-                    : AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(_isRenameMailboxValid
-                ? AppColor.colorTextButton
-                : AppColor.colorTextButton.withOpacity(0.3))
-            ..onPressActionClick(() {
-              if (_isRenameMailboxValid) {
-                _onMailboxActionsClick?.call(MailboxActions.rename, _listSelectionMailbox);
-              }
-            })
-            ..text(AppLocalizations.of(_context).rename, isVertical: true))
-          .build()),
-        Expanded(child: (ButtonBuilder(_imagePaths.icMarkAsRead)
-            ..key(const Key('button_mark_read_all_mailbox'))
-            ..paddingIcon(const EdgeInsets.all(8))
-            ..textStyle(TextStyle(
-                fontSize: 12,
-                color: _isMarkAsReadMailboxValid
-                    ? AppColor.colorTextButton
-                    : AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(_isMarkAsReadMailboxValid
-                ? AppColor.colorTextButton
-                : AppColor.colorTextButton.withOpacity(0.3))
-            ..onPressActionClick(() {
-              if (_isMarkAsReadMailboxValid) {
-                _onMailboxActionsClick?.call(MailboxActions.markAsRead, _listSelectionMailbox);
-              }
-            })
-            ..text(AppLocalizations.of(_context).mark_as_read, isVertical: true))
-          .build()),
-        Expanded(child: (ButtonBuilder(_imagePaths.icDeleteMailbox)
-            ..key(const Key('button_delete_all_mailbox'))
-            ..paddingIcon(const EdgeInsets.all(8))
-            ..textStyle(TextStyle(
-                fontSize: 12,
-                color: _isDeleteMailboxValid
-                    ? AppColor.colorTextButton
-                    : AppColor.colorTextButton.withOpacity(0.3)))
-            ..iconColor(_isDeleteMailboxValid
-                ? AppColor.colorTextButton
-                : AppColor.colorTextButton.withOpacity(0.3))
-            ..onPressActionClick(() {
-              if (_isDeleteMailboxValid) {
-                _onMailboxActionsClick?.call(MailboxActions.delete, _listSelectionMailbox);
-              }
-            })
-            ..text(AppLocalizations.of(_context).delete, isVertical: true))
-          .build())
-      ]
-    );
-  }
-
-  bool get _isDeleteMailboxValid => _isAllFolderMailbox;
-
-  bool get _isRenameMailboxValid => _listSelectionMailbox.length == 1
-      && _isAllFolderMailbox;
-
-  bool get _isMarkAsReadMailboxValid => _listSelectionMailbox.length == 1
-      && _listSelectionMailbox.first.getCountUnReadEmails().isNotEmpty;
-
-  bool get _isMoveMailboxValid => _listSelectionMailbox.length == 1
-      && _isAllFolderMailbox;
-
-  bool get _isAllFolderMailbox =>
-      _listSelectionMailbox.every((mailbox) => !mailbox.hasRole());
 }
