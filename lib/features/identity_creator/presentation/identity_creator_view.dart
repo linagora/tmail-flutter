@@ -232,11 +232,6 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   color: AppColor.colorContentEmail,
                 ),
               ),
-              Expanded(
-                child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  _buildSignatureButton(context)
-                ]),
-              )
             ],
           ),
           const SizedBox(height: 8),
@@ -253,7 +248,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           ),
           if (_responsiveUtils.isTablet(context) || _responsiveUtils.isMobile(context))...[
             Obx(() => Padding(
-            padding: const EdgeInsets.only(top: 27, bottom: 135),
+            padding: const EdgeInsets.only(top: 27),
             child: SetDefaultIdentityCheckboxBuilder(
               imagePaths: _imagePaths,
               isCheck: controller.isDefaultIdentity.value,
@@ -359,18 +354,6 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           ]
       ),
     );
-  }
-
-  Widget _buildSignatureButton(BuildContext context) {
-    return buildButtonWrapText(
-        AppLocalizations.of(context).html,
-        textStyle: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-            color: AppColor.colorContentEmail),
-        bgColor: AppColor.emailAddressChipColor,
-        height: 30,
-        radius: 10);
   }
 
   Widget _buildSignatureHtmlTemplate(BuildContext context) {

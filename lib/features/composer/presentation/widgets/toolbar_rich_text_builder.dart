@@ -36,7 +36,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
       final opacity = codeViewEnabled ? 0.5 : 1.0;
 
       return Container(
-        padding: padding,
+        padding: padding ?? const EdgeInsets.only(left: 20, top: 8, bottom: 8),
         alignment: Alignment.centerLeft,
         child: Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
