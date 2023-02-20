@@ -64,9 +64,7 @@ class ComposerView extends GetWidget<ComposerController>
                     Expanded(child: Column(
                         children: [
                           _buildAttachmentsWidget(context),
-                          ToolbarRichTextWebBuilder(
-                            richTextWebController: controller.richTextWebController,
-                            padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8)),
+                          ToolbarRichTextWebBuilder(richTextWebController: controller.richTextWebController),
                           buildInlineLoadingView(controller),
                           _buildEditorForm(context)
                         ]
