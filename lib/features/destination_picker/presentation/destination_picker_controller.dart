@@ -177,13 +177,24 @@ class DestinationPickerController extends BaseMailboxController {
   void toggleMailboxCategories(MailboxCategories categories) {
     switch(categories) {
       case MailboxCategories.exchange:
-        final newExpandMode = mailboxCategoriesExpandMode.value.defaultMailbox == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
+        final newExpandMode = mailboxCategoriesExpandMode.value.defaultMailbox == ExpandMode.EXPAND
+          ? ExpandMode.COLLAPSE
+          : ExpandMode.EXPAND;
         mailboxCategoriesExpandMode.value.defaultMailbox = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
       case MailboxCategories.personalMailboxes:
-        final newExpandMode = mailboxCategoriesExpandMode.value.personalMailboxes == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
+        final newExpandMode = mailboxCategoriesExpandMode.value.personalMailboxes == ExpandMode.EXPAND
+          ? ExpandMode.COLLAPSE
+          : ExpandMode.EXPAND;
         mailboxCategoriesExpandMode.value.personalMailboxes = newExpandMode;
+        mailboxCategoriesExpandMode.refresh();
+        break;
+      case MailboxCategories.teamMailboxes:
+        final newExpandMode = mailboxCategoriesExpandMode.value.teamMailboxes == ExpandMode.EXPAND
+          ? ExpandMode.COLLAPSE
+          : ExpandMode.EXPAND;
+        mailboxCategoriesExpandMode.value.teamMailboxes = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
       default:
@@ -280,10 +291,11 @@ class DestinationPickerController extends BaseMailboxController {
 
   void searchMailbox(String value) {
     searchQuery.value = SearchQuery(value);
-    _searchMailboxAction(
-      allMailboxes.listPersonalMailboxes,
-      searchQuery.value
-    );
+    final searchableMailboxList = mailboxAction.value == MailboxActions.moveEmail
+      ? allMailboxes
+      : allMailboxes.listPersonalMailboxes;
+
+    _searchMailboxAction(searchableMailboxList, searchQuery.value);
   }
 
   void _searchMailboxAction(List<PresentationMailbox> allMailboxes, SearchQuery searchQuery) {

@@ -251,6 +251,31 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               return const SizedBox.shrink();
             }
           }),
+          Obx(() {
+            if (controller.teamMailboxesIsNotEmpty
+                && controller.mailboxAction.value == MailboxActions.moveEmail) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Divider(
+                    color: AppColor.colorDividerMailbox,
+                    height: 0.5,
+                    thickness: 0.2
+                  ),
+                  const SizedBox(height: 8),
+                  _buildMailboxCategory(
+                    context,
+                    MailboxCategories.teamMailboxes,
+                    controller.teamMailboxesRootNode,
+                    actions,
+                    mailboxIdSelected
+                  )
+                ]
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          }),
           const SizedBox(height: 12)
         ])
     );
