@@ -68,8 +68,7 @@ class MailboxView extends GetWidget<MailboxController>
                             }),
                           ]),
                         ),
-                        Obx(() => controller.isMailboxListScrollable.isTrue
-                          && !controller.isSelectionEnabled()
+                        Obx(() => !controller.isSelectionEnabled()
                             ? const QuotasFooterWidget()
                             : const SizedBox.shrink(),
                         ),
@@ -260,13 +259,6 @@ class MailboxView extends GetWidget<MailboxController>
                 MailboxCategories.teamMailboxes,
                 controller.teamMailboxesRootNode
               );
-            } else {
-              return const SizedBox.shrink();
-            }
-          }),
-          Obx(() {
-            if (controller.isMailboxListScrollable.isFalse) {
-              return const QuotasFooterWidget();
             } else {
               return const SizedBox.shrink();
             }

@@ -190,6 +190,43 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     );
   }
 
+  @override
+  Future<void> toggleMailboxFolder(MailboxNode selectedMailboxNode) async {
+    final newExpandMode = selectedMailboxNode.expandMode == ExpandMode.COLLAPSE
+        ? ExpandMode.EXPAND
+        : ExpandMode.COLLAPSE;
+
+    if (personalMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
+      log('toggleMailboxFolder() refresh folderMailboxTree');
+      personalMailboxTree.refresh();
+      final _childrenItems = personalMailboxTree.value.root.childrenItems ?? [];
+      _triggerScrollWhenExpandMailboxFolder(_childrenItems, selectedMailboxNode);
+    }
+
+    if (teamMailboxesTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
+      log('toggleMailboxFolder() refresh teamMailboxesTree');
+      teamMailboxesTree.refresh();
+      final _childrenItems = teamMailboxesTree.value.root.childrenItems ?? [];
+      _triggerScrollWhenExpandMailboxFolder(_childrenItems, selectedMailboxNode);
+    }
+  }
+
+  void _triggerScrollWhenExpandMailboxFolder(List<MailboxNode> childrenItems, MailboxNode selectedMailboxNode) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final _lastItem = childrenItems.last;
+    if (_lastItem.mailboxNameAsString.contains(selectedMailboxNode.mailboxNameAsString)) {
+      mailboxListScrollController.animateTo(
+        mailboxListScrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInToLinear);
+    } else {
+      mailboxListScrollController.animateTo(
+        mailboxListScrollController.offset + 100,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInToLinear);
+    }
+  }
+
   void handleScrollEnable() {
     isMailboxListScrollable.value = mailboxListScrollController.hasClients && mailboxListScrollController.position.maxScrollExtent > 0;
   }
@@ -847,7 +884,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
   }
 
-  void toggleMailboxCategories(MailboxCategories categories) {
+  void toggleMailboxCategories(MailboxCategories categories) async {
     switch(categories) {
       case MailboxCategories.exchange:
         final newExpandMode = mailboxCategoriesExpandMode.value.defaultMailbox == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
@@ -858,11 +895,17 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         final newExpandMode = mailboxCategoriesExpandMode.value.personalMailboxes == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
         mailboxCategoriesExpandMode.value.personalMailboxes = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
+        if (personalMailboxTree.value.root.hasChildren()) {
+          _triggerToggleMailboxCategories();
+        }
         break;
       case MailboxCategories.teamMailboxes:
         final newExpandMode = mailboxCategoriesExpandMode.value.teamMailboxes == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
         mailboxCategoriesExpandMode.value.teamMailboxes = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
+        if (personalMailboxTree.value.root.hasChildren()) {
+          _triggerToggleMailboxCategories();
+        }
         break;
       case MailboxCategories.appGrid:
         final currentExpandMode = mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value;
@@ -873,6 +916,14 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         }
         break;
     }
+  }
+
+  void _triggerToggleMailboxCategories() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    mailboxListScrollController.animateTo(
+      mailboxListScrollController.offset + 100,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInToLinear);
   }
 
   void _handleNavigationRouteParameters(Map<String, String?>? parameters) {
