@@ -182,26 +182,31 @@ class ThreadView extends GetWidget<ThreadController>
 
     return Obx(() {
       if (controller.isAllSearchInActive) {
-        return Align(
-          alignment: Alignment.bottomRight,
-          child: ScrollingFloatingButtonAnimated(
-            icon: SvgPicture.asset(_imagePaths.icCompose, width: 20, height: 20, fit: BoxFit.fill),
-            text: Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Text(AppLocalizations.of(context).compose,
-                overflow: CommonTextStyle.defaultTextOverFlow,
-                softWrap: CommonTextStyle.defaultSoftWrap,
-                style: const TextStyle(
-                    color: AppColor.colorTextButton,
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.w500))),
-            onPress: () => controller.mailboxDashBoardController.goToComposer(ComposerArguments()),
-            scrollController: controller.listEmailController,
-            color: Colors.white,
-            elevation: 4.0,
-            width: 140,
-            animateIcon: false
-          )
+        return Container(
+          padding: BuildUtils.isWeb
+              ? EdgeInsets.zero
+              : controller.listEmailSelected.isNotEmpty ? const EdgeInsets.only(bottom: 70) : EdgeInsets.zero,
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: ScrollingFloatingButtonAnimated(
+              icon: SvgPicture.asset(_imagePaths.icCompose, width: 20, height: 20, fit: BoxFit.fill),
+              text: Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: Text(AppLocalizations.of(context).compose,
+                  overflow: CommonTextStyle.defaultTextOverFlow,
+                  softWrap: CommonTextStyle.defaultSoftWrap,
+                  style: const TextStyle(
+                      color: AppColor.colorTextButton,
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.w500))),
+              onPress: () => controller.mailboxDashBoardController.goToComposer(ComposerArguments()),
+              scrollController: controller.listEmailController,
+              color: Colors.white,
+              elevation: 4.0,
+              width: 140,
+              animateIcon: false
+            )
+          ),
         );
       } else {
         return const SizedBox.shrink();
