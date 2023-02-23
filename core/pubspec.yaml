@@ -20,70 +20,59 @@ publish_to: none
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.16.2 <3.0.0"
+  sdk: ">=2.19.2 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
+  ### Dependencies from pub.dev ###
+  cupertino_icons: ^1.0.5
 
-  # flutter_svg
-  flutter_svg: 1.1.0
+  flutter_svg: 2.0.2
 
-  # Http client
-  dio: 4.0.6
+  dio: 5.0.0
 
-  # dartz
   dartz: 0.10.1
 
-  # equatable
-  equatable: 2.0.3
+  equatable: 2.0.5
 
   built_collection: 5.1.1
 
-  html: 0.15.0
+  html: 0.15.1
 
-  # fluttertoast
-  fluttertoast: 8.0.8
+  fluttertoast: 8.2.1
 
-  # sqflite
-  sqflite: 2.0.0+4
-
-  # GetX
   get: 4.6.5
 
-  # device_info_plus
-  device_info_plus: 4.0.2
+  device_info_plus: 8.1.0
 
-  # webview_flutter
-  webview_flutter: 3.0.0
+  flutter_inappwebview: 6.0.0-beta.22
 
-  # url_launcher
-  url_launcher: 6.1.5
+  url_launcher: 6.1.10
 
-  # collection
-  collection: 1.16.0
+  universal_html: 2.0.9
 
-  universal_html: 2.0.8
+  http: 0.13.5
 
-  http: 0.13.4
+  pointer_interceptor: ^0.9.3+4
 
-  pointer_interceptor: 0.9.1
+  flutter_keyboard_visibility: 5.4.0
 
-  flutter_keyboard_visibility: 5.2.0
+  flex_color_picker: 3.1.0
 
-  flex_color_picker: 2.5.0
+  flutter_image_compress: 1.1.3
 
-  flutter_image_compress: 1.1.0
+  http_parser: 4.0.2
+
+  # flutter_test from sdk depends on collection 1.17.0
+  collection: 1.17.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: 1.0.4
+  flutter_lints: ^2.0.1
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
