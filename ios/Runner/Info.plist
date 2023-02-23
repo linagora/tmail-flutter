@@ -83,5 +83,7 @@
 	<false/>
 	<key>com.apple.developer.mail-client</key>
 	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 </dict>
 </plist>
