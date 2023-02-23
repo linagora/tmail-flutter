@@ -23,7 +23,8 @@ class ImageTransformer extends DomTransformer {
     final imageElements = document.querySelectorAll('img[src^="cid:"]');
     log('ImageTransformer::process(): imageElements: ${imageElements.length}');
     await Future.wait(imageElements.map((imageElement) async {
-      imageElement.attributes['style'] = 'display: inline;max-width: 100%;height: auto;';
+      final _exStyle = imageElement.attributes['style'];
+      imageElement.attributes['style'] = '$_exStyle display: inline;max-width: 100%;';
       final src = imageElement.attributes['src'];
       log('ImageTransformer::process(): src: $src');
       final cid = src?.replaceFirst('cid:', '').trim();
