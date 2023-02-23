@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/foundation.dart';
@@ -9,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/model.dart';
-import 'package:rich_text_composer/rich_text_composer.dart' as rich_text_composer;
+import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -84,7 +83,7 @@ class ComposerView extends GetWidget<ComposerController>
             child: Scaffold(
                 backgroundColor: Colors.black38,
                 body: LayoutBuilder(builder: (context, constraints) {
-                  return rich_text_composer.KeyboardRichText(
+                  return KeyboardRichText(
                     richTextController: controller.keyboardRichTextController,
                     keyBroadToolbar: RichTextKeyboardToolBar(
                       backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
@@ -313,7 +312,7 @@ class ComposerView extends GetWidget<ComposerController>
             )).toList(),
             onChanged: (newIdentity) => controller.selectIdentity(newIdentity),
             itemPadding: const EdgeInsets.symmetric(horizontal: 8),
-            customItemsHeight: 55,
+            itemHeight: 55,
             dropdownMaxHeight: 240,
             dropdownWidth: 300,
             dropdownDecoration: BoxDecoration(
@@ -450,27 +449,7 @@ class ComposerView extends GetWidget<ComposerController>
   }
 
   Widget _buildBodyMobile(BuildContext context, double maxWidth) {
-    return rich_text_composer.KeyboardRichText(
-      child: SingleChildScrollView(
-          controller: controller.scrollController,
-          physics: const ClampingScrollPhysics(),
-          child: Column(children: [
-            Obx(() => controller.identitySelected.value != null
-                ? _buildFromEmailAddress(context)
-                : const SizedBox.shrink()),
-            Obx(() => controller.identitySelected.value != null
-                ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-                : const SizedBox.shrink()),
-            _buildEmailAddress(context),
-            const Divider(color: AppColor.colorDividerComposer, height: 1),
-            Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), child: _buildSubjectEmail(context)),
-            const Divider(color: AppColor.colorDividerComposer, height: 1),
-            _buildAttachmentsWidget(context),
-            buildInlineLoadingView(controller),
-            _buildComposerEditor(context),
-          ])
-      ),
-      richTextController: controller.keyboardRichTextController,
+    return KeyboardRichText(
       keyBroadToolbar: RichTextKeyboardToolBar(
         backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
         isLandScapeMode: responsiveUtils.isLandscapeMobile(context),
@@ -482,6 +461,28 @@ class ComposerView extends GetWidget<ComposerController>
         titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
         titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
         titleBack: AppLocalizations.of(context).format,
+      ),
+      richTextController: controller.keyboardRichTextController,
+      child: SingleChildScrollView(
+          controller: controller.scrollController,
+          physics: const ClampingScrollPhysics(),
+          child: Column(children: [
+            Obx(() => controller.identitySelected.value != null
+              ? _buildFromEmailAddress(context)
+              : const SizedBox.shrink()),
+            Obx(() => controller.identitySelected.value != null
+              ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+              : const SizedBox.shrink()),
+            _buildEmailAddress(context),
+            const Divider(color: AppColor.colorDividerComposer, height: 1),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: _buildSubjectEmail(context)),
+            const Divider(color: AppColor.colorDividerComposer, height: 1),
+            _buildAttachmentsWidget(context),
+            buildInlineLoadingView(controller),
+            _buildComposerEditor(context),
+          ])
       ),
     );
   }

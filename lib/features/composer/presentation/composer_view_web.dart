@@ -435,7 +435,7 @@ class ComposerView extends GetWidget<ComposerController>
             )).toList(),
             onChanged: (newIdentity) => controller.selectIdentity(newIdentity),
             itemPadding: const EdgeInsets.symmetric(horizontal: 8),
-            customItemsHeight: 55,
+            itemHeight: 55,
             dropdownMaxHeight: 240,
             dropdownWidth: 370,
             dropdownDecoration: BoxDecoration(
@@ -581,7 +581,7 @@ class ComposerView extends GetWidget<ComposerController>
                   icon: SvgPicture.asset(imagePaths.icAttachmentsComposer,
                       width: 24,
                       height: 24,
-                      color: AppColor.colorTextButton,
+                      colorFilter: const ColorFilter.mode(AppColor.colorTextButton, BlendMode.srcIn),
                       fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).attach_file,
                   onTap: () => controller.openFilePickerByType(context, FileType.any)),
@@ -593,8 +593,11 @@ class ComposerView extends GetWidget<ComposerController>
                   child: buildIconWeb(
                       minSize: 40,
                       iconPadding: EdgeInsets.zero,
-                      icon: SvgPicture.asset(imagePaths.icInsertImage,
-                          color: AppColor.colorTextButton.withOpacity(opacity),
+                      icon: SvgPicture.asset(
+                          imagePaths.icInsertImage,
+                          colorFilter: ColorFilter.mode(
+                            AppColor.colorTextButton.withOpacity(opacity),
+                            BlendMode.srcIn),
                           fit: BoxFit.fill),
                       tooltip: AppLocalizations.of(context).insertImage,
                       onTap: () => controller.insertImage(context, constraints.maxWidth)),
@@ -608,9 +611,10 @@ class ComposerView extends GetWidget<ComposerController>
                       ? AppColor.colorSelectedRichTextButton
                       : Colors.transparent,
                     iconPadding: EdgeInsets.zero,
-                    icon: SvgPicture.asset(imagePaths.icStyleCodeView,
-                        color: AppColor.colorTextButton,
-                        fit: BoxFit.fill),
+                    icon: SvgPicture.asset(
+                      imagePaths.icStyleCodeView,
+                      colorFilter: const ColorFilter.mode(AppColor.colorTextButton, BlendMode.srcIn),
+                      fit: BoxFit.fill),
                     tooltip: AppLocalizations.of(context).codeView,
                     onTap: () => controller.richTextWebController.toggleCodeView());
               }),
