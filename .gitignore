@@ -119,3 +119,4 @@ app.*.symbols
 #generated file
 *.g.dart
 messages_*.dart
+*.mocks.dart

@@ -38,7 +38,7 @@ void main() {
       when(threadRepository.refreshChanges(
           AccountFixtures.aliceAccountId,
           StateFixtures.currentEmailState,
-          sort: Set()..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
+          sort: <EmailComparator>{}..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
           propertiesCreated: ThreadConstants.propertiesDefault,
           propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
           emailFilter: EmailFilter(
@@ -58,7 +58,7 @@ void main() {
       final streamStates = refreshChangesEmailsInMailboxInteractor.execute(
         AccountFixtures.aliceAccountId,
         StateFixtures.currentEmailState,
-        sort: Set()..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
+        sort: <EmailComparator>{}..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
         propertiesCreated: ThreadConstants.propertiesDefault,
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         emailFilter: EmailFilter(

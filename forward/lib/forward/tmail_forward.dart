@@ -1,4 +1,3 @@
-import 'package:forward/forward/converter/forward_id_coverter.dart';
 import 'package:forward/forward/converter/forward_id_nullable_converter.dart';
 import 'package:forward/forward/forward.dart';
 import 'package:forward/forward/forward_id.dart';
@@ -6,7 +5,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'tmail_forward.g.dart';
 
-@ForwardIdConverter()
 @ForwardIdNullableConverter()
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class TMailForward extends Forward {
