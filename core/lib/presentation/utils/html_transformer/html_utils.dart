@@ -52,11 +52,11 @@ class HtmlUtils {
           if (maxOffset === scrollLeftRounded || 
               maxOffset === (scrollLeftRounded + 1) || 
               maxOffset === (scrollLeftRounded - 1)) {
-            window.$scrollEventJSChannelName.postMessage('${HtmlEventAction.scrollRightEndAction}');
+            window.flutter_inappwebview.callHandler('$scrollEventJSChannelName', '${HtmlEventAction.scrollRightEndAction}');
           }
         } else {
           if (scrollLeftRounded === 0) {
-            window.$scrollEventJSChannelName.postMessage('${HtmlEventAction.scrollLeftEndAction}');
+            window.flutter_inappwebview.callHandler('$scrollEventJSChannelName', '${HtmlEventAction.scrollLeftEndAction}');
           }
         }                       
       }

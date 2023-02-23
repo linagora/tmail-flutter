@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:core/data/extensions/options_extensions.dart';
 import 'package:dio/dio.dart';
-import 'package:core/core.dart';
 
 class DioClient {
   static const jmapHeader = 'application/json;jmapVersion=rfc-8621';

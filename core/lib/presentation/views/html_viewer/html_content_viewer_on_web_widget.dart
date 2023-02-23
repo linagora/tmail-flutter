@@ -34,7 +34,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _HtmlContentViewerOnWebState createState() => _HtmlContentViewerOnWebState();
+  State<HtmlContentViewerOnWeb> createState() => _HtmlContentViewerOnWebState();
 }
 
 class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
@@ -226,12 +226,10 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           }
 
           if (data['type'] != null && data['type'].contains('toDart: onChangeContent') && data['view'] == createdViewId) {
-            if (Scrollable.of(context) != null) {
-              Scrollable.of(context)!.position.ensureVisible(
-                  context.findRenderObject()!,
-                  duration: const Duration(milliseconds: 100),
-                  curve: Curves.easeIn);
-            }
+            Scrollable.of(context).position.ensureVisible(
+                context.findRenderObject()!,
+                duration: const Duration(milliseconds: 100),
+                curve: Curves.easeIn);
           }
 
           if (data['type'] != null && data['type'].contains('toDart: OpenLink') && data['view'] == createdViewId) {
