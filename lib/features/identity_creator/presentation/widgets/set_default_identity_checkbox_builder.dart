@@ -32,11 +32,11 @@ class SetDefaultIdentityCheckboxBuilder extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4.0),
                   border: Border.all(color: AppColor.primaryColor, width: 2.0),
-                  color: isCheck ? AppColor.primaryColor : Colors.transparent,
+                  color: isCheck ? AppColor.primaryColor : Colors.white,
                 ),
                 child: SvgPicture.asset(
                   imagePaths.icSelectedSB,
-                  color: isCheck ? Colors.white : Colors.transparent,
+                  colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                   width: 18,
                   height: 18,
                 )),

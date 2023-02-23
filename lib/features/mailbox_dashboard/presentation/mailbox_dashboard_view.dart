@@ -3,7 +3,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:focus_detector/focus_detector.dart';
+import 'package:focus_detector_v2/focus_detector_v2.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
@@ -79,22 +79,31 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       body: body,
       drawer: ResponsiveWidget(
         responsiveUtils: responsiveUtils,
-        mobile: SizedBox(child: MailboxView(), width: double.infinity),
+        mobile: SizedBox(
+          width: double.infinity,
+          child: MailboxView()
+        ),
         landscapeMobile: SizedBox(
-            child: MailboxView(),
-            width: ResponsiveUtils.defaultSizeDrawer),
+          width: ResponsiveUtils.defaultSizeDrawer,
+          child: MailboxView()
+        ),
         tablet: SizedBox(
-            child: MailboxView(),
-            width: ResponsiveUtils.defaultSizeDrawer),
+          width: ResponsiveUtils.defaultSizeDrawer,
+          child: MailboxView()
+        ),
         landscapeTablet: SizedBox(
-            child: MailboxView(),
-            width: ResponsiveUtils.defaultSizeLeftMenuMobile),
+          width: ResponsiveUtils.defaultSizeLeftMenuMobile,
+          child: MailboxView()
+        ),
         tabletLarge: SizedBox(
-            child: MailboxView(),
-            width: ResponsiveUtils.defaultSizeLeftMenuMobile),
+          width: ResponsiveUtils.defaultSizeLeftMenuMobile,
+          child: MailboxView()
+        ),
         desktop: SizedBox(
-            child: MailboxView(),
-            width: ResponsiveUtils.defaultSizeLeftMenuMobile)),
+          width: ResponsiveUtils.defaultSizeLeftMenuMobile,
+          child: MailboxView()
+        )
+      ),
     );
   }
 }
