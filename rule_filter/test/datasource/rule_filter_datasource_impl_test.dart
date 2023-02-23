@@ -40,20 +40,20 @@ void main() {
 
 
   group('rule_filter_datasource_impl_test', () {
-    late RuleFilterAPI _ruleFilterAPI;
-    late RuleFilterDataSourceImpl _ruleFilterDataSourceImpl;
+    late RuleFilterAPI ruleFilterAPI;
+    late RuleFilterDataSourceImpl ruleFilterDataSourceImpl;
 
     setUp(() {
-      _ruleFilterAPI = MockRuleFilterAPI();
-      _ruleFilterDataSourceImpl = RuleFilterDataSourceImpl(_ruleFilterAPI);
+      ruleFilterAPI = MockRuleFilterAPI();
+      ruleFilterDataSourceImpl = RuleFilterDataSourceImpl(ruleFilterAPI);
     });
 
     test('getListTMailRule should return success with valid data', () async {
-      when(_ruleFilterAPI.getListTMailRule(AccountId(Id(
+      when(ruleFilterAPI.getListTMailRule(AccountId(Id(
               '0eacc7a5c74b27ab36a823bc5c34da36e16c093705f241d6ed5f48ee73a4ecfb'))))
           .thenAnswer((_) async => expectRuleFilter1.rules);
 
-      final result = await _ruleFilterDataSourceImpl.getListTMailRule(AccountId(Id(
+      final result = await ruleFilterDataSourceImpl.getListTMailRule(AccountId(Id(
           '0eacc7a5c74b27ab36a823bc5c34da36e16c093705f241d6ed5f48ee73a4ecfb')));
       expect(result, expectRuleFilter1.rules);
     });
