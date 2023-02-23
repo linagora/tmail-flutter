@@ -212,17 +212,17 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void _triggerScrollWhenExpandMailboxFolder(List<MailboxNode> childrenItems, MailboxNode selectedMailboxNode) async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 200));
     final _lastItem = childrenItems.last;
     if (_lastItem.mailboxNameAsString.contains(selectedMailboxNode.mailboxNameAsString)) {
       mailboxListScrollController.animateTo(
         mailboxListScrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 200),
         curve: Curves.easeInToLinear);
     } else {
       mailboxListScrollController.animateTo(
         mailboxListScrollController.offset + 100,
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 200),
         curve: Curves.easeInToLinear);
     }
   }
@@ -919,10 +919,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void _triggerToggleMailboxCategories() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 200));
     mailboxListScrollController.animateTo(
       mailboxListScrollController.offset + 100,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 200),
       curve: Curves.easeInToLinear);
   }
 
