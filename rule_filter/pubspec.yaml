@@ -5,34 +5,38 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=2.19.2 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  equatable: 2.0.3
-
-  json_annotation: 4.5.0
-
+  ### Dependencies from git ###
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: master
+      ref: upgrade-latest-flutter-version
 
-  http_mock_adapter: 0.3.2
+  ### Dependencies from pub.dev ###
+  equatable: 2.0.5
+
+  json_annotation: 4.8.0
+
+  dio: 5.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: 1.0.4
+  flutter_lints: ^2.0.1
 
-  build_runner: 2.1.11
+  build_runner: 2.3.3
 
-  json_serializable: 6.2.0
+  json_serializable: 6.6.1
 
-  mockito: 5.2.0
+  mockito: 5.3.2
+
+  http_mock_adapter: 0.4.2
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
