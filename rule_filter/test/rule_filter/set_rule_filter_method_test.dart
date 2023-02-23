@@ -104,8 +104,7 @@ void main() {
           },
           headers: {
             "accept": "application/json;jmapVersion=rfc-8621",
-            "content-type": "application/json; charset=utf-8",
-            "content-length": 340
+            "content-length": 753
           });
 
       final setRuleFilterMethod = SetRuleFilterMethod(AccountId(Id(

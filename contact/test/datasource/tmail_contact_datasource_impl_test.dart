@@ -28,22 +28,22 @@ void main() {
   );
 
   group('tmail_contact_datasource_impl_test', () {
-    late ContactAPI _contactAPI;
-    late TMailContactDataSourceImpl _tmailContactDataSourceImpl;
+    late ContactAPI contactAPI;
+    late TMailContactDataSourceImpl tmailContactDataSourceImpl;
 
     setUp(() {
-      _contactAPI = MockContactAPI();
-      _tmailContactDataSourceImpl = TMailContactDataSourceImpl(_contactAPI);
+      contactAPI = MockContactAPI();
+      tmailContactDataSourceImpl = TMailContactDataSourceImpl(contactAPI);
     });
 
     test('getAutoComplete should return success with valid data', () async {
-      when(_contactAPI.getAutoComplete(
+      when(contactAPI.getAutoComplete(
          AutoCompletePattern(
              word: 'marie',
              accountId: AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')))
       )).thenAnswer((_) async => [contact1, contact2]);
 
-      final result = await _tmailContactDataSourceImpl.getAutoComplete(
+      final result = await tmailContactDataSourceImpl.getAutoComplete(
           AutoCompletePattern(
               word: 'marie',
               accountId: AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')))

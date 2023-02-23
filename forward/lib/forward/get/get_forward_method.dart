@@ -1,5 +1,4 @@
 import 'package:forward/forward/capability_forward.dart';
-import 'package:forward/forward/converter/forward_id_coverter.dart';
 import 'package:jmap_dart_client/http/converter/account_id_converter.dart';
 import 'package:jmap_dart_client/http/converter/id_converter.dart';
 import 'package:jmap_dart_client/http/converter/properties_converter.dart';
@@ -13,7 +12,6 @@ import 'package:json_annotation/json_annotation.dart';
 part 'get_forward_method.g.dart';
 
 @IdConverter()
-@ForwardIdConverter()
 @AccountIdConverter()
 @PropertiesConverter()
 @JsonSerializable(explicitToJson: true)
