@@ -43,8 +43,8 @@ class DownloadManager {
             .takeWhile((_) => cancelToken == null || !cancelToken.isCancelled)
             .listen((data) {
               subscription.pause();
-              randomAccessFile.writeFrom(data).then((_randomAccessFile) {
-                randomAccessFile = _randomAccessFile;
+              randomAccessFile.writeFrom(data).then((accessFile) {
+                randomAccessFile = accessFile;
                 subscription.resume();
                 if (cancelToken != null && cancelToken.isCancelled) {
                   streamController.sink.addError(CancelDownloadFileException(cancelToken.cancelError?.message));
