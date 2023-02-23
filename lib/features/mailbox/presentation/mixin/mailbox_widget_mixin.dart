@@ -59,7 +59,8 @@ mixin MailboxWidgetMixin {
     return [
       if (BuildUtils.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
-      MailboxActions.markAsRead,
+      if (mailbox.isChildOfTeamMailboxes)
+        MailboxActions.markAsRead,
       if (mailbox.isTeamMailboxes)
         if (mailbox.isSubscribedMailbox)
           MailboxActions.disableMailbox
