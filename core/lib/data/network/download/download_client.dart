@@ -1,7 +1,6 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/data/utils/compress_file_utils.dart';
