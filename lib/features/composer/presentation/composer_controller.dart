@@ -668,6 +668,11 @@ class ComposerController extends BaseController {
   void sendEmailAction(BuildContext context) async {
     clearFocusEditor(context);
 
+    if (toEmailAddressController.text.isNotEmpty) {
+      _collapseAllRecipient();
+      _autoCreateEmailTag();
+    }
+
     if (!isEnableEmailSendButton.value) {
       showConfirmDialogAction(context,
           AppLocalizations.of(context).message_dialog_send_email_without_recipient,
