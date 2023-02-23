@@ -98,8 +98,7 @@ void main() {
         },
         headers: {
           "accept": "application/json;jmapVersion=rfc-8621",
-          "content-type": "application/json; charset=utf-8",
-          "content-length": 420
+          "content-length": 765
         }
       );
 
