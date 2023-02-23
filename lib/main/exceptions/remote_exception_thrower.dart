@@ -23,7 +23,7 @@ class RemoteExceptionThrower extends ExceptionThrower {
 
     if (error is DioError) {
       switch (error.type) {
-        case DioErrorType.connectTimeout:
+        case DioErrorType.connectionTimeout:
           throw const ConnectError();
         default:
           if (error.response?.statusCode == 502) {

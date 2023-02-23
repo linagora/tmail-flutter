@@ -21,7 +21,7 @@ import 'package:model/model.dart';
 import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:share/share.dart' as share_library;
+import 'package:share_plus/share_plus.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
@@ -445,7 +445,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           _downloadAttachmentsAction(attachments);
           break;
         case PermissionStatus.permanentlyDenied:
-          _appToast.showToast(AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments);
+          if (context.mounted) {
+            _appToast.showToast(AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments);
+          }
           break;
         default: {
           final requested = await Permission.storage.request();
@@ -454,7 +456,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               _downloadAttachmentsAction(attachments);
               break;
             default:
-              _appToast.showToast(AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments);
+              if (context.mounted) {
+                _appToast.showToast(AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments);
+              }
               break;
           }
         }
@@ -536,7 +540,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _openDownloadedPreviewWorkGroupDocument(DownloadedResponse downloadedResponse) async {
     log('SingleEmailController::_openDownloadedPreviewWorkGroupDocument(): $downloadedResponse');
     if (downloadedResponse.mediaType == null) {
-      await share_library.Share.shareFiles([downloadedResponse.filePath]);
+      await Share.shareXFiles([XFile(downloadedResponse.filePath)]);
     }
 
     final openResult = await open_file.OpenFile.open(
@@ -596,10 +600,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void moveToMailbox(BuildContext context, PresentationEmail email) async {
     final currentMailbox = getMailboxContain(email);
     final accountId = mailboxDashBoardController.accountId.value;
-    final _session = mailboxDashBoardController.sessionCurrent;
+    final session = mailboxDashBoardController.sessionCurrent;
 
     if (currentMailbox != null && accountId != null) {
-      final arguments = DestinationPickerArguments(accountId, MailboxActions.moveEmail, _session);
+      final arguments = DestinationPickerArguments(accountId, MailboxActions.moveEmail, session);
       if (BuildUtils.isWeb) {
         showDialogDestinationPicker(
             context: context,
@@ -621,8 +625,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             arguments: arguments);
 
         if (destinationMailbox != null &&
-            destinationMailbox is PresentationMailbox &&
-            mailboxDashBoardController.sessionCurrent != null) {
+          destinationMailbox is PresentationMailbox &&
+          mailboxDashBoardController.sessionCurrent != null &&
+          context.mounted
+        ) {
           _dispatchMoveToAction(
               context,
               accountId,
@@ -692,7 +698,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             imagePaths.icFolderMailbox,
             width: 24,
             height: 24,
-            color: Colors.white,
+            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
             fit: BoxFit.fill),
         backgroundColor: AppColor.toastSuccessBackgroundColor,
         textColor: Colors.white,
@@ -932,7 +938,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               imagePaths.icNotConnection,
               width: 24,
               height: 24,
-              color: Colors.white,
+              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
               fit: BoxFit.fill),
           backgroundColor: AppColor.toastErrorBackgroundColor,
           textColor: Colors.white,
@@ -949,7 +955,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               imagePaths.icNotConnection,
               width: 24,
               height: 24,
-              color: Colors.white,
+              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
               fit: BoxFit.fill),
           backgroundColor: AppColor.toastErrorBackgroundColor,
           textColor: Colors.white,
@@ -966,7 +972,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               imagePaths.icNotConnection,
               width: 24,
               height: 24,
-              color: Colors.white,
+              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
               fit: BoxFit.fill),
           backgroundColor: AppColor.toastErrorBackgroundColor,
           textColor: Colors.white,
