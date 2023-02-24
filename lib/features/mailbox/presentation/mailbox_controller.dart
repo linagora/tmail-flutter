@@ -214,6 +214,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   void _triggerScrollWhenExpandMailboxFolder(List<MailboxNode> childrenItems, MailboxNode selectedMailboxNode) async {
     await Future.delayed(const Duration(milliseconds: 200));
     final _lastItem = childrenItems.last;
+
+    if (selectedMailboxNode.expandMode == ExpandMode.COLLAPSE) {
+      return;
+    }
+
     if (_lastItem.mailboxNameAsString.contains(selectedMailboxNode.mailboxNameAsString)) {
       mailboxListScrollController.animateTo(
         mailboxListScrollController.position.maxScrollExtent,
@@ -903,7 +908,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         final newExpandMode = mailboxCategoriesExpandMode.value.teamMailboxes == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
         mailboxCategoriesExpandMode.value.teamMailboxes = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
-        if (personalMailboxTree.value.root.hasChildren()) {
+        if (personalMailboxTree.value.root.hasChildren() && mailboxCategoriesExpandMode.value.teamMailboxes == ExpandMode.COLLAPSE) {
           _triggerToggleMailboxCategories();
         }
         break;
