@@ -48,10 +48,9 @@ class ThreadIsolateWorker {
     List<EmailId> emailListCompleted = List.empty(growable: true);
     try {
       var hasEmails = true;
+      Email? lastEmail;
 
       while (hasEmails) {
-        Email? lastEmail;
-
         final emailsResponse = await args.threadAPI.getAllEmail(args.accountId,
             sort: <Comparator>{}..add(
                 EmailComparator(EmailComparatorProperty.receivedAt)
@@ -66,7 +65,7 @@ class ThreadIsolateWorker {
 
         log('ThreadIsolateWorker::_emptyTrashFolderAction(): ${newEmailList.length}');
 
-        if (newEmailList.isNotEmpty == true) {
+        if (newEmailList.isNotEmpty) {
           lastEmail = newEmailList.last;
           hasEmails = true;
           final emailIds = newEmailList.map((email) => email.id).toList();
@@ -98,10 +97,9 @@ class ThreadIsolateWorker {
     List<EmailId> emailListCompleted = List.empty(growable: true);
     try {
       var hasEmails = true;
+      Email? lastEmail;
 
       while (hasEmails) {
-        Email? lastEmail;
-
         final emailsResponse = await _threadAPI.getAllEmail(accountId,
             sort: <Comparator>{}..add(
                 EmailComparator(EmailComparatorProperty.receivedAt)
@@ -116,7 +114,7 @@ class ThreadIsolateWorker {
 
         log('ThreadIsolateWorker::_emptyTrashFolderOnWeb(): ${newEmailList.length}');
 
-        if (newEmailList.isNotEmpty == true) {
+        if (newEmailList.isNotEmpty) {
           lastEmail = newEmailList.last;
           hasEmails = true;
           final emailIds = newEmailList.map((email) => email.id).toList();

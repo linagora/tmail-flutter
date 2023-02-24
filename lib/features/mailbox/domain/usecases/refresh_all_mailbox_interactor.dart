@@ -2,7 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmapState;
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap_state;
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
@@ -13,7 +13,7 @@ class RefreshAllMailboxInteractor {
 
   RefreshAllMailboxInteractor(this._mailboxRepository);
 
-  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, jmapState.State currentState) async* {
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, jmap_state.State currentState) async* {
     try {
       yield Right<Failure, Success>(RefreshingState());
 

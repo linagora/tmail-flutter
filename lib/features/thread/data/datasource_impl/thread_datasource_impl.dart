@@ -47,9 +47,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
         sort: sort,
         filter: filter,
         properties: properties);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -67,9 +65,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
         sinceState,
         propertiesCreated: propertiesCreated,
         propertiesUpdated: propertiesUpdated);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -90,9 +86,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
           mailboxId,
           updateDestroyedEmailCache,
       );
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -100,8 +94,6 @@ class ThreadDataSourceImpl extends ThreadDataSource {
     return Future.sync(() async {
       final email = await threadAPI.getEmailById(accountId, emailId, properties: properties);
       return email.toPresentationEmail();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

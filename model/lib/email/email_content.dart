@@ -36,10 +36,10 @@ extension EmailContentExtension on EmailContent {
       return '';
     }
 
-    final firstTags = '<html><head></head><body>';
-    final latestTags = '</body></html>';
+    const firstTags = '<html><head></head><body>';
+    const latestTags = '</body></html>';
     if (content.startsWith(firstTags) && content.endsWith(latestTags)) {
-      final firstIndex = firstTags.length;
+      const firstIndex = firstTags.length;
       final latestIndex = content.length - latestTags.length;
       log('EmailContentExtension::_getContentOriginal(): firstIndex: $firstIndex');
       log('EmailContentExtension::_getContentOriginal(): latestIndex: $latestIndex');

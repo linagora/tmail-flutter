@@ -18,35 +18,27 @@ class ForwardingDataSourceImpl extends ForwardingDataSource {
   Future<TMailForward> getForward(AccountId accountId) {
     return Future.sync(() async {
       return await _forwardingAPI.getForward(accountId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<TMailForward> deleteRecipientInForwarding(AccountId accountId, DeleteRecipientInForwardingRequest deleteRequest) {
     return Future.sync(() async {
       return await _forwardingAPI.updateForward(accountId, deleteRequest.newTMailForward);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<TMailForward> addRecipientsInForwarding(AccountId accountId, AddRecipientInForwardingRequest addRequest) {
     return Future.sync(() async {
       return await _forwardingAPI.updateForward(accountId, addRequest.newTMailForward);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<TMailForward> editLocalCopyInForwarding(AccountId accountId, EditLocalCopyInForwardingRequest editRequest) {
     return Future.sync(() async {
       return await _forwardingAPI.updateForward(accountId, editRequest.newTMailForward);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

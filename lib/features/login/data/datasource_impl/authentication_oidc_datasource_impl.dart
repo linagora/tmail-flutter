@@ -27,63 +27,49 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
     return Future.sync(() async {
       final oidcResponse = await _oidcHttpClient.checkOIDCIsAvailable(oidcRequest);
       return oidcResponse!;
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<OIDCConfiguration> getOIDCConfiguration(OIDCResponse oidcResponse) {
     return Future.sync(() async {
       return await _oidcHttpClient.getOIDCConfiguration(oidcResponse);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl, String discoveryUrl, List<String> scopes) {
     return Future.sync(() async {
       return await _authenticationClient.getTokenOIDC(clientId, redirectUrl, discoveryUrl, scopes);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<TokenOIDC> getStoredTokenOIDC(String tokenIdHash) {
     return Future.sync(() async {
       return await _tokenOidcCacheManager.getTokenOidc(tokenIdHash);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> persistTokenOIDC(TokenOIDC tokenOidc) {
     return Future.sync(() async {
       return await _tokenOidcCacheManager.persistOneTokenOidc(tokenOidc);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<OIDCConfiguration> getStoredOidcConfiguration() {
     return Future.sync(() async {
       return await _oidcConfigurationCacheManager.getOidcConfiguration();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> persistAuthorityOidc(String authority) {
     return Future.sync(() async {
       return await _oidcConfigurationCacheManager.persistAuthorityOidc(authority);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -101,27 +87,21 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
         discoveryUrl,
         scopes,
         refreshToken);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<bool> logout(TokenId tokenId, OIDCConfiguration config) {
     return Future.sync(() async {
        return await _authenticationClient.logoutOidc(tokenId, config);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> deleteAuthorityOidc() {
     return Future.sync(() async {
       return await _oidcConfigurationCacheManager.deleteAuthorityOidc();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -137,26 +117,20 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
         redirectUrl,
         discoveryUrl,
         scopes);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<String?> getAuthenticationInfo() {
     return Future.sync(() async {
       return await _authenticationClient.getAuthenticationInfo();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> deleteTokenOIDC() {
     return Future.sync(() async {
       return await _tokenOidcCacheManager.deleteTokenOidc();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

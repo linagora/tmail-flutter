@@ -25,9 +25,7 @@ class SearchDataSourceImpl extends SearchDataSource {
             recentSearch.value,
             recentSearch.toRecentSearchCache());
       }
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -47,9 +45,7 @@ class SearchDataSourceImpl extends SearchDataSource {
         : listRecentSearch;
 
       return newListRecentSearch;
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   bool _filterRecentSearchCache(RecentSearchCache recentSearchCache, String? pattern) {

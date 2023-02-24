@@ -62,9 +62,9 @@ class SpamReportController extends BaseController {
   }
 
   void getUnreadSpamMailboxAction(AccountId accountId) {
-    final _mailboxFilterCondition = MailboxFilterCondition(role: Role('Spam'));
+    final mailboxFilterCondition = MailboxFilterCondition(role: Role('Spam'));
     getSpamReportStateAction();
-    consumeState(_getNumberOfUnreadSpamEmailsInteractor.execute(accountId,mailboxFilterCondition: _mailboxFilterCondition));
+    consumeState(_getNumberOfUnreadSpamEmailsInteractor.execute(accountId,mailboxFilterCondition: mailboxFilterCondition));
   }
 
   void _storeLastTimeDismissedSpamReportedAction() {
@@ -78,9 +78,9 @@ class SpamReportController extends BaseController {
   bool get enableSpamReport => _spamReportState.value == SpamReportState.enabled;
 
   void openMailbox(BuildContext context) {
-    final _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+    final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     dismissSpamReportAction();
-    _mailboxDashBoardController.openMailboxAction(context, _presentationSpamMailbox.value!);
+    mailboxDashBoardController.openMailboxAction(context, _presentationSpamMailbox.value!);
   }
 
   void storeSpamReportStateAction(SpamReportState spamReportState) {

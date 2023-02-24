@@ -207,43 +207,41 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     );
 
     ever(mailboxDashBoardController.viewState, (state) {
-      if (state is Either) {
-        state.fold((failure) => null, (success) {
-          if (success is MarkAsMultipleEmailReadAllSuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is EmptyTrashFolderSuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is MarkAsEmailReadSuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is MoveToMailboxSuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is DeleteEmailPermanentlySuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is SaveEmailAsDraftsSuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is RemoveEmailDraftsSuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is SendEmailSuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is MarkAsMailboxReadAllSuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          } else if (success is UpdateEmailDraftsSuccess) {
-            _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-          }
-        });
-      }
+      state.fold((failure) => null, (success) {
+        if (success is MarkAsMultipleEmailReadAllSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is EmptyTrashFolderSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is MarkAsEmailReadSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is MoveToMailboxSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is DeleteEmailPermanentlySuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is SaveEmailAsDraftsSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is RemoveEmailDraftsSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is SendEmailSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is MarkAsMailboxReadAllSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is UpdateEmailDraftsSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        }
+      });
     });
 
     ever(mailboxDashBoardController.dashBoardAction, (action) {
@@ -518,7 +516,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
               _imagePaths.icFolderMailbox,
               width: 24,
               height: 24,
-              color: Colors.white,
+              colorFilter: Colors.white.asFilter(),
               fit: BoxFit.fill),
           backgroundColor: AppColor.toastSuccessBackgroundColor,
           textColor: Colors.white,
@@ -544,7 +542,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
               _imagePaths.icNotConnection,
               width: 24,
               height: 24,
-              color: Colors.white,
+              colorFilter: Colors.white.asFilter(),
               fit: BoxFit.fill),
           backgroundColor: AppColor.toastErrorBackgroundColor,
           textColor: Colors.white,
@@ -828,7 +826,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
               _imagePaths.icFolderMailbox,
               width: 24,
               height: 24,
-              color: Colors.white,
+              colorFilter: Colors.white.asFilter(),
               fit: BoxFit.fill),
           backgroundColor: AppColor.toastSuccessBackgroundColor,
           textColor: Colors.white,
@@ -1029,9 +1027,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void _unsubscribeMailboxAction(MailboxId mailboxId) {
-    final _accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.accountId.value;
 
-    if (_accountId != null) {
+    if (accountId != null) {
       final subscribeRequest = generateSubscribeRequest(
         mailboxId,
         MailboxSubscribeState.disabled,
@@ -1039,9 +1037,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       );
 
       if (subscribeRequest is SubscribeMultipleMailboxRequest) {
-        consumeState(_subscribeMultipleMailboxInteractor.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMultipleMailboxInteractor.execute(accountId, subscribeRequest));
       } else if (subscribeRequest is SubscribeMailboxRequest) {
-        consumeState(_subscribeMailboxInteractor.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMailboxInteractor.execute(accountId, subscribeRequest));
       }
     }
   }
@@ -1120,7 +1118,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           _imagePaths.icFolderMailbox,
           width: 24,
           height: 24,
-          color: Colors.white,
+          colorFilter: Colors.white.asFilter(),
           fit: BoxFit.fill
         ),
         backgroundColor: AppColor.toastSuccessBackgroundColor,
@@ -1136,9 +1134,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     MailboxId mailboxIdSubscribed,
     {List<MailboxId>? listDescendantMailboxIds}
   ) {
-    final _accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.accountId.value;
 
-    if (_accountId != null) {
+    if (accountId != null) {
       SubscribeRequest? subscribeRequest;
 
       if (listDescendantMailboxIds != null) {
@@ -1157,9 +1155,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       }
 
       if (subscribeRequest is SubscribeMultipleMailboxRequest) {
-        consumeState(_subscribeMultipleMailboxInteractor.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMultipleMailboxInteractor.execute(accountId, subscribeRequest));
       } else if (subscribeRequest is SubscribeMailboxRequest) {
-        consumeState(_subscribeMailboxInteractor.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMailboxInteractor.execute(accountId, subscribeRequest));
       }
     }
   }

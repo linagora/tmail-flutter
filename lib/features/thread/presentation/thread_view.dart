@@ -228,8 +228,9 @@ class ThreadView extends GetWidget<ThreadController>
                 width: 20,
                 height: 20,
                 fit: BoxFit.fill,
-                color: filter == FilterMessageOption.attachments
-                    ? AppColor.colorTextButton : null),
+                colorFilter: filter == FilterMessageOption.attachments
+                  ? AppColor.colorTextButton.asFilter()
+                  : null),
             filter.getName(context),
             filter,
             optionCurrent: optionCurrent,
@@ -345,20 +346,6 @@ class ThreadView extends GetWidget<ThreadController>
             return Obx(() => Draggable<List<PresentationEmail>>(
               maxSimultaneousDrags: kIsWeb ? null : 0,
               data: controller.listEmailDrag,
-              child: (EmailTileBuilder(
-                    context,
-                    currentPresentationEmail,
-                    controller.mailboxDashBoardController.currentSelectMode.value,
-                    controller.searchQuery,
-                    controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
-                    mailboxContain: currentPresentationEmail.mailboxContain,
-                    isSearchEmailRunning: controller.searchController.isSearchEmailRunning)
-                ..addOnPressEmailActionClick((action, email) =>
-                    controller.pressEmailAction(context, action, email, mailboxContain: currentPresentationEmail.mailboxContain))
-                ..addOnMoreActionClick((email, position) => _responsiveUtils.isScreenWithShortestSide(context)
-                    ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
-                    : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
-              ).build(),
               feedback: _buildFeedBackWidget(context),
               childWhenDragging: (EmailTileBuilder(
                   context,
@@ -377,6 +364,20 @@ class ThreadView extends GetWidget<ThreadController>
               },
               onDragEnd: (_) => controller.onDragMailBox(false),
               onDraggableCanceled: (_,__) => controller.onDragMailBox(false),
+              child: (EmailTileBuilder(
+                    context,
+                    currentPresentationEmail,
+                    controller.mailboxDashBoardController.currentSelectMode.value,
+                    controller.searchQuery,
+                    controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
+                    mailboxContain: currentPresentationEmail.mailboxContain,
+                    isSearchEmailRunning: controller.searchController.isSearchEmailRunning)
+                ..addOnPressEmailActionClick((action, email) =>
+                    controller.pressEmailAction(context, action, email, mailboxContain: currentPresentationEmail.mailboxContain))
+                ..addOnMoreActionClick((email, position) => _responsiveUtils.isScreenWithShortestSide(context)
+                    ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
+                    : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
+              ).build(),
             ));
           }),
       )
@@ -398,7 +399,7 @@ class ThreadView extends GetWidget<ThreadController>
                 width: 24,
                 height: 24,
                 fit: BoxFit.fill,
-                color: Colors.white,
+                colorFilter: Colors.white.asFilter(),
               ),
               const SizedBox(width: 10),
               Obx(
@@ -545,7 +546,7 @@ class ThreadView extends GetWidget<ThreadController>
           width: 24,
           height: 24,
           fit: BoxFit.fill,
-          color: AppColor.colorTextButton),
+          colorFilter: AppColor.colorTextButton.asFilter()),
         mailboxContain?.isSpam == true
           ? AppLocalizations.of(context).remove_from_spam
           : AppLocalizations.of(context).mark_as_spam,
@@ -572,7 +573,7 @@ class ThreadView extends GetWidget<ThreadController>
         width: 24,
         height: 24,
         fit: BoxFit.fill,
-        color: AppColor.colorTextButton),
+        colorFilter: AppColor.colorTextButton.asFilter()),
       AppLocalizations.of(context).openInNewTab,
       email,
       iconLeftPadding: _responsiveUtils.isMobile(context)

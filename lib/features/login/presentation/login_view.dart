@@ -30,8 +30,8 @@ class LoginView extends BaseLoginView {
             child: _supportScrollForm(context)
                 ? Stack(children: [
                     Center(child: SingleChildScrollView(
-                        child: _buildCenterForm(context),
-                        scrollDirection: Axis.vertical)),
+                        scrollDirection: Axis.vertical,
+                        child: _buildCenterForm(context))),
                     Obx(() {
                       if (loginController.loginFormType.value == LoginFormType.credentialForm
                           || loginController.loginFormType.value == LoginFormType.ssoForm) {
@@ -128,7 +128,7 @@ class LoginView extends BaseLoginView {
           icon: SvgPicture.asset(
             imagePaths.icBack,
             alignment: Alignment.center,
-            color: AppColor.primaryColor
+            colorFilter: AppColor.primaryColor.asFilter()
           )
         ),
     );

@@ -10,8 +10,8 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_
 class SpecialCharacterValidator extends Validator<NewNameRequest> {
 
   @override
-  Either<Failure, Success> validate(NewNameRequest newNameRequest) {
-    if (newNameRequest.value != null && newNameRequest.value!.hasSpecialCharactersInName()) {
+  Either<Failure, Success> validate(NewNameRequest value) {
+    if (value.value != null && value.value!.hasSpecialCharactersInName()) {
       return Left<Failure, Success>(VerifyNameFailure(const SpecialCharacterException()));
     } else {
       return Right<Failure, Success>(VerifyNameViewState());

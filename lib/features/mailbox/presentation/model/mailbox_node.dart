@@ -53,8 +53,8 @@ class MailboxNode with EquatableMixin{
   }
 
   List<MailboxNode>? updateNode(MailboxId mailboxId, MailboxNode newNode, {MailboxNode? parent}) {
-    List<MailboxNode>? _children = parent == null ? childrenItems : parent.childrenItems;
-    return _children?.map((MailboxNode child) {
+    List<MailboxNode>? children = parent == null ? childrenItems : parent.childrenItems;
+    return children?.map((MailboxNode child) {
       if (child.item.id == mailboxId) {
         return newNode;
       } else {
@@ -91,8 +91,8 @@ class MailboxNode with EquatableMixin{
   }
 
   List<MailboxNode>? toggleSelectNode(MailboxNode selectedMailboxMode, {MailboxNode? parent}) {
-    List<MailboxNode>? _children = parent == null ? childrenItems : parent.childrenItems;
-    return _children?.map((MailboxNode child) {
+    List<MailboxNode>? children = parent == null ? childrenItems : parent.childrenItems;
+    return children?.map((MailboxNode child) {
       if (child.item.id == selectedMailboxMode.item.id) {
         return child.toggleSelectMailboxNode();
       } else {
@@ -105,8 +105,8 @@ class MailboxNode with EquatableMixin{
   }
 
   List<MailboxNode>? toSelectedNode({required SelectMode selectMode, ExpandMode? newExpandMode, MailboxNode? parent}) {
-    List<MailboxNode>? _children = parent == null ? childrenItems : parent.childrenItems;
-    return _children?.map((MailboxNode child) {
+    List<MailboxNode>? children = parent == null ? childrenItems : parent.childrenItems;
+    return children?.map((MailboxNode child) {
       if (child.hasChildren()) {
         return child.copyWith(
             children: toSelectedNode(selectMode: selectMode, newExpandMode: newExpandMode, parent: child),

@@ -1,11 +1,12 @@
-import 'package:flutter/foundation.dart' as Foundation;
+
+import 'package:flutter/foundation.dart';
 
 abstract class BuildUtils {
-  static const bool isDebugMode = Foundation.kDebugMode;
+  static const bool isDebugMode = kDebugMode;
 
-  static const bool isReleaseMode = Foundation.kReleaseMode;
+  static const bool isReleaseMode = kReleaseMode;
 
-  static const bool isWeb = Foundation.kIsWeb;
+  static const bool isWeb = kIsWeb;
 
-  static const bool isProfileMode = Foundation.kProfileMode;
+  static const bool isProfileMode = kProfileMode;
 }

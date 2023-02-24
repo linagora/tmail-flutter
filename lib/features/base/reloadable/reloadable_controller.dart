@@ -98,8 +98,8 @@ abstract class ReloadableController extends BaseController {
         } else if (success is GetStoredTokenOidcSuccess) {
           _handleGetStoredTokenOIDCSuccess(success);
         } else if (success is GetFCMSubscriptionLocalSuccess) {
-          final _subscriptionId = success.fcmSubscription.subscriptionId;
-          _destroySubscriptionAction(_subscriptionId);
+          final subscriptionId = success.fcmSubscription.subscriptionId;
+          _destroySubscriptionAction(subscriptionId);
         } else if (success is DestroySubscriptionSuccess) {
           _checkAuthenticationTypeWhenLogout();
         }
@@ -249,18 +249,18 @@ abstract class ReloadableController extends BaseController {
   }
 
   bool fcmEnabled(Session? session, AccountId? accountId) {
-    bool _fcmEnabled = false;
+    bool fcmEnabled = false;
     try {
       requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
       if (AppConfig.fcmAvailable) {
-        _fcmEnabled = true;
+        fcmEnabled = true;
       } else {
-        _fcmEnabled = false;
+        fcmEnabled = false;
       }
     } catch (e) {
       logError('BaseController::fcmEnabled(): exception: $e');
     }
-    return _fcmEnabled;
+    return fcmEnabled;
   }
 
   void logout(Session? session, AccountId? accountId) {

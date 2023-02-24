@@ -11,11 +11,11 @@ class SpamReportBannerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-    final _spamReportController = Get.find<SpamReportController>();
-    final _imagePaths = Get.find<ImagePaths>();
+    final spamReportController = Get.find<SpamReportController>();
+    final imagePaths = Get.find<ImagePaths>();
     
     return Obx(() {
-      if (!_spamReportController.enableSpamReport || _spamReportController.notShowSpamReportBanner) {
+      if (!spamReportController.enableSpamReport || spamReportController.notShowSpamReportBanner) {
         return const SizedBox.shrink();
       }
       return Container(
@@ -35,16 +35,16 @@ class SpamReportBannerWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SvgPicture.asset(
-                    _imagePaths.icInfoCircleOutline,
+                    imagePaths.icInfoCircleOutline,
                     width: 28,
                     height: 28,
-                    color: AppColor.primaryColor,
+                    colorFilter: AppColor.primaryColor.asFilter(),
                   ),
                   const SizedBox(
                     width: 8,
                   ),
                   Text(
-                    AppLocalizations.of(context).countNewSpamEmails(_spamReportController.numberOfUnreadSpamEmails),
+                    AppLocalizations.of(context).countNewSpamEmails(spamReportController.numberOfUnreadSpamEmails),
                     style: const TextStyle(
                         fontSize: 16,
                         color: AppColor.primaryColor,
@@ -64,7 +64,7 @@ class SpamReportBannerWidget extends StatelessWidget {
                           context,
                           AppLocalizations.of(context).showDetails,
                           AppColor.primaryColor,
-                          () => _spamReportController.openMailbox(context)),
+                          () => spamReportController.openMailbox(context)),
                     ),
                     const SizedBox(
                       width: 8,
@@ -74,7 +74,7 @@ class SpamReportBannerWidget extends StatelessWidget {
                           context,
                           AppLocalizations.of(context).dismiss,
                           AppColor.textFieldErrorBorderColor,
-                          () => _spamReportController
+                          () => spamReportController
                               .dismissSpamReportAction()),
                     ),
                   ],

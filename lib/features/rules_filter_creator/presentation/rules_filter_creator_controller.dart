@@ -252,7 +252,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
             AppRoutes.destinationPicker,
             arguments: arguments);
 
-        if (destinationMailbox is PresentationMailbox) {
+        if (destinationMailbox is PresentationMailbox && context.mounted) {
           mailboxSelected.value = destinationMailbox;
           errorRuleActionValue.value = _getErrorStringByInputValue(
               context,

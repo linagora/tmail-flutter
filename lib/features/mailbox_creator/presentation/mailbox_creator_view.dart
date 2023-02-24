@@ -180,7 +180,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                     color: AppColor.primaryColor,
                     icon: SvgPicture.asset(
                         _imagePaths.icCollapseFolder,
-                        color: AppColor.colorCollapseMailbox,
+                        colorFilter: AppColor.colorCollapseMailbox.asFilter(),
                         fit: BoxFit.fill),
                     onPressed: () => controller.selectMailboxLocation(context))
                 ])),

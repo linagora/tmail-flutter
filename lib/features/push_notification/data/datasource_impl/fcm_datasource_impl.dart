@@ -19,9 +19,7 @@ class FcmDatasourceImpl extends FCMDatasource {
   Future<FirebaseSubscription> getFirebaseSubscriptionByDeviceId(String deviceId) {
     return Future.sync(() async {
       return await _fcmApi.getFirebaseSubscriptionByDeviceId(deviceId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -44,9 +42,7 @@ class FcmDatasourceImpl extends FCMDatasource {
     return Future.sync(() async {
       final firebaseSubscription = await _fcmApi.registerNewToken(newTokenRequest);
       return firebaseSubscription.fromDeviceId(newDeviceId: newTokenRequest.firebaseSubscription.deviceClientId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
   
   @override
@@ -63,8 +59,6 @@ class FcmDatasourceImpl extends FCMDatasource {
   Future<bool> destroySubscription(String subscriptionId) {
     return Future.sync(() async {
       return await _fcmApi.destroySubscription(subscriptionId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

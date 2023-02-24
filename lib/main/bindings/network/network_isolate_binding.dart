@@ -2,7 +2,7 @@ import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/http/http_client.dart' as JmapHttpClient;
+import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
@@ -44,7 +44,7 @@ class NetworkIsolateBindings extends Bindings {
   }
 
   void _bindingApi() {
-    final JmapHttpClient.HttpClient httpClient = Get.put(JmapHttpClient.HttpClient(Get.find<Dio>(tag: BindingTag.isolateTag)), tag: BindingTag.isolateTag);
+    final httpClient = Get.put(HttpClient(Get.find<Dio>(tag: BindingTag.isolateTag)), tag: BindingTag.isolateTag);
     Get.put(DownloadClient(Get.find<DioClient>(tag: BindingTag.isolateTag), Get.find<CompressFileUtils>()), tag: BindingTag.isolateTag);
     Get.put(DownloadManager(Get.find<DownloadClient>(tag: BindingTag.isolateTag)), tag: BindingTag.isolateTag);
     Get.put(ThreadAPI(httpClient), tag: BindingTag.isolateTag);

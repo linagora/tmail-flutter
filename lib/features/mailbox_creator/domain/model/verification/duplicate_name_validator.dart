@@ -11,11 +11,11 @@ class DuplicateNameValidator extends Validator<NewNameRequest> {
   DuplicateNameValidator(this._listName);
 
   @override
-  Either<Failure, Success> validate(NewNameRequest newNameRequest) {
-    if (newNameRequest.value != null) {
+  Either<Failure, Success> validate(NewNameRequest value) {
+    if (value.value != null) {
       final nameExist = _listName
           .map((nameItem) => nameItem.toLowerCase())
-          .contains(newNameRequest.value!.toLowerCase());
+          .contains(value.value!.toLowerCase());
       if (nameExist) {
         return Left<Failure, Success>(VerifyNameFailure(const DuplicatedNameException()));
       } else {

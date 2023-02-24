@@ -28,9 +28,9 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
             minSize: 40,
             iconPadding: const EdgeInsets.only(right: 2),
             icon: SvgPicture.asset(_imagePaths.icFilterAdvanced,
-                color: searchController.isAdvancedSearchViewOpen.isTrue || searchController.advancedSearchIsActivated.isTrue
-                    ? AppColor.colorFilterMessageEnabled
-                    : AppColor.colorFilterMessageDisabled,
+                colorFilter: searchController.isAdvancedSearchViewOpen.isTrue || searchController.advancedSearchIsActivated.isTrue
+                    ? AppColor.colorFilterMessageEnabled.asFilter()
+                    : AppColor.colorFilterMessageDisabled.asFilter(),
                 width: 16,
                 height: 16),
             onTap: () {

@@ -51,11 +51,11 @@ class FCMCacheManager {
   }
   
   Future<FCMSubscriptionCache> getSubscription() async {
-    final _fcmSubscription = await _fcmSubscriptionCacheClient.getItem(FCMSubscriptionCache.keyCacheValue);
-    if (_fcmSubscription == null) {
+    final fcmSubscription = await _fcmSubscriptionCacheClient.getItem(FCMSubscriptionCache.keyCacheValue);
+    if (fcmSubscription == null) {
       throw NotFoundSubscriptionException();
     } else {
-      return _fcmSubscription;
+      return fcmSubscription;
     }
   }
 }
