@@ -668,7 +668,9 @@ class ComposerController extends BaseController {
   void sendEmailAction(BuildContext context) async {
     clearFocusEditor(context);
 
-    if (toEmailAddressController.text.isNotEmpty) {
+    if (toEmailAddressController.text.isNotEmpty
+        || ccEmailAddressController.text.isNotEmpty
+        || bccEmailAddressController.text.isNotEmpty) {
       _collapseAllRecipient();
       _autoCreateEmailTag();
     }
