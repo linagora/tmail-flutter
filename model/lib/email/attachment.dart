@@ -32,9 +32,9 @@ class Attachment with EquatableMixin {
   bool hasCid() => cid != null && cid?.isNotEmpty == true;
 
   String getDownloadUrl(String baseDownloadUrl, AccountId accountId) {
-    final downloadUriTemplate = UriTemplate('$baseDownloadUrl');
+    final downloadUriTemplate = UriTemplate(baseDownloadUrl);
     final downloadUri = downloadUriTemplate.expand({
-      'accountId' : '${accountId.id.value}',
+      'accountId' : accountId.id.value,
       'blobId' : '${blobId?.value}',
       'name' : '$name',
       'type' : '${type?.mimeType}',
@@ -68,7 +68,7 @@ extension ContentDispositionExtension on ContentDisposition {
       case ContentDisposition.attachment:
         return 'attachment';
       case ContentDisposition.other:
-        return this.toString();
+        return toString();
     }
   }
 }

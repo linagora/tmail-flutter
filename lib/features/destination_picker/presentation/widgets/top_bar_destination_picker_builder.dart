@@ -94,7 +94,7 @@ class TopBarDestinationPickerBuilder extends StatelessWidget {
                             _imagePaths.icBack,
                             width: 14,
                             height: 14,
-                            color: AppColor.primaryColor,
+                            colorFilter: AppColor.primaryColor.asFilter(),
                             fit: BoxFit.fill),
                           const SizedBox(width: 5),
                           Text(
@@ -115,69 +115,6 @@ class TopBarDestinationPickerBuilder extends StatelessWidget {
               )
           ]
       ),
-    );
-  }
-
-  Widget _buildIconCreateButton(BuildContext context) {
-    return buildIconWeb(
-      iconSize: 24,
-      colorSelected: Colors.white,
-      splashRadius: 15,
-      iconPadding: const EdgeInsets.all(3),
-      icon: SvgPicture.asset(
-        _imagePaths.icCreateNewFolder,
-        color: mailboxIdDestination != null
-          ? AppColor.colorTextButton
-          : AppColor.colorDisableMailboxCreateButton,
-        fit: BoxFit.fill),
-      tooltip: AppLocalizations.of(context).create,
-      onTap: onOpenCreateNewMailboxScreenAction
-    );
-  }
-
-  Widget _buildDoneButton(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        customBorder: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8))),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 8,
-            horizontal: 8),
-          child: Text(
-            AppLocalizations.of(context).done,
-            style: TextStyle(
-              fontSize: 15,
-              color: mailboxIdDestination != null
-                ? AppColor.colorTextButton
-                : AppColor.colorDisableMailboxCreateButton))),
-        onTap: onSelectedMailboxDestinationAction
-      )
-    );
-  }
-
-  Widget _buildSaveButton(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        customBorder: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8))),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 8,
-            horizontal: 8),
-          child: Text(
-            AppLocalizations.of(context).save,
-            style: TextStyle(
-              fontSize: 15,
-              color: isCreateMailboxValidated
-                ? AppColor.colorTextButton
-                : AppColor.colorDisableMailboxCreateButton)
-          )
-        ),
-        onTap: isCreateMailboxValidated ? onCreateNewMailboxAction : null
-      )
     );
   }
 }

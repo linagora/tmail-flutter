@@ -62,7 +62,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
                         _imagePaths.icBack,
                         width: 14,
                         height: 14,
-                        color: AppColor.colorTextButton,
+                        colorFilter: AppColor.colorTextButton.asFilter(),
                         fit: BoxFit.fill),
                     if (!isSearchIsRunning)
                       Container(
@@ -134,9 +134,9 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
         buildIconWeb(
             icon: SvgPicture.asset(
                 _imagePaths.icDeleteComposer,
-                color: mailboxContain?.isTrash == false
-                  ? AppColor.colorTextButton
-                  : AppColor.colorDeletePermanentlyButton,
+                colorFilter: mailboxContain?.isTrash == false
+                  ? AppColor.colorTextButton.asFilter()
+                  : AppColor.colorDeletePermanentlyButton.asFilter(),
                 width: BuildUtils.isWeb ? 18 : 20,
                 height: BuildUtils.isWeb ? 18 : 20,
                 fit: BoxFit.fill),

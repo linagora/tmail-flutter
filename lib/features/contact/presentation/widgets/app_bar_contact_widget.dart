@@ -24,11 +24,12 @@ class AppBarContactWidget extends StatelessWidget {
       Positioned(
         left: 0,
         child: buildIconWeb(
-            icon: SvgPicture.asset(_imagePaths.icCloseComposer,
-                color: AppColor.colorCloseButton,
-                width: 24,
-                height: 24,
-                fit: BoxFit.fill),
+            icon: SvgPicture.asset(
+              _imagePaths.icCloseComposer,
+              colorFilter: AppColor.colorCloseButton.asFilter(),
+              width: 24,
+              height: 24,
+              fit: BoxFit.fill),
             minSize: 25,
             iconSize: 25,
             iconPadding: const EdgeInsets.all(5),

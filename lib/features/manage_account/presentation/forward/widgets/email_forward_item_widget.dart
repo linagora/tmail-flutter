@@ -31,7 +31,7 @@ class EmailForwardItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _imagePaths = Get.find<ImagePaths>();
+    final imagePaths = Get.find<ImagePaths>();
 
     return Padding(
       padding: const EdgeInsets.only(top: 4),
@@ -53,7 +53,7 @@ class EmailForwardItemWidget extends StatelessWidget {
                 recipientForward.selectMode == SelectMode.ACTIVE ? 12 : 0))
             ),
             child: Row(children: [
-              _buildAvatarIcon(_imagePaths),
+              _buildAvatarIcon(imagePaths),
               const SizedBox(width: 12),
               Expanded(child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -92,7 +92,7 @@ class EmailForwardItemWidget extends StatelessWidget {
                 buildIconWeb(
                   iconSize: 30,
                   splashRadius: 20,
-                  icon: SvgPicture.asset(_imagePaths.icDeleteRecipient),
+                  icon: SvgPicture.asset(imagePaths.icDeleteRecipient),
                   onTap: () => onDeleteRecipientCallback?.call(recipientForward)
                 )
             ]),

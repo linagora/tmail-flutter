@@ -82,7 +82,10 @@ class UserInformationWidgetBuilder extends StatelessWidget {
           Transform(
             transform: Matrix4.translationValues(14.0, 0.0, 0.0),
             child: IconButton(
-              icon: SvgPicture.asset(_imagePaths.icCollapseFolder, fit: BoxFit.fill, color: AppColor.colorCollapseMailbox),
+              icon: SvgPicture.asset(
+                _imagePaths.icCollapseFolder,
+                fit: BoxFit.fill,
+                colorFilter: AppColor.colorCollapseMailbox.asFilter()),
               onPressed: () => {}))
       ]),
     );

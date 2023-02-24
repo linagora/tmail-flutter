@@ -24,9 +24,7 @@ class LoginUrlDataSourceImpl implements LoginUrlDataSource {
             recentLoginUrl.url,
             recentLoginUrl.toRecentLoginUrlCache());
       }
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -46,9 +44,7 @@ class LoginUrlDataSourceImpl implements LoginUrlDataSource {
           : listRecentUrl;
 
       return newListRecentSUrl;
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   bool _filterRecentUrlCache(RecentLoginUrlCache recentLoginUrlCache, String? pattern) {

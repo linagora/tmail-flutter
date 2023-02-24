@@ -221,7 +221,7 @@ class MailboxView extends GetWidget<MailboxController>
                         iconPadding: EdgeInsets.zero,
                         icon: SvgPicture.asset(
                           _imagePaths.icSearchBar,
-                          color: AppColor.colorTextButton,
+                          colorFilter: AppColor.colorTextButton.asFilter(),
                           fit: BoxFit.fill
                         ),
                         tooltip: AppLocalizations.of(context).searchForMailboxes,
@@ -232,7 +232,10 @@ class MailboxView extends GetWidget<MailboxController>
                           iconSize: 20,
                           iconPadding: EdgeInsets.zero,
                           splashRadius: 15,
-                          icon: SvgPicture.asset(_imagePaths.icAddNewFolder, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                          icon: SvgPicture.asset(
+                            _imagePaths.icAddNewFolder,
+                            colorFilter: AppColor.colorTextButton.asFilter(),
+                            fit: BoxFit.fill),
                           tooltip: AppLocalizations.of(context).new_mailbox,
                           onTap: () => controller.goToCreateNewMailboxView(context)),
                     ],
@@ -283,7 +286,8 @@ class MailboxView extends GetWidget<MailboxController>
                   categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
                     ? _imagePaths.icExpandFolder
                     : _imagePaths.icCollapseFolder,
-                  color: AppColor.primaryColor, fit: BoxFit.fill),
+                  colorFilter: AppColor.primaryColor.asFilter(),
+                  fit: BoxFit.fill),
               tooltip: AppLocalizations.of(context).collapse,
               onTap: () => controller.toggleMailboxCategories(categories)),
           Expanded(child: Text(categories.getTitle(context),

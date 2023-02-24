@@ -1,4 +1,5 @@
 
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -24,7 +25,7 @@ mixin PopupMenuWidgetMixin {
               width: iconSize ?? 20,
               height: iconSize ?? 20,
               fit: BoxFit.fill,
-              color: colorIcon
+              colorFilter: colorIcon.asFilter()
             ),
             const SizedBox(width: 12),
             Expanded(child: Text(

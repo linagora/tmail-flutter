@@ -26,10 +26,10 @@ mixin MessageDialogActionMixin {
         Color? cancelButtonColor,
       }
   ) {
-    final _responsiveUtils = Get.find<ResponsiveUtils>();
-    final _imagePaths = Get.find<ImagePaths>();
+    final responsiveUtils = Get.find<ResponsiveUtils>();
+    final imagePaths = Get.find<ImagePaths>();
 
-    if (_responsiveUtils.isMobile(context)) {
+    if (responsiveUtils.isMobile(context)) {
       if (showAsBottomSheet) {
         showModalBottomSheet(
             context: context,
@@ -38,13 +38,13 @@ mixin MessageDialogActionMixin {
             backgroundColor: Colors.transparent,
             enableDrag: true,
             builder: (BuildContext context) => PointerInterceptor(
-              child: (ConfirmDialogBuilder(_imagePaths, showAsBottomSheet: true)
+              child: (ConfirmDialogBuilder(imagePaths, showAsBottomSheet: true)
                 ..key(const Key('confirm_dialog_action'))
                 ..title(title ?? '')
                 ..content(message)
                 ..addIcon(icon)
                 ..margin(const EdgeInsets.symmetric(vertical: 42, horizontal: 16))
-                ..widthDialog(_responsiveUtils.getSizeScreenWidth(context))
+                ..widthDialog(responsiveUtils.getSizeScreenWidth(context))
                 ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
                 ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
                 ..paddingTitle(icon != null ? const EdgeInsets.only(top: 24) : EdgeInsets.zero)
@@ -76,7 +76,7 @@ mixin MessageDialogActionMixin {
       showDialog(
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
+          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
               ..key(const Key('confirm_dialog_action'))
               ..title(title ?? '')
               ..content(message)

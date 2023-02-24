@@ -134,7 +134,7 @@ class SettingsView extends GetWidget<SettingsController> {
                       _imagePaths.icBack,
                       width: 18,
                       height: 18,
-                      color: AppColor.colorTextButton,
+                      colorFilter: AppColor.colorTextButton.asFilter(),
                       fit: BoxFit.fill),
                   Container(
                     margin: const EdgeInsets.only(left: 8),

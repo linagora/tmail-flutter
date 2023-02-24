@@ -7,7 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/http/http_client.dart' as JmapHttpClient;
+import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/mdn_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
@@ -73,25 +73,25 @@ class NetworkBindings extends Bindings {
   }
 
   void _bindingApi() {
-    Get.put(JmapHttpClient.HttpClient(Get.find<Dio>()));
+    Get.put(HttpClient(Get.find<Dio>()));
     Get.put(DownloadClient(Get.find<DioClient>(), Get.find<CompressFileUtils>()));
     Get.put(DownloadManager(Get.find<DownloadClient>()));
-    Get.put(MailboxAPI(Get.find<JmapHttpClient.HttpClient>()));
-    Get.put(SessionAPI(Get.find<JmapHttpClient.HttpClient>()));
-    Get.put(ThreadAPI(Get.find<JmapHttpClient.HttpClient>()));
+    Get.put(MailboxAPI(Get.find<HttpClient>()));
+    Get.put(SessionAPI(Get.find<HttpClient>()));
+    Get.put(ThreadAPI(Get.find<HttpClient>()));
     Get.put(EmailAPI(
-      Get.find<JmapHttpClient.HttpClient>(),
+      Get.find<HttpClient>(),
       Get.find<DownloadManager>(),
       Get.find<DioClient>()));
-    Get.put(RuleFilterAPI(Get.find<JmapHttpClient.HttpClient>()));
-    Get.put(VacationAPI(Get.find<JmapHttpClient.HttpClient>()));
-    Get.put(ContactAPI(Get.find<JmapHttpClient.HttpClient>()));
-    Get.put(IdentityAPI(Get.find<JmapHttpClient.HttpClient>()));
-    Get.put(MdnAPI(Get.find<JmapHttpClient.HttpClient>()));
-    Get.put(ForwardingAPI(Get.find<JmapHttpClient.HttpClient>()));
-    Get.put(QuotasAPI(Get.find<JmapHttpClient.HttpClient>()));
-    Get.put(FcmApi(Get.find<JmapHttpClient.HttpClient>()));
-    Get.put(SpamReportApi(Get.find<JmapHttpClient.HttpClient>()));
+    Get.put(RuleFilterAPI(Get.find<HttpClient>()));
+    Get.put(VacationAPI(Get.find<HttpClient>()));
+    Get.put(ContactAPI(Get.find<HttpClient>()));
+    Get.put(IdentityAPI(Get.find<HttpClient>()));
+    Get.put(MdnAPI(Get.find<HttpClient>()));
+    Get.put(ForwardingAPI(Get.find<HttpClient>()));
+    Get.put(QuotasAPI(Get.find<HttpClient>()));
+    Get.put(FcmApi(Get.find<HttpClient>()));
+    Get.put(SpamReportApi(Get.find<HttpClient>()));
   }
 
   void _bindingConnection() {

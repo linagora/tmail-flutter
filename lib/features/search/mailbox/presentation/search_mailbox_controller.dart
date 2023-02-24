@@ -348,7 +348,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
           imagePaths.icFolderMailbox,
           width: 24,
           height: 24,
-          color: Colors.white,
+          colorFilter: Colors.white.asFilter(),
           fit: BoxFit.fill),
         backgroundColor: AppColor.toastSuccessBackgroundColor,
         textColor: Colors.white,
@@ -426,14 +426,14 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     MailboxSubscribeState subscribeState,
     MailboxSubscribeAction subscribeAction
   ) {
-    final _accountId = dashboardController.accountId.value;
-    if (_accountId != null) {
+    final accountId = dashboardController.accountId.value;
+    if (accountId != null) {
       final subscribeRequest = generateSubscribeRequest(mailboxId, subscribeState, subscribeAction);
 
       if (subscribeRequest is SubscribeMultipleMailboxRequest) {
-        consumeState(_subscribeMultipleMailboxInteractor.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMultipleMailboxInteractor.execute(accountId, subscribeRequest));
       } else if (subscribeRequest is SubscribeMailboxRequest) {
-        consumeState(_subscribeMailboxInteractor.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMailboxInteractor.execute(accountId, subscribeRequest));
       }
     }
   }
@@ -524,7 +524,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
           imagePaths.icFolderMailbox,
           width: 24,
           height: 24,
-          color: Colors.white,
+          colorFilter: Colors.white.asFilter(),
           fit: BoxFit.fill
         ),
         backgroundColor: AppColor.toastSuccessBackgroundColor,
@@ -540,8 +540,8 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     MailboxId mailboxIdSubscribed,
     {List<MailboxId>? listDescendantMailboxIds}
   ) {
-    final _accountId = dashboardController.accountId.value;
-    if (_accountId != null) {
+    final accountId = dashboardController.accountId.value;
+    if (accountId != null) {
       SubscribeRequest? subscribeRequest;
 
       if (listDescendantMailboxIds != null) {
@@ -560,9 +560,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       }
 
       if (subscribeRequest is SubscribeMultipleMailboxRequest) {
-        consumeState(_subscribeMultipleMailboxInteractor.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMultipleMailboxInteractor.execute(accountId, subscribeRequest));
       } else if (subscribeRequest is SubscribeMailboxRequest) {
-        consumeState(_subscribeMailboxInteractor.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMailboxInteractor.execute(accountId, subscribeRequest));
       }
     }
   }
@@ -571,8 +571,8 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     MailboxId mailboxIdSubscribed,
     {List<MailboxId>? listDescendantMailboxIds}
   ) {
-    final _accountId = dashboardController.accountId.value;
-    if (_accountId != null) {
+    final accountId = dashboardController.accountId.value;
+    if (accountId != null) {
       SubscribeRequest? subscribeRequest;
 
       if (listDescendantMailboxIds != null) {
@@ -591,9 +591,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       }
 
       if (subscribeRequest is SubscribeMultipleMailboxRequest) {
-        consumeState(_subscribeMultipleMailboxInteractor.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMultipleMailboxInteractor.execute(accountId, subscribeRequest));
       } else if (subscribeRequest is SubscribeMailboxRequest) {
-        consumeState(_subscribeMailboxInteractor.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMailboxInteractor.execute(accountId, subscribeRequest));
       }
     }
   }

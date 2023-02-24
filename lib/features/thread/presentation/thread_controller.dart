@@ -61,7 +61,6 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -207,10 +206,8 @@ class ThreadController extends BaseController with EmailActionController {
     });
 
     ever(searchController.searchState, (searchState) {
-      if (searchState is SearchState) {
-        if (searchState.searchStatus == SearchStatus.ACTIVE) {
-          cancelSelectEmail();
-        }
+      if (searchState.searchStatus == SearchStatus.ACTIVE) {
+        cancelSelectEmail();
       }
     });
 
@@ -278,49 +275,47 @@ class ThreadController extends BaseController with EmailActionController {
     });
 
     ever(mailboxDashBoardController.viewState, (viewState) {
-      if (viewState is Either) {
-        viewState.map((success) {
-          if (success is MarkAsEmailReadSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is MoveToMailboxSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is MarkAsStarEmailSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is DeleteEmailPermanentlySuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is SaveEmailAsDraftsSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is RemoveEmailDraftsSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is SendEmailSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is UpdateEmailDraftsSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is MarkAsMailboxReadAllSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is MarkAsStarMultipleEmailAllSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is MarkAsMultipleEmailReadAllSuccess) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-            _refreshEmailChanges(currentEmailState: success.currentEmailState);
-          } else if (success is EmptyTrashFolderSuccess) {
-            refreshAllEmail();
-          }
-        });
-      }
+      viewState.map((success) {
+        if (success is MarkAsEmailReadSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is MoveToMailboxSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is MarkAsStarEmailSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is DeleteEmailPermanentlySuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is SaveEmailAsDraftsSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is RemoveEmailDraftsSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is SendEmailSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is UpdateEmailDraftsSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is MarkAsMailboxReadAllSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is MarkAsStarMultipleEmailAllSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is MarkAsMultipleEmailReadAllSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
+        } else if (success is EmptyTrashFolderSuccess) {
+          refreshAllEmail();
+        }
+      });
     });
   }
 

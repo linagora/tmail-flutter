@@ -28,9 +28,7 @@ class LoginUsernameDataSourceImpl implements LoginUsernameDataSource {
       return listValidRecentUsername.length > newLimit
           ? listValidRecentUsername.sublist(0, newLimit)
           : listValidRecentUsername;
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -44,9 +42,7 @@ class LoginUsernameDataSourceImpl implements LoginUsernameDataSource {
         await _recentLoginUsernameCacheClient.insertItem(recentLoginUsername.username,
             recentLoginUsername.toRecentLoginUsernameCache());
       }
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   bool _filterRecentLoginUsernameCache(

@@ -156,7 +156,7 @@ class QuickSearchInputForm<T, R> extends FormField<String> {
           });
 
   @override
-  _TypeAheadFormFieldState<T, R> createState() => _TypeAheadFormFieldState<T, R>();
+  FormFieldState<String> createState() => _TypeAheadFormFieldState<T, R>();
 }
 
 class _TypeAheadFormFieldState<T, R> extends FormFieldState<String> {
@@ -567,7 +567,7 @@ class TypeAheadFieldQuickSearch<T, R> extends StatefulWidget {
         super(key: key);
 
   @override
-  _TypeAheadFieldQuickSearchState<T, R> createState() => _TypeAheadFieldQuickSearchState<T, R>();
+  State<TypeAheadFieldQuickSearch<T, R>> createState() => _TypeAheadFieldQuickSearchState<T, R>();
 }
 
 class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSearch<T, R>>
@@ -678,13 +678,9 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
   void didChangeDependencies() {
     super.didChangeDependencies();
     ScrollableState? scrollableState = Scrollable.of(context);
-    if (scrollableState != null) {
-      // The TypeAheadFieldQuickSearch is inside a scrollable widget
-      _scrollPosition = scrollableState.position;
-
-      _scrollPosition!.removeListener(_scrollResizeListener);
-      _scrollPosition!.isScrollingNotifier.addListener(_scrollResizeListener);
-    }
+    _scrollPosition = scrollableState.position;
+    _scrollPosition!.removeListener(_scrollResizeListener);
+    _scrollPosition!.isScrollingNotifier.addListener(_scrollResizeListener);
   }
 
   void _scrollResizeListener() {
@@ -1176,7 +1172,6 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
             return Padding(
               padding: const EdgeInsets.only(right: 8, bottom: kIsWeb ? 8 : 0),
               child: InkWell(
-                child: widget.actionButtonBuilder!(context, action),
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
                 onTap: () {
                   if (widget.buttonActionCallback != null) {
@@ -1184,6 +1179,7 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
                     invalidateSuggestions();
                   }
                 },
+                child: widget.actionButtonBuilder!(context, action),
               ),
             );
           } else {
@@ -1257,7 +1253,6 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
             return Padding(
               padding: const EdgeInsets.only(right: 8, bottom: kIsWeb ? 8 : 0),
               child: InkWell(
-                child: widget.actionButtonBuilder!(context, action),
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
                 onTap: () {
                   if (widget.buttonActionCallback != null) {
@@ -1265,6 +1260,7 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
                     invalidateSuggestions();
                   }
                 },
+                child: widget.actionButtonBuilder!(context, action),
               ),
             );
           } else {
@@ -1680,7 +1676,7 @@ class _SuggestionsBox {
     if (isOpened) return;
     assert(_overlayEntry != null);
     resize();
-    Overlay.of(context)!.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
     isOpened = true;
   }
 
@@ -1726,7 +1722,7 @@ class _SuggestionsBox {
         await Future<void>.delayed(const Duration(milliseconds: 170));
         timer += 170;
 
-        if (widgetMounted &&
+        if (widgetMounted && context.mounted &&
             (MediaQuery.of(context).viewInsets != initial ||
                 _findRootMediaQuery() != initialRootMediaQuery)) {
           return true;

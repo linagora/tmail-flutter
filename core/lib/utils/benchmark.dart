@@ -33,4 +33,4 @@ class _Benchmark {
   }
 }
 
-final _Benchmark bench = _Benchmark();
+final bench = _Benchmark();

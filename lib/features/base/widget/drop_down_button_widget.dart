@@ -3,12 +3,12 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:enough_html_editor/enough_html_editor.dart' as enough_html_editor;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:rich_text_composer/rich_text_composer.dart' as rich_text_composer;
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/extensions/locale_extension.dart';
@@ -54,7 +54,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _imagePaths = Get.find<ImagePaths>();
+    final imagePaths = Get.find<ImagePaths>();
 
     return DropdownButtonHideUnderline(
       child: PointerInterceptor(
@@ -91,7 +91,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                             overflow: CommonTextStyle.defaultTextOverFlow,
                           )),
                           if (supportSelectionIcon && item == itemSelected)
-                            SvgPicture.asset(_imagePaths.icChecked,
+                            SvgPicture.asset(imagePaths.icChecked,
                               width: sizeIconChecked,
                               height: sizeIconChecked,
                               fit: BoxFit.fill)
@@ -125,13 +125,13 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                       softWrap: CommonTextStyle.defaultSoftWrap,
                       overflow: CommonTextStyle.defaultTextOverFlow,
                     )),
-                    iconArrowDown ?? SvgPicture.asset(_imagePaths.icDropDown)
+                    iconArrowDown ?? SvgPicture.asset(imagePaths.icDropDown)
                   ]),
                 ),
               )
             : null,
           onChanged: onChanged,
-          icon: iconArrowDown ?? SvgPicture.asset(_imagePaths.icDropDown),
+          icon: iconArrowDown ?? SvgPicture.asset(imagePaths.icDropDown),
           buttonPadding: const EdgeInsets.symmetric(horizontal: 12),
           buttonDecoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radiusButton),
@@ -173,7 +173,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     if (item is FontNameType) {
       return item.fontFamily;
     }
-    if (item is enough_html_editor.SafeFont) {
+    if (item is rich_text_composer.SafeFont) {
       return item.name;
     }
     if (item is rule_condition.Field) {

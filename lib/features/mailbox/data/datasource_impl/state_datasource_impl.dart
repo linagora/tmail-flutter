@@ -19,9 +19,7 @@ class StateDataSourceImpl extends StateDataSource {
     return Future.sync(() async {
       final stateCache = await _stateCacheClient.getItem(stateType.value);
       return stateCache?.toState();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -33,8 +31,6 @@ class StateDataSourceImpl extends StateDataSource {
       } else {
         return await _stateCacheClient.insertItem(stateCache.type.value, stateCache);
       }
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

@@ -179,7 +179,7 @@ class VacationController extends BaseController {
                       onPrimary: Colors.white,
                       onSurface: Colors.black),
                   textButtonTheme: TextButtonThemeData(
-                      style: TextButton.styleFrom(primary: AppColor.primaryColor))),
+                      style: TextButton.styleFrom(foregroundColor: AppColor.primaryColor))),
               child: child!);
         }
     );
@@ -207,7 +207,7 @@ class VacationController extends BaseController {
               onPrimary: Colors.white,
               onSurface: Colors.black),
             textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(primary: AppColor.primaryColor))),
+              style: TextButton.styleFrom(foregroundColor: AppColor.primaryColor))),
           child: MediaQuery(
               data: const MediaQueryData(alwaysUse24HourFormat: false),
               child: child!),
@@ -270,7 +270,7 @@ class VacationController extends BaseController {
 
       final messagePlainText = messageTextController.text;
       final messageHtmlText = (BuildUtils.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
-      if (messagePlainText.isEmpty && messageHtmlText.isEmpty) {
+      if (messagePlainText.isEmpty && messageHtmlText.isEmpty && context.mounted) {
         _appToast.showToastWithIcon(
             context,
             bgColor: AppColor.toastErrorBackgroundColor,

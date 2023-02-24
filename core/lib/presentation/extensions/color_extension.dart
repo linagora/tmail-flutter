@@ -1,5 +1,3 @@
-import 'dart:ui' show Color;
-
 import 'package:flutter/material.dart';
 
 extension AppColor on Color {
@@ -197,3 +195,12 @@ extension AppColor on Color {
       .toUpperCase()}';
 }
 
+extension ColorNullableExtension on Color? {
+  ColorFilter? asFilter({BlendMode? blendMode}) {
+    if (this == null) {
+      return null;
+    } else {
+      return ColorFilter.mode(this!, blendMode ?? BlendMode.srcIn);
+    }
+  }
+}

@@ -82,7 +82,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         splashRadius: SearchMailboxUtils.getIconSplashRadius(context, controller.responsiveUtils),
         icon: SvgPicture.asset(
           controller.imagePaths.icBack,
-          color: AppColor.colorTextButton,
+          colorFilter: AppColor.colorTextButton.asFilter(),
           fit: BoxFit.fill
         ),
         tooltip: AppLocalizations.of(context).back,
@@ -104,7 +104,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
               iconPadding: EdgeInsets.zero,
               icon: SvgPicture.asset(
                 controller.imagePaths.icSearchBar,
-                color: AppColor.colorTextButton,
+                colorFilter: AppColor.colorTextButton.asFilter(),
                 fit: BoxFit.fill
               ),
               tooltip: AppLocalizations.of(context).search,
@@ -229,7 +229,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
                 width: 24,
                 height: 24,
                 fit: BoxFit.fill,
-                color: contextMenuItem.action.getColorContextMenuIcon()
+                colorFilter: contextMenuItem.action.getColorContextMenuIcon().asFilter()
               ),
               const SizedBox(width: 12),
               Expanded(child: Text(

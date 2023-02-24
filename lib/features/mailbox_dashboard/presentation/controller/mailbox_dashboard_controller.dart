@@ -573,7 +573,7 @@ class MailboxDashBoardController extends ReloadableController {
               _imagePaths.icMailboxDrafts,
               width: 24,
               height: 24,
-              color: Colors.white,
+              colorFilter: Colors.white.asFilter(),
               fit: BoxFit.fill),
           backgroundColor: AppColor.toastSuccessBackgroundColor,
           textColor: Colors.white,
@@ -606,7 +606,7 @@ class MailboxDashBoardController extends ReloadableController {
               _imagePaths.icFolderMailbox,
               width: 24,
               height: 24,
-              color: Colors.white,
+              colorFilter: Colors.white.asFilter(),
               fit: BoxFit.fill),
           backgroundColor: AppColor.toastSuccessBackgroundColor,
           textColor: Colors.white,
@@ -939,7 +939,7 @@ class MailboxDashBoardController extends ReloadableController {
               _imagePaths.icFolderMailbox,
               width: 24,
               height: 24,
-              color: Colors.white,
+              colorFilter: Colors.white.asFilter(),
               fit: BoxFit.fill),
           backgroundColor: AppColor.toastSuccessBackgroundColor,
           textColor: Colors.white,
@@ -1553,8 +1553,8 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void storeSpamReportStateAction() {
-    final _storeSpamReportState = enableSpamReport ? SpamReportState.disabled : SpamReportState.enabled;
-    spamReportController.storeSpamReportStateAction(_storeSpamReportState);
+    final storeSpamReportState = enableSpamReport ? SpamReportState.disabled : SpamReportState.enabled;
+    spamReportController.storeSpamReportStateAction(storeSpamReportState);
   }
 
   void onDragMailbox(bool isDragging) {

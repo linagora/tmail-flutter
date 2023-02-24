@@ -536,7 +536,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         child: Row(
             children: [
               Padding(padding: const EdgeInsets.only(left: 5), child: buildIconWeb(
-                  icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                  icon: SvgPicture.asset(
+                    _imagePaths.icBack,
+                    colorFilter: AppColor.colorTextButton.asFilter(),
+                    fit: BoxFit.fill),
                   onTap: () => controller.disableSearch(context))),
               Expanded(child: (SearchAppBarWidget(
                       _imagePaths,

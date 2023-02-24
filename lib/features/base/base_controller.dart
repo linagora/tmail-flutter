@@ -78,9 +78,9 @@ abstract class BaseController extends GetxController
       return;
     }
 
-    final _appToast = Get.find<AppToast>();
-    final _imagePaths = Get.find<ImagePaths>();
-    final _responsiveUtils = Get.find<ResponsiveUtils>();
+    final appToast = Get.find<AppToast>();
+    final imagePaths = Get.find<ImagePaths>();
+    final responsiveUtils = Get.find<ResponsiveUtils>();
 
     String messageError = '';
     if (error is MethodLevelErrors) {
@@ -92,19 +92,19 @@ abstract class BaseController extends GetxController
     }
 
     if (messageError.isNotEmpty && currentContext != null && currentOverlayContext != null) {
-      _appToast.showBottomToast(
+      appToast.showBottomToast(
         currentOverlayContext!,
         messageError,
         leadingIcon: SvgPicture.asset(
-          _imagePaths.icNotConnection,
+          imagePaths.icNotConnection,
           width: 24,
           height: 24,
-          color: Colors.white,
+          colorFilter: Colors.white.asFilter(),
           fit: BoxFit.fill),
         backgroundColor: AppColor.toastErrorBackgroundColor,
         textColor: Colors.white,
         textActionColor: Colors.white,
-        maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
+        maxWidth: responsiveUtils.getMaxWidthToast(currentContext!));
     }
   }
 

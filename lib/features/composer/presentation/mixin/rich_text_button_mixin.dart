@@ -96,9 +96,9 @@ mixin RichTextButtonMixin {
     return buildIconWeb(
       icon: SvgPicture.asset(
           path,
-          color: isSelected == true
-              ? Colors.black.withOpacity(opacity)
-              : AppColor.colorDefaultRichTextButton.withOpacity(opacity),
+          colorFilter: isSelected == true
+            ? Colors.black.withOpacity(opacity).asFilter()
+            : AppColor.colorDefaultRichTextButton.withOpacity(opacity).asFilter(),
           fit: BoxFit.fill),
       iconPadding: const EdgeInsets.all(4),
       colorFocus: Colors.white,
@@ -120,12 +120,14 @@ mixin RichTextButtonMixin {
 
     return tooltip?.isNotEmpty == true
       ? Tooltip(
-          child: SvgPicture.asset(path,
-            color: newColor?.withOpacity(opacity),
-            fit: BoxFit.fill),
-          message: tooltip)
-      : SvgPicture.asset(path,
-          color: newColor?.withOpacity(opacity),
+          message: tooltip,
+          child: SvgPicture.asset(
+            path,
+            colorFilter: newColor?.withOpacity(opacity).asFilter(),
+            fit: BoxFit.fill))
+      : SvgPicture.asset(
+          path,
+          colorFilter: newColor?.withOpacity(opacity).asFilter(),
           fit: BoxFit.fill);
   }
 
@@ -138,9 +140,10 @@ mixin RichTextButtonMixin {
         ? AppColor.colorDefaultRichTextButton
         : color;
 
-    return SvgPicture.asset(path,
-        color: newColor?.withOpacity(opacity),
-        fit: BoxFit.fill);
+    return SvgPicture.asset(
+      path,
+      colorFilter: newColor?.withOpacity(opacity).asFilter(),
+      fit: BoxFit.fill);
   }
 
   Widget buildIconColorBackgroundTextWithoutTooltip({
@@ -166,10 +169,10 @@ mixin RichTextButtonMixin {
         ? AppColor.colorDefaultRichTextButton
         : colorSelected;
     return Tooltip(
+      message: tooltip,
       child: Icon(iconData,
           color: (newColor ?? AppColor.colorDefaultRichTextButton).withOpacity(opacity),
           size: 20),
-      message: tooltip,
     );
   }
 
@@ -223,9 +226,10 @@ mixin RichTextButtonMixin {
       DropDownMenuHeaderStyleWidget(
           icon: buildWrapIconStyleText(
               isSelected: richTextController.isMenuHeaderStyleOpen,
-              icon: SvgPicture.asset(RichTextStyleType.headerStyle.getIcon(_imagePaths),
-                  color: AppColor.colorDefaultRichTextButton,
-                  fit: BoxFit.fill),
+              icon: SvgPicture.asset(
+                RichTextStyleType.headerStyle.getIcon(_imagePaths),
+                colorFilter: AppColor.colorDefaultRichTextButton.asFilter(),
+                fit: BoxFit.fill),
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
               tooltip: RichTextStyleType.headerStyle.getTooltipButton(context)
           ),
