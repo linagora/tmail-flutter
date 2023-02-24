@@ -31,12 +31,15 @@ mixin MailboxWidgetMixin {
     PresentationMailbox mailbox,
     bool spamReportEnabled
   ) {
+    final _notSupportShowMarkAsRead = mailbox.isDrafts || mailbox.isSent || mailbox.isTrash;
+
     return [
       if (BuildUtils.isWeb)
         MailboxActions.openInNewTab,
       if (mailbox.isSpam)
         _mailboxActionForSpam(spamReportEnabled),
-      MailboxActions.markAsRead
+      if (mailbox.getCountUnReadEmails().isNotEmpty && !_notSupportShowMarkAsRead)
+        MailboxActions.markAsRead
     ];
   }
 
@@ -44,7 +47,8 @@ mixin MailboxWidgetMixin {
     return [
       if (BuildUtils.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
-      MailboxActions.markAsRead,
+      if (mailbox.getCountUnReadEmails().isNotEmpty)
+        MailboxActions.markAsRead,
       MailboxActions.move,
       MailboxActions.rename,
       MailboxActions.delete,
@@ -59,7 +63,7 @@ mixin MailboxWidgetMixin {
     return [
       if (BuildUtils.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
-      if (mailbox.isChildOfTeamMailboxes)
+      if (mailbox.isChildOfTeamMailboxes && mailbox.getCountUnReadEmails().isNotEmpty)
         MailboxActions.markAsRead,
       if (mailbox.isTeamMailboxes)
         if (mailbox.isSubscribedMailbox)
