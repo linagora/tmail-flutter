@@ -15,17 +15,13 @@ class VacationDataSourceImpl extends VacationDataSource {
   Future<List<VacationResponse>> getAllVacationResponse(AccountId accountId) {
     return Future.sync(() async {
       return await _vacationAPI.getAllVacationResponse(accountId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<List<VacationResponse>> updateVacation(AccountId accountId, VacationResponse vacationResponse) {
     return Future.sync(() async {
       return await _vacationAPI.updateVacation(accountId, vacationResponse);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

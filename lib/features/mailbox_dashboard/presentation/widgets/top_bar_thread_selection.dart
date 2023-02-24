@@ -42,7 +42,7 @@ class TopBarThreadSelection {
       buildIconWeb(
           icon: SvgPicture.asset(
               imagePaths.icCloseComposer,
-              color: AppColor.colorTextButton,
+              colorFilter: AppColor.colorTextButton.asFilter(),
               fit: BoxFit.fill),
           tooltip: AppLocalizations.of(context).cancel,
           onTap: onCancelSelection),
@@ -113,9 +113,9 @@ class TopBarThreadSelection {
               canDeletePermanently
                   ? imagePaths.icDeleteComposer
                   : imagePaths.icDelete,
-              color: canDeletePermanently
-                  ? AppColor.colorDeletePermanentlyButton
-                  : AppColor.primaryColor,
+              colorFilter: canDeletePermanently
+                  ? AppColor.colorDeletePermanentlyButton.asFilter()
+                  : AppColor.primaryColor.asFilter(),
               width: 20,
               height: 20,
               fit: BoxFit.fill),

@@ -1,6 +1,5 @@
 
 import 'package:core/core.dart';
-import 'package:enough_html_editor/enough_html_editor.dart' as html_editor_mobile;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -468,7 +467,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
         ),
       );
     } else {
-      return html_editor_mobile.HtmlEditor(
+      return HtmlEditor(
           key: controller.htmlKey,
           minHeight: controller.htmlEditorMinHeight,
           addDefaultSelectionMenuItems: false,

@@ -13,7 +13,6 @@ class LoginTextInputBuilder {
   Key? _key;
   String? _title;
   String? _hintText;
-  String? _labelText;
   String? _prefixText;
   SetErrorString? _setErrorString;
   String? _errorText;
@@ -44,7 +43,6 @@ class LoginTextInputBuilder {
   }
 
   void labelText(String? labelText) {
-    _labelText = labelText;
   }
 
   void prefixText(String? prefixText) {

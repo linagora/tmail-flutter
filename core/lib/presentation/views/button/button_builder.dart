@@ -161,7 +161,7 @@ class ButtonBuilder {
         width: _size ?? 24,
         height: _size ?? 24,
         fit: BoxFit.fill,
-        color: _iconColor));
+        colorFilter: _iconColor.asFilter()));
 
   Widget _buildText() {
     return Text(

@@ -10,7 +10,7 @@ extension OidcConfigurationExtensions on OIDCConfiguration {
       if (AppConfig.domainRedirectUrl.endsWith('/')) {
         return AppConfig.domainRedirectUrl + loginRedirectOidcWeb;
       } else {
-        return AppConfig.domainRedirectUrl + '/' + loginRedirectOidcWeb;
+        return '${AppConfig.domainRedirectUrl}/$loginRedirectOidcWeb';
       }
     } else {
       return redirectOidcMobile;
@@ -22,7 +22,7 @@ extension OidcConfigurationExtensions on OIDCConfiguration {
       if (AppConfig.domainRedirectUrl.endsWith('/')) {
         return AppConfig.domainRedirectUrl + logoutRedirectOidcWeb;
       } else {
-        return AppConfig.domainRedirectUrl + '/' + logoutRedirectOidcWeb;
+        return '${AppConfig.domainRedirectUrl}/$logoutRedirectOidcWeb';
       }
     } else {
       return redirectOidcMobile;

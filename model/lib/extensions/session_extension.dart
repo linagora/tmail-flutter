@@ -21,9 +21,9 @@ extension SessionExtension on Session {
 
   Uri getUploadUri(AccountId accountId) {
     final baseUrl = '${uploadUrl.origin}${uploadUrl.path}';
-    final uploadUriTemplate = UriTemplate('${Uri.decodeFull(baseUrl)}');
+    final uploadUriTemplate = UriTemplate(Uri.decodeFull(baseUrl));
     final uploadUri = uploadUriTemplate.expand({
-      'accountId' : '${accountId.id.value}'
+      'accountId' : accountId.id.value
     });
     log('SessionExtension::getUploadUri(): uploadUri: $uploadUri');
     return Uri.parse(uploadUri);

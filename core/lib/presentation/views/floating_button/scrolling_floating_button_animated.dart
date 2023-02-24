@@ -57,7 +57,7 @@ class ScrollingFloatingButtonAnimated extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ScrollingFloatingButtonAnimatedState createState() =>
+  State<ScrollingFloatingButtonAnimated> createState() =>
       _ScrollingFloatingButtonAnimatedState();
 }
 
@@ -93,10 +93,10 @@ class _ScrollingFloatingButtonAnimatedState
 
   /// Function to add listener for scroll
   void _handleScroll() {
-    ScrollController _scrollController = widget.scrollController!;
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels > widget.limitIndicator! &&
-          _scrollController.position.userScrollDirection ==
+    ScrollController scrollController = widget.scrollController!;
+    scrollController.addListener(() {
+      if (scrollController.position.pixels > widget.limitIndicator! &&
+          scrollController.position.userScrollDirection ==
               ScrollDirection.reverse) {
         if (widget.animateIcon!) _animationController.forward();
         if (mounted) {
@@ -104,8 +104,8 @@ class _ScrollingFloatingButtonAnimatedState
             _onTop = false;
           });
         }
-      } else if (_scrollController.position.pixels <= widget.limitIndicator! &&
-          _scrollController.position.userScrollDirection ==
+      } else if (scrollController.position.pixels <= widget.limitIndicator! &&
+          scrollController.position.userScrollDirection ==
               ScrollDirection.forward) {
         if (widget.animateIcon!) _animationController.reverse();
         if (mounted) {
@@ -145,14 +145,14 @@ class _ScrollingFloatingButtonAnimatedState
                 Container(
                   padding: EdgeInsets.only(left: 16, right: _onTop ? 10 : 16),
                   child: AnimatedBuilder(
-                      child: widget.icon!,
                       animation: _animationController,
-                      builder: (BuildContext context, Widget? _widget) {
+                      builder: (BuildContext context, Widget? widget) {
                         return Transform.rotate(
                           angle: (_animationController.value * 3 * math.pi) / 180,
-                          child: _widget!,
+                          child: widget!,
                         );
-                      }),
+                      },
+                      child: widget.icon!),
                 ),
                 ...(_onTop
                     ? [

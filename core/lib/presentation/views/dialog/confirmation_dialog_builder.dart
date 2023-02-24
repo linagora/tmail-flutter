@@ -166,7 +166,7 @@ class ConfirmDialogBuilder {
         height: _heightDialog,
         decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: const BorderRadius.all(Radius.circular(16))),
+            borderRadius: BorderRadius.all(Radius.circular(16))),
         margin: _margin,
         child: Wrap(children: [
           if (_onCloseButtonAction != null)

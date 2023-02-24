@@ -1,5 +1,6 @@
-import 'package:core/core.dart';
-import 'package:enough_html_editor/enough_html_editor.dart';
+
+import 'package:core/utils/app_logger.dart';
+import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';

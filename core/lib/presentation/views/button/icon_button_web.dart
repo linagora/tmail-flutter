@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 typedef IconWebCallback = void Function();
 typedef IconWebHasPositionCallback = void Function(RelativeRect);
 typedef OnTapIconButtonCallbackAction = void Function();
-typedef OnTapDownIconButtonCallbackAction = void Function(TapDownDetails TapDetails);
+typedef OnTapDownIconButtonCallbackAction = void Function(TapDownDetails tapDetails);
 
 Widget buildIconWeb({
   required Widget icon,
@@ -51,7 +51,7 @@ Widget buildSVGIconButton({
       width: iconSize,
       height: iconSize,
       fit: BoxFit.fill,
-      color: iconColor,
+      colorFilter: iconColor.asFilter(),
     ),
   );
 
@@ -107,15 +107,20 @@ Widget buildTextCircleButton(String text, {
       shape: const CircleBorder(),
       color: Colors.transparent,
       child: TextButton(
-          child: Text(
-              text,
-              style: textStyle ?? const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.lineItemListColor)),
           style: ButtonStyle(
               overlayColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.colorFocusButton),
               shape: MaterialStateProperty.all(const CircleBorder()),
               padding: MaterialStateProperty.resolveWith<EdgeInsets>((Set<MaterialState> states) => EdgeInsets.zero),
               elevation: MaterialStateProperty.resolveWith<double>((Set<MaterialState> states) => 0)),
-          onPressed: () => onTap?.call()
+          onPressed: () => onTap?.call(),
+          child: Text(
+            text,
+            style: textStyle ?? const TextStyle(
+              fontWeight: FontWeight.normal,
+              fontSize: 15,
+              color: AppColor.lineItemListColor
+            )
+          )
       )
   );
 }

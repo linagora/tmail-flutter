@@ -11,7 +11,7 @@ extension URLExtension on String {
       } else if (startsWith(prefixUrlHttp)) {
         return kReleaseMode ? replaceAll(prefixUrlHttp, prefixUrlHttps) : this;
       } else {
-        return '$prefixUrlHttps${this}';
+        return '$prefixUrlHttps$this';
       }
     }
     return '';

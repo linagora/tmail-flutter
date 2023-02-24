@@ -40,12 +40,12 @@ class SpamReportApi {
           .build()
           .execute();
 
-    final _mailboxResponse = result
+    final mailboxResponse = result
         .parse<GetMailboxResponse>(getMailboxInvocation.methodCallId, GetMailboxResponse.deserialize);
 
      return Future.sync(() async {
-      final _unreadSpamMailbox = _mailboxResponse?.list.first;
-      return UnreadSpamEmailsResponse(unreadSpamMailbox: _unreadSpamMailbox);
+      final unreadSpamMailbox = mailboxResponse?.list.first;
+      return UnreadSpamEmailsResponse(unreadSpamMailbox: unreadSpamMailbox);
     }).catchError((error) {
       throw error;
     });

@@ -18,8 +18,6 @@ class MdnDataSourceImpl extends MdnDataSource {
   Future<MDN?> sendReceiptToSender(AccountId accountId, SendReceiptToSenderRequest request) {
     return Future.sync(() async {
       return await _mdnAPI.sendReceiptToSender(accountId, request);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

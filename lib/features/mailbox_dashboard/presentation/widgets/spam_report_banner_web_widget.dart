@@ -12,10 +12,10 @@ class SpamReportBannerWebWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-    final _spamReportController = Get.find<SpamReportController>();
-    final _imagePaths = Get.find<ImagePaths>();
+    final spamReportController = Get.find<SpamReportController>();
+    final imagePaths = Get.find<ImagePaths>();
     return Obx(() {
-      if (!_spamReportController.enableSpamReport || _spamReportController.notShowSpamReportBanner) {
+      if (!spamReportController.enableSpamReport || spamReportController.notShowSpamReportBanner) {
         return const SizedBox(
           height: 8,
         );
@@ -36,15 +36,15 @@ class SpamReportBannerWebWidget extends StatelessWidget {
                 Row(
                   children: [
                     SvgPicture.asset(
-                      _imagePaths.icInfoCircleOutline,
+                      imagePaths.icInfoCircleOutline,
                       width: 28,
                       height: 28,
-                      color: AppColor.primaryColor,
+                      colorFilter: AppColor.primaryColor.asFilter(),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       AppLocalizations.of(context).countNewSpamEmails(
-                        _spamReportController.numberOfUnreadSpamEmails),
+                        spamReportController.numberOfUnreadSpamEmails),
                       style: const TextStyle(
                           fontSize: 16,
                           color: AppColor.primaryColor,
@@ -66,7 +66,7 @@ class SpamReportBannerWebWidget extends StatelessWidget {
                         fontWeight: FontWeight.w400),
                     backgroundColor: AppColor.colorCreateNewIdentityButton,
                     radius: 10,
-                    onTap: () => _spamReportController.openMailbox(context),
+                    onTap: () => spamReportController.openMailbox(context),
                   ),
                 ),
               ],
@@ -75,8 +75,8 @@ class SpamReportBannerWebWidget extends StatelessWidget {
               top: 16,
               right: 16,
               child: buildSVGIconButton(
-                icon: _imagePaths.icCloseComposer,
-                onTap: () => _spamReportController.dismissSpamReportAction(),
+                icon: imagePaths.icCloseComposer,
+                onTap: () => spamReportController.dismissSpamReportAction(),
               ),
             ),
           ],

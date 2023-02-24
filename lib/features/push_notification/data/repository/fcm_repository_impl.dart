@@ -88,8 +88,8 @@ class FCMRepositoryImpl extends FCMRepository {
 
   @override
   Future<FCMSubscription> getSubscription() async {
-    final _fcmSubScription = await _fcmDatasource[DataSourceType.local]!.geSubscription();
-    return FCMSubscription(_fcmSubScription.deviceId, _fcmSubScription.subscriptionId);
+    final fcmSubScription = await _fcmDatasource[DataSourceType.local]!.geSubscription();
+    return FCMSubscription(fcmSubScription.deviceId, fcmSubScription.subscriptionId);
   }
   
   @override

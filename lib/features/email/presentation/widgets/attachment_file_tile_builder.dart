@@ -89,7 +89,7 @@ class AttachmentFileTileBuilder extends StatelessWidget{
                         imagePaths.icDownloadAttachment,
                         width: 24,
                         height: 24,
-                        color: AppColor.primaryColor,
+                        colorFilter: AppColor.primaryColor.asFilter(),
                         fit: BoxFit.fill),
                       onTap: () => onDownloadAttachmentFileActionClick?.call(_attachment)
                     ),

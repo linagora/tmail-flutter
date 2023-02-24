@@ -25,9 +25,7 @@ class ContactDataSourceImpl extends ContactDataSource {
           return <DeviceContact>[];
         }
       }
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   List<DeviceContact> _toDeviceContact(contact_service.Contact contact) {

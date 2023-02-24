@@ -53,6 +53,11 @@ dependencies:
 
   mime: 1.0.4
 
+  # flutter_test from sdk depends on collection 1.17.0
+  collection: 1.17.0
+
+  dartz: 0.10.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

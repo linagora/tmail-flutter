@@ -43,6 +43,7 @@ class BackgroundWidgetBuilder extends StatelessWidget {
     return Container(
       color: Colors.transparent,
       padding: const EdgeInsets.symmetric(horizontal: 12),
+      height: MediaQuery.of(context).size.height,
       child: Column(
         mainAxisAlignment: responsiveUtils.isLandscapeMobile(context)
           ? MainAxisAlignment.start
@@ -83,7 +84,6 @@ class BackgroundWidgetBuilder extends StatelessWidget {
             )
         ],
       ),
-      height: MediaQuery.of(context).size.height,
     );
   }
 }

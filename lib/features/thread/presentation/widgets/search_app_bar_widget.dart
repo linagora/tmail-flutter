@@ -104,7 +104,10 @@ class SearchAppBarWidget {
 
  Widget _buildBackButton() {
    return buildIconWeb(
-       icon: SvgPicture.asset(_imagePaths.icBack, color: AppColor.colorTextButton, fit: BoxFit.fill),
+       icon: SvgPicture.asset(
+         _imagePaths.icBack,
+         colorFilter: AppColor.colorTextButton.asFilter(),
+         fit: BoxFit.fill),
        onTap: () {
          _searchInputController?.clear();
          if (_onCancelSearchPressed != null) {

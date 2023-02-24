@@ -21,8 +21,8 @@ class ThemeUtils {
 
   static TextTheme get _textTheme {
     return const TextTheme(
-      bodyText1: TextStyle(color: AppColor.baseTextColor),
-      bodyText2: TextStyle(color: AppColor.baseTextColor),
+      bodyMedium: TextStyle(color: AppColor.baseTextColor),
+      bodySmall: TextStyle(color: AppColor.baseTextColor),
     );
   }
 

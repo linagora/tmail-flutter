@@ -96,10 +96,10 @@ class MailboxVisibilityController extends BaseMailboxController {
 
   @override
   void onReady() {
-    final _session = _accountDashBoardController.sessionCurrent.value;
-    final _accountId = _accountDashBoardController.accountId.value;
-    if(_session != null && _accountId != null) {
-      getAllMailbox(_session, _accountId);
+    final session = _accountDashBoardController.sessionCurrent.value;
+    final accountId = _accountDashBoardController.accountId.value;
+    if(session != null && accountId != null) {
+      getAllMailbox(session, accountId);
     }
     super.onReady();
   }
@@ -111,22 +111,22 @@ class MailboxVisibilityController extends BaseMailboxController {
   }
 
   void subscribeMailbox(MailboxNode mailboxNode) {
-    final _mailboxSubscribeState = mailboxNode.item.isSubscribedMailbox
+    final mailboxSubscribeState = mailboxNode.item.isSubscribedMailbox
       ? MailboxSubscribeState.disabled : MailboxSubscribeState.enabled;
-    final _mailboxSubscribeStateAction = mailboxNode.item.isSubscribedMailbox
+    final mailboxSubscribeStateAction = mailboxNode.item.isSubscribedMailbox
       ? MailboxSubscribeAction.unSubscribe : MailboxSubscribeAction.subscribe;
     _subscribeMailboxAction(
         SubscribeMailboxRequest(
           mailboxNode.item.id,
-          _mailboxSubscribeState,
-          _mailboxSubscribeStateAction,
+          mailboxSubscribeState,
+          mailboxSubscribeStateAction,
         )
     );
   }
 
   void _subscribeMailboxAction(SubscribeMailboxRequest subscribeMailboxRequest) {
-    final _accountId = _accountDashBoardController.accountId.value;
-    if (_accountId != null) {
+    final accountId = _accountDashBoardController.accountId.value;
+    if (accountId != null) {
       final subscribeRequest = generateSubscribeRequest(
         subscribeMailboxRequest.mailboxId,
         subscribeMailboxRequest.subscribeState,
@@ -134,9 +134,9 @@ class MailboxVisibilityController extends BaseMailboxController {
       );
 
       if (subscribeRequest is SubscribeMultipleMailboxRequest) {
-        consumeState(_subscribeMultipleMailboxInteractor!.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMultipleMailboxInteractor!.execute(accountId, subscribeRequest));
       } else if (subscribeRequest is SubscribeMailboxRequest) {
-        consumeState(_subscribeMailboxInteractor!.execute(_accountId, subscribeRequest));
+        consumeState(_subscribeMailboxInteractor!.execute(accountId, subscribeRequest));
       }
     }
   }
@@ -196,11 +196,11 @@ class MailboxVisibilityController extends BaseMailboxController {
   }
 
   void _refreshMailboxChanges(jmap.State? newMailboxState) {
-    final _session = _accountDashBoardController.sessionCurrent.value;
-    final _accountId = _accountDashBoardController.accountId.value;
+    final session = _accountDashBoardController.sessionCurrent.value;
+    final accountId = _accountDashBoardController.accountId.value;
     final mailboxState = newMailboxState ?? currentMailboxState;
-    if (_session != null && _accountId != null && mailboxState != null) {
-      refreshMailboxChanges(_session, _accountId, mailboxState);
+    if (session != null && accountId != null && mailboxState != null) {
+      refreshMailboxChanges(session, accountId, mailboxState);
     }
   }
 
@@ -224,7 +224,7 @@ class MailboxVisibilityController extends BaseMailboxController {
             _imagePaths.icFolderMailbox,
             width: 24,
             height: 24,
-            color: Colors.white,
+            colorFilter: Colors.white.asFilter(),
             fit: BoxFit.fill
           ),
           backgroundColor: AppColor.toastSuccessBackgroundColor,

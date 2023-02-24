@@ -62,9 +62,9 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
               _mailboxNode.expandMode == ExpandMode.EXPAND
                 ? _imagePaths.icExpandFolder
                 : _imagePaths.icCollapseFolder,
-              color: _mailboxNode.item.allowedToDisplay
-                ? AppColor.primaryColor
-                : AppColor.colorIconUnSubscribedMailbox,
+              colorFilter: _mailboxNode.item.allowedToDisplay
+                ? AppColor.primaryColor.asFilter()
+                : AppColor.colorIconUnSubscribedMailbox.asFilter(),
               fit: BoxFit.fill
             ),
             tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND
@@ -120,9 +120,9 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
         _mailboxNode.item.getMailboxIcon(_imagePaths),
         width: 20,
         height: 20,
-        color: _mailboxNode.item.allowedToDisplay
-          ? AppColor.primaryColor
-          : AppColor.colorIconUnSubscribedMailbox,
+        colorFilter: _mailboxNode.item.allowedToDisplay
+          ? AppColor.primaryColor.asFilter()
+          : AppColor.colorIconUnSubscribedMailbox.asFilter(),
         fit: BoxFit.fill
       ),
     );

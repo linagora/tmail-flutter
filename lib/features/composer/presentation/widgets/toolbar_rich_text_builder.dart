@@ -47,9 +47,10 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                 child: DropDownMenuHeaderStyleWidget(
                     icon: buildWrapIconStyleText(
                         isSelected: richTextWebController.isMenuHeaderStyleOpen,
-                        icon: SvgPicture.asset(RichTextStyleType.headerStyle.getIcon(_imagePaths),
-                            color: AppColor.colorDefaultRichTextButton.withOpacity(opacity),
-                            fit: BoxFit.fill),
+                        icon: SvgPicture.asset(
+                          RichTextStyleType.headerStyle.getIcon(_imagePaths),
+                          colorFilter: AppColor.colorDefaultRichTextButton.withOpacity(opacity).asFilter(),
+                          fit: BoxFit.fill),
                         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                         tooltip: RichTextStyleType.headerStyle.getTooltipButton(context)
                     ),
