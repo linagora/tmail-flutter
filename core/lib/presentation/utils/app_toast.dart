@@ -170,7 +170,7 @@ class AppToast {
                   width: 24,
                   height: 24,
                   fit: BoxFit.fill,
-                  color: iconColor),
+                  colorFilter: iconColor.asFilter()),
             if (icon != null)
               const SizedBox(width: 10.0),
             Expanded(child: Text(

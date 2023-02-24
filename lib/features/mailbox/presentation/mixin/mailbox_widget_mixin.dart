@@ -141,7 +141,7 @@ mixin MailboxWidgetMixin {
           Key('${contextMenuItem.action.name}_action'),
           SvgPicture.asset(
             contextMenuItem.action.getContextMenuIcon(imagePaths),
-            color: contextMenuItem.action.getColorContextMenuIcon(),
+            colorFilter: contextMenuItem.action.getColorContextMenuIcon().asFilter(),
             width: 24,
             height: 24
           ),
@@ -294,7 +294,7 @@ mixin MailboxWidgetMixin {
               expandMode == ExpandMode.EXPAND
                 ? imagePaths.icExpandFolder
                 : imagePaths.icCollapseFolder,
-              color: AppColor.primaryColor,
+              colorFilter: AppColor.primaryColor.asFilter(),
               fit: BoxFit.fill
             ),
             tooltip: expandMode == ExpandMode.EXPAND

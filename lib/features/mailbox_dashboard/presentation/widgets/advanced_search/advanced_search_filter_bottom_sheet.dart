@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 Future<void> showAdvancedSearchFilterBottomSheet(BuildContext context) async {
-  final ImagePaths _imagePaths = Get.find<ImagePaths>();
+  final ImagePaths imagePaths = Get.find<ImagePaths>();
 
   await FullScreenActionSheetBuilder(
     context: context,
@@ -19,8 +19,8 @@ Future<void> showAdvancedSearchFilterBottomSheet(BuildContext context) async {
     cancelWidget: Padding(
       padding: const EdgeInsets.only(right: 16),
       child: SvgPicture.asset(
-        _imagePaths.icCloseAdvancedSearch,
-        color: AppColor.colorHintSearchBar,
+        imagePaths.icCloseAdvancedSearch,
+        colorFilter: AppColor.colorHintSearchBar.asFilter(),
         width: 24,
         height: 24,
       ),

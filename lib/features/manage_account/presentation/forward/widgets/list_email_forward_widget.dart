@@ -82,6 +82,7 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
       color: Colors.transparent,
       child: InkWell(
         customBorder: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
+        onTap: controller.selectAllRecipientForward,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           child: Text(
@@ -93,7 +94,6 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
             )
           ),
         ),
-        onTap: controller.selectAllRecipientForward,
       )
     );
   }
@@ -107,7 +107,7 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
           buildIconWeb(
             icon: SvgPicture.asset(
               _imagePaths.icCloseComposer,
-              color: AppColor.colorTextButton,
+              colorFilter: AppColor.colorTextButton.asFilter(),
               fit: BoxFit.fill),
             tooltip: AppLocalizations.of(context).cancel,
             onTap: controller.cancelSelectionMode

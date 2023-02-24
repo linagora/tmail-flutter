@@ -111,7 +111,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               icon: SvgPicture.asset(_imagePaths.icBack,
                   width: 18,
                   height: 18,
-                  color: AppColor.colorTextButton,
+                  colorFilter: AppColor.colorTextButton.asFilter(),
                   fit: BoxFit.fill),
               tooltip: AppLocalizations.of(context).back,
               onTap: () => controller.closeSearchView(context)
@@ -241,9 +241,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     const SizedBox(width: 4),
                     SvgPicture.asset(
                         _imagePaths.icChevronDownOutline,
-                        color: filterSelected
-                            ? AppColor.primaryColor
-                            : AppColor.colorDefaultRichTextButton,
+                        colorFilter: filterSelected
+                          ? AppColor.primaryColor.asFilter()
+                          : AppColor.colorDefaultRichTextButton.asFilter(),
                         fit: BoxFit.fill),
                   ]
               ])
@@ -469,8 +469,11 @@ class SearchEmailView extends GetWidget<SearchEmailController>
     return (EmailActionCupertinoActionSheetActionBuilder(
         const Key('mark_as_spam_or_un_spam_action'),
         SvgPicture.asset(
-            mailboxContain?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
-            width: 28, height: 28, fit: BoxFit.fill, color: AppColor.colorTextButton),
+          mailboxContain?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
+          width: 28,
+          height: 28,
+          fit: BoxFit.fill,
+          colorFilter: AppColor.colorTextButton.asFilter()),
         mailboxContain?.isSpam == true
             ? AppLocalizations.of(context).remove_from_spam
             : AppLocalizations.of(context).mark_as_spam,
@@ -553,9 +556,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 const SizedBox(width: 4),
                 SvgPicture.asset(
                     _imagePaths.icChevronDownOutline,
-                    color: filterSelected
-                        ? AppColor.primaryColor
-                        : AppColor.colorDefaultRichTextButton,
+                    colorFilter: filterSelected
+                      ? AppColor.primaryColor.asFilter()
+                      : AppColor.colorDefaultRichTextButton.asFilter(),
                     fit: BoxFit.fill),
               ])
           ),
@@ -607,9 +610,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 const SizedBox(width: 4),
                 SvgPicture.asset(
                     _imagePaths.icChevronDownOutline,
-                    color: filterSelected
-                        ? AppColor.primaryColor
-                        : AppColor.colorDefaultRichTextButton,
+                    colorFilter: filterSelected
+                      ? AppColor.primaryColor.asFilter()
+                      : AppColor.colorDefaultRichTextButton.asFilter(),
                     fit: BoxFit.fill),
               ])
           ),

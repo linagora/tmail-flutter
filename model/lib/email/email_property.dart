@@ -18,5 +18,5 @@ class EmailProperty {
   static const String htmlBody = 'htmlBody';
   static const String attachments = 'attachments';
   static const String headers = 'headers';
-  static final String headerMdnKey = 'Disposition-Notification-To';
+  static const String headerMdnKey = 'Disposition-Notification-To';
 }

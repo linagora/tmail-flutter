@@ -21,7 +21,7 @@ class OIDCConfiguration with EquatableMixin {
     if (authority.endsWith('/')) {
       return authority + wellKnownOpenId;
     } else {
-      return authority + '/' + wellKnownOpenId;
+      return '$authority/$wellKnownOpenId';
     }
   }
 

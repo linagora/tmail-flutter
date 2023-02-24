@@ -28,12 +28,10 @@ class SpamReportDataSourceImpl extends SpamReportDataSource {
     }
   ) {
      return Future.sync(() async {
-      final _unreadSpamEmailsResponse = await _spamReportApi.getUnreadSpamEmailbox(
+      final unreadSpamEmailsResponse = await _spamReportApi.getUnreadSpamEmailbox(
         accountId, mailboxFilterCondition: mailboxFilterCondition, limit: limit);
-      return _unreadSpamEmailsResponse;
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+      return unreadSpamEmailsResponse;
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override

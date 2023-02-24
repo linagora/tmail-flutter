@@ -42,7 +42,7 @@ Widget _buildDropDownButton<T>({
   DateTime? startDate,
   DateTime? endDate
 }) {
-  final ImagePaths _imagePaths = Get.find<ImagePaths>();
+  final ImagePaths imagePaths = Get.find<ImagePaths>();
 
   return DropdownButtonHideUnderline(
     child: DropdownButton2<T>(
@@ -68,7 +68,7 @@ Widget _buildDropDownButton<T>({
           .toList(),
       value: itemSelected,
       onChanged: onChanged,
-      icon: SvgPicture.asset(_imagePaths.icDropDown),
+      icon: SvgPicture.asset(imagePaths.icDropDown),
       buttonPadding: const EdgeInsets.symmetric(horizontal: 12),
       buttonDecoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),

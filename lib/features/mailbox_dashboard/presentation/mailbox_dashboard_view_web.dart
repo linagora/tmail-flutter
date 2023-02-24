@@ -105,6 +105,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     Column(children: [
                       _buildComposerButton(context),
                       Expanded(child: SizedBox(
+                        width: ResponsiveUtils.defaultSizeMenu,
                         child: Obx(() {
                           if (controller.searchMailboxActivated.isTrue) {
                             return const SearchMailboxView(
@@ -113,8 +114,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           } else {
                             return MailboxView();
                           }
-                        }),
-                        width: ResponsiveUtils.defaultSizeMenu
+                        })
                       ))
                     ]),
                     Expanded(child: Column(children: [
@@ -204,8 +204,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       key: controller.scaffoldKey,
       drawer: ResponsiveWidget(
         responsiveUtils: responsiveUtils,
-        mobile: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeDrawer),
-        tabletLarge: SizedBox(child: MailboxView(), width: ResponsiveUtils.defaultSizeLeftMenuMobile),
+        mobile: SizedBox(width: ResponsiveUtils.defaultSizeDrawer, child: MailboxView()),
+        tabletLarge: SizedBox(width: ResponsiveUtils.defaultSizeLeftMenuMobile, child: MailboxView()),
         desktop: const SizedBox.shrink()
       ),
       body: body,
@@ -306,16 +306,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 behavior: HitTestBehavior.opaque,
                 onTap: () => appGridDashboardController.toggleAppGridDashboard()),
               child: PortalTarget(
-                child: buildIconWeb(
-                  onTap: controller.showAppDashboardAction,
-                  splashRadius: 20,
-                  icon: SvgPicture.asset(
-                    imagePaths.icAppDashboard,
-                    width: 28,
-                    height: 28,
-                    fit: BoxFit.fill
-                  ),
-                ),
                 anchor: const Aligned(
                   follower: Alignment.topRight,
                   target: Alignment.bottomRight
@@ -327,6 +317,16 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   return const SizedBox.shrink();
                 }),
                 visible: appGridDashboardController.isAppGridDashboardOverlayOpen.isTrue,
+                child: buildIconWeb(
+                  onTap: controller.showAppDashboardAction,
+                  splashRadius: 20,
+                  icon: SvgPicture.asset(
+                    imagePaths.icAppDashboard,
+                    width: 28,
+                    height: 28,
+                    fit: BoxFit.fill
+                  ),
+                ),
               )
             )
           )

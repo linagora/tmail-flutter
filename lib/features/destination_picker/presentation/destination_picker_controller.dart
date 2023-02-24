@@ -16,8 +16,6 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
-import 'package:model/mailbox/expand_mode.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -324,7 +322,7 @@ class DestinationPickerController extends BaseMailboxController {
           _imagePaths.icNotConnection,
           width: 24,
           height: 24,
-          color: Colors.white,
+          colorFilter: Colors.white.asFilter(),
           fit: BoxFit.fill),
         backgroundColor: AppColor.toastErrorBackgroundColor,
         textColor: Colors.white,
@@ -370,7 +368,7 @@ class DestinationPickerController extends BaseMailboxController {
               _imagePaths.icNotConnection,
               width: 24,
               height: 24,
-              color: Colors.white,
+              colorFilter: Colors.white.asFilter(),
               fit: BoxFit.fill),
           backgroundColor: AppColor.toastErrorBackgroundColor,
           textColor: Colors.white,
@@ -415,7 +413,7 @@ class DestinationPickerController extends BaseMailboxController {
               _imagePaths.icNotConnection,
               width: 24,
               height: 24,
-              color: Colors.white,
+              colorFilter: Colors.white.asFilter(),
               fit: BoxFit.fill),
           backgroundColor: AppColor.toastErrorBackgroundColor,
           textColor: Colors.white,

@@ -10,8 +10,8 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_
 class EmailAddressValidator extends Validator<NewNameRequest> {
 
   @override
-  Either<Failure, Success> validate(NewNameRequest newNameRequest) {
-    if (newNameRequest.value != null && GetUtils.isEmail(newNameRequest.value!)) {
+  Either<Failure, Success> validate(NewNameRequest value) {
+    if (value.value != null && GetUtils.isEmail(value.value!)) {
       return Right<Failure, Success>(VerifyNameViewState());
     } else {
       return Left<Failure, Success>(VerifyNameFailure(const EmailAddressInvalidException()));

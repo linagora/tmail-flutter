@@ -1,15 +1,13 @@
 import 'dart:math';
 
 import 'package:core/core.dart';
-import 'package:enough_html_editor/enough_html_editor.dart' as html_editor_mobile;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
-import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:rich_text_composer/views/keyboard_richtext.dart';
+import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/toolbar_rich_text_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
@@ -348,7 +346,11 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             Positioned(top: 2, right: 8,
                 child: buildIconWeb(
                     iconSize: 24,
-                    icon: SvgPicture.asset(_imagePaths.icComposerClose, fit: BoxFit.fill, color: AppColor.colorDeleteContactIcon),
+                    icon: SvgPicture.asset(
+                      _imagePaths.icComposerClose,
+                      fit: BoxFit.fill,
+                      colorFilter: AppColor.colorDeleteContactIcon.asFilter()
+                    ),
                     tooltip: AppLocalizations.of(context).close,
                     onTap: () => controller.closeView(context)))
           ]
@@ -383,16 +385,16 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         child: html_editor_browser.HtmlEditor(
           key: const Key('identity_create_editor_web'),
           controller: controller.richTextWebController.editorController,
-          htmlEditorOptions: const HtmlEditorOptions(
+          htmlEditorOptions: const html_editor_browser.HtmlEditorOptions(
             hint: '',
             darkMode: false,
             customBodyCssStyle: bodyCssStyleForEditor),
           blockQuotedContent: initContent,
-          htmlToolbarOptions: const HtmlToolbarOptions(
-              toolbarType: ToolbarType.hide,
+          htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
+              toolbarType: html_editor_browser.ToolbarType.hide,
               defaultToolbarButtons: []),
-          otherOptions: const OtherOptions(height: 550),
-          callbacks: Callbacks(onBeforeCommand: (currentHtml) {
+          otherOptions: const html_editor_browser.OtherOptions(height: 550),
+          callbacks: html_editor_browser.Callbacks(onBeforeCommand: (currentHtml) {
             log('IdentityCreatorView::_buildHtmlEditorWeb(): onBeforeCommand : $currentHtml');
             controller.updateContentHtmlEditor(currentHtml);
           }, onChangeContent: (changed) {
@@ -425,7 +427,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
     final richTextMobileTabletController = controller.richTextMobileTabletController;
     return Focus(
       focusNode: controller.htmlEditorNode,
-      child: html_editor_mobile.HtmlEditor(
+      child: HtmlEditor(
         key: const Key('identity_create_editor'),
         minHeight: 111,
         addDefaultSelectionMenuItems: false,

@@ -1,7 +1,6 @@
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
-import 'package:enough_html_editor/enough_html_editor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_core/get_core.dart';
@@ -17,7 +16,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
-import 'package:rich_text_composer/richtext_controller.dart';
+import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';

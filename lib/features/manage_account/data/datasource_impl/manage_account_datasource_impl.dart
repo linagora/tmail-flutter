@@ -18,8 +18,6 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   Future<void> persistLanguage(Locale localeCurrent) {
     return Future.sync(() async {
       return await _languageCacheManager.persistLanguage(localeCurrent);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

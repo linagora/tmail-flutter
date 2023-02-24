@@ -140,7 +140,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
             _imagePaths.icNotConnection,
             width: 24,
             height: 24,
-            color: Colors.white,
+            colorFilter: Colors.white.asFilter(),
             fit: BoxFit.fill),
           backgroundColor: AppColor.toastErrorBackgroundColor,
           textColor: Colors.white,

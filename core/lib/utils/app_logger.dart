@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-_Dispatcher logHistory = _Dispatcher("");
+final logHistory = _Dispatcher("");
 
 void log(String? value) {
   String v = value ?? "";
-  logHistory.value = v + "\n" + logHistory.value;
-  if (kReleaseMode == false) {
+  logHistory.value = "$v\n${logHistory.value}";
+  if (kDebugMode) {
     print(v);
   }
 }
 
-void logError(String? value) => log("[ERROR] " + (value ?? ""));
+void logError(String? value) => log("[ERROR] ${value ?? ""}");
 
 // Take from: https://flutter.dev/docs/testing/errors
 void initLogger(VoidCallback runApp) {

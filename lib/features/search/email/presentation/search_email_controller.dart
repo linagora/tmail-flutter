@@ -190,26 +190,24 @@ class SearchEmailController extends BaseController
 
   void _initWorkerListener() {
     dashBoardViewStateWorker = ever(mailboxDashBoardController.viewState, (viewState) {
-      if (viewState is Either) {
-        viewState.map((success) {
-          if (success is MarkAsEmailReadSuccess ||
-              success is MoveToMailboxSuccess ||
-              success is MarkAsStarEmailSuccess ||
-              success is DeleteEmailPermanentlySuccess ||
-              success is MarkAsMultipleEmailReadAllSuccess ||
-              success is MarkAsMultipleEmailReadHasSomeEmailFailure ||
-              success is MarkAsStarMultipleEmailAllSuccess ||
-              success is MarkAsStarMultipleEmailHasSomeEmailFailure ||
-              success is MoveMultipleEmailToMailboxAllSuccess ||
-              success is MoveMultipleEmailToMailboxHasSomeEmailFailure ||
-              success is EmptyTrashFolderSuccess ||
-              success is DeleteMultipleEmailsPermanentlyAllSuccess ||
-              success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure
-          ) {
-            _refreshEmailChanges();
-          }
-        });
-      }
+      viewState.map((success) {
+        if (success is MarkAsEmailReadSuccess ||
+            success is MoveToMailboxSuccess ||
+            success is MarkAsStarEmailSuccess ||
+            success is DeleteEmailPermanentlySuccess ||
+            success is MarkAsMultipleEmailReadAllSuccess ||
+            success is MarkAsMultipleEmailReadHasSomeEmailFailure ||
+            success is MarkAsStarMultipleEmailAllSuccess ||
+            success is MarkAsStarMultipleEmailHasSomeEmailFailure ||
+            success is MoveMultipleEmailToMailboxAllSuccess ||
+            success is MoveMultipleEmailToMailboxHasSomeEmailFailure ||
+            success is EmptyTrashFolderSuccess ||
+            success is DeleteMultipleEmailsPermanentlyAllSuccess ||
+            success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure
+        ) {
+          _refreshEmailChanges();
+        }
+      });
     });
   }
 
@@ -500,7 +498,10 @@ class SearchEmailController extends BaseController
             mailboxOption: Some(mailboxSelected),
             beforeOption: const None()
           );
-          _searchEmailAction(context);
+
+          if (context.mounted) {
+            _searchEmailAction(context);
+          }
         }
       }
     }
@@ -530,7 +531,7 @@ class SearchEmailController extends BaseController
             AppRoutes.contact,
             arguments: arguments);
 
-        if (newContact is EmailAddress) {
+        if (newContact is EmailAddress && context.mounted) {
           _dispatchApplyContactAction(
               context,
               listContactSelected,

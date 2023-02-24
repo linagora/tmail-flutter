@@ -11,7 +11,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class RemoteExceptionThrower extends ExceptionThrower {
 
   @override
-  void throwException(dynamic error) {
+  throwException(dynamic error) {
     logError('RemoteExceptionThrower::throwException():error: $error');
     final networkConnectionController = getBinding<NetworkConnectionController>();
     if (networkConnectionController != null) {

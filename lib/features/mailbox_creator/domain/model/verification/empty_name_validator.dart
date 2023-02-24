@@ -9,8 +9,8 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_
 class EmptyNameValidator extends Validator<NewNameRequest> {
 
   @override
-  Either<Failure, Success> validate(NewNameRequest newNameRequest) {
-    if (newNameRequest.value == null || newNameRequest.value!.isEmpty) {
+  Either<Failure, Success> validate(NewNameRequest value) {
+    if (value.value == null || value.value!.isEmpty) {
       return Left<Failure, Success>(VerifyNameFailure(const EmptyNameException()));
     } else {
       return Right<Failure, Success>(VerifyNameViewState());

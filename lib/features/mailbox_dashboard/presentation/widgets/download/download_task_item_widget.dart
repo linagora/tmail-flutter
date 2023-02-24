@@ -19,7 +19,7 @@ class DownloadTaskItemWidget extends StatelessWidget with AppLoaderMixin {
 
   @override
   Widget build(BuildContext context) {
-    final _imagePaths = Get.find<ImagePaths>();
+    final imagePaths = Get.find<ImagePaths>();
 
     return Container(
       padding: EdgeInsets.zero,
@@ -36,7 +36,7 @@ class DownloadTaskItemWidget extends StatelessWidget with AppLoaderMixin {
             height: 30,
             child: Stack(alignment: Alignment.center, children: [
               SvgPicture.asset(
-                  taskState.attachment.getIcon(_imagePaths),
+                  taskState.attachment.getIcon(imagePaths),
                   width: 16,
                   height: 16,
                   fit: BoxFit.fill),

@@ -16,27 +16,21 @@ class SharePreferenceSpamReportDataSourceImpl extends SpamReportDataSource {
   Future<DateTime> getLastTimeDismissedSpamReported() async {
     return Future.sync(() async {
       return await _sharePreferenceSpamReportDataSource.getLastTimeDismissedSpamReported();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<bool> storeLastTimeDismissedSpamReported(DateTime lastTimeDismissedSpamReported) async {
     return Future.sync(() async {
       return await _sharePreferenceSpamReportDataSource.storeLastTimeDismissedSpamReported(lastTimeDismissedSpamReported);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
   
   @override
   Future<bool> deleteLastTimeDismissedSpamReported() {
     return Future.sync(() async {
       return await _sharePreferenceSpamReportDataSource.deleteLastTimeDismissedSpamReported();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -54,26 +48,20 @@ class SharePreferenceSpamReportDataSourceImpl extends SpamReportDataSource {
   Future<void> deleteSpamReportState() {
     return Future.sync(() async {
       return await _sharePreferenceSpamReportDataSource.deleteLastTimeDismissedSpamReported();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<SpamReportState> getSpamReportState() {
     return Future.sync(() async {
       return await _sharePreferenceSpamReportDataSource.getSpamReportState();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> storeSpamReportState(SpamReportState spamReportState) {
     return Future.sync(() async {
       return await _sharePreferenceSpamReportDataSource.storeSpamReportState(spamReportState);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

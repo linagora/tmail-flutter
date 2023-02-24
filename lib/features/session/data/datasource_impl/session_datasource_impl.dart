@@ -14,8 +14,6 @@ class SessionDataSourceImpl extends SessionDataSource {
   Future<Session> getSession() {
     return Future.sync(() async {
       return await _sessionAPI.getSession();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

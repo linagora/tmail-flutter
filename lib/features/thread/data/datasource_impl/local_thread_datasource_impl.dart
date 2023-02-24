@@ -61,9 +61,7 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
         sort: sort,
         filterOption: filterOption ?? FilterMessageOption.all,
         limit: limit);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -77,9 +75,7 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
         updated: updated,
         created: created,
         destroyed: destroyed);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
