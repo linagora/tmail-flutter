@@ -30,35 +30,27 @@ class CleanupDataSourceImpl extends CleanupDataSource {
   Future<void> cleanEmailCache(EmailCleanupRule cleanupRule) {
     return Future.sync(() async {
       return await emailCacheManager.clean(cleanupRule);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> cleanRecentSearchCache(RecentSearchCleanupRule cleanupRule) {
     return Future.sync(() async {
       return await recentSearchCacheManager.clean(cleanupRule);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> cleanRecentLoginUrlCache(RecentLoginUrlCleanupRule cleanupRule) {
     return Future.sync(() async {
       return await recentLoginUrlCacheManager.clean(cleanupRule);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> cleanRecentLoginUsernameCache(RecentLoginUsernameCleanupRule cleanupRule) {
     return Future.sync(() async {
       return await recentLoginUsernameCacheManager.clean(cleanupRule);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

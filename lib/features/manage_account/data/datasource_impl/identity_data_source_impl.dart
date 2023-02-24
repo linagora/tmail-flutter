@@ -20,35 +20,27 @@ class IdentityDataSourceImpl extends IdentityDataSource {
       {Properties? properties}) {
     return Future.sync(() async {
       return await _identityAPI.getAllIdentities(accountId, properties: properties);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<Identity> createNewIdentity(AccountId accountId, CreateNewIdentityRequest identityRequest) {
     return Future.sync(() async {
       return await _identityAPI.createNewIdentity(accountId, identityRequest);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<bool> deleteIdentity(AccountId accountId, IdentityId identityId) {
     return Future.sync(() async {
       return await _identityAPI.deleteIdentity(accountId, identityId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<bool> editIdentity(AccountId accountId, EditIdentityRequest editIdentityRequest) {
     return Future.sync(() async {
       return await _identityAPI.editIdentity(accountId, editIdentityRequest);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

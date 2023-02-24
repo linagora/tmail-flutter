@@ -12,8 +12,8 @@ class GetFCMSubscriptionLocalInteractor {
   Stream<Either<Failure, Success>> execute() async* {
     try {
       yield Right<Failure, Success>(GetFCMSubscriptionLocalLoading());
-      final _subscription = await _fcmRepository.getSubscription();
-      yield Right<Failure, Success>(GetFCMSubscriptionLocalSuccess(_subscription));
+      final subscription = await _fcmRepository.getSubscription();
+      yield Right<Failure, Success>(GetFCMSubscriptionLocalSuccess(subscription));
     } catch (e) {
       yield Left<Failure, Success>(GetFCMSubscriptionLocalFailure(e));
     }

@@ -63,8 +63,8 @@ mixin FilterEmailPopupMenuMixin {
                   width: 20,
                   height: 20,
                   fit: BoxFit.fill,
-                  color: option != FilterMessageOption.starred
-                      ? AppColor.colorTextButton
+                  colorFilter: option != FilterMessageOption.starred
+                      ? AppColor.colorTextButton.asFilter()
                       : null),
               const SizedBox(width: 12),
               Expanded(child: Text(

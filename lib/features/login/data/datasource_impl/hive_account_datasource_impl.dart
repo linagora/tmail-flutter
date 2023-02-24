@@ -14,26 +14,20 @@ class HiveAccountDatasourceImpl extends AccountDatasource {
   Future<Account> getCurrentAccount() {
     return Future.sync(() async {
       return await _accountCacheManager.getSelectedAccount();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> setCurrentAccount(Account newCurrentAccount) {
     return Future.sync(() async {
       return await _accountCacheManager.setSelectedAccount(newCurrentAccount);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> deleteCurrentAccount(String accountId) {
     return Future.sync(() async {
       return await _accountCacheManager.deleteSelectedAccount(accountId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

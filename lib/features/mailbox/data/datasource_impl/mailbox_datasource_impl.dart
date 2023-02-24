@@ -35,18 +35,14 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   Future<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) {
     return Future.sync(() async {
       return await mailboxAPI.getAllMailbox(session, accountId, properties: properties);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState) {
     return Future.sync(() async {
       return await mailboxAPI.getChanges(session, accountId, sinceState);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -63,36 +59,28 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
     return Future.sync(() async {
       return await mailboxAPI.createNewMailbox(accountId, newMailboxRequest);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<Map<Id,SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) {
     return Future.sync(() async {
       return await mailboxAPI.deleteMultipleMailbox(session, accountId, mailboxIds);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) {
     return Future.sync(() async {
       return await mailboxAPI.renameMailbox(accountId, request);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) {
     return Future.sync(() async {
       return await mailboxAPI.moveMailbox(accountId, request);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -107,26 +95,20 @@ class MailboxDataSourceImpl extends MailboxDataSource {
           mailboxId,
           totalEmailUnread,
           onProgressController);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request) {
     return Future.sync(() async {
       return await mailboxAPI.subscribeMailbox(accountId, request);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<List<MailboxId>> subscribeMultipleMailbox(AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) {
     return Future.sync(() async {
       return await mailboxAPI.subscribeMultipleMailbox(accountId, subscribeRequest);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

@@ -18,15 +18,15 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
 
   @override
   Widget build(BuildContext context) {
-    final _responsiveUtils = Get.find<ResponsiveUtils>();
+    final responsiveUtils = Get.find<ResponsiveUtils>();
 
     return Padding(
       padding: EdgeInsets.only(
-          top: _isMobileAndLandscapeTablet(context, _responsiveUtils) ? 8 : 20),
+          top: _isMobileAndLandscapeTablet(context, responsiveUtils) ? 8 : 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (_isMobileAndLandscapeTablet(context, _responsiveUtils))
+          if (_isMobileAndLandscapeTablet(context, responsiveUtils))
             ...[
               _buildCheckboxHasAttachment(
                   context,
@@ -35,17 +35,17 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
               const SizedBox(height: 24)
             ],
           Row(
-            mainAxisAlignment: _isMobileAndLandscapeTablet(context, _responsiveUtils)
+            mainAxisAlignment: _isMobileAndLandscapeTablet(context, responsiveUtils)
                 ? MainAxisAlignment.spaceEvenly
                 : MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (!_isMobileAndLandscapeTablet(context, _responsiveUtils))
+              if (!_isMobileAndLandscapeTablet(context, responsiveUtils))
                 Expanded(child: _buildCheckboxHasAttachment(
                     context,
                     currentFocusNode: focusManager?.attachmentCheckboxFocusNode,
                     nextFocusNode: focusManager?.searchButtonFocusNode)),
-              ..._buildListButton(context, _responsiveUtils),
+              ..._buildListButton(context, responsiveUtils),
             ],
           ),
         ],

@@ -49,7 +49,12 @@ class MailboxNewFolderTileBuilder {
             leading: Padding(
               padding: const EdgeInsets.only(left: 34),
               child: _icon != null
-                ? SvgPicture.asset(_icon!, width: 24, height: 24, color: AppColor.mailboxIconColor, fit: BoxFit.fill)
+                ? SvgPicture.asset(
+                    _icon!,
+                    width: 24,
+                    height: 24,
+                    colorFilter: AppColor.mailboxIconColor.asFilter(),
+                    fit: BoxFit.fill)
                 : const SizedBox.shrink()),
             title: Padding(
               padding: const EdgeInsets.only(left: 8),

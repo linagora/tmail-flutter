@@ -38,9 +38,10 @@ class AppBarSelectionMode extends StatelessWidget {
 
     return Row(children: [
       buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icCloseComposer,
-              color: AppColor.colorTextButton,
-              fit: BoxFit.fill),
+          icon: SvgPicture.asset(
+            _imagePaths.icCloseComposer,
+            colorFilter: AppColor.colorTextButton.asFilter(),
+            fit: BoxFit.fill),
           minSize: 25,
           iconSize: 25,
           iconPadding: const EdgeInsets.all(5),
@@ -128,11 +129,11 @@ class AppBarSelectionMode extends StatelessWidget {
               splashRadius: 15,
               icon: SvgPicture.asset(
                   canDeletePermanently
-                      ? _imagePaths.icDeleteComposer
-                      : _imagePaths.icDelete,
-                  color: canDeletePermanently
-                      ? AppColor.colorDeletePermanentlyButton
-                      : AppColor.primaryColor,
+                    ? _imagePaths.icDeleteComposer
+                    : _imagePaths.icDelete,
+                  colorFilter: canDeletePermanently
+                    ? AppColor.colorDeletePermanentlyButton.asFilter()
+                    : AppColor.primaryColor.asFilter(),
                   width: 20,
                   height: 20,
                   fit: BoxFit.fill),

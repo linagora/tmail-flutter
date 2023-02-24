@@ -192,9 +192,9 @@ class EmailView extends GetWidget<SingleEmailController> {
       buildIconWeb(
         icon: SvgPicture.asset(
           imagePaths.icNewer,
-          color: controller.emailSupervisorController.nextEmailActivated
-            ? AppColor.primaryColor
-            : AppColor.colorAttachmentIcon,
+          colorFilter: controller.emailSupervisorController.nextEmailActivated
+            ? AppColor.primaryColor.asFilter()
+            : AppColor.colorAttachmentIcon.asFilter(),
           width: IconUtils.defaultIconSize,
           height: IconUtils.defaultIconSize,
           fit: BoxFit.fill),
@@ -205,9 +205,9 @@ class EmailView extends GetWidget<SingleEmailController> {
           imagePaths.icOlder,
           width: IconUtils.defaultIconSize,
           height: IconUtils.defaultIconSize,
-          color: controller.emailSupervisorController.previousEmailActivated
-            ? AppColor.primaryColor
-            : AppColor.colorAttachmentIcon,
+          colorFilter: controller.emailSupervisorController.previousEmailActivated
+            ? AppColor.primaryColor.asFilter()
+            : AppColor.colorAttachmentIcon.asFilter(),
           fit: BoxFit.fill),
         tooltip: AppLocalizations.of(context).older,
         onTap: controller.emailSupervisorController.backToPreviousEmail),
@@ -341,7 +341,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 SvgPicture.asset(imagePaths.icAttachment,
                     width: 20,
                     height: 20,
-                    color: AppColor.colorAttachmentIcon,
+                    colorFilter: AppColor.colorAttachmentIcon.asFilter(),
                     fit: BoxFit.fill),
                 const SizedBox(width: 5),
                 Expanded(child: Text(
@@ -472,7 +472,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             width: 24,
             height: 24,
             fit: BoxFit.fill,
-            color: AppColor.colorTextButton
+            colorFilter: AppColor.colorTextButton.asFilter()
           ),
           AppLocalizations.of(context).mark_as_unread,
           email,
@@ -500,7 +500,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             width: 24,
             height: 24,
             fit: BoxFit.fill,
-            color: AppColor.colorTextButton
+            colorFilter: AppColor.colorTextButton.asFilter()
           ),
           currentMailbox?.isSpam == true
             ? AppLocalizations.of(context).remove_from_spam
@@ -528,7 +528,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             width: 24,
             height: 24,
             fit: BoxFit.fill,
-            color: AppColor.colorTextButton),
+            colorFilter: AppColor.colorTextButton.asFilter()),
           AppLocalizations.of(context).quickCreatingRule,
           email,
           iconLeftPadding: responsiveUtils.isMobile(context)

@@ -34,8 +34,8 @@ class FpsManager {
   final List<FpsCallback> _fpsCallbacks = [];
 
   /// Temporarily save 120 frames
-  static const int _queue_capacity = 120;
-  final ListQueue framesQueue = ListQueue<FrameTiming>(_queue_capacity);
+  static const int queueCapacity = 120;
+  final ListQueue framesQueue = ListQueue<FrameTiming>(queueCapacity);
 
   void addFpsCallback(FpsCallback callback) {
     _fpsCallbacks.add(callback);
@@ -69,7 +69,7 @@ class FpsManager {
       for (FrameTiming timing in timings) {
         framesQueue.addFirst(timing);
       }
-      while (framesQueue.length > _queue_capacity) {
+      while (framesQueue.length > queueCapacity) {
         framesQueue.removeLast();
       }
 

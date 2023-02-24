@@ -27,7 +27,7 @@ class RuleFilterButtonField<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _imagePaths = Get.find<ImagePaths>();
+    final imagePaths = Get.find<ImagePaths>();
 
     return InkWell(
       onTap: () => tapActionCallback?.call(value),
@@ -51,7 +51,7 @@ class RuleFilterButtonField<T> extends StatelessWidget {
             softWrap: CommonTextStyle.defaultSoftWrap,
             overflow: CommonTextStyle.defaultTextOverFlow,
           )),
-          SvgPicture.asset(_imagePaths.icDropDown)
+          SvgPicture.asset(imagePaths.icDropDown)
         ]),
       ),
     );

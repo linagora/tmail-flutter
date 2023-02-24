@@ -291,13 +291,11 @@ class ComposerController extends BaseController {
   void _listenWorker() {
     uploadInlineImageWorker = ever(uploadController.uploadInlineViewState, (state) {
       log('ComposerController::_listenWorker(): $state');
-      if (state is Either) {
-        state.fold((failure) => null, (success) {
-          if (success is SuccessAttachmentUploadState) {
-            _handleUploadInlineSuccess(success);
-          }
-        });
-      }
+      state.fold((failure) => null, (success) {
+        if (success is SuccessAttachmentUploadState) {
+          _handleUploadInlineSuccess(success);
+        }
+      });
     });
   }
 
@@ -916,7 +914,10 @@ class ComposerController extends BaseController {
   ) async {
     final newEmailBody = await _getEmailBodyText(context, changedEmail: true);
     log('ComposerController::_isEmailChanged(): newEmailBody: $newEmailBody');
-    var oldEmailBody = getContentEmail(context) ?? '';
+    var oldEmailBody = '';
+    if (context.mounted) {
+      oldEmailBody = getContentEmail(context) ?? '';
+    }
     log('ComposerController::_isEmailChanged(): getContentEmail: $oldEmailBody');
     if (arguments.emailActionType != EmailActionType.compose &&
         oldEmailBody.isNotEmpty) {
@@ -974,7 +975,7 @@ class ComposerController extends BaseController {
 
     if (arguments != null && userProfile != null && accountId != null) {
       final isChanged = await _isEmailChanged(context, arguments);
-      if (isChanged) {
+      if (isChanged && context.mounted) {
         final newEmail = await _generateEmail(
             context,
             userProfile,

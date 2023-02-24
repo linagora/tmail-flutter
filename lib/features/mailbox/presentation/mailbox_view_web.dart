@@ -151,7 +151,7 @@ class MailboxView extends GetWidget<MailboxController>
                           iconPadding: EdgeInsets.zero,
                           icon: SvgPicture.asset(
                             _imagePaths.icSearchBar,
-                            color: AppColor.colorTextButton,
+                            colorFilter: AppColor.colorTextButton.asFilter(),
                             fit: BoxFit.fill
                           ),
                           onTap: () => controller.openSearchViewAction(context)
@@ -161,7 +161,10 @@ class MailboxView extends GetWidget<MailboxController>
                             iconSize: 20,
                             iconPadding: EdgeInsets.zero,
                             splashRadius: 15,
-                            icon: SvgPicture.asset(_imagePaths.icAddNewFolder, color: AppColor.colorTextButton, fit: BoxFit.fill),
+                            icon: SvgPicture.asset(
+                              _imagePaths.icAddNewFolder,
+                              colorFilter: AppColor.colorTextButton.asFilter(),
+                              fit: BoxFit.fill),
                             tooltip: AppLocalizations.of(context).new_mailbox,
                             onTap: () => controller.goToCreateNewMailboxView(context)),
                       ],
@@ -396,7 +399,7 @@ class MailboxView extends GetWidget<MailboxController>
             iconSize: 28,
             icon: SvgPicture.asset(
               _imagePaths.icAppDashboard,
-              color: AppColor.primaryColor,
+              colorFilter: AppColor.primaryColor.asFilter(),
               fit: BoxFit.fill
             ),
             tooltip: AppLocalizations.of(context).appGridTittle),
@@ -423,7 +426,7 @@ class MailboxView extends GetWidget<MailboxController>
               controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.COLLAPSE
                 ? _imagePaths.icCollapseFolder
                 : _imagePaths.icExpandFolder,
-              color: AppColor.primaryColor,
+              colorFilter: AppColor.primaryColor.asFilter(),
               fit: BoxFit.fill
             )),
             tooltip: AppLocalizations.of(context).appGridTittle,

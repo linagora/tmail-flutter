@@ -14,15 +14,15 @@ class SharePreferenceSpamReportDataSource extends SpamReportDataSource {
 
   @override
   Future<DateTime> getLastTimeDismissedSpamReported() async {
-    final _timeStamp = _sharedPreferences.getInt(MailboxDashboardConstant.keyLastTimeDismissedSpamReported) ?? 0;
-    final _lastTimeDismissedSpamReported =  DateTime.fromMillisecondsSinceEpoch(_timeStamp);
-    return _lastTimeDismissedSpamReported;
+    final timeStamp = _sharedPreferences.getInt(MailboxDashboardConstant.keyLastTimeDismissedSpamReported) ?? 0;
+    final lastTimeDismissedSpamReported =  DateTime.fromMillisecondsSinceEpoch(timeStamp);
+    return lastTimeDismissedSpamReported;
   }
   
   @override
   Future<bool> storeLastTimeDismissedSpamReported(DateTime lastTimeDismissedSpamReported) async {
-    final _timeStamp = lastTimeDismissedSpamReported.millisecondsSinceEpoch;
-    return await _sharedPreferences.setInt(MailboxDashboardConstant.keyLastTimeDismissedSpamReported,_timeStamp);
+    final timeStamp = lastTimeDismissedSpamReported.millisecondsSinceEpoch;
+    return await _sharedPreferences.setInt(MailboxDashboardConstant.keyLastTimeDismissedSpamReported,timeStamp);
   }
 
   @override
@@ -48,13 +48,13 @@ class SharePreferenceSpamReportDataSource extends SpamReportDataSource {
 
   @override
   Future<SpamReportState> getSpamReportState() async {
-    final _spamReportState = _sharedPreferences.getString(MailboxDashboardConstant.keySpamReportState) ?? '';
-    return _spamReportState == SpamReportState.disabled.keyValue ? SpamReportState.disabled : SpamReportState.enabled;
+    final spamReportState = _sharedPreferences.getString(MailboxDashboardConstant.keySpamReportState) ?? '';
+    return spamReportState == SpamReportState.disabled.keyValue ? SpamReportState.disabled : SpamReportState.enabled;
   }
 
   @override
   Future<bool> storeSpamReportState(SpamReportState spamReportState) async {
-    final _spamReportState = spamReportState.keyValue;
-    return await _sharedPreferences.setString(MailboxDashboardConstant.keySpamReportState, _spamReportState);
+    final spamReportState0 = spamReportState.keyValue;
+    return await _sharedPreferences.setString(MailboxDashboardConstant.keySpamReportState, spamReportState0);
   }
 }

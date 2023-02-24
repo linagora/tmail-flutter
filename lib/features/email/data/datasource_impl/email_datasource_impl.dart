@@ -27,27 +27,21 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<Email> getEmailContent(AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
       return await emailAPI.getEmailContent(accountId, emailId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest, {CreateNewMailboxRequest? mailboxRequest}) {
     return Future.sync(() async {
       return await emailAPI.sendEmail(accountId, emailRequest, mailboxRequest: mailboxRequest);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions) {
     return Future.sync(() async {
       return await emailAPI.markAsRead(accountId, emails, readActions);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -59,9 +53,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   ) {
     return Future.sync(() async {
       return await emailAPI.downloadAttachments(attachments, accountId, baseDownloadUrl, accountRequest);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -74,54 +66,42 @@ class EmailDataSourceImpl extends EmailDataSource {
   ) {
     return Future.sync(() async {
       return await emailAPI.exportAttachment(attachment, accountId, baseDownloadUrl, accountRequest, cancelToken);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) {
     return Future.sync(() async {
       return await emailAPI.moveToMailbox(accountId, moveRequest);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<List<Email>> markAsStar(AccountId accountId, List<Email> emails, MarkStarAction markStarAction) {
     return Future.sync(() async {
       return await emailAPI.markAsStar(accountId, emails, markStarAction);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<Email> saveEmailAsDrafts(AccountId accountId, Email email) {
     return Future.sync(() async {
       return await emailAPI.saveEmailAsDrafts(accountId, email);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
       return await emailAPI.removeEmailDrafts(accountId, emailId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<Email> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) {
     return Future.sync(() async {
       return await emailAPI.updateEmailDrafts(accountId, newEmail, oldEmailId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -141,26 +121,20 @@ class EmailDataSourceImpl extends EmailDataSource {
           baseDownloadUrl,
           accountRequest,
           onReceiveController);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<List<EmailId>> deleteMultipleEmailsPermanently(AccountId accountId, List<EmailId> emailIds) {
     return Future.sync(() async {
       return await emailAPI.deleteMultipleEmailsPermanently(accountId, emailIds);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<bool> deleteEmailPermanently(AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
       return await emailAPI.deleteEmailPermanently(accountId, emailId);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

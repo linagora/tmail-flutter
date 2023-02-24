@@ -30,7 +30,7 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(child: Padding(
+    return InkWell(onTap: clickAction,child: Padding(
       padding: const EdgeInsets.only(top: 24, bottom: 24),
       child: Row(
         children: [
@@ -76,11 +76,10 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
            icon: SvgPicture.asset(
              _imagePath.icCollapseFolder,
              fit: BoxFit.fill,
-             color: AppColor.colorCollapseMailbox),
+             colorFilter: AppColor.colorCollapseMailbox.asFilter()),
            onPressed: clickAction
         )
       ])),
-      onTap: clickAction,
     );
   }
 

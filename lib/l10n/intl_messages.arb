@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-02-10T03:40:25.843946",
+  "@@last_modified": "2023-02-24T11:57:26.810965",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2724,6 +2724,18 @@
   },
   "toastMessageShowMailboxSuccess": "This mailbox is already displayed in your primary mailbox",
   "@toastMessageShowMailboxSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxVisibility": "Mailbox visibility",
+  "@mailboxVisibility": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxVisibilitySubtitle": "Show/ hide your mailboxes, including your personal and team mailboxes.",
+  "@mailboxVisibilitySubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -1,4 +1,5 @@
 
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -28,7 +29,13 @@ class PopupMenuItemWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: SizedBox(
               child: Row(children: [
-                SvgPicture.asset(icon, width: 20, height: 20, fit: BoxFit.fill, color: iconColor),
+                SvgPicture.asset(
+                  icon,
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.fill,
+                  colorFilter: iconColor.asFilter()
+                ),
                 const SizedBox(width: 12),
                 Expanded(child: Text(name,
                     style: const TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w500))),

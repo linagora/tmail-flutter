@@ -133,7 +133,7 @@ class HiveCacheConfig {
     );
      registerCacheAdapter<FCMSubscriptionCache>(
       FCMSubscriptionCacheAdapter(),
-      CachingConstants.FCM_SUBSCRIPTION_HIVE_CACHE_INDENTITY
+      CachingConstants.FCM_SUBSCRIPTION_HIVE_CACHE_IDENTITY
     );
   }
 

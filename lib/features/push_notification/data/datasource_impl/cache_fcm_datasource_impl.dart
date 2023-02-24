@@ -18,27 +18,21 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
   Future<bool> storeStateToRefresh(TypeName typeName, jmap.State newState) {
     return Future.sync(() async {
       return await _firebaseCacheManager.storeStateToRefresh(typeName, newState);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<jmap.State> getStateToRefresh(TypeName typeName) {
     return Future.sync(() async {
       return await _firebaseCacheManager.getStateToRefresh(typeName);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<bool> deleteStateToRefresh(TypeName typeName) {
     return Future.sync(() async {
       return await _firebaseCacheManager.deleteStateToRefresh(typeName);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -64,9 +58,7 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
   Future<FCMSubscriptionCache> geSubscription() {
     return Future.sync(() async {
       return await _firebaseCacheManager.getSubscription();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override

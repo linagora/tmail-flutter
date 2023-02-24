@@ -195,9 +195,9 @@ class MailBoxFolderTileBuilder {
               _mailboxNode.expandMode == ExpandMode.EXPAND
                 ? _imagePaths.icExpandFolder
                 : _imagePaths.icCollapseFolder,
-              color: _mailboxNode.item.allowedToDisplay
-                ? AppColor.primaryColor
-                : AppColor.colorIconUnSubscribedMailbox,
+              colorFilter: _mailboxNode.item.allowedToDisplay
+                ? AppColor.primaryColor.asFilter()
+                : AppColor.colorIconUnSubscribedMailbox.asFilter(),
               fit: BoxFit.fill
             ),
             minSize: 12,

@@ -59,7 +59,7 @@ class ContactInputTagItem extends StatelessWidget {
             imagePaths.icClose,
             width: 20,
             height: 20,
-            color: AppColor.colorDeleteContactIcon,
+            colorFilter: AppColor.colorDeleteContactIcon.asFilter(),
             fit: BoxFit.fill)
         : null,
       labelStyle: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.normal),

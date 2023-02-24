@@ -271,8 +271,9 @@ class EmailRulesController extends BaseController {
   Widget _deleteEmailRuleActionTile(BuildContext context, TMailRule rule) {
     return (EmailRuleBottomSheetActionTileBuilder(
       const Key('delete_emailRule_action'),
-      SvgPicture.asset(_imagePaths.icDeleteComposer,
-          color: AppColor.colorActionDeleteConfirmDialog),
+      SvgPicture.asset(
+        _imagePaths.icDeleteComposer,
+        colorFilter: AppColor.colorActionDeleteConfirmDialog.asFilter()),
       AppLocalizations.of(context).deleteRule,
       rule,
       iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),

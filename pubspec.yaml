@@ -189,6 +189,17 @@ dependencies:
 
   focus_detector_v2: 3.0.0+2
 
+  universal_html: 2.0.9
+
+  debounce_throttle: 2.0.0
+
+  flutter_appauth_platform_interface: 5.2.0
+
+  # flutter_localizations depends on intl 0.17.0
+  intl: 0.17.0
+
+  fluttertoast: 8.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -30,8 +30,6 @@ class ComposerDataSourceImpl extends ComposerDataSource {
         bytesData: fileInfo.bytes,
         maxWidth: maxWidth,
         compress: compress);
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

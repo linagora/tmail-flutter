@@ -321,7 +321,7 @@ packages:
     source: hosted
     version: "0.7.8"
   debounce_throttle:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: debounce_throttle
       sha256: c95cf47afda975fc507794a52040a16756fb2f31ad3027d4e691c41862ff5692
@@ -542,7 +542,7 @@ packages:
     source: hosted
     version: "4.2.1"
   flutter_appauth_platform_interface:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_appauth_platform_interface
       sha256: "7b0c6e19e6b9a33098c6a14fb64aca62fccaefd40eccba1c4974d9a9d1fbe95a"
@@ -776,7 +776,7 @@ packages:
     source: sdk
     version: "0.0.0"
   fluttertoast:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: fluttertoast
       sha256: "2f9c4d3f4836421f7067a28f8939814597b27614e021da9d63e5d3fb6e212d25"
@@ -920,7 +920,7 @@ packages:
     source: hosted
     version: "1.1.0"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       sha256: "910f85bce16fb5c6f614e117efa303e85a1731bb0081edf3604a2ae6e9a3cc91"
@@ -1551,7 +1551,7 @@ packages:
     source: hosted
     version: "1.3.1"
   universal_html:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: universal_html
       sha256: b5061c64c7c863c12e46279e032976f1c274f927fb3589b52b5928dcd2d52f7c

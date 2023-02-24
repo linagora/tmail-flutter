@@ -90,9 +90,10 @@ class AppBarThreadWidgetBuilder extends StatelessWidget {
   Widget _buildBodyAppBarForWebSelection(BuildContext context) {
     return Row(children: [
       buildIconWeb(
-          icon: SvgPicture.asset(_imagePaths.icCloseComposer,
-              color: AppColor.colorTextButton,
-              fit: BoxFit.fill),
+          icon: SvgPicture.asset(
+            _imagePaths.icCloseComposer,
+            colorFilter: AppColor.colorTextButton.asFilter(),
+            fit: BoxFit.fill),
           minSize: 25,
           iconSize: 25,
           iconPadding: const EdgeInsets.all(5),
@@ -178,7 +179,9 @@ class AppBarThreadWidgetBuilder extends StatelessWidget {
           splashRadius: 15,
           icon: SvgPicture.asset(
               canDeletePermanently ? _imagePaths.icDeleteComposer : _imagePaths.icDelete,
-              color: canDeletePermanently ? AppColor.colorDeletePermanentlyButton : AppColor.primaryColor,
+              colorFilter: canDeletePermanently
+                ? AppColor.colorDeletePermanentlyButton.asFilter()
+                : AppColor.primaryColor.asFilter(),
               width: 20,
               height: 20,
               fit: BoxFit.fill),
@@ -289,9 +292,9 @@ class AppBarThreadWidgetBuilder extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
             child: SvgPicture.asset(
               _imagePaths.icFilter,
-              color: _filterMessageOption == FilterMessageOption.all
-                  ? AppColor.colorFilterMessageDisabled
-                  : AppColor.colorFilterMessageEnabled,
+              colorFilter: _filterMessageOption == FilterMessageOption.all
+                ? AppColor.colorFilterMessageDisabled.asFilter()
+                : AppColor.colorFilterMessageEnabled.asFilter(),
               fit: BoxFit.fill),
           ),
           onTapDown: (detail) {
@@ -337,7 +340,7 @@ class AppBarThreadWidgetBuilder extends StatelessWidget {
                   SvgPicture.asset(_imagePaths.icBack,
                       width: 20,
                       height: 20,
-                      color: AppColor.colorTextButton,
+                      colorFilter: AppColor.colorTextButton.asFilter(),
                       fit: BoxFit.fill),
                   const SizedBox(width: 8),
                   _buildCountItemSelected()

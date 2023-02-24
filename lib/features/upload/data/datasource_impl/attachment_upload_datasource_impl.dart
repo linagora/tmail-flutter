@@ -26,8 +26,6 @@ class AttachmentUploadDataSourceImpl extends AttachmentUploadDataSource {
         _fileUploader,
         cancelToken: cancelToken
       )..upload();
-    }).catchError((error) {
-      _exceptionThrower.throwException(error);
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

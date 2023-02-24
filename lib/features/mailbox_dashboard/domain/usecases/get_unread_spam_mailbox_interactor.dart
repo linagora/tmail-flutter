@@ -23,17 +23,17 @@ class GetUnreadSpamMailboxInteractor {
   ) async* {
     try {
       yield Right(GetUnreadSpamMailboxLoading());
-      final _lastTimeDissmissedSpamReported = await _spamReportRepository.getLastTimeDismissedSpamReported();
-      final _timeLast = DateTime.now().difference(_lastTimeDissmissedSpamReported);
+      final lastTimeDismissedSpamReported = await _spamReportRepository.getLastTimeDismissedSpamReported();
+      final timeLast = DateTime.now().difference(lastTimeDismissedSpamReported);
 
-      final _checkTimeCondition = (_timeLast.inHours > 0) && (_timeLast.inHours > conditionsForDisplayingSpamReportBanner);
+      final checkTimeCondition = (timeLast.inHours > 0) && (timeLast.inHours > conditionsForDisplayingSpamReportBanner);
 
-      if (_checkTimeCondition) {
-        final _response =  await _spamReportRepository.getUnreadSpamMailbox(accountId, mailboxFilterCondition: mailboxFilterCondition, limit: limit);
-        final _unreadSpamMailbox = _response.unreadSpamMailbox;
+      if (checkTimeCondition) {
+        final response =  await _spamReportRepository.getUnreadSpamMailbox(accountId, mailboxFilterCondition: mailboxFilterCondition, limit: limit);
+        final unreadSpamMailbox = response.unreadSpamMailbox;
 
-        if (_unreadSpamMailbox!.unreadEmails!.value.value > 0) {
-          yield Right(GetUnreadSpamMailboxSuccess(_unreadSpamMailbox));
+        if (unreadSpamMailbox!.unreadEmails!.value.value > 0) {
+          yield Right(GetUnreadSpamMailboxSuccess(unreadSpamMailbox));
         } else {
           yield Left(InvalidSpamReportCondition());
         }
