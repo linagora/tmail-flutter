@@ -159,6 +159,7 @@ class DestinationPickerController extends BaseMailboxController {
   @override
   void onClose() {
     _disposeWidget();
+    destinationListScrollController.dispose();
     super.onClose();
   }
 
