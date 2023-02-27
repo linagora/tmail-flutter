@@ -196,6 +196,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         ? ExpandMode.EXPAND
         : ExpandMode.COLLAPSE;
 
+    if (defaultMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
+      log('toggleMailboxFolder() refresh defaultMailboxTree');
+      defaultMailboxTree.refresh();
+    }
+
     if (personalMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
       log('toggleMailboxFolder() refresh folderMailboxTree');
       personalMailboxTree.refresh();
