@@ -299,7 +299,8 @@ class MailboxView extends GetWidget<MailboxController>
                 lastNode: lastNode,
                 mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
             ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-            ..addOnClickExpandMailboxNodeAction((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
+            ..addOnClickExpandMailboxNodeAction((mailboxNode) =>
+              controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController))
             ..addOnClickOpenMenuMailboxNodeAction((position, mailboxNode) {
               openMailboxMenuActionOnWeb(
                 context,

@@ -141,14 +141,18 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
             parent: MailBoxVisibilityFolderTileBuilder(
               _imagePaths,
               mailboxNode,
-              onClickExpandMailboxNodeAction: controller.toggleMailboxFolder,
+              onClickExpandMailboxNodeAction: (mailboxNode) {
+                controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController);
+              },
               onClickSubscribeMailboxAction: controller.subscribeMailbox
             ),
             children: _buildListChildTileWidget(context, mailboxNode)).build()
         : MailBoxVisibilityFolderTileBuilder(
             _imagePaths,
             mailboxNode,
-            onClickExpandMailboxNodeAction: controller.toggleMailboxFolder,
+            onClickExpandMailboxNodeAction: (mailboxNode) {
+              controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController);
+            },
             onClickSubscribeMailboxAction: controller.subscribeMailbox
           ))
       .toList() ?? <Widget>[];

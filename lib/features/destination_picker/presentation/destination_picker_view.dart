@@ -207,6 +207,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   ) {
     return SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
+        controller: controller.destinationListScrollController,
         child: Column(children: [
           if (actions?.canSearch() == true &&
             controller.destinationScreenType.value == DestinationScreenType.destinationPicker)
@@ -378,7 +379,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                     mailboxIdAlreadySelected: mailboxIdSelected,
                     mailboxDisplayed: MailboxDisplayed.destinationPicker)
                 ..addOnClickOpenMailboxNodeAction((node) => _pickMailboxNode(context, node))
-                ..addOnClickExpandMailboxNodeAction((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
+                ..addOnClickExpandMailboxNodeAction((mailboxNode) =>
+                  controller.toggleMailboxFolder(mailboxNode, controller.destinationListScrollController))
               ).build(),
             children: _buildListChildTileWidget(
                 context,
