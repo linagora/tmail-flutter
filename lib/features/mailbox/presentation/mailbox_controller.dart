@@ -190,55 +190,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     );
   }
 
-  @override
-  Future<void> toggleMailboxFolder(MailboxNode selectedMailboxNode) async {
-    final newExpandMode = selectedMailboxNode.expandMode == ExpandMode.COLLAPSE
-        ? ExpandMode.EXPAND
-        : ExpandMode.COLLAPSE;
-
-    if (defaultMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
-      log('toggleMailboxFolder() refresh defaultMailboxTree');
-      defaultMailboxTree.refresh();
-      final _childrenItems = defaultMailboxTree.value.root.childrenItems ?? [];
-      _triggerScrollWhenExpandMailboxFolder(_childrenItems, selectedMailboxNode);
-    }
-
-    if (personalMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
-      log('toggleMailboxFolder() refresh folderMailboxTree');
-      personalMailboxTree.refresh();
-      final _childrenItems = personalMailboxTree.value.root.childrenItems ?? [];
-      _triggerScrollWhenExpandMailboxFolder(_childrenItems, selectedMailboxNode);
-    }
-
-    if (teamMailboxesTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
-      log('toggleMailboxFolder() refresh teamMailboxesTree');
-      teamMailboxesTree.refresh();
-      final _childrenItems = teamMailboxesTree.value.root.childrenItems ?? [];
-      _triggerScrollWhenExpandMailboxFolder(_childrenItems, selectedMailboxNode);
-    }
-  }
-
-  void _triggerScrollWhenExpandMailboxFolder(List<MailboxNode> childrenItems, MailboxNode selectedMailboxNode) async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    final _lastItem = childrenItems.last;
-
-    if (selectedMailboxNode.expandMode == ExpandMode.COLLAPSE) {
-      return;
-    }
-
-    if (_lastItem.mailboxNameAsString.contains(selectedMailboxNode.mailboxNameAsString)) {
-      mailboxListScrollController.animateTo(
-        mailboxListScrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeInToLinear);
-    } else {
-      mailboxListScrollController.animateTo(
-        mailboxListScrollController.offset + 100,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeInToLinear);
-    }
-  }
-
   void handleScrollEnable() {
     isMailboxListScrollable.value = mailboxListScrollController.hasClients && mailboxListScrollController.position.maxScrollExtent > 0;
   }
