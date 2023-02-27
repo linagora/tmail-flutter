@@ -99,7 +99,7 @@ abstract class BaseMailboxController extends BaseController {
     teamMailboxesTree.value = tupleTree.value3;
   }
 
-  void toggleMailboxFolder(MailboxNode selectedMailboxNode,ScrollController scrollController) {
+  void toggleMailboxFolder(MailboxNode selectedMailboxNode, ScrollController scrollController) {
     final newExpandMode = selectedMailboxNode.expandMode == ExpandMode.COLLAPSE
         ? ExpandMode.EXPAND
         : ExpandMode.COLLAPSE;
