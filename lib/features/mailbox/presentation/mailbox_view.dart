@@ -345,7 +345,8 @@ class MailboxView extends GetWidget<MailboxController>
                   );
                 })
                 ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-                ..addOnClickExpandMailboxNodeAction((mailboxNode) => controller.toggleMailboxFolder(mailboxNode))
+                ..addOnClickExpandMailboxNodeAction((mailboxNode) =>
+                  controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController))
                 ..addOnSelectMailboxNodeAction((mailboxNode) => controller.selectMailboxNode(mailboxNode))
               ).build()),
               children: _buildListChildTileWidget(context, mailboxNode)
