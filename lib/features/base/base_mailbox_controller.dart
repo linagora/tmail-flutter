@@ -99,7 +99,7 @@ abstract class BaseMailboxController extends BaseController {
     teamMailboxesTree.value = tupleTree.value3;
   }
 
-  void toggleMailboxFolder(MailboxNode selectedMailboxNode) {
+  void toggleMailboxFolder(MailboxNode selectedMailboxNode,ScrollController scrollController) {
     final newExpandMode = selectedMailboxNode.expandMode == ExpandMode.COLLAPSE
         ? ExpandMode.EXPAND
         : ExpandMode.COLLAPSE;
@@ -112,11 +112,45 @@ abstract class BaseMailboxController extends BaseController {
     if (personalMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
       log('toggleMailboxFolder() refresh folderMailboxTree');
       personalMailboxTree.refresh();
+      final _childrenItems = personalMailboxTree.value.root.childrenItems ?? [];
+      _triggerScrollWhenExpandMailboxFolder(
+        _childrenItems,
+        selectedMailboxNode,
+        scrollController);
     }
 
     if (teamMailboxesTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
       log('toggleMailboxFolder() refresh teamMailboxesTree');
       teamMailboxesTree.refresh();
+      final _childrenItems = teamMailboxesTree.value.root.childrenItems ?? [];
+      _triggerScrollWhenExpandMailboxFolder(
+          _childrenItems,
+          selectedMailboxNode,
+          scrollController);
+    }
+  }
+
+  void _triggerScrollWhenExpandMailboxFolder(
+      List<MailboxNode> childrenItems,
+      MailboxNode selectedMailboxNode,
+      ScrollController scrollController) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final _lastItem = childrenItems.last;
+
+    if (selectedMailboxNode.expandMode == ExpandMode.COLLAPSE) {
+      return;
+    }
+
+    if (_lastItem.mailboxNameAsString.contains(selectedMailboxNode.mailboxNameAsString)) {
+      scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInToLinear);
+    } else {
+      scrollController.animateTo(
+          scrollController.offset + 100,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInToLinear);
     }
   }
 
