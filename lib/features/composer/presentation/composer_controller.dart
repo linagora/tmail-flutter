@@ -750,6 +750,13 @@ class ComposerController extends BaseController {
     final sentMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent];
     final outboxMailboxId = mailboxDashBoardController.outboxMailbox?.id;
     final userProfile = mailboxDashBoardController.userProfile.value;
+
+    if (kIsWeb) {
+      closeComposerWeb();
+    } else {
+      popBack();
+    }
+
     if (arguments != null && accountId != null && userProfile != null) {
       final email = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId);
       final submissionCreateId = Id(_uuid.v1());
@@ -774,12 +781,6 @@ class ComposerController extends BaseController {
       );
 
       uploadController.clearInlineFileUploaded();
-    }
-
-    if (kIsWeb) {
-      closeComposerWeb();
-    } else {
-      popBack();
     }
   }
 
