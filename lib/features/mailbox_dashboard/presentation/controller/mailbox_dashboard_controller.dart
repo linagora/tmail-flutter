@@ -260,7 +260,9 @@ class MailboxDashBoardController extends ReloadableController {
             _appToast.showToastWithIcon(
                 currentOverlayContext!,
                 message: AppLocalizations.of(currentContext!).your_email_being_sent,
-                icon: _imagePaths.icSendToast);
+                icon: _imagePaths.icSendToast,
+                delayTime: const Duration(seconds: 1),
+            );
           }
         } else if (success is GetEmailStateToRefreshSuccess) {
           dispatchEmailUIAction(RefreshChangeEmailAction(success.storedState));
