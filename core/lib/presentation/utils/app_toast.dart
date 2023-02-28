@@ -148,7 +148,8 @@ class AppToast {
   void showToastWithIcon(BuildContext context, {
       String? message, String? icon, Color? bgColor, Color? iconColor,
       Color? textColor, double? radius, EdgeInsets? padding,
-      TextStyle? textStyle, double? widthToast, Duration? toastLength}) {
+      TextStyle? textStyle, double? widthToast, Duration? toastLength,
+      Duration? delayTime}) async {
     double sizeWidth = context.width > 360 ? 360 : context.width - 40;
     final toast = Material(
       color: bgColor ?? Colors.white,
@@ -181,6 +182,9 @@ class AppToast {
       ),
     );
     fToast.init(context);
+    if (delayTime != null) {
+      await Future.delayed(delayTime);
+    }
     fToast.showToast(
       child: toast,
       gravity: ToastGravity.BOTTOM,
