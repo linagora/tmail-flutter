@@ -54,10 +54,10 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           onTap: () => controller.clearFocusEditor(context),
           child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.95,
-            child: SafeArea(
-                child: BuildUtils.isWeb ? Scaffold(body: _buildBodyMobile(context)) : _buildBodyMobile(context),
-              ),
-            )
+            child: BuildUtils.isWeb
+              ? Scaffold(body: _buildBodyMobile(context))
+              : _buildBodyMobile(context)
+          )
         ),
         landscapeMobile: Scaffold(
             backgroundColor: Colors.white,
@@ -164,7 +164,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
       physics: const ClampingScrollPhysics(),
       child: Padding(
       padding: const EdgeInsets.all(24.0),
-        child: Column(children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Obx(() => (IdentityInputFieldBuilder(
             AppLocalizations.of(context).name,
             controller.errorNameIdentity.value,
@@ -237,9 +237,8 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           const SizedBox(height: 8),
           PointerInterceptor(
             child: Container(
-              height: 300,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
                 color: Colors.white,
               ),
@@ -361,84 +360,78 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         ? _buildHtmlEditorWeb(context, controller.contentHtmlEditor ?? '')
         : _buildHtmlEditor(context, initialContent: controller.contentHtmlEditor ?? '');
 
-    return SizedBox(
-      height: 300,
-      child: Column(
-        children: [
-          if(BuildUtils.isWeb)
-            ToolbarRichTextWebBuilder(
-              richTextWebController: controller.richTextWebController,
-              padding: const EdgeInsets.only(top: 22, bottom: 8.0, left: 24, right: 12)),
-          htmlEditor,
-        ],
-      ),
+    return Column(
+      children: [
+        if(BuildUtils.isWeb)
+          ToolbarRichTextWebBuilder(
+            richTextWebController: controller.richTextWebController,
+            padding: const EdgeInsets.only(top: 22, bottom: 8.0, left: 24, right: 12)),
+        htmlEditor,
+      ],
     );
   }
 
   Widget _buildHtmlEditorWeb(BuildContext context, String initContent) {
     log('IdentityCreatorView::_buildHtmlEditorWeb(): initContent: $initContent');
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 14.0, right: 2.0),
-        child: html_editor_browser.HtmlEditor(
-          key: const Key('identity_create_editor_web'),
-          controller: controller.richTextWebController.editorController,
-          htmlEditorOptions: const HtmlEditorOptions(
-            hint: '',
-            darkMode: false,
-            customBodyCssStyle: bodyCssStyleForEditor),
-          blockQuotedContent: initContent,
-          htmlToolbarOptions: const HtmlToolbarOptions(
-              toolbarType: ToolbarType.hide,
-              defaultToolbarButtons: []),
-          otherOptions: const OtherOptions(height: 550),
-          callbacks: Callbacks(onBeforeCommand: (currentHtml) {
-            log('IdentityCreatorView::_buildHtmlEditorWeb(): onBeforeCommand : $currentHtml');
-            controller.updateContentHtmlEditor(currentHtml);
-          }, onChangeContent: (changed) {
-            log('IdentityCreatorView::_buildHtmlEditorWeb(): onChangeContent : $changed');
-            controller.updateContentHtmlEditor(changed);
-          }, onInit: () {
-            log('IdentityCreatorView::_buildHtmlEditorWeb(): onInit');
-            controller.updateContentHtmlEditor(initContent);
-            controller.richTextWebController.setFullScreenEditor();
-            controller.richTextWebController.setEnableCodeView();
-          }, onFocus: () {
-            log('IdentityCreatorView::_buildHtmlEditorWeb(): onFocus');
-            FocusManager.instance.primaryFocus?.unfocus();
-            Future.delayed(const Duration(milliseconds: 500), () {
-              controller.richTextWebController.editorController.setFocus();
-            });
-            controller.richTextWebController.closeAllMenuPopup();
-          }, onChangeSelection: (settings) {
-            controller.richTextWebController.onEditorSettingsChange(settings);
-          }, onChangeCodeview: (contentChanged) {
-            log('IdentityCreatorView::_buildHtmlEditorWeb(): onChangeCodeView : $contentChanged');
-            controller.updateContentHtmlEditor(contentChanged);
-          }),
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 14.0, right: 2.0),
+      child: html_editor_browser.HtmlEditor(
+        key: const Key('identity_create_editor_web'),
+        controller: controller.richTextWebController.editorController,
+        htmlEditorOptions: const HtmlEditorOptions(
+          hint: '',
+          darkMode: false,
+          customBodyCssStyle: bodyCssStyleForEditor),
+        blockQuotedContent: initContent,
+        htmlToolbarOptions: const HtmlToolbarOptions(
+            toolbarType: ToolbarType.hide,
+            defaultToolbarButtons: []),
+        otherOptions: const OtherOptions(height: 150),
+        callbacks: Callbacks(onBeforeCommand: (currentHtml) {
+          log('IdentityCreatorView::_buildHtmlEditorWeb(): onBeforeCommand : $currentHtml');
+          controller.updateContentHtmlEditor(currentHtml);
+        }, onChangeContent: (changed) {
+          log('IdentityCreatorView::_buildHtmlEditorWeb(): onChangeContent : $changed');
+          controller.updateContentHtmlEditor(changed);
+        }, onInit: () {
+          log('IdentityCreatorView::_buildHtmlEditorWeb(): onInit');
+          controller.updateContentHtmlEditor(initContent);
+          controller.richTextWebController.setFullScreenEditor();
+          controller.richTextWebController.setEnableCodeView();
+        }, onFocus: () {
+          log('IdentityCreatorView::_buildHtmlEditorWeb(): onFocus');
+          FocusManager.instance.primaryFocus?.unfocus();
+          Future.delayed(const Duration(milliseconds: 500), () {
+            controller.richTextWebController.editorController.setFocus();
+          });
+          controller.richTextWebController.closeAllMenuPopup();
+        }, onChangeSelection: (settings) {
+          controller.richTextWebController.onEditorSettingsChange(settings);
+        }, onChangeCodeview: (contentChanged) {
+          log('IdentityCreatorView::_buildHtmlEditorWeb(): onChangeCodeView : $contentChanged');
+          controller.updateContentHtmlEditor(contentChanged);
+        }),
       ),
     );
   }
 
   Widget _buildHtmlEditor(BuildContext context, {String? initialContent}) {
-    final richTextMobileTabletController = controller.richTextMobileTabletController;
-    return Focus(
-      focusNode: controller.htmlEditorNode,
+    return Padding(
+      padding: const EdgeInsets.all(16),
       child: html_editor_mobile.HtmlEditor(
-        key: const Key('identity_create_editor'),
-        minHeight: 111,
+        key: controller.htmlKey,
+        minHeight: controller.htmlEditorMinHeight,
         addDefaultSelectionMenuItems: false,
         initialContent: initialContent ?? '',
         onCreated: (editorApi) {
-          richTextMobileTabletController.htmlEditorApi = editorApi;
-            controller.keyboardRichTextController.onCreateHTMLEditor(
-              editorApi,
-              onEnterKeyDown: controller.onEnterKeyDown,
-              context: context,
-            );
+          controller.keyboardRichTextController.onCreateHTMLEditor(
+            editorApi,
+            onEnterKeyDown: controller.onEnterKeyDownOnMobile,
+            onFocus: controller.onFocusHTMLEditorOnMobile,
+            context: context
+          );
         },
-      )
+      ),
     );
   }
 
