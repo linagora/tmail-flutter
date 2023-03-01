@@ -50,14 +50,47 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
   Widget build(BuildContext context) {
     return ResponsiveWidget(
         responsiveUtils: _responsiveUtils,
-        mobile: GestureDetector(
-          onTap: () => controller.clearFocusEditor(context),
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.95,
-            child: BuildUtils.isWeb
-              ? Scaffold(body: _buildBodyMobile(context))
-              : _buildBodyMobile(context)
-          )
+        mobile: Card(
+          margin: EdgeInsets.zero,
+          borderOnForeground: false,
+          color: Colors.transparent,
+          child: SafeArea(
+            top: !BuildUtils.isWeb,
+            bottom: false,
+            left: false,
+            right: false,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(16),
+                topLeft: Radius.circular(16)),
+              child: GestureDetector(
+                onTap: () => controller.clearFocusEditor(context),
+                child: Scaffold(
+                  backgroundColor: Colors.white,
+                  body: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(16),
+                        topLeft: Radius.circular(16)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColor.colorShadowLayerBottom,
+                          blurRadius: 96,
+                          spreadRadius: 96,
+                          offset: Offset.zero),
+                        BoxShadow(
+                          color: AppColor.colorShadowLayerTop,
+                          blurRadius: 2,
+                          spreadRadius: 2,
+                          offset: Offset.zero),
+                      ]),
+                    child: _buildBodyMobile(context),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
         landscapeMobile: Scaffold(
             backgroundColor: Colors.white,
@@ -163,7 +196,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
       controller: controller.scrollController,
       physics: const ClampingScrollPhysics(),
       child: Padding(
-      padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Obx(() => (IdentityInputFieldBuilder(
             AppLocalizations.of(context).name,
@@ -223,27 +256,21 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           .build()
           ),
           const SizedBox(height: 32),
-          Row(
-            children: [
-              Text(AppLocalizations.of(context).signature,
-                style: const TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14,
-                  color: AppColor.colorContentEmail,
-                ),
-              ),
-            ],
+          Text(AppLocalizations.of(context).signature,
+            style: const TextStyle(
+              fontWeight: FontWeight.normal,
+              fontSize: 14,
+              color: AppColor.colorContentEmail,
+            ),
           ),
           const SizedBox(height: 8),
-          PointerInterceptor(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
-                color: Colors.white,
-              ),
-              child: _buildSignatureHtmlTemplate(context),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
+              color: Colors.white,
             ),
+            child: _buildSignatureHtmlTemplate(context),
           ),
           if (_responsiveUtils.isTablet(context) || _responsiveUtils.isMobile(context))...[
             Obx(() => Padding(

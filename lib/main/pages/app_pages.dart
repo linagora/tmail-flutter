@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/destination_picker/presentation/destinati
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_view.dart';
 import 'package:tmail_ui_user/features/contact/presentation/contact_view.dart' deferred as contact_view;
+import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_bindings.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart' deferred as rules_filter_creator;
 import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
@@ -16,6 +17,7 @@ import 'package:tmail_ui_user/features/login/presentation/login_view.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/login/presentation/login_view_web.dart' deferred as login;
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_view.dart' deferred as mailbox_creator;
+import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart' deferred as identity_creator;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view_web.dart' deferred as mailbox_dashboard;
@@ -107,6 +109,14 @@ class AppPages {
             () => search_mailbox_view.SearchMailboxView()
           ),
           binding: SearchMailboxBindings()),
+        GetPage(
+          name: AppRoutes.identityCreator,
+          opaque: false,
+          page: () => DeferredWidget(
+            identity_creator.loadLibrary,
+            () => identity_creator.IdentityCreatorView()
+          ),
+          binding: IdentityCreatorBindings()),
       ]
   ];
 
