@@ -56,6 +56,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_co
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
@@ -162,9 +163,9 @@ class ComposerController extends BaseController {
       final newContentHtml = contentHtml.removeEditorStartTag();
       if (changedEmail) {
         return newContentHtml;
-      } else if (_isMobileApp && identitySelected.value?.textSignature?.value.isNotEmpty == true) {
+      } else if (_isMobileApp && identitySelected.value?.signatureAsString.isNotEmpty == true) {
         final contentHtmlWithSignature =
-            '$newContentHtml${identitySelected.value?.textSignature?.value.toSignatureBlock()}';
+            '$newContentHtml${identitySelected.value?.signatureAsString.toSignatureBlock()}';
         log('ComposerController::_getEmailBodyText():MOBILE:SIGNATURE: $contentHtmlWithSignature');
         return contentHtmlWithSignature;
       } else {
@@ -922,10 +923,8 @@ class ComposerController extends BaseController {
       oldEmailBody = BuildUtils.isWeb ? oldEmailBody : '\n$oldEmailBody\n';
     }
     if (BuildUtils.isWeb) {
-      if (identitySelected.value?.htmlSignature?.value.isNotEmpty == true) {
-        oldEmailBody = '$oldEmailBody${identitySelected.value?.htmlSignature?.value.toSignatureBlock()}';
-      } else if (identitySelected.value?.textSignature?.value.isNotEmpty == true) {
-        oldEmailBody = '$oldEmailBody${identitySelected.value?.textSignature?.value.toSignatureBlock()}';
+      if (identitySelected.value?.signatureAsString.isNotEmpty == true) {
+        oldEmailBody = '$oldEmailBody${identitySelected.value?.signatureAsString.toSignatureBlock()}';
       }
     }
 
@@ -1330,8 +1329,8 @@ class ComposerController extends BaseController {
 
   bool get _isMobileApp {
     return !BuildUtils.isWeb
-        && currentContext != null
-        && _responsiveUtils.isMobile(currentContext!);
+      && currentContext != null
+      && (_responsiveUtils.isLandscapeMobile(currentContext!) || _responsiveUtils.isPortraitMobile(currentContext!));
   }
 
   Future<void> _applyIdentityForAllFieldComposer(
@@ -1354,12 +1353,8 @@ class ComposerController extends BaseController {
       await _applyBccEmailAddressFromIdentity(newIdentity.bcc!);
     }
 
-    if (!_isMobileApp) {
-      if (newIdentity.htmlSignature?.value.isNotEmpty == true) {
-        _applySignature(newIdentity.htmlSignature!);
-      } else if (newIdentity.textSignature?.value.isNotEmpty == true) {
-        _applySignature(newIdentity.textSignature!);
-      }
+    if (!_isMobileApp && newIdentity.signatureAsString.isNotEmpty == true) {
+      _applySignature(newIdentity.signatureAsString);
     }
 
     return Future.value(null);
@@ -1391,8 +1386,8 @@ class ComposerController extends BaseController {
     _updateStatusEmailSendButton();
   }
 
-  void _applySignature(Signature signature) {
-    final signatureAsHtml = '--<br><br>${signature.value}';
+  void _applySignature(String signature) {
+    final signatureAsHtml = '--<br><br>$signature';
     log('ComposerController::_applySignature(): $signatureAsHtml');
     if (BuildUtils.isWeb) {
       richTextWebController.editorController.insertSignature(signatureAsHtml);
