@@ -337,115 +337,100 @@ class ComposerView extends GetWidget<ComposerController>
   }
 
   Widget _buildEmailAddress(BuildContext context) {
-    return Focus(
-      onFocusChange: (focus) {
-        if(focus) {
-          controller.htmlEditorApi?.unfocus();
-          controller.keyboardRichTextController.hideRichTextView();
-        }
-      },
-      child: Column(
-        children: [
-          Obx(() => Padding(
-              padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-              child: (EmailAddressInputBuilder(context, imagePaths,
-                      PrefixEmailAddress.to,
-                      controller.listToEmailAddress,
-                      controller.listEmailAddressType,
-                      expandMode: controller.toAddressExpandMode.value,
-                      controller: controller.toEmailAddressController,
-                      focusNode: controller.toAddressFocusNode,
-                      autoDisposeFocusNode: false,
-                      keyTagEditor: controller.keyToEmailTagEditor,
-                      isInitial: controller.isInitialRecipient.value)
-                  ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
-                  ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
-                  ..addOnAddEmailAddressTypeAction((prefixEmailAddress) => controller.addEmailAddressType(prefixEmailAddress))
-                  ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                  ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
-                .build()
-          )),
-          Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
-              ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-              : const SizedBox.shrink()),
-          Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
-              ? Padding(
-                  padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                  child: (EmailAddressInputBuilder(context, imagePaths,
-                          PrefixEmailAddress.cc,
-                          controller.listCcEmailAddress,
-                          controller.listEmailAddressType,
-                          expandMode: controller.ccAddressExpandMode.value,
-                          controller: controller.ccEmailAddressController,
-                          keyTagEditor: controller.keyCcEmailTagEditor,
-                          isInitial: controller.isInitialRecipient.value,)
-                      ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
-                      ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
-                      ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
-                      ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                      ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
-                    .build())
-              : const SizedBox.shrink()
-          ),
-          Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
-              ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-              : const SizedBox.shrink()),
-          Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
-              ? Padding(
-                  padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
-                  child: (EmailAddressInputBuilder(context, imagePaths,
-                          PrefixEmailAddress.bcc,
-                          controller.listBccEmailAddress,
-                          controller.listEmailAddressType,
-                          expandMode: controller.bccAddressExpandMode.value,
-                          controller: controller.bccEmailAddressController,
-                          keyTagEditor: controller.keyBccEmailTagEditor,
-                          isInitial: controller.isInitialRecipient.value,)
-                      ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
-                      ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
-                      ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
-                      ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                      ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
-                    .build())
-              : const SizedBox.shrink()
-          ),
-        ],
-      ),
+    return Column(
+      children: [
+        Obx(() => Padding(
+            padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+            child: (EmailAddressInputBuilder(context, imagePaths,
+                    PrefixEmailAddress.to,
+                    controller.listToEmailAddress,
+                    controller.listEmailAddressType,
+                    expandMode: controller.toAddressExpandMode.value,
+                    controller: controller.toEmailAddressController,
+                    focusNode: controller.toAddressFocusNode,
+                    autoDisposeFocusNode: false,
+                    keyTagEditor: controller.keyToEmailTagEditor,
+                    isInitial: controller.isInitialRecipient.value)
+                ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
+                ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
+                ..addOnAddEmailAddressTypeAction((prefixEmailAddress) => controller.addEmailAddressType(prefixEmailAddress))
+                ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+                ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+              .build()
+        )),
+        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
+            ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+            : const SizedBox.shrink()),
+        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
+            ? Padding(
+                padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+                child: (EmailAddressInputBuilder(context, imagePaths,
+                        PrefixEmailAddress.cc,
+                        controller.listCcEmailAddress,
+                        controller.listEmailAddressType,
+                        expandMode: controller.ccAddressExpandMode.value,
+                        controller: controller.ccEmailAddressController,
+                        keyTagEditor: controller.keyCcEmailTagEditor,
+                        isInitial: controller.isInitialRecipient.value,)
+                    ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
+                    ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
+                    ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
+                    ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+                    ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                  .build())
+            : const SizedBox.shrink()
+        ),
+        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
+            ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+            : const SizedBox.shrink()),
+        Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
+            ? Padding(
+                padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+                child: (EmailAddressInputBuilder(context, imagePaths,
+                        PrefixEmailAddress.bcc,
+                        controller.listBccEmailAddress,
+                        controller.listEmailAddressType,
+                        expandMode: controller.bccAddressExpandMode.value,
+                        controller: controller.bccEmailAddressController,
+                        keyTagEditor: controller.keyBccEmailTagEditor,
+                        isInitial: controller.isInitialRecipient.value,)
+                    ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
+                    ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
+                    ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
+                    ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
+                    ..addOnSuggestionEmailAddress((word) => controller.getAutoCompleteSuggestion(word)))
+                  .build())
+            : const SizedBox.shrink()
+        ),
+      ],
     );
   }
 
   Widget _buildSubjectEmail(BuildContext context) {
-    return Focus(
-      onFocusChange: (focus) {
-        if(focus) {
-          controller.htmlEditorApi?.unfocus();
-          controller.keyboardRichTextController.hideRichTextView();
-        }
-      },
-      child: Row(
-          children: [
-            Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Text(
-                    '${AppLocalizations.of(context).subject_email}:',
-                    style: const TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput))),
-            Expanded(
-                child: FocusScope(child: Focus(
-                  onFocusChange: (focus) => controller.onSubjectEmailFocusChange(focus),
-                  child: (TextFieldBuilder()
-                      ..key(const Key('subject_email_input'))
-                      ..cursorColor(AppColor.colorTextButton)
-                      ..maxLines(responsiveUtils.isMobile(context) ? null : 1)
-                      ..addFocusNode(controller.subjectEmailInputFocusNode)
-                      ..onChange((value) => controller.setSubjectEmail(value))
-                      ..textStyle(const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.normal))
-                      ..textDecoration(const InputDecoration(contentPadding: EdgeInsets.zero, border: InputBorder.none))
-                      ..addController(controller.subjectEmailInputController))
-                    .build(),
-                ))
+    log('ComposerView::_buildSubjectEmail(): ');
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: Text(
+            '${AppLocalizations.of(context).subject_email}:',
+            style: const TextStyle(
+              fontSize: 15,
+              color: AppColor.colorHintEmailAddressInput
             )
-          ]
-      ),
+          )
+        ),
+        Expanded(child: (TextFieldBuilder()
+          ..key(const Key('subject_email_input'))
+          ..cursorColor(AppColor.colorTextButton)
+          ..maxLines(responsiveUtils.isMobile(context) ? null : 1)
+          ..addFocusNode(controller.subjectEmailInputFocusNode)
+          ..onChange((value) => controller.setSubjectEmail(value))
+          ..textStyle(const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.normal))
+          ..textDecoration(const InputDecoration(contentPadding: EdgeInsets.zero, border: InputBorder.none))
+          ..addController(controller.subjectEmailInputController))
+        .build())
+      ]
     );
   }
 
