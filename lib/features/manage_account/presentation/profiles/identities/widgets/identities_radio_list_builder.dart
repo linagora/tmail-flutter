@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_list_tile_builder.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/signature_of_identity_builder.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/signature_builder.dart';
 
 class IdentitiesRadioListBuilder extends StatelessWidget {
 
@@ -46,7 +46,7 @@ class IdentitiesRadioListBuilder extends StatelessWidget {
           ...[
             _buildListIdentityView(context),
             Container(height: 1, color: AppColor.attachmentFileBorderColor),
-            Obx(() => SignatureOfIdentityBuilder(identity: controller.identitySelected.value!))
+            Obx(() => SignatureBuilder(identity: controller.identitySelected.value!))
           ]
         else
           _buildListIdentityView(context)
@@ -63,7 +63,7 @@ class IdentitiesRadioListBuilder extends StatelessWidget {
             _buildListIdentityView(context),
             Container(width: 1, color: AppColor.attachmentFileBorderColor),
             Expanded(
-              child: Obx(() => SignatureOfIdentityBuilder(identity: controller.identitySelected.value!)),
+              child: Obx(() => SignatureBuilder(identity: controller.identitySelected.value!)),
             )
           ]
         else
