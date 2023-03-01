@@ -11,8 +11,6 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
@@ -32,6 +30,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/identit
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/delete_identity_dialog_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class IdentitiesController extends BaseController {
@@ -40,7 +39,6 @@ class IdentitiesController extends BaseController {
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _identityCreatorBindings = IdentityCreatorBindings();
 
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final CreateNewIdentityInteractor _createNewIdentityInteractor;
@@ -165,8 +163,9 @@ class IdentitiesController extends BaseController {
               }
             });
       } else {
-        final newIdentityArguments =
-            await _getIdentityRequest(context, arguments);
+        final newIdentityArguments = await push(
+          AppRoutes.identityCreator,
+          arguments: arguments);
 
         if (newIdentityArguments is CreateNewIdentityRequest) {
           _createNewIdentityAction(accountId, newIdentityArguments);
@@ -175,25 +174,6 @@ class IdentitiesController extends BaseController {
         }
       }
     }
-  }
-
-  Future<dynamic> _getIdentityRequest(
-    BuildContext context, 
-    dynamic arguments
-  ) async {
-    return await showModalBottomSheet(
-        enableDrag: false,
-        context: context,
-        isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16.0), 
-            topRight: Radius.circular(16.0)),
-        ),
-        builder: (context) {
-          _identityCreatorBindings.dependencies();
-          return IdentityCreatorView.fromArguments(arguments);
-        });
   }
 
   void _createNewIdentityAction(
@@ -308,7 +288,9 @@ class IdentitiesController extends BaseController {
               }
             });
       } else {
-        final newIdentityArguments = await _getIdentityRequest(context, arguments);
+        final newIdentityArguments = await push(
+          AppRoutes.identityCreator,
+          arguments: arguments);
 
         if (newIdentityArguments is CreateNewIdentityRequest) {
           _createNewIdentityAction(accountId, newIdentityArguments);
