@@ -544,28 +544,29 @@ class ComposerView extends GetWidget<ComposerController>
 
   Widget _buildSubjectEmail(BuildContext context) {
     return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-              padding: const EdgeInsets.only(right: 8, top: 16),
-              child: Text(
-                '${AppLocalizations.of(context).subject_email}:',
-                style: const TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput))),
-          Expanded(
-              child: FocusScope(child: Focus(
-                onFocusChange: (focus) => controller.onSubjectEmailFocusChange(focus),
-                child: (TextFieldBuilder()
-                    ..key(const Key('subject_email_input'))
-                    ..cursorColor(AppColor.colorTextButton)
-                    ..addFocusNode(controller.subjectEmailInputFocusNode)
-                    ..onChange((value) => controller.setSubjectEmail(value))
-                    ..textStyle(const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.normal))
-                    ..textDecoration(const InputDecoration(contentPadding: EdgeInsets.zero, border: InputBorder.none))
-                    ..addController(controller.subjectEmailInputController))
-                  .build(),
-              ))
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8, top: 16),
+          child: Text(
+            '${AppLocalizations.of(context).subject_email}:',
+            style: const TextStyle(
+              fontSize: 15,
+              color: AppColor.colorHintEmailAddressInput
+            )
           )
-        ]
+        ),
+        Expanded(child: (TextFieldBuilder()
+          ..key(const Key('subject_email_input'))
+          ..cursorColor(AppColor.colorTextButton)
+          ..addFocusNode(controller.subjectEmailInputFocusNode)
+          ..onChange((value) => controller.setSubjectEmail(value))
+          ..textStyle(const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.normal))
+          ..textDecoration(const InputDecoration(contentPadding: EdgeInsets.zero, border: InputBorder.none))
+          ..addController(controller.subjectEmailInputController))
+        .build()
+        )
+      ]
     );
   }
 

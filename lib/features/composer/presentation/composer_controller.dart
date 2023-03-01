@@ -314,6 +314,17 @@ class ComposerController extends BaseController {
   void createFocusNodeInput() {
     toAddressFocusNode = FocusNode();
     subjectEmailInputFocusNode = FocusNode();
+
+    subjectEmailInputFocusNode?.addListener(() {
+      log('ComposerController::createFocusNodeInput():subjectEmailInputFocusNode: ${subjectEmailInputFocusNode?.hasFocus}');
+      if (subjectEmailInputFocusNode?.hasFocus == true) {
+        if (!BuildUtils.isWeb) {
+          htmlEditorApi?.unfocus();
+        }
+        _collapseAllRecipient();
+        _autoCreateEmailTag();
+      }
+    });
   }
 
   void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi) {
@@ -322,14 +333,8 @@ class ComposerController extends BaseController {
       editorApi,
       onEnterKeyDown: _onEnterKeyDown,
       context: context,
+      onFocus: _onEditorFocusOnMobile
     );
-
-    richTextMobileTabletController.htmlEditorApi?.onFocus = () {
-      FocusManager.instance.primaryFocus?.unfocus();
-
-      _collapseAllRecipient();
-      _autoCreateEmailTag();
-    };
   }
 
   void _initEmail() {
@@ -1170,15 +1175,6 @@ class ComposerController extends BaseController {
     }
   }
 
-  void onSubjectEmailFocusChange(bool isFocus) {
-    log('ComposerController::onSubjectEmailFocusChange(): Focus: $isFocus');
-    if (isFocus) {
-      _collapseAllRecipient();
-      htmlEditorApi?.unfocus();
-      _autoCreateEmailTag();
-    }
-  }
-
   void onEditorFocusChange(bool isFocus) {
     log('ComposerController::onEditorFocusChange(): Focus: $isFocus');
     if (isFocus) {
@@ -1312,6 +1308,9 @@ class ComposerController extends BaseController {
           break;
       }
       _closeSuggestionBox();
+      if (!BuildUtils.isWeb) {
+        htmlEditorApi?.unfocus();
+      }
     } else {
       if (!BuildUtils.isWeb) {
         _collapseAllRecipient();
@@ -1505,6 +1504,13 @@ class ComposerController extends BaseController {
   void closeComposer() {
     FocusManager.instance.primaryFocus?.unfocus();
     popBack();
+  }
+
+  void _onEditorFocusOnMobile() {
+    if (Platform.isAndroid) {
+      _collapseAllRecipient();
+      _autoCreateEmailTag();
+    }
   }
 
   void _onEnterKeyDown() {
