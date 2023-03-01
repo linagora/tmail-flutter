@@ -18,7 +18,6 @@ import 'package:model/model.dart';
 import 'package:rich_text_composer/richtext_controller.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
@@ -56,8 +55,6 @@ class IdentityCreatorController extends BaseController {
   final bccOfIdentity = Rxn<EmailAddress>();
   final actionType = IdentityActionType.create.obs;
   final isDefaultIdentity = RxBool(false);
-  final htmlEditorNode = FocusNode(debugLabel: 'html_editor');
-  final identityCreatorBinding = IdentityCreatorBindings();
 
   late RichTextController keyboardRichTextController;
   late RichTextWebController richTextWebController;
@@ -75,8 +72,8 @@ class IdentityCreatorController extends BaseController {
   IdentityCreatorArguments? arguments;
   OnCreatedIdentityCallback? onCreatedIdentityCallback;
   VoidCallback? onDismissIdentityCreator;
+  ScrollController? scrollController;
 
-  final ScrollController scrollController = ScrollController();
   final GlobalKey htmlKey = GlobalKey();
   final htmlEditorMinHeight = 160;
 
@@ -110,6 +107,7 @@ class IdentityCreatorController extends BaseController {
     inputNameIdentityController = TextEditingController();
     inputBccIdentityController = TextEditingController();
     inputNameIdentityFocusNode = FocusNode();
+    scrollController = ScrollController();
   }
 
   @override
@@ -128,7 +126,6 @@ class IdentityCreatorController extends BaseController {
 
   @override
   void onClose() {
-    keyboardRichTextController.dispose();
     _disposeWidget();
     super.onClose();
   }
@@ -153,9 +150,11 @@ class IdentityCreatorController extends BaseController {
     _nameIdentity = identity?.name ?? '';
     inputNameIdentityController?.text = identity?.name ?? '';
 
-    if (identity?.htmlSignature?.value.isNotEmpty == true) {
-      updateContentHtmlEditor(arguments?.identity?.htmlSignature?.value ?? '');
-      signatureHtmlEditorController.setText(arguments?.identity?.htmlSignature?.value ?? '');
+    if (identity?.signatureAsString.isNotEmpty == true) {
+      updateContentHtmlEditor(arguments?.identity?.signatureAsString ?? '');
+      if (BuildUtils.isWeb) {
+        signatureHtmlEditorController.setText(arguments?.identity?.signatureAsString ?? '');
+      }
     }
   }
 
@@ -339,14 +338,13 @@ class IdentityCreatorController extends BaseController {
         newIdentity,
         isDefaultIdentity: isDefaultIdentity.value
       );
-      _disposeWidget();
 
       if (BuildUtils.isWeb) {
+        _disposeWidget();
         onCreatedIdentityCallback?.call(identityRequest);
       } else {
         popBack(result: identityRequest);
       }
-
     } else {
       final identityRequest = EditIdentityRequest(
           identityId: identity!.id!,
@@ -360,7 +358,6 @@ class IdentityCreatorController extends BaseController {
         popBack(result: identityRequest);
       }
     }
-    identityCreatorBinding.dispose();
   }
 
   void onCheckboxChanged() {
@@ -433,40 +430,42 @@ class IdentityCreatorController extends BaseController {
       onDismissIdentityCreator?.call();
     } else {
       popBack();
-      identityCreatorBinding.dispose();
     }
   }
 
   void _disposeWidget() {
+    keyboardRichTextController.dispose();
     inputNameIdentityFocusNode?.dispose();
     inputNameIdentityFocusNode = null;
     inputNameIdentityController?.dispose();
     inputNameIdentityController = null;
     inputBccIdentityController?.dispose();
     inputBccIdentityController = null;
-    scrollController.dispose();
+    scrollController?.dispose();
   }
 
   void onFocusHTMLEditorOnMobile() async {
-    if (htmlKey.currentContext != null) {
-      await Scrollable.ensureVisible(htmlKey.currentContext!);
+    if (scrollController != null) {
+      if (htmlKey.currentContext != null) {
+        await Scrollable.ensureVisible(htmlKey.currentContext!);
+      }
+      await Future.delayed(const Duration(milliseconds: 500), () {
+        final offset = scrollController!.position.pixels +
+          defaultKeyboardToolbarHeight +
+          htmlEditorMinHeight;
+        scrollController!.animateTo(
+          offset,
+          duration: const Duration(milliseconds: 1),
+          curve: Curves.linear,
+        );
+      });
     }
-    await Future.delayed(const Duration(milliseconds: 500), () {
-      final offset = scrollController.position.pixels +
-        defaultKeyboardToolbarHeight +
-        htmlEditorMinHeight;
-      scrollController.animateTo(
-        offset,
-        duration: const Duration(milliseconds: 1),
-        curve: Curves.linear,
-      );
-    });
   }
 
   void onEnterKeyDownOnMobile() {
-    if(scrollController.position.pixels < scrollController.position.maxScrollExtent) {
-      scrollController.animateTo(
-        scrollController.position.pixels + 20,
+    if (scrollController != null && scrollController!.position.pixels < scrollController!.position.maxScrollExtent) {
+      scrollController!.animateTo(
+        scrollController!.position.pixels + 20,
         duration: const Duration(milliseconds: 1),
         curve: Curves.linear,
       );
