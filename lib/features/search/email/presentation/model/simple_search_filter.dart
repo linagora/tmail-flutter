@@ -21,6 +21,8 @@ class SimpleSearchFilter with EquatableMixin {
   final EmailReceiveTimeType emailReceiveTimeType;
   final bool hasAttachment;
   final UTCDate? before;
+  final UTCDate? startDate;
+  final UTCDate? endDate;
 
   SimpleSearchFilter({
     Set<String>? from,
@@ -30,6 +32,8 @@ class SimpleSearchFilter with EquatableMixin {
     this.text,
     this.before,
     this.mailbox,
+    this.startDate,
+    this.endDate
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
         hasAttachment = hasAttachment ?? false,
@@ -43,6 +47,8 @@ class SimpleSearchFilter with EquatableMixin {
     Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
     Option<bool>? hasAttachmentOption,
     Option<UTCDate>? beforeOption,
+    Option<UTCDate>? startDateOption,
+    Option<UTCDate>? endDateOption
   }) {
     return SimpleSearchFilter(
       from: _getOptionParam(fromOption, from),
@@ -52,6 +58,8 @@ class SimpleSearchFilter with EquatableMixin {
       emailReceiveTimeType: _getOptionParam(emailReceiveTimeTypeOption, emailReceiveTimeType),
       hasAttachment: _getOptionParam(hasAttachmentOption, hasAttachment),
       before: _getOptionParam(beforeOption, before),
+      startDate: _getOptionParam(startDateOption, startDate),
+      endDate: _getOptionParam(endDateOption, endDate)
     );
   }
 
@@ -69,9 +77,9 @@ class SimpleSearchFilter with EquatableMixin {
         ? text?.value
         : null,
       inMailbox: mailbox?.id,
-      after: emailReceiveTimeType.toUTCDate(),
+      after: emailReceiveTimeType.getAfterDate(startDate),
       hasAttachment: hasAttachment == false ? null : hasAttachment,
-      before: before,
+      before: emailReceiveTimeType.getBeforeDate(endDate, before)
     );
 
     final listEmailCondition = {
@@ -93,7 +101,17 @@ class SimpleSearchFilter with EquatableMixin {
   }
 
   @override
-  List<Object?> get props => [from, to, text, mailbox, emailReceiveTimeType, hasAttachment, before];
+  List<Object?> get props => [
+    from,
+    to,
+    text,
+    mailbox,
+    emailReceiveTimeType,
+    hasAttachment,
+    before,
+    startDate,
+    endDate
+  ];
 }
 
 extension SearchEmailFilterExtension on SimpleSearchFilter {

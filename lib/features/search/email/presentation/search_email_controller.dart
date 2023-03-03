@@ -26,6 +26,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:model/user/user_profile.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/date_range_picker_mixin.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
@@ -44,6 +45,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_re
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
@@ -66,7 +68,8 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SearchEmailController extends BaseController
-    with EmailActionController {
+    with EmailActionController,
+        DateRangePickerMixin {
 
   final QuickSearchEmailInteractor _quickSearchEmailInteractor;
   final SaveRecentSearchInteractor _saveRecentSearchInteractor;
@@ -84,7 +87,7 @@ class SearchEmailController extends BaseController
   final listSuggestionSearch = RxList<PresentationEmail>();
   final simpleSearchFilter = Rx<SimpleSearchFilter>(SimpleSearchFilter());
   final searchIsRunning = RxBool(false);
-  final emailReceiveTimeType = Rxn<EmailReceiveTimeType>();
+  final emailReceiveTimeType = EmailReceiveTimeType.allTime.obs;
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
 
   late Debouncer<String> _deBouncerTime;
@@ -399,10 +402,7 @@ class SearchEmailController extends BaseController
       case QuickSearchFilter.hasAttachment:
         return simpleSearchFilter.value.hasAttachment == true;
       case QuickSearchFilter.last7Days:
-        if (emailReceiveTimeType.value != null) {
-          return true;
-        }
-        return simpleSearchFilter.value.emailReceiveTimeType == EmailReceiveTimeType.last7Days;
+        return true;
       default:
         return false;
     }
@@ -418,51 +418,57 @@ class SearchEmailController extends BaseController
         );
         break;
       case QuickSearchFilter.last7Days:
-        if (filterSelected) {
-          _setEmailReceiveTimeType(null);
-          _updateSimpleSearchFilter(
-            emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
-            beforeOption: const None()
-          );
-        } else {
-          _setEmailReceiveTimeType(EmailReceiveTimeType.last7Days);
-          _updateSimpleSearchFilter(
-            emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.last7Days),
-            beforeOption: const None()
-          );
-        }
+        _updateSimpleSearchFilter(
+          emailReceiveTimeTypeOption: optionOf(emailReceiveTimeType.value),
+          beforeOption: const None()
+        );
         break;
       default:
         break;
     }
   }
 
-  void _setEmailReceiveTimeType(EmailReceiveTimeType? receiveTimeType) {
+  void _setEmailReceiveTimeType(EmailReceiveTimeType receiveTimeType) {
     emailReceiveTimeType.value = receiveTimeType;
   }
 
-  void selectReceiveTimeQuickSearchFilter(BuildContext context, EmailReceiveTimeType? emailReceiveTimeType) {
+  void selectReceiveTimeQuickSearchFilter(BuildContext context, EmailReceiveTimeType emailReceiveTimeType) {
     popBack();
 
-    if (emailReceiveTimeType != null) {
+    if (emailReceiveTimeType == EmailReceiveTimeType.customRange) {
+      showMultipleViewDateRangePicker(
+        context,
+        simpleSearchFilter.value.startDate?.value.toLocal(),
+        simpleSearchFilter.value.endDate?.value.toLocal(),
+        onCallbackAction: (newStartDate, newEndDate) {
+          _updateSimpleSearchFilter(
+            emailReceiveTimeTypeOption: Some(emailReceiveTimeType),
+            textOption: searchQuery == null
+              ? Some(SearchQuery.initial())
+              : optionOf(simpleSearchFilter.value.text),
+            beforeOption: const None(),
+            startDateOption: optionOf(newStartDate?.toUTCDate()),
+            endDateOption: optionOf(newEndDate?.toUTCDate()),
+          );
+
+          _setEmailReceiveTimeType(emailReceiveTimeType);
+          _searchEmailAction(context);
+        }
+      );
+    } else {
       _updateSimpleSearchFilter(
         emailReceiveTimeTypeOption: Some(emailReceiveTimeType),
         textOption: searchQuery == null
           ? Some(SearchQuery.initial())
           : optionOf(simpleSearchFilter.value.text),
-        beforeOption: const None()
+        beforeOption: const None(),
+        startDateOption: const None(),
+        endDateOption: const None()
       );
-    } else {
-      _updateSimpleSearchFilter(
-        emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
-        textOption: searchQuery == null
-          ? Some(SearchQuery.initial())
-          : optionOf(simpleSearchFilter.value.text),
-        beforeOption: const None()
-      );
+
+      _setEmailReceiveTimeType(emailReceiveTimeType);
+      _searchEmailAction(context);
     }
-    _setEmailReceiveTimeType(emailReceiveTimeType);
-    _searchEmailAction(context);
   }
 
   void selectMailboxForSearchFilter(BuildContext context, PresentationMailbox? mailbox) async {
@@ -610,6 +616,8 @@ class SearchEmailController extends BaseController
     Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
     Option<bool>? hasAttachmentOption,
     Option<UTCDate>? beforeOption,
+    Option<UTCDate>? startDateOption,
+    Option<UTCDate>? endDateOption
   }) {
     simpleSearchFilter.value = simpleSearchFilter.value.copyWith(
       fromOption: fromOption,
@@ -619,6 +627,8 @@ class SearchEmailController extends BaseController
       emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
       hasAttachmentOption: hasAttachmentOption,
       beforeOption: beforeOption,
+      startDateOption: startDateOption,
+      endDateOption: endDateOption
     );
     simpleSearchFilter.refresh();
   }
