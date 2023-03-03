@@ -16,7 +16,6 @@ import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
@@ -59,8 +58,6 @@ class LoginController extends ReloadableController {
 
   final AuthenticationInteractor _authenticationInteractor;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
-  final AuthorizationInterceptors _authorizationInterceptors;
-  final AuthorizationInterceptors _authorizationIsolateInterceptors;
   final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
   final GetOIDCIsAvailableInteractor _getOIDCIsAvailableInteractor;
   final GetOIDCConfigurationInteractor _getOIDCConfigurationInteractor;
@@ -85,8 +82,6 @@ class LoginController extends ReloadableController {
     UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor,
     this._authenticationInteractor,
     this._dynamicUrlInterceptors,
-    this._authorizationInterceptors,
-    this._authorizationIsolateInterceptors,
     this._checkOIDCIsAvailableInteractor,
     this._getOIDCIsAvailableInteractor,
     this._getOIDCConfigurationInteractor,
@@ -99,8 +94,6 @@ class LoginController extends ReloadableController {
     this._saveLoginUsernameOnMobileInteractor,
     this._getAllRecentLoginUsernameOnMobileInteractor,
   ) : super(
-    logoutOidcInteractor,
-    deleteAuthorityOidcInteractor,
     getAuthenticatedAccountInteractor,
     updateAuthenticationAccountInteractor
   );
@@ -314,10 +307,10 @@ class LoginController extends ReloadableController {
     log('LoginController::_getTokenOIDCSuccess(): ${success.tokenOIDC.toString()}');
     loginState.value = LoginState(Right(success));
     _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
-    _authorizationInterceptors.setTokenAndAuthorityOidc(
+    authorizationInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
         newConfig: success.configuration);
-    _authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
+    authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
         newConfig: success.configuration);
     pushAndPop(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
@@ -330,8 +323,8 @@ class LoginController extends ReloadableController {
   void _loginSuccessAction(AuthenticationUserSuccess success) {
     loginState.value = LoginState(Right(success));
     _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
-    _authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);
-    _authorizationIsolateInterceptors.setBasicAuthorization(_userNameText, _passwordText);
+    authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);
+    authorizationIsolateInterceptors.setBasicAuthorization(_userNameText, _passwordText);
     pushAndPop(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
   }
 

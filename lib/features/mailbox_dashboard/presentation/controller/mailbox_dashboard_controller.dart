@@ -201,8 +201,6 @@ class MailboxDashBoardController extends ReloadableController {
     this._deleteMultipleEmailsPermanentlyInteractor,
     this._getEmailByIdInteractor,
   ) : super(
-    logoutOidcInteractor,
-    deleteAuthorityOidcInteractor,
     getAuthenticatedAccountInteractor,
     updateAuthenticationAccountInteractor
   );
