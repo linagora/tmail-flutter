@@ -5,7 +5,8 @@ import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
-import 'package:model/model.dart';
+import 'package:model/extensions/email_filter_condition_extension.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
@@ -52,9 +53,9 @@ class SearchEmailFilter with EquatableMixin {
     PresentationMailbox? mailbox,
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
-    UTCDate? before,
-    UTCDate? startDate,
-    UTCDate? endDate,
+    Option<UTCDate>? beforeOption,
+    Option<UTCDate>? startDateOption,
+    Option<UTCDate>? endDateOption,
   }) {
     return SearchEmailFilter(
       from: from ?? this.from,
@@ -65,9 +66,9 @@ class SearchEmailFilter with EquatableMixin {
       mailbox: mailbox ?? this.mailbox,
       emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
       hasAttachment: hasAttachment ?? this.hasAttachment,
-      before: before ?? this.before,
-      startDate: startDate ?? this.startDate,
-      endDate: endDate ?? this.endDate,
+      before: _getOptionParam(beforeOption, before),
+      startDate: _getOptionParam(startDateOption, startDate),
+      endDate: _getOptionParam(endDateOption, endDate),
     );
   }
 
@@ -84,17 +85,13 @@ class SearchEmailFilter with EquatableMixin {
       text: text?.value.trim().isNotEmpty == true
         ? text?.value
         : null,
-      inMailbox: mailbox == PresentationMailbox.unifiedMailbox
-          ? null
-          : mailbox?.id,
-      after: emailReceiveTimeType == EmailReceiveTimeType.customRange
-        ? startDate
-        : emailReceiveTimeType.toUTCDate(),
+      inMailbox: mailbox?.mailboxId,
+      after: emailReceiveTimeType.getAfterDate(startDate),
       hasAttachment: hasAttachment == false ? null : hasAttachment,
-      subject: subject,
-      before: emailReceiveTimeType == EmailReceiveTimeType.customRange
-        ? endDate
-        : before,
+      subject: subject?.trim().isNotEmpty == true
+        ? subject
+        : null,
+      before: emailReceiveTimeType.getBeforeDate(endDate, before)
     );
 
     final listEmailCondition = {
@@ -135,39 +132,4 @@ class SearchEmailFilter with EquatableMixin {
     startDate,
     endDate
   ];
-}
-
-extension SearchEmailFilterExtension on SearchEmailFilter {
-
-  SearchEmailFilter clearBeforeDate() {
-    return SearchEmailFilter(
-      from: from,
-      to: to,
-      text: text,
-      subject: subject,
-      notKeyword: notKeyword,
-      mailbox: mailbox,
-      emailReceiveTimeType: emailReceiveTimeType,
-      hasAttachment: hasAttachment,
-      before: null,
-      startDate: startDate,
-      endDate: endDate,
-    );
-  }
-
-  SearchEmailFilter withDateRange({UTCDate? startDate, UTCDate? endDate}) {
-    return SearchEmailFilter(
-      from: from,
-      to: to,
-      text: text,
-      subject: subject,
-      notKeyword: notKeyword,
-      mailbox: mailbox,
-      emailReceiveTimeType: emailReceiveTimeType,
-      hasAttachment: hasAttachment,
-      before: before,
-      startDate: startDate,
-      endDate: endDate,
-    );
-  }
 }

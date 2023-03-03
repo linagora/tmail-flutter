@@ -128,10 +128,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             },
             buttonActionCallback: (filterAction) {
               if (filterAction is QuickSearchFilter) {
-                dashBoardController.selectQuickSearchFilter(
-                  quickSearchFilter: filterAction,
-                  fromSuggestionBox: true,
-                );
+                dashBoardController.addFilterToSuggestionForm(filterAction);
               }
             },
             listActionPadding: const EdgeInsets.only(
@@ -210,43 +207,31 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   }
 
   Widget buildListButtonForQuickSearchForm(BuildContext context, QuickSearchFilter filter) {
-    final controller = dashBoardController.searchController;
-
     return Obx(() {
-      final isFilterSelected = dashBoardController.checkQuickSearchFilterSelected(
-          quickSearchFilter: filter);
+      final isFilterSelected = filter.isApplied(dashBoardController.searchController.listFilterOnSuggestionForm);
 
       return Chip(
         labelPadding: const EdgeInsets.only(
-            top: 2,
-            bottom: 2,
-            right: 10),
+          top: 2,
+          bottom: 2,
+          right: 10),
         label: Text(
-          filter.getTitle(
-              context,
-              receiveTimeType: controller.emailReceiveTimeType.value),
+          filter.getName(context),
           maxLines: 1,
           overflow: CommonTextStyle.defaultTextOverFlow,
           softWrap: CommonTextStyle.defaultSoftWrap,
-          style: filter.getTextStyle(
-              quickSearchFilterSelected: isFilterSelected),
+          style: filter.getTextStyle(isFilterSelected: isFilterSelected),
         ),
         avatar: SvgPicture.asset(
-            filter.getIcon(
-                imagePaths,
-                quickSearchFilterSelected: isFilterSelected),
-            width: 16,
-            height: 16,
-            fit: BoxFit.fill),
-        labelStyle: filter.getTextStyle(
-            quickSearchFilterSelected: isFilterSelected),
-        backgroundColor: filter.getBackgroundColor(
-            quickSearchFilterSelected: isFilterSelected),
+          filter.getIcon(imagePaths, isFilterSelected: isFilterSelected),
+          width: 16,
+          height: 16,
+          fit: BoxFit.fill),
+        labelStyle: filter.getTextStyle(isFilterSelected: isFilterSelected),
+        backgroundColor: filter.getBackgroundColor(isFilterSelected: isFilterSelected),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-              color: filter.getBackgroundColor(
-                  quickSearchFilterSelected: isFilterSelected)),
+          side: BorderSide(color: filter.getBackgroundColor(isFilterSelected: isFilterSelected)),
         ),
       );
     });

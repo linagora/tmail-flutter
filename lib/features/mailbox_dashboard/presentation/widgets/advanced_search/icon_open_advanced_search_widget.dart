@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -34,9 +35,8 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
                 width: 16,
                 height: 16),
             onTap: () {
-              if(searchController.isAdvancedSearchViewOpen.isFalse && searchController.advancedSearchIsActivated.isFalse){
-                advancedFilterController.initSearchFilterField(context);
-              }
+              log('IconOpenAdvancedSearchWidget::build(): clicked');
+              advancedFilterController.initSearchFilterField(context);
               searchController.showAdvancedFilterView(_parentContext);
             }),
       ),
