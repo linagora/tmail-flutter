@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/html_transformer/html_event_action.dart';
@@ -55,7 +54,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   late double actualHeight;
   double minHeight = 100;
   double minWidth = 300;
-  late double maxHeightForAndroid;
   String? _htmlData;
   late InAppWebViewController _webViewController;
   bool _isLoading = true;
@@ -65,7 +63,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   void initState() {
     super.initState();
     actualHeight = widget.heightContent;
-    maxHeightForAndroid = window.physicalSize.height;
     _htmlData = generateHtml(widget.contentHtml);
   }
 
@@ -162,12 +159,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       final scrollHeightWithBuffer = scrollHeight + 30.0;
       if (scrollHeightWithBuffer > minHeight) {
         setState(() {
-          // It hotfix for web_view crash on android device and waiting lib web_view update to fix this issue
-          if (Platform.isAndroid && scrollHeightWithBuffer > maxHeightForAndroid){
-            actualHeight = maxHeightForAndroid;
-          } else {
-            actualHeight = scrollHeightWithBuffer;
-          }
+          actualHeight = scrollHeightWithBuffer;
           _isLoading = false;
         });
       } else {
