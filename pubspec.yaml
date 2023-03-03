@@ -49,22 +49,22 @@ dependencies:
   rich_text_composer:
     git:
       url: https://github.com/linagora/rich-text-composer.git
-      ref: upgrade-latest-flutter-version
+      ref: master
 
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: upgrade-latest-flutter-version
+      ref: email_supported
 
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: upgrade-latest-flutter-version
+      ref: master
 
   super_tag_editor:
     git:
       url: https://github.com/dab246/super_tag_editor.git
-      ref: upgrade/upgrade-flutter-version-to-v3.7.5
+      ref: master
 
   contacts_service:
     git:
@@ -84,7 +84,7 @@ dependencies:
   flutter_date_range_picker:
     git:
       url: https://github.com/linagora/flutter-date-range-picker.git
-      ref: upgrade-latest-flutter-version
+      ref: master
 
   ### Dependencies from pub.dev ###
   cupertino_icons: ^1.0.5
