@@ -1515,13 +1515,6 @@ class AppLocalizations {
     );
   }
 
-  String get allMails {
-    return Intl.message(
-      'All mails',
-      name: 'allMails',
-    );
-  }
-
   String get allTime {
     return Intl.message(
       'All time',

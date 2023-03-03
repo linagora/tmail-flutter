@@ -2,14 +2,12 @@ import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_date_range_picker/multiple_view_date_range_picker.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
@@ -37,28 +35,24 @@ class AdvancedFilterController extends BaseController {
   final hasAttachment = false.obs;
   final lastTextForm = ''.obs;
   final lastTextTo = ''.obs;
+  final startDate = Rxn<DateTime>();
+  final endDate = Rxn<DateTime>();
+
   TextEditingController subjectFilterInputController = TextEditingController();
   TextEditingController hasKeyWordFilterInputController = TextEditingController();
   TextEditingController notKeyWordFilterInputController = TextEditingController();
-  TextEditingController dateFilterInputController = TextEditingController();
   TextEditingController mailBoxFilterInputController = TextEditingController();
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
 
   final SearchController searchController = Get.find<SearchController>();
   final MailboxDashBoardController _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-  final _appToast = Get.find<AppToast>();
-  final _imagePaths = Get.find<ImagePaths>();
 
   SearchEmailFilter get searchEmailFilter =>
       searchController.searchEmailFilter.value;
 
   final focusManager = InputFieldFocusManager.initial();
 
-  DateTime? _startDate, _endDate;
-
-  DateTime? get startDate => _startDate;
-
-  DateTime? get endDate => _endDate;
+  PresentationMailbox? _destinationMailboxSelected;
 
   late Worker _dashboardActionWorker;
 
@@ -83,17 +77,15 @@ class AdvancedFilterController extends BaseController {
 
   void cleanSearchFilter(BuildContext context) {
     searchController.clearSearchFilter();
-    dateFilterSelectedFormAdvancedSearch.value = EmailReceiveTimeType.allTime;
-    clearDateRangeOfFilter();
+    _updateDateRangeTime(EmailReceiveTimeType.allTime);
     subjectFilterInputController.text = '';
     hasKeyWordFilterInputController.text = '';
     notKeyWordFilterInputController.text = '';
-    dateFilterInputController.text = '';
     hasAttachment.value = false;
+    _destinationMailboxSelected = null;
     searchController.deactivateAdvancedSearch();
     searchController.isAdvancedSearchViewOpen.toggle();
-    _mailboxDashBoardController.searchEmail(
-        context, StringConvert.writeNullToEmpty(searchEmailFilter.text?.value));
+    _mailboxDashBoardController.searchEmail(context, StringConvert.writeNullToEmpty(searchEmailFilter.text?.value));
   }
 
   void _updateFilterEmailFromAdvancedSearchView() {
@@ -127,11 +119,12 @@ class AdvancedFilterController extends BaseController {
     }
 
     searchController.updateFilterEmail(
+      mailbox: _destinationMailboxSelected,
       subjectOption: optionOf(subjectFilterInputController.text),
       emailReceiveTimeType: dateFilterSelectedFormAdvancedSearch.value,
       hasAttachment: hasAttachment.value,
-      endDate: _endDate.toUTCDate(),
-      startDate: _startDate.toUTCDate()
+      startDateOption: optionOf(startDate.value?.toUTCDate()),
+      endDateOption: optionOf(endDate.value?.toUTCDate())
     );
   }
 
@@ -150,9 +143,9 @@ class AdvancedFilterController extends BaseController {
             context: context,
             arguments: arguments,
             onSelectedMailbox: (destinationMailbox) {
-              searchController.updateFilterEmail(mailbox: destinationMailbox);
-              mailBoxFilterInputController.text =
-                  StringConvert.writeNullToEmpty(destinationMailbox.name?.name);
+              _destinationMailboxSelected = destinationMailbox;
+              final mailboxName = destinationMailbox.name?.name;
+              mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(mailboxName);
             });
       } else {
         final destinationMailbox = await push(
@@ -160,9 +153,9 @@ class AdvancedFilterController extends BaseController {
             arguments: arguments);
 
         if (destinationMailbox is PresentationMailbox) {
-          searchController.updateFilterEmail(mailbox: destinationMailbox);
-          mailBoxFilterInputController.text =
-              StringConvert.writeNullToEmpty(destinationMailbox.name?.name);
+          _destinationMailboxSelected = destinationMailbox;
+          final mailboxName = destinationMailbox.name?.name;
+          mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(mailboxName);
         }
       }
     }
@@ -176,8 +169,7 @@ class AdvancedFilterController extends BaseController {
       searchController.deactivateAdvancedSearch();
     }
     if (!isAdvancedSearchHasApplied) {
-      final newSearchEmailFilter = searchController.searchEmailFilter.value.clearBeforeDate();
-      searchController.searchEmailFilter.value = newSearchEmailFilter;
+      searchController.updateFilterEmail(beforeOption: const None());
     }
     searchController.isAdvancedSearchViewOpen.toggle();
     _mailboxDashBoardController.searchEmail(
@@ -259,111 +251,55 @@ class AdvancedFilterController extends BaseController {
   }
 
   void initSearchFilterField(BuildContext context) {
-    searchController.updateFilterEmail(
-        mailbox: PresentationMailbox.unifiedMailbox);
-    subjectFilterInputController.text =
-        StringConvert.writeNullToEmpty(searchEmailFilter.subject);
-    hasKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(
-        searchEmailFilter.text?.value);
-    notKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(
-        searchEmailFilter.notKeyword.firstOrNull);
-    dateFilterInputController.text = StringConvert.writeNullToEmpty(
-        searchEmailFilter.emailReceiveTimeType.getTitle(
-            context,
-            startDate: _startDate,
-            endDate: _endDate));
-    mailBoxFilterInputController.text =
-        StringConvert.writeNullToEmpty(searchEmailFilter.mailbox?.name?.name);
-    dateFilterSelectedFormAdvancedSearch.value =
-        searchEmailFilter.emailReceiveTimeType;
+    subjectFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.subject);
+    hasKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.text?.value);
+    notKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.notKeyword.firstOrNull);
+    dateFilterSelectedFormAdvancedSearch.value = searchEmailFilter.emailReceiveTimeType;
+    _destinationMailboxSelected = searchEmailFilter.mailbox;
+    if (searchEmailFilter.mailbox == null) {
+      mailBoxFilterInputController.text = AppLocalizations.of(context).allMailboxes;
+    } else {
+      mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.mailbox?.name?.name);
+    }
     hasAttachment.value = searchEmailFilter.hasAttachment;
   }
 
   void selectDateRange(BuildContext context) {
-    showGeneralDialog(
-        context: context,
-        barrierDismissible: true,
-        barrierLabel: '',
-        barrierColor: Colors.black54,
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return Dialog(
-            elevation: 0,
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0)),
-            child: PointerInterceptor(
-              child: MultipleViewDateRangePicker(
-                confirmText: AppLocalizations.of(context).setDate,
-                cancelText: AppLocalizations.of(context).cancel,
-                last7daysTitle: AppLocalizations.of(context).last7Days,
-                last30daysTitle: AppLocalizations.of(context).last30Days,
-                last6monthsTitle: AppLocalizations.of(context).last6Months,
-                lastYearTitle: AppLocalizations.of(context).lastYears,
-                startDate: _startDate,
-                endDate: _endDate,
-                setDateActionCallback: ({startDate, endDate}) {
-                  _handleSelectDateRangeResult(context, startDate, endDate);
-                },
-              ),
-            )
-          );
-        }
+    searchController.showMultipleViewDateRangePicker(
+      context,
+      startDate.value,
+      endDate.value,
+      onCallbackAction: (startDate, endDate) =>
+        _updateDateRangeTime(
+          EmailReceiveTimeType.customRange,
+          newStartDate: startDate,
+          newEndDate: endDate
+        )
     );
   }
 
-  void _handleSelectDateRangeResult(
-      BuildContext context,
-      DateTime? startDate,
-      DateTime? endDate
-  ) {
-    log('AdvancedFilterController::_handleSelectDateRangeResult(): startDate: $startDate');
-    log('AdvancedFilterController::_handleSelectDateRangeResult(): endDate: $endDate');
-    if (startDate == null) {
-      _appToast.showToastWithIcon(
-          context,
-          textColor: Colors.black,
-          message: AppLocalizations.of(context).toastMessageErrorWhenSelectStartDateIsEmpty,
-          icon: _imagePaths.icNotConnection);
-      return;
-    }
-    if (endDate == null) {
-      _appToast.showToastWithIcon(
-          context,
-          textColor: Colors.black,
-          message: AppLocalizations.of(context).toastMessageErrorWhenSelectEndDateIsEmpty,
-          icon: _imagePaths.icNotConnection);
-      return;
-    }
-
-    if (endDate.isBefore(startDate)) {
-      _appToast.showToastWithIcon(
-          context,
-          textColor: Colors.black,
-          message: AppLocalizations.of(context).toastMessageErrorWhenSelectDateIsInValid,
-          icon: _imagePaths.icNotConnection);
-      return;
-    }
-
-    _startDate = startDate;
-    _endDate = endDate;
-    dateFilterSelectedFormAdvancedSearch.value = EmailReceiveTimeType.customRange;
-    dateFilterInputController.text = EmailReceiveTimeType.customRange.getTitle(
-        context,
-        startDate: startDate,
-        endDate: endDate);
-    dateFilterSelectedFormAdvancedSearch.refresh();
-
-    popBack();
+  void _updateDateRangeTime(EmailReceiveTimeType receiveTime, {DateTime? newStartDate, DateTime? newEndDate}) {
+    startDate.value = newStartDate;
+    endDate.value = newEndDate;
+    dateFilterSelectedFormAdvancedSearch.value = receiveTime;
   }
 
-  void clearDateRangeOfFilter() {
-    _startDate = null;
-    _endDate = null;
-
-    searchController.searchEmailFilter.value =
-        searchController.searchEmailFilter.value.withDateRange(
-          startDate: _startDate.toUTCDate(),
-          endDate: _endDate.toUTCDate());
+  void updateReceiveDateSearchFilter(BuildContext context, EmailReceiveTimeType receiveTime) {
+    if (receiveTime == EmailReceiveTimeType.customRange) {
+      searchController.showMultipleViewDateRangePicker(
+        context,
+        startDate.value,
+        endDate.value,
+        onCallbackAction: (startDate, endDate) =>
+          _updateDateRangeTime(
+            EmailReceiveTimeType.customRange,
+            newStartDate: startDate,
+            newEndDate: endDate
+          )
+      );
+    } else {
+      _updateDateRangeTime(receiveTime);
+    }
   }
 
   void _resetAllToOriginalValue() {
@@ -371,15 +307,14 @@ class AdvancedFilterController extends BaseController {
     hasAttachment.value = false;
     lastTextForm.value = '';
     lastTextTo.value = '';
-    _startDate = null;
-    _endDate = null;
+    startDate.value = null;
+    endDate.value = null;
   }
 
   void _clearAllTextFieldInput() {
     subjectFilterInputController.clear();
     hasKeyWordFilterInputController.clear();
     notKeyWordFilterInputController.clear();
-    dateFilterInputController.clear();
     mailBoxFilterInputController.clear();
   }
 
@@ -389,6 +324,14 @@ class AdvancedFilterController extends BaseController {
       (action) {
         if (action is ClearAllFieldOfAdvancedSearchAction) {
           _handleClearAllFieldOfAdvancedSearch();
+        } else if (action is SelectDateRangeToAdvancedSearch) {
+          _updateDateRangeTime(
+            EmailReceiveTimeType.customRange,
+            newStartDate: action.startDate,
+            newEndDate: action.endDate
+          );
+        } else if (action is ClearDateRangeToAdvancedSearch) {
+          _updateDateRangeTime(action.receiveTime);
         }
       }
     );
@@ -410,7 +353,6 @@ class AdvancedFilterController extends BaseController {
     hasKeyWordFilterInputController.dispose();
     notKeyWordFilterInputController.dispose();
     mailBoxFilterInputController.dispose();
-    dateFilterInputController.dispose();
     _unregisterWorkerListener();
     super.onClose();
   }

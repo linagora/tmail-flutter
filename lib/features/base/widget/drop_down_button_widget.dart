@@ -28,7 +28,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   final double radiusButton;
   final double opacity;
   final Widget? iconArrowDown;
-  final Color? colorButton;
+  final Color colorButton;
   final String tooltip;
   final double? dropdownWidth;
   final double? dropdownMaxHeight;
@@ -36,7 +36,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   const DropDownButtonWidget({
     Key? key,
     required this.items,
-    required this.itemSelected,
+    this.itemSelected,
     this.onChanged,
     this.onMenuStateChange,
     this.supportHint = false,
@@ -112,7 +112,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                       color: AppColor.colorInputBorderCreateMailbox,
                       width: 1,
                     ),
-                    color: colorButton ?? AppColor.colorInputBackgroundCreateMailbox,
+                    color: colorButton,
                   ),
                   padding: const EdgeInsets.only(left: 12, right: 10),
                   child: Row(children: [
@@ -139,7 +139,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
               color: AppColor.colorInputBorderCreateMailbox,
               width: 1,
             ),
-            color: colorButton ?? AppColor.colorInputBackgroundCreateMailbox,
+            color: colorButton,
           ),
           itemHeight: heightItem,
           buttonHeight: heightItem,
