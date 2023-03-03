@@ -4,6 +4,7 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -541,8 +542,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       QuickSearchFilter filter
   ) {
     return Obx(() {
-      final quickSearchFilterSelected = controller.checkQuickSearchFilterSelected(
-        quickSearchFilter: filter,
+      final isFilterSelected = filter.isSelected(
+        controller.searchController.searchEmailFilter.value,
+        controller.userProfile.value
       );
 
       return Padding(
@@ -563,35 +565,40 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 screenSize.width - offset.dx,
                 screenSize.height - offset.dy,
               );
-              controller.openPopupMenuAction(context, position,
-                  popupMenuEmailReceiveTimeType(context,
-                      controller.searchController.emailReceiveTimeType.value,
-                          (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(receiveTime)));
+              controller.openPopupMenuAction(
+                context,
+                position,
+                popupMenuEmailReceiveTimeType(
+                  context,
+                  controller.searchController.receiveTimeFiltered,
+                  onCallBack: (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(context, receiveTime)
+                )
+              );
             }
           },
           borderRadius: const BorderRadius.all(Radius.circular(10)),
           child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: filter.getBackgroundColor(quickSearchFilterSelected: quickSearchFilterSelected)),
+                  color: filter.getBackgroundColor(isFilterSelected: isFilterSelected)),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 SvgPicture.asset(
-                    filter.getIcon(
-                        imagePaths,
-                        quickSearchFilterSelected: quickSearchFilterSelected),
+                    filter.getIcon(imagePaths, isFilterSelected: isFilterSelected),
                     width: 16,
                     height: 16,
                     fit: BoxFit.fill),
                 const SizedBox(width: 4),
                 Text(
                   filter.getTitle(
-                      context,
-                      receiveTimeType: controller.searchController.emailReceiveTimeType.value),
+                    context,
+                    receiveTimeType: controller.searchController.receiveTimeFiltered,
+                    startDate: controller.searchController.startDateFiltered,
+                    endDate: controller.searchController.endDateFiltered
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: filter.getTextStyle(
-                      quickSearchFilterSelected: quickSearchFilterSelected),
+                  style: filter.getTextStyle(isFilterSelected: isFilterSelected),
                 ),
                 if (filter == QuickSearchFilter.last7Days)
                   ... [
@@ -609,55 +616,21 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   }
 
   List<PopupMenuEntry> popupMenuEmailReceiveTimeType(
-      BuildContext context,
-      EmailReceiveTimeType? receiveTimeSelected,
-      Function(EmailReceiveTimeType?)? onCallBack
+    BuildContext context,
+    EmailReceiveTimeType? receiveTimeSelected,
+    {Function(EmailReceiveTimeType)? onCallBack}
   ) {
     return EmailReceiveTimeType.values
-        .map((timeType) => PopupMenuItem(
-            padding: EdgeInsets.zero,
-            child: _receiveTimeTileAction(
-                context,
-                receiveTimeSelected,
-                timeType,
-                onCallBack)))
-        .toList();
-  }
-
-  Widget _receiveTimeTileAction(
-      BuildContext context,
-      EmailReceiveTimeType? receiveTimeSelected,
-      EmailReceiveTimeType receiveTimeType,
-      Function(EmailReceiveTimeType?)? onCallBack
-  ) {
-    return InkWell(
-        onTap: () => onCallBack?.call(receiveTimeType == receiveTimeSelected
-            ? null
-            : receiveTimeType),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: SizedBox(
-              width: 320,
-              child: Row(children: [
-                Expanded(child: Text(
-                    receiveTimeType.getTitle(context),
-                    style: const TextStyle(
-                        fontSize: 17,
-                        color: Colors.black,
-                        fontWeight: FontWeight.normal))),
-                if (receiveTimeType == receiveTimeSelected)
-                  ...[
-                    const SizedBox(width: 12),
-                    SvgPicture.asset(
-                        imagePaths.icFilterSelected,
-                        width: 24,
-                        height: 24,
-                        fit: BoxFit.fill),
-                  ]
-              ])
-          ),
-        )
-    );
+      .map((receiveTime) => PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemNoIconWidget(
+          receiveTime.getTitle(context),
+          svgIconSelected: imagePaths.icFilterSelected,
+          maxWidth: 320,
+          isSelected: receiveTimeSelected == receiveTime,
+          onCallbackAction: () => onCallBack?.call(receiveTime),
+        )))
+      .toList();
   }
 
   bool supportEmptyTrash(BuildContext context) {

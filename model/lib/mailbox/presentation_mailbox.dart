@@ -107,6 +107,14 @@ class PresentationMailbox with EquatableMixin {
 
   bool get allowedToDisplay => isSubscribedMailbox || isDefault;
 
+  MailboxId? get mailboxId {
+    if (id == unifiedMailbox.id) {
+      return null;
+    } else {
+      return id;
+    }
+  }
+
   @override
   List<Object?> get props => [
     id,

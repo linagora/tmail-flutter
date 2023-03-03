@@ -4,11 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/drop_down_button_filter_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/date_drop_down_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_auto_complete_email_adress.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -73,7 +74,6 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onTap: () => controller.selectedMailBox(context)),
         Row(children: [
          Expanded(child: _buildFilterField(
-           textEditingController: controller.dateFilterInputController,
            context: context,
            advancedSearchFilterField: AdvancedSearchFilterField.date,
            isSelectFormList: true,
@@ -102,52 +102,22 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
 
   List<Widget> _buildEmailReceiveTimeTypeActionTiles(BuildContext context) {
     return EmailReceiveTimeType.values
-        .map(
-          (e) => Material(
-            child: PopupMenuItem(
-              child: Row(children: [
-                const SizedBox(width: 12),
-                Expanded(
-                    child: Text(
-                        e.getTitle(
-                            context,
-                            startDate: controller.startDate,
-                            endDate: controller.endDate),
-                        style: const TextStyle(
-                            fontSize: 15,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500))),
-                if (e == controller.dateFilterSelectedFormAdvancedSearch.value)
-                ...[
-                  const SizedBox(width: 12),
-                  SvgPicture.asset(
-                    _imagePaths.icFilterSelected,
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.fill,
-                  ),
-                ]
-              ]),
-              onTap: () {
-                if (e != EmailReceiveTimeType.customRange) {
-                  controller.clearDateRangeOfFilter();
-                }
-                controller.dateFilterSelectedFormAdvancedSearch.value = e;
-                controller.dateFilterInputController.text = e.getTitle(
-                    context,
-                    startDate: controller.startDate,
-                    endDate: controller.endDate);
-              },
-            ),
-          ),
-        )
-        .toList();
+      .map((receiveTime) => PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemNoIconWidget(
+          receiveTime.getTitle(context),
+          svgIconSelected: _imagePaths.icFilterSelected,
+          maxWidth: 320,
+          isSelected: controller.dateFilterSelectedFormAdvancedSearch.value == receiveTime,
+          onCallbackAction: () => controller.updateReceiveDateSearchFilter(context, receiveTime),
+        )))
+      .toList();
   }
 
   Widget _buildFilterField({
     required BuildContext context,
     required AdvancedSearchFilterField advancedSearchFilterField,
-    required TextEditingController textEditingController,
+    TextEditingController? textEditingController,
     VoidCallback? onTap,
     bool isSelectFormList = false,
     MouseCursor? mouseCursor,
@@ -180,7 +150,13 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         )
       else if (_responsiveUtils.landscapeTabletSupported(context))
         if (advancedSearchFilterField == AdvancedSearchFilterField.date)
-          const DateDropDownButton()
+          Obx(() => DateDropDownButton(
+            _imagePaths,
+            startDate: controller.startDate.value,
+            endDate: controller.endDate.value,
+            receiveTimeSelected: controller.dateFilterSelectedFormAdvancedSearch.value,
+            onReceiveTimeSelected: (receiveTime) => controller.updateReceiveDateSearchFilter(context, receiveTime),
+          ))
         else
           _buildTextField(
             isSelectFormList: isSelectFormList,
@@ -222,7 +198,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   Widget _buildTextFieldFilterForWeb({
     required BuildContext context,
     required AdvancedSearchFilterField advancedSearchFilterField,
-    required TextEditingController textEditingController,
+    TextEditingController? textEditingController,
     VoidCallback? onTap,
     bool isSelectFormList = false,
     MouseCursor? mouseCursor,
@@ -231,7 +207,13 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   }) {
     switch (advancedSearchFilterField) {
       case AdvancedSearchFilterField.date:
-        return const DateDropDownButton();
+        return Obx(() => DateDropDownButton(
+          _imagePaths,
+          startDate: controller.startDate.value,
+          endDate: controller.endDate.value,
+          receiveTimeSelected: controller.dateFilterSelectedFormAdvancedSearch.value,
+          onReceiveTimeSelected: (receiveTime) => controller.updateReceiveDateSearchFilter(context, receiveTime),
+        ));
       default:
         return _buildTextField(
           isSelectFormList: isSelectFormList,
@@ -357,7 +339,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   Widget _buildTextField({
     required BuildContext context,
     required AdvancedSearchFilterField advancedSearchFilterField,
-    required TextEditingController textEditingController,
+    TextEditingController? textEditingController,
     VoidCallback? onTap,
     bool isSelectFormList = false,
     MouseCursor? mouseCursor,
