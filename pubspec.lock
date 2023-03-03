@@ -5,10 +5,10 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: e440ac42679dfc04bbbefb58ed225c994bc7e07fccc8a68ec7d3631a127e5da9
+      sha256: "98d1d33ed129b372846e862de23a0fc365745f4d7b5e786ce667fcbbb7ac5c07"
       url: "https://pub.dev"
     source: hosted
-    version: "54.0.0"
+    version: "55.0.0"
   _flutterfire_internals:
     dependency: transitive
     description:
@@ -21,10 +21,10 @@ packages:
     dependency: transitive
     description:
       name: analyzer
-      sha256: "2c2e3721ee9fb36de92faa060f3480c81b23e904352b087e5c64224b1a044427"
+      sha256: "881348aed9b0b425882c97732629a6a31093c8ff20fc4b3b03fb9d3d50a3a126"
       url: "https://pub.dev"
     source: hosted
-    version: "5.6.0"
+    version: "5.7.1"
   archive:
     dependency: transitive
     description:
@@ -300,10 +300,10 @@ packages:
     dependency: transitive
     description:
       name: dart_style
-      sha256: "7a03456c3490394c8e7665890333e91ae8a49be43542b616e414449ac358acd4"
+      sha256: "5be16bf1707658e4c03078d4a9b90208ded217fb02c163e207d334082412f2fb"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.4"
+    version: "2.2.5"
   dartz:
     dependency: "direct main"
     description:
@@ -364,8 +364,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: upgrade-latest-flutter-version
-      resolved-ref: "3c4f78ffdac96befdd23c71f60f423922ce0b5ea"
+      ref: email_supported
+      resolved-ref: cd9b1ed2667348f7663c8947bb41f0a9321e09d7
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
@@ -570,8 +570,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: upgrade-latest-flutter-version
-      resolved-ref: baf6195a3531e2aba8f2dc857b64f4b2a7db6407
+      ref: master
+      resolved-ref: "7d6d50b470e31917d22a31028b485e16685b30a8"
       url: "https://github.com/linagora/flutter-date-range-picker.git"
     source: git
     version: "1.0.1"
@@ -729,10 +729,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_plugin_android_lifecycle
-      sha256: "4bef634684b2c7f3468c77c766c831229af829a0cd2d4ee6c1b99558bd14e5d2"
+      sha256: c224ac897bed083dabf11f238dd11a239809b446740be0c2044608c50029ffdf
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.8"
+    version: "2.0.9"
   flutter_portal:
     dependency: "direct main"
     description:
@@ -866,8 +866,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: upgrade-latest-flutter-version
-      resolved-ref: dcda72ae730a0d3db09d6f559d1ef266e8e1451a
+      ref: email_supported
+      resolved-ref: b0791598dfdc4fb89fc9a88554d838b61370100a
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
@@ -955,8 +955,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: upgrade-latest-flutter-version
-      resolved-ref: "9be1a7b3b4a8fbe93fa4b8cf12795f8110de0c06"
+      ref: master
+      resolved-ref: "8c6f7aa55cd136307c30f5e934a3f8a0ceab6617"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.0.1"
@@ -1275,10 +1275,10 @@ packages:
     dependency: transitive
     description:
       name: pubspec_parse
-      sha256: "75f6614d6dde2dc68948dffbaa4fe5dae32cd700eb9fb763fe11dfb45a3c4d0a"
+      sha256: ec85d7d55339d85f44ec2b682a82fea340071e8978257e5a43e69f79e98ef50c
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.1"
+    version: "1.2.2"
   quiver:
     dependency: transitive
     description:
@@ -1300,8 +1300,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: upgrade-latest-flutter-version
-      resolved-ref: "6f54ce823848822114ec8d2a44495c5de977250c"
+      ref: master
+      resolved-ref: ffab737265a1fd018fc9d561b5ece434519a1f19
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.2"
@@ -1481,8 +1481,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "upgrade/upgrade-flutter-version-to-v3.7.5"
-      resolved-ref: b5ed6ee0b862786cb094025ef8b9a3de59a4a534
+      ref: master
+      resolved-ref: "8ef077f9c2918c062bfda1b5d5b80f1e9d3e74cb"
       url: "https://github.com/dab246/super_tag_editor.git"
     source: git
     version: "0.0.3+4"
@@ -1490,10 +1490,10 @@ packages:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: "5f7dae40707df507325ee045d1a172aea9f449ac4244d7c52391dd97208eeef8"
+      sha256: "4319454a92fe5aea1e90ff68c17703a39517ab05dd3074c34c9553e5f7cbf414"
       url: "https://pub.dev"
     source: hosted
-    version: "20.4.51"
+    version: "20.4.52"
   syncfusion_flutter_datepicker:
     dependency: transitive
     description:
