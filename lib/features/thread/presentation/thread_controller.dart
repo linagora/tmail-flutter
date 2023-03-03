@@ -20,7 +20,6 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
@@ -81,7 +80,6 @@ class ThreadController extends BaseController with EmailActionController {
   final LoadMoreEmailsInMailboxInteractor _loadMoreEmailsInMailboxInteractor;
   final SearchEmailInteractor _searchEmailInteractor;
   final SearchMoreEmailInteractor _searchMoreEmailInteractor;
-  final CachingManager _cachingManager;
   final GetEmailByIdInteractor _getEmailByIdInteractor;
 
   final listEmailDrag = <PresentationEmail>[].obs;
@@ -122,7 +120,6 @@ class ThreadController extends BaseController with EmailActionController {
     this._loadMoreEmailsInMailboxInteractor,
     this._searchEmailInteractor,
     this._searchMoreEmailInteractor,
-    this._cachingManager,
     this._getEmailByIdInteractor,
   );
 
