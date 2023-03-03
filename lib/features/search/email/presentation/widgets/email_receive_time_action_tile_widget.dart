@@ -9,7 +9,7 @@ class EmailReceiveTimeActionTileWidget extends StatelessWidget {
 
   final EmailReceiveTimeType? receiveTimeSelected;
   final EmailReceiveTimeType receiveTimeType;
-  final Function(EmailReceiveTimeType?)? onCallBack;
+  final Function(EmailReceiveTimeType)? onCallBack;
 
   const EmailReceiveTimeActionTileWidget({
     Key? key,
@@ -23,7 +23,7 @@ class EmailReceiveTimeActionTileWidget extends StatelessWidget {
     final imagePaths = Get.find<ImagePaths>();
 
     return InkWell(
-        onTap: () => onCallBack?.call(receiveTimeType == receiveTimeSelected ? null : receiveTimeType),
+        onTap: () => onCallBack?.call(receiveTimeType),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: SizedBox(
