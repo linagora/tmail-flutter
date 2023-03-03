@@ -1,5 +1,6 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get_connect/http/src/status/http_status.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
@@ -15,7 +16,6 @@ class RemoteExceptionThrower extends ExceptionThrower {
     logError('RemoteExceptionThrower::throwException():error: $error');
     final networkConnectionController = getBinding<NetworkConnectionController>();
     if (networkConnectionController != null) {
-      log('RemoteExceptionThrower::throwException(): CONNECTION: ${networkConnectionController.connectivityResult.value}');
       if (!networkConnectionController.isNetworkConnectionAvailable()) {
         throw const NoNetworkError();
       }
@@ -28,6 +28,8 @@ class RemoteExceptionThrower extends ExceptionThrower {
         default:
           if (error.response?.statusCode == 502) {
             throw BadGateway();
+          } else if (error.response?.statusCode == HttpStatus.unauthorized) {
+            throw const BadCredentialsException();
           } else {
             throw UnknownError(
               code: error.response?.statusCode,
