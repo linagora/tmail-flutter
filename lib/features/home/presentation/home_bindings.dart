@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource/cleanup_datasource.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource_impl/cleanup_datasource_impl.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
@@ -22,7 +21,6 @@ import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.da
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc_repository_impl.dart';
@@ -30,13 +28,10 @@ import 'package:tmail_ui_user/features/login/domain/repository/account_repositor
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
-import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -48,16 +43,11 @@ class HomeBindings extends BaseBindings {
     Get.lazyPut(() => HomeController(
         Get.find<GetAuthenticatedAccountInteractor>(),
         Get.find<DynamicUrlInterceptors>(),
-        Get.find<AuthorizationInterceptors>(),
-        Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag),
         Get.find<CleanupEmailCacheInteractor>(),
         Get.find<EmailReceiveManager>(),
         Get.find<CleanupRecentSearchCacheInteractor>(),
         Get.find<CleanupRecentLoginUrlCacheInteractor>(),
         Get.find<CleanupRecentLoginUsernameCacheInteractor>(),
-        Get.find<DeleteCredentialInteractor>(),
-        Get.find<CachingManager>(),
-        Get.find<DeleteAuthorityOidcInteractor>(),
         Get.find<CheckOIDCIsAvailableInteractor>(),
     ));
   }
@@ -105,9 +95,6 @@ class HomeBindings extends BaseBindings {
     Get.lazyPut(() => CleanupRecentSearchCacheInteractor(Get.find<CleanupRepository>()));
     Get.lazyPut(() => CleanupRecentLoginUrlCacheInteractor(Get.find<CleanupRepository>()));
     Get.lazyPut(() => CleanupRecentLoginUsernameCacheInteractor(Get.find<CleanupRepository>()));
-    Get.lazyPut(() => DeleteAuthorityOidcInteractor(
-        Get.find<AuthenticationOIDCRepository>(),
-        Get.find<CredentialRepository>()));
     Get.lazyPut(() => CheckOIDCIsAvailableInteractor(Get.find<AuthenticationOIDCRepository>()));
   }
 

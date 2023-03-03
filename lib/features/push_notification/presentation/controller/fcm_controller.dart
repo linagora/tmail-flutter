@@ -18,7 +18,6 @@ import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
@@ -42,7 +41,6 @@ class FcmController extends BaseController {
 
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
-  AuthorizationInterceptors? _authorizationInterceptors;
 
   FcmController._internal() {
     _listenFcmStream();
@@ -187,7 +185,6 @@ class FcmController extends BaseController {
     try {
       _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
-      _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
       FcmTokenHandler.instance.initialize();
     } catch (e) {
       logError('FcmController::_getBindings(): ${e.toString()}');
@@ -228,7 +225,7 @@ class FcmController extends BaseController {
 
   void _handleGetAccountByOidcSuccess(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
     log('FcmController::_handleGetAccountByOidcSuccess():');
-    _authorizationInterceptors?.setTokenAndAuthorityOidc(
+    authorizationInterceptors.setTokenAndAuthorityOidc(
       newToken: storedTokenOidcSuccess.tokenOidc.toToken(),
       newConfig: storedTokenOidcSuccess.oidcConfiguration
     );
@@ -237,7 +234,7 @@ class FcmController extends BaseController {
 
   void _handleGetAccountByBasicAuthSuccess(GetCredentialViewState credentialViewState) {
     log('FcmController::_handleGetAccountByBasicAuthSuccess():');
-    _authorizationInterceptors?.setBasicAuthorization(
+    authorizationInterceptors.setBasicAuthorization(
       credentialViewState.userName.userName,
       credentialViewState.password.value,
     );

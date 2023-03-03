@@ -98,7 +98,10 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                         Padding(padding: const EdgeInsets.only(left: 32),
                             child: InkWell(
                                 onTap: () {
-                                  controller.logout();
+                                  controller.logout(
+                                    controller.dashBoardController.sessionCurrent.value,
+                                    controller.dashBoardController.accountId.value
+                                  );
                                 },
                                 child: Row(children: [
                                   SvgPicture.asset(_imagePaths.icSignOut, fit: BoxFit.fill),
