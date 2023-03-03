@@ -43,7 +43,7 @@ enum AdvancedSearchFilterField {
       case AdvancedSearchFilterField.notKeyword:
         return AppLocalizations.of(context).enterSearchTerm;
       case AdvancedSearchFilterField.mailBox:
-        return AppLocalizations.of(context).allMails;
+        return AppLocalizations.of(context).allMailboxes;
       case AdvancedSearchFilterField.date:
         return AppLocalizations.of(context).allTime;
       case AdvancedSearchFilterField.hasAttachment:

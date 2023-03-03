@@ -73,6 +73,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacati
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
@@ -534,9 +535,6 @@ class MailboxDashBoardController extends ReloadableController {
     FocusScope.of(context).unfocus();
     if (_searchInsideEmailDetailedViewIsActive(context)) {
       _closeEmailDetailedView();
-    }
-    if (value.isEmpty){
-      searchController.setEmailReceiveTimeType(null);
     }
     _unSelectedMailbox();
   }
@@ -1281,23 +1279,13 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void selectQuickSearchFilter({
-    required QuickSearchFilter quickSearchFilter,
-    bool fromSuggestionBox = false,
-  }) => searchController.selectQuickSearchFilter(
-    quickSearchFilter: quickSearchFilter,
-    userProfile: userProfile.value!,
-    fromSuggestionBox: fromSuggestionBox,
-  );
+  void selectQuickSearchFilter(QuickSearchFilter filter) {
+    return searchController.selectQuickSearchFilter(filter, userProfile.value!);
+  }
 
-  bool checkQuickSearchFilterSelected({
-    required QuickSearchFilter quickSearchFilter,
-    bool fromSuggestionBox = false,
-  }) => searchController.checkQuickSearchFilterSelected(
-      quickSearchFilter: quickSearchFilter,
-      userProfile: userProfile.value!,
-      fromSuggestionBox: fromSuggestionBox,
-  );
+  void addFilterToSuggestionForm(QuickSearchFilter filter) {
+    searchController.addFilterToSuggestionForm(filter);
+  }
 
   Future<List<PresentationEmail>> quickSearchEmails() => searchController.quickSearchEmails(accountId: accountId.value!);
 
@@ -1353,25 +1341,43 @@ class MailboxDashBoardController extends ReloadableController {
 
   void selectQuickSearchFilterAction(QuickSearchFilter filter) {
     log('MailboxDashBoardController::selectQuickSearchFilterAction(): filter: $filter');
-    selectQuickSearchFilter(quickSearchFilter: filter);
+    selectQuickSearchFilter(filter);
     dispatchAction(StartSearchEmailAction());
   }
 
-  void selectReceiveTimeQuickSearchFilter(EmailReceiveTimeType? emailReceiveTimeType) {
+  void selectReceiveTimeQuickSearchFilter(BuildContext context, EmailReceiveTimeType receiveTime) {
+    log('MailboxDashBoardController::selectReceiveTimeQuickSearchFilter():receiveTime: $receiveTime');
     popBack();
 
-    if (emailReceiveTimeType != null) {
-      searchController.updateFilterEmail(emailReceiveTimeType: emailReceiveTimeType);
+    if (receiveTime == EmailReceiveTimeType.customRange) {
+      searchController.showMultipleViewDateRangePicker(
+        context,
+        searchController.startDateFiltered,
+        searchController.endDateFiltered,
+        onCallbackAction: (startDate, endDate) {
+          dispatchAction(SelectDateRangeToAdvancedSearch(startDate, endDate));
+          searchController.updateFilterEmail(
+            emailReceiveTimeType: receiveTime,
+            startDateOption: optionOf(startDate?.toUTCDate()),
+            endDateOption: optionOf(startDate?.toUTCDate()),
+            beforeOption: const None()
+          );
+          dispatchAction(StartSearchEmailAction());
+        }
+      );
     } else {
-      searchController.updateFilterEmail(emailReceiveTimeType: EmailReceiveTimeType.allTime);
+      dispatchAction(ClearDateRangeToAdvancedSearch(receiveTime));
+      searchController.updateFilterEmail(
+        emailReceiveTimeType: receiveTime,
+        startDateOption: const None(),
+        endDateOption: const None(),
+        beforeOption: const None()
+      );
+      dispatchAction(StartSearchEmailAction());
     }
-    searchController.setEmailReceiveTimeType(emailReceiveTimeType);
-    searchController.updateFilterEmail();
-    if (searchController.searchQuery == null){
-      searchController.updateFilterEmail(text: SearchQuery.initial());
-    }
-    dispatchAction(StartSearchEmailAction());
   }
+
+
 
   bool get isMailboxTrash => selectedMailbox.value?.isTrash == true;
 

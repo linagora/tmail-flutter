@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-02-24T11:57:26.810965",
+  "@@last_modified": "2023-03-02T21:08:14.879842",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1484,12 +1484,6 @@
   },
   "enterSearchTerm": "Enter search term",
   "@enterSearchTerm": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "allMails": "All mails",
-  "@allMails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

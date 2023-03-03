@@ -37,10 +37,8 @@ enum EmailReceiveTimeType {
     }
   }
 
-  UTCDate? toUTCDate() {
+  UTCDate? toOldestUTCDate() {
     switch(this) {
-      case EmailReceiveTimeType.allTime:
-        return null;
       case EmailReceiveTimeType.last7Days:
         final today = DateTime.now();
         final last7Days = today.subtract(const Duration(days: 7));
@@ -57,8 +55,49 @@ enum EmailReceiveTimeType {
         final today = DateTime.now();
         final lastYear = DateTime(today.year - 1, today.month, today.day);
         return lastYear.toUTCDate();
-      case EmailReceiveTimeType.customRange:
+      default:
         return null;
+    }
+  }
+
+  UTCDate? toLatestUTCDate() {
+    switch(this) {
+      case EmailReceiveTimeType.last7Days:
+      case EmailReceiveTimeType.last30Days:
+      case EmailReceiveTimeType.last6Months:
+      case EmailReceiveTimeType.lastYear:
+        return DateTime.now().toUTCDate();
+      default:
+        return null;
+    }
+  }
+
+  UTCDate? getAfterDate(UTCDate? startDate) {
+    if (startDate != null) {
+      return startDate;
+    } else {
+      return toOldestUTCDate();
+    }
+  }
+
+  UTCDate? getBeforeDate(UTCDate? endDate, UTCDate? loadMoreDate) {
+    if (endDate != null) {
+      if (loadMoreDate != null && loadMoreDate.value.isBefore(endDate.value)) {
+        return loadMoreDate;
+      } else {
+        return endDate;
+      }
+    } else {
+      final latestDate = toLatestUTCDate();
+      if (latestDate != null) {
+        if (loadMoreDate != null && loadMoreDate.value.isBefore(latestDate.value)) {
+          return loadMoreDate;
+        } else {
+          return latestDate;
+        }
+      } else {
+        return loadMoreDate;
+      }
     }
   }
 }
