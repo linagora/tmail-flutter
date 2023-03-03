@@ -220,21 +220,26 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: filter.getBackgroundColor(quickSearchFilterSelected: filterSelected)),
+                  color: filter.getBackgroundColor(isFilterSelected: filterSelected)),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 SvgPicture.asset(
-                    filter.getIcon(_imagePaths, quickSearchFilterSelected: filterSelected),
+                    filter.getIcon(_imagePaths, isFilterSelected: filterSelected),
                     width: 16,
                     height: 16,
                     fit: BoxFit.fill),
                 const SizedBox(width: 4),
                 Text(
-                  filter.getTitle(context, receiveTimeType: controller.emailReceiveTimeType.value),
+                  filter.getTitle(
+                    context,
+                    receiveTimeType: controller.emailReceiveTimeType.value,
+                    startDate: controller.simpleSearchFilter.value.startDate?.value.toLocal(),
+                    endDate: controller.simpleSearchFilter.value.endDate?.value.toLocal()
+                  ),
                   maxLines: 1,
                   overflow: CommonTextStyle.defaultTextOverFlow,
                   softWrap: CommonTextStyle.defaultSoftWrap,
-                  style: filter.getTextStyle(quickSearchFilterSelected: filterSelected),
+                  style: filter.getTextStyle(isFilterSelected: filterSelected),
                 ),
                 if (filter == QuickSearchFilter.last7Days)
                   ... [
@@ -256,22 +261,23 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   List<PopupMenuEntry> _popupMenuEmailReceiveTimeType(
       BuildContext context,
       EmailReceiveTimeType? receiveTimeSelected,
-      Function(EmailReceiveTimeType?)? onCallBack
+      Function(EmailReceiveTimeType)? onCallBack
   ) {
     return EmailReceiveTimeType.values
-        .map((timeType) => PopupMenuItem(
+      .map((timeType) => PopupMenuItem(
         padding: EdgeInsets.zero,
         child: EmailReceiveTimeActionTileWidget(
-            receiveTimeSelected: receiveTimeSelected,
-            receiveTimeType: timeType,
-            onCallBack: onCallBack)))
-        .toList();
+          receiveTimeSelected: receiveTimeSelected,
+          receiveTimeType: timeType,
+          onCallBack: onCallBack
+        )))
+      .toList();
   }
 
   List<Widget> _emailReceiveTimeCupertinoActionTile(
       BuildContext context,
       EmailReceiveTimeType? receiveTimeSelected,
-      Function(EmailReceiveTimeType?)? onCallBack
+      Function(EmailReceiveTimeType)? onCallBack
   ) {
     return EmailReceiveTimeType.values
         .map((timeType) => (EmailReceiveTimeCupertinoActionSheetActionBuilder(
@@ -289,7 +295,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     width: 20,
                     height: 20,
                     fit: BoxFit.fill))
-            ..onActionClick((timeType) => onCallBack?.call(timeType == receiveTimeSelected ? null : timeType)))
+            ..onActionClick((timeType) => onCallBack?.call(timeType)))
             .build())
         .toList();
   }
