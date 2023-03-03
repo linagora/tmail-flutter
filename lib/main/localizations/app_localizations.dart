@@ -36,6 +36,10 @@ class AppLocalizations {
   String get loginInputCredentialMessage {
     return Intl.message('Enter your credentials to sign in', name: 'loginInputCredentialMessage');
   }
+  
+  String get badCredentials {
+    return Intl.message('Bad credentials');
+  }
 
   String get next {
     return Intl.message('Next', name: 'next');
