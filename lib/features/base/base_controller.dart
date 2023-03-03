@@ -70,6 +70,7 @@ abstract class BaseController extends GetxController
   final LogoutOidcInteractor logoutOidcInteractor = Get.find<LogoutOidcInteractor>();
   final DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor = Get.find<DeleteAuthorityOidcInteractor>();
   final _fcmReceiver = FcmReceiver.instance;
+  bool _isFcmEnabled = false;
 
   GetFCMSubscriptionLocalInteractor? _getSubscriptionLocalInteractor;
   DestroySubscriptionInteractor? _destroySubscriptionInteractor;
@@ -137,7 +138,6 @@ abstract class BaseController extends GetxController
         return true;
       } else if (failure.exception is BadCredentialsException) {
         _appToast.showErrorToast(AppLocalizations.of(currentContext!).badCredentials);
-        cleanAppAtTheEnd();
         checkAuthenticationTypeWhenLogout();
         return true;
       }
@@ -259,5 +259,100 @@ abstract class BaseController extends GetxController
     } catch(e) {
       logError('BaseController::injectFCMBindings(): exception: $e');
     }
+  }
+
+  bool fcmEnabled(Session? session, AccountId? accountId) {
+    bool _fcmEnabled = false;
+    try {
+      requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
+      if (AppConfig.fcmAvailable) {
+        _fcmEnabled = true;
+      } else {
+        _fcmEnabled = false;
+      }
+    } catch (e) {
+      logError('BaseController::fcmEnabled(): exception: $e');
+    }
+    return _fcmEnabled;
+  }
+
+  void goToLogin({LoginArguments? arguments}) {
+    pushAndPopAll(AppRoutes.login, arguments: arguments);
+  }
+
+  void logout(Session? session, AccountId? accountId) {
+    _isFcmEnabled = fcmEnabled(session, accountId);
+    if (_isFcmEnabled) {
+      final authenticationType = authorizationInterceptors.authenticationType;
+      if (authenticationType == AuthenticationType.oidc) {
+        consumeState(logoutOidcInteractor.execute());
+      } else {
+        _getSubscriptionLocalAction();
+      }
+    } else {
+      checkAuthenticationTypeWhenLogout();
+    }
+  }
+
+  void _destroySubscriptionAction(String subscriptionId) {
+    try {
+      _destroySubscriptionInteractor = Get.find<DestroySubscriptionInteractor>();
+      consumeState(_destroySubscriptionInteractor!.execute(subscriptionId));
+    } catch(e) {
+      logError('ReloadableController::destroySubscriptionAction(): exception: $e');
+      logoutAction();
+    }
+  }
+
+  Future<void> _getSubscriptionLocalAction() {
+    try {
+      _getSubscriptionLocalInteractor = Get.find<GetFCMSubscriptionLocalInteractor>();
+      consumeState(_getSubscriptionLocalInteractor!.execute());
+    } catch (e) {
+      logError(
+          'ReloadableController::getSubscriptionLocalAction(): exception: $e');
+      logoutAction();
+    }
+    return Future.value();
+  }
+
+  void checkAuthenticationTypeWhenLogout() {
+    final authenticationType = authorizationInterceptors.authenticationType;
+    if (authenticationType == AuthenticationType.oidc) {
+      _logoutOIDCAction();
+    } else {
+      logoutAction();
+    }
+  }
+
+  void logoutAction() async {
+    await Future.wait([
+      deleteCredentialInteractor.execute(),
+      cachingManager.clearAll(),
+      languageCacheManager.removeLanguage(),
+    ]);
+    authorizationInterceptors.clear();
+    authorizationIsolateInterceptors.clear();
+    if (_isFcmEnabled) {
+      _fcmReceiver.deleteFcmToken();
+    }
+    await cachingManager.closeHive();
+    goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
+  }
+
+  void _logoutOIDCAction() async {
+    log('ReloadableController::_logoutOIDCAction():');
+    await Future.wait([
+      deleteAuthorityOidcInteractor.execute(),
+      cachingManager.clearAll(),
+      languageCacheManager.removeLanguage(),
+    ]);
+    authorizationIsolateInterceptors.clear();
+    authorizationInterceptors.clear();
+    if (_isFcmEnabled) {
+      _fcmReceiver.deleteFcmToken();
+    }
+    await cachingManager.closeHive();
+    goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
   }
 }
