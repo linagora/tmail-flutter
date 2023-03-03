@@ -58,9 +58,9 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.d
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/search_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/spam_report_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/share_preference_spam_report_data_source_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/search_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/session_storage_composer_datasoure_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/share_preference_spam_report_data_source_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/spam_report_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/share_preference_spam_report_data_source.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/spam_report_api.dart';
@@ -242,10 +242,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MailboxRepository>(),
       Get.find<EmailRepository>())
     );
-    Get.lazyPut(() => LogoutOidcInteractor(
-      Get.find<AccountRepository>(),
-      Get.find<AuthenticationOIDCRepository>(),
-    ));
     Get.lazyPut(() => DeleteAuthorityOidcInteractor(
         Get.find<AuthenticationOIDCRepository>(),
         Get.find<CredentialRepository>()));

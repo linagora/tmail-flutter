@@ -70,8 +70,4 @@ class ManageAccountMenuController extends BaseController {
   void backToMailboxDashBoard(BuildContext context) {
     dashBoardController.backToMailboxDashBoard(context);
   }
-
-  void logout(){
-    dashBoardController.logout(dashBoardController.sessionCurrent.value, dashBoardController.accountId.value);
-  }
 }

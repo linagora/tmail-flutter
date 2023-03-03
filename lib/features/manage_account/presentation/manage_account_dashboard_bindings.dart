@@ -80,10 +80,6 @@ class ManageAccountDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => LogoutOidcInteractor(
-        Get.find<AccountRepository>(),
-        Get.find<AuthenticationOIDCRepository>(),
-    ));
     Get.lazyPut(() => DeleteAuthorityOidcInteractor(
         Get.find<AuthenticationOIDCRepository>(),
         Get.find<CredentialRepository>()));

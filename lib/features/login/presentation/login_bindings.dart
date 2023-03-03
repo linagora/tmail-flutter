@@ -64,8 +64,6 @@ class LoginBindings extends BaseBindings {
         Get.find<UpdateAuthenticationAccountInteractor>(),
         Get.find<AuthenticationInteractor>(),
         Get.find<DynamicUrlInterceptors>(),
-        Get.find<AuthorizationInterceptors>(),
-        Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag),
         Get.find<CheckOIDCIsAvailableInteractor>(),
         Get.find<GetOIDCIsAvailableInteractor>(),
         Get.find<GetOIDCConfigurationInteractor>(),
@@ -113,10 +111,6 @@ class LoginBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => LogoutOidcInteractor(
-      Get.find<AccountRepository>(),
-      Get.find<AuthenticationOIDCRepository>(),
-    ));
     Get.lazyPut(() => DeleteAuthorityOidcInteractor(
       Get.find<AuthenticationOIDCRepository>(),
       Get.find<CredentialRepository>())

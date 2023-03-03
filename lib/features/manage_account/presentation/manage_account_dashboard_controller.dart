@@ -62,8 +62,6 @@ class ManageAccountDashBoardController extends ReloadableController {
     GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
     UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor
   ) : super(
-    logoutOidcInteractor,
-    deleteAuthorityOidcInteractor,
     getAuthenticatedAccountInteractor,
     updateAuthenticationAccountInteractor
   );
