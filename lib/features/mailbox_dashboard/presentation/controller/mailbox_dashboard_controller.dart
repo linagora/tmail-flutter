@@ -216,6 +216,7 @@ class MailboxDashBoardController extends ReloadableController {
   @override
   void onReady() {
     _registerPendingEmailAddress();
+    _registerPendingEmailContents();
     _registerPendingFileInfo();
     _getSessionCurrent();
     _getAppVersion();
@@ -352,6 +353,21 @@ class MailboxDashBoardController extends ReloadableController {
             final arguments = ComposerArguments(
                 emailActionType: EmailActionType.composeFromEmailAddress,
                 emailAddress: emailAddress,
+                mailboxRole: selectedMailbox.value?.role);
+            goToComposer(arguments);
+          }
+        });
+  }
+
+  void _registerPendingEmailContents() {
+    _emailReceiveManagerStreamSubscription =
+        _emailReceiveManager.pendingEmailContentInfo.stream.listen((emailContent) {
+          log('MailboxDashBoardController::_registerPendingEmailContents(): ${emailContent?.content}');
+          if (emailContent != null && emailContent.content.isNotEmpty == true) {
+            _emailReceiveManager.clearPendingEmailContent();
+            final arguments = ComposerArguments(
+                emailActionType: EmailActionType.edit,
+                emailContents: [emailContent],
                 mailboxRole: selectedMailbox.value?.role);
             goToComposer(arguments);
           }

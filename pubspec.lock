@@ -1291,9 +1291,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: e1a945c3da610cdb0ec2788f1b89a96e3f0c6f32
-      url: "https://github.com/KasemJaffer/receive_sharing_intent.git"
+      ref: handle-share-for-vcard-and-mailto
+      resolved-ref: "48f12f2f2dca76fbfac39b31d638cacef6d1d95e"
+      url: "https://github.com/nqhhdev/receive_sharing_intent.git"
     source: git
     version: "1.4.5"
   rich_text_composer:
@@ -1480,10 +1480,18 @@ packages:
   super_tag_editor:
     dependency: "direct main"
     description:
+<<<<<<< HEAD
       name: super_tag_editor
       sha256: "381896629b7004b30079f485196b9f067340313e717b239506e0fcc893b667a7"
       url: "https://pub.dev"
     source: hosted
+=======
+      path: "."
+      ref: master
+      resolved-ref: "1df7366f29940c68788de240aba114ebbc38bef8"
+      url: "https://github.com/dab246/super_tag_editor.git"
+    source: git
+>>>>>>> 2c179930 (Handle some case about share intent from android phone)
     version: "0.1.0"
   syncfusion_flutter_core:
     dependency: transitive
