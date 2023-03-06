@@ -39,7 +39,7 @@ class EmailReceiveManager {
   }
 
   void clearPendingEmailContent() {
-    if(_pendingEmailContentInfo.isClosed) {
+    if (_pendingEmailContentInfo.isClosed) {
       _pendingEmailContentInfo = BehaviorSubject.seeded(null);
     } else {
       _pendingEmailContentInfo.add(null);
