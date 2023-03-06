@@ -61,11 +61,6 @@ dependencies:
       url: https://github.com/linagora/jmap-dart-client.git
       ref: master
 
-  super_tag_editor:
-    git:
-      url: https://github.com/dab246/super_tag_editor.git
-      ref: master
-
   contacts_service:
     git:
       url: https://github.com/linagora/flutter_contacts.git
@@ -199,6 +194,8 @@ dependencies:
   intl: 0.17.0
 
   fluttertoast: 8.2.1
+
+  super_tag_editor: 0.1.0
 
 dev_dependencies:
   flutter_test:
