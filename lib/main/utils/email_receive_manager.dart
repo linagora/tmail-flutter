@@ -1,5 +1,6 @@
 
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:model/email/email_content.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -7,6 +8,9 @@ class EmailReceiveManager {
 
   BehaviorSubject<EmailAddress?> _pendingEmailAddressInfo = BehaviorSubject.seeded(null);
   BehaviorSubject<EmailAddress?> get pendingEmailAddressInfo => _pendingEmailAddressInfo;
+
+  BehaviorSubject<EmailContent?> _pendingEmailContentInfo = BehaviorSubject.seeded(null);
+  BehaviorSubject<EmailContent?> get pendingEmailContentInfo => _pendingEmailContentInfo;
 
   BehaviorSubject<List<SharedMediaFile>> _pendingFileInfo = BehaviorSubject.seeded(List.empty(growable: true));
   BehaviorSubject<List<SharedMediaFile>> get pendingFileInfo => _pendingFileInfo;
@@ -27,6 +31,19 @@ class EmailReceiveManager {
   void setPendingEmailAddress(EmailAddress emailAddress) async {
     clearPendingEmailAddress();
     _pendingEmailAddressInfo.add(emailAddress);
+  }
+
+  void setPendingEmailContent(EmailContent emailContent) async {
+    clearPendingEmailAddress();
+    _pendingEmailContentInfo.add(emailContent);
+  }
+
+  void clearPendingEmailContent() {
+    if(_pendingEmailContentInfo.isClosed) {
+      _pendingEmailContentInfo = BehaviorSubject.seeded(null);
+    } else {
+      _pendingEmailContentInfo.add(null);
+    }
   }
 
   void clearPendingEmailAddress() {
