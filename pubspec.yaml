@@ -68,8 +68,8 @@ dependencies:
 
   receive_sharing_intent:
     git:
-      url: https://github.com/KasemJaffer/receive_sharing_intent.git
-      ref: master
+      url: https://github.com/nqhhdev/receive_sharing_intent.git
+      ref: handle-share-for-vcard-and-mailto
 
   flutter_appauth_web:
     git:

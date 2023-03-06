@@ -110,12 +110,15 @@ class HomeController extends BaseController {
     _emailReceiveManager.receivingSharingStream.listen((uri) {
       log('HomeController::onReady(): Received Email: ${uri.toString()}');
       if (uri != null) {
-        if(GetUtils.isEmail(uri.path)) {
+        if (GetUtils.isEmail(uri.path)) {
           log('HomeController::onReady(): Address: ${uri.path}');
           _emailReceiveManager.setPendingEmailAddress(EmailAddress(null, uri.path));
-        } else {
-          log('HomeController::onInit(): SharedMediaFilePath: ${uri.path}');
+        } else if (uri.scheme == "file") {
+          log('HomeController::onReady(): SharedMediaFilePath: ${uri.path}');
           _emailReceiveManager.setPendingFileInfo([SharedMediaFile(uri.path, null, null, SharedMediaType.FILE)]);
+        } else {
+          log('HomeController::onReady(): EmailContent: ${uri.path}');
+          _emailReceiveManager.setPendingEmailContent(EmailContent(EmailContentType.textPlain, Uri.decodeComponent(uri.path)));
         }
       }
     });
