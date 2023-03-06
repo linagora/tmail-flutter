@@ -1054,7 +1054,7 @@ class ComposerController extends BaseController {
   void _getEmailContentAction(ComposerArguments arguments) async {
 
     final listSharedMediaFile = arguments.listSharedMediaFile;
-    if(listSharedMediaFile != null && listSharedMediaFile.isNotEmpty) {
+    if (listSharedMediaFile != null && listSharedMediaFile.isNotEmpty) {
       final listImageSharedMediaFile = listSharedMediaFile.where((element) => element.type == SharedMediaType.IMAGE);
       final listFileAttachmentSharedMediaFile = listSharedMediaFile.where((element) => element.type != SharedMediaType.IMAGE);
       if (listImageSharedMediaFile.isNotEmpty) {
