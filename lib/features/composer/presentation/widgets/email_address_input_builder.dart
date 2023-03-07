@@ -164,9 +164,11 @@ class EmailAddressInputBuilder {
               }
             },
             onSubmitted: (value) {
-              log('EmailAddressInputBuilder::_buildTagEditor(): onSubmitted: $value');
-              if (!_isDuplicatedRecipient(value)) {
-                setState(() => listEmailAddress.add(EmailAddress(null, value)));
+              log('EmailAddressInputBuilder::_buildTagEditor():onSubmitted: value: $value');
+              final textTrim = value.trim();
+              log('EmailAddressInputBuilder::_buildTagEditor():onSubmitted: textTrim: $textTrim');
+              if (!_isDuplicatedRecipient(textTrim)) {
+                setState(() => listEmailAddress.add(EmailAddress(null, textTrim)));
                 _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
               }
             },
@@ -221,10 +223,12 @@ class EmailAddressInputBuilder {
                 ]
               );
             },
-            onTagChanged: (String value) {
-              log('EmailAddressInputBuilder::_buildTagEditor(): onTagChanged: $value');
-              if (!_isDuplicatedRecipient(value)) {
-                setState(() => listEmailAddress.add(EmailAddress(null, value)));
+            onTagChanged: (value) {
+              log('EmailAddressInputBuilder::_buildTagEditor():onTagChanged: value: $value');
+              final textTrim = value.trim();
+              log('EmailAddressInputBuilder::_buildTagEditor():onTagChanged: textTrim: $textTrim');
+              if (!_isDuplicatedRecipient(textTrim)) {
+                setState(() => listEmailAddress.add(EmailAddress(null, textTrim)));
                 _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
               }
               _gapBetweenTagChangedAndFindSuggestion = Timer(
