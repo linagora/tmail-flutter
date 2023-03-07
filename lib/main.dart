@@ -59,7 +59,7 @@ class TMailApp extends StatelessWidget {
         }
       },
       unknownRoute: AppPages.unknownRoutePage,
-      defaultTransition: Transition.fade,
+      defaultTransition: Transition.noTransition,
       initialRoute: AppRoutes.home,
       getPages: AppPages.pages);
   }
