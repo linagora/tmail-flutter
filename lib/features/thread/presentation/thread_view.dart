@@ -341,47 +341,100 @@ class ThreadView extends GetWidget<ThreadController>
           key: const PageStorageKey('list_presentation_email_in_threads'),
           itemExtent: _getItemExtent(context),
           itemCount: listPresentationEmail.length,
-          itemBuilder: (context, index) {
-            final currentPresentationEmail = listPresentationEmail[index];
-            return Obx(() => Draggable<List<PresentationEmail>>(
-              maxSimultaneousDrags: kIsWeb ? null : 0,
-              data: controller.listEmailDrag,
-              feedback: _buildFeedBackWidget(context),
-              childWhenDragging: (EmailTileBuilder(
-                  context,
-                  currentPresentationEmail,
-                  controller.mailboxDashBoardController.currentSelectMode.value,
-                  controller.searchQuery,
-                  controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
-                  mailboxContain: currentPresentationEmail.mailboxContain,
-                  isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
-                  isDrag: true)
-              ).build(),
-              dragAnchorStrategy: pointerDragAnchorStrategy,
-              onDragStarted: () {
-                controller.calculateDragValue(currentPresentationEmail);
-                controller.onDragMailBox(true);
-              },
-              onDragEnd: (_) => controller.onDragMailBox(false),
-              onDraggableCanceled: (_,__) => controller.onDragMailBox(false),
-              child: (EmailTileBuilder(
-                    context,
-                    currentPresentationEmail,
-                    controller.mailboxDashBoardController.currentSelectMode.value,
-                    controller.searchQuery,
-                    controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
-                    mailboxContain: currentPresentationEmail.mailboxContain,
-                    isSearchEmailRunning: controller.searchController.isSearchEmailRunning)
-                ..addOnPressEmailActionClick((action, email) =>
-                    controller.pressEmailAction(context, action, email, mailboxContain: currentPresentationEmail.mailboxContain))
-                ..addOnMoreActionClick((email, position) => _responsiveUtils.isScreenWithShortestSide(context)
-                    ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
-                    : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
-              ).build(),
-            ));
-          }),
+          itemBuilder: (context, index) => Obx(() => _buildEmailItem(context, listPresentationEmail[index]))
+        ),
       )
     );
+  }
+
+  Widget _buildEmailItem(BuildContext context, PresentationEmail presentationEmail) {
+    if (_responsiveUtils.isWebDesktop(context)) {
+      return _buildEmailItemDraggable(context, presentationEmail);
+    } else {
+      return _buildEmailItemNotDraggable(context, presentationEmail);
+    }
+  }
+
+  Widget _buildEmailItemDraggable(BuildContext context, PresentationEmail presentationEmail) {
+    return Draggable<List<PresentationEmail>>(
+      data: controller.listEmailDrag,
+      feedback: _buildFeedBackWidget(context),
+      childWhenDragging: _buildEmailItemWhenDragging(context, presentationEmail),
+      dragAnchorStrategy: pointerDragAnchorStrategy,
+      onDragStarted: () {
+        controller.calculateDragValue(presentationEmail);
+        controller.onDragMailBox(true);
+      },
+      onDragEnd: (_) => controller.onDragMailBox(false),
+      onDraggableCanceled: (_,__) => controller.onDragMailBox(false),
+      child: _buildEmailItemNotDraggable(context, presentationEmail)
+    );
+  }
+
+  Widget _buildEmailItemWhenDragging(BuildContext context, PresentationEmail presentationEmail) {
+    final isShowingEmailContent = controller.mailboxDashBoardController.selectedEmail.value?.id == presentationEmail.id;
+    final selectModeAll = controller.mailboxDashBoardController.currentSelectMode.value;
+
+    return (EmailTileBuilder(
+      context,
+      presentationEmail,
+      selectModeAll,
+      controller.searchQuery,
+      isShowingEmailContent,
+      mailboxContain: presentationEmail.mailboxContain,
+      isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
+      isDrag: true
+    )).build();
+  }
+
+  Widget _buildEmailItemNotDraggable(BuildContext context, PresentationEmail presentationEmail) {
+    final isShowingEmailContent = controller.mailboxDashBoardController.selectedEmail.value?.id == presentationEmail.id;
+    final selectModeAll = controller.mailboxDashBoardController.currentSelectMode.value;
+
+    return (EmailTileBuilder(
+      context,
+      presentationEmail,
+      selectModeAll,
+      controller.searchQuery,
+      isShowingEmailContent,
+      mailboxContain: presentationEmail.mailboxContain,
+      isSearchEmailRunning: controller.searchController.isSearchEmailRunning
+    )
+      ..addOnPressEmailActionClick((action, email) => _handleEmailActionClicked(context, email, action))
+      ..addOnMoreActionClick((email, position) => _handleEmailContextMenuAction(context, email, position))
+    ).build();
+  }
+
+  void _handleEmailActionClicked(
+    BuildContext context,
+    PresentationEmail presentationEmail,
+    EmailActionType actionType
+  ) {
+    controller.pressEmailAction(
+      context,
+      actionType,
+      presentationEmail,
+      mailboxContain: presentationEmail.mailboxContain
+    );
+  }
+
+  void _handleEmailContextMenuAction(
+    BuildContext context,
+    PresentationEmail presentationEmail,
+    RelativeRect? position
+  ) {
+    if (_responsiveUtils.isScreenWithShortestSide(context)) {
+      controller.openContextMenuAction(
+        context,
+        _contextMenuActionTile(context, presentationEmail)
+      );
+    } else {
+      controller.openPopupMenuAction(
+        context,
+        position,
+        _popupMenuActionTile(context, presentationEmail)
+      );
+    }
   }
 
   Widget _buildFeedBackWidget(BuildContext context) {
