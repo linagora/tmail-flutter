@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/utils/build_utils.dart';
@@ -22,6 +23,7 @@ class MailBoxFolderTileBuilder {
   final MailboxNode _mailboxNode;
   final BuildContext _context;
   final ImagePaths _imagePaths;
+  final ResponsiveUtils? responsiveUtils;
   final SelectMode allSelectMode;
   final MailboxDisplayed mailboxDisplayed;
   final MailboxNode? lastNode;
@@ -48,6 +50,7 @@ class MailBoxFolderTileBuilder {
       this.lastNode,
       this.mailboxNodeSelected,
       this.mailboxActions,
+      this.responsiveUtils,
       this.mailboxIdAlreadySelected
     }
   );
@@ -77,14 +80,10 @@ class MailBoxFolderTileBuilder {
   }
 
   Widget build() {
-    if (BuildUtils.isWeb) {
+    if (responsiveUtils?.isWebDesktop(_context) == true && mailboxDisplayed == MailboxDisplayed.mailbox) {
       return DragTarget<List<PresentationEmail>>(
-        builder: (context, _, __,) {
-          return _buildMailboxItem();
-        },
-        onAccept: (emails) {
-          _onDragItemAccepted?.call(emails, _mailboxNode.item);
-        },
+        builder: (_, __, ___) => _buildMailboxItem(),
+        onAccept: (emails) => _onDragItemAccepted?.call(emails, _mailboxNode.item),
       );
     } else {
       return _buildMailboxItem();

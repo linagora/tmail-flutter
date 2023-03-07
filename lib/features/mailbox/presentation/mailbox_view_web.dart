@@ -299,6 +299,7 @@ class MailboxView extends GetWidget<MailboxController>
                 context,
                 _imagePaths,
                 mailboxNode,
+                responsiveUtils: _responsiveUtils,
                 lastNode: lastNode,
                 mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
             ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
@@ -324,6 +325,7 @@ class MailboxView extends GetWidget<MailboxController>
             context,
               _imagePaths,
               mailboxNode,
+              responsiveUtils: _responsiveUtils,
               lastNode: lastNode,
               mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
           ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
