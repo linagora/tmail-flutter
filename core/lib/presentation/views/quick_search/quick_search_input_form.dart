@@ -779,11 +779,13 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
               _suggestionsBox!.direction == AxisDirection.down
                   ? _suggestionsBox!.textBoxHeight + widget.suggestionsBoxVerticalOffset
                   : _suggestionsBox!.directionUpOffset),
-          child: _suggestionsBox!.direction == AxisDirection.down
+          child: TextFieldTapRegion(
+            child: _suggestionsBox!.direction == AxisDirection.down
               ? suggestionsList
               : FractionalTranslation(
                   translation: const Offset(0.0, -1.0), // visually flips list to go up
                   child: suggestionsList,
+                )
           ),
         ),
       );
