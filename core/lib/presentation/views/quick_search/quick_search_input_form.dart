@@ -677,10 +677,12 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    ScrollableState? scrollableState = Scrollable.of(context);
-    _scrollPosition = scrollableState.position;
-    _scrollPosition!.removeListener(_scrollResizeListener);
-    _scrollPosition!.isScrollingNotifier.addListener(_scrollResizeListener);
+    final scrollableState = Scrollable.maybeOf(context);
+    if (scrollableState != null) {
+      _scrollPosition = scrollableState.position;
+      _scrollPosition!.removeListener(_scrollResizeListener);
+      _scrollPosition!.isScrollingNotifier.addListener(_scrollResizeListener);
+    }
   }
 
   void _scrollResizeListener() {
