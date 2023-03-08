@@ -327,7 +327,6 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _activateSearchFromRouter() {
-    searchController.autoFocus.value = false;
     searchController.enableSearch();
     searchController.updateTextSearch(_navigationRouter!.searchQuery!.value);
     searchController.updateFilterEmail(text: _navigationRouter!.searchQuery!);
@@ -716,7 +715,6 @@ class ThreadController extends BaseController with EmailActionController {
       isSearchEmailRunning: searchController.isSearchEmailRunning
     );
     mailboxDashBoardController.updateEmailList(newEmailListSynced);
-    searchController.autoFocus.value = true;
   }
 
   void searchMoreEmails() {

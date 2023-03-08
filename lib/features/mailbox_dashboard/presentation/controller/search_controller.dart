@@ -50,7 +50,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
   final listFilterOnSuggestionForm = RxList<QuickSearchFilter>();
   final simpleSearchIsActivated = RxBool(false);
   final advancedSearchIsActivated = RxBool(false);
-  final autoFocus = RxBool(true);
 
   SearchQuery? get searchQuery => searchEmailFilter.value.text;
 
