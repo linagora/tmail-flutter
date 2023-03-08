@@ -114,7 +114,7 @@ class _TextFieldAutoCompleteEmailAddressState
           textEditingController: ttec,
           focusNode: tfn,
           textfieldTagsController: _controller,
-          textSeparators: const [' ', ','],
+          textSeparators: const ['\n', ','],
           letterCase: LetterCase.normal,
           validator: (String tag) {
             if (_controller.getTags!.contains(tag)) {
