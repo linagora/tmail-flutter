@@ -83,6 +83,7 @@ class AdvancedFilterController extends BaseController {
     notKeyWordFilterInputController.text = '';
     hasAttachment.value = false;
     _destinationMailboxSelected = null;
+    searchController.searchInputController.clear();
     searchController.deactivateAdvancedSearch();
     searchController.isAdvancedSearchViewOpen.toggle();
     _mailboxDashBoardController.searchEmail(context, StringConvert.writeNullToEmpty(searchEmailFilter.text?.value));

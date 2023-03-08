@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -20,8 +19,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/comp
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_overlay.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/spam_report_banner_web_widget.dart';
@@ -262,43 +259,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           width: constraint.maxWidth / 2,
           height: 52,
           color: Colors.transparent,
-          child: Obx(() {
-            if (searchController.isSearchActive()) {
-              return SearchInputFormWidget(
-                  maxWidth: constraint.maxWidth / 2,
-                  dashBoardController: controller,
-                  imagePaths: imagePaths);
-            } else {
-              return PortalTarget(
-                visible: searchController.isAdvancedSearchViewOpen.isTrue,
-                portalFollower: PointerInterceptor(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => searchController.selectOpenAdvanceSearch()),
-                ),
-                child: PortalTarget(
-                  visible: searchController.isAdvancedSearchViewOpen.isTrue,
-                  anchor: const Aligned(
-                    follower: Alignment.topRight,
-                    target: Alignment.bottomRight,
-                    widthFactor: 1,
-                    backup: Aligned(
-                      follower: Alignment.topRight,
-                      target: Alignment.bottomRight,
-                      widthFactor: 1,
-                    ),
-                  ),
-                  portalFollower: AdvancedSearchFilterOverlay(maxWidth: constraint.maxWidth / 2),
-                  child: SearchBarView(imagePaths,
-                      hintTextSearch: AppLocalizations.of(context).search_emails,
-                      onOpenSearchViewAction: controller.searchController.enableSearch,
-                      heightSearchBar: 52,
-                      radius: 12,
-                      rightButton: IconOpenAdvancedSearchWidget(context)),
-                ),
-              );
-            }
-          })),
+          child: SearchInputFormWidget(
+            maxWidth: constraint.maxWidth / 2,
+            dashBoardController: controller,
+            imagePaths: imagePaths
+          )
+        ),
         const Spacer(),
         AppConfig.appGridDashboardAvailable
           ? Obx(() => PortalTarget(
