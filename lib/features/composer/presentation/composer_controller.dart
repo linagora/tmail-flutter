@@ -484,22 +484,13 @@ class ComposerController extends BaseController {
   void _initEmailAddress(ComposerArguments arguments) {
     final userProfile =  mailboxDashBoardController.userProfile.value;
     if (arguments.presentationEmail != null && userProfile != null) {
-      final userEmailAddress = EmailAddress(null, userProfile.email);
-
       final recipients = arguments.presentationEmail!.generateRecipientsEmailAddressForComposer(
           arguments.emailActionType,
           arguments.mailboxRole);
 
-      if (arguments.mailboxRole == PresentationMailbox.roleSent
-          || arguments.emailActionType == EmailActionType.edit) {
-        listToEmailAddress = List.from(recipients.value1);
-        listCcEmailAddress = List.from(recipients.value2);
-        listBccEmailAddress = List.from(recipients.value3);
-      } else {
-        listToEmailAddress = List.from(recipients.value1.toSet().filterEmailAddress(userEmailAddress));
-        listCcEmailAddress = List.from(recipients.value2.toSet().filterEmailAddress(userEmailAddress));
-        listBccEmailAddress = List.from(recipients.value3.toSet().filterEmailAddress(userEmailAddress));
-      }
+      listToEmailAddress = List.from(recipients.value1);
+      listCcEmailAddress = List.from(recipients.value2);
+      listBccEmailAddress = List.from(recipients.value3);
 
       if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty) {
         isInitialRecipient.value = true;
