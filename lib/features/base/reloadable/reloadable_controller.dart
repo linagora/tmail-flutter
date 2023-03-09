@@ -55,14 +55,6 @@ abstract class ReloadableController extends BaseController {
           _handleGetSessionSuccess(success);
         } else if (success is GetStoredTokenOidcSuccess) {
           _handleGetStoredTokenOIDCSuccess(success);
-<<<<<<< HEAD
-        } else if (success is GetFCMSubscriptionLocalSuccess) {
-          final subscriptionId = success.fcmSubscription.subscriptionId;
-          _destroySubscriptionAction(subscriptionId);
-        } else if (success is DestroySubscriptionSuccess) {
-          _checkAuthenticationTypeWhenLogout();
-=======
->>>>>>> d49ace46 (Move logout logic to BaseController to handle logout when BadCredentials for all cases)
         }
       }
     );
