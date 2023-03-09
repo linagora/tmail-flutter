@@ -5,7 +5,7 @@ set -e
 set -x
 
 cd core
-flutter pub get
+#flutter pub get
 
 ## Install necessary pods
 #cd ../ios
