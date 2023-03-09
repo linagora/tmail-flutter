@@ -122,8 +122,8 @@ abstract class BaseController extends GetxController
           log('BaseController::onData(): $success');
           _getSubscriptionLocalAction();
         } else if (success is GetFCMSubscriptionLocalSuccess) {
-          final _subscriptionId = success.fcmSubscription.subscriptionId;
-          _destroySubscriptionAction(_subscriptionId);
+          final subscriptionId = success.fcmSubscription.subscriptionId;
+          _destroySubscriptionAction(subscriptionId);
         } else if (success is DestroySubscriptionSuccess) {
           checkAuthenticationTypeWhenLogout();
         }
