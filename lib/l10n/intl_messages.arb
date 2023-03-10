@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-03-10T13:53:08.023350",
+  "@@last_modified": "2023-03-10T14:00:31.546227",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1574,6 +1574,12 @@
   },
   "languageArabic": "Arabic",
   "@languageArabic": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageItalian": "Italian",
+  "@languageItalian": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
