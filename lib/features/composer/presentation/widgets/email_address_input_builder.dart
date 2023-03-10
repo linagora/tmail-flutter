@@ -335,17 +335,20 @@ class EmailAddressInputBuilder {
   ) {
     return Container(
       color: highlight ? AppColor.colorItemSelected : Colors.white,
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-        leading: _buildAvatarSuggestionItem(emailAddress),
-        title: _buildTitleSuggestionItem(emailAddress, suggestionValid),
-        subtitle: _buildSubtitleSuggestionItem(emailAddress, suggestionValid),
-        onTap: () {
-          setState(() => listEmailAddress.add(emailAddress));
-          _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
-          tagEditorState.resetTextField();
-          tagEditorState.closeSuggestionBox();
-        },
+      child: Material(
+        type: MaterialType.transparency,
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+          leading: _buildAvatarSuggestionItem(emailAddress),
+          title: _buildTitleSuggestionItem(emailAddress, suggestionValid),
+          subtitle: _buildSubtitleSuggestionItem(emailAddress, suggestionValid),
+          onTap: () {
+            setState(() => listEmailAddress.add(emailAddress));
+            _onUpdateListEmailAddressAction?.call(_prefixEmailAddress, listEmailAddress);
+            tagEditorState.resetTextField();
+            tagEditorState.closeSuggestionBox();
+          },
+        ),
       ),
     );
   }
