@@ -1,6 +1,7 @@
 
 import 'dart:ui';
 
+import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/save_language_state.dart';
@@ -13,6 +14,7 @@ class LanguageAndRegionController extends BaseController {
 
   final listSupportedLanguages = <Locale>[].obs;
   final languageSelected = LocalizationService.defaultLocale.obs;
+  final isLanguageMenuOverlayOpen = RxBool(false);
 
   LanguageAndRegionController(this._saveLanguageInteractor);
 
@@ -37,6 +39,7 @@ class LanguageAndRegionController extends BaseController {
     listSupportedLanguages.value = LocalizationService.supportedLocales;
 
     final currentLocale = Get.locale;
+    log('LanguageAndRegionController::_setUpSupportedLanguages():currentLocale: $currentLocale');
     if (currentLocale != null) {
       languageSelected.value = currentLocale;
     } else {
@@ -45,11 +48,16 @@ class LanguageAndRegionController extends BaseController {
   }
 
   void selectLanguage(Locale? selectedLocale) {
+    isLanguageMenuOverlayOpen.value = false;
     languageSelected.value = selectedLocale ?? LocalizationService.defaultLocale;
     _saveLanguage(languageSelected.value);
   }
 
   void _saveLanguage(Locale localeCurrent) {
     consumeState(_saveLanguageInteractor.execute(localeCurrent));
+  }
+
+  void toggleLanguageMenuOverlay() {
+    isLanguageMenuOverlayOpen.toggle();
   }
 }

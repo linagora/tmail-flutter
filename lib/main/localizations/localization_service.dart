@@ -14,14 +14,16 @@ class LocalizationService extends Translations {
     'fr',
     'en',
     'vi',
-    'ru'
+    'ru',
+    'ar'
   ];
 
   static const List<Locale> supportedLocales = [
     Locale('fr', 'FR'),
     Locale('en', 'US'),
     Locale('vi', 'VN'),
-    Locale('ru', 'RU')
+    Locale('ru', 'RU'),
+    Locale('ar', 'TN')
   ];
 
   static final locale = _getLocaleFromLanguage();
