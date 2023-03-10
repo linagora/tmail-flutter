@@ -2351,5 +2351,533 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "skip": "Bỏ qua",
+  "@skip": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "profilesSettingExplanation": "Thông tin về bạn và các tùy chọn để quản lý",
+  "@profilesSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "setDefaultIdentity": "Đặt làm định danh mặc định",
+  "@setDefaultIdentity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "identitiesSettingExplanation": "Chọn danh tính hoặc địa chỉ email mà bạn muốn sử dụng để gửi email",
+  "@identitiesSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewIdentity": "Tạo danh tính mới",
+  "@createNewIdentity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "regards": "Trân trọng,",
+  "@regards": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNewMessages": "Bạn có tin nhắn mới",
+  "@youHaveNewMessages": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "appTitlePushNotification": "Team Mail",
+  "@appTitlePushNotification": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "totalNewMessagePushNotification": "{count} email mới",
+  "@totalNewMessagePushNotification": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "privacyPolicy": "Chính sách bảo mật",
+  "@privacyPolicy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "countNewSpamEmails": "Bạn có {count} email rác mới!",
+  "@countNewSpamEmails": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "showDetails": "Chi tiết",
+  "@showDetails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dismiss": "Bỏ qua",
+  "@dismiss": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noEmailInYourCurrentMailbox": "Chúng tôi xin lỗi, không có email nào trong hộp thư hiện tại của bạn",
+  "@noEmailInYourCurrentMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "required": "yêu cầu",
+  "@required": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noEmailMatchYourCurrentFilter": "Chúng tôi xin lỗi, không có email nào phù hợp với bộ lọc hiện tại của bạn.",
+  "@noEmailMatchYourCurrentFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reduceSomeFiltersAndTryAgain": "Hãy giảm bớt một số bộ lọc và thử lại",
+  "@reduceSomeFiltersAndTryAgain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendMessageFailure": "Không thể gửi tin nhắn của bạn.",
+  "@sendMessageFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendMessageFailureWithSetErrorTypeTooLarge": "Không thể gửi tin nhắn của bạn, vì nó quá lớn.",
+  "@sendMessageFailureWithSetErrorTypeTooLarge": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailBoxes": "Hộp thư",
+  "@mailBoxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisImageCannotBeAdded": "Không thể thêm hình ảnh này.",
+  "@thisImageCannotBeAdded": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showMailbox": "Hiển thị hộp thư",
+  "@showMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "undo": "Hoàn tác",
+  "@undo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showAll": "Hiển thị tất cả",
+  "@showAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintInputAutocompleteContact": "Nhập tên hoặc địa chỉ email",
+  "@hintInputAutocompleteContact": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleReadReceiptRequestNotificationMessage": "Yêu cầu xác nhận đọc",
+  "@titleReadReceiptRequestNotificationMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no": "Không",
+  "@no": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageSendReceiptSuccess": "Đã gửi xác nhận đọc",
+  "@toastMessageSendReceiptSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "Bạn chưa chọn thư mục để lưu trữ",
+  "@toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newer": "Mới hơn",
+  "@newer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "totalEmailSelected": "Bỏ chọn tất cả ({count})",
+  "@totalEmailSelected": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "storageQuotas": "Dung lượng lưu trữ",
+  "@storageQuotas": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasUsed": "Đã sử dụng {used} GB trong tổng số {softLimit} GB",
+  "@textQuotasUsed": {
+    "type": "text",
+    "placeholders_order": [
+      "used",
+      "softLimit"
+    ],
+    "placeholders": {
+      "used": {},
+      "softLimit": {}
+    }
+  },
+  "textQuotasRunningOutOfStorageTitle": "Dung lượng lưu trữ của bạn đang cạn kiệt ({progress}%).",
+  "@textQuotasRunningOutOfStorageTitle": {
+    "type": "text",
+    "placeholders_order": [
+      "progress"
+    ],
+    "placeholders": {
+      "progress": {}
+    }
+  },
+  "openInNewTab": "Mở trong tab mới",
+  "@openInNewTab": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveConversation": "Chuyển {numberOfConversation} cuộc trò chuyện",
+  "@moveConversation": {
+    "type": "text",
+    "placeholders_order": [
+      "numberOfConversation"
+    ],
+    "placeholders": {
+      "numberOfConversation": {}
+    }
+  },
+  "disableSpamReport": "Tắt báo cáo thư rác",
+  "@disableSpamReport": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "remove": "Xóa",
+  "@remove": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "incorrectEmailFormat": "Email không đúng định dạng",
+  "@incorrectEmailFormat": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addRecipientButton": "Thêm người nhận",
+  "@addRecipientButton": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasRunningOutOfStorageContent": "Sắp tới bạn sẽ không thể gửi email trong Team Mail. Vui lòng dọn dẹp không gian lưu trữ hoặc nâng cấp dung lượng để sử dụng đầy đủ tính năng trong Team Mail.",
+  "@textQuotasRunningOutOfStorageContent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasOutOfStorage": "Hết dung lượng lưu trữ",
+  "@textQuotasOutOfStorage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasRunOutOfStorageTitle": "Bạn đã hết dung lượng lưu trữ",
+  "@textQuotasRunOutOfStorageTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "page404": "Trang 404",
+  "@page404": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasRunOutOfStorageContent": "Bây giờ bạn tạm thời không thể gửi hoặc nhận email. Vui lòng giải phóng hoặc nâng cấp bộ nhớ của bạn để  sử dụng các tính năng đầy đủ của Team Mail.",
+  "@textQuotasRunOutOfStorageContent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subTitlePageNotFound": "Có thể trang đích của bạn đã biến mất hoặc thuộc về tài khoản khác.",
+  "@subTitlePageNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quickCreatingRule": "Tạo một quy tắc với email này",
+  "@quickCreatingRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titlePageNotFound": "Xin lỗi, chúng tôi không thể tìm thấy trang",
+  "@titlePageNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bcc_to": "Bcc",
+  "@bcc_to": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "personalMailboxes": "Hộp thư cá nhân",
+  "@personalMailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textBodySendReceiptToSender": "Tin nhắn đã được {receiver} đọc vào lúc {time}\n\nChủ đề: {subject}\n\nChú ý: Xác nhận đã đọc này chỉ xác nhận rằng tin nhắn đã hiển thị trên máy tính của người nhận. Không có bảo đảm rằng người nhận đã đọc hoặc hiểu nội dung của tin nhắn.",
+  "@textBodySendReceiptToSender": {
+    "type": "text",
+    "placeholders_order": [
+      "receiver",
+      "subject",
+      "time"
+    ],
+    "placeholders": {
+      "receiver": {},
+      "subject": {},
+      "time": {}
+    }
+  },
+  "createNewMailbox": "Tạo hộp thư mới",
+  "@createNewMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_to": "Trả lời",
+  "@reply_to": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "html": "Html",
+  "@html": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_have_created_a_new_default_identity": "Bạn đã tạo một danh tính mặc định mới",
+  "@you_have_created_a_new_default_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectParentFolder": "Chọn thư mục cha",
+  "@selectParentFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceipt": "Yêu cầu xác nhận đọc",
+  "@requestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "appGridTittle": "Mở ứng dụng",
+  "@appGridTittle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageNotSupportMdnWhenSendReceipt": "Tài khoản của bạn không hỗ trợ tính năng MDN",
+  "@toastMessageNotSupportMdnWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardingSettingExplanation": "Cho phép người nhận mới xem email đã gửi nếu họ không được bao gồm trong chuỗi email ban đầu",
+  "@forwardingSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subTitleReadReceiptRequestNotificationMessage": "Người gửi đã yêu cầu xác nhận đọc cho email này. Gửi xác nhận đọc?",
+  "@subTitleReadReceiptRequestNotificationMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "older": "Cũ hơn",
+  "@older": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageCannotFoundEmailIdWhenSendReceipt": "Không tìm thấy email id",
+  "@toastMessageCannotFoundEmailIdWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subjectSendReceiptToSender": "Đọc {subject}",
+  "@subjectSendReceiptToSender": {
+    "type": "text",
+    "placeholders_order": [
+      "subject"
+    ],
+    "placeholders": {
+      "subject": {}
+    }
+  },
+  "messageConfirmationDialogDeleteMultipleMailbox": "{numberOfMailbox} hộp thư và tất cả các thư mục con và các email bên trong sẽ bị xóa và không thể khôi phục được. Bạn có muốn tiếp tục xóa không?",
+  "@messageConfirmationDialogDeleteMultipleMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "numberOfMailbox"
+    ],
+    "placeholders": {
+      "numberOfMailbox": {}
+    }
+  },
+  "toastMessageCannotFoundIdentityWhenSendReceipt": "Không tìm thấy id danh tính",
+  "@toastMessageCannotFoundIdentityWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enableSpamReport": "Bật báo cáo Spam",
+  "@enableSpamReport": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "teamMailBoxes": "Hộp thư nhóm",
+  "@teamMailBoxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendMessageFailureWithSetErrorTypeOverQuota": "Không thể gửi tin nhắn của bạn, vì vượt quá giới hạn dung lượng.",
+  "@sendMessageFailureWithSetErrorTypeOverQuota": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveEmailAsDraftFailure": "Không thể lưu tin nhắn của bạn vào mục nháp.",
+  "@saveEmailAsDraftFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveEmailAsDraftFailureWithSetErrorTypeOverQuota": "Không thể lưu tin nhắn của bạn vào mục nháp, vì vượt quá giới hạn dung lượng",
+  "@saveEmailAsDraftFailureWithSetErrorTypeOverQuota": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveEmailAsDraftFailureWithSetErrorTypeTooLarge": "Không thể lưu tin nhắn của bạn vào mục nháp, vì nó quá lớn.",
+  "@saveEmailAsDraftFailureWithSetErrorTypeTooLarge": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hideMailBoxes": "Ẩn hộp thư",
+  "@hideMailBoxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMsgHideMailboxSuccess": "Hộp thư này đã bị ẩn khỏi hộp thư chính của bạn",
+  "@toastMsgHideMailboxSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "searchForMailboxes": "Tìm kiếm hộp thư",
+  "@searchForMailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxVisibility": "Chế độ hiển thị hộp thư",
+  "@mailboxVisibility": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxVisibilitySubtitle": "Hiển thị/ẩn hộp thư của bạn, bao gồm hộp thư cá nhân và hộp thư nhóm của bạn.",
+  "@mailboxVisibilitySubtitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageShowMailboxSuccess": "Hộp thư này đã được hiển thị trong hộp thư chính của bạn",
+  "@toastMessageShowMailboxSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleHeaderAttachment": "{count} Tệp đính kèm ({totalSize}):",
+  "@titleHeaderAttachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "totalSize"
+    ],
+    "placeholders": {
+      "count": {},
+      "totalSize": {}
+    }
+  },
+  "yes": "Có",
+  "@yes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
