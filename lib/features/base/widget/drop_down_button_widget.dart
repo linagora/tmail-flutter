@@ -11,7 +11,6 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart' as rich_text_composer;
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/extensions/locale_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 
@@ -166,9 +165,6 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   String _getTextItemDropdown(BuildContext context, {required T? item}) {
     if (item is Identity) {
       return item.name ?? '';
-    }
-    if (item is Locale) {
-      return item.getLanguageName(context);
     }
     if (item is FontNameType) {
       return item.fontFamily;

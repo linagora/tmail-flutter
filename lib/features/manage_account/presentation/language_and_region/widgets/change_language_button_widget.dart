@@ -112,7 +112,7 @@ class ChangeLanguageButtonWidget extends StatelessWidget {
           padding: const EdgeInsets.only(left: 12, right: 10),
           child: Row(children: [
             Expanded(child: Text(
-              _controller.languageSelected.value.getLanguageName(context),
+              _controller.languageSelected.value.getLanguageNameByCurrentLocale(context),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.normal,
