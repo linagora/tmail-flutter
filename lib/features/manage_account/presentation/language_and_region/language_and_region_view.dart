@@ -1,9 +1,10 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/widgets/change_language_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/widgets/change_language_button_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/widgets/language_and_region_header_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 
@@ -43,7 +44,7 @@ class LanguageAndRegionView extends GetWidget<LanguageAndRegionController> {
               children: [
                 const LanguageAndRegionHeaderWidget(),
                 const SizedBox(height: 22),
-                Expanded(child: ChangeLanguageWidget())
+                Expanded(child: ChangeLanguageButtonWidget())
               ]
             ),
           ),

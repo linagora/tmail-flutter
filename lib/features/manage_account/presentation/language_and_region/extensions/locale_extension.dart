@@ -14,6 +14,8 @@ extension LocaleExtension on Locale {
         return AppLocalizations.of(context).languageVietnamese;
       case 'ru':
         return AppLocalizations.of(context).languageRussian;
+      case 'ar':
+        return AppLocalizations.of(context).languageArabic;
       default:
         return '';
     }
