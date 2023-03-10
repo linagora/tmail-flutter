@@ -57,6 +57,7 @@ class EmailRulesHeaderWidget extends StatelessWidget {
             ..iconColor(Colors.white)
             ..size(20)
             ..radiusSplash(10)
+            ..addBoxConstraints(const BoxConstraints(minWidth: 130))
             ..padding(const EdgeInsets.symmetric(vertical: 12,horizontal: 8))
             ..textStyle(const TextStyle(
               fontSize: 17,
@@ -68,7 +69,7 @@ class EmailRulesHeaderWidget extends StatelessWidget {
               AppLocalizations.of(context).addNewRule,
               isVertical: false,
             )).build(),
-          const Expanded(child: SizedBox()),
+          const Spacer(),
         ],
       );
     } else {

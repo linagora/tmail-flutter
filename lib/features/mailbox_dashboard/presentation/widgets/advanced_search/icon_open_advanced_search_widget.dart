@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class IconOpenAdvancedSearchWidget extends StatelessWidget {
   IconOpenAdvancedSearchWidget(
@@ -23,11 +24,17 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => Padding(
-        padding: const EdgeInsets.only(right: 8),
+        padding: EdgeInsets.only(
+          right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+          left: AppUtils.isDirectionRTL(context) ? 8 : 0,
+        ),
         child: buildIconWeb(
             splashRadius: 15,
             minSize: 40,
-            iconPadding: const EdgeInsets.only(right: 2),
+            iconPadding: EdgeInsets.only(
+              right: AppUtils.isDirectionRTL(context) ? 0 : 2,
+              left: AppUtils.isDirectionRTL(context) ? 2 : 0,
+            ),
             icon: SvgPicture.asset(_imagePaths.icFilterAdvanced,
                 colorFilter: searchController.isAdvancedSearchViewOpen.isTrue || searchController.advancedSearchIsActivated.isTrue
                     ? AppColor.colorFilterMessageEnabled.asFilter()

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/account_menu_item_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
 
@@ -57,11 +58,18 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                       color: _responsiveUtils.isWebDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Padding(
-                          padding: const EdgeInsets.only(left: 20, top: 24),
+                          padding: EdgeInsets.only(
+                            left: AppUtils.isDirectionRTL(context) ? 0 : 20,
+                            right: AppUtils.isDirectionRTL(context) ? 20 : 0,
+                            top: 24
+                          ),
                           child: (ButtonBuilder(_imagePaths.icBack)
                             ..key(const Key('button_back'))
                             ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorBgMailboxSelected))
-                            ..paddingIcon(const EdgeInsets.only(right: 8))
+                            ..paddingIcon(EdgeInsets.only(
+                                right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+                                left: AppUtils.isDirectionRTL(context) ? 8 : 0,
+                            ))
                             ..iconColor(AppColor.colorTextButton)
                             ..maxWidth(100)
                             ..size(16)
@@ -72,14 +80,21 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                             ..text(AppLocalizations.of(context).back, isVertical: false))
                           .build()),
                         Padding(
-                            padding: const EdgeInsets.only(left: 32, top: 20),
+                            padding: EdgeInsets.only(
+                              left: AppUtils.isDirectionRTL(context) ? 0 : 32,
+                              right: AppUtils.isDirectionRTL(context) ? 32 : 0,
+                              top: 20
+                            ),
                             child: Text(
                                 AppLocalizations.of(context).manage_account,
                                 style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 17))),
                         const SizedBox(height: 12),
                         Obx(
                           () => ListView.builder(
-                              padding: const EdgeInsets.only(left: 16, right: 8),
+                              padding: EdgeInsets.only(
+                                left: AppUtils.isDirectionRTL(context) ? 8 : 16,
+                                right: AppUtils.isDirectionRTL(context) ? 16 : 8
+                              ),
                               key: const Key('list_manage_account_property'),
                               shrinkWrap: true,
                               itemCount: controller.listAccountMenuItem.length,
@@ -95,21 +110,31 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                         const Padding(
                             padding: EdgeInsets.symmetric(vertical: 16),
                             child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
-                        Padding(padding: const EdgeInsets.only(left: 32),
-                            child: InkWell(
-                                onTap: () {
-                                  controller.logout(
-                                    controller.dashBoardController.sessionCurrent.value,
-                                    controller.dashBoardController.accountId.value
-                                  );
-                                },
-                                child: Row(children: [
-                                  SvgPicture.asset(_imagePaths.icSignOut, fit: BoxFit.fill),
-                                  const SizedBox(width: 12),
-                                  Expanded(child: Text(AppLocalizations.of(context).sign_out,
-                                      style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: Colors.black)))
-                                ])
-                            )
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: AppUtils.isDirectionRTL(context) ? 0 : 32,
+                            right: AppUtils.isDirectionRTL(context) ? 32 : 0,
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              controller.logout(
+                                controller.dashBoardController.sessionCurrent.value,
+                                controller.dashBoardController.accountId.value
+                              );
+                            },
+                            child: Row(children: [
+                              SvgPicture.asset(_imagePaths.icSignOut, fit: BoxFit.fill),
+                              const SizedBox(width: 12),
+                              Expanded(child: Text(
+                                AppLocalizations.of(context).sign_out,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 15,
+                                  color: Colors.black
+                                )
+                              ))
+                            ])
+                          )
                         ),
                       ]),
                     )),

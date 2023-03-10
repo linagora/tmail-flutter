@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_ma
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
 
@@ -75,7 +76,7 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
         else
           const SizedBox(width: 24),
         if (!_mailboxNode.item.isTeamMailboxes)
-          _buildMailboxIcon(),
+          _buildMailboxIcon(context),
       ]
     );
   }
@@ -113,9 +114,12 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
     );
   }
 
-  Widget _buildMailboxIcon() {
+  Widget _buildMailboxIcon(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: EdgeInsets.only(
+        right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+        left: AppUtils.isDirectionRTL(context) ? 8 : 0,
+      ),
       child: SvgPicture.asset(
         _mailboxNode.item.getMailboxIcon(_imagePaths),
         width: 20,

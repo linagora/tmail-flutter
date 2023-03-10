@@ -26,6 +26,7 @@ class ButtonBuilder {
   double? _maxWidth;
   EdgeInsets? _padding;
   String? _tooltip;
+  BoxConstraints? _constraints;
 
   void key(Key key) {
     _key = key;
@@ -84,6 +85,10 @@ class ButtonBuilder {
     _tooltip = message;
   }
 
+  void addBoxConstraints(BoxConstraints? constraints) {
+    _constraints = constraints;
+  }
+
   ButtonBuilder(this._icon);
 
   void onPressActionClick(OnPressActionClick onPressActionClick) {
@@ -122,6 +127,7 @@ class ButtonBuilder {
             color: _decoration == null ? _colorButton : null,
             decoration: _decoration,
             width: _maxWidth,
+            constraints: _constraints,
             padding: _padding ?? EdgeInsets.zero,
             child: _buildBody()
           ),

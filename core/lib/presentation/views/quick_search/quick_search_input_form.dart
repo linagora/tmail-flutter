@@ -89,6 +89,7 @@ class QuickSearchInputForm<T, R> extends FormField<String> {
         bool hideSuggestionsBox = false,
         BoxDecoration? decoration,
         double? maxHeight,
+        bool isDirectionRTL = false,
       }) : assert(
   initialValue == null || textFieldConfiguration.controller == null),
         assert(minCharsForSuggestions >= 0),
@@ -152,6 +153,7 @@ class QuickSearchInputForm<T, R> extends FormField<String> {
               hideSuggestionsBox: hideSuggestionsBox,
               decoration: decoration,
               maxHeight: maxHeight,
+              isDirectionRTL: isDirectionRTL,
             );
           });
 
@@ -519,6 +521,8 @@ class TypeAheadFieldQuickSearch<T, R> extends StatefulWidget {
   /// Max height search input
   final double? maxHeight;
 
+  final bool isDirectionRTL;
+
   /// Creates a [TypeAheadFieldQuickSearch]
   const TypeAheadFieldQuickSearch(
       {Key? key,
@@ -560,6 +564,7 @@ class TypeAheadFieldQuickSearch<T, R> extends StatefulWidget {
         this.hideSuggestionsBox = false,
         this.decoration,
         this.maxHeight,
+        this.isDirectionRTL = false,
       }) : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
         direction == AxisDirection.down || direction == AxisDirection.up),
@@ -748,6 +753,7 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
         },
         listActionPadding: widget.listActionPadding,
         hideSuggestionsBox: widget.hideSuggestionsBox,
+        isDirectionRTL: widget.isDirectionRTL,
       );
 
       double w = _suggestionsBox!.textBoxWidth;
@@ -899,6 +905,7 @@ class _SuggestionsList<T, R> extends StatefulWidget {
   final RecentSelectionCallback<R>? onRecentSelected;
   final EdgeInsets? listActionPadding;
   final bool hideSuggestionsBox;
+  final bool isDirectionRTL;
 
   const _SuggestionsList({
     required this.suggestionsBox,
@@ -932,6 +939,7 @@ class _SuggestionsList<T, R> extends StatefulWidget {
     this.onRecentSelected,
     this.listActionPadding,
     this.hideSuggestionsBox = false,
+    this.isDirectionRTL = false,
   });
 
   @override
@@ -1174,7 +1182,11 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
         children: widget.listActionButton!.map((dynamic action) {
           if (widget.actionButtonBuilder != null) {
             return Padding(
-              padding: const EdgeInsets.only(right: 8, bottom: kIsWeb ? 8 : 0),
+              padding: EdgeInsets.only(
+                right: widget.isDirectionRTL ? 0 : 8,
+                left: widget.isDirectionRTL ? 8 : 0,
+                bottom: kIsWeb ? 8 : 0
+              ),
               child: InkWell(
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
                 onTap: () {
@@ -1255,7 +1267,11 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
         children: widget.listActionButton!.map((dynamic action) {
           if (widget.actionButtonBuilder != null) {
             return Padding(
-              padding: const EdgeInsets.only(right: 8, bottom: kIsWeb ? 8 : 0),
+              padding: EdgeInsets.only(
+                right: widget.isDirectionRTL ? 0 : 8,
+                left: widget.isDirectionRTL ? 8 : 0,
+                bottom: kIsWeb ? 8 : 0
+              ),
               child: InkWell(
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
                 onTap: () {

@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   final MailboxDashBoardController dashBoardController;
@@ -189,7 +190,10 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         labelStyle: const TextStyle(color: Colors.black, fontSize: 16.0)
       ),
       leftButton: Padding(
-        padding: const EdgeInsets.only(left: 8),
+        padding: EdgeInsets.only(
+          left: AppUtils.isDirectionRTL(context) ? 0 : 8,
+          right: AppUtils.isDirectionRTL(context) ? 8 : 0
+        ),
         child: buildIconWeb(
           minSize: 40,
           iconPadding: EdgeInsets.zero,
@@ -215,10 +219,12 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       final isFilterSelected = filter.isApplied(dashBoardController.searchController.listFilterOnSuggestionForm);
 
       return Chip(
-        labelPadding: const EdgeInsets.only(
+        labelPadding: EdgeInsets.only(
           top: 2,
           bottom: 2,
-          right: 10),
+          right: AppUtils.isDirectionRTL(context) ? 0 : 10,
+          left: AppUtils.isDirectionRTL(context) ? 10 : 0,
+        ),
         label: Text(
           filter.getName(context),
           maxLines: 1,

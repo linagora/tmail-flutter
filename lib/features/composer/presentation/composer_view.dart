@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/upload/presentation/extensions/list_uploa
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class ComposerView extends GetWidget<ComposerController>
     with AppLoaderMixin, RichTextButtonMixin, ComposerLoadingMixin {
@@ -271,7 +272,8 @@ class ComposerView extends GetWidget<ComposerController>
   Widget _buildFromEmailAddress(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          left: responsiveUtils.isMobile(context) ? 16 : 0,
+          left: AppUtils.isDirectionRTL(context) ? 0 : responsiveUtils.isMobile(context) ? 16 : 0,
+          right: AppUtils.isDirectionRTL(context) ? responsiveUtils.isMobile(context) ? 16 : 0 : 0,
           top: 12,
           bottom: 12),
       child: Row(children: [
@@ -324,7 +326,10 @@ class ComposerView extends GetWidget<ComposerController>
           ),
         ),
         Expanded(child: Padding(
-            padding: const EdgeInsets.only(right: 8, left: 12),
+            padding: EdgeInsets.only(
+              right: AppUtils.isDirectionRTL(context) ? 12 : 8,
+              left: AppUtils.isDirectionRTL(context) ? 8 : 12
+            ),
             child: Text(
               controller.identitySelected.value?.email ?? '',
               maxLines: 1,
@@ -339,7 +344,10 @@ class ComposerView extends GetWidget<ComposerController>
     return Column(
       children: [
         Obx(() => Padding(
-            padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+            padding: EdgeInsets.only(
+              left: AppUtils.isDirectionRTL(context) ? 0 : responsiveUtils.isMobile(context) ? 16 : 0,
+              right: AppUtils.isDirectionRTL(context) ? responsiveUtils.isMobile(context) ? 16 : 0 : 0,
+            ),
             child: (EmailAddressInputBuilder(context, imagePaths,
                     PrefixEmailAddress.to,
                     controller.listToEmailAddress,
@@ -362,7 +370,10 @@ class ComposerView extends GetWidget<ComposerController>
             : const SizedBox.shrink()),
         Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
             ? Padding(
-                padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+                padding: EdgeInsets.only(
+                  left: AppUtils.isDirectionRTL(context) ? 0 : responsiveUtils.isMobile(context) ? 16 : 0,
+                  right: AppUtils.isDirectionRTL(context) ? responsiveUtils.isMobile(context) ? 16 : 0 : 0,
+                ),
                 child: (EmailAddressInputBuilder(context, imagePaths,
                         PrefixEmailAddress.cc,
                         controller.listCcEmailAddress,
@@ -384,7 +395,10 @@ class ComposerView extends GetWidget<ComposerController>
             : const SizedBox.shrink()),
         Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true
             ? Padding(
-                padding: EdgeInsets.only(left: responsiveUtils.isMobile(context) ? 16 : 0),
+                padding: EdgeInsets.only(
+                  left: AppUtils.isDirectionRTL(context) ? 0 : responsiveUtils.isMobile(context) ? 16 : 0,
+                  right: AppUtils.isDirectionRTL(context) ? responsiveUtils.isMobile(context) ? 16 : 0 : 0,
+                ),
                 child: (EmailAddressInputBuilder(context, imagePaths,
                         PrefixEmailAddress.bcc,
                         controller.listBccEmailAddress,
@@ -410,7 +424,10 @@ class ComposerView extends GetWidget<ComposerController>
     return Row(
       children: [
         Padding(
-          padding: const EdgeInsets.only(right: 8),
+          padding: EdgeInsets.only(
+            right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+            left: AppUtils.isDirectionRTL(context) ? 8 : 0
+          ),
           child: Text(
             '${AppLocalizations.of(context).subject_email}:',
             style: const TextStyle(
@@ -478,7 +495,10 @@ class ComposerView extends GetWidget<ComposerController>
         physics: const ClampingScrollPhysics(),
         child: Column(children: [
           Padding(
-              padding: const EdgeInsets.only(left: 16),
+              padding: EdgeInsets.only(
+                right: AppUtils.isDirectionRTL(context) ? 16 : 0,
+                left: AppUtils.isDirectionRTL(context) ? 0 : 16
+              ),
               child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Padding(padding: const EdgeInsets.only(top: 20),
                     child: (AvatarBuilder()
@@ -498,13 +518,22 @@ class ComposerView extends GetWidget<ComposerController>
                         : const SizedBox.shrink()),
                     _buildEmailAddress(context),
                     const Divider(color: AppColor.colorDividerComposer, height: 1),
-                    Padding(padding: const EdgeInsets.only(right: 16), child: _buildSubjectEmail(context)),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+                        right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+                      ),
+                      child: _buildSubjectEmail(context)
+                    ),
                   ]),
                 ))
               ])),
           const Divider(color: AppColor.colorDividerComposer, height: 1),
           Padding(
-              padding: const EdgeInsets.only(left: 60, right: 25),
+              padding: EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 25 : 60,
+                right: AppUtils.isDirectionRTL(context) ? 60 : 25,
+              ),
               child: Column(children: [
                 _buildAttachmentsWidget(context),
                 buildInlineLoadingView(controller),
@@ -662,7 +691,10 @@ class ComposerView extends GetWidget<ComposerController>
                     itemCount: uploadFilesState.length,
                     itemBuilder: (context, index) => AttachmentFileComposerBuilder(
                         uploadFilesState[index],
-                      itemMargin: const EdgeInsets.only(right: 8),
+                      itemMargin: EdgeInsets.only(
+                        left: AppUtils.isDirectionRTL(context) ? 8 : 0,
+                        right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+                      ),
                       maxWidth: _getMaxWidthItemListAttachment(context, constraints),
                       onDeleteAttachmentAction: (attachment) =>
                           controller.deleteAttachmentUploaded(attachment.uploadTaskId))

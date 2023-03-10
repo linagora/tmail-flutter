@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/mailbox_visibility_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
@@ -46,7 +47,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
               desktop: Column(children: [
                 Row(children: [
                   Container(width: 256, color: Colors.white,
-                      padding: const EdgeInsets.only(top: 25, bottom: 25, left: 32),
+                      padding: SettingsUtils.getPaddingHeaderSetting(context),
                       child: Row(children: [
                         (SloganBuilder(arrangedByHorizontal: true)
                           ..setSloganText(AppLocalizations.of(context).app_name)
@@ -71,7 +72,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                       ])
                   ),
                   Expanded(child: Padding(
-                      padding: const EdgeInsets.only(right: 10, top: 16, bottom: 10, left: 48),
+                      padding: SettingsUtils.getPaddingRightHeaderSetting(context),
                       child: _buildRightHeader(context)))
                 ]),
                 Expanded(child: Row(

@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 import 'widgets/app_dashboard/app_grid_dashboard_overlay.dart';
 
@@ -61,7 +62,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     Container(
                       width: ResponsiveUtils.defaultSizeMenu,
                       color: Colors.white,
-                      padding: const EdgeInsets.only(left: 28),
+                      padding: EdgeInsets.only(
+                        left: AppUtils.isDirectionRTL(context) ? 0 : 28,
+                        right: AppUtils.isDirectionRTL(context) ? 28 : 0,
+                      ),
                       alignment: Alignment.center,
                       height: 80,
                       child: Row(children: [
@@ -95,7 +99,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     Expanded(child: Container(
                       color: Colors.white,
                       alignment: Alignment.center,
-                      padding: const EdgeInsets.only(right: 10),
+                      padding: EdgeInsets.only(
+                        right: AppUtils.isDirectionRTL(context) ? 0 : 10,
+                        left: AppUtils.isDirectionRTL(context) ? 10 : 0,
+                      ),
                       height: 80,
                       child: _buildRightHeader(context)))
                   ]),
@@ -118,8 +125,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     Expanded(child: Column(children: [
                       const SpamReportBannerWebWidget(),
                       _buildEmptyTrashButton(context),
-                      const QuotasWarningBannerWidget(
-                        margin: EdgeInsets.only(right: 16, top: 8),
+                      QuotasWarningBannerWidget(
+                        margin: EdgeInsets.only(
+                          right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+                          left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+                          top: 8
+                        ),
                       ),
                       _buildVacationNotificationMessage(context),
                       _buildListButtonQuickSearchFilter(context),
@@ -212,7 +223,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   Widget _buildThreadViewForWebDesktop(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(right: 16, top: 8, bottom: 16),
+      margin: EdgeInsets.only(
+        right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+        left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+        top: 8,
+        bottom: 16
+      ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
@@ -273,9 +289,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 behavior: HitTestBehavior.opaque,
                 onTap: () => appGridDashboardController.toggleAppGridDashboard()),
               child: PortalTarget(
-                anchor: const Aligned(
-                  follower: Alignment.topRight,
-                  target: Alignment.bottomRight
+                anchor: Aligned(
+                  follower: AppUtils.isDirectionRTL(context)
+                    ? Alignment.topLeft
+                    : Alignment.topRight,
+                  target: AppUtils.isDirectionRTL(context)
+                    ? Alignment.bottomLeft
+                    : Alignment.bottomRight
                 ),
                 portalFollower: Obx(() {
                   if (appGridDashboardController.linagoraApplications.value != null) {
@@ -344,7 +364,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ..decoration(const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(10)),
               color: AppColor.colorButtonHeaderThread))
-          ..paddingIcon(const EdgeInsets.only(right: 8))
+          ..paddingIcon(EdgeInsets.only(
+              right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+              left: AppUtils.isDirectionRTL(context) ? 8 : 0
+          ))
           ..size(16)
           ..radiusSplash(10)
           ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
@@ -354,7 +377,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         .build(),
       if (mailBoxDashboardController.isAbleMarkAllAsRead())
         Padding(
-          padding: const EdgeInsets.only(left: 16),
+          padding: EdgeInsets.only(
+            left: AppUtils.isDirectionRTL(context) ? 0 : 16,
+            right: AppUtils.isDirectionRTL(context) ? 16 : 0,
+          ),
           child: (ButtonBuilder(imagePaths.icMarkAllAsRead)
             ..key(const Key('button_mark_all_as_read'))
             ..decoration(const BoxDecoration(
@@ -378,13 +404,19 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ..decoration(BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(10)),
               color: controller.filterMessageOption.value.getBackgroundColor()))
-          ..paddingIcon(const EdgeInsets.only(right: 8))
+          ..paddingIcon(EdgeInsets.only(
+              right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+              left: AppUtils.isDirectionRTL(context) ? 8 : 0,
+          ))
           ..size(16)
           ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
           ..radiusSplash(10)
           ..textStyle(controller.filterMessageOption.value.getTextStyle())
           ..addIconAction(Padding(
-              padding: const EdgeInsets.only(left: 8),
+              padding: EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 0 : 8,
+                right: AppUtils.isDirectionRTL(context) ? 8 : 0,
+              ),
               child: SvgPicture.asset(imagePaths.icArrowDown, fit: BoxFit.fill)))
           ..addOnPressActionWithPositionClick((position) =>
               controller.openPopupMenuAction(
@@ -472,7 +504,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Obx(() {
       if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
         return VacationNotificationMessageWidget(
-            margin: const EdgeInsets.only(top: 16, right: 16),
+            margin: EdgeInsets.only(
+              top: 16,
+              right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+              left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+            ),
             vacationResponse: controller.vacationResponse.value!,
             actionGotoVacationSetting: () => controller.goToVacationSetting(),
             actionEndNow: () => controller.disableVacationResponder());
@@ -491,7 +527,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Obx(() {
       if (supportListButtonQuickSearchFilter(context)) {
         return Padding(
-          padding: const EdgeInsets.only(right: 16, top: 16),
+          padding: EdgeInsets.only(
+            right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+            left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+            top: 16
+          ),
           child: Row(children: QuickSearchFilter.values
             .map((filter) => _buildQuickSearchFilterButton(context, filter))
             .toList()
@@ -514,7 +554,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       );
 
       return Padding(
-        padding: const EdgeInsets.only(right: 8),
+        padding: EdgeInsets.only(
+          right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+          left: AppUtils.isDirectionRTL(context) ? 8 : 0,
+        ),
         child: InkWell(
           onTap: () {
             if (filter != QuickSearchFilter.last7Days) {
@@ -613,11 +656,18 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               borderRadius: const BorderRadius.all(Radius.circular(14)),
               border: Border.all(color: AppColor.colorLineLeftEmailView),
               color: Colors.white),
-          margin: const EdgeInsets.only(right: 16, top: 16),
+          margin: EdgeInsets.only(
+            right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+            left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+            top: 16
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(children: [
             Padding(
-                padding: const EdgeInsets.only(right: 16),
+                padding: EdgeInsets.only(
+                  right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+                  left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+                ),
                 child: SvgPicture.asset(
                     imagePaths.icDeleteTrash,
                     fit: BoxFit.fill)),
@@ -626,7 +676,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                          padding: const EdgeInsets.only(left: 8),
+                          padding: EdgeInsets.only(
+                            left: AppUtils.isDirectionRTL(context) ? 0 : 8,
+                            right: AppUtils.isDirectionRTL(context) ? 8 : 0
+                          ),
                           child: Text(
                               AppLocalizations.of(context).message_delete_all_email_in_trash_button,
                               style: const TextStyle(
@@ -671,7 +724,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 color: AppColor.colorShadowComposerButton
               )
             ]))
-        ..paddingIcon(const EdgeInsets.only(right: 8))
+        ..paddingIcon(EdgeInsets.only(
+            right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+            left: AppUtils.isDirectionRTL(context) ? 8 : 0,
+        ))
         ..iconColor(Colors.white)
         ..size(24)
         ..radiusSplash(10)
