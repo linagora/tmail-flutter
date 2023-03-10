@@ -33,16 +33,31 @@ class LanguageItemWidget extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
           child: Row(children: [
-            Expanded(child: Text(
-              localeCurrent.getLanguageName(context),
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.normal,
-                color: Colors.black
-              ),
-              maxLines: 1,
-              softWrap: CommonTextStyle.defaultSoftWrap,
-              overflow: CommonTextStyle.defaultTextOverFlow,
+            Expanded(child: Row(
+              children: [
+                Text(
+                  localeCurrent.getLanguageNameByCurrentLocale(context),
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.black
+                  ),
+                  maxLines: 1,
+                  softWrap: CommonTextStyle.defaultSoftWrap,
+                  overflow: CommonTextStyle.defaultTextOverFlow,
+                ),
+                Text(
+                  ' - ${localeCurrent.getSourceLanguageName()}',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black
+                  ),
+                  maxLines: 1,
+                  softWrap: CommonTextStyle.defaultSoftWrap,
+                  overflow: CommonTextStyle.defaultTextOverFlow,
+                )
+              ]
             )),
             if (localeCurrent == localeSelected)
               SvgPicture.asset(

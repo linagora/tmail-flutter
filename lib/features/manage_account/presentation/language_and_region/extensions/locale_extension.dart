@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 extension LocaleExtension on Locale {
 
-  String getLanguageName(BuildContext context) {
+  String getLanguageNameByCurrentLocale(BuildContext context) {
     switch(languageCode) {
       case 'fr':
         return AppLocalizations.of(context).languageFrench;
@@ -18,6 +18,25 @@ extension LocaleExtension on Locale {
         return AppLocalizations.of(context).languageArabic;
       case 'it':
         return AppLocalizations.of(context).languageItalian;
+      default:
+        return '';
+    }
+  }
+
+  String getSourceLanguageName() {
+    switch(languageCode) {
+      case 'fr':
+        return 'Français';
+      case 'en':
+        return 'English';
+      case 'vi':
+        return 'Tiếng Việt';
+      case 'ru':
+        return 'Русский';
+      case 'ar':
+        return 'اَلْعَرَبِيَّةُ';
+      case 'it':
+        return 'Italiano';
       default:
         return '';
     }
