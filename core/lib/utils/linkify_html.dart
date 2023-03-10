@@ -21,11 +21,16 @@ class LinkifyHtml {
     final regexLinkWithHttp = _generateRegExp(r'(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])');
     final newReplacedTextWithHttp = replacedText.replaceAllMapped(regexLinkWithHttp, (regexMatch) {
       final link = regexMatch.group(1);
-      final newLinkWithHttp = link?.isNotEmpty == true
-          ? '<a href="$link" target="_blank">$link</a>'
-          : '';
-      log('ConvertUrlStringToHtmlLinksTransformers::_linkifyUrlAddress(): newLinkWithHttp: $newLinkWithHttp');
-      return newLinkWithHttp;
+      log('LinkifyHtml::_linkifyUrlAddress():link: $link');
+      if (link?.isNotEmpty == true) {
+        if (replacedText.contains('<a href="$link"')) {
+          return link!;
+        } else {
+          return '<a href="$link" target="_blank">$link</a>';
+        }
+      } else {
+        return '';
+      }
     });
     replacedText = newReplacedTextWithHttp;
 
@@ -35,11 +40,16 @@ class LinkifyHtml {
       final previousChar = regexMatch.group(1);
       log('LinkifyHtml::_linkifyUrlAddress(): previousChar: $previousChar');
       final link = regexMatch.group(2);
-      final newLinkWithWWW = link?.isNotEmpty == true
-          ? '$previousChar<a href="https://$link" target="_blank">$link</a>'
-          : '';
-      log('ConvertUrlStringToHtmlLinksTransformers::_linkifyUrlAddress(): newLinkWithWWW: $newLinkWithWWW');
-      return newLinkWithWWW;
+      log('LinkifyHtml::_linkifyUrlAddress():link: $link');
+      if (link?.isNotEmpty == true) {
+        if (replacedText.contains('<a href="https://$link"') || replacedText.contains('<a href="http://$link"')) {
+          return link!;
+        } else {
+          return '$previousChar<a href="https://$link" target="_blank">$link</a>';
+        }
+      } else {
+        return '';
+      }
     });
     replacedText = newReplacedTextWithWWW;
 
@@ -52,11 +62,15 @@ class LinkifyHtml {
 
     final newReplacedTextWitMailTo = inputText.replaceAllMapped(regexMailTo, (regexMatch) {
       final emailAddress = regexMatch.group(1);
-      final newMailToLink = emailAddress?.isNotEmpty == true
-        ? '<a href="mailto:$emailAddress">$emailAddress</a>'
-        : '';
-      log('ConvertUrlStringToHtmlLinksTransformers::_linkifyUrlAddress(): newMailToLink: $newMailToLink');
-      return newMailToLink;
+      if (emailAddress?.isNotEmpty == true) {
+        if (inputText.contains('<a href="mailto:$emailAddress"')) {
+          return emailAddress!;
+        } else {
+          return '<a href="mailto:$emailAddress">$emailAddress</a>';
+        }
+      } else {
+        return '';
+      }
     });
 
     return newReplacedTextWitMailTo;
