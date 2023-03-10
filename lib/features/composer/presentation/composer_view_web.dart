@@ -781,6 +781,7 @@ class ComposerView extends GetWidget<ComposerController>
             key: const Key('composer_editor_web'),
             controller: controller.richTextWebController.editorController,
             htmlEditorOptions: const HtmlEditorOptions(
+              shouldEnsureVisible: true,
               hint: '',
               darkMode: false,
               customBodyCssStyle: bodyCssStyleForEditor),
@@ -791,6 +792,7 @@ class ComposerView extends GetWidget<ComposerController>
             otherOptions: const OtherOptions(height: 550),
             callbacks: Callbacks(onBeforeCommand: (currentHtml) {
               log('ComposerView::_buildHtmlEditor(): onBeforeCommand : $currentHtml');
+              controller.richTextWebController.setFullScreenEditor();
               controller.setTextEditorWeb(currentHtml);
             }, onChangeContent: (changed) {
               log('ComposerView::_buildHtmlEditor(): onChangeContent : $changed');
