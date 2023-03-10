@@ -42,5 +42,18 @@ void main() {
               equals('See <a href="mailto:tdvu@linagora.com">tdvu@linagora.com</a> at Hanoi'));
         }
     );
+
+    test(
+      'generateLinkify should preserve the text when input text contain <a href=',
+      () async {
+        final htmlValidate = linkifyHtml.generateLinkify(
+          'Check console output at "<a href="https://ci-builds.apache.org/job/james/job/ApacheJames/job/master/765/">james/ApacheJames/master [master] [765]</a>"'
+        );
+        expect(
+          htmlValidate,
+          equals('Check console output at "<a href="https://ci-builds.apache.org/job/james/job/ApacheJames/job/master/765/">james/ApacheJames/master [master] [765]</a>"')
+        );
+      }
+    );
   });
 }
