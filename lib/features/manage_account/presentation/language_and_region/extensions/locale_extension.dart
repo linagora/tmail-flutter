@@ -34,7 +34,7 @@ extension LocaleExtension on Locale {
       case 'ru':
         return 'Русский';
       case 'ar':
-        return 'اَلْعَرَبِيَّةُ';
+        return 'عربي';
       case 'it':
         return 'Italiano';
       default:

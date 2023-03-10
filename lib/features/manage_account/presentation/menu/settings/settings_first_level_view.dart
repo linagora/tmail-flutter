@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/setting_first_level_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SettingsFirstLevelView extends GetWidget<SettingsController> {
   SettingsFirstLevelView({Key? key}) : super(key: key);
@@ -25,7 +26,10 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           child: UserInformationWidgetBuilder(
             _imagePaths,
             controller.manageAccountDashboardController.userProfile.value,
-            titlePadding: const EdgeInsets.only(left: 16))
+            titlePadding: EdgeInsets.only(
+              left: AppUtils.isDirectionRTL(context) ? 0 : 16,
+              right: AppUtils.isDirectionRTL(context) ? 16 : 0
+            ))
         )),
         Divider(
           color: AppColor.colorDividerComposer,

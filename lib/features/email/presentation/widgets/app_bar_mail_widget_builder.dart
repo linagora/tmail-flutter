@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnBackActionClick = void Function();
 typedef OnEmailActionClick = void Function(PresentationEmail, EmailActionType);
@@ -66,7 +67,10 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
                         fit: BoxFit.fill),
                     if (!isSearchIsRunning)
                       Container(
-                        margin: const EdgeInsets.only(left: 8),
+                        margin: EdgeInsets.only(
+                          left: AppUtils.isDirectionRTL(context) ? 0 : 8,
+                          right: AppUtils.isDirectionRTL(context) ? 8 : 0,
+                        ),
                         constraints: BoxConstraints(
                             maxWidth: _responsiveUtils.getSizeScreenWidth(context) - 250),
                         child: Text(

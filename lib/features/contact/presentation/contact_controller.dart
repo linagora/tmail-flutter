@@ -174,7 +174,6 @@ class ContactController extends BaseController {
     FocusScope.of(context).unfocus();
 
     if (BuildUtils.isWeb) {
-      _disposeWidget();
       onSelectedContactCallback?.call(emailAddress);
     } else {
       popBack(result: emailAddress);
@@ -186,7 +185,6 @@ class ContactController extends BaseController {
     FocusScope.of(context).unfocus();
 
     if (BuildUtils.isWeb) {
-      _disposeWidget();
       onDismissContactView?.call();
     } else {
       popBack();

@@ -88,7 +88,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
     inputConditionValueController = TextEditingController();
     inputRuleNameFocusNode = FocusNode();
     inputRuleConditionFocusNode = FocusNode();
-
   }
 
   @override
@@ -319,7 +318,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
         newTMailRule);
 
       if (BuildUtils.isWeb) {
-        _disposeWidget();
         onCreatedRuleFilterCallback?.call(ruleFilterRequest);
       } else {
         popBack(result: ruleFilterRequest);
@@ -330,7 +328,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
         newTMailRule);
 
       if (BuildUtils.isWeb) {
-        _disposeWidget();
         onCreatedRuleFilterCallback?.call(ruleFilterRequest);
       } else {
         popBack(result: ruleFilterRequest);
@@ -359,7 +356,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
     FocusScope.of(context).unfocus();
 
     if (BuildUtils.isWeb) {
-      _disposeWidget();
       onDismissRuleFilterCreator?.call();
     } else {
       popBack();

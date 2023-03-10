@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/profiles/prof
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef CloseSettingsViewAction = void Function();
 
@@ -66,9 +67,12 @@ class SettingsView extends GetWidget<SettingsController> {
                   fromAccountDashBoard: true,
                   vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                  leadingIcon: const Padding(
-                    padding: EdgeInsets.only(right: 16),
-                    child: Icon(Icons.timer, size: 20),
+                  leadingIcon: Padding(
+                    padding: EdgeInsets.only(
+                      right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+                      left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+                    ),
+                    child: const Icon(Icons.timer, size: 20),
                   )
                 );
               } else {
@@ -131,13 +135,14 @@ class SettingsView extends GetWidget<SettingsController> {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   SvgPicture.asset(
-                      _imagePaths.icBack,
-                      width: 18,
-                      height: 18,
+                      AppUtils.isDirectionRTL(context) ? _imagePaths.icCollapseFolder : _imagePaths.icBack,
                       colorFilter: AppColor.colorTextButton.asFilter(),
                       fit: BoxFit.fill),
                   Container(
-                    margin: const EdgeInsets.only(left: 8),
+                    margin: EdgeInsets.only(
+                      left: AppUtils.isDirectionRTL(context) ? 0 : 8,
+                      right: AppUtils.isDirectionRTL(context) ? 8 : 0,
+                    ),
                     constraints: const BoxConstraints(maxWidth: 100),
                     child: Text(
                         AppLocalizations.of(context).settings,

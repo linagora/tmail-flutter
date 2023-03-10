@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/set
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
 
@@ -475,12 +476,20 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         }),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.only(top: 24.0, bottom: 12.0, left: 12.0),
+            padding: EdgeInsets.only(
+              top: 24.0,
+              bottom: 12.0,
+              left: AppUtils.isDirectionRTL(context) ? 0 : 12,
+              right: AppUtils.isDirectionRTL(context) ? 12 : 0
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
+                  padding: EdgeInsets.only(
+                    right: AppUtils.isDirectionRTL(context) ? 0 : 12,
+                    left: AppUtils.isDirectionRTL(context) ? 12 : 0
+                  ),
                   child: buildTextButton(
                     AppLocalizations.of(context).cancel,
                     textStyle: const TextStyle(

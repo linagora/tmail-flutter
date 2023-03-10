@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SpamReportBannerWebWidget extends StatelessWidget {
   const SpamReportBannerWebWidget({ Key? key }) : super(key: key);
@@ -22,7 +23,11 @@ class SpamReportBannerWebWidget extends StatelessWidget {
       }
       return Container(
         height: 84,
-        margin: const EdgeInsets.only(right: 16, top: 16),
+        margin: EdgeInsets.only(
+          right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+          left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+          top: 16
+        ),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
@@ -53,8 +58,9 @@ class SpamReportBannerWebWidget extends StatelessWidget {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                    left: 32,
+                  padding: EdgeInsets.only(
+                    left: AppUtils.isDirectionRTL(context) ? 0 : 32,
+                    right: AppUtils.isDirectionRTL(context) ? 32 : 0,
                   ),
                   child: buildTextButton(
                     AppLocalizations.of(context).showDetails,
@@ -71,14 +77,24 @@ class SpamReportBannerWebWidget extends StatelessWidget {
                 ),
               ],
             ),
-            Positioned(
-              top: 16,
-              right: 16,
-              child: buildSVGIconButton(
-                icon: imagePaths.icCloseComposer,
-                onTap: () => spamReportController.dismissSpamReportAction(),
-              ),
-            ),
+            if (AppUtils.isDirectionRTL(context))
+              Positioned(
+                top: 16,
+                left: 16,
+                child: buildSVGIconButton(
+                  icon: imagePaths.icCloseComposer,
+                  onTap: spamReportController.dismissSpamReportAction,
+                ),
+              )
+            else
+              Positioned(
+                top: 16,
+                right: 16,
+                child: buildSVGIconButton(
+                  icon: imagePaths.icCloseComposer,
+                  onTap: spamReportController.dismissSpamReportAction,
+                ),
+              )
           ],
         ),
       );

@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_fold
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class DestinationPickerView extends GetWidget<DestinationPickerController>
   with AppLoaderMixin,
@@ -368,8 +369,12 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           return TreeViewChild(
             context,
             key: const Key('children_tree_mailbox_child'),
+            isDirectionRTL: AppUtils.isDirectionRTL(context),
             isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-            paddingChild: const EdgeInsets.only(left: 14),
+            paddingChild: EdgeInsets.only(
+              left: AppUtils.isDirectionRTL(context) ? 0 : 14,
+              right: AppUtils.isDirectionRTL(context) ? 14 : 0,
+            ),
             parent: (MailBoxFolderTileBuilder(
                     context,
                     _imagePaths,
@@ -481,7 +486,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               if (actions == MailboxActions.select && (mailboxIdSelected == null ||
                   mailboxIdSelected == PresentationMailbox.unifiedMailbox.id))
                 Padding(
-                  padding: const EdgeInsets.only(right: 30.0),
+                  padding: EdgeInsets.only(
+                    right: AppUtils.isDirectionRTL(context) ? 0 : 30.0,
+                    left: AppUtils.isDirectionRTL(context) ? 30 : 0.0,
+                  ),
                   child: SvgPicture.asset(
                     _imagePaths.icFilterSelected,
                     width: 20,
@@ -535,7 +543,12 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Row(
             children: [
-              Padding(padding: const EdgeInsets.only(left: 5), child: buildIconWeb(
+              Padding(
+                padding: EdgeInsets.only(
+                  left: AppUtils.isDirectionRTL(context) ? 0 : 5,
+                  right: AppUtils.isDirectionRTL(context) ? 5 : 0,
+                ),
+                child: buildIconWeb(
                   icon: SvgPicture.asset(
                     _imagePaths.icBack,
                     colorFilter: AppColor.colorTextButton.asFilter(),
@@ -549,7 +562,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                       hasBackButton: false,
                       hasSearchButton: true)
                   ..addPadding(EdgeInsets.zero)
-                  ..setMargin(const EdgeInsets.only(right: 16))
+                  ..setMargin(EdgeInsets.only(
+                      right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+                      left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+                  ))
                   ..addDecoration(BoxDecoration(borderRadius: BorderRadius.circular(12), color: AppColor.colorBgSearchBar))
                   ..addIconClearText(SvgPicture.asset(_imagePaths.icClearTextSearch, width: 18, height: 18, fit: BoxFit.fill))
                   ..setHintText(AppLocalizations.of(context).hint_search_mailboxes)

@@ -7,6 +7,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_screen_type.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnCreateNewMailboxAction = Function();
 typedef OnOpenCreateNewMailboxScreenAction = Function();
@@ -61,7 +62,10 @@ class TopBarDestinationPickerBuilder extends StatelessWidget {
                     fontWeight: FontWeight.w700))),
             if (_destinationScreenType == DestinationScreenType.destinationPicker)
               Padding(
-                padding: const EdgeInsets.only(left: 8.0),
+                padding: EdgeInsets.only(
+                  left: AppUtils.isDirectionRTL(context) ? 0 : 8,
+                  right: AppUtils.isDirectionRTL(context) ? 8 : 0,
+                ),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: buildIconWeb(
@@ -76,7 +80,10 @@ class TopBarDestinationPickerBuilder extends StatelessWidget {
               )
             else
               Padding(
-                padding: const EdgeInsets.only(left: 8.0),
+                padding: EdgeInsets.only(
+                  left: AppUtils.isDirectionRTL(context) ? 0 : 8,
+                  right: AppUtils.isDirectionRTL(context) ? 8 : 0,
+                ),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Material(

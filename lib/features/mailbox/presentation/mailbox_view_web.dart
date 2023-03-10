@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ap
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_footer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class MailboxView extends GetWidget<MailboxController>
   with AppLoaderMixin,
@@ -39,8 +40,7 @@ class MailboxView extends GetWidget<MailboxController>
                   height: 0.5,
                   thickness: 0.2),
             Expanded(child: Container(
-              padding: EdgeInsets.only(
-                  left: _responsiveUtils.isDesktop(context) ? 16 : 0),
+              padding: _getViewPadding(context),
               color: _responsiveUtils.isDesktop(context)
                   ? AppColor.colorBgDesktop
                   : Colors.white,
@@ -61,13 +61,23 @@ class MailboxView extends GetWidget<MailboxController>
     );
   }
 
+  EdgeInsets _getViewPadding(BuildContext context) {
+    if (AppUtils.isDirectionRTL(context)) {
+      return EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 16 : 0);
+    } else {
+      return EdgeInsets.only(left: _responsiveUtils.isDesktop(context) ? 16 : 0);
+    }
+  }
+
   Widget _buildLogoApp(BuildContext context) {
     return Container(
         color: Colors.white,
         padding: EdgeInsets.only(
-            top: _responsiveUtils.isDesktop(context) ? 25 : 16,
-            bottom: _responsiveUtils.isDesktop(context) ? 25 : 16,
-            left: _responsiveUtils.isDesktop(context) ? 32 : 16),
+          top: _responsiveUtils.isDesktop(context) ? 25 : 16,
+          bottom: _responsiveUtils.isDesktop(context) ? 25 : 16,
+          left: AppUtils.isDirectionRTL(context) ? 0 : _responsiveUtils.isDesktop(context) ? 32 : 16,
+          right: AppUtils.isDirectionRTL(context) ? _responsiveUtils.isDesktop(context) ? 32 : 16 : 0
+        ),
         child: Row(children: [
           (SloganBuilder(arrangedByHorizontal: true)
             ..setSloganText(AppLocalizations.of(context).app_name)
@@ -102,7 +112,10 @@ class MailboxView extends GetWidget<MailboxController>
           controller: controller.mailboxListScrollController,
           key: const PageStorageKey('mailbox_list'),
           physics: const ClampingScrollPhysics(),
-          padding: EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 16 : 0),
+          padding: EdgeInsets.only(
+            right: AppUtils.isDirectionRTL(context) ? 0 : _responsiveUtils.isDesktop(context) ? 16 : 0,
+            left: AppUtils.isDirectionRTL(context) ? _responsiveUtils.isDesktop(context) ? 16 : 0 : 0
+          ),
           child: Column(children: [
             if (!_responsiveUtils.isDesktop(context))
               _buildUserInformation(context),
@@ -131,7 +144,8 @@ class MailboxView extends GetWidget<MailboxController>
             const SizedBox(height: 13),
             Padding(
               padding: EdgeInsets.only(
-                left: _responsiveUtils.isDesktop(context) ? 0 : 12,
+                left: AppUtils.isDirectionRTL(context) ? 0 : _responsiveUtils.isDesktop(context) ? 0 : 12,
+                right: AppUtils.isDirectionRTL(context) ? _responsiveUtils.isDesktop(context) ? 0 : 12 : 0,
                 bottom: 8
               ),
               child: Row(
@@ -143,7 +157,10 @@ class MailboxView extends GetWidget<MailboxController>
                     color: Colors.black,
                     fontWeight: FontWeight.bold)),
                   Padding(
-                    padding: EdgeInsets.only(right: _responsiveUtils.isDesktop(context) ? 0 : 12),
+                    padding: EdgeInsets.only(
+                      right: AppUtils.isDirectionRTL(context) ? 0 : _responsiveUtils.isDesktop(context) ? 0 : 12,
+                      left: AppUtils.isDirectionRTL(context) ? _responsiveUtils.isDesktop(context) ? 0 : 12 : 0,
+                    ),
                     child: Row(
                       children: [
                         buildIconWeb(
@@ -293,8 +310,12 @@ class MailboxView extends GetWidget<MailboxController>
         return TreeViewChild(
           context,
           key: const Key('children_tree_mailbox_child'),
+          isDirectionRTL: AppUtils.isDirectionRTL(context),
           isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-          paddingChild: const EdgeInsets.only(left: 14),
+          paddingChild: EdgeInsets.only(
+            left: AppUtils.isDirectionRTL(context) ? 0 : 14,
+            right: AppUtils.isDirectionRTL(context) ? 14 : 0,
+          ),
           parent: Obx(() => (MailBoxFolderTileBuilder(
                 context,
                 _imagePaths,

@@ -100,6 +100,7 @@ class IdentityCreatorController extends BaseController {
 
   @override
   void onInit() {
+    log('IdentityCreatorController::onInit():');
     super.onInit();
     keyboardRichTextController = RichTextController();
     richTextWebController = RichTextWebController();
@@ -340,7 +341,6 @@ class IdentityCreatorController extends BaseController {
       );
 
       if (BuildUtils.isWeb) {
-        _disposeWidget();
         onCreatedIdentityCallback?.call(identityRequest);
       } else {
         popBack(result: identityRequest);
@@ -352,7 +352,6 @@ class IdentityCreatorController extends BaseController {
           isDefaultIdentity: isDefaultIdentity.value);
 
       if (BuildUtils.isWeb) {
-        _disposeWidget();
         onCreatedIdentityCallback?.call(identityRequest);
       } else {
         popBack(result: identityRequest);
@@ -426,7 +425,6 @@ class IdentityCreatorController extends BaseController {
 
   void closeView(BuildContext context) {
     if (BuildUtils.isWeb) {
-      _disposeWidget();
       onDismissIdentityCreator?.call();
     } else {
       popBack();
