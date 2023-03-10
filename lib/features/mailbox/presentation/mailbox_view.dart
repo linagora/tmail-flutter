@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_fold
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_footer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class MailboxView extends GetWidget<MailboxController>
   with MailboxWidgetMixin,
@@ -101,8 +102,11 @@ class MailboxView extends GetWidget<MailboxController>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: _buildCloseScreenButton(context)),
+                padding: EdgeInsets.only(
+                  left: AppUtils.isDirectionRTL(context) ? 0 : 10,
+                  right: AppUtils.isDirectionRTL(context) ? 19 : 0,
+                ),
+                child: _buildCloseScreenButton(context)),
               SizedBox(width: controller.isSelectionEnabled() ? 49 : 40),
               Expanded(child: Text(
                 AppLocalizations.of(context).folders,
@@ -147,8 +151,8 @@ class MailboxView extends GetWidget<MailboxController>
     return Column(children: [
       Padding(
         padding: EdgeInsets.only(
-          left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
-          right: 16),
+          left: AppUtils.isDirectionRTL(context) ? 16 : _responsiveUtils.isLandscapeMobile(context) ? 0 : 16,
+          right: AppUtils.isDirectionRTL(context) ?_responsiveUtils.isLandscapeMobile(context) ? 0 : 16 : 16),
         child: UserInformationWidgetBuilder(
           _imagePaths,
           controller.mailboxDashBoardController.userProfile.value,
@@ -203,44 +207,45 @@ class MailboxView extends GetWidget<MailboxController>
           const SizedBox(height: 12),
           Container(
             margin: EdgeInsets.only(
-              left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
-              right: 16),
-            padding: const EdgeInsets.only(left: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(AppLocalizations.of(context).mailBoxes,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold)),
-                  Row(
-                    children: [
-                      buildIconWeb(
-                        minSize: 40,
-                        iconPadding: EdgeInsets.zero,
-                        icon: SvgPicture.asset(
-                          _imagePaths.icSearchBar,
-                          colorFilter: AppColor.colorTextButton.asFilter(),
-                          fit: BoxFit.fill
-                        ),
-                        tooltip: AppLocalizations.of(context).searchForMailboxes,
-                        onTap: () => controller.openSearchViewAction(context)
-                      ),
-                      buildIconWeb(
-                          minSize: 40,
-                          iconSize: 20,
-                          iconPadding: EdgeInsets.zero,
-                          splashRadius: 15,
-                          icon: SvgPicture.asset(
-                            _imagePaths.icAddNewFolder,
-                            colorFilter: AppColor.colorTextButton.asFilter(),
-                            fit: BoxFit.fill),
-                          tooltip: AppLocalizations.of(context).new_mailbox,
-                          onTap: () => controller.goToCreateNewMailboxView(context)),
-                    ],
+              left: AppUtils.isDirectionRTL(context) ? 16 : _responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
+              right: AppUtils.isDirectionRTL(context) ? _responsiveUtils.isLandscapeMobile(context) ? 0 : 8 : 16),
+            padding: EdgeInsets.only(
+              left: AppUtils.isDirectionRTL(context) ? 0 : 8,
+              right: AppUtils.isDirectionRTL(context) ? 8 : 0,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(AppLocalizations.of(context).mailBoxes,
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold)),
+                Row(children: [
+                  buildIconWeb(
+                    minSize: 40,
+                    iconPadding: EdgeInsets.zero,
+                    icon: SvgPicture.asset(
+                      _imagePaths.icSearchBar,
+                      colorFilter: AppColor.colorTextButton.asFilter(),
+                      fit: BoxFit.fill
+                    ),
+                    tooltip: AppLocalizations.of(context).searchForMailboxes,
+                    onTap: () => controller.openSearchViewAction(context)
                   ),
+                  buildIconWeb(
+                    minSize: 40,
+                    iconSize: 20,
+                    iconPadding: EdgeInsets.zero,
+                    splashRadius: 15,
+                    icon: SvgPicture.asset(
+                      _imagePaths.icAddNewFolder,
+                      colorFilter: AppColor.colorTextButton.asFilter(),
+                      fit: BoxFit.fill),
+                    tooltip: AppLocalizations.of(context).new_mailbox,
+                  onTap: () => controller.goToCreateNewMailboxView(context)),
                 ]),
+              ]),
             ),
             const SizedBox(height: 8),
             Obx(() {
@@ -274,8 +279,8 @@ class MailboxView extends GetWidget<MailboxController>
   Widget _buildHeaderMailboxCategory(BuildContext context, MailboxCategories categories) {
     return Padding(
         padding: EdgeInsets.only(
-            right: _responsiveUtils.isLandscapeMobile(context) ? 8 : 28,
-            left: 4),
+          right: AppUtils.isDirectionRTL(context) ? 4 : _responsiveUtils.isLandscapeMobile(context) ? 8 : 28,
+          left: AppUtils.isDirectionRTL(context) ? _responsiveUtils.isLandscapeMobile(context) ? 8 : 28 : 4),
         child: Row(children: [
          buildIconWeb(
               minSize: 40,
@@ -302,9 +307,13 @@ class MailboxView extends GetWidget<MailboxController>
 
     return Container(
         margin: EdgeInsets.only(
-            left: _responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
-            right: 16),
-        padding: const EdgeInsets.only(left: 12),
+          left: AppUtils.isDirectionRTL(context) ? 16 : _responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
+          right: AppUtils.isDirectionRTL(context) ? _responsiveUtils.isLandscapeMobile(context) ? 0 : 8 : 16
+        ),
+        padding: EdgeInsets.only(
+          left: AppUtils.isDirectionRTL(context) ? 0 : 12,
+          right: AppUtils.isDirectionRTL(context) ? 12 : 0,
+        ),
         child: TreeView(
             key: Key('${categories.keyValue}_mailbox_list'),
             children: _buildListChildTileWidget(context, mailboxNode, lastNode: lastNode)));
@@ -332,7 +341,11 @@ class MailboxView extends GetWidget<MailboxController>
               context,
               key: const Key('children_tree_mailbox_child'),
               isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-              paddingChild: const EdgeInsets.only(left: 14),
+              isDirectionRTL: AppUtils.isDirectionRTL(context),
+              paddingChild: EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 0 : 14,
+                right: AppUtils.isDirectionRTL(context) ? 14 : 0,
+              ),
               parent: Obx(() => (MailBoxFolderTileBuilder(
                     context,
                     _imagePaths,

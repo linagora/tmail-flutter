@@ -1,11 +1,15 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_utils/src/platform/platform.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnSubtitleClick = void Function();
 
@@ -49,7 +53,11 @@ class UserInformationWidgetBuilder extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-                padding: titlePadding ?? const EdgeInsets.only(left: 16, top: 10),
+                padding: titlePadding ?? EdgeInsets.only(
+                  left: AppUtils.isDirectionRTL(context) ? 0 : 16,
+                  right: AppUtils.isDirectionRTL(context) ? 16 : 0,
+                  top: 10
+                ),
                 child: Text(
                     _userProfile != null ? '${_userProfile?.email}' : '',
                     maxLines: 1,
@@ -60,7 +68,10 @@ class UserInformationWidgetBuilder extends StatelessWidget {
             ),
             subtitle != null
               ? Padding(
-                  padding: const EdgeInsets.only(left: 10),
+                  padding: EdgeInsets.only(
+                    left: AppUtils.isDirectionRTL(context) ? 0 : 10,
+                    right: AppUtils.isDirectionRTL(context) ? 10 : 0
+                  ),
                   child: Material(
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.transparent,
@@ -80,10 +91,14 @@ class UserInformationWidgetBuilder extends StatelessWidget {
         ])),
         if (!kIsWeb)
           Transform(
-            transform: Matrix4.translationValues(14.0, 0.0, 0.0),
+            transform: Matrix4.translationValues(
+              AppUtils.isDirectionRTL(context) ? -14.0 : 14.0,
+              0.0,
+              0.0
+            ),
             child: IconButton(
               icon: SvgPicture.asset(
-                _imagePaths.icCollapseFolder,
+                AppUtils.isDirectionRTL(context) ? _imagePaths.icBack : _imagePaths.icCollapseFolder,
                 fit: BoxFit.fill,
                 colorFilter: AppColor.colorCollapseMailbox.asFilter()),
               onPressed: () => {}))

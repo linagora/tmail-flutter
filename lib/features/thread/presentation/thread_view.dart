@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_messag
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_report_banner_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class ThreadView extends GetWidget<ThreadController>
   with AppLoaderMixin,
@@ -187,11 +188,16 @@ class ThreadView extends GetWidget<ThreadController>
               ? EdgeInsets.zero
               : controller.listEmailSelected.isNotEmpty ? const EdgeInsets.only(bottom: 70) : EdgeInsets.zero,
           child: Align(
-            alignment: Alignment.bottomRight,
+            alignment: AppUtils.isDirectionRTL(context)
+              ? Alignment.bottomLeft
+              : Alignment.bottomRight,
             child: ScrollingFloatingButtonAnimated(
               icon: SvgPicture.asset(_imagePaths.icCompose, width: 20, height: 20, fit: BoxFit.fill),
               text: Padding(
-                padding: const EdgeInsets.only(right: 16),
+                padding: EdgeInsets.only(
+                  right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+                  left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+                ),
                 child: Text(AppLocalizations.of(context).compose,
                   overflow: CommonTextStyle.defaultTextOverFlow,
                   softWrap: CommonTextStyle.defaultSoftWrap,
@@ -532,14 +538,17 @@ class ThreadView extends GetWidget<ThreadController>
               border: Border.all(color: AppColor.colorLineLeftEmailView),
               color: Colors.white),
           margin: EdgeInsets.only(
-              left: _responsiveUtils.isWebDesktop(context) ? 0 : 16,
-              right: 16,
+              left: AppUtils.isDirectionRTL(context) ? 16 : _responsiveUtils.isWebDesktop(context) ? 0 : 16,
+              right: AppUtils.isDirectionRTL(context) ? _responsiveUtils.isWebDesktop(context) ? 0 : 16 : 16,
               bottom: _responsiveUtils.isWebDesktop(context) ? 0 : 16,
               top: _responsiveUtils.isWebDesktop(context) ? 16 : 0),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(children: [
             Padding(
-                padding: const EdgeInsets.only(right: 16),
+                padding: EdgeInsets.only(
+                  right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+                  left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+                ),
                 child: SvgPicture.asset(
                     _imagePaths.icDeleteTrash,
                     fit: BoxFit.fill)),
@@ -548,7 +557,10 @@ class ThreadView extends GetWidget<ThreadController>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                          padding: const EdgeInsets.only(left: 8),
+                          padding: EdgeInsets.only(
+                            left: AppUtils.isDirectionRTL(context) ? 0 : 8,
+                            right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+                          ),
                           child: Text(
                               AppLocalizations.of(context).message_delete_all_email_in_trash_button,
                               style: const TextStyle(

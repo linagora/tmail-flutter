@@ -426,7 +426,6 @@ class DestinationPickerController extends BaseMailboxController {
     }
 
     if (BuildUtils.isWeb) {
-      _disposeWidget();
       onSelectedMailboxCallback?.call(mailboxDestination.value);
     } else {
       popBack(result: mailboxDestination.value);
@@ -475,7 +474,6 @@ class DestinationPickerController extends BaseMailboxController {
     FocusScope.of(context).unfocus();
 
     if (BuildUtils.isWeb) {
-      _disposeWidget();
       onDismissDestinationPicker?.call();
     } else {
       popBack();
