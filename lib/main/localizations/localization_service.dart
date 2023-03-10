@@ -15,7 +15,8 @@ class LocalizationService extends Translations {
     'en',
     'vi',
     'ru',
-    'ar'
+    'ar',
+    'it'
   ];
 
   static const List<Locale> supportedLocales = [
@@ -23,7 +24,8 @@ class LocalizationService extends Translations {
     Locale('en', 'US'),
     Locale('vi', 'VN'),
     Locale('ru', 'RU'),
-    Locale('ar', 'TN')
+    Locale('ar', 'TN'),
+    Locale('it', 'IT')
   ];
 
   static final locale = _getLocaleFromLanguage();

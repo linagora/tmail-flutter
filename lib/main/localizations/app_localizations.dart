@@ -1609,6 +1609,12 @@ class AppLocalizations {
         name: 'languageArabic');
   }
 
+  String get languageItalian {
+    return Intl.message(
+      'Italian',
+      name: 'languageItalian');
+  }
+
   String get messageDialogSendEmailUploadingAttachment {
     return Intl.message(
         'Your message could not be sent because it uploading attachment',
