@@ -195,7 +195,7 @@ dependencies:
 
   fluttertoast: 8.2.1
 
-  super_tag_editor: 0.1.0
+  super_tag_editor: 0.1.1
 
 dev_dependencies:
   flutter_test:
