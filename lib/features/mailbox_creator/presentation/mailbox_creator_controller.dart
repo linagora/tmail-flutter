@@ -205,7 +205,6 @@ class MailboxCreatorController extends BaseController {
           mailboxLocation: selectedMailbox.value);
 
       if (BuildUtils.isWeb) {
-        _disposeWidget();
         onCreatedMailboxCallback?.call(newMailboxArguments);
       } else {
         popBack(result: newMailboxArguments);
@@ -217,7 +216,6 @@ class MailboxCreatorController extends BaseController {
     FocusScope.of(context).unfocus();
 
     if (BuildUtils.isWeb) {
-      _disposeWidget();
       onDismissMailboxCreator?.call();
     } else {
       popBack();

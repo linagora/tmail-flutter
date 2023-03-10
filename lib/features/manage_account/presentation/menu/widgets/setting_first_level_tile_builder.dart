@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef SettingFirstLevelTileClickAction = void Function();
 
@@ -41,7 +42,10 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
               Row(
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(left: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)),
+                    padding: EdgeInsets.only(
+                      right: AppUtils.isDirectionRTL(context) ? SettingsUtils.getHorizontalPadding(context, _responsiveUtils) : 0,
+                      left: AppUtils.isDirectionRTL(context) ? 0 : SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+                    ),
                     child: _buildSettingIcon(context)),
                   Expanded(child: Padding(
                     padding: const EdgeInsets.only(left: 12, right: 12),
@@ -61,7 +65,11 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
               ),
               subtitle != null
                 ? Padding(
-                    padding: EdgeInsets.only(left: _getSubtitleLeftPadding(context), right: 12, top: 12),
+                    padding: EdgeInsets.only(
+                      left: AppUtils.isDirectionRTL(context) ? 12 : _getSubtitleLeftPadding(context),
+                      right: AppUtils.isDirectionRTL(context) ? _getSubtitleLeftPadding(context) : 12,
+                      top: 12
+                    ),
                     child: Text(
                       subtitle!,
                       style: const TextStyle(
@@ -72,9 +80,12 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
             ]
           )),
          IconButton(
-           padding: EdgeInsets.only(right: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)),
+           padding: EdgeInsets.only(
+             right: AppUtils.isDirectionRTL(context) ? 0 : SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+             left: AppUtils.isDirectionRTL(context) ? SettingsUtils.getHorizontalPadding(context, _responsiveUtils) : 0,
+           ),
            icon: SvgPicture.asset(
-             _imagePath.icCollapseFolder,
+             AppUtils.isDirectionRTL(context) ? _imagePath.icBack : _imagePath.icCollapseFolder,
              fit: BoxFit.fill,
              colorFilter: AppColor.colorCollapseMailbox.asFilter()),
            onPressed: clickAction

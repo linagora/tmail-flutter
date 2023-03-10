@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_ma
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
 
@@ -64,7 +65,7 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
                       ]
                     )
                   )),
-                  _buildSelectedIcon()
+                  _buildSelectedIcon(context)
                 ]
               ),
             )
@@ -132,12 +133,15 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
     }
   }
 
-  Widget _buildSelectedIcon() {
+  Widget _buildSelectedIcon(BuildContext context) {
     if (_presentationMailbox.id == mailboxIdAlreadySelected &&
         (mailboxActions == MailboxActions.select ||
         mailboxActions == MailboxActions.create)) {
       return Padding(
-        padding: const EdgeInsets.only(right: 8),
+        padding: EdgeInsets.only(
+          right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+          left: AppUtils.isDirectionRTL(context) ? 8 : 0,
+        ),
         child: SvgPicture.asset(
           _imagePaths.icFilterSelected,
           width: 20,

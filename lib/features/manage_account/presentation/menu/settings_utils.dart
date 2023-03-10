@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SettingsUtils {
   static double getHorizontalPadding(BuildContext context, ResponsiveUtils responsiveUtils) {
@@ -140,6 +141,22 @@ class SettingsUtils {
       return const EdgeInsets.all(16);
     } else {
       return EdgeInsets.zero;
+    }
+  }
+
+  static EdgeInsets getPaddingHeaderSetting(BuildContext context) {
+    if (AppUtils.isDirectionRTL(context)) {
+      return const EdgeInsets.only(top: 25, bottom: 25, right: 32);
+    } else {
+      return const EdgeInsets.only(top: 25, bottom: 25, left: 32);
+    }
+  }
+
+  static EdgeInsets getPaddingRightHeaderSetting(BuildContext context) {
+    if (AppUtils.isDirectionRTL(context)) {
+      return const EdgeInsets.only(right: 48, top: 16, bottom: 10, left: 10);
+    } else {
+      return const EdgeInsets.only(right: 10, top: 16, bottom: 10, left: 48);
     }
   }
 }

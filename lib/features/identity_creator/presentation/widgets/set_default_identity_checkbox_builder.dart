@@ -3,6 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnCheckboxChanged = void Function();
 
@@ -43,7 +44,10 @@ class SetDefaultIdentityCheckboxBuilder extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 8.0),
+          padding: EdgeInsets.only(
+            left: AppUtils.isDirectionRTL(context) ? 0 : 8,
+            right: AppUtils.isDirectionRTL(context) ? 8 : 0,
+          ),
           child: Text(
             AppLocalizations.of(context).setDefaultIdentity,
             style: const TextStyle(

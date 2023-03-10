@@ -419,10 +419,9 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
   Widget _buildMessagePlainTextEditor(BuildContext context) {
     return (TextFieldBuilder()
       ..onChange((value) => controller.updateMessageBody(context, value))
-      ..textInputAction(TextInputAction.next)
+      ..keyboardType(TextInputType.multiline)
       ..addController(controller.messageTextController)
       ..textStyle(const TextStyle(color: Colors.black, fontSize: 16))
-      ..keyboardType(TextInputType.text)
       ..minLines(10)
       ..maxLines(null)
       ..textDecoration((TextInputDecorationBuilder()

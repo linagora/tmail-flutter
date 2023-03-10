@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/information_se
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class EmailView extends GetWidget<SingleEmailController> {
 
@@ -81,7 +82,12 @@ class EmailView extends GetWidget<SingleEmailController> {
   EdgeInsets _getMarginEmailView(BuildContext context) {
     if (BuildUtils.isWeb) {
       if (responsiveUtils.isDesktop(context)) {
-        return const EdgeInsets.only(right: 16, top: 16, bottom: 16);
+        return EdgeInsets.only(
+          left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+          right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+          top: 16,
+          bottom: 16
+        );
       } else {
         return const EdgeInsets.symmetric(vertical: 16);
       }
@@ -278,8 +284,13 @@ class EmailView extends GetWidget<SingleEmailController> {
             _buildAttachments(context),
             if (BuildUtils.isWeb)
               Expanded(child: Padding(
-                  padding: const EdgeInsets.only(left: 16, bottom: 16),
-                  child: _buildEmailContent(context, constraints, email)))
+                padding: EdgeInsets.only(
+                  left: AppUtils.isDirectionRTL(context) ? 0 : 16,
+                  right: AppUtils.isDirectionRTL(context) ? 16 : 0,
+                  bottom: 16
+                ),
+                child: _buildEmailContent(context, constraints, email)
+              ))
             else
               Padding(
                   padding: const EdgeInsets.all(16),
@@ -477,10 +488,19 @@ class EmailView extends GetWidget<SingleEmailController> {
           AppLocalizations.of(context).mark_as_unread,
           email,
           iconLeftPadding: responsiveUtils.isMobile(context)
-            ? const EdgeInsets.only(left: 12, right: 16)
-            : const EdgeInsets.only(right: 12),
+            ? EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 16 : 12,
+                right: AppUtils.isDirectionRTL(context) ? 12 : 16,
+              )
+            : EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 12 : 0,
+                right: AppUtils.isDirectionRTL(context) ? 0 : 12,
+              ),
           iconRightPadding: responsiveUtils.isMobile(context)
-            ? const EdgeInsets.only(right: 12)
+            ? EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 12 : 0,
+                right: AppUtils.isDirectionRTL(context) ? 0 : 12,
+              )
             : EdgeInsets.zero)
       ..onActionClick((email) => controller.handleEmailAction(
         context,
@@ -507,10 +527,19 @@ class EmailView extends GetWidget<SingleEmailController> {
             : AppLocalizations.of(context).mark_as_spam,
           email,
           iconLeftPadding: responsiveUtils.isMobile(context)
-            ? const EdgeInsets.only(left: 12, right: 16)
-            : const EdgeInsets.only(right: 12),
+            ? EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 16 : 12,
+                right: AppUtils.isDirectionRTL(context) ? 12 : 16,
+              )
+            : EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 12 : 0,
+                right: AppUtils.isDirectionRTL(context) ? 0 : 12,
+              ),
           iconRightPadding: responsiveUtils.isMobile(context)
-            ? const EdgeInsets.only(right: 12)
+            ? EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 12 : 0,
+                right: AppUtils.isDirectionRTL(context) ? 0 : 12,
+              )
             : EdgeInsets.zero)
       ..onActionClick((email) => controller.handleEmailAction(
         context,
@@ -532,10 +561,19 @@ class EmailView extends GetWidget<SingleEmailController> {
           AppLocalizations.of(context).quickCreatingRule,
           email,
           iconLeftPadding: responsiveUtils.isMobile(context)
-            ? const EdgeInsets.only(left: 12, right: 16)
-            : const EdgeInsets.only(right: 12),
+            ? EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 16 : 12,
+                right: AppUtils.isDirectionRTL(context) ? 12 : 16,
+              )
+            : EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 12 : 0,
+                right: AppUtils.isDirectionRTL(context) ? 0 : 12,
+              ),
           iconRightPadding: responsiveUtils.isMobile(context)
-            ? const EdgeInsets.only(right: 12)
+            ? EdgeInsets.only(
+                left: AppUtils.isDirectionRTL(context) ? 12 : 0,
+                right: AppUtils.isDirectionRTL(context) ? 0 : 12,
+              )
             : EdgeInsets.zero)
         ..onActionClick((email) => controller.quickCreatingRule(context, email.from!.first)))
       .build();
