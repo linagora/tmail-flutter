@@ -53,6 +53,7 @@ class ComposerView extends GetWidget<ComposerController>
               },
               child: Scaffold(
                 backgroundColor: Colors.white,
+                resizeToAvoidBottomInset: false,
                 body: SafeArea(
                   right: responsiveUtils.isLandscapeMobile(context),
                   left: responsiveUtils.isLandscapeMobile(context),
