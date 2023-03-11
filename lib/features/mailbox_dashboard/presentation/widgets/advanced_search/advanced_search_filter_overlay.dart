@@ -43,6 +43,7 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
                       offset: Offset.zero),
                 ]),
             child: SingleChildScrollView(
+              padding: const EdgeInsets.only(right: 16),
               child: AdvancedSearchInputForm(),
             ),
           ),
