@@ -792,7 +792,6 @@ class ComposerView extends GetWidget<ComposerController>
             otherOptions: const OtherOptions(height: 550),
             callbacks: Callbacks(onBeforeCommand: (currentHtml) {
               log('ComposerView::_buildHtmlEditor(): onBeforeCommand : $currentHtml');
-              controller.richTextWebController.setFullScreenEditor();
               controller.setTextEditorWeb(currentHtml);
             }, onChangeContent: (changed) {
               log('ComposerView::_buildHtmlEditor(): onChangeContent : $changed');
@@ -800,7 +799,6 @@ class ComposerView extends GetWidget<ComposerController>
             }, onInit: () {
               log('ComposerView::_buildHtmlEditor(): onInit');
               controller.setTextEditorWeb(initContent);
-              controller.richTextWebController.setFullScreenEditor();
               controller.richTextWebController.setEnableCodeView();
             }, onFocus: () {
               log('ComposerView::_buildHtmlEditor(): onFocus');
