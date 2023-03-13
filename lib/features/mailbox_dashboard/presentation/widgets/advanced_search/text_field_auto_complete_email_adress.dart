@@ -89,7 +89,7 @@ class _TextFieldAutoCompleteEmailAddressState
                   itemBuilder: (BuildContext context, int index) {
                     final emailAddress = listEmailAddress.elementAt(index);
                     return InkWell(
-                      onTap: () => onSelected(emailAddress),
+                      onTap: () {_controller.onSubmitted(emailAddress.emailAddress);},
                       child: _buildSuggestionItem(context, emailAddress),
                     );
                   },
