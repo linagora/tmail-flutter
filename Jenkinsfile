@@ -1,5 +1,7 @@
 pipeline {
-  agent any
+  agent {
+    label 'jdk11'
+  }
 
   options {
     // Configure an overall timeout for the build.
