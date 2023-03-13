@@ -33,7 +33,7 @@ class CustomController extends TextfieldTagsController {
 
   @override
   void onChanged(String value) {
-    final ts = [' ', ','];
+    final ts = [','];
     final separator = ts.cast<String?>().firstWhere(
         (element) => value.contains(element!) && value.indexOf(element) != 0,
         orElse: () => null);
