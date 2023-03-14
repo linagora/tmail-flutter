@@ -450,9 +450,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
             defaultToolbarButtons: []),
         otherOptions: const html_editor_browser.OtherOptions(height: 150),
         callbacks: html_editor_browser.Callbacks(
-          onInit: () {
-            controller.richTextControllerForWeb.setFullScreenEditor();
-          }, onChangeSelection: (settings) {
+          onChangeSelection: (settings) {
             controller.richTextControllerForWeb.onEditorSettingsChange(settings);
           }, onChangeContent: (String? changed) {
             controller.updateMessageHtmlText(changed);
