@@ -2879,5 +2879,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "Bad credentials": "Thông tin đăng nhập không chính xác",
+  "@Bad credentials": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
