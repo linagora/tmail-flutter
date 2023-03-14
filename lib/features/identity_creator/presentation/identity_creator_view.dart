@@ -267,7 +267,6 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
-              color: Colors.white,
             ),
             child: _buildSignatureHtmlTemplate(context),
           ),
@@ -426,7 +425,6 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         }, onInit: () {
           log('IdentityCreatorView::_buildHtmlEditorWeb(): onInit');
           controller.updateContentHtmlEditor(initContent);
-          controller.richTextWebController.setFullScreenEditor();
           controller.richTextWebController.setEnableCodeView();
         }, onFocus: () {
           log('IdentityCreatorView::_buildHtmlEditorWeb(): onFocus');
