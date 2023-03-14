@@ -174,10 +174,6 @@ class RichTextWebController extends BaseRichTextController {
 
   Future<bool> get isActivatedCodeView => editorController.isActivatedCodeView();
 
-  void setFullScreenEditor() {
-    editorController.setFullScreen();
-  }
-
   void setEnableCodeView() async {
     final isActivated = await isActivatedCodeView;
     if (codeViewEnabled && !isActivated) {
@@ -191,7 +187,6 @@ class RichTextWebController extends BaseRichTextController {
     codeViewState.value = newCodeViewState;
     editorController.toggleCodeView();
     if (isActivated) {
-      setFullScreenEditor();
       editorController.setFullScreen();
     }
   }
