@@ -300,10 +300,10 @@ packages:
     dependency: transitive
     description:
       name: dart_style
-      sha256: "5be16bf1707658e4c03078d4a9b90208ded217fb02c163e207d334082412f2fb"
+      sha256: "6d691edde054969f0e0f26abb1b30834b5138b963793e56f69d3a9a4435e6352"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.5"
+    version: "2.3.0"
   dartz:
     dependency: "direct main"
     description:
@@ -867,7 +867,7 @@ packages:
     description:
       path: "."
       ref: email_supported
-      resolved-ref: b0791598dfdc4fb89fc9a88554d838b61370100a
+      resolved-ref: "750fc01e09b5a98b06463e336a4b30851d90fa70"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
