@@ -24,9 +24,11 @@ import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_email_method_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -45,6 +47,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
@@ -134,6 +137,7 @@ class MailboxDashBoardController extends ReloadableController {
   final EmptyTrashFolderInteractor _emptyTrashFolderInteractor;
   final DeleteMultipleEmailsPermanentlyInteractor _deleteMultipleEmailsPermanentlyInteractor;
   final GetEmailByIdInteractor _getEmailByIdInteractor;
+  final SendEmailInteractor _sendEmailInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -200,6 +204,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._emptyTrashFolderInteractor,
     this._deleteMultipleEmailsPermanentlyInteractor,
     this._getEmailByIdInteractor,
+    this._sendEmailInteractor
   ) : super(
     getAuthenticatedAccountInteractor,
     updateAuthenticationAccountInteractor
@@ -261,7 +266,6 @@ class MailboxDashBoardController extends ReloadableController {
                 currentOverlayContext!,
                 message: AppLocalizations.of(currentContext!).your_email_being_sent,
                 icon: _imagePaths.icSendToast,
-                delayTime: const Duration(seconds: 1),
             );
           }
         } else if (success is GetEmailStateToRefreshSuccess) {
@@ -1669,6 +1673,18 @@ class MailboxDashBoardController extends ReloadableController {
     }
 
     clearState();
+  }
+
+  void handleSendEmailAction(
+    AccountId accountId,
+    EmailRequest emailRequest,
+    CreateNewMailboxRequest? mailboxRequest
+  ) {
+    consumeState(_sendEmailInteractor.execute(
+      accountId,
+      emailRequest,
+      mailboxRequest: mailboxRequest
+    ));
   }
   
   @override

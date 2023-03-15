@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
@@ -157,6 +158,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<EmptyTrashFolderInteractor>(),
       Get.find<DeleteMultipleEmailsPermanentlyInteractor>(),
       Get.find<GetEmailByIdInteractor>(),
+      Get.find<SendEmailInteractor>()
     ));
     Get.put(AdvancedFilterController());
   }
@@ -291,6 +293,10 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<SpamReportRepository>()));
     Get.lazyPut(() => GetSpamReportStateInteractor(
       Get.find<SpamReportRepository>()));
+    Get.lazyPut(() => SendEmailInteractor(
+      Get.find<EmailRepository>(),
+      Get.find<MailboxRepository>()
+    ));
   }
 
   @override
