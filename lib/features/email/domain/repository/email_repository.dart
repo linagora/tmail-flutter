@@ -55,7 +55,8 @@ abstract class EmailRepository {
     List<EmailContent> emailContents,
     List<Attachment> attachmentInlines,
     String? baseUrlDownload,
-    AccountId accountId
+    AccountId accountId,
+    {bool draftsEmail = false}
   );
 
   Future<List<EmailContent>> addTooltipWhenHoverOnLink(List<EmailContent> emailContents);
