@@ -145,7 +145,7 @@ class RichTextWebController extends BaseRichTextController {
     if (image.source == ImageSource.network) {
       editorController.insertNetworkImage(image.link!);
     } else {
-      editorController.insertHtml(image.base64Uri ?? '');
+      editorController.insertHtml("<div>${image.base64Uri ?? ''}</div><br>");
     }
   }
 
