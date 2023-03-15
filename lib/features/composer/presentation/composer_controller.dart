@@ -39,7 +39,6 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_a
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
@@ -91,7 +90,6 @@ class ComposerController extends BaseController {
   final emailContentsViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final hasRequestReadReceipt = false.obs;
 
-  final SendEmailInteractor _sendEmailInteractor;
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final DeviceInfoPlugin _deviceInfoPlugin;
   final SaveEmailAsDraftsInteractor _saveEmailAsDraftsInteractor;
@@ -190,7 +188,6 @@ class ComposerController extends BaseController {
   }
 
   ComposerController(
-    this._sendEmailInteractor,
     this._deviceInfoPlugin,
     this._localFilePickerInteractor,
     this._saveEmailAsDraftsInteractor,
@@ -764,36 +761,30 @@ class ComposerController extends BaseController {
     final outboxMailboxId = mailboxDashBoardController.outboxMailbox?.id;
     final userProfile = mailboxDashBoardController.userProfile.value;
 
-    if (kIsWeb) {
-      closeComposerWeb();
-    } else {
-      popBack();
-    }
-
     if (arguments != null && accountId != null && userProfile != null) {
       final email = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId);
       final submissionCreateId = Id(_uuid.v1());
-
-      mailboxDashBoardController.consumeState(
-        _sendEmailInteractor.execute(
-          accountId,
-          EmailRequest(
-            email,
-            submissionCreateId,
-            sentMailboxId: sentMailboxId,
-            identity: identitySelected.value,
-            emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
-              ? arguments.presentationEmail?.id
-              : null),
-          mailboxRequest: outboxMailboxId == null
-            ? CreateNewMailboxRequest(
-                Id(_uuid.v1()),
-                PresentationMailbox.outboxMailboxName)
-            : null
-        )
+      final emailRequest = EmailRequest(
+        email,
+        submissionCreateId,
+        sentMailboxId: sentMailboxId,
+        identity: identitySelected.value,
+        emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
+          ? arguments.presentationEmail?.id
+          : null
       );
+      final mailboxRequest = outboxMailboxId == null
+        ? CreateNewMailboxRequest(Id(_uuid.v1()), PresentationMailbox.outboxMailboxName)
+        : null;
 
+      mailboxDashBoardController.handleSendEmailAction(accountId, emailRequest, mailboxRequest);
       uploadController.clearInlineFileUploaded();
+    }
+
+    if (BuildUtils.isWeb) {
+      closeComposerWeb();
+    } else {
+      popBack();
     }
   }
 
