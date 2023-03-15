@@ -14,11 +14,17 @@ class HtmlDataSourceImpl extends HtmlDataSource {
 
   @override
   Future<EmailContent> transformEmailContent(
-      EmailContent emailContent,
-      Map<String, String>? mapUrlDownloadCID
+    EmailContent emailContent,
+    Map<String, String>? mapUrlDownloadCID,
+    {bool draftsEmail = false}
   ) {
     return Future.sync(() async {
-      return await _htmlAnalyzer.transformEmailContent(emailContent, mapUrlDownloadCID, _dioClient);
+      return await _htmlAnalyzer.transformEmailContent(
+        emailContent,
+        mapUrlDownloadCID,
+        _dioClient,
+        draftsEmail: draftsEmail
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 

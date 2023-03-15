@@ -39,11 +39,13 @@ class TransformConfiguration {
     List<TextTransformer>? customTextTransformers
   }) {
     final domTransformers = (customDomTransformers != null && customDomTransformers.isNotEmpty)
-        ? [...customDomTransformers]
-        : [...standardDomTransformers];
+      ? customDomTransformers
+      : standardDomTransformers;
+
     final textTransformers = (customTextTransformers != null && customTextTransformers.isNotEmpty)
-        ? [...customTextTransformers]
-        : standardTextTransformers;
+      ? customTextTransformers
+      : standardTextTransformers;
+
     return TransformConfiguration(
       domTransformers,
       textTransformers
@@ -53,6 +55,14 @@ class TransformConfiguration {
   static const List<DomTransformer> standardDomTransformers = [
     RemoveScriptTransformer(),
     SignatureTransformer(),
+    BlockQuotedTransformer(),
+    BlockCodeTransformer(),
+    AddTargetBlankInTagATransformer(),
+    ImageTransformer(),
+  ];
+
+  static const List<DomTransformer> domTransformersForDraftEmail = [
+    RemoveScriptTransformer(),
     BlockQuotedTransformer(),
     BlockCodeTransformer(),
     AddTargetBlankInTagATransformer(),
