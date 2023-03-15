@@ -622,7 +622,7 @@ class ComposerView extends GetWidget<ComposerController>
         minHeight: 550,
         addDefaultSelectionMenuItems: false,
         initialContent: initialContent ?? '',
-        onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi)
+        onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi, initialContent)
       ),
     );
   }
