@@ -24,10 +24,7 @@ extension HtmlExtension on String {
     'blockquote',
     attribute: 'style="margin-left:8px;margin-right:8px;padding-left:12px;padding-right:12px;border-left:5px solid #eee;"');
 
-  String asSignatureHtml() => '--<br><br>$this';
-
-  String toSignatureBlock() =>
-      '<br class="tmail-break-tag"><div class="tmail-signature">${asSignatureHtml()}</div><br class="tmail-break-tag">';
+  String asSignatureHtml() => '--<br>$this';
 
   String removeEditorStartTag() {
     if (trim() == editorStartTags) {
