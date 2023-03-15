@@ -1086,7 +1086,13 @@ class ComposerController extends BaseController {
       final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
       final emailId = arguments.presentationEmail?.id;
       if (emailId != null && baseDownloadUrl != null && accountId != null) {
-        consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
+        consumeState(_getEmailContentInteractor.execute(
+          accountId,
+          emailId,
+          baseDownloadUrl,
+          composeEmail: true,
+          draftsEmail: arguments.presentationEmail?.isDraft ?? false
+        ));
       }
     }
   }
@@ -1133,7 +1139,11 @@ class ComposerController extends BaseController {
     _updateTextForEditor();
     screenDisplayMode.value = displayMode;
     _autoFocusFieldWhenLauncher();
-    selectIdentity(identitySelected.value);
+
+    Future.delayed(
+      const Duration(milliseconds: 500),
+      () => selectIdentity(identitySelected.value)
+    );
   }
 
   void _updateTextForEditor() async {
@@ -1340,19 +1350,16 @@ class ComposerController extends BaseController {
         _removeBccEmailAddressFromFormerIdentity(formerIdentity.bcc!);
       }
 
-      if (!_isMobileApp && newIdentity != formerIdentity) {
+      if (!_isMobileApp) {
         _removeSignature();
       }
     }
-
     // Add new identity
     if (newIdentity.bcc?.isNotEmpty == true) {
       await _applyBccEmailAddressFromIdentity(newIdentity.bcc!);
     }
 
-    if (!_isMobileApp
-        && newIdentity != formerIdentity
-        && newIdentity.signatureAsString.isNotEmpty == true) {
+    if (!_isMobileApp && newIdentity.signatureAsString.isNotEmpty == true) {
       _applySignature(newIdentity.signatureAsString.asSignatureHtml());
     }
 

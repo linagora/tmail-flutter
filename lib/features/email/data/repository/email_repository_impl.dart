@@ -90,7 +90,8 @@ class EmailRepositoryImpl extends EmailRepository {
       List<EmailContent> emailContents,
       List<Attachment> attachmentInlines,
       String? baseUrlDownload,
-      AccountId accountId
+      AccountId accountId,
+      {bool draftsEmail = false}
     ) async {
     final mapUrlDownloadCID = {
       for (var attachment in attachmentInlines)
@@ -98,7 +99,11 @@ class EmailRepositoryImpl extends EmailRepository {
     };
     return await Future.wait(emailContents
       .map((emailContent) async {
-        return await _htmlDataSource.transformEmailContent(emailContent, mapUrlDownloadCID);
+        return await _htmlDataSource.transformEmailContent(
+          emailContent,
+          mapUrlDownloadCID,
+          draftsEmail: draftsEmail
+        );
       })
       .toList());
   }
