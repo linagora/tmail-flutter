@@ -15,7 +15,6 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_a
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
@@ -135,10 +134,6 @@ class ComposerBindings extends BaseBindings {
   void bindingsInteractor() {
     Get.lazyPut(() => LocalFilePickerInteractor());
     Get.lazyPut(() => UploadAttachmentInteractor(Get.find<ComposerRepository>()));
-    Get.lazyPut(() => SendEmailInteractor(
-      Get.find<EmailRepository>(),
-      Get.find<MailboxRepository>()
-    ));
     Get.lazyPut(() => SaveEmailAsDraftsInteractor(
         Get.find<EmailRepository>(),
         Get.find<MailboxRepository>()));
@@ -159,7 +154,6 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => UploadController(Get.find<UploadAttachmentInteractor>()));
     Get.lazyPut(() => RichTextWebController());
     Get.lazyPut(() => ComposerController(
-        Get.find<SendEmailInteractor>(),
         Get.find<DeviceInfoPlugin>(),
         Get.find<LocalFilePickerInteractor>(),
         Get.find<SaveEmailAsDraftsInteractor>(),
