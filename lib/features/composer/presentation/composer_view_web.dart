@@ -774,52 +774,36 @@ class ComposerView extends GetWidget<ComposerController>
   Widget _buildHtmlEditor(BuildContext context, String initContent) {
     log('ComposerView::_buildHtmlEditor(): initContent: $initContent');
     return Expanded(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: responsiveUtils.isMobile(context) ? 8 : 10),
-          child: HtmlEditor(
-            key: const Key('composer_editor_web'),
-            controller: controller.richTextWebController.editorController,
-            htmlEditorOptions: const HtmlEditorOptions(
-              shouldEnsureVisible: true,
-              hint: '',
-              darkMode: false,
-              customBodyCssStyle: bodyCssStyleForEditor),
-            blockQuotedContent: initContent,
-            htmlToolbarOptions: const HtmlToolbarOptions(
-                toolbarType: ToolbarType.hide,
-                defaultToolbarButtons: []),
-            otherOptions: const OtherOptions(height: 550),
-            callbacks: Callbacks(onBeforeCommand: (currentHtml) {
-              log('ComposerView::_buildHtmlEditor(): onBeforeCommand : $currentHtml');
-              controller.setTextEditorWeb(currentHtml);
-            }, onChangeContent: (changed) {
-              log('ComposerView::_buildHtmlEditor(): onChangeContent : $changed');
-              controller.setTextEditorWeb(changed);
-            }, onInit: () {
-              log('ComposerView::_buildHtmlEditor(): onInit');
-              controller.setTextEditorWeb(initContent);
-              controller.richTextWebController.setEnableCodeView();
-            }, onFocus: () {
-              log('ComposerView::_buildHtmlEditor(): onFocus');
-              FocusManager.instance.primaryFocus?.unfocus();
-              Future.delayed(const Duration(milliseconds: 500), () {
-                controller.richTextWebController.editorController.setFocus();
-              });
-              controller.richTextWebController.closeAllMenuPopup();
-            }, onBlur: () {
-              controller.onEditorFocusChange(false);
-            }, onMouseDown: () {
-              Navigator.maybePop(context);  
-              controller.onEditorFocusChange(true);
-            }, onChangeSelection: (settings) {
-              controller.richTextWebController.onEditorSettingsChange(settings);
-            }, onChangeCodeview: (contentChanged) {
-              log('ComposerView::_buildHtmlEditor(): onChangeCodeView : $contentChanged');
-              controller.setTextEditorWeb(contentChanged);
-            }),
-          )
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: HtmlEditor(
+          key: const Key('composer_editor_web'),
+          controller: controller.richTextWebController.editorController,
+          htmlEditorOptions: const HtmlEditorOptions(
+            shouldEnsureVisible: true,
+            hint: '',
+            darkMode: false,
+            customBodyCssStyle: bodyCssStyleForEditor
+          ),
+          blockQuotedContent: initContent,
+          htmlToolbarOptions: const HtmlToolbarOptions(
+            toolbarType: ToolbarType.hide,
+            toolbarPosition: ToolbarPosition.custom,
+            defaultToolbarButtons: []
+          ),
+          otherOptions: const OtherOptions(height: 550),
+          callbacks: Callbacks(
+            onBeforeCommand: controller.onChangeTextEditorWeb,
+            onChangeContent: controller.onChangeTextEditorWeb,
+            onInit: () => controller.handleInitHtmlEditorWeb(initContent),
+            onFocus: controller.handleOnFocusHtmlEditorWeb,
+            onBlur: controller.handleOnUnFocusHtmlEditorWeb,
+            onMouseDown: () => controller.handleOnMouseDownHtmlEditorWeb(context),
+            onChangeSelection: controller.richTextWebController.onEditorSettingsChange,
+            onChangeCodeview: controller.onChangeTextEditorWeb
+          ),
         )
+      )
     );
   }
 

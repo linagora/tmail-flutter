@@ -130,11 +130,22 @@ class ComposerController extends BaseController {
 
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
+  String? _initTextEditor;
   List<EmailContent>? _emailContents;
   double? maxWithEditor;
   late Worker uploadInlineImageWorker;
 
-  void setTextEditorWeb(String? text) => _textEditorWeb = text;
+  void onChangeTextEditorWeb(String? text) {
+    initTextEditor(text);
+    _textEditorWeb = text;
+  }
+
+  void initTextEditor(String? text) {
+   if (_initTextEditor == null) {
+     _initTextEditor = text;
+     log('ComposerController::initTextEditor():$_initTextEditor');
+   }
+  }
 
   String? get textEditorWeb => _textEditorWeb;
 
@@ -164,9 +175,13 @@ class ComposerController extends BaseController {
       if (changedEmail) {
         return newContentHtml;
       } else if (_isMobileApp && identitySelected.value?.signatureAsString.isNotEmpty == true) {
-        final contentHtmlWithSignature =
-            '$newContentHtml${identitySelected.value?.signatureAsString.toSignatureBlock()}';
+        await htmlEditorApi?.removeSignature();
+        await htmlEditorApi?.insertSignature(identitySelected.value!.signatureAsString.asSignatureHtml());
+
+        contentHtml = await htmlEditorApi?.getText() ?? '';
+        final contentHtmlWithSignature = contentHtml.removeEditorStartTag();
         log('ComposerController::_getEmailBodyText():MOBILE:SIGNATURE: $contentHtmlWithSignature');
+
         return contentHtmlWithSignature;
       } else {
         return newContentHtml;
@@ -218,6 +233,7 @@ class ComposerController extends BaseController {
 
   @override
   void onClose() {
+    _initTextEditor = null;
     if (!BuildUtils.isWeb) {
       FkUserAgent.release();
     }
@@ -326,7 +342,8 @@ class ComposerController extends BaseController {
     });
   }
 
-  void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi) {
+  void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi, String? content) {
+    initTextEditor(content);
     richTextMobileTabletController.htmlEditorApi = editorApi;
     keyboardRichTextController.onCreateHTMLEditor(
       editorApi,
@@ -390,6 +407,7 @@ class ComposerController extends BaseController {
         .toList();
 
       if (listIdentities.isNotEmpty) {
+        _initTextEditor = null;
         await selectIdentity(listIdentities.first);
       }
     }
@@ -550,7 +568,7 @@ class ComposerController extends BaseController {
     final headerEmailQuotedAsHtml = headerEmailQuoted != null ? headerEmailQuoted.addBlockTag('cite') : '';
 
     final trustAsHtml = arguments.emailContents?.asHtmlString ?? '';
-    final emailQuotedHtml = '<p></br></p>$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}</br></br></br>';
+    final emailQuotedHtml = '${HtmlExtension.editorStartTags}$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}';
 
     return emailQuotedHtml;
   }
@@ -905,44 +923,30 @@ class ComposerController extends BaseController {
   ) async {
     final newEmailBody = await _getEmailBodyText(context, changedEmail: true);
     log('ComposerController::_isEmailChanged(): newEmailBody: $newEmailBody');
-    var oldEmailBody = '';
-    if (context.mounted) {
-      oldEmailBody = getContentEmail(context) ?? '';
-    }
-    log('ComposerController::_isEmailChanged(): getContentEmail: $oldEmailBody');
-    if (arguments.emailActionType != EmailActionType.compose &&
-        oldEmailBody.isNotEmpty) {
-      oldEmailBody = BuildUtils.isWeb ? oldEmailBody : '\n$oldEmailBody\n';
-    }
-    if (BuildUtils.isWeb) {
-      if (identitySelected.value?.signatureAsString.isNotEmpty == true) {
-        oldEmailBody = '$oldEmailBody${identitySelected.value?.signatureAsString.toSignatureBlock()}';
-      }
-    }
-
+    var oldEmailBody = _initTextEditor ?? '';
     log('ComposerController::_isEmailChanged(): oldEmailBody: $oldEmailBody');
     final isEmailBodyChanged = !oldEmailBody.trim().isSame(newEmailBody.trim());
     log('ComposerController::_isEmailChanged(): isEmailBodyChanged: $isEmailBodyChanged');
 
-    final newEmailSubject = subjectEmail.value;
+    final newEmailSubject = subjectEmail.value ?? '';
     final titleEmail = arguments.presentationEmail?.getEmailTitle().trim() ?? '';
-    final oldEmailSubject = arguments.emailActionType.getSubjectComposer(currentContext!, titleEmail);
-    final isEmailSubjectChanged = !oldEmailSubject.isSame(newEmailSubject);
+    final oldEmailSubject = arguments.emailActionType == EmailActionType.edit ? titleEmail : '';
+    final isEmailSubjectChanged = !oldEmailSubject.trim().isSame(newEmailSubject.trim());
 
     final recipients = arguments.presentationEmail
         ?.generateRecipientsEmailAddressForComposer(arguments.emailActionType, arguments.mailboxRole)
         ?? const Tuple3(<EmailAddress>[], <EmailAddress>[], <EmailAddress>[]);
 
     final newToEmailAddress = listToEmailAddress;
-    final oldToEmailAddress = recipients.value1;
+    final oldToEmailAddress = arguments.emailActionType == EmailActionType.edit ? recipients.value1 : [];
     final isToEmailAddressChanged = !oldToEmailAddress.isSame(newToEmailAddress);
 
-    final newCcEmailAddress = listToEmailAddress;
-    final oldCcEmailAddress = recipients.value1;
+    final newCcEmailAddress = listCcEmailAddress;
+    final oldCcEmailAddress = arguments.emailActionType == EmailActionType.edit ? recipients.value2 : [];
     final isCcEmailAddressChanged = !oldCcEmailAddress.isSame(newCcEmailAddress);
 
-    final newBccEmailAddress = listToEmailAddress;
-    final oldBccEmailAddress = recipients.value1;
+    final newBccEmailAddress = listBccEmailAddress;
+    final oldBccEmailAddress = arguments.emailActionType == EmailActionType.edit ? recipients.value3 : [];
     final isBccEmailAddressChanged = !oldBccEmailAddress.isSame(newBccEmailAddress);
 
     final isAttachmentsChanged = !initialAttachments.isSame(uploadController.attachmentsUploaded.toList());
@@ -1129,6 +1133,7 @@ class ComposerController extends BaseController {
     _updateTextForEditor();
     screenDisplayMode.value = displayMode;
     _autoFocusFieldWhenLauncher();
+    selectIdentity(identitySelected.value);
   }
 
   void _updateTextForEditor() async {
@@ -1335,7 +1340,7 @@ class ComposerController extends BaseController {
         _removeBccEmailAddressFromFormerIdentity(formerIdentity.bcc!);
       }
 
-      if (!_isMobileApp) {
+      if (!_isMobileApp && newIdentity != formerIdentity) {
         _removeSignature();
       }
     }
@@ -1345,8 +1350,10 @@ class ComposerController extends BaseController {
       await _applyBccEmailAddressFromIdentity(newIdentity.bcc!);
     }
 
-    if (!_isMobileApp && newIdentity.signatureAsString.isNotEmpty == true) {
-      _applySignature(newIdentity.signatureAsString);
+    if (!_isMobileApp
+        && newIdentity != formerIdentity
+        && newIdentity.signatureAsString.isNotEmpty == true) {
+      _applySignature(newIdentity.signatureAsString.asSignatureHtml());
     }
 
     return Future.value(null);
@@ -1379,12 +1386,10 @@ class ComposerController extends BaseController {
   }
 
   void _applySignature(String signature) {
-    final signatureAsHtml = '--<br><br>$signature';
-    log('ComposerController::_applySignature(): $signatureAsHtml');
     if (BuildUtils.isWeb) {
-      richTextWebController.editorController.insertSignature(signatureAsHtml);
+      richTextWebController.editorController.insertSignature(signature);
     } else {
-      htmlEditorApi?.insertSignature(signatureAsHtml);
+      htmlEditorApi?.insertSignature(signature);
     }
   }
 
@@ -1527,5 +1532,27 @@ class ComposerController extends BaseController {
         richTextWebController.editorController.setFocus
       );
     }
+  }
+
+  void handleInitHtmlEditorWeb(String initContent) {
+    onChangeTextEditorWeb(initContent);
+    richTextWebController.setEnableCodeView();
+  }
+
+  void handleOnFocusHtmlEditorWeb() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      richTextWebController.editorController.setFocus();
+    });
+    richTextWebController.closeAllMenuPopup();
+  }
+
+  void handleOnUnFocusHtmlEditorWeb() {
+    onEditorFocusChange(false);
+  }
+
+  void handleOnMouseDownHtmlEditorWeb(BuildContext context) {
+    Navigator.maybePop(context);
+    onEditorFocusChange(true);
   }
 }
