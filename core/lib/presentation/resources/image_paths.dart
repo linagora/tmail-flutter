@@ -49,6 +49,7 @@ class ImagePaths {
   String get icFilterMessageAttachments => _getImagePath('ic_filter_message_attachments.svg');
   String get icLogoTMail => _getImagePath('logo_tmail.png');
   String get icSendToast => _getImagePath('ic_send_toast.svg');
+  String get icSendSuccessToast => _getImagePath('ic_send_success_toast.svg');
   String get icClearTextSearch => _getImagePath('ic_clear_text_search.svg');
   String get icRenameMailbox => _getImagePath('ic_rename_mailbox.svg');
   String get icDeleteToast => _getImagePath('ic_delete_toast.svg');
@@ -175,6 +176,7 @@ class ImagePaths {
   String get icHideMailbox => _getImagePath('ic_hide_mailbox.svg');
   String get icShowMailbox => _getImagePath('ic_show_mailbox.svg');
   String get icMailboxVisibility => _getImagePath('ic_mailbox_visibility.svg');
+  String get icToastSuccessMessage => _getImagePath('ic_toast_success_message.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

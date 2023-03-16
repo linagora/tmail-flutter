@@ -77,7 +77,7 @@ class ResponsiveUtils {
     if (isPortraitMobile(context)) {
       return widthScreen;
     } else {
-      return widthScreen < 444 ? widthScreen : 444;
+      return widthScreen < 424 ? widthScreen : 424;
     }
   }
 

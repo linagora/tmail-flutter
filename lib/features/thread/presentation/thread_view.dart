@@ -126,20 +126,18 @@ class ThreadView extends GetWidget<ThreadController>
       if ((!BuildUtils.isWeb || (BuildUtils.isWeb && controller.isSelectionEnabled()
             && controller.isSearchActive() && !_responsiveUtils.isDesktop(context)))
           && controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected.isNotEmpty) {
-        return Column(children: [
-          const Divider(color: AppColor.lineItemListColor, height: 1, thickness: 0.2),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: (BottomBarThreadSelectionWidget(
-                    context,
-                    _imagePaths,
-                    _responsiveUtils,
-                    controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
-                    controller.mailboxDashBoardController.selectedMailbox.value)
-                ..addOnPressEmailSelectionActionClick((actionType, selectionEmail) =>
-                    controller.pressEmailSelectionAction(context, actionType, selectionEmail)))
-              .build()),
-        ]);
+        return BottomBarThreadSelectionWidget(
+          _imagePaths,
+          _responsiveUtils,
+          controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
+          controller.mailboxDashBoardController.selectedMailbox.value,
+          onPressEmailSelectionActionClick: (actionType, selectionEmail) =>
+            controller.pressEmailSelectionAction(
+              context,
+              actionType,
+              selectionEmail
+            )
+        );
       } else {
         return const SizedBox.shrink();
       }

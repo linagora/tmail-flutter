@@ -29,7 +29,6 @@ class VacationController extends BaseController {
 
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final _appToast = Get.find<AppToast>();
-  final _imagePaths = Get.find<ImagePaths>();
   final _settingController = Get.find<SettingsController>();
   final _richTextControllerForWeb = Get.find<RichTextWebController>(tag: VacationUtils.vacationTagName);
 
@@ -249,33 +248,33 @@ class VacationController extends BaseController {
     if (vacationPresentation.value.isEnabled) {
       final fromDate = vacationPresentation.value.fromDate;
       if (fromDate == null) {
-          _appToast.showToastWithIcon(
-              context,
-              bgColor: AppColor.toastErrorBackgroundColor,
-              textColor: Colors.white,
-              message: AppLocalizations.of(context).errorMessageWhenStartDateVacationIsEmpty);
+        if (currentOverlayContext != null && currentContext != null) {
+          _appToast.showToastErrorMessage(
+            currentOverlayContext!,
+            AppLocalizations.of(currentContext!).errorMessageWhenStartDateVacationIsEmpty);
+        }
         return;
       }
 
       final vacationStopEnabled = vacationPresentation.value.vacationStopEnabled;
       final toDate = vacationPresentation.value.toDate;
       if (vacationStopEnabled && toDate != null && toDate.isBefore(fromDate)) {
-        _appToast.showToastWithIcon(
-            context,
-            bgColor: AppColor.toastErrorBackgroundColor,
-            textColor: Colors.white,
-            message: AppLocalizations.of(context).errorMessageWhenEndDateVacationIsInValid);
+        if (currentOverlayContext != null && currentContext != null) {
+          _appToast.showToastErrorMessage(
+            currentOverlayContext!,
+            AppLocalizations.of(currentContext!).errorMessageWhenEndDateVacationIsInValid);
+        }
         return;
       }
 
       final messagePlainText = messageTextController.text;
       final messageHtmlText = (BuildUtils.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
       if (messagePlainText.isEmpty && messageHtmlText.isEmpty && context.mounted) {
-        _appToast.showToastWithIcon(
-            context,
-            bgColor: AppColor.toastErrorBackgroundColor,
-            textColor: Colors.white,
-            message: AppLocalizations.of(context).errorMessageWhenMessageVacationIsEmpty);
+        if (currentOverlayContext != null && currentContext != null) {
+          _appToast.showToastErrorMessage(
+            currentOverlayContext!,
+            AppLocalizations.of(currentContext!).errorMessageWhenMessageVacationIsEmpty);
+        }
         return;
       }
 
@@ -307,11 +306,10 @@ class VacationController extends BaseController {
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
     if (success.listVacationResponse.isNotEmpty) {
-      if (currentContext != null && currentOverlayContext != null) {
-        _appToast.showToastWithIcon(
-            currentOverlayContext!,
-            message: AppLocalizations.of(currentContext!).vacationSettingSaved,
-            icon: _imagePaths.icChecked);
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastSuccessMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).vacationSettingSaved);
       }
       currentVacation = success.listVacationResponse.first;
       log('VacationController::_handleUpdateVacationSuccess(): $currentVacation');

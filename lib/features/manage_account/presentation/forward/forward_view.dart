@@ -133,19 +133,9 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
         controller.addRecipientAction(context, listRecipientsSelected);
       },
       onExceptionCallback: () {
-        _appToast.showBottomToast(
+        _appToast.showToastErrorMessage(
           context,
-          AppLocalizations.of(context).incorrectEmailFormat,
-          leadingIcon: SvgPicture.asset(
-            _imagePaths.icNotConnection,
-            width: 24,
-            height: 24,
-            colorFilter: Colors.white.asFilter(),
-            fit: BoxFit.fill),
-          backgroundColor: AppColor.toastErrorBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          maxWidth: _responsiveUtils.getMaxWidthToast(context));
+          AppLocalizations.of(context).incorrectEmailFormat);
       },
     );
   }

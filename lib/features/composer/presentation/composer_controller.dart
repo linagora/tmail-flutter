@@ -872,8 +872,10 @@ class ComposerController extends BaseController {
 
   void _pickFileFailure(Failure failure) {
     if (failure is LocalFilePickerFailure) {
-      if (currentContext != null) {
-        _appToast.showErrorToast(AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments);
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments);
       }
     }
   }

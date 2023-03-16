@@ -1,18 +1,13 @@
 import 'package:contact/contact/model/capability_contact.dart';
-import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/fps_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -77,7 +72,6 @@ abstract class BaseController extends GetxController
 
   final AppToast _appToast = Get.find<AppToast>();
 
-
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
 
@@ -137,7 +131,12 @@ abstract class BaseController extends GetxController
       if (failure.exception is NoNetworkError) {
         return true;
       } else if (failure.exception is BadCredentialsException) {
-        _appToast.showErrorToast(AppLocalizations.of(currentContext!).badCredentials);
+        if (currentOverlayContext != null && currentContext != null) {
+          _appToast.showToastErrorMessage(
+            currentOverlayContext!,
+            AppLocalizations.of(currentContext!).badCredentials);
+        }
+
         checkAuthenticationTypeWhenLogout();
         return true;
       }
@@ -152,8 +151,6 @@ abstract class BaseController extends GetxController
     }
 
     final appToast = Get.find<AppToast>();
-    final imagePaths = Get.find<ImagePaths>();
-    final responsiveUtils = Get.find<ResponsiveUtils>();
 
     String messageError = '';
     if (error is MethodLevelErrors) {
@@ -165,19 +162,7 @@ abstract class BaseController extends GetxController
     }
 
     if (messageError.isNotEmpty && currentContext != null && currentOverlayContext != null) {
-      appToast.showBottomToast(
-        currentOverlayContext!,
-        messageError,
-        leadingIcon: SvgPicture.asset(
-          imagePaths.icNotConnection,
-          width: 24,
-          height: 24,
-          colorFilter: Colors.white.asFilter(),
-          fit: BoxFit.fill),
-        backgroundColor: AppColor.toastErrorBackgroundColor,
-        textColor: Colors.white,
-        textActionColor: Colors.white,
-        maxWidth: responsiveUtils.getMaxWidthToast(currentContext!));
+      appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }
   }
 
@@ -262,18 +247,18 @@ abstract class BaseController extends GetxController
   }
 
   bool fcmEnabled(Session? session, AccountId? accountId) {
-    bool _fcmEnabled = false;
+    bool fcmEnabled = false;
     try {
       requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
       if (AppConfig.fcmAvailable) {
-        _fcmEnabled = true;
+        fcmEnabled = true;
       } else {
-        _fcmEnabled = false;
+        fcmEnabled = false;
       }
     } catch (e) {
       logError('BaseController::fcmEnabled(): exception: $e');
     }
-    return _fcmEnabled;
+    return fcmEnabled;
   }
 
   void goToLogin({LoginArguments? arguments}) {

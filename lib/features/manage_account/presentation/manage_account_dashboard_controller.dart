@@ -41,7 +41,6 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 class ManageAccountDashBoardController extends ReloadableController {
 
   final _appToast = Get.find<AppToast>();
-  final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   GetAllVacationInteractor? _getAllVacationInteractor;
@@ -268,10 +267,9 @@ class ManageAccountDashBoardController extends ReloadableController {
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
     if (success.listVacationResponse.isNotEmpty) {
       if (currentContext != null && currentOverlayContext != null) {
-        _appToast.showToastWithIcon(
-            currentOverlayContext!,
-            message: AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully,
-            icon: _imagePaths.icChecked);
+        _appToast.showToastSuccessMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully);
       }
       vacationResponse.value = success.listVacationResponse.first;
       log('ManageAccountDashBoardController::_handleUpdateVacationSuccess(): $vacationResponse');
